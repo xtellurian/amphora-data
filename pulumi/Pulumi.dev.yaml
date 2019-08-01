@@ -1,0 +1,22 @@
+config:
+  azure:environment: public
+
+  application:location: AustraliaSoutheast
+  application:rg: d-application
+  application:appSvcPlanTier: Free
+  application:appSvcPlanSize: B1
+
+  authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+  
+  compose:application: "true"
+  compose:monitoring: "true"
+  compose:state: "true"
+
+  monitoring:location: AustraliaSoutheast
+  monitoring:rg: d-monitoring
+
+  state:failoverLocation: AustraliaEast
+  state:location: AustraliaSoutheast
+  state:rg: d-state
+
+  tsi:location: AustraliaSoutheast
