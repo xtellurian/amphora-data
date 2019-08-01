@@ -5,27 +5,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.Models;
+using api.Contracts;
 
 namespace api.Controllers
 {
     [Route("amphorae")]
     public class AmphoraController : Controller
     {
-        public IActionResult Index()
+        private readonly IAmphoraModelService amphoraModelService;
+
+        public AmphoraController(IAmphoraModelService amphoraModelService)
         {
-            return Ok("hello");
+            this.amphoraModelService = amphoraModelService;
+        }
+        
+        [HttpGet()]
+        public IActionResult ListAmphoraIds()
+        {
+            return Ok(this.amphoraModelService.ListAmphoraeIds());
         }
 
 
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetAmphoraInformation(string id)
         {
-            return Json(new AmphoraModel(){
-                Title= "Soil Data",
-                Description= "some numbers and letteers",
-                Price=21,
-                Id=id
-            });
+            return Ok(this.amphoraModelService.GetAmphora(id));
+        }
+
+        [HttpPut()]
+        public IActionResult SetAmphora([FromBody] AmphoraModel model)
+        {
+            return Ok(this.amphoraModelService.SetAmphora(model));
         }
     }
 }
