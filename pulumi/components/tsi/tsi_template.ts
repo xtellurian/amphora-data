@@ -13,6 +13,9 @@ export function getTsiTemplate() {
       eventHubName: {
         type: "String"
       },
+      eventHubResourceId: {
+        type: "String"
+      },
       eh_consumer_group: {
         defaultValue: "$default",
         type: "String"
@@ -70,8 +73,9 @@ export function getTsiTemplate() {
         ],
         kind: "Microsoft.EventHub",
         properties: {
-          eventSourceResourceId:
-            "[concat(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespaceName')), '/EventHub/' , parameters('eventHubName'))]",
+          // eventSourceResourceId:
+          //   "[concat(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespaceName')), '/EventHub/' , parameters('eventHubName'))]",
+          eventSourceResourceId: "[parameters('eventHubResourceId')]",
           consumerGroupName: "[parameters('eh_consumer_group')]",
           keyName: "[parameters('keyName')]",
           timestampPropertyName: "t",
@@ -94,16 +98,6 @@ export function getTsiTemplate() {
           "[concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))]"
         ]
       },
-      // {
-      //   type: "Microsoft.Storage/storageAccounts",
-      //   name: "[parameters('storageAccountName')]",
-      //   apiVersion: "2018-02-01",
-      //   location: "[parameters('location')]",
-      //   sku: {
-      //     name: "[parameters('storageAccountSkuName')]"
-      //   },
-      //   kind: "Storage"
-      // }
     ]
   };
 }

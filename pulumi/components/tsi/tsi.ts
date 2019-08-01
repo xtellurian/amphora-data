@@ -66,6 +66,7 @@ export class Tsi extends pulumi.ComponentResource {
           location: config.require("location"),
           eventHubNamespaceName: this._params.eh_namespace.name,
           eventHubName: this._params.eh.name,
+          eventHubResourceId: this._params.eh.id,
           environmentName: env_name.result,
           storageAccountName: coldStorage.name,
           keyName: "RootManageSharedAccessKey",
