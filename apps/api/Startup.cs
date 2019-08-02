@@ -1,8 +1,9 @@
 ﻿using api.Contracts;
-using api.Models;
 using api.Options;
+using api.Services;
 using api.Stores;
 using AutoMapper;
+using common.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using schema.Models;
 
 namespace api
 {
@@ -33,6 +35,7 @@ namespace api
             });
 
             ConfigureStores(services);
+            services.AddTransient<IAmphoraFillerService, AmphoraFillerService>();
 
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());

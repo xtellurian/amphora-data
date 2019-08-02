@@ -1,7 +1,8 @@
-using api.Contracts;
+using common.Contracts;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace api.Models
+namespace schema.Models
 {
     public class AmphoraSchema : IAmphoraEntity
     {
@@ -17,6 +18,11 @@ namespace api.Models
         
         public string Id { get; set; }
         public JSchema JsonSchema { get; set; }
+
+        public bool IsValid(JObject jObj)
+        {
+            return jObj.IsValid(JsonSchema);
+        }
 
     }
 }

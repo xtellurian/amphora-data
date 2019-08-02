@@ -20,6 +20,12 @@
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.11" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\schemas\schemas.csproj" />
+    <ProjectReference Include="..\common\common.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>79a3edd0-2022-40a2-a04d-dcb46a5ca9fd</UserSecretsId>

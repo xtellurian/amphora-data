@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using api.Contracts;
+using common.Contracts;
 
 namespace api.Stores
 {

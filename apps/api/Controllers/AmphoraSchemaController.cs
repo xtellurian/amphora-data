@@ -1,7 +1,7 @@
 using api.Contracts;
-using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
+using schema.Models;
 
 namespace api.Controllers
 {

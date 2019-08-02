@@ -1,3 +1,4 @@
+using common.Models;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace api.Models
