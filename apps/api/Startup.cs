@@ -31,7 +31,9 @@ namespace api
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
+            //services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
+            services.AddSingleton<IAmphoraModelService, InMemoryAmphoraModelService>();
+            
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()

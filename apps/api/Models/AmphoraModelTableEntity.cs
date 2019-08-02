@@ -15,6 +15,7 @@ namespace api.Models
 
         }
         public string Id { get; set; }
+        public AmphoraClass Class { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
