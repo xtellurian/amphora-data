@@ -32,9 +32,8 @@ namespace api
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
-            services.AddSingleton<IAmphoraEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
-            
+            ConfigureStores(services);
+
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()
@@ -43,6 +42,13 @@ namespace api
 
             services.Configure<TableStoreOptions>(Configuration);
 
+        }
+
+        private static void ConfigureStores(IServiceCollection services)
+        {
+            //services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
+            services.AddSingleton<IAmphoraEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
+            services.AddSingleton<IAmphoraEntityStore<AmphoraSchema>, InMemoryEntityStore<AmphoraSchema>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
