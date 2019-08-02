@@ -1,41 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.Models;
 using api.Contracts;
 
 namespace api.Controllers
 {
-    [Route("amphorae")]
+    [Route("api/amphorae")]
     public class AmphoraController : Controller
     {
-        private readonly IAmphoraModelService amphoraModelService;
+        private readonly IAmphoraEntityStore<AmphoraModel> amphoraModelStore;
 
-        public AmphoraController(IAmphoraModelService amphoraModelService)
+        public AmphoraController(IAmphoraEntityStore<AmphoraModel> amphoraModelStore)
         {
-            this.amphoraModelService = amphoraModelService;
+            this.amphoraModelStore = amphoraModelStore;
         }
-        
+
         [HttpGet()]
         public IActionResult ListAmphoraIds()
         {
-            return Ok(this.amphoraModelService.ListAmphoraeIds());
+            return Ok(this.amphoraModelStore.ListIds());
         }
 
 
         [HttpGet("{id}")]
         public IActionResult GetAmphoraInformation(string id)
         {
-            return Ok(this.amphoraModelService.GetAmphora(id));
+            return Ok(this.amphoraModelStore.Get(id));
         }
 
         [HttpPut()]
         public IActionResult SetAmphora([FromBody] AmphoraModel model)
         {
-            return Ok(this.amphoraModelService.SetAmphora(model));
+            if (model == null)
+            {
+                return BadRequest("Invalid Model");
+            }
+            return Ok(this.amphoraModelStore.Set(model));
         }
     }
 }

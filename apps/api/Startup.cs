@@ -1,6 +1,7 @@
 ﻿using api.Contracts;
+using api.Models;
 using api.Options;
-using api.Services;
+using api.Stores;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +33,7 @@ namespace api
             });
 
             //services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
-            services.AddSingleton<IAmphoraModelService, InMemoryAmphoraModelService>();
+            services.AddSingleton<IAmphoraEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
             
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());

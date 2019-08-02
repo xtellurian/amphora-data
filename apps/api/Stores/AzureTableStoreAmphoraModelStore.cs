@@ -8,9 +8,9 @@ using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace api.Services
+namespace api.Store
 {
-    public class AzureTableStoreAmphoraModelService : IAmphoraModelService
+    public class AzureTableStoreAmphoraModelService : IAmphoraEntityStore<AmphoraModel>
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
@@ -46,7 +46,7 @@ namespace api.Services
             }
             this.isInit = true;
         }
-        public AmphoraModel GetAmphora(string id)
+        public AmphoraModel Get(string id)
         {
             InitTable();
             try
@@ -75,7 +75,7 @@ namespace api.Services
 
         }
 
-        public IEnumerable<string> ListAmphoraeIds()
+        public IEnumerable<string> ListIds()
         {
             InitTable();
             var query = new TableQuery<DynamicTableEntity>()
@@ -92,7 +92,7 @@ namespace api.Services
             }
         }
 
-        public AmphoraModel SetAmphora(AmphoraModel model)
+        public AmphoraModel Set(AmphoraModel model)
         {
             InitTable();
             var entity = mapper.Map<AmphoraModelTableEntity>(model);
