@@ -5,11 +5,18 @@ namespace api.Models
 {
     public class AmphoraSchema : IAmphoraEntity
     {
-        public string Id { get; set; }
-        public string JsonSchema { get; set; }
-        public JSchema LoadJSchema()
+        public AmphoraSchema() { }
+        public AmphoraSchema(string jsonSchema)
         {
-            return JSchema.Parse(this.JsonSchema);
+            this.JsonSchema = JSchema.Parse(jsonSchema);
         }
+        public AmphoraSchema(JSchema jSchema)
+        {
+            this.JsonSchema = jSchema;
+        }
+        
+        public string Id { get; set; }
+        public JSchema JsonSchema { get; set; }
+
     }
 }
