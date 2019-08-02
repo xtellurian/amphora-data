@@ -18,7 +18,7 @@ const COMPONENT_PARAMS = {
 };
 
 const CONSTANTS = {
-  AzStorage_KV_CS_SecretName: "stateStorageCS"
+  AzStorage_KV_CS_SecretName: "StorageConnectionString"
 }
 
 export { COMPONENTS, COMPONENT_PARAMS, CONSTANTS };

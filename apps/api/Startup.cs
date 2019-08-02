@@ -1,5 +1,7 @@
 ﻿using api.Contracts;
+using api.Options;
 using api.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,12 +31,14 @@ namespace api
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton<IAmphoraModelService, InMemoryAmphoraModelService>();
+            services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
 
-
+            services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
+
+            services.Configure<TableStoreOptions>(Configuration);
 
         }
 

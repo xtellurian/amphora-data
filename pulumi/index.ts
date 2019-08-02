@@ -68,4 +68,8 @@ export let appUrl = result.then(r =>
   r.application ? pulumi.interpolate `https://${r.application.appSvc.defaultSiteHostname}` : null
 );
 
+export let kvUri = result.then(r =>
+  r.state ? r.state.kv.vaultUri : null
+);
+
 // export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )
