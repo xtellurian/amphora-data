@@ -32,7 +32,7 @@ namespace api
             });
 
             services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
-
+            services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
