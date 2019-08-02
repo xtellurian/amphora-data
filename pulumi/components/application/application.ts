@@ -179,7 +179,7 @@ export class Application extends pulumi.ComponentResource
       "appSvc-access",
       {
         keyVaultId: kv.id,
-        secretPermissions: ["get"],
+        secretPermissions: ["get", "list"],
         objectId: appSvc.identity.apply(
           identity =>
             identity.principalId || "11111111-1111-1111-1111-111111111111"
