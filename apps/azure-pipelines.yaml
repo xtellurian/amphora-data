@@ -16,12 +16,17 @@ steps:
 
 - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
   workingDirectory: apps
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: dotnet test
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
 
 - task: PublishCodeCoverageResults@1
+  displayName: Publish Code Coverage Report
   inputs:
-    summaryFileLocation: $(Build.SourcesDirectory)\results\coverage.cobertura.xml
-    reportDirectory: $(Build.SourcesDirectory)\results
+    summaryFileLocation: $(Build.SourcesDirectory)/apps/test-unit/coverage.cobertura.xml
     codecoverageTool: cobertura
 
 - script: docker build .
