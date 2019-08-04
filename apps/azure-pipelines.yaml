@@ -5,9 +5,25 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
+  imageName: api
+  imageTag: latest
   buildConfiguration: 'Release'
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
   workingDirectory: apps
   displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
+  workingDirectory: apps
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    summaryFileLocation: $(Build.SourcesDirectory)\results\coverage.cobertura.xml
+    reportDirectory: $(Build.SourcesDirectory)\results
+    codecoverageTool: cobertura
+
+- script: docker build .
+  workingDirectory: apps
+  displayName: Build docker image

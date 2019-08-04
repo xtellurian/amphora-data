@@ -2,15 +2,13 @@ FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
-
-# Copy everything else and build
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet restore ./api
+
+RUN dotnet publish -c Release -o out api
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=build-env /app/api/out .
 ENTRYPOINT ["dotnet", "api.dll"]

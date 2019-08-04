@@ -1,0 +1,8 @@
+.vscode/
+[Bb]in/
+[Oo]bj/
+Dockerfile
+test-unit/
+apps.sln
+azure-pipelines.yaml
+.gitignore
