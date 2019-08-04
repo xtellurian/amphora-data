@@ -11,6 +11,7 @@ namespace Amphora.Common.Models
         [JsonConverter(typeof(StringEnumConverter))]
         public AmphoraClass Class { get; set; }
         public string SchemaId { get; set; }
+        public bool Bounded { get; set; } = true; // a bounded amphora cannot be appended to
         public string Title { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

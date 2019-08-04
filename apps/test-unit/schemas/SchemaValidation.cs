@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Amphora.Schemas.Library;
 using Xunit;
 
-namespace test_unit
+namespace Amphora.Tests.Unit
 {
     public class SchemaValidation
     {
