@@ -47,5 +47,27 @@ namespace Amphora.Tests.Unit.Automapper
             var amphora = mapper.Map<AmphoraModel>(tableEntity);
             Assert.NotNull(amphora);
         }
+
+        [Fact]
+        public void MapSchemaToTableStoreEntity()
+        {
+            var schema = new AmphoraSchema()
+            {
+                // set random things
+            };
+            var tableEntity = mapper.Map<AmphoraSchemaTableEntity>(schema);
+            Assert.NotNull(tableEntity);
+        }
+
+        [Fact]
+        public void MapTableStoreEntityToSchema()
+        {
+            var tableEntity = new AmphoraSchemaTableEntity()
+            {
+                // set random things
+            };
+            var schema = mapper.Map<AmphoraSchema>(tableEntity);
+            Assert.NotNull(schema);
+        }
     }
 }

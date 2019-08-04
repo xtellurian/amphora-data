@@ -41,7 +41,7 @@ namespace Amphora.Schemas.Library
             {
                 var generator = new JSchemaGenerator();
                 generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                this.JsonSchema = generator.Generate(typeof(IdValue));
+                this._jSchema = generator.Generate(typeof(IdValue));
                 this.Id = LibraryId;
             }
         }

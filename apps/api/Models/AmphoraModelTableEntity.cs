@@ -9,12 +9,6 @@ namespace Amphora.Api.Models
         public AmphoraModelTableEntity()
         {
         }
-        public AmphoraModelTableEntity(string partitionKey, string rowKey)
-        {
-            this.PartitionKey = partitionKey;
-            this.RowKey = rowKey;
-
-        }
         public string Id { get; set; }
         public string SchemaId { get; set; }
         public bool Bounded { get; set; }
