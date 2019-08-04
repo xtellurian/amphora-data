@@ -34,6 +34,7 @@ namespace Amphora.Api.Controllers
         public IActionResult GetJsonSchema(string id) 
         {
             var schema = store.Get(id);
+            if(schema == null) return NotFound();
             return Ok(schema.JsonSchema);
         }
     }
