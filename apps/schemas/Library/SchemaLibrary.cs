@@ -1,25 +1,25 @@
 using Newtonsoft.Json.Schema.Generation;
 using Amphora.Common.Models;
+using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Schemas.Library
 {
     public class SchemaLibrary
     {
-        public class BasicSensor
+        class IdValue
         {
             public string Id { get; set; }
             public double Value { get; set; }
         }
 
-        public class TestSchema : AmphoraSchema
+        public class IdValueSchema : AmphoraSchema
         {
-            private const string jsonSchema = "";
-
-            public TestSchema()
+            public IdValueSchema()
             {
                 var generator = new JSchemaGenerator();
-                this.JsonSchema = generator.Generate(typeof(BasicSensor));
-                this.Id = nameof(TestSchema);
+                generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                this.JsonSchema = generator.Generate(typeof(IdValue));
+                this.Id = nameof(IdValue);
             }
         }
     }
