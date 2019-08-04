@@ -16,6 +16,8 @@ namespace Amphora.Api.Models
 
         }
         public string Id { get; set; }
+        public string SchemaId { get; set; }
+        public bool Bounded { get; set; }
         public AmphoraClass Class { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
