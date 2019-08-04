@@ -1,14 +1,10 @@
-using schema.Models;
-using common.Contracts;
-using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
+using Amphora.Common.Models;
 
-namespace schemas.Library
+namespace Amphora.Schemas.Library
 {
     public class SchemaLibrary
     {
-
-
         public class BasicSensor
         {
             public string Id { get; set; }

@@ -3,7 +3,7 @@ using common.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace common.Models
+namespace Amphora.Common.Models
 {
     public class AmphoraModel : IAmphoraEntity
     {

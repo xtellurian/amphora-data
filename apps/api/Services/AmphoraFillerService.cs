@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using api.Contracts;
-using common.Models;
+using Amphora.Common.Models;
 using Newtonsoft.Json.Linq;
-using schema.Models;
 
 namespace api.Services
 {

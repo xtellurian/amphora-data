@@ -2,7 +2,7 @@ using common.Contracts;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace schema.Models
+namespace Amphora.Common.Models
 {
     public class AmphoraSchema : IAmphoraEntity
     {
@@ -23,6 +23,5 @@ namespace schema.Models
         {
             return jObj.IsValid(JsonSchema);
         }
-
     }
 }

@@ -1,4 +1,4 @@
-namespace common.Models
+namespace Amphora.Common.Models
 {
     public enum AmphoraClass
     {

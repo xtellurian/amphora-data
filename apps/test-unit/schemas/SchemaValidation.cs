@@ -1,7 +1,6 @@
 using System;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using schemas.Library;
+using Amphora.Schemas.Library;
 using Xunit;
 
 namespace test_unit

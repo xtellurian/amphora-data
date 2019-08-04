@@ -4,7 +4,7 @@ using api.Contracts;
 using api.Models;
 using api.Options;
 using AutoMapper;
-using common.Models;
+using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

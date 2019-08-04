@@ -1,9 +1,9 @@
+using Amphora.Common.Models;
 using api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
-using schema.Models;
 
-namespace api.Controllers
+namespace Amphora.Api.Controllers
 {
     [Route("api/schemas")]
     public class AmphoraSchemaController : Controller

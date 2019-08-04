@@ -4,7 +4,7 @@ using api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-namespace api.Controllers
+namespace Amphora.Ai.Controllers
 {
     [Route("api/amphorae")]
     public class FillAmphoraController : Controller

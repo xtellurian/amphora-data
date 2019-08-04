@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.Models;
 
-namespace api.Controllers
+namespace Amphora.Api.Controllers
 {
     public class HomeController : Controller
     {
