@@ -11,6 +11,9 @@ using Newtonsoft.Json.Serialization;
 using Amphora.Api.Services;
 using Amphora.Api.Stores;
 using Amphora.Api.Options;
+using System;
+using Amphora.Api.Fillers;
+using Amphora.Api.Drinkers;
 
 namespace Amphora.Api
 {
@@ -34,7 +37,8 @@ namespace Amphora.Api
             });
 
             ConfigureStores(services);
-            services.AddTransient<IAmphoraFillerService, AmphoraFillerService>();
+            ConfigureFillersAndDrinkers(services);
+            
 
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
@@ -44,6 +48,15 @@ namespace Amphora.Api
 
             services.Configure<TableStoreOptions>(Configuration);
 
+        }
+
+        private void ConfigureFillersAndDrinkers(IServiceCollection services)
+        {
+            services.AddSingleton<InMemoryBinaryAmphora>();
+            services.AddSingleton<IBinaryAmphoraFiller>(x => x.GetRequiredService<InMemoryBinaryAmphora>());
+            services.AddSingleton<IBinaryAmphoraDrinker>(x => x.GetRequiredService<InMemoryBinaryAmphora>());
+            services.AddTransient<IAmphoraFillerService, AmphoraFillerService>();
+            services.AddTransient<IAmphoraDrinkerService, AmphoraDrinkerService>();
         }
 
         private static void ConfigureStores(IServiceCollection services)

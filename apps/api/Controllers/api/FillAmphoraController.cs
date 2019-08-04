@@ -17,10 +17,17 @@ namespace Amphora.Api.Api.Controllers
         }
 
 
-        [HttpPost("{id}/fill")]
-        public async Task<IActionResult> GetAmphoraInformation(string id, [FromBody] IEnumerable<JObject> data)
+        [HttpPost("{id}/fillJson")]
+        public async Task<IActionResult> FillWithJson(string id, [FromBody] IEnumerable<JObject> data)
         {
             await fillerService.FillWithJson(id, data);
+            return Ok();
+        }
+
+        [HttpPost("{id}/fillBinary")]
+        public async Task<IActionResult> FillWithBinary(string id)
+        {
+            await fillerService.FillWithBinary(id, Request.Body);
             return Ok();
         }
     }
