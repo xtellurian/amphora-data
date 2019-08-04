@@ -1,5 +1,5 @@
 using Amphora.Common.Models;
-using api.Contracts;
+using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
 

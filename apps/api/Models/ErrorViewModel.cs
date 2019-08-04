@@ -1,6 +1,6 @@
 using System;
 
-namespace api.Models
+namespace Amphora.Api.Models
 {
     public class ErrorViewModel
     {

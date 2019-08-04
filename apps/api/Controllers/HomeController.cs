@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using Amphora.Api.Models;
 using Microsoft.AspNetCore.Mvc;
-using api.Models;
+
 
 namespace Amphora.Api.Controllers
 {

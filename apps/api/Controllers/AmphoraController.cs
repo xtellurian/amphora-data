@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Amphora.Common.Models;
-using api.Contracts;
+using Amphora.Api.Contracts;
 
 namespace Amphora.Api.Controllers
 {

@@ -1,5 +1,5 @@
 
-namespace api.Options
+namespace Amphora.Api.Options
 {
     public class TableStoreOptions
     {

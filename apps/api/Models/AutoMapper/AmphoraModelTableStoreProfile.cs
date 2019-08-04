@@ -1,5 +1,6 @@
 using AutoMapper;
 using Amphora.Common.Models;
+using Amphora.Api.Models;
 
 namespace api.Models.AutoMapper
 {

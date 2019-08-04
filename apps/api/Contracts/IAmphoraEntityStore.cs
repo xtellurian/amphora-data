@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using common.Contracts;
 
-namespace api.Contracts
+namespace Amphora.Api.Contracts
 {
     public interface IAmphoraEntityStore<T> where T : IAmphoraEntity
     {

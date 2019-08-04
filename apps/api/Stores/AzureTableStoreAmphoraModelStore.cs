@@ -1,13 +1,13 @@
 
 using System.Collections.Generic;
-using api.Contracts;
-using api.Models;
-using api.Options;
+using Amphora.Api.Contracts;
 using AutoMapper;
 using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Amphora.Api.Options;
+using Amphora.Api.Models;
 
 namespace api.Store
 {

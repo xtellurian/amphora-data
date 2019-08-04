@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using api.Contracts;
+using Amphora.Api.Contracts;
 using common.Contracts;
 
-namespace api.Stores
+namespace Amphora.Api.Stores
 {
     public class InMemoryEntityStore<T>: IAmphoraEntityStore<T> where T: class, IAmphoraEntity
     {

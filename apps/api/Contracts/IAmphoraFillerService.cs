@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace api.Contracts
+namespace Amphora.Api.Contracts
 {
     public interface IAmphoraFillerService
     {

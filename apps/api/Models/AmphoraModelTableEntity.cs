@@ -1,7 +1,7 @@
 using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace api.Models
+namespace Amphora.Api.Models
 {
 
     public class AmphoraModelTableEntity : TableEntity

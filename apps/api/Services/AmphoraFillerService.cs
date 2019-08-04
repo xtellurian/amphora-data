@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using api.Contracts;
+using Amphora.Api.Contracts;
 using Amphora.Common.Models;
 using Newtonsoft.Json.Linq;
 
-namespace api.Services
+namespace Amphora.Api.Services
 {
     public class AmphoraFillerService : IAmphoraFillerService
     {

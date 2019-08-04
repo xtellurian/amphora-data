@@ -1,7 +1,4 @@
-﻿using api.Contracts;
-using api.Options;
-using api.Services;
-using api.Stores;
+﻿using Amphora.Api.Contracts;
 using AutoMapper;
 using Amphora.Common.Models;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-
+using Amphora.Api.Services;
+using Amphora.Api.Stores;
+using Amphora.Api.Options;
 
 namespace api
 {

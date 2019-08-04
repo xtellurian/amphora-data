@@ -1,6 +1,6 @@
 using Microsoft.Azure.Cosmos.Table;
 
-namespace api.Models
+namespace Amphora.Api.Models
 {
     public class AmphoraSchemaTableEntity : TableEntity
     {
