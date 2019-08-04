@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Amphora.Common.Models;
 using Amphora.Api.Contracts;
 
-namespace Amphora.Api.Controllers
+namespace Amphora.Api.Api.Controllers
 {
     [Route("api/amphorae")]
     public class AmphoraController : Controller

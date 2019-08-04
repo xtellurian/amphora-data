@@ -3,7 +3,7 @@ using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
 
-namespace Amphora.Api.Controllers
+namespace Amphora.Api.Api.Controllers
 {
     [Route("api/schemas")]
     public class AmphoraSchemaController : Controller
