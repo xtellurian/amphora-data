@@ -12,7 +12,7 @@ using Amphora.Api.Services;
 using Amphora.Api.Stores;
 using Amphora.Api.Options;
 
-namespace api
+namespace Amphora.Api
 {
     public class Startup
     {
@@ -54,8 +54,9 @@ namespace api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IMapper mapper)
         {
+            mapper.ConfigurationProvider.AssertConfigurationIsValid();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
