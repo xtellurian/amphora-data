@@ -7,6 +7,23 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.navbar { background-color: rgba(0, 0, 0, 0.91) !important; }
+.navbar #title-amphora { color: #FFFFFF ;}
+.navbar #title-data { color: #B31818 ;}
+.navbar .navbar-brand img {
+  max-height:100%; max-width:20px; margin-right: 10px;
+}
+
+.navbar .avatar a img {
+  max-height: 35px;
+  vertical-align: center;
+  text-align: center;
+}
+
+.navbar .avatar a {
+  height: 100%;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -16,6 +33,10 @@ html {
   html {
     font-size: 16px;
   }
+}
+
+.footer {
+  background-color: rgba(0, 0, 0, 0.91) ;
 }
 
 .border-top {

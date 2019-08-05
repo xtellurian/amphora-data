@@ -1,3 +1,4 @@
 obj/
 bin/
 test/lcov.info
+.DS_Store
