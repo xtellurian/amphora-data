@@ -58,10 +58,10 @@ namespace Amphora.Tests.Unit
         private void ListAmphora(IAmphoraEntityStore<AmphoraModel> sut, AmphoraModel a)
         {
             var emptyList = sut.List();
-            Assert.Equal(0, emptyList.Count());
+            Assert.Empty(emptyList);
             var setResult = sut.Set(a);
             var list = sut.List();
-            Assert.Equal(1, list.Count());
+            Assert.Single(list);
             Assert.NotNull(list.FirstOrDefault());
             Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
         }

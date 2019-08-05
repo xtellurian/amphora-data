@@ -18,6 +18,7 @@ namespace Amphora.Tests.Integration
         [InlineData("/")]
         [InlineData("/Home/Privacy")]
         [InlineData("/Market")]
+        [InlineData("/MyAmphorae")]
         public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange
