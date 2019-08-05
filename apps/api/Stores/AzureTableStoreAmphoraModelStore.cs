@@ -11,20 +11,20 @@ using Amphora.Api.Models;
 
 namespace api.Store
 {
-    public class AzureTableStoreAmphoraModelService : IAmphoraEntityStore<AmphoraModel>
+    public class AzureTableAmphoraModelService : IAmphoraEntityStore<AmphoraModel>
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
         private readonly IMapper mapper;
-        private readonly ILogger<AzureTableStoreAmphoraModelService> logger;
+        private readonly ILogger<AzureTableAmphoraModelService> logger;
         private CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
         private const string tableName = "amphorae";
         private const string partitionKey = "testPartition";
 
-        public AzureTableStoreAmphoraModelService(IOptionsMonitor<TableStoreOptions> options,
+        public AzureTableAmphoraModelService(IOptionsMonitor<TableStoreOptions> options,
             IMapper mapper,
-            ILogger<AzureTableStoreAmphoraModelService> logger)
+            ILogger<AzureTableAmphoraModelService> logger)
         {
             this.storageAccount = CloudStorageAccount.Parse(options.CurrentValue.StorageConnectionString);
             this.tableClient = this.storageAccount.CreateCloudTableClient();
@@ -128,6 +128,11 @@ namespace api.Store
                 System.Console.WriteLine(e.Message);
                 throw;
             }
+        }
+
+        public IReadOnlyCollection<AmphoraModel> List()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

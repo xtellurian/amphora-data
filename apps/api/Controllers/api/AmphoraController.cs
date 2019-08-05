@@ -15,9 +15,9 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpGet()]
-        public IActionResult ListAmphoraIds()
+        public IActionResult ListAmphora()
         {
-            return Ok(this.amphoraModelStore.ListIds());
+            return Ok(this.amphoraModelStore.List());
         }
 
 

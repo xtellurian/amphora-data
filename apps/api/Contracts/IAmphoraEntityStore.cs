@@ -5,7 +5,7 @@ namespace Amphora.Api.Contracts
 {
     public interface IAmphoraEntityStore<T> where T : IAmphoraEntity
     {
-        IEnumerable<string> ListIds();
+        IReadOnlyCollection<T> List();
         T Get(string id);
         T Set(T entity);
         

@@ -14,17 +14,21 @@ using Amphora.Api.Options;
 using System;
 using Amphora.Api.Fillers;
 using Amphora.Api.Drinkers;
+using api.Store;
 
 namespace Amphora.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            HostingEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,8 +39,15 @@ namespace Amphora.Api
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            if(HostingEnvironment.IsDevelopment())
+            {
+                UseInMemoryStores(services);
+            }
+            else if (HostingEnvironment.IsProduction())
+            {
+                UsePersistentStores(services);
+            }
 
-            ConfigureStores(services);
             ConfigureFillersAndDrinkers(services);
             
 
@@ -58,10 +69,13 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraFillerService, AmphoraFillerService>();
             services.AddTransient<IAmphoraDrinkerService, AmphoraDrinkerService>();
         }
-
-        private static void ConfigureStores(IServiceCollection services)
+        private void UsePersistentStores(IServiceCollection services)
         {
-            //services.AddSingleton<IAmphoraModelService, AzureTableStoreAmphoraModelService>();
+            services.AddScoped<IAmphoraEntityStore<AmphoraModel>, AzureTableAmphoraModelService>();
+            // need to add the schema store here
+        }
+        private static void UseInMemoryStores(IServiceCollection services)
+        {
             services.AddSingleton<IAmphoraEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
             services.AddSingleton<IAmphoraEntityStore<AmphoraSchema>, InMemoryEntityStore<AmphoraSchema>>();
         }

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Amphora.Api.Contracts;
 using common.Contracts;
 
@@ -18,6 +20,11 @@ namespace Amphora.Api.Stores
             {
                 return null;
             }
+        }
+
+        public IReadOnlyCollection<T> List()
+        {
+            return new ReadOnlyCollection<T> (this.store.Values.ToList());
         }
 
         public IEnumerable<string> ListIds()

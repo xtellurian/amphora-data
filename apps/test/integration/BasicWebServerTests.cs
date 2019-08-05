@@ -4,22 +4,20 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class WebServerRuns
+    public class BasicWebServer
         : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public WebServerRuns(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public BasicWebServer(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
             _factory = factory;
         }
 
         [Theory]
         [InlineData("/")]
-        // [InlineData("/Index")]
-        // [InlineData("/About")]
         [InlineData("/Home/Privacy")]
-        // [InlineData("/Contact")]
+        [InlineData("/Market")]
         public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange
