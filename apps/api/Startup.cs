@@ -11,9 +11,6 @@ using Newtonsoft.Json.Serialization;
 using Amphora.Api.Services;
 using Amphora.Api.Stores;
 using Amphora.Api.Options;
-using System;
-using Amphora.Api.Fillers;
-using Amphora.Api.Drinkers;
 using api.Store;
 
 namespace Amphora.Api
@@ -47,8 +44,6 @@ namespace Amphora.Api
             {
                 UsePersistentStores(services);
             }
-
-            ConfigureFillersAndDrinkers(services);
             
 
             services.AddApplicationInsightsTelemetry();
@@ -60,15 +55,6 @@ namespace Amphora.Api
             services.Configure<TableStoreOptions>(Configuration);
 
         }
-
-        private void ConfigureFillersAndDrinkers(IServiceCollection services)
-        {
-            services.AddSingleton<InMemoryBinaryAmphora>();
-            services.AddSingleton<IBinaryAmphoraFiller>(x => x.GetRequiredService<InMemoryBinaryAmphora>());
-            services.AddSingleton<IBinaryAmphoraDrinker>(x => x.GetRequiredService<InMemoryBinaryAmphora>());
-            services.AddTransient<IAmphoraFillerService, AmphoraFillerService>();
-            services.AddTransient<IAmphoraDrinkerService, AmphoraDrinkerService>();
-        }
         private void UsePersistentStores(IServiceCollection services)
         {
             services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, AzureTableAmphoraModelService>();
@@ -78,6 +64,7 @@ namespace Amphora.Api
         {
             services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
