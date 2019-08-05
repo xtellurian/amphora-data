@@ -9,11 +9,11 @@ namespace Amphora.Api.Api.Controllers
     [Route("api/amphorae")]
     public class AmphoraController : Controller
     {
-        private readonly IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore;
+        private readonly IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
 
         public AmphoraController(
-            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore, 
+            IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore, 
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore)
         {
             this.amphoraEntityStore = amphoraEntityStore;

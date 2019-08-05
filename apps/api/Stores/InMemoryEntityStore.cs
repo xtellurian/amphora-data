@@ -9,27 +9,21 @@ namespace Amphora.Api.Stores
 {
     public class InMemoryEntityStore<T>: IEntityStore<T> where T: class, IEntity
     {
-        private Dictionary<string, T> store = new Dictionary<string, T>();
+        protected List<T> store = new List<T>();
 
         public T Get(string id)
         {
-            if (this.store.ContainsKey(id)){
-                return this.store[id];
-            }
-            else 
-            {
-                return null;
-            }
+            return this.store.FirstOrDefault(o => string.Equals(o.Id, id));
         }
 
         public IReadOnlyCollection<T> List()
         {
-            return new ReadOnlyCollection<T> (this.store.Values.ToList());
+            return new ReadOnlyCollection<T> (this.store);
         }
 
         public IEnumerable<string> ListIds()
         {
-            return this.store.Keys;
+            return this.store.Select(o => o.Id);
         }
 
         public T Set(T model)
@@ -38,8 +32,12 @@ namespace Amphora.Api.Stores
             {
                 model.Id = Guid.NewGuid().ToString();
             }
+            if(this.store.Any( o => o.Id == model.Id))
+            {
+                this.store.RemoveAll(o => o.Id == model.Id);
+            }
 
-            this.store[model.Id] = model;
+            this.store.Add(model);
             return model;
         }
     }

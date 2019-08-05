@@ -61,7 +61,7 @@ namespace Amphora.Api
         }
         private static void UseInMemoryStores(IServiceCollection services)
         {
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Amphora>, InMemoryDataEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
         }

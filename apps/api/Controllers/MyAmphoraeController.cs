@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.ViewModels;
 using Amphora.Common.Models;
@@ -10,20 +12,36 @@ namespace Amphora.Api.Controllers
 {
     public class MyAmphoraeController : Controller
     {
-        public IActionResult Index()
+        private readonly IDataEntityStore<Common.Models.Amphora> amphoraEntityStore;
+
+        public MyAmphoraeController(IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore)
         {
-            var viewModel = new MyAmphoraeViewModel
+            this.amphoraEntityStore = amphoraEntityStore;
+        }
+        [HttpGet]
+        public IActionResult Index(string orgId)
+        {
+            List<Amphora.Common.Models.Amphora> myAmphora;
+            if (orgId != null)
             {
-                MyAmphora = new List<Common.Models.Amphora>() 
+                myAmphora = amphoraEntityStore.List(orgId).ToList();
+            }
+            else
+            {
+                myAmphora = new List<Common.Models.Amphora>()
                 {
-                    new Common.Models.Amphora 
+                    new Common.Models.Amphora
                     {
                         Title = "Hello world",
                         Description = "This should be on the page :)"
                     }
-                }
+                };
+            }
+            var viewModel = new MyAmphoraeViewModel
+            {
+                MyAmphora = myAmphora
             };
-            
+
             return View(viewModel);
         }
 
