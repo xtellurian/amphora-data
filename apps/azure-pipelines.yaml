@@ -26,7 +26,7 @@ steps:
 - task: PublishCodeCoverageResults@1
   displayName: Publish Code Coverage Report
   inputs:
-    summaryFileLocation: $(Build.SourcesDirectory)/apps/test-unit/coverage.cobertura.xml
+    summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
     codecoverageTool: cobertura
 
 - script: docker build .

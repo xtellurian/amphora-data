@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "schemas", "schemas\schemas.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "api\api.csproj", "{CEBD877F-C7BA-4859-8D5F-B967190FDD48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-unit", "test-unit\test-unit.csproj", "{027FB870-6F54-4339-84DD-06E5D6DB6427}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{027FB870-6F54-4339-84DD-06E5D6DB6427}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
