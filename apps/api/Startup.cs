@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using Amphora.Api.Stores;
 using Amphora.Api.Options;
 using api.Store;
+using Microsoft.OpenApi.Models;
 
 namespace Amphora.Api
 {
@@ -35,7 +36,7 @@ namespace Amphora.Api
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            if(HostingEnvironment.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 UseInMemoryStores(services);
             }
@@ -43,7 +44,7 @@ namespace Amphora.Api
             {
                 UsePersistentStores(services);
             }
-            
+
 
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
@@ -52,6 +53,11 @@ namespace Amphora.Api
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 
             services.Configure<TableStoreOptions>(Configuration);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmphoraApi", Version = "v1" });
+            });
 
         }
         private void UsePersistentStores(IServiceCollection services)
@@ -81,9 +87,19 @@ namespace Amphora.Api
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmphoraApi");
+            });
 
             app.UseMvc(routes =>
             {

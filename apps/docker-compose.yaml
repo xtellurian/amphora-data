@@ -1,0 +1,12 @@
+version: "3"
+services:
+  web:
+    build: .
+  genpy:
+    image: openapitools/openapi-generator-cli
+    depends_on: 
+      - web
+    volumes: 
+      - ${PWD}/api-clients:/local
+    command: generate -i http://web/swagger/v1/swagger.json -g python -o /local/python
+    
