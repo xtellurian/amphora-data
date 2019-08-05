@@ -6,12 +6,11 @@ namespace Amphora.Tests.Helpers
     public static class AmphoraLibrary
     {
         private static Random rnd = new Random();
-        public static AmphoraModel GetValidAmphora()
+        public static Amphora.Common.Models.Amphora GetValidAmphora()
         {
-            return new AmphoraModel()
+            return new Amphora.Common.Models.Amphora()
             {
                 Bounded = true,
-                Class = AmphoraClass.Binary,
                 Description = "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
                 SchemaId = null,

@@ -71,13 +71,13 @@ namespace Amphora.Api
         }
         private void UsePersistentStores(IServiceCollection services)
         {
-            services.AddScoped<IAmphoraEntityStore<AmphoraModel>, AzureTableAmphoraModelService>();
+            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, AzureTableAmphoraModelService>();
             // need to add the schema store here
         }
         private static void UseInMemoryStores(IServiceCollection services)
         {
-            services.AddSingleton<IAmphoraEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
-            services.AddSingleton<IAmphoraEntityStore<AmphoraSchema>, InMemoryEntityStore<AmphoraSchema>>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,8 +1,6 @@
-
 using System.Collections.Generic;
 using Amphora.Api.Contracts;
 using AutoMapper;
-using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,7 +9,7 @@ using Amphora.Api.Models;
 
 namespace api.Store
 {
-    public class AzureTableAmphoraModelService : IAmphoraEntityStore<AmphoraModel>
+    public class AzureTableAmphoraModelService : IEntityStore<Amphora.Common.Models.Amphora>
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
@@ -47,7 +45,7 @@ namespace api.Store
             }
             this.isInit = true;
         }
-        public AmphoraModel Get(string id)
+        public Amphora.Common.Models.Amphora Get(string id)
         {
             InitTable();
             try
@@ -66,7 +64,7 @@ namespace api.Store
                     logger.LogInformation("Request Charge of Retrieve Operation: " + result.RequestCharge);
                 }
 
-                return mapper.Map<AmphoraModel>(amphoraModelTableEntity);
+                return mapper.Map<Amphora.Common.Models.Amphora>(amphoraModelTableEntity);
             }
             catch (StorageException e)
             {
@@ -93,7 +91,7 @@ namespace api.Store
             }
         }
 
-        public AmphoraModel Set(AmphoraModel model)
+        public Amphora.Common.Models.Amphora Set(Amphora.Common.Models.Amphora model)
         {
             InitTable();
             var entity = mapper.Map<AmphoraModelTableEntity>(model);
@@ -121,7 +119,7 @@ namespace api.Store
                     System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + result.RequestCharge);
                 }
 
-                return mapper.Map<AmphoraModel>(insertedAmphoraModel);
+                return mapper.Map<Amphora.Common.Models.Amphora>(insertedAmphoraModel);
             }
             catch (StorageException e)
             {
@@ -130,7 +128,7 @@ namespace api.Store
             }
         }
 
-        public IReadOnlyCollection<AmphoraModel> List()
+        public IReadOnlyCollection<Amphora.Common.Models.Amphora> List()
         {
             throw new System.NotImplementedException();
         }

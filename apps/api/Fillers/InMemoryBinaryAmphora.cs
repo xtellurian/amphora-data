@@ -10,11 +10,11 @@ namespace Amphora.Api.Fillers
     public class InMemoryBinaryAmphora : IBinaryAmphoraFiller, IBinaryAmphoraDrinker
     {
         private Dictionary<string, byte[]> _store = new Dictionary<string, byte[]>();
-        public bool IsAmphoraSupported(AmphoraModel amphora)
+        public bool IsAmphoraSupported(Amphora.Common.Models.Amphora amphora)
         {
-            return amphora?.Class == AmphoraClass.Binary;
+            return true;
         }
-        public async Task Fill(AmphoraModel amphora, Stream data)
+        public async Task Fill(Amphora.Common.Models.Amphora amphora, Stream data)
         {
             if (amphora == null || amphora.Id == null)
             {
@@ -23,7 +23,7 @@ namespace Amphora.Api.Fillers
             var buffer = await ReadFullyAsync(data);
             this._store[amphora.Id] = buffer;
         }
-        public Task<Stream> Drink(AmphoraModel amphora)
+        public Task<Stream> Drink(Amphora.Common.Models.Amphora amphora)
         {
             return Task<Stream>.Factory.StartNew(() =>
             {

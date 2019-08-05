@@ -1,5 +1,4 @@
 using AutoMapper;
-using Amphora.Common.Models;
 using Amphora.Api.Models;
 
 namespace api.Models.AutoMapper
@@ -8,7 +7,7 @@ namespace api.Models.AutoMapper
     {
         public AmphoraModelTableStoreProfile()
         {
-            CreateMap<AmphoraModel, AmphoraModelTableEntity>()
+            CreateMap<Amphora.Common.Models.Amphora, AmphoraModelTableEntity>()
                 .ForMember(m => m.RowKey, cfg => cfg.Ignore())
                 .ForMember(m => m.PartitionKey, cfg => cfg.Ignore())
                 .ForMember(m => m.ETag, cfg => cfg.Ignore())

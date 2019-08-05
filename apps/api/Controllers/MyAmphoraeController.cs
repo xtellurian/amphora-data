@@ -14,9 +14,9 @@ namespace Amphora.Api.Controllers
         {
             var viewModel = new MyAmphoraeViewModel
             {
-                MyAmphora = new List<AmphoraModel>() 
+                MyAmphora = new List<Common.Models.Amphora>() 
                 {
-                    new AmphoraModel 
+                    new Common.Models.Amphora 
                     {
                         Title = "Hello world",
                         Description = "This should be on the page :)"

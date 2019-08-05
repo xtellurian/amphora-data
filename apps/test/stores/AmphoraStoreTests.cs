@@ -1,8 +1,4 @@
-using System;
-using Newtonsoft.Json.Linq;
-using Amphora.Schemas.Library;
 using Xunit;
-using Amphora.Common.Models;
 using Amphora.Api.Stores;
 using Amphora.Api.Contracts;
 using System.Linq;
@@ -15,8 +11,8 @@ namespace Amphora.Tests.Unit
         [Fact]
         public void InMemoryCanStoreAndRetrieveAmphora()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>();
-            var a = new AmphoraModel()
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var a = new Amphora.Common.Models.Amphora()
             {
                 Title = "Test Title",
                 Description = "Test Description",
@@ -30,8 +26,8 @@ namespace Amphora.Tests.Unit
         [Fact]
         public void InMemoryEntityStoreList()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>();
-            var a = new AmphoraModel()
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var a = new Amphora.Common.Models.Amphora()
             {
                 Title = "Test Title",
                 Description = "Test Description",
@@ -45,17 +41,17 @@ namespace Amphora.Tests.Unit
         [Fact]
         public void InMemoryEntityStoreReturnsNull()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>();
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
             GetMissingAmphora(sut);
         }
 
-        private void GetMissingAmphora(IAmphoraEntityStore<AmphoraModel> sut)
+        private void GetMissingAmphora(IEntityStore<Amphora.Common.Models.Amphora> sut)
         {
             var missing = sut.Get("missing");
             Assert.Null(missing);
         }
 
-        private void ListAmphora(IAmphoraEntityStore<AmphoraModel> sut, AmphoraModel a)
+        private void ListAmphora(IEntityStore<Amphora.Common.Models.Amphora> sut, Amphora.Common.Models.Amphora a)
         {
             var emptyList = sut.List();
             Assert.Empty(emptyList);
@@ -66,7 +62,7 @@ namespace Amphora.Tests.Unit
             Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
         }
 
-        private void StoreAndRetrieveAmphora(IAmphoraEntityStore<AmphoraModel> sut, AmphoraModel a)
+        private void StoreAndRetrieveAmphora(IEntityStore<Amphora.Common.Models.Amphora> sut, Amphora.Common.Models.Amphora a)
         {
             var setResult = sut.Set(a);
             Assert.NotNull(setResult);

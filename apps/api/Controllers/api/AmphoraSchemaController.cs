@@ -8,16 +8,16 @@ namespace Amphora.Api.Api.Controllers
     [Route("api/schemas")]
     public class AmphoraSchemaController : Controller
     {
-        private readonly IAmphoraEntityStore<AmphoraSchema> store;
+        private readonly IEntityStore<Schema> store;
 
-        public AmphoraSchemaController(IAmphoraEntityStore<AmphoraSchema> store)
+        public AmphoraSchemaController(IEntityStore<Schema> store)
         {
             this.store = store;
         }
 
 
         [HttpPut]
-        public IActionResult Create([FromBody] AmphoraSchema schema)
+        public IActionResult Create([FromBody] Schema schema)
         {
             if (schema == null) return BadRequest("Invalid Model");
             return Ok(store.Set(schema));
@@ -26,7 +26,7 @@ namespace Amphora.Api.Api.Controllers
         [HttpPut("JsonSchema")]
         public IActionResult CreateFromJsonSchema([FromBody] JSchema jSchema)
         {
-            var schema = new AmphoraSchema(jSchema);
+            var schema = new Schema(jSchema);
             return Ok(store.Set(schema));
         }
 

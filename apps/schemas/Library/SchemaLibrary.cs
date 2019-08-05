@@ -11,7 +11,7 @@ namespace Amphora.Schemas.Library
         {
             return string.Equals(id, IdValueSchema.LibraryId);
         }
-        public AmphoraSchema Load(string id)
+        public Schema Load(string id)
         {
             if (IsInLibrary(id))
             {
@@ -29,7 +29,7 @@ namespace Amphora.Schemas.Library
             }
         }
 
-        public class IdValueSchema : AmphoraSchema
+        public class IdValueSchema : Schema
         {
             public const string LibraryId = "IdValue";
             class IdValue

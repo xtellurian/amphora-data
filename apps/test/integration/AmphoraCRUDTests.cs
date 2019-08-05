@@ -38,10 +38,9 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<AmphoraModel>(responseBody);
+            var b = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Bounded, b.Bounded);
-            Assert.Equal(a.Class, b.Class);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.SchemaId, b.SchemaId);
@@ -67,7 +66,7 @@ namespace Amphora.Tests.Integration
             
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<List<AmphoraModel>>(responseBody);
+            var b = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseBody);
             Assert.True(b.Count > 0);
         }
     

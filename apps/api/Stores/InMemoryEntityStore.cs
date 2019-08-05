@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Api.Contracts;
-using common.Contracts;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryEntityStore<T>: IAmphoraEntityStore<T> where T: class, IAmphoraEntity
+    public class InMemoryEntityStore<T>: IEntityStore<T> where T: class, IEntity
     {
         private Dictionary<string, T> store = new Dictionary<string, T>();
 

@@ -7,9 +7,9 @@ namespace Amphora.Api.Api.Controllers
     [Route("api/amphorae")]
     public class AmphoraController : Controller
     {
-        private readonly IAmphoraEntityStore<AmphoraModel> amphoraModelStore;
+        private readonly IEntityStore<Amphora.Common.Models.Amphora> amphoraModelStore;
 
-        public AmphoraController(IAmphoraEntityStore<AmphoraModel> amphoraModelStore)
+        public AmphoraController(IEntityStore<Amphora.Common.Models.Amphora> amphoraModelStore)
         {
             this.amphoraModelStore = amphoraModelStore;
         }
@@ -28,7 +28,7 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpPut()]
-        public IActionResult SetAmphora([FromBody] AmphoraModel model)
+        public IActionResult SetAmphora([FromBody] Amphora.Common.Models.Amphora model)
         {
             if (model == null)
             {

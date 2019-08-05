@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Reflection;
 using Amphora.Api;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
@@ -29,7 +27,7 @@ namespace Amphora.Tests.Unit.Automapper
         [Fact]
         public void MapAmphoraToTableStoreEntity()
         {
-            var amphora = new AmphoraModel()
+            var amphora = new Amphora.Common.Models.Amphora()
             {
                 // set random things
             };
@@ -44,14 +42,14 @@ namespace Amphora.Tests.Unit.Automapper
             {
                 // set random things
             };
-            var amphora = mapper.Map<AmphoraModel>(tableEntity);
+            var amphora = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
             Assert.NotNull(amphora);
         }
 
         [Fact]
         public void MapSchemaToTableStoreEntity()
         {
-            var schema = new AmphoraSchema()
+            var schema = new Schema()
             {
                 // set random things
             };
@@ -66,7 +64,7 @@ namespace Amphora.Tests.Unit.Automapper
             {
                 // set random things
             };
-            var schema = mapper.Map<AmphoraSchema>(tableEntity);
+            var schema = mapper.Map<Schema>(tableEntity);
             Assert.NotNull(schema);
         }
     }

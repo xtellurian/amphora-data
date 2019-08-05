@@ -1,19 +1,18 @@
-using common.Contracts;
+using Amphora.Common.Contracts;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace Amphora.Common.Models
 {
-    public class AmphoraSchema : IAmphoraEntity
+    public class Schema : Entity, IEntity
     {
         protected JSchema _jSchema;
-        public AmphoraSchema() { }
-        public AmphoraSchema(JSchema jSchema)
+        public Schema() { }
+        public Schema(JSchema jSchema)
         {
             this._jSchema = jSchema;
         }
 
-        public string Id { get; set; }
         public string JsonSchema
         {
             get

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using common.Contracts;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Contracts
 {
-    public interface IAmphoraEntityStore<T> where T : IAmphoraEntity
+    public interface IEntityStore<T> where T : IEntity
     {
         IReadOnlyCollection<T> List();
         T Get(string id);
