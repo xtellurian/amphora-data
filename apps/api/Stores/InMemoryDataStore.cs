@@ -16,7 +16,7 @@ namespace Amphora.Api.Stores
             }
             else
             {
-                return default;
+                return default(TData);
             }
         }
 
