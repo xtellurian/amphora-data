@@ -8,12 +8,24 @@ namespace Amphora.Tests.Helpers
     public static class BadJsonLibrary
     {
         public const string DiverseTypesKey = "DiverseTypes";
+        public const string BadlyFormedAmphoraKey = "BadlyFormedAmphora";
         private static Random rnd = new Random();
         public static string GetJson(string key)
         {
             if (string.Equals(key, DiverseTypesKey)) return JsonConvert.SerializeObject(new DiverseTypes());
-
+            if (string.Equals(key, BadlyFormedAmphoraKey)) return BadlyFormedAmphora();
             return "";
+        }
+
+        private static string BadlyFormedAmphora()
+        {
+            var entity = new Amphora.Common.Models.Amphora
+            {
+                Price = -1,
+                Title = null,
+                Description = null,
+            };
+            return JsonConvert.SerializeObject(entity);
         }
 
         private class DiverseTypes

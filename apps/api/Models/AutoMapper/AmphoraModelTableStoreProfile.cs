@@ -7,7 +7,7 @@ namespace api.Models.AutoMapper
     {
         public AmphoraModelTableStoreProfile()
         {
-            CreateMap<Amphora.Common.Models.Amphora, AmphoraModelTableEntity>()
+            CreateMap<Amphora.Common.Models.Amphora, AmphoraTableEntity>()
                 .ForMember(m => m.RowKey, cfg => cfg.Ignore())
                 .ForMember(m => m.PartitionKey, cfg => cfg.Ignore())
                 .ForMember(m => m.ETag, cfg => cfg.Ignore())

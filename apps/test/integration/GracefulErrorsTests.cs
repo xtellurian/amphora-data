@@ -17,9 +17,8 @@ namespace Amphora.Tests.Integration
         }
 
         [Theory]
-        [InlineData("/")]
         [InlineData("/api/amphorae")]
-        public async Task Post_RandomByteArray(string url)
+        public async Task Post_RandomByteArray_MethodNotAllowed(string url)
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -30,14 +29,12 @@ namespace Amphora.Tests.Integration
             var response = await client.PostAsync(url, new ByteArrayContent(content));
 
             // Assert
-            response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            Assert.Equal(System.Net.HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
 
         [Theory]
-        [InlineData("/")]
-        [InlineData("/api/amphorae")]
         [InlineData("/api/amphorae", Helpers.BadJsonLibrary.DiverseTypesKey)]
-        [InlineData("/api/amphorae", Helpers.BadJsonLibrary.DiverseTypesKey)]
+        [InlineData("/api/amphorae", Helpers.BadJsonLibrary.BadlyFormedAmphoraKey)]
         public async Task Post_WeirdJson(string url, string key = "")
         {
             // Arrange
@@ -48,7 +45,24 @@ namespace Amphora.Tests.Integration
             var response = await client.PostAsync(url, content);
 
             // Assert
-            response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            Assert.Equal(System.Net.HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        }
+
+        [Theory]
+        [InlineData("/api/amphorae", Helpers.BadJsonLibrary.DiverseTypesKey)]
+        [InlineData("/api/amphorae", Helpers.BadJsonLibrary.BadlyFormedAmphoraKey)]
+        public async Task Put_WeirdJson(string url, string key = "")
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var content = new StringContent(Helpers.BadJsonLibrary.GetJson(key), Encoding.UTF8, "application/json");
+
+            // Act
+            var response = await client.PutAsync(url, content);
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            
         }
     }
 }

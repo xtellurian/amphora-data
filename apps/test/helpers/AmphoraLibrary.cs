@@ -10,10 +10,8 @@ namespace Amphora.Tests.Helpers
         {
             return new Amphora.Common.Models.Amphora()
             {
-                Bounded = true,
                 Description = "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
-                SchemaId = null,
                 Title = "Valid Amphora - title"
             };
         }

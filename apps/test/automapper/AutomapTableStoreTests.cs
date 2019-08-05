@@ -31,14 +31,14 @@ namespace Amphora.Tests.Unit.Automapper
             {
                 // set random things
             };
-            var tableEntity = mapper.Map<AmphoraModelTableEntity>(amphora);
+            var tableEntity = mapper.Map<AmphoraTableEntity>(amphora);
             Assert.NotNull(tableEntity);
         }
 
         [Fact]
         public void MapTableStoreEntityToAmphora()
         {
-            var tableEntity = new AmphoraModelTableEntity()
+            var tableEntity = new AmphoraTableEntity()
             {
                 // set random things
             };

@@ -4,14 +4,12 @@ using Microsoft.Azure.Cosmos.Table;
 namespace Amphora.Api.Models
 {
 
-    public class AmphoraModelTableEntity : TableEntity
+    public class AmphoraTableEntity : TableEntity
     {
-        public AmphoraModelTableEntity()
+        public AmphoraTableEntity()
         {
         }
         public string Id { get; set; }
-        public string SchemaId { get; set; }
-        public bool Bounded { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

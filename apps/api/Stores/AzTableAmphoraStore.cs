@@ -50,9 +50,9 @@ namespace api.Store
             InitTable();
             try
             {
-                var retrieveOperation = TableOperation.Retrieve<AmphoraModelTableEntity>(partitionKey, id);
+                var retrieveOperation = TableOperation.Retrieve<AmphoraTableEntity>(partitionKey, id);
                 var result = table.Execute(retrieveOperation);
-                var amphoraModelTableEntity = result.Result as AmphoraModelTableEntity;
+                var amphoraModelTableEntity = result.Result as AmphoraTableEntity;
                 if (amphoraModelTableEntity != null)
                 {
                     logger.LogInformation("\t{0}\t{1}", amphoraModelTableEntity.PartitionKey, amphoraModelTableEntity.RowKey);
@@ -94,7 +94,7 @@ namespace api.Store
         public Amphora.Common.Models.Amphora Set(Amphora.Common.Models.Amphora model)
         {
             InitTable();
-            var entity = mapper.Map<AmphoraModelTableEntity>(model);
+            var entity = mapper.Map<AmphoraTableEntity>(model);
             // set the id, rowkey, and partitionKey
             if (string.IsNullOrEmpty(entity.Id))
             {
@@ -111,7 +111,7 @@ namespace api.Store
 
                 // Execute the operation.
                 var result = table.Execute(insertOrMergeOperation);
-                var insertedAmphoraModel = result.Result as AmphoraModelTableEntity;
+                var insertedAmphoraModel = result.Result as AmphoraTableEntity;
 
                 // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
                 if (result.RequestCharge.HasValue)

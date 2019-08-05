@@ -16,7 +16,6 @@ namespace Amphora.Tests.Unit
             {
                 Title = "Test Title",
                 Description = "Test Description",
-                SchemaId = "not a real schema I reckon",
                 Price = 42
             };
 
@@ -31,7 +30,6 @@ namespace Amphora.Tests.Unit
             {
                 Title = "Test Title",
                 Description = "Test Description",
-                SchemaId = "not a real schema I reckon",
                 Price = 42
             };
 

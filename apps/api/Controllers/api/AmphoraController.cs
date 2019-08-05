@@ -36,7 +36,7 @@ namespace Amphora.Api.Api.Controllers
         [HttpPut()]
         public IActionResult CreateAmphora([FromBody] Amphora.Common.Models.Amphora model)
         {
-            if (model == null)
+            if (model == null || !model.IsValid())
             {
                 return BadRequest("Invalid Model");
             }
