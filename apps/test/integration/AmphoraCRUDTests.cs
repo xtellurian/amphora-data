@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -11,7 +10,7 @@ namespace Amphora.Tests.Integration
 {
     public class AmphoraCRUDTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
+        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
         public AmphoraCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory)
         {

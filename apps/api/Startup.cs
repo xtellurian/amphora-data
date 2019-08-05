@@ -56,7 +56,7 @@ namespace Amphora.Api
         }
         private void UsePersistentStores(IServiceCollection services)
         {
-            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, AzureTableAmphoraModelService>();
+            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, AzTableAmphoraStore>();
             // need to add the schema store here
         }
         private static void UseInMemoryStores(IServiceCollection services)

@@ -9,20 +9,20 @@ using Amphora.Api.Models;
 
 namespace api.Store
 {
-    public class AzureTableAmphoraModelService : IEntityStore<Amphora.Common.Models.Amphora>
+    public class AzTableAmphoraStore : IEntityStore<Amphora.Common.Models.Amphora>
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
         private readonly IMapper mapper;
-        private readonly ILogger<AzureTableAmphoraModelService> logger;
+        private readonly ILogger<AzTableAmphoraStore> logger;
         private CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
         private const string tableName = "amphorae";
         private const string partitionKey = "testPartition";
 
-        public AzureTableAmphoraModelService(IOptionsMonitor<TableStoreOptions> options,
+        public AzTableAmphoraStore(IOptionsMonitor<TableStoreOptions> options,
             IMapper mapper,
-            ILogger<AzureTableAmphoraModelService> logger)
+            ILogger<AzTableAmphoraStore> logger)
         {
             this.storageAccount = CloudStorageAccount.Parse(options.CurrentValue.StorageConnectionString);
             this.tableClient = this.storageAccount.CreateCloudTableClient();
