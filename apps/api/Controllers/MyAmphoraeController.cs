@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using Amphora.Api.Models;
+using Amphora.Api.ViewModels;
+using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,7 +12,19 @@ namespace Amphora.Api.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            var viewModel = new MyAmphoraeViewModel
+            {
+                MyAmphora = new List<AmphoraModel>() 
+                {
+                    new AmphoraModel 
+                    {
+                        Title = "Hello world",
+                        Description = "This should be on the page :)"
+                    }
+                }
+            };
+            
+            return View(viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

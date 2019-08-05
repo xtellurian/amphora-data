@@ -1,8 +1,21 @@
 ﻿@{
     ViewData["Title"] = "My Amphorae";
 }
+@model Amphora.Api.ViewModels.MyAmphoraeViewModel
 
 <div class="text-center">
     <h1 class="display-4">My Amphorae</h1>
     <p> This is where you see a list of your own amphorae</p>
+    <div>
+        <ul>
+        @foreach (var amphora in Model.MyAmphora)
+        {
+            <li>
+                <b> @amphora.Title </b> 
+                <br/>
+                @amphora.Description
+            </li>
+        }
+        </ul>
+    </div>
 </div>
