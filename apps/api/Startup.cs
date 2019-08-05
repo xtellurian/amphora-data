@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using Amphora.Api.Services;
 using Amphora.Api.Stores;
 using Amphora.Api.Options;
 using api.Store;
