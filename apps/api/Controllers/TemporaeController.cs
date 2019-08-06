@@ -54,7 +54,7 @@ namespace Amphora.Api.Controllers
             var entity = temporaEntityStore.Get(id);
             if(entity == null)
             {
-                return BadRequest($"{id} not found");
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
 
             var token = "TODO"; // this can now be a token for THIS site
