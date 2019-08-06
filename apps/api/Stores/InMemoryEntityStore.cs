@@ -16,7 +16,7 @@ namespace Amphora.Api.Stores
             return this.store.FirstOrDefault(o => string.Equals(o.Id, id));
         }
 
-        public IReadOnlyCollection<T> List()
+        public IEnumerable<T> List()
         {
             return new ReadOnlyCollection<T> (this.store);
         }

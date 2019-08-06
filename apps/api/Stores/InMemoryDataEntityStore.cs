@@ -13,7 +13,7 @@ namespace Amphora.Api.Stores
             return this.store.FirstOrDefault(o => string.Equals(o.Id, id) && string.Equals(o.OrgId, orgId));
         }
 
-        public IReadOnlyCollection<T> List(string orgId)
+        public IEnumerable<T> List(string orgId)
         {
             return new ReadOnlyCollection<T>(this.store.Where(o => string.Equals(orgId, o.OrgId)).ToList());
         }

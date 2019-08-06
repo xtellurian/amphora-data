@@ -1,13 +1,14 @@
 using AutoMapper;
+using Amphora.Common.Models;
 using Amphora.Api.Models;
 
 namespace api.Models.AutoMapper
 {
-    public class AmphoraModelTableStoreProfile : Profile
+    public class SchemaProfile : Profile
     {
-        public AmphoraModelTableStoreProfile()
+        public SchemaProfile()
         {
-            CreateMap<Amphora.Common.Models.Amphora, AmphoraTableEntity>()
+            CreateMap<Schema, AmphoraSchemaTableEntity>()
                 .ForMember(m => m.RowKey, cfg => cfg.Ignore())
                 .ForMember(m => m.PartitionKey, cfg => cfg.Ignore())
                 .ForMember(m => m.ETag, cfg => cfg.Ignore())

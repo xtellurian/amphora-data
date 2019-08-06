@@ -40,13 +40,13 @@ namespace Amphora.Api
             });
             // temporary adding this here
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaDataStore>();
-            if (HostingEnvironment.IsDevelopment())
+            if (HostingEnvironment.IsProduction() || Configuration["PersistantStores"] == "true")
+            { 
+                UsePersistentStores(services);
+            }
+            else if (HostingEnvironment.IsDevelopment())
             {
                 UseInMemoryStores(services);
-            }
-            else if (HostingEnvironment.IsProduction())
-            {
-                UsePersistentStores(services);
             }
 
             services.AddScoped<ITsiService, TsiService>();
@@ -68,8 +68,12 @@ namespace Amphora.Api
         }
         private void UsePersistentStores(IServiceCollection services)
         {
-            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, AzTableAmphoraStore>();
-            // need to add the schema store here
+            services.AddScoped<IDataEntityStore<Amphora.Common.Models.Amphora>, AzTableAmphoraStore>();
+            services.AddScoped<IDataEntityStore<Amphora.Common.Models.Tempora>, AzTableTemporaStore>();
+            // using in memory for now (not implemented)
+            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
+
         }
         private static void UseInMemoryStores(IServiceCollection services)
         {

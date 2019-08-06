@@ -10,7 +10,7 @@ using Amphora.Common.Models;
 
 namespace api.Store
 {
-    public class AzTableAmphoraStore : IDataEntityStore<Amphora.Common.Models.Amphora>
+    public class AzTableTemporaStore : IDataEntityStore<Amphora.Common.Models.Tempora>
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
@@ -18,10 +18,10 @@ namespace api.Store
         private readonly ILogger<AzTableAmphoraStore> logger;
         private CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
-        private const string tableName = "amphorae";
+        private const string tableName = "temporae";
         private const string partitionKey = "testPartition";
 
-        public AzTableAmphoraStore(IOptionsMonitor<TableStoreOptions> options,
+        public AzTableTemporaStore(IOptionsMonitor<TableStoreOptions> options,
             IMapper mapper,
             ILogger<AzTableAmphoraStore> logger)
         {
@@ -46,14 +46,14 @@ namespace api.Store
             }
             this.isInit = true;
         }
-        public Amphora.Common.Models.Amphora Get(string id)
+        public Amphora.Common.Models.Tempora Get(string id)
         {
             InitTable();
             try
             {
-                var retrieveOperation = TableOperation.Retrieve<AmphoraTableEntity>(partitionKey, id);
+                var retrieveOperation = TableOperation.Retrieve<TemporaTableEntity>(partitionKey, id);
                 var result = table.Execute(retrieveOperation);
-                var amphoraModelTableEntity = result.Result as AmphoraTableEntity;
+                var amphoraModelTableEntity = result.Result as TemporaTableEntity;
                 if (amphoraModelTableEntity != null)
                 {
                     logger.LogInformation("\t{0}\t{1}", amphoraModelTableEntity.PartitionKey, amphoraModelTableEntity.RowKey);
@@ -65,7 +65,7 @@ namespace api.Store
                     logger.LogInformation("Request Charge of Retrieve Operation: " + result.RequestCharge);
                 }
 
-                return mapper.Map<Amphora.Common.Models.Amphora>(amphoraModelTableEntity);
+                return mapper.Map<Amphora.Common.Models.Tempora>(amphoraModelTableEntity);
             }
             catch (StorageException e)
             {
@@ -92,10 +92,10 @@ namespace api.Store
             }
         }
 
-        public Amphora.Common.Models.Amphora Set(Amphora.Common.Models.Amphora model)
+        public Amphora.Common.Models.Tempora Set(Amphora.Common.Models.Tempora model)
         {
             InitTable();
-            var entity = mapper.Map<AmphoraTableEntity>(model);
+            var entity = mapper.Map<TemporaTableEntity>(model);
             // set the id, rowkey, and partitionKey
             if (string.IsNullOrEmpty(entity.Id))
             {
@@ -112,7 +112,7 @@ namespace api.Store
 
                 // Execute the operation.
                 var result = table.Execute(insertOrMergeOperation);
-                var insertedAmphoraModel = result.Result as AmphoraTableEntity;
+                var insertedAmphoraModel = result.Result as TemporaTableEntity;
 
                 // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
                 if (result.RequestCharge.HasValue)
@@ -120,7 +120,7 @@ namespace api.Store
                     System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + result.RequestCharge);
                 }
 
-                return mapper.Map<Amphora.Common.Models.Amphora>(insertedAmphoraModel);
+                return mapper.Map<Amphora.Common.Models.Tempora>(insertedAmphoraModel);
             }
             catch (StorageException e)
             {
@@ -129,28 +129,28 @@ namespace api.Store
             }
         }
 
-        IEnumerable<Amphora.Common.Models.Amphora> IEntityStore<Amphora.Common.Models.Amphora>.List()
+        public IEnumerable<Amphora.Common.Models.Tempora> List()
         {
             InitTable();
-            var query = new TableQuery<AmphoraTableEntity>()
+            var query = new TableQuery<TemporaTableEntity>()
             {
             };
-            var queryOutput = table.ExecuteQuerySegmented<AmphoraTableEntity>(query, null);
+            var queryOutput = table.ExecuteQuerySegmented<TemporaTableEntity>(query, null);
 
             var results = queryOutput.Results;
             
             foreach (var entity in results)
             {
-                yield return mapper.Map<Amphora.Common.Models.Amphora>(entity);
+                yield return mapper.Map<Amphora.Common.Models.Tempora>(entity);
             }
         }
 
-        public Amphora.Common.Models.Amphora Get(string id, string orgId)
+        public Tempora Get(string id, string orgId)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<Amphora.Common.Models.Amphora> List(string orgId)
+        public IEnumerable<Tempora> List(string orgId)
         {
             throw new System.NotImplementedException();
         }

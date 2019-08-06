@@ -7,17 +7,17 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class MyAmphoraeTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraeTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public MyAmphoraeTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public AmphoraeTests(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
             _factory = factory;
         }
 
         [Theory]
-        [InlineData("myAmphorae", "AmphoraData")]
+        [InlineData("amphorae", "AmphoraData")]
         public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
         {
             // Arrange
