@@ -3,19 +3,15 @@ import * as docker from "@pulumi/docker";
 import * as azure from "@pulumi/azure";
 import {
   IComponentParams,
-  COMPONENT_PARAMS,
-  COMPONENTS,
   CONSTANTS
 } from "../../components";
-import { injectable, inject } from "inversify";
-import { IState } from "../state/state";
-import { IAzureConfig } from "../azure-config/azure-config";
-import { IMonitoring } from "../monitoring/monitoring";
+import { Monitoring } from "../monitoring/monitoring";
+import { State } from "../state/state";
+import { AzureConfig } from "../azure-config/azure-config";
 
 const config = new pulumi.Config("application");
 
 // lives in here for now
-@injectable()
 export class ApplicationParams implements IComponentParams {
   name: string = "d-app-component";
   opts?: pulumi.ComponentResourceOptions | undefined = undefined;
@@ -31,7 +27,6 @@ export interface IApplication {
   eventHubCollections: EventHubCollection[];
 }
 
-@injectable()
 export class Application extends pulumi.ComponentResource
   implements IApplication {
   private _appSvc: azure.appservice.AppService;
@@ -44,15 +39,15 @@ export class Application extends pulumi.ComponentResource
   get eventHubCollections(): EventHubCollection[] {
     return this._eventHubCollections;
   }
-  get plan() : azure.appservice.Plan {
+  get plan(): azure.appservice.Plan {
     return this._plan;
   }
 
   constructor(
-    @inject(COMPONENT_PARAMS.ApplicationParams) params: IComponentParams,
-    @inject(COMPONENTS.Monitoring) private _monitoring: IMonitoring,
-    @inject(COMPONENTS.State) private _state: IState,
-    @inject("azure-config") private _azConfig: IAzureConfig
+    params: IComponentParams,
+    private _monitoring: Monitoring,
+    private _state: State,
+    private _azConfig: AzureConfig
   ) {
     super("amphora:Application", params.name, {}, params.opts);
     if (_state.kv == null) {
@@ -235,11 +230,11 @@ export class Application extends pulumi.ComponentResource
       resourceGroupName: rg.name,
       send: true,
     }, {
-      parent: this
-    });
+        parent: this
+      });
 
-    this.storeInVault( "EventHubConnectionString" , ehAuthRule.primaryConnectionString);
-    this.storeInVault( "EventHubName" , eh.name);
+    this.storeInVault("EventHubConnectionString", ehAuthRule.primaryConnectionString);
+    this.storeInVault("EventHubName", eh.name);
 
     this._eventHubCollections.push({
       namespace: ehns,

@@ -1,60 +1,45 @@
 import * as pulumi from "@pulumi/pulumi";
-import { amphoraContainer } from "./inversify.config";
-import { COMPONENTS } from "./components";
 
-import { IApplication } from "./components/application/application";
-import { IState } from "./components/state/state";
-import { IMonitoring } from "./components/monitoring/monitoring";
-import {
-  AzureConfig,
-  IAzureConfig
-} from "./components/azure-config/azure-config";
+import { Application, ApplicationParams } from "./components/application/application";
+import { State, StateParams } from "./components/state/state";
+import { Monitoring, MonitoringParams } from "./components/monitoring/monitoring";
+import { AzureConfig } from "./components/azure-config/azure-config";
 
 import { Tsi } from "./components/tsi/tsi";
-import { appendFile } from "fs";
 
-const config = new pulumi.Config("compose");
 const azureConfig = new AzureConfig();
 // do not create or reference container anywhere but here!
 
 interface MainResult {
-  monitoring?: IMonitoring | undefined;
-  state?: IState | undefined;
-  application?: IApplication | undefined;
+  monitoring: Monitoring;
+  state: State;
+  application: Application;
+  tsi: Tsi;
 }
 
 async function main(): Promise<MainResult> {
-  let outputs: MainResult = {};
+
   await azureConfig.init();
-  amphoraContainer
-    .bind<IAzureConfig>("azure-config")
-    .toConstantValue(azureConfig);
 
-  if (config.getBoolean("monitoring")) {
-    const monitoring = amphoraContainer.get<IMonitoring>(COMPONENTS.Monitoring);
-    outputs.monitoring = monitoring;
-  }
+  const monitoring = new Monitoring(new MonitoringParams());
 
-  if (config.getBoolean("state")) {
-    const state = amphoraContainer.get<IState>(COMPONENTS.State);
-    outputs.state = state;
-  }
+  const state = new State(new StateParams(), monitoring, azureConfig);
 
-  if (config.getBoolean("application")) {
-    const application = amphoraContainer.get<IApplication>(
-      COMPONENTS.Application
-    );
-    outputs.application = application;
-  }
+  const application = new Application(new ApplicationParams(), monitoring, state, azureConfig);
 
-  if (outputs.application) {
-    const tsi = new Tsi("testtsi", {
-      eh_namespace: outputs.application.eventHubCollections[0].namespace, // very fragile code
-      eh: outputs.application.eventHubCollections[0].hubs[0],
-      appSvc: outputs.application.appSvc
-    })
-  }
-  return outputs;
+  const tsi = new Tsi("testtsi", {
+    eh_namespace: application.eventHubCollections[0].namespace, // very fragile code
+    eh: application.eventHubCollections[0].hubs[0],
+    appSvc: application.appSvc,
+    kv: state.kv
+  })
+
+  return {
+    monitoring,
+    state,
+    application,
+    tsi
+  };
 }
 
 // async workaround
@@ -66,7 +51,7 @@ export let instrumentatonKey = result.then(r =>
 );
 
 export let appUrl = result.then(r =>
-  r.application ? pulumi.interpolate `https://${r.application.appSvc.defaultSiteHostname}` : null
+  r.application ? pulumi.interpolate`https://${r.application.appSvc.defaultSiteHostname}` : null
 );
 
 export let kvUri = result.then(r =>
@@ -75,6 +60,10 @@ export let kvUri = result.then(r =>
 
 export let appSvcSku = result.then(r =>
   r.application ? r.application.plan.sku : null
+);
+
+export let tsiFqdn = result.then(r =>
+  r.tsi ? r.tsi.dataAccessFqdn : null
 );
 
 // export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )

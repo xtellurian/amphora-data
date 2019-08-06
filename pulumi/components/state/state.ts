@@ -1,42 +1,32 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
-import { injectable, inject } from "inversify";
 import {
   IComponentParams,
-  COMPONENTS,
-  COMPONENT_PARAMS,
   CONSTANTS
 } from "../../components";
-import { IMonitoring } from "../monitoring/monitoring";
+
 import { IAzureConfig } from "../azure-config/azure-config";
+import { Monitoring } from "../monitoring/monitoring";
 
 const config = new pulumi.Config("state");
 const authConfig = new pulumi.Config("authentication");
 
-@injectable()
 export class StateParams implements IComponentParams {
   name: string = "d-state-component";
   opts?: pulumi.ComponentResourceOptions | undefined;
 }
 
-export interface IState {
-  kv: azure.keyvault.KeyVault;
-}
-
-@injectable()
 export class State extends pulumi.ComponentResource {
   private _kv: azure.keyvault.KeyVault;
   private _storageAccount: azure.storage.Account;
-  private _sqlServer: azure.sql.SqlServer;
-  private _sql: azure.sql.Database;
   get kv(): azure.keyvault.KeyVault {
     return this._kv;
   }
 
   constructor(
-    @inject(COMPONENT_PARAMS.StateParams) params: IComponentParams,
-    @inject(COMPONENTS.Monitoring) private monitoring: IMonitoring,
-    @inject("azure-config") private azConfig: IAzureConfig
+    params: IComponentParams,
+    private monitoring: Monitoring,
+    private azConfig: IAzureConfig
   ) {
     super("amphora:State", params.name, {}, params.opts);
 
@@ -147,8 +137,8 @@ export class State extends pulumi.ComponentResource {
       },
       { parent: this }
     );
-    
-    
+
+
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
       {

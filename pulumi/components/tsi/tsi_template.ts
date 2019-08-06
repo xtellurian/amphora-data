@@ -102,7 +102,13 @@ export function getTsiTemplate() {
           "[concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))]"
         ]
       },
-    ]
+    ],
+    outputs: {
+      dataAccessFqdn : {
+        type : "string",
+        value: "[reference(concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))).dataAccessFqdn]"
+      }
+    }
   };
 }
 

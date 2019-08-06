@@ -8,7 +8,6 @@
         "@pulumi/docker": "^0.17.0",
         "@pulumi/pulumi": "latest",
         "@pulumi/random": "^0.5.6",
-        "inversify": "^5.0.1",
         "reflect-metadata": "^0.1.13"
     }
 }

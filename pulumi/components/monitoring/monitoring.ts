@@ -1,26 +1,17 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
-import { injectable, inject } from "inversify";
 import { IComponentParams, COMPONENT_PARAMS } from "../../components";
 
 import { getDashboardTemplate } from "./dashboards-arm";
 
 const config = new pulumi.Config("monitoring");
 
-export interface IMonitoring {
-  logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
-  appInsights: azure.appinsights.Insights;
-}
-
-@injectable()
 export class MonitoringParams implements IComponentParams {
   name: string = "d-monitoring-component";
   opts?: pulumi.ComponentResourceOptions | undefined;
 }
 
-@injectable()
-export class Monitoring extends pulumi.ComponentResource
-  implements IMonitoring {
+export class Monitoring extends pulumi.ComponentResource {
   private _logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
   private _applicationInsights: azure.appinsights.Insights;
 
@@ -33,7 +24,7 @@ export class Monitoring extends pulumi.ComponentResource
   }
 
   constructor(
-    @inject(COMPONENT_PARAMS.MonitoringParams) params: IComponentParams
+    params: IComponentParams
   ) {
     super("amphora:Monitoring", params.name, {}, params.opts);
 

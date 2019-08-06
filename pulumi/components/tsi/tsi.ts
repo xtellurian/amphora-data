@@ -10,9 +10,18 @@ export interface TsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
   eh: azure.eventhub.EventHub;
   appSvc: azure.appservice.AppService;
+  kv: azure.keyvault.KeyVault;
 }
 
-export class Tsi extends pulumi.ComponentResource {
+export interface ITsi {
+  env_name: random.RandomString;
+  dataAccessFqdn: pulumi.Output<any>;
+}
+
+export class Tsi extends pulumi.ComponentResource implements ITsi {
+  env_name: random.RandomString;
+  template: azure.core.TemplateDeployment;
+  dataAccessFqdn: pulumi.Output<any>;
   constructor(
     private name: string,
     private _params: TsiParams,
@@ -35,7 +44,7 @@ export class Tsi extends pulumi.ComponentResource {
       { parent: this }
     );
 
-    const env_name = new random.RandomString(
+    this.env_name = new random.RandomString(
       "env_name",
       {
         length: 12,
@@ -58,7 +67,7 @@ export class Tsi extends pulumi.ComponentResource {
       },
     }, { parent: this });
 
-    const t = new azure.core.TemplateDeployment(
+    this.template = new azure.core.TemplateDeployment(
       this.name + "_template",
       {
         resourceGroupName: rg.name,
@@ -68,7 +77,7 @@ export class Tsi extends pulumi.ComponentResource {
           eventHubNamespaceName: this._params.eh_namespace.name,
           eventHubName: this._params.eh.name,
           eventHubResourceId: this._params.eh.id,
-          environmentName: env_name.result,
+          environmentName: this.env_name.result,
           storageAccountName: coldStorage.name,
           keyName: "RootManageSharedAccessKey",
           sharedAccessKey: this._params.eh_namespace.defaultPrimaryKey,
@@ -81,5 +90,7 @@ export class Tsi extends pulumi.ComponentResource {
       },
       { parent: this }
     );
+
+    this.dataAccessFqdn = this.template.outputs["dataAccessFqdn"]
   }
 }
