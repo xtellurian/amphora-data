@@ -46,6 +46,17 @@
             { from: startDate, to: endDate, bucketSize: '1d' }, // search span
             '#D869CB', // color
             'AvgValue')); // 
+        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
+            {Min: {
+                kind: 'numeric',
+                value: {tsx: '$event.value.Double'},
+                filter: null,
+                aggregation: {tsx: 'min($value)'}
+            }}, // variable json
+            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            '#BD1509', // color
+            'MinValue')); // 
         
             console.log(linechartTsqExpressions);
             tsiClient.server.getTsqResults("@Model.Token", window.location.host +"/tsi", linechartTsqExpressions.map(function(ae){return ae.toTsq()})).then(function(result){
