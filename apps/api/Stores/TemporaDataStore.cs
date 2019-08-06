@@ -16,12 +16,15 @@ namespace Amphora.Api.Stores
 
         public TemporaDataStore(IOptionsMonitor<Options.EventHubOptions> options)
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(options.CurrentValue.EventHubConnectionString)
+            if (options.CurrentValue.EventHubConnectionString != null)
             {
-                EntityPath = options.CurrentValue.EventHubName
-            };
-            eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
-            
+                var connectionStringBuilder = new EventHubsConnectionStringBuilder(options.CurrentValue.EventHubConnectionString)
+                {
+                    EntityPath = options.CurrentValue.EventHubName
+                };
+                eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+            }
+
         }
         public JObject GetData(Tempora entity)
         {
@@ -45,7 +48,7 @@ namespace Amphora.Api.Stores
         const string temporaKey = "tempora";
         private JObject AddPropertiesIfRequired(Tempora entity, JObject data)
         {
-            if (! data.ContainsKey(timeKey)) data[timeKey] = DateTime.Now;
+            if (!data.ContainsKey(timeKey)) data[timeKey] = DateTime.Now;
             data[temporaKey] = entity.Id;
             return data;
         }

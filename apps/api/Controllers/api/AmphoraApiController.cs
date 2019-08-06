@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace Amphora.Api.Api.Controllers
 {
     [Route("api/amphorae")]
-    public class AmphoraController : Controller
+    public class AmphoraApiController : Controller
     {
         private readonly IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
 
-        public AmphoraController(
+        public AmphoraApiController(
             IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore, 
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore)
         {

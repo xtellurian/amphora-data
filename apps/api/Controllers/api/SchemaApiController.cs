@@ -6,11 +6,11 @@ using Newtonsoft.Json.Schema;
 namespace Amphora.Api.Api.Controllers
 {
     [Route("api/schemas")]
-    public class AmphoraSchemaController : Controller
+    public class SchemaApiController : Controller
     {
         private readonly IEntityStore<Schema> store;
 
-        public AmphoraSchemaController(IEntityStore<Schema> store)
+        public SchemaApiController(IEntityStore<Schema> store)
         {
             this.store = store;
         }

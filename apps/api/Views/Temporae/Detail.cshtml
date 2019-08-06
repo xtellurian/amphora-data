@@ -1,0 +1,57 @@
+
+@model Amphora.Api.ViewModels.TemporaDetailViewModel
+
+@{
+    ViewData["Title"] = @Model.Tempora.Title;
+}
+<h1>@ViewData["Title"]</h1>
+<p>@Model.Tempora.Description</p>
+<p>$@Model.Tempora.Price</p>
+
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/tsiclient@1.2.24/tsiclient.css"></link>
+<div id="chart1" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+
+@section Scripts {
+
+<script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+
+<script>
+        var tsiClient = new TsiClient();
+        var linechartTsqExpressions = [];
+        var startDate = new Date();
+        startDate.setMonth(startDate.getMonth()-1);
+        var endDate = new Date();
+        console.log(endDate);
+
+        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
+            {Max: {
+                kind: 'numeric',
+                value: {tsx: '$event.value.Double'},
+                filter: null,
+                aggregation: {tsx: 'max($value)'}
+            }}, // variable json
+            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            '#60B9AE', // color
+            'MaxValue')); // alias
+        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
+            {Avg: {
+                kind: 'numeric',
+                value: {tsx: '$event.value.Double'},
+                filter: null,
+                aggregation: {tsx: 'avg($value)'}
+            }}, // variable json
+            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            '#D869CB', // color
+            'AvgValue')); // 
+        
+
+            tsiClient.server.getTsqResults("@Model.Token", "@Model.TSEnvId" +'.env.timeseries.azure.com', linechartTsqExpressions.map(function(ae){return ae.toTsq()})).then(function(result){
+                var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
+                var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart1'));
+                lineChart.render(transformedResult, {theme: 'light', grid: true, tooltip: true, legend: 'compact'}, linechartTsqExpressions);
+            });
+</script>
+}

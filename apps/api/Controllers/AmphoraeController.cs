@@ -4,17 +4,16 @@ using System.Linq;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.ViewModels;
-using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace Amphora.Api.Controllers
 {
-    public class MyAmphoraeController : Controller
+    public class AmphoraeController : Controller
     {
         private readonly IDataEntityStore<Common.Models.Amphora> amphoraEntityStore;
 
-        public MyAmphoraeController(IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore)
+        public AmphoraeController(IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore)
         {
             this.amphoraEntityStore = amphoraEntityStore;
         }

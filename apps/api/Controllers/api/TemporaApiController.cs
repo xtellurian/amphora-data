@@ -11,13 +11,13 @@ using System;
 namespace Amphora.Api.Api.Controllers
 {
     [Route("api/temporae")]
-    public class TemporaController : Controller
+    public class TemporaApiController : Controller
     {
         private readonly IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore;
         private readonly IEntityStore<Schema> schemaStore;
         private readonly IDataStore<Common.Models.Tempora, JObject> dataStore;
 
-        public TemporaController(
+        public TemporaApiController(
             IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore, 
             IEntityStore<Schema> schemaStore,
             IDataStore<Amphora.Common.Models.Tempora, JObject> dataStore)
