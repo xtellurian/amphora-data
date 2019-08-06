@@ -9,6 +9,7 @@ const config = new pulumi.Config("tsi");
 export interface TsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
   eh: azure.eventhub.EventHub;
+  appSvc: azure.appservice.AppService;
 }
 
 export class Tsi extends pulumi.ComponentResource {
@@ -70,7 +71,11 @@ export class Tsi extends pulumi.ComponentResource {
           environmentName: env_name.result,
           storageAccountName: coldStorage.name,
           keyName: "RootManageSharedAccessKey",
-          sharedAccessKey: this._params.eh_namespace.defaultPrimaryKey
+          sharedAccessKey: this._params.eh_namespace.defaultPrimaryKey,
+          accessPolicyReaderObjectId: this._params.appSvc.identity.apply(
+            identity =>
+            identity.principalId || "11111111-1111-1111-1111-111111111111"
+          ), // https://github.com/pulumi/pulumi-azure/issues/192)
         },
         templateBody: JSON.stringify(getTsiTemplate())
       },

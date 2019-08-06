@@ -50,7 +50,8 @@ async function main(): Promise<MainResult> {
   if (outputs.application) {
     const tsi = new Tsi("testtsi", {
       eh_namespace: outputs.application.eventHubCollections[0].namespace, // very fragile code
-      eh: outputs.application.eventHubCollections[0].hubs[0]
+      eh: outputs.application.eventHubCollections[0].hubs[0],
+      appSvc: outputs.application.appSvc
     })
   }
   return outputs;
