@@ -13,6 +13,7 @@ using Amphora.Api.Options;
 using api.Store;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
+using Amphora.Api.Services;
 
 namespace Amphora.Api
 {
@@ -48,6 +49,7 @@ namespace Amphora.Api
                 UsePersistentStores(services);
             }
 
+            services.AddScoped<ITsiService, TsiService>();
 
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());

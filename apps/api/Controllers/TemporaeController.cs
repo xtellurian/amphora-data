@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.ViewModels;
@@ -13,10 +14,13 @@ namespace Amphora.Api.Controllers
     public class TemporaeController : Controller
     {
         private readonly IDataEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly ITsiService tsiService;
 
-        public TemporaeController(IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore)
+        public TemporaeController(IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            ITsiService tsiService )
         {
             this.temporaEntityStore = temporaEntityStore;
+            this.tsiService = tsiService;
         }
 
         [HttpGet]
@@ -26,7 +30,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detail(string id)
+        public async Task<IActionResult> Detail(string id)
         {
             if(string.IsNullOrEmpty(id))
             {
@@ -37,15 +41,11 @@ namespace Amphora.Api.Controllers
             {
                 return BadRequest($"{id} not found");
             }
-            
             var envId = "f4db6163-54ce-4171-b020-873a7832fdee";
-            // if (orgId != null)
-            // {
-            //     temporae = temporaEntityStore.List(orgId).ToList();
-            // }
+            var token = await tsiService.GetAccessTokenAsync();
             var viewModel = new TemporaDetailViewModel
             {
-                Token = "token",
+                Token = token,
                 Tempora = entity,
                 TSEnvId = envId
             };
