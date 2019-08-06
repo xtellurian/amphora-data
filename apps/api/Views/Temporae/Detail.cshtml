@@ -48,7 +48,7 @@
             'AvgValue')); // 
         
             console.log(linechartTsqExpressions);
-            tsiClient.server.getTsqResults("@Model.Token", "@Model.TSEnvId" +'.env.timeseries.azure.com', linechartTsqExpressions.map(function(ae){return ae.toTsq()})).then(function(result){
+            tsiClient.server.getTsqResults("@Model.Token", window.location.host +"/tsi", linechartTsqExpressions.map(function(ae){return ae.toTsq()})).then(function(result){
                 console.log(result);
                 var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
                 var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart1'));

@@ -4,6 +4,6 @@ namespace Amphora.Api.ViewModels
     {
         public Amphora.Common.Models.Tempora Tempora { get; set; }
         public string Token { get; set; }
-        public string TSEnvId { get; set; }
+        public string DataAccessFqdn { get; set; }
     }
 }

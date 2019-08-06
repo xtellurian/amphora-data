@@ -14,6 +14,7 @@ using api.Store;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Amphora.Api.Services;
+using System;
 
 namespace Amphora.Api
 {
@@ -41,7 +42,7 @@ namespace Amphora.Api
             // temporary adding this here
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaDataStore>();
             if (HostingEnvironment.IsProduction() || Configuration["PersistantStores"] == "true")
-            { 
+            {
                 UsePersistentStores(services);
             }
             else if (HostingEnvironment.IsDevelopment())
@@ -51,6 +52,7 @@ namespace Amphora.Api
 
             services.AddScoped<ITsiService, TsiService>();
 
+            services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc()
@@ -59,6 +61,7 @@ namespace Amphora.Api
 
             services.Configure<TableStoreOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration);
+            services.Configure<TsiOptions>(Configuration);
 
             services.AddSwaggerGen(c =>
             {
@@ -83,7 +86,7 @@ namespace Amphora.Api
 
             //temporae
             services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
-        
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

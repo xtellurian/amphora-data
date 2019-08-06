@@ -16,7 +16,8 @@ namespace Amphora.Api.Controllers
         private readonly IDataEntityStore<Common.Models.Tempora> temporaEntityStore;
         private readonly ITsiService tsiService;
 
-        public TemporaeController(IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+        public TemporaeController(
+            IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
             ITsiService tsiService )
         {
             this.temporaEntityStore = temporaEntityStore;
@@ -30,7 +31,6 @@ namespace Amphora.Api.Controllers
             if (orgId != null)
             {
                 throw new System.NotImplementedException();
-                // amphorae = temporaEntityStore.List(orgId).ToList();
             }
             else
             {
@@ -56,13 +56,13 @@ namespace Amphora.Api.Controllers
             {
                 return BadRequest($"{id} not found");
             }
-            var envId = "f4db6163-54ce-4171-b020-873a7832fdee";
-            var token = await tsiService.GetAccessTokenAsync();
+
+            var token = "TODO"; // this can now be a token for THIS site
             var viewModel = new TemporaDetailViewModel
             {
                 Token = token,
                 Tempora = entity,
-                TSEnvId = envId
+                DataAccessFqdn = tsiService.GetDataAccessFqdn()
             };
 
             return View(viewModel);
