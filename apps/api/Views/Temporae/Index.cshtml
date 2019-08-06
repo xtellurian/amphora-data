@@ -4,3 +4,16 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>This is the page for managing your Temporae</p>
+
+<div>
+        <ul>
+        @foreach (var tempora in Model.Temporae)
+        {
+            <li>
+                <b> @tempora.Title </b> 
+                <br/>
+                @tempora.Description
+            </li>
+        }
+        </ul>
+    </div>

@@ -20,25 +20,19 @@ namespace Amphora.Api.Controllers
         [HttpGet]
         public IActionResult Index(string orgId)
         {
-            List<Amphora.Common.Models.Amphora> myAmphora;
+            List<Amphora.Common.Models.Amphora> amphorae;
             if (orgId != null)
             {
-                myAmphora = amphoraEntityStore.List(orgId).ToList();
+                amphorae = amphoraEntityStore.List(orgId).ToList();
             }
             else
             {
-                myAmphora = new List<Common.Models.Amphora>()
-                {
-                    new Common.Models.Amphora
-                    {
-                        Title = "Hello world",
-                        Description = "This should be on the page :)"
-                    }
-                };
+                amphorae = amphoraEntityStore.List().ToList();
             }
-            var viewModel = new MyAmphoraeViewModel
+            
+            var viewModel = new AmphoraeViewModel
             {
-                MyAmphora = myAmphora
+                Amphorae = amphorae
             };
 
             return View(viewModel);

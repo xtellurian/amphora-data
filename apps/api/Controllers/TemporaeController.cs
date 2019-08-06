@@ -24,9 +24,24 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string orgId)
         {
-            return View();
+            List<Amphora.Common.Models.Tempora> temporae;
+            if (orgId != null)
+            {
+                throw new System.NotImplementedException();
+                // amphorae = temporaEntityStore.List(orgId).ToList();
+            }
+            else
+            {
+                temporae = temporaEntityStore.List().ToList();
+            }
+            
+            var viewModel = new TemporaeViewModel
+            {
+                Temporae = temporae
+            };
+            return View(viewModel);
         }
 
         [HttpGet]
