@@ -5,7 +5,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryDataStore<T, TData> : IDataStore<T,TData> where T: class, IDataEntity
+    public class InMemoryDataStore<T, TData> : IDataStore<T,TData> where T: class, IOrgEntity
     {
         private Dictionary<T, TData> store = new Dictionary<T, TData>();
         public TData GetData(T entity)

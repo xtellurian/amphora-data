@@ -2,11 +2,13 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Models
 {
-    public class Tempora : DataEntity, IDataEntity
+    public class Tempora : SearchableDataEntity, IOrgEntity
     {
         public string SchemaId { get; set; }
-        public string Title {get;set;}
-        public string Description {get;set;}
-        public double Price {get;set;}
+
+        public override DataEntityTypes GetEntityType()
+        {
+            return DataEntityTypes.Tempora;
+        }
     }
 }

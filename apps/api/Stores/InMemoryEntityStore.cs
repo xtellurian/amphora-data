@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryEntityStore<T>: IEntityStore<T> where T: class, IEntity
+    public class InMemoryEntityStore<T> : IEntityStore<T> where T : class, IEntity
     {
         protected List<T> store = new List<T>();
 
@@ -16,29 +17,38 @@ namespace Amphora.Api.Stores
             return this.store.FirstOrDefault(o => string.Equals(o.Id, id));
         }
 
-        public IEnumerable<T> List()
+        public Task<T> GetAsync(string id)
         {
-            return new ReadOnlyCollection<T> (this.store);
+            return Task<T>.Factory.StartNew(() =>
+            {
+                return store.FirstOrDefault(e => string.Equals(e.Id, id));
+            });
         }
 
-        public IEnumerable<string> ListIds()
+        public Task<IEnumerable<T>> ListAsync()
         {
-            return this.store.Select(o => o.Id);
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
+            {
+                return new ReadOnlyCollection<T>(this.store);
+            });
         }
 
-        public T Set(T model)
+        public Task<T> SetAsync(T entity)
         {
-            if(string.IsNullOrEmpty(model.Id)) 
+            return Task<T>.Factory.StartNew(() =>
             {
-                model.Id = Guid.NewGuid().ToString();
-            }
-            if(this.store.Any( o => o.Id == model.Id))
-            {
-                this.store.RemoveAll(o => o.Id == model.Id);
-            }
+                if (string.IsNullOrEmpty(entity.Id))
+                {
+                    entity.Id = Guid.NewGuid().ToString();
+                }
+                if (this.store.Any(o => o.Id == entity.Id))
+                {
+                    this.store.RemoveAll(o => o.Id == entity.Id);
+                }
 
-            this.store.Add(model);
-            return model;
+                this.store.Add(entity);
+                return entity;
+            });
         }
     }
 }

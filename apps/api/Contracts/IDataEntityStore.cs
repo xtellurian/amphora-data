@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Contracts
 {
-    public interface IDataEntityStore<T> : IEntityStore<T> where T : IDataEntity
+    public interface IOrgEntityStore<T> where T : IOrgEntity
     {
-        T Get(string id, string orgId);
-        IEnumerable<T> List(string orgId);
+        Task<T> GetAsync(string id, string orgId = "default");
+        Task<T> SetAsync(T entity);
+        Task<IEnumerable<T>> ListAsync(string orgId = "default");
     }
 }

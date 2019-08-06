@@ -13,12 +13,12 @@ namespace Amphora.Api.Api.Controllers
     [Route("api/temporae")]
     public class TemporaApiController : Controller
     {
-        private readonly IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore;
         private readonly IEntityStore<Schema> schemaStore;
         private readonly IDataStore<Common.Models.Tempora, JObject> dataStore;
 
         public TemporaApiController(
-            IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore, 
+            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore, 
             IEntityStore<Schema> schemaStore,
             IDataStore<Amphora.Common.Models.Tempora, JObject> dataStore)
         {
@@ -28,32 +28,32 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpGet()]
-        public IActionResult ListTempora()
+        public async Task<IActionResult> ListTemporaAsync()
         {
-            return Ok(this.temporaEntityStore.List());
+            return Ok(await this.temporaEntityStore.ListAsync());
         }
 
 
         [HttpGet("{id}")]
-        public IActionResult GetInformation(string id)
+        public async Task<IActionResult> GetInformationAsync(string id)
         {
-            return Ok(this.temporaEntityStore.Get(id));
+            return Ok(await this.temporaEntityStore.GetAsync(id));
         }
 
         [HttpPut()]
-        public IActionResult CreateTempora([FromBody] Amphora.Common.Models.Tempora model)
+        public async Task<IActionResult> CreateTemporaAsync([FromBody] Amphora.Common.Models.Tempora model)
         {
             if (model == null || !model.IsValid())
             {
                 return BadRequest("Invalid Model");
             }
-            return Ok(this.temporaEntityStore.Set(model));
+            return Ok(await this.temporaEntityStore.SetAsync(model));
         }
 
         [HttpPost("{id}/fill")]
         public async Task<IActionResult> FillTempora(string id, [FromBody] JObject jObj)
         {
-            var entity = temporaEntityStore.Get(id);
+            var entity = await temporaEntityStore.GetAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Tempora Id");
@@ -73,9 +73,9 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpGet("{id}/drink")]
-        public IActionResult DrinkTempora(string id)
+        public async Task<IActionResult> DrinkTemporaAsync(string id)
         {
-            var entity = temporaEntityStore.Get(id);
+            var entity = await temporaEntityStore.GetAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Tempora Id");

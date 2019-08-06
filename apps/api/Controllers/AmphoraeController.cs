@@ -11,23 +11,24 @@ namespace Amphora.Api.Controllers
 {
     public class AmphoraeController : Controller
     {
-        private readonly IDataEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IOrgEntityStore<Common.Models.Amphora> amphoraEntityStore;
 
-        public AmphoraeController(IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore)
+        public AmphoraeController(IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore)
         {
             this.amphoraEntityStore = amphoraEntityStore;
         }
+
         [HttpGet]
-        public IActionResult Index(string orgId)
+        public async System.Threading.Tasks.Task<IActionResult> Index(string orgId)
         {
             List<Amphora.Common.Models.Amphora> amphorae;
             if (orgId != null)
             {
-                amphorae = amphoraEntityStore.List(orgId).ToList();
+                amphorae = (await amphoraEntityStore.ListAsync(orgId)).ToList();
             }
             else
             {
-                amphorae = amphoraEntityStore.List().ToList();
+                amphorae = (await amphoraEntityStore.ListAsync()).ToList();
             }
             
             var viewModel = new AmphoraeViewModel

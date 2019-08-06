@@ -9,11 +9,11 @@ namespace Amphora.Api.Api.Controllers
     [Route("api/amphorae")]
     public class AmphoraApiController : Controller
     {
-        private readonly IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore;
+        private readonly IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
 
         public AmphoraApiController(
-            IDataEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore, 
+            IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore, 
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore)
         {
             this.amphoraEntityStore = amphoraEntityStore;
@@ -21,32 +21,32 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpGet()]
-        public IActionResult ListAmphora()
+        public async Task<IActionResult> ListAmphoraAsync()
         {
-            return Ok(this.amphoraEntityStore.List());
+            return Ok(await this.amphoraEntityStore.ListAsync());
         }
 
 
         [HttpGet("{id}")]
-        public IActionResult GetAmphoraInformation(string id)
+        public async Task<IActionResult> GetAmphoraInformationAsync(string id)
         {
-            return Ok(this.amphoraEntityStore.Get(id));
+            return Ok(await this.amphoraEntityStore.GetAsync(id));
         }
 
         [HttpPut()]
-        public IActionResult CreateAmphora([FromBody] Amphora.Common.Models.Amphora model)
+        public async Task<IActionResult> CreateAmphoraAsync([FromBody] Amphora.Common.Models.Amphora model)
         {
             if (model == null || !model.IsValid())
             {
                 return BadRequest("Invalid Model");
             }
-            return Ok(this.amphoraEntityStore.Set(model));
+            return Ok(await this.amphoraEntityStore.SetAsync(model));
         }
 
         [HttpPost("{id}/fill")]
         public async Task<IActionResult> FillAmphora(string id)
         {
-            var entity = amphoraEntityStore.Get(id);
+            var entity = await amphoraEntityStore.GetAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Amphora Id");
@@ -57,9 +57,9 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpGet("{id}/drink")]
-        public IActionResult DrinkAmphora(string id)
+        public async Task<IActionResult> DrinkAmphoraAsync(string id)
         {
-            var entity = amphoraEntityStore.Get(id);
+            var entity = await amphoraEntityStore.GetAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Amphora Id");

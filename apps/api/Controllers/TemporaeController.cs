@@ -13,11 +13,11 @@ namespace Amphora.Api.Controllers
 {
     public class TemporaeController : Controller
     {
-        private readonly IDataEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgEntityStore<Common.Models.Tempora> temporaEntityStore;
         private readonly ITsiService tsiService;
 
         public TemporaeController(
-            IDataEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
             ITsiService tsiService )
         {
             this.temporaEntityStore = temporaEntityStore;
@@ -25,7 +25,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string orgId)
+        public async Task<IActionResult> Index(string orgId)
         {
             List<Amphora.Common.Models.Tempora> temporae;
             if (orgId != null)
@@ -34,7 +34,7 @@ namespace Amphora.Api.Controllers
             }
             else
             {
-                temporae = temporaEntityStore.List().ToList();
+                temporae = ( await temporaEntityStore.ListAsync()).ToList();
             }
             
             var viewModel = new TemporaeViewModel
@@ -51,7 +51,7 @@ namespace Amphora.Api.Controllers
             {
                 return RedirectToAction("Index");
             }
-            var entity = temporaEntityStore.Get(id);
+            var entity = await temporaEntityStore.GetAsync(id);
             if(entity == null)
             {
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

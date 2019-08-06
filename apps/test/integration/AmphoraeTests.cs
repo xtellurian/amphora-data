@@ -17,7 +17,7 @@ namespace Amphora.Tests.Integration
         }
 
         [Theory]
-        [InlineData("amphorae", "AmphoraData")]
+        [InlineData("amphorae", "default")]
         public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
         {
             // Arrange

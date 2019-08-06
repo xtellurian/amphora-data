@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Amphora.Api.Services;
 using System;
+using Amphora.Api.Models;
 
 namespace Amphora.Api
 {
@@ -71,8 +72,8 @@ namespace Amphora.Api
         }
         private void UsePersistentStores(IServiceCollection services)
         {
-            services.AddScoped<IDataEntityStore<Amphora.Common.Models.Amphora>, AzTableAmphoraStore>();
-            services.AddScoped<IDataEntityStore<Amphora.Common.Models.Tempora>, AzTableTemporaStore>();
+            services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
+            services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Tempora>, AzTableOrgEntityStore<Amphora.Common.Models.Tempora, TemporaTableEntity>>();
             // using in memory for now (not implemented)
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
@@ -80,12 +81,12 @@ namespace Amphora.Api
         }
         private static void UseInMemoryStores(IServiceCollection services)
         {
-            services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Amphora>, InMemoryDataEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Amphora>, InMemoryDataEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
 
             //temporae
-            services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
+            services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
 
         }
 

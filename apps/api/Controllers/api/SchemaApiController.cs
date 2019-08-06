@@ -2,6 +2,7 @@ using Amphora.Common.Models;
 using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
+using System.Threading.Tasks;
 
 namespace Amphora.Api.Api.Controllers
 {
@@ -17,23 +18,23 @@ namespace Amphora.Api.Api.Controllers
 
 
         [HttpPut]
-        public IActionResult Create([FromBody] Schema schema)
+        public async Task<IActionResult> CreateAsync([FromBody] Schema schema)
         {
             if (schema == null) return BadRequest("Invalid Model");
-            return Ok(store.Set(schema));
+            return Ok(await store.SetAsync(schema));
         }
 
         [HttpPut("JsonSchema")]
-        public IActionResult CreateFromJsonSchema([FromBody] JSchema jSchema)
+        public async Task<IActionResult> CreateFromJsonSchemaAsync([FromBody] JSchema jSchema)
         {
             var schema = new Schema(jSchema);
-            return Ok(store.Set(schema));
+            return Ok(await store.SetAsync(schema));
         }
 
         [HttpGet("{id}/JsonSchema")]
-        public IActionResult GetJsonSchema(string id) 
+        public async Task<IActionResult> GetJsonSchemaAsync(string id) 
         {
-            var schema = store.Get(id);
+            var schema = await store.GetAsync(id);
             if(schema == null) return NotFound();
             return Ok(schema.JsonSchema);
         }

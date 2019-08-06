@@ -1,6 +1,6 @@
 namespace Amphora.Common.Contracts
 {
-    public interface IDataEntity : IEntity
+    public interface IOrgEntity : IEntity
     {
         string OrgId { get; set; }
     }
