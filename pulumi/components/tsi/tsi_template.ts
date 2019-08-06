@@ -35,6 +35,10 @@ export function getTsiTemplate() {
       accessPolicyReaderObjectId: {
         type: "String",
         defaultValue: ""
+      },
+      timestampPropertyName: {
+        type: "String",
+        defaultValue: "t"
       }
     },
     variables: {},
@@ -57,7 +61,7 @@ export function getTsiTemplate() {
           },
           timeSeriesIdProperties: [
             {
-              name: "s",
+              name: "tempora",
               type: "string"
             }
           ]
@@ -78,7 +82,7 @@ export function getTsiTemplate() {
           eventSourceResourceId: "[parameters('eventHubResourceId')]",
           consumerGroupName: "[parameters('eh_consumer_group')]",
           keyName: "[parameters('keyName')]",
-          timestampPropertyName: "t",
+          timestampPropertyName: "[parameters('timestampPropertyName')]",
           eventHubName: "[parameters('eventHubName')]",
           serviceBusNamespace: "[parameters('eventHubNamespaceName')]",
           sharedAccessKey: "[parameters('sharedAccessKey')]",

@@ -27,6 +27,7 @@ interface EventHubCollection {
 }
 export interface IApplication {
   appSvc: azure.appservice.AppService;
+  plan: azure.appservice.Plan;
   eventHubCollections: EventHubCollection[];
 }
 
@@ -36,11 +37,15 @@ export class Application extends pulumi.ComponentResource
   private _appSvc: azure.appservice.AppService;
   private _acr: azure.containerservice.Registry;
   private _eventHubCollections: EventHubCollection[] = [];
+  private _plan: azure.appservice.Plan;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
   }
   get eventHubCollections(): EventHubCollection[] {
     return this._eventHubCollections;
+  }
+  get plan() : azure.appservice.Plan {
+    return this._plan;
   }
 
   constructor(
@@ -102,9 +107,9 @@ export class Application extends pulumi.ComponentResource
       {
         imageName: pulumi.interpolate`${
           registry.loginServer
-        }/${customImage}:v1.0.0`,
+          }/${customImage}:v1.0.0`,
         build: {
-          context: `../apps/api`
+          context: `../apps`
         },
         registry: {
           server: registry.loginServer,
@@ -122,7 +127,7 @@ export class Application extends pulumi.ComponentResource
     kv: azure.keyvault.KeyVault,
     image: docker.Image
   ) {
-    const appSvcPlan = new azure.appservice.Plan(
+    this._plan = new azure.appservice.Plan(
       "appSvcPlan",
       {
         location: rg.location,
@@ -144,7 +149,7 @@ export class Application extends pulumi.ComponentResource
       {
         location: rg.location,
         resourceGroupName: rg.name,
-        appServicePlanId: appSvcPlan.id,
+        appServicePlanId: this._plan.id,
         identity: { type: "SystemAssigned" },
         appSettings: {
           kvUri: kv.vaultUri,
@@ -154,7 +159,7 @@ export class Application extends pulumi.ComponentResource
           WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
             this._acr.loginServer
-          }`,
+            }`,
           DOCKER_REGISTRY_SERVER_USERNAME: this._acr.adminUsername,
           DOCKER_REGISTRY_SERVER_PASSWORD: this._acr.adminPassword,
           WEBSITES_PORT: 80
@@ -221,9 +226,36 @@ export class Application extends pulumi.ComponentResource
         parent: this
       }
     );
+
+    const ehAuthRule = new azure.eventhub.EventHubAuthorizationRule("ehAuthRule", {
+      eventhubName: eh.name,
+      listen: true,
+      manage: false,
+      namespaceName: ehns.name,
+      resourceGroupName: rg.name,
+      send: true,
+    }, {
+      parent: this
+    });
+
+    this.storeInVault( "EventHubConnectionString" , ehAuthRule.primaryConnectionString);
+    this.storeInVault( "EventHubName" , eh.name);
+
     this._eventHubCollections.push({
       namespace: ehns,
       hubs: [eh]
     });
+  }
+
+  storeInVault(name: string, value: pulumi.Input<string> | string) {
+    return new azure.keyvault.Secret(
+      name,
+      {
+        value: value,
+        keyVaultId: this._state.kv.id,
+        name: name
+      },
+      { parent: this }
+    );
   }
 }

@@ -72,4 +72,8 @@ export let kvUri = result.then(r =>
   r.state ? r.state.kv.vaultUri : null
 );
 
+export let appSvcSku = result.then(r =>
+  r.application ? r.application.plan.sku : null
+);
+
 // export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )

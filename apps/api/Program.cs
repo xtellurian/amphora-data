@@ -4,6 +4,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api
 {
@@ -29,6 +30,7 @@ namespace Amphora.Api
         {
             if (!string.IsNullOrEmpty(builtConfig[kvUri]))
             {
+                System.Console.WriteLine($"Using KeyVault {builtConfig[kvUri]} as Config Provider");
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(
                     new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
@@ -36,7 +38,11 @@ namespace Amphora.Api
                 config.AddAzureKeyVault($"{builtConfig[kvUri]}",
                     keyVaultClient,
                     new DefaultKeyVaultSecretManager());
-
+                    System.Console.WriteLine("KeyVault Configuration Loaded!");
+            }
+            else 
+            {
+                System.Console.WriteLine("No KeyVault as config provider");
             }
         }
     }

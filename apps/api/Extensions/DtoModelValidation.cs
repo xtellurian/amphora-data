@@ -10,5 +10,13 @@ namespace Amphora.Api.Extensions
                 ! string.IsNullOrEmpty(amphora.Description)  &&
                 amphora.Price >= 0;
         }
+        public static bool IsValid(this Amphora.Common.Models.Tempora tempora)
+        {
+            return
+                tempora != null &&
+                ! string.IsNullOrEmpty(tempora.Title) &&
+                ! string.IsNullOrEmpty(tempora.Description)  &&
+                tempora.Price >= 0;
+        }
     }
 }

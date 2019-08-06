@@ -12,6 +12,7 @@ using Amphora.Api.Stores;
 using Amphora.Api.Options;
 using api.Store;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api
 {
@@ -36,6 +37,8 @@ namespace Amphora.Api
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            // temporary adding this here
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaDataStore>();
             if (HostingEnvironment.IsDevelopment())
             {
                 UseInMemoryStores(services);
@@ -53,6 +56,7 @@ namespace Amphora.Api
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 
             services.Configure<TableStoreOptions>(Configuration);
+            services.Configure<EventHubOptions>(Configuration);
 
             services.AddSwaggerGen(c =>
             {
@@ -70,6 +74,10 @@ namespace Amphora.Api
             services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Amphora>, InMemoryDataEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
+
+            //temporae
+            services.AddSingleton<IDataEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,7 +95,7 @@ namespace Amphora.Api
                 app.UseHsts();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
