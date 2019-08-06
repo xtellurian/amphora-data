@@ -31,7 +31,7 @@ async function main(): Promise<MainResult> {
     eh_namespace: application.eventHubCollections[0].namespace, // very fragile code
     eh: application.eventHubCollections[0].hubs[0],
     appSvc: application.appSvc,
-    kv: state.kv
+    state: state
   })
 
   return {

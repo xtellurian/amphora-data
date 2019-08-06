@@ -3,6 +3,7 @@ import * as azure from "@pulumi/azure";
 import * as random from "@pulumi/random";
 
 import { getTsiTemplate } from "./tsi_template";
+import { State } from "../state/state";
 
 const config = new pulumi.Config("tsi");
 
@@ -10,7 +11,7 @@ export interface TsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
   eh: azure.eventhub.EventHub;
   appSvc: azure.appservice.AppService;
-  kv: azure.keyvault.KeyVault;
+  state: State;
 }
 
 export interface ITsi {
@@ -91,6 +92,8 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
       { parent: this }
     );
 
-    this.dataAccessFqdn = this.template.outputs["dataAccessFqdn"]
+    this.dataAccessFqdn = this.template.outputs["dataAccessFqdn"];
+
+    this._params.state.storeInVault("DataAccessFqdn", this.dataAccessFqdn, this);
   }
 }

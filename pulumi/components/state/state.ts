@@ -34,6 +34,8 @@ export class State extends pulumi.ComponentResource {
     this.resolve();
   }
 
+  
+
   resolve() {
     console.log("Done creating state");
   }
@@ -60,7 +62,7 @@ export class State extends pulumi.ComponentResource {
     );
   }
 
-  storeInVault(name: string, value: pulumi.Input<string> | string) {
+  storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource ) {
     return new azure.keyvault.Secret(
       name,
       {
@@ -68,7 +70,7 @@ export class State extends pulumi.ComponentResource {
         keyVaultId: this._kv.id,
         name: name
       },
-      { parent: this }
+      { parent: parent || this }
     );
   }
 
