@@ -54,6 +54,8 @@ namespace Amphora.Api
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
+            // Angular's default header name for sending the XSRF token.
+            services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
@@ -72,10 +74,12 @@ namespace Amphora.Api
             services.Configure<TableStoreOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration);
             services.Configure<TsiOptions>(Configuration);
-            services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>( p => {
+            services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>(p =>
+            {
                 p.TableName = "amphorae";
             });
-            services.Configure<EntityTableStoreOptions<TemporaTableEntity>>( p => {
+            services.Configure<EntityTableStoreOptions<TemporaTableEntity>>(p =>
+            {
                 p.TableName = "temporae";
             });
         }
@@ -99,11 +103,13 @@ namespace Amphora.Api
         {
             services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Amphora>, InMemoryDataEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+            // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, InMemoryDataStore<Amphora.Common.Models.Tempora, JObject>>();
 
             //temporae
             services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
-            
+
             // this isnt actually in memory :()
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }

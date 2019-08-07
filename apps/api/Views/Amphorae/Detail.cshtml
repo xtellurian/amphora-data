@@ -1,19 +1,58 @@
 @model Amphora.Api.ViewModels.AmphoraViewModel
 @{
-    ViewData["Title"] = "@Model.Title";
+    ViewData["Title"] = "Amphora -";
 }
 
 
 <div id="main" class="text-center">
-     <span>
-        <h1 class="display-4">@Model.Title</h1>
-        <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
-    </span>
-    <div class="text-left">
-        <b>Price:</b> $@Model.Price
-        <p> <b>Description:</b> @Model.Description </p>
+    <div class="container">
+        <span>
+            <h1 class="display-4">@Model.Title</h1>
+            <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
+        </span>
+    </div>
+    <div class="card text-white bg-info mb-3">
+        <div class="card-header">
+            <h5 class="card-title">Admin Pane</h5>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <form method="post" enctype="multipart/form-data" asp-action="Upload" asp-route-id="@Model.Id">
+                    <div class="form-group">
+                        <p class="card-text">Upload file</p>
+                        <input class="form-control" type="file" name="files" multiple>
+                        <small class="form-text card-text text-muted">This becomes the content of the Amphora.</small>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="submit" value="Upload">
+                    </div>
+                </form> 
+            </div>                                                        
+        </div>
+    </div>
 
-        <a asp-action="Index"><button class="btn btn-primary">Download</button></a>
+    <div class="card bg-light mb-3">
+        <div class="card-header">@Model.Title</div>
+        <div class="card-body">
+            <h5 class="card-title">Description</h5>
+            <p class="card-text">@Model.Description</p>
+        </div>
+        <div class="container card-footer">
+        <div class="row">
+            <div class="col-sm">
+                $@Model.Price 
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm">
+             <span class="card-text">
+                @Model.FileName
+                <a asp-route-id="@Model.Id" asp-action="Download"><button class="btn btn-primary">Download</button></a>
+            </span>
+            </div>
+        </div>
+
+           
+        </div>
     </div>
     
 </div>

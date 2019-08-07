@@ -43,7 +43,7 @@ namespace Amphora.Api.Api.Controllers
             return Ok(await this.amphoraEntityStore.SetAsync(model));
         }
 
-        [HttpPost("{id}/fill")]
+        [HttpPost("{id}/upload")]
         public async Task<IActionResult> FillAmphora(string id)
         {
             var entity = await amphoraEntityStore.GetAsync(id);

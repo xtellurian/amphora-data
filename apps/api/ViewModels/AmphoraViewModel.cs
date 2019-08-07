@@ -7,5 +7,7 @@ namespace Amphora.Api.ViewModels
 
         [Display(Name = "Content Type")]
         public string ContentType { get; set; }
+        [Display(Name = "File Name")]
+        public string FileName { get; set; }
     }
 }
