@@ -40,7 +40,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet("api/amphorae/{id}")]
-        public async Task<IActionResult> GetAmphoraInformationAsync(string id)
+        public async Task<IActionResult> ReadAsync(string id)
         {
             return Ok(await this.amphoraEntityStore.ReadAsync(id));
         }

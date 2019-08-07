@@ -22,7 +22,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            var a = Helpers.AmphoraLibrary.GetValidAmphora();
+            var a = Helpers.EntityLibrary.GetValidAmphora();
             a.OrgId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");

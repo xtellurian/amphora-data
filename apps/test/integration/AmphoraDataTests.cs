@@ -39,7 +39,7 @@ namespace Amphora.Tests.Integration
 
         private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
         {
-            var amphora = Helpers.AmphoraLibrary.GetValidAmphora();
+            var amphora = Helpers.EntityLibrary.GetValidAmphora();
             // create an amphora for us to work with
             var createResponse = await client.PutAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")

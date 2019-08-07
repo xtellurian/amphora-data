@@ -23,7 +23,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            var a = Helpers.AmphoraLibrary.GetValidAmphora();
+            var a = Helpers.EntityLibrary.GetValidAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
@@ -65,6 +65,40 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(responseBody);
             var b = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseBody);
             Assert.True(b.Count > 0);
+        }
+
+        [Theory]
+        [InlineData("/api/amphorae")]
+        public async Task Get_ReadsAmphora(string url)
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await client.PutAsync(url, requestBody);
+            createResponse.EnsureSuccessStatusCode();
+            var b = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
+
+            // Act
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await client.GetAsync($"{url}/{b.Id}");
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(responseBody);
+            var c = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(responseBody);
+            Assert.Equal(b.Id, c.Id);
+            Assert.Equal(b.ContentType, c.ContentType);
+            Assert.Equal(b.Description, c.Description);
+            Assert.Equal(b.Price, c.Price);
+            Assert.Equal(b.Title, c.Title);
+            Assert.Equal(b.FileName, c.FileName);
         }
     
     }
