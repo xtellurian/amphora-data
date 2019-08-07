@@ -53,36 +53,30 @@ namespace api.Store
             }
             this.isInit = true;
         }
-        public async Task<T> GetAsync(string id, string orgId = "default")
+
+        public async Task<IList<T>> ListAsync(string orgId)
         {
             await InitTableAsync();
-            try
-            {
-                var retrieveOperation = TableOperation.Retrieve<TTableEntity>(orgId, id);
-                var result = table.Execute(retrieveOperation);
-                var tableEntity = result.Result as TTableEntity;
-                if (tableEntity != null)
-                {
-                    logger.LogInformation("\t{0}\t{1}", tableEntity.PartitionKey, tableEntity.RowKey);
-                }
 
-                // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
-                if (result.RequestCharge.HasValue)
-                {
-                    logger.LogInformation("Request Charge of Retrieve Operation: " + result.RequestCharge);
-                }
+            var query = new TableQuery<TTableEntity>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, orgId));
 
-                return mapper.Map<T>(tableEntity);
-            }
-            catch (StorageException e)
-            {
-                logger.LogError(e.Message);
-                throw;
-            }
+            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
+
+            return mapper.Map<List<T>>(queryOutput.Results);
 
         }
 
-        public async Task<T> SetAsync(T model)
+        public async Task<IList<T>> ListAsync()
+        {
+            await InitTableAsync();
+            var query = new TableQuery<TTableEntity>(); // empty query - list everything
+            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
+
+            return mapper.Map<List<T>>(queryOutput.Results);
+        }
+
+        public async Task<T> CreateAsync(T model)
         {
             await InitTableAsync();
             if(string.IsNullOrEmpty(model.Id)) model.Id = System.Guid.NewGuid().ToString();
@@ -113,29 +107,7 @@ namespace api.Store
             }
         }
 
-        public async Task<IList<T>> ListAsync(string orgId)
-        {
-            await InitTableAsync();
-
-            var query = new TableQuery<TTableEntity>()
-                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, orgId));
-
-            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
-
-            return mapper.Map<List<T>>(queryOutput.Results);
-
-        }
-
-        public async Task<IList<T>> ListAsync()
-        {
-            await InitTableAsync();
-            var query = new TableQuery<TTableEntity>(); // empty query - list everything
-            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
-
-            return mapper.Map<List<T>>(queryOutput.Results);
-        }
-
-        public async Task<T> GetAsync(string id)
+         public async Task<T> ReadAsync(string id)
         {
             await InitTableAsync();
 
@@ -156,6 +128,45 @@ namespace api.Store
             }
 
             return mapper.Map<T>(queryOutput.Results.FirstOrDefault());
+        }
+
+        public async Task<T> ReadAsync(string id, string orgId = "default")
+        {
+            await InitTableAsync();
+            try
+            {
+                var retrieveOperation = TableOperation.Retrieve<TTableEntity>(orgId, id);
+                var result = table.Execute(retrieveOperation);
+                var tableEntity = result.Result as TTableEntity;
+                if (tableEntity != null)
+                {
+                    logger.LogInformation("\t{0}\t{1}", tableEntity.PartitionKey, tableEntity.RowKey);
+                }
+
+                // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
+                if (result.RequestCharge.HasValue)
+                {
+                    logger.LogInformation("Request Charge of Retrieve Operation: " + result.RequestCharge);
+                }
+
+                return mapper.Map<T>(tableEntity);
+            }
+            catch (StorageException e)
+            {
+                logger.LogError(e.Message);
+                throw;
+            }
+
+        }
+
+        public Task<T> UpdateAsync(T entity)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task DeleteAsync(T entity)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

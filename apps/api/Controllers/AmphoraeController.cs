@@ -42,7 +42,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> GetAmphoraInformationAsync(string id)
         {
-            return Ok(await this.amphoraEntityStore.GetAsync(id));
+            return Ok(await this.amphoraEntityStore.ReadAsync(id));
         }
 
         [HttpPut("api/amphorae")]
@@ -52,13 +52,13 @@ namespace Amphora.Api.Controllers
             {
                 return BadRequest("Invalid Model");
             }
-            return Ok(await this.amphoraEntityStore.SetAsync(model));
+            return Ok(await this.amphoraEntityStore.CreateAsync(model));
         }
 
         [HttpPost("api/amphorae/{id}/upload")]
         public async Task<IActionResult> FillAmphora(string id)
         {
-            var entity = await amphoraEntityStore.GetAsync(id);
+            var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Amphora Id");
@@ -72,7 +72,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Download(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.GetAsync(id);
+            var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null) return RedirectToAction(nameof(Index));
             var data = dataStore.GetData(entity);
             if (data == null) return RedirectToAction(nameof(Error));
@@ -119,7 +119,7 @@ namespace Amphora.Api.Controllers
             if (ModelState.IsValid)
             {
                 var entity = mapper.Map<Amphora.Common.Models.Amphora>(amphoraVm);
-                var setResult = await amphoraEntityStore.SetAsync(entity);
+                var setResult = await amphoraEntityStore.CreateAsync(entity);
                 return RedirectToAction(nameof(Index));
             }
             return View(amphoraVm);
@@ -129,7 +129,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Detail(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.GetAsync(id);
+            var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null) return RedirectToAction(nameof(Index));
             return View(mapper.Map<AmphoraViewModel>(entity));
         }
@@ -144,7 +144,7 @@ namespace Amphora.Api.Controllers
             }
 
             if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.GetAsync(id);
+            var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null) return RedirectToAction(nameof(Index));
 
             var formFile = files.FirstOrDefault();
@@ -158,7 +158,7 @@ namespace Amphora.Api.Controllers
                     this.dataStore.SetData(entity, await stream.ReadFullyAsync());
                 }
                 entity.FileName = formFile.FileName;
-                await amphoraEntityStore.SetAsync(entity);
+                await amphoraEntityStore.CreateAsync(entity);
             }
 
             return View("Detail", mapper.Map<AmphoraViewModel>(entity));

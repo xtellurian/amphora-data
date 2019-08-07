@@ -44,7 +44,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/temporae/{id}")]
         public async Task<IActionResult> GetInformationAsync(string id)
         {
-            return Ok(await this.temporaEntityStore.GetAsync(id));
+            return Ok(await this.temporaEntityStore.ReadAsync(id));
         }
 
         [HttpPut("api/temporae")]
@@ -54,13 +54,13 @@ namespace Amphora.Api.Controllers
             {
                 return BadRequest("Invalid Model");
             }
-            return Ok(await this.temporaEntityStore.SetAsync(model));
+            return Ok(await this.temporaEntityStore.CreateAsync(model));
         }
 
         [HttpPost("api/temporae/{id}/upload")]
         public async Task<IActionResult> FillTempora(string id, [FromBody] JObject jObj)
         {
-            var entity = await temporaEntityStore.GetAsync(id);
+            var entity = await temporaEntityStore.ReadAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Tempora Id");
@@ -82,7 +82,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/temporae/{id}/download")]
         public async Task<IActionResult> DrinkTemporaAsync(string id)
         {
-            var entity = await temporaEntityStore.GetAsync(id);
+            var entity = await temporaEntityStore.ReadAsync(id);
             if (entity == null)
             {
                 return BadRequest("Invalid Tempora Id");
@@ -126,7 +126,7 @@ namespace Amphora.Api.Controllers
             if (ModelState.IsValid)
             {
                 var entity = mapper.Map<Amphora.Common.Models.Tempora>(temporaVm);
-                var setResult = await temporaEntityStore.SetAsync(entity);
+                var setResult = await temporaEntityStore.CreateAsync(entity);
                 return RedirectToAction(nameof(Index));
             }
             return View(temporaVm);
@@ -139,7 +139,7 @@ namespace Amphora.Api.Controllers
             {
                 return RedirectToAction("Index");
             }
-            var entity = await temporaEntityStore.GetAsync(id);
+            var entity = await temporaEntityStore.ReadAsync(id);
             if (entity == null)
             {
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

@@ -9,7 +9,7 @@ namespace Amphora.Api.Stores
 {
     public class InMemoryDataEntityStore<T> : InMemoryEntityStore<T>, IOrgEntityStore<T> where T : class, IOrgEntity
     {
-        public Task<T> GetAsync(string id, string orgId)
+        public Task<T> ReadAsync(string id, string orgId)
         {
             return Task<T>.Factory.StartNew(() =>
             {

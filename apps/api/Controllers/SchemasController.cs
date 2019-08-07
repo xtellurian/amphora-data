@@ -21,20 +21,20 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] Schema schema)
         {
             if (schema == null) return BadRequest("Invalid Model");
-            return Ok(await store.SetAsync(schema));
+            return Ok(await store.CreateAsync(schema));
         }
 
         [HttpPut("JsonSchema")]
         public async Task<IActionResult> CreateFromJsonSchemaAsync([FromBody] JSchema jSchema)
         {
             var schema = new Schema(jSchema);
-            return Ok(await store.SetAsync(schema));
+            return Ok(await store.CreateAsync(schema));
         }
 
         [HttpGet("{id}/JsonSchema")]
         public async Task<IActionResult> GetJsonSchemaAsync(string id) 
         {
-            var schema = await store.GetAsync(id);
+            var schema = await store.ReadAsync(id);
             if(schema == null) return NotFound();
             return Ok(schema.JsonSchema);
         }

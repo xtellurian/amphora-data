@@ -12,19 +12,6 @@ namespace Amphora.Api.Stores
     {
         protected List<T> store = new List<T>();
 
-        public T Get(string id)
-        {
-            return this.store.FirstOrDefault(o => string.Equals(o.Id, id));
-        }
-
-        public Task<T> GetAsync(string id)
-        {
-            return Task<T>.Factory.StartNew(() =>
-            {
-                return store.FirstOrDefault(e => string.Equals(e.Id, id));
-            });
-        }
-
         public Task<IList<T>> ListAsync()
         {
             return Task<IList<T>>.Factory.StartNew(() =>
@@ -33,7 +20,7 @@ namespace Amphora.Api.Stores
             });
         }
 
-        public Task<T> SetAsync(T entity)
+        public Task<T> CreateAsync(T entity)
         {
             return Task<T>.Factory.StartNew(() =>
             {
@@ -48,6 +35,44 @@ namespace Amphora.Api.Stores
 
                 this.store.Add(entity);
                 return entity;
+            });
+        }
+
+        public Task<T> ReadAsync(string id)
+        {
+            return Task<T>.Factory.StartNew(() =>
+            {
+                return store.FirstOrDefault(e => string.Equals(e.Id, id));
+            });
+        }
+
+        public Task<T> UpdateAsync(T entity)
+        {
+            return Task<T>.Factory.StartNew(() =>
+            {
+                if (string.IsNullOrEmpty(entity.Id))
+                {
+                    throw new ArgumentException("id null of entity update.");
+                }
+                if (this.store.Any(o => o.Id == entity.Id))
+                {
+                    this.store.RemoveAll(o => o.Id == entity.Id);
+                }
+
+                this.store.Add(entity);
+                return entity;
+            });
+        }
+
+        public Task DeleteAsync(T entity)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                if (string.IsNullOrEmpty(entity.Id))
+                {
+                    throw new ArgumentException("id null of entity update.");
+                }
+                this.store.RemoveAll(o => o.Id == entity.Id);
             });
         }
     }

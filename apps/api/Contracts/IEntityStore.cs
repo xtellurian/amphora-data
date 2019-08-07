@@ -7,8 +7,10 @@ namespace Amphora.Api.Contracts
     public interface IEntityStore<T> where T : IEntity
     {
         Task<IList<T>> ListAsync();
-        Task<T> GetAsync(string id);
-        Task<T> SetAsync(T entity);
+        Task<T> CreateAsync(T entity);
+        Task<T> ReadAsync(string id);
+        Task<T> UpdateAsync(T entity);
+        Task DeleteAsync(T entity);
         
     }
 }
