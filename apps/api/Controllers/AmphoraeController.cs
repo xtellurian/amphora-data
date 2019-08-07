@@ -46,14 +46,14 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ContentType,Price")] 
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,ContentType,Price")]
             AmphoraViewModel amphoraVm)
         {
             if (ModelState.IsValid)
@@ -63,6 +63,15 @@ namespace Amphora.Api.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(amphoraVm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
+            var entity = await amphoraEntityStore.GetAsync(id);
+            if (entity == null) return RedirectToAction(nameof(Index));
+            return View(mapper.Map<AmphoraViewModel>(entity));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

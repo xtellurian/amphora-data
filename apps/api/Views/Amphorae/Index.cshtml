@@ -1,21 +1,29 @@
-﻿@{
-    ViewData["Title"] = "My Amphorae";
+﻿@model Amphora.Api.ViewModels.AmphoraeViewModel
+@{
+    ViewData["Title"] = "Amphorae";
 }
-@model Amphora.Api.ViewModels.AmphoraeViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Amphorae</h1>
-    <p> This is where you see a list of your amphorae</p>
+<div id="main" class="text-center">
+    <div class="main-header">
+        <span>
+            <h1 class="display-4">Amphoræ</h1>
+            <a asp-action="Create"><button class="btn btn-primary">Create</button></a>
+        </span>
+    </div>
+    
     <div>
-        <ul>
+        <ul class="list-group">
         @foreach (var amphora in Model.Amphorae)
         {
-            <li>
-                <b> @amphora.Title </b> 
-                <br/>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                $@amphora.Price
+                <b> @amphora.Title </b>
                 @amphora.Description
+                <span class="badge badge-primary badge-pill">14</span>
+                <a asp-action="Detail" asp-route-id="@amphora.Id"><button class="btn btn-secondary">Detail</button></a>
             </li>
         }
         </ul>
     </div>
 </div>
+

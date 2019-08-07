@@ -1,9 +1,15 @@
+@model Amphora.Api.ViewModels.AmphoraViewModel
 @{
-    ViewData["Title"] = "My Amphorae";
+    ViewData["Title"] = "@Model.Title";
 }
-@model Amphora.Api.ViewModels.AmphoraeViewModel
 
-<div class="text-center">
-    <h1 class="display-4">My Amphorae</h1>
-    <p> This is where you see the detail of a single Amphora</p>
+
+<div id="main" class="text-center">
+     <span>
+        <h1 class="display-4">@Model.Title</h1>
+        <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
+    </span>
+     $@Model.Price
+    <p> @Model.Description </p>
+    
 </div>
