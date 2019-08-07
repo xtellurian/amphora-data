@@ -75,8 +75,8 @@ namespace Amphora.Api.Controllers
             var entity = await amphoraEntityStore.GetAsync(id);
             if (entity == null) return RedirectToAction(nameof(Index));
             var data = dataStore.GetData(entity);
-            if (data == null) return View("Detail", mapper.Map<AmphoraViewModel>(entity));
-            return File(data, entity.ContentType, entity.FileName);
+            if (data == null) return RedirectToAction(nameof(Error));
+            return File(data, entity.ContentType ?? "application/octet-stream", entity.FileName);
         }
 
         #endregion
