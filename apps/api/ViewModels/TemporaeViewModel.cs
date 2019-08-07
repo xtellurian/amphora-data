@@ -4,6 +4,6 @@ namespace Amphora.Api.ViewModels
 {
     public class TemporaeViewModel
     {
-        public List<Common.Models.Tempora> Temporae {get;set;}
+        public IList<Common.Models.Tempora> Temporae {get;set;}
     }
 }

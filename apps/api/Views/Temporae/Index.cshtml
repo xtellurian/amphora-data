@@ -1,19 +1,29 @@
+@model Amphora.Api.ViewModels.TemporaeViewModel
 @{
     ViewData["Title"] = "Temporae";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>This is the page for managing your Temporae</p>
-
-<div>
-        <ul>
+<div id="main" class="text-center">
+    <div class="main-header">
+        <span>
+            <h1 class="display-4">Temporæ</h1>
+            <a asp-action="Create"><button class="btn btn-primary">Create</button></a>
+        </span>
+    </div>
+    
+    <div>
+        <ul class="list-group">
         @foreach (var tempora in Model.Temporae)
         {
-            <li>
-                <b> @tempora.Title </b> 
-                <br/>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                $@tempora.Price
+                <b> @tempora.Title </b>
                 @tempora.Description
+                <span class="badge badge-primary badge-pill">14</span>
+                <a asp-action="Detail" asp-route-id="@tempora.Id"><button class="btn btn-secondary">Detail</button></a>
             </li>
         }
         </ul>
     </div>
+</div>
+

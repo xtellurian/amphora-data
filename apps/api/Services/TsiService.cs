@@ -6,28 +6,37 @@ using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
 using System.Net.Http;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services
 {
-    public class TsiService: ITsiService
+    public class TsiService : ITsiService
     {
         private const string resource = "https://api.timeseries.azure.com/";
         private readonly AzureServiceTokenProvider azureServiceTokenProvider;
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly HttpClient client;
 
-        public TsiService(IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory)
+        public TsiService(IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory, ILogger<TsiService> logger)
         {
             azureServiceTokenProvider = new AzureServiceTokenProvider();
             this.options = options;
             var client = clientFactory.CreateClient("tsi");
             var fqdn = options.CurrentValue.DataAccessFqdn;
-            if( ! fqdn.StartsWith("https"))
+            if (string.IsNullOrEmpty(fqdn))
             {
-                fqdn = $"https://{fqdn}";
+                logger.LogWarning("FQDN missing");
             }
-            client.BaseAddress = new System.Uri(fqdn);
-            this.client = client;
+            else
+            {
+
+                if (!fqdn.StartsWith("https"))
+                {
+                    fqdn = $"https://{fqdn}";
+                }
+                client.BaseAddress = new System.Uri(fqdn);
+                this.client = client;
+            }
         }
 
         public async Task<string> GetAccessTokenAsync()
@@ -39,7 +48,7 @@ namespace Amphora.Api.Services
 
         public string GetDataAccessFqdn()
         {
-            if(options.CurrentValue.DataAccessFqdn == null)
+            if (options.CurrentValue.DataAccessFqdn == null)
             {
                 throw new System.ArgumentNullException("TsiOptions.DataAccessFqdn");
             }
