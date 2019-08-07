@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace api.Store
 {
-    public abstract class AzTableOrgEntityStore<T, TTableEntity> : IOrgEntityStore<T> where T : class, IOrgEntity where TTableEntity : class, ITableEntity, new()
+    public class AzTableOrgEntityStore<T, TTableEntity> : IOrgEntityStore<T> where T : class, IOrgEntity where TTableEntity : class, ITableEntity, new()
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
@@ -20,20 +20,20 @@ namespace api.Store
         private readonly ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger;
         private CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
-
-        public AzTableOrgEntityStore(string tableName,
+        public AzTableOrgEntityStore(
             IOptionsMonitor<TableStoreOptions> options,
+            IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
             ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger)
         {
-            if (string.IsNullOrEmpty(tableName))
+            if (string.IsNullOrEmpty(tableOptions.CurrentValue.TableName))
             {
-                throw new System.ArgumentException("null or empty", nameof(tableName));
+                throw new System.ArgumentException("null or empty", nameof(tableOptions.CurrentValue.TableName));
             }
 
             this.storageAccount = CloudStorageAccount.Parse(options.CurrentValue.StorageConnectionString);
             this.tableClient = this.storageAccount.CreateCloudTableClient();
-            this.tableName = tableName;
+            this.tableName = tableOptions.CurrentValue.TableName;
             this.mapper = mapper;
             this.logger = logger;
         }
@@ -45,11 +45,11 @@ namespace api.Store
             this.table = tableClient.GetTableReference(tableName);
             if (await table.CreateIfNotExistsAsync())
             {
-                System.Console.WriteLine("Created Table named: {0}", tableName);
+                logger.LogWarning("Created Table named: {0}", tableName);
             }
             else
             {
-                System.Console.WriteLine("Table {0} already exists", tableName);
+                logger.LogInformation("Table {0} already exists", tableName);
             }
             this.isInit = true;
         }
@@ -85,14 +85,8 @@ namespace api.Store
         public async Task<T> SetAsync(T model)
         {
             await InitTableAsync();
-            // set the id, rowkey, and partitionKey
-            if (string.IsNullOrEmpty(model.Id))
-            {
-                model.Id = System.Guid.NewGuid().ToString();
-            }
+            if(string.IsNullOrEmpty(model.Id)) model.Id = System.Guid.NewGuid().ToString();
             var entity = mapper.Map<TTableEntity>(model);
-            entity.RowKey = model.Id;
-            entity.PartitionKey = model.OrgId;
 
             // try the insertion
             try

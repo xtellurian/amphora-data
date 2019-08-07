@@ -10,14 +10,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services
 {
-    public class TsiService : ITsiService
+    public class RealTsiService : ITsiService
     {
         private const string resource = "https://api.timeseries.azure.com/";
         private readonly AzureServiceTokenProvider azureServiceTokenProvider;
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly HttpClient client;
 
-        public TsiService(IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory, ILogger<TsiService> logger)
+        public RealTsiService(IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory, ILogger<RealTsiService> logger)
         {
             azureServiceTokenProvider = new AzureServiceTokenProvider();
             this.options = options;

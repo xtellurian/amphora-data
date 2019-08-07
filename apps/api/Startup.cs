@@ -14,7 +14,6 @@ using api.Store;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Amphora.Api.Services;
-using System;
 using Amphora.Api.Models;
 
 namespace Amphora.Api
@@ -40,8 +39,7 @@ namespace Amphora.Api
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            // temporary adding this here
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaDataStore>();
+
             if (HostingEnvironment.IsProduction() || Configuration["PersistantStores"] == "true")
             {
                 UsePersistentStores(services);
@@ -51,7 +49,7 @@ namespace Amphora.Api
                 UseInMemoryStores(services);
             }
 
-            services.AddScoped<ITsiService, TsiService>();
+            services.AddScoped<ITsiService, RealTsiService>();
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
@@ -60,9 +58,7 @@ namespace Amphora.Api
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 
-            services.Configure<TableStoreOptions>(Configuration);
-            services.Configure<EventHubOptions>(Configuration);
-            services.Configure<TsiOptions>(Configuration);
+            ConfigureOptions(services);
 
             services.AddSwaggerGen(c =>
             {
@@ -70,13 +66,33 @@ namespace Amphora.Api
             });
 
         }
+
+        private void ConfigureOptions(IServiceCollection services)
+        {
+            services.Configure<TableStoreOptions>(Configuration);
+            services.Configure<EventHubOptions>(Configuration);
+            services.Configure<TsiOptions>(Configuration);
+            services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>( p => {
+                p.TableName = "amphorae";
+            });
+            services.Configure<EntityTableStoreOptions<TemporaTableEntity>>( p => {
+                p.TableName = "temporae";
+            });
+        }
+
         private void UsePersistentStores(IServiceCollection services)
         {
+            // org entity stores
             services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
             services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Tempora>, AzTableOrgEntityStore<Amphora.Common.Models.Tempora, TemporaTableEntity>>();
-            // using in memory for now (not implemented)
-            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+            // data stores
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
+            // TODO (these are in memory)
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
+
+            // schemas 
+            // using in memory for now (not implemented properly)
+            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
 
         }
         private static void UseInMemoryStores(IServiceCollection services)
@@ -87,7 +103,9 @@ namespace Amphora.Api
 
             //temporae
             services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Tempora>, InMemoryDataEntityStore<Amphora.Common.Models.Tempora>>();
-
+            
+            // this isnt actually in memory :()
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

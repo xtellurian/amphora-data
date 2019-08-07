@@ -9,7 +9,11 @@
         <h1 class="display-4">@Model.Title</h1>
         <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
     </span>
-     $@Model.Price
-    <p> @Model.Description </p>
+    <div class="text-left">
+        <b>Price:</b> $@Model.Price
+        <p> <b>Description:</b> @Model.Description </p>
+
+        <a asp-action="Index"><button class="btn btn-primary">Download</button></a>
+    </div>
     
 </div>

@@ -10,11 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Stores
 {
-    public class TemporaDataStore : IDataStore<Amphora.Common.Models.Tempora, JObject>
+    public class TemporaEventHubDataStore : IDataStore<Amphora.Common.Models.Tempora, JObject>
     {
         private readonly EventHubClient eventHubClient;
 
-        public TemporaDataStore(IOptionsMonitor<Options.EventHubOptions> options)
+        public TemporaEventHubDataStore(IOptionsMonitor<Options.EventHubOptions> options)
         {
             if (options.CurrentValue.EventHubConnectionString != null)
             {

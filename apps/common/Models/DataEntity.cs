@@ -4,6 +4,6 @@ namespace Amphora.Common.Models
 {
     public abstract class DataEntity : Entity, IOrgEntity
     {
-        public string OrgId { get; set; }
+        public string OrgId { get; set; } = "default";
     }
 }
