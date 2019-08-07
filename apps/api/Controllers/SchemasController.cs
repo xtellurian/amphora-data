@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
 using System.Threading.Tasks;
 
-namespace Amphora.Api.Api.Controllers
+namespace Amphora.Api.Controllers
 {
     [Route("api/schemas")]
-    public class SchemaApiController : Controller
+    public class SchemasController : Controller
     {
         private readonly IEntityStore<Schema> store;
 
-        public SchemaApiController(IEntityStore<Schema> store)
+        public SchemasController(IEntityStore<Schema> store)
         {
             this.store = store;
         }
