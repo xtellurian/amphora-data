@@ -4,6 +4,6 @@ namespace Amphora.Api.ViewModels
 {
     public class AmphoraeViewModel
     {
-        public List<Common.Models.Amphora> Amphorae {get;set;}
+        public IList<Common.Models.Amphora> Amphorae {get;set;}
     }
 }

@@ -17,9 +17,9 @@ namespace Amphora.Api.Stores
             });
         }
 
-        public Task<IEnumerable<T>> ListAsync(string orgId)
+        public Task<IList<T>> ListAsync(string orgId)
         {
-            return Task<IEnumerable<T>>.Factory.StartNew( () => 
+            return Task<IList<T>>.Factory.StartNew( () => 
             {
                 return new ReadOnlyCollection<T>(this.store.Where(o => string.Equals(orgId, o.OrgId)).ToList());
             });

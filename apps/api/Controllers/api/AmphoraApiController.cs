@@ -34,7 +34,7 @@ namespace Amphora.Api.Api.Controllers
         }
 
         [HttpPut()]
-        public async Task<IActionResult> CreateAmphoraAsync([FromBody] Amphora.Common.Models.Amphora model)
+        public async Task<IActionResult> Create([FromBody] Amphora.Common.Models.Amphora model)
         {
             if (model == null || !model.IsValid())
             {

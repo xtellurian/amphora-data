@@ -7,10 +7,11 @@ using Amphora.Api.Options;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Api.Contracts;
+using System.Linq;
 
 namespace api.Store
 {
-    public abstract class AzTableOrgEntityStore<T, TTableEntity> : IOrgEntityStore<T> where T: class, IOrgEntity where TTableEntity : class, ITableEntity, new()
+    public abstract class AzTableOrgEntityStore<T, TTableEntity> : IOrgEntityStore<T> where T : class, IOrgEntity where TTableEntity : class, ITableEntity, new()
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
@@ -20,7 +21,7 @@ namespace api.Store
         private CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
 
-        public AzTableOrgEntityStore(string tableName, 
+        public AzTableOrgEntityStore(string tableName,
             IOptionsMonitor<TableStoreOptions> options,
             IMapper mapper,
             ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger)
@@ -92,7 +93,7 @@ namespace api.Store
             var entity = mapper.Map<TTableEntity>(model);
             entity.RowKey = model.Id;
             entity.PartitionKey = model.OrgId;
-            
+
             // try the insertion
             try
             {
@@ -118,16 +119,49 @@ namespace api.Store
             }
         }
 
-        public async Task<IEnumerable<T>> ListAsync(string orgId)
+        public async Task<IList<T>> ListAsync(string orgId)
         {
             await InitTableAsync();
+
             var query = new TableQuery<TTableEntity>()
-            {
-            };
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, orgId));
+
             var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
 
             return mapper.Map<List<T>>(queryOutput.Results);
 
+        }
+
+        public async Task<IList<T>> ListAsync()
+        {
+            await InitTableAsync();
+            var query = new TableQuery<TTableEntity>(); // empty query - list everything
+            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
+
+            return mapper.Map<List<T>>(queryOutput.Results);
+        }
+
+        public async Task<T> GetAsync(string id)
+        {
+            await InitTableAsync();
+
+            var query = new TableQuery<TTableEntity>()
+                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
+
+            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null); // TODO
+
+            // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
+            if (queryOutput.RequestCharge.HasValue)
+            {
+                System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + queryOutput.RequestCharge);
+            }
+
+            if (queryOutput.Results.Count > 1)
+            {
+                logger.LogWarning($"{id} exists twice");
+            }
+
+            return mapper.Map<T>(queryOutput.Results.FirstOrDefault());
         }
     }
 }
