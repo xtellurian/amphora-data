@@ -30,6 +30,60 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
         }
 
+        #region REST API
+        // this is the API section, where you interact with objects
+
+        [HttpGet("api/amphorae")]
+        public async Task<IActionResult> ListAmphoraAsync()
+        {
+            return Ok(await this.amphoraEntityStore.ListAsync());
+        }
+
+        [HttpGet("api/amphorae/{id}")]
+        public async Task<IActionResult> GetAmphoraInformationAsync(string id)
+        {
+            return Ok(await this.amphoraEntityStore.GetAsync(id));
+        }
+
+        [HttpPut("api/amphorae")]
+        public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.Amphora model)
+        {
+            if (model == null || !model.IsValid())
+            {
+                return BadRequest("Invalid Model");
+            }
+            return Ok(await this.amphoraEntityStore.SetAsync(model));
+        }
+
+        [HttpPost("api/amphorae/{id}/upload")]
+        public async Task<IActionResult> FillAmphora(string id)
+        {
+            var entity = await amphoraEntityStore.GetAsync(id);
+            if (entity == null)
+            {
+                return BadRequest("Invalid Amphora Id");
+            }
+
+            dataStore.SetData(entity, await Request.Body.ReadFullyAsync());
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Download(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
+            var entity = await amphoraEntityStore.GetAsync(id);
+            if (entity == null) return RedirectToAction(nameof(Index));
+            var data = dataStore.GetData(entity);
+            if (data == null) return View("Detail", mapper.Map<AmphoraViewModel>(entity));
+            return File(data, entity.ContentType, entity.FileName);
+        }
+
+        #endregion
+
+        #region  Views
+        // this is the views section
+
         [HttpGet]
         public async Task<IActionResult> Index(string orgId)
         {
@@ -110,22 +164,12 @@ namespace Amphora.Api.Controllers
             return View("Detail", mapper.Map<AmphoraViewModel>(entity));
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> Download(string id)
-        {
-            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.GetAsync(id);
-            if (entity == null) return RedirectToAction(nameof(Index));
-            var data = dataStore.GetData(entity);
-            if (data == null) return View("Detail", mapper.Map<AmphoraViewModel>(entity));
-            return File(data, entity.ContentType, entity.FileName);
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        #endregion
     }
 }

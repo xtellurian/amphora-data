@@ -19,7 +19,7 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_FillsAmphora_Get_DrinksAmphora(string url)
+        public async Task Post_UploadToAmphora(string url)
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -30,16 +30,11 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var fillResponse = await client.PostAsync($"{url}/{amphora.Id}/fill", requestBody);
-
-            var drinkResponse = await client.GetAsync($"{url}/{amphora.Id}/drink");
-            var drinkContent = await drinkResponse.Content.ReadAsByteArrayAsync();
+            var fillResponse = await client.PostAsync($"{url}/{amphora.Id}/upload", requestBody);
 
             // Assert
             fillResponse.EnsureSuccessStatusCode();
-            drinkResponse.EnsureSuccessStatusCode();
 
-            Assert.Equal(content, drinkContent);
         }
 
         private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
