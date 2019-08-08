@@ -1,7 +1,14 @@
+﻿using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Amphora.Api.Data;
 
-[assembly: HostingStartup(typeof(Amphora.Api.Areas.Identity.IdentityHostingStartup))]
-namespace Amphora.Api.Areas.Identity
+[assembly: HostingStartup(typeof(Amphora.Areas.Identity.IdentityHostingStartup))]
+namespace Amphora.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {

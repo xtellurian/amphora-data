@@ -54,7 +54,12 @@ namespace Amphora.Api
                 UseInMemoryStores(services);
             }
 
-            // SetupIdentity(services);
+            if(! string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
+            {
+                SetupUserIdentities(services);
+            }
+            
+            SetupToDoServices(services);
 
             services.AddScoped<ITsiService, RealTsiService>();
             services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
@@ -77,8 +82,14 @@ namespace Amphora.Api
 
         }
 
-        private void SetupIdentity(IServiceCollection services)
+        private void SetupToDoServices(IServiceCollection services)
         {
+            services.AddTransient<IEmailSender, EmailSender>();
+        }
+
+        private void SetupUserIdentities(IServiceCollection services)
+        {
+            System.Console.WriteLine("Setting Up User Identities");
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.

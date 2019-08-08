@@ -31,32 +31,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1 justify-content-end">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Market/Index">Market</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Amphorae/Index">Amphorae</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Temporae/Index">Temporae</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Profile/Index">My Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/Home/Settings" >Settings</a>
-                        </li>
-                        <li class="nav-item avatar">
-                            <a class="nav-link p-0" href="#">
-                            <img src="~/images/doge.jpg" class="rounded-circle z-depth-0"
-                                alt="avatar image" >
-                            </a>
-                        </li>
-                    </ul>
+                    <partial name="_NavbarPartial">
                 </div>
             </div>
         </nav>
