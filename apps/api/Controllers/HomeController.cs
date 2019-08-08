@@ -16,11 +16,6 @@ namespace Amphora.Api.Controllers
         {
             return View();
         }
-
-        public IActionResult Profile()
-        {
-            return View();
-        }
         public IActionResult Settings()
         {
             return View();
