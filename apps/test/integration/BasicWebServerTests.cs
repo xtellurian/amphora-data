@@ -20,11 +20,16 @@ namespace Amphora.Tests.Integration
         [InlineData("/Home/Privacy")]
         [InlineData("/Home/Profile")]
         [InlineData("/Home/Settings")]
+        [InlineData("/Home/Error")]
         [InlineData("/Market")]
+        [InlineData("/Market/Error")]
         [InlineData("/Amphorae")]
         [InlineData("/Amphorae/create")]
+        [InlineData("/Amphorae/detail")]
         [InlineData("/Temporae")]
         [InlineData("/Temporae/create")]
+        [InlineData("/Temporae/detail")]
+        [InlineData("/Temporae/error")]
         public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange

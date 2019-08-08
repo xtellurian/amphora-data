@@ -50,6 +50,7 @@ namespace Amphora.Api
             }
 
             services.AddScoped<ITsiService, RealTsiService>();
+            services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();

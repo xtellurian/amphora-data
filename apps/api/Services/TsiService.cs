@@ -13,15 +13,18 @@ namespace Amphora.Api.Services
     public class RealTsiService : ITsiService
     {
         private const string resource = "https://api.timeseries.azure.com/";
-        private readonly AzureServiceTokenProvider azureServiceTokenProvider;
         private readonly IOptionsMonitor<TsiOptions> options;
-        private readonly HttpClient client;
+        private readonly IAzureServiceTokenProvider tokenProvider;
+        public HttpClient Client { get; }
 
-        public RealTsiService(IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory, ILogger<RealTsiService> logger)
+        public RealTsiService(IOptionsMonitor<TsiOptions> options,
+            IHttpClientFactory clientFactory,
+            ILogger<RealTsiService> logger,
+            IAzureServiceTokenProvider tokenProvider)
         {
-            azureServiceTokenProvider = new AzureServiceTokenProvider();
             this.options = options;
-            var client = clientFactory.CreateClient("tsi");
+            this.tokenProvider = tokenProvider;
+            this.Client = clientFactory.CreateClient("tsi");
             var fqdn = options.CurrentValue.DataAccessFqdn;
             if (string.IsNullOrEmpty(fqdn))
             {
@@ -34,15 +37,14 @@ namespace Amphora.Api.Services
                 {
                     fqdn = $"https://{fqdn}";
                 }
-                client.BaseAddress = new System.Uri(fqdn);
-                this.client = client;
+                this.Client.BaseAddress = new System.Uri(fqdn);
             }
         }
 
         public async Task<string> GetAccessTokenAsync()
         {
-            var token = await azureServiceTokenProvider.GetAccessTokenAsync(resource);
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var token = await tokenProvider.GetAccessTokenAsync(resource);
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             return token;
         }
 
@@ -58,7 +60,7 @@ namespace Amphora.Api.Services
         public async Task<HttpResponseMessage> ProxyQueryAsync(string uri, HttpContent content)
         {
             await GetAccessTokenAsync(); // make sure the token is loaded.
-            var response = await client.PostAsync(uri, content);
+            var response = await Client.PostAsync(uri, content);
             return response;
         }
     }

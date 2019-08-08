@@ -25,5 +25,15 @@ namespace Amphora.Tests.Helpers
                 Title = "Valid Amphora - title"
             };
         }
+
+        public static Amphora.Common.Models.Tempora GetInvalidTempora()
+        {
+            return new Amphora.Common.Models.Tempora()
+            {
+                Description = null,
+                Price = -1 * rnd.Next(0, 99),
+                Title = null
+            };
+        }
     }
 }

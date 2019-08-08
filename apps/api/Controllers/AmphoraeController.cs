@@ -56,7 +56,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/amphorae/{id}/upload")]
-        public async Task<IActionResult> FillAmphora(string id)
+        public async Task<IActionResult> UploadToAmphora(string id)
         {
             var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null)
@@ -68,7 +68,7 @@ namespace Amphora.Api.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("api/amphorae/{id}/download")]
         public async Task<IActionResult> Download(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));

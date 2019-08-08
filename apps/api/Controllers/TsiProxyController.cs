@@ -27,7 +27,6 @@ namespace Amphora.Api.Controllers
         {
             var body = await ReadBodyAsync();
             var json = JObject.Parse(body);
-            // var ids = query["getEvents"]["timeSeriesId"];
             var token = await tsiService.GetAccessTokenAsync();
             var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
             var response = await tsiService.ProxyQueryAsync($"timeseries/query{Request.QueryString}", content);

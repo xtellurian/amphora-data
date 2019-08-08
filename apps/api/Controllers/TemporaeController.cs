@@ -58,12 +58,12 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/temporae/{id}/upload")]
-        public async Task<IActionResult> FillTempora(string id, [FromBody] JObject jObj)
+        public async Task<IActionResult> Upload(string id, [FromBody] JObject jObj)
         {
             var entity = await temporaEntityStore.ReadAsync(id);
             if (entity == null)
             {
-                return BadRequest("Invalid Tempora Id");
+                return NotFound("Invalid Tempora Id");
             }
 
             // var schema = schemaStore.Get(entity.SchemaId);
@@ -80,12 +80,12 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet("api/temporae/{id}/download")]
-        public async Task<IActionResult> DrinkTemporaAsync(string id)
+        public async Task<IActionResult> Download(string id)
         {
             var entity = await temporaEntityStore.ReadAsync(id);
             if (entity == null)
             {
-                return BadRequest("Invalid Tempora Id");
+                return NotFound("Invalid Tempora Id");
             }
 
             throw new NotImplementedException();

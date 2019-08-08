@@ -19,7 +19,7 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_UploadToAmphora(string url)
+        public async Task Post_UploadAndDownload_HappyPath(string url)
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -30,11 +30,31 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var fillResponse = await client.PostAsync($"{url}/{amphora.Id}/upload", requestBody);
+            var uploadResponse = await client.PostAsync($"{url}/{amphora.Id}/upload", requestBody);
+            uploadResponse.EnsureSuccessStatusCode();
+
+            var downloadResponse = await client.GetAsync($"{url}/{amphora.Id}/download");
+            downloadResponse.EnsureSuccessStatusCode();
 
             // Assert
-            fillResponse.EnsureSuccessStatusCode();
+            Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
+        }
+        [Theory]
+        [InlineData("/api/amphorae")]
+        public async Task Post_UploadToAmphora_MissingEntity(string url)
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var generator = new Helpers.RandomBufferGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
 
+            // Act
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var fillResponse = await client.PostAsync($"{url}/{Guid.NewGuid()}/upload", requestBody);
+
+            // Assert
+            Assert.Equal( System.Net.HttpStatusCode.BadRequest ,fillResponse.StatusCode);
         }
 
         private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
