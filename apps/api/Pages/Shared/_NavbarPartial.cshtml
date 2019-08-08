@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<Amphora.Api.Models.ApplicationUser> SignInManager
-@inject UserManager<Amphora.Api.Models.ApplicationUser> UserManager
+@using Amphora.Api.Contracts
+@inject ISignInManager<Amphora.Api.Models.ApplicationUser> SignInManager
+@inject IUserManager<Amphora.Api.Models.ApplicationUser> UserManager
 
  <ul class="navbar-nav flex-grow-1 justify-content-end">
 @if (SignInManager.IsSignedIn(User))

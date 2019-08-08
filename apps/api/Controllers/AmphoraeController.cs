@@ -30,9 +30,6 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
         }
 
-        #region REST API
-        // this is the API section, where you interact with objects
-
         [HttpGet("api/amphorae")]
         public async Task<IActionResult> ListAmphoraAsync()
         {
@@ -71,105 +68,12 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}/download")]
         public async Task<IActionResult> Download(string id)
         {
-            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
+            if (string.IsNullOrEmpty(id)) return BadRequest();
             var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return RedirectToAction(nameof(Index));
+            if (entity == null) return NotFound("Amphora not found");
             var data = dataStore.GetData(entity);
-            if (data == null) return RedirectToAction(nameof(Error));
+            if (data == null) return NotFound("Data not found.");
             return File(data, entity.ContentType ?? "application/octet-stream", entity.FileName);
         }
-
-        #endregion
-
-        #region  Views
-        // this is the views section
-
-        [HttpGet]
-        public async Task<IActionResult> Index(string orgId)
-        {
-            IList<Amphora.Common.Models.Amphora> amphorae;
-            if (orgId != null)
-            {
-                amphorae = await amphoraEntityStore.ListAsync(orgId);
-            }
-            else
-            {
-                amphorae = await amphoraEntityStore.ListAsync();
-            }
-
-            var viewModel = new AmphoraeViewModel
-            {
-                Amphorae = amphorae
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ContentType,Price")]
-            AmphoraViewModel amphoraVm)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = mapper.Map<Amphora.Common.Models.Amphora>(amphoraVm);
-                var setResult = await amphoraEntityStore.CreateAsync(entity);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(amphoraVm);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Detail(string id)
-        {
-            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return RedirectToAction(nameof(Index));
-            return View(mapper.Map<AmphoraViewModel>(entity));
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Upload(string id, List<IFormFile> files)
-        {
-            if (files == null || files.Count > 1)
-            {
-                throw new System.ArgumentException("Only 1 file is supported");
-            }
-
-            if (string.IsNullOrEmpty(id)) return RedirectToAction(nameof(Index));
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return RedirectToAction(nameof(Index));
-
-            var formFile = files.FirstOrDefault();
-
-            if (formFile != null && formFile.Length > 0)
-            {
-                using (var stream = new MemoryStream())
-                {
-                    await formFile.CopyToAsync(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    this.dataStore.SetData(entity, await stream.ReadFullyAsync());
-                }
-                entity.FileName = formFile.FileName;
-                await amphoraEntityStore.CreateAsync(entity);
-            }
-
-            return View("Detail", mapper.Map<AmphoraViewModel>(entity));
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        #endregion
     }
 }

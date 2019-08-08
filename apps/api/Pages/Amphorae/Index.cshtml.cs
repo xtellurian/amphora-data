@@ -14,13 +14,13 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserManager<ApplicationUser> userManager;
         private readonly IOrgEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public IndexModel(
-            UserManager<ApplicationUser> userManager,
+            IUserManager<ApplicationUser> userManager,
             IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IMapper mapper)

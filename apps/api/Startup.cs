@@ -20,6 +20,7 @@ using System;
 using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Amphora.Api
 {
@@ -53,12 +54,14 @@ namespace Amphora.Api
             {
                 UseInMemoryStores(services);
             }
-
-            if(! string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
+            // wrap the user services
+            services.AddSingleton<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
+            services.AddSingleton<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
+            if (!string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
             {
                 SetupUserIdentities(services);
             }
-            
+
             SetupToDoServices(services);
 
             services.AddScoped<ITsiService, RealTsiService>();
@@ -69,9 +72,22 @@ namespace Amphora.Api
             services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
-            services.AddMvc()
+            if (HostingEnvironment.IsDevelopment())
+            {
+                services.AddMvc(opts =>
+                {
+                    opts.Filters.Add(new AllowAnonymousFilter());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
+            }
+            else
+            {
+                services.AddMvc()
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
+            }
+                
 
             ConfigureOptions(services);
 
@@ -161,8 +177,6 @@ namespace Amphora.Api
 
             // orgs
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
-            // users
-            services.AddSingleton<IOrgEntityStore<User>, InMemoryOrgEntityStore<User>>();
             // this isnt actually in memory :()
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
