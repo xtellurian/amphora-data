@@ -33,22 +33,22 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Market" asp-action="Index">Market</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Market/Index">Market</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Amphorae" asp-action="Index">Amphorae</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Amphorae/Index">Amphorae</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Temporae" asp-action="Index">Temporae</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Temporae/Index">Temporae</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Profile" asp-action="Index">My Profile</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Profile/Index">My Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Settings">Settings</a>
+                            <a class="nav-link text-light" asp-area="" asp-page="/Home/Settings" >Settings</a>
                         </li>
                         <li class="nav-item avatar">
                             <a class="nav-link p-0" href="#">
@@ -70,7 +70,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - Amphora Data - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2019 - Amphora Data - <a asp-page="/Home/Privacy" >Privacy</a>
         </div>
     </footer>
 

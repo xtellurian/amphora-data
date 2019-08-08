@@ -1,4 +1,5 @@
-@model Amphora.Api.ViewModels.AmphoraViewModel
+@page
+@model Amphora.Api.Pages.Amphorae.DetailModel
 @{
     ViewData["Title"] = "Amphora -";
 }
@@ -7,7 +8,7 @@
 <div id="main" class="text-center">
     <div class="container">
         <span>
-            <h1 class="display-4">@Model.Title</h1>
+            <h1 class="display-4">@Model.Amphora.Title</h1>
             <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
         </span>
     </div>
@@ -17,7 +18,7 @@
         </div>
         <div class="card-body">
             <div class="container">
-                <form method="post" enctype="multipart/form-data" asp-action="Upload" asp-route-id="@Model.Id">
+                <form method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <p class="card-text">Upload file</p>
                         <input class="form-control" type="file" name="files" multiple>
@@ -32,21 +33,21 @@
     </div>
 
     <div class="card bg-light mb-3">
-        <div class="card-header">@Model.Title</div>
+        <div class="card-header">@Model.Amphora.Title</div>
         <div class="card-body">
             <h5 class="card-title">Description</h5>
-            <p class="card-text">@Model.Description</p>
+            <p class="card-text">@Model.Amphora.Description</p>
         </div>
         <div class="container card-footer">
         <div class="row">
             <div class="col-sm">
-                $@Model.Price 
+                $@Model.Amphora.Price 
             </div>
             <div class="col-sm"></div>
             <div class="col-sm">
              <span class="card-text">
-                @Model.FileName
-                <a asp-route-id="@Model.Id" asp-action="Download"><button class="btn btn-primary">Download</button></a>
+                @Model.Amphora.FileName
+                <a asp-route-id="@Model.Amphora.Id" asp-action="Download"><button class="btn btn-primary">Download</button></a>
             </span>
             </div>
         </div>

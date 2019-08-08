@@ -15,6 +15,11 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Amphora.Api.Services;
 using Amphora.Api.Models;
+using Amphora.Api.Data;
+using System;
+using ElCamino.AspNetCore.Identity.AzureTable.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 
 namespace Amphora.Api
 {
@@ -49,6 +54,8 @@ namespace Amphora.Api
                 UseInMemoryStores(services);
             }
 
+            // SetupIdentity(services);
+
             services.AddScoped<ITsiService, RealTsiService>();
             services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
 
@@ -68,6 +75,34 @@ namespace Amphora.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmphoraApi", Version = "v1" });
             });
 
+        }
+
+        private void SetupIdentity(IServiceCollection services)
+        {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>((options) =>
+            {
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddAzureTableStoresV2<ApplicationDbContext>(new Func<IdentityConfiguration>(() =>
+                {
+                    IdentityConfiguration idconfig = new IdentityConfiguration();
+                    idconfig.TablePrefix = Configuration.GetSection("IdentityConfiguration:TablePrefix").Value;
+                    idconfig.StorageConnectionString = Configuration.GetSection("StorageConnectionString").Value;
+                    idconfig.LocationMode = Configuration.GetSection("IdentityConfiguration:LocationMode").Value;
+                    idconfig.IndexTableName = Configuration.GetSection("IdentityConfiguration:IndexTableName").Value; // default: AspNetIndex
+                    idconfig.RoleTableName = Configuration.GetSection("IdentityConfiguration:RoleTableName").Value;   // default: AspNetRoles
+                    idconfig.UserTableName = Configuration.GetSection("IdentityConfiguration:UserTableName").Value;   // default: AspNetUsers
+                    return idconfig;
+                }))
+                .AddDefaultTokenProviders()
+                .AddDefaultUI(UIFramework.Bootstrap4)
+                .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
         }
 
         private void ConfigureOptions(IServiceCollection services)

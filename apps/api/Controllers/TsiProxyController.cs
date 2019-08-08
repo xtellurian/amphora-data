@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -25,21 +26,29 @@ namespace Amphora.Api.Controllers
         [HttpPost("tsi/timeseries/query")]
         public async Task<IActionResult> TimeSeriesQuery()
         {
-            var body = await ReadBodyAsync();
-            var json = JObject.Parse(body);
-            var token = await tsiService.GetAccessTokenAsync();
-            var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
-            var response = await tsiService.ProxyQueryAsync($"timeseries/query{Request.QueryString}", content);
+            try
+            {
+                var body = await ReadBodyAsync();
+                var json = JObject.Parse(body);
+                var token = await tsiService.GetAccessTokenAsync();
+                var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
+                var response = await tsiService.ProxyQueryAsync($"timeseries/query{Request.QueryString}", content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return Ok(await response.Content.ReadAsStringAsync());
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok(await response.Content.ReadAsStringAsync());
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    logger.LogWarning(responseContent);
+                    return BadRequest(responseContent);
+                }
             }
-            else
+            catch(InvalidOperationException ex)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                logger.LogWarning(responseContent);
-                return BadRequest(responseContent);
+                logger.LogError(ex.Message, ex);
+                throw ex;
             }
         }
 

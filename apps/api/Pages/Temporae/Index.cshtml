@@ -1,4 +1,5 @@
-@model Amphora.Api.ViewModels.TemporaeViewModel
+@page
+@model Amphora.Api.Pages.Temporae.IndexModel
 @{
     ViewData["Title"] = "Temporae";
 }
@@ -7,7 +8,7 @@
     <div class="main-header">
         <span>
             <h1 class="display-4">Temporæ</h1>
-            <a asp-action="Create"><button class="btn btn-primary">Create</button></a>
+            <a asp-page="/Temporae/Create"><button class="btn btn-primary">Create</button></a>
         </span>
     </div>
     
@@ -20,7 +21,7 @@
                 <b> @tempora.Title </b>
                 @tempora.Description
                 <span class="badge badge-primary badge-pill">14</span>
-                <a asp-action="Detail" asp-route-id="@tempora.Id"><button class="btn btn-secondary">Detail</button></a>
+                <a asp-page="/Temporae/Detail" asp-route-id="@tempora.Id"><button class="btn btn-secondary">Detail</button></a>
             </li>
         }
         </ul>
