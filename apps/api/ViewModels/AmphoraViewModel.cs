@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.ViewModels
 {
-    public class AmphoraViewModel : SearchableDataEntityViewModel
+    public class AmphoraViewModel : MarketEntityViewModel
     {
 
         [Display(Name = "Content Type")]

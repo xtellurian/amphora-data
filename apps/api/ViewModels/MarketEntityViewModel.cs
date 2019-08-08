@@ -3,7 +3,7 @@ using Amphora.Common.Models;
 
 namespace Amphora.Api.ViewModels
 {
-    public abstract class SearchableDataEntityViewModel : DataEntity
+    public abstract class MarketEntityViewModel : OrgEntity
     {
         [Required]
         public string Title { get; set; }

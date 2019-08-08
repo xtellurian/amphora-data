@@ -2,7 +2,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Models
 {
-    public class Amphora : SearchableDataEntity, IOrgEntity
+    public class Amphora : MarketEntity, IOrgEntity
     {
         public Amphora()
         {

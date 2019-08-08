@@ -1,6 +1,6 @@
 namespace Amphora.Common.Models
 {
-    public abstract class SearchableDataEntity : DataEntity
+    public abstract class MarketEntity : OrgEntity
     {
         public abstract DataEntityTypes GetEntityType();
         public string Title {get;set;}

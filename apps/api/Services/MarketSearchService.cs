@@ -18,7 +18,7 @@ namespace Amphora.Api.Services
             this.temporaStore = temporaStore;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.SearchableDataEntity>> Search(string term)
+        public async Task<IEnumerable<Amphora.Common.Models.MarketEntity>> Search(string term)
         {
             var amphora = await amphoraStore.ListAsync();
             var tempora = await temporaStore.ListAsync();
