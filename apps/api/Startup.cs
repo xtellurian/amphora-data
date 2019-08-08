@@ -103,7 +103,6 @@ namespace Amphora.Api
         private static void UseInMemoryStores(IServiceCollection services)
         {
             services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Amphora>, InMemoryOrgEntityStore<Amphora.Common.Models.Amphora>>();
-            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, InMemoryDataStore<Amphora.Common.Models.Tempora, JObject>>();
@@ -111,6 +110,13 @@ namespace Amphora.Api
             //temporae
             services.AddSingleton<IOrgEntityStore<Amphora.Common.Models.Tempora>, InMemoryOrgEntityStore<Amphora.Common.Models.Tempora>>();
 
+            // schemas
+            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+
+            // orgs
+            services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
+            // users
+            services.AddSingleton<IOrgEntityStore<User>, InMemoryOrgEntityStore<User>>();
             // this isnt actually in memory :()
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
