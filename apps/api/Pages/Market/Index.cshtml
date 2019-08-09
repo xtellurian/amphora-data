@@ -1,4 +1,5 @@
 ﻿@page
+@model Amphora.Api.Pages.Market.IndexModel
 @{
     ViewData["Title"] = "Market";
 }
@@ -6,4 +7,25 @@
 <div class="text-center">
     <h1 class="display-4">The Market</h1>
     <p> This is where you could search for data, click to view details, and eventually purchase.</p>
+    <form asp-route-term="@Model.Term" method="get">
+        <div class="input-group mb-4 border rounded-pill p-1">
+            <input type="search" placeholder="What're you searching for?" asp-for="Term" aria-describedby="button-addon3" class="form-control bg-none border-0">
+            <div class="input-group-append border-0">
+                <button id="button-addon3" type="submit" class="btn btn-link text-success"><i class="icon fa fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+    <div>
+        <ul class="list-group">
+        @foreach (var entity in Model.Entities)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="badge badge-primary badge-pill">$@entity.Price</span>
+                @entity.GetEntityType()
+                <b> @entity.Title </b>
+                @entity.Description
+            </li>
+        }
+        </ul>
+    </div>
 </div>

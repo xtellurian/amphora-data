@@ -58,7 +58,7 @@ namespace Amphora.Api
 
 
             SetupUserIdentities(services);
-
+            SetupMarket(services);
             SetupToDoServices(services);
 
             services.AddScoped<ITsiService, RealTsiService>();
@@ -93,6 +93,11 @@ namespace Amphora.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmphoraApi", Version = "v1" });
             });
 
+        }
+
+        private void SetupMarket(IServiceCollection services)
+        {
+            services.AddScoped<IMarketService, MarketService>();
         }
 
         private void SetupToDoServices(IServiceCollection services)
