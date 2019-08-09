@@ -7,15 +7,43 @@
 
 <!-- <link rel="stylesheet" type="text/css" href="https://unpkg.com/tsiclient@1.2.24/tsiclient.css"></link> -->
 
-<div id="main" class="text-center">
-     <span>
-        <h1 class="display-4">@Model.Tempora.Title</h1>
-        <a asp-action="Index"><button class="btn btn-secondary">Back</button></a>
-    </span>
-     $@Model.Tempora.Price
-    <p> @Model.Tempora.Description </p>
-    
-    <div id="chart1" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+<div id="main" class="container">
+    <div class="row">
+        <div class="col-3">
+            <h1 class="display-4">@Model.Tempora.Title</h1>
+        </div>
+        <div class="col">
+            <span>
+                <a asp-page="/Temporae/Index"><button class="btn btn-secondary">Back</button></a>
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Admin Pane</h5>
+                </div>
+                <div class="card-body">
+                    <small> @Model.Tempora.Id </small>                                                      
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Details</h5>
+                </div>
+                <div class="card-body">
+                    @Model.Tempora.Description   
+                    $@Model.Tempora.Price                                                  
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart1" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+    </div>
 </div>
 
 

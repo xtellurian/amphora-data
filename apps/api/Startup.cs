@@ -107,8 +107,8 @@ namespace Amphora.Api
 
         private void SetupUserIdentities(IServiceCollection services)
         {
-            services.AddSingleton<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
-            services.AddSingleton<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
+            services.AddScoped<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
+            services.AddScoped<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
             if (HostingEnvironment.IsProduction())
             {
                 Console.WriteLine("Disabling Dev SignIn for production");
@@ -162,7 +162,7 @@ namespace Amphora.Api
 
         private void UsePersistentStores(IServiceCollection services)
         {
-            // org entity stores
+            // org entity store
             services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
             services.AddScoped<IOrgEntityStore<Amphora.Common.Models.Tempora>, AzTableOrgEntityStore<Amphora.Common.Models.Tempora, TemporaTableEntity>>();
             // data stores
@@ -191,7 +191,7 @@ namespace Amphora.Api
             // orgs
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
             // this isnt actually in memory :()
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
+            // services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
