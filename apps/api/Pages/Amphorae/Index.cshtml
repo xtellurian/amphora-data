@@ -4,27 +4,40 @@
     ViewData["Title"] = "Amphorae";
 }
 
-<div id="main" class="text-center">
-    <div class="main-header">
-        <span>
-            <h1 class="display-4">Amphoræ</h1>
-            <a asp-page="/amphorae/create"><button class="btn btn-primary">Create</button></a>
-        </span>
+<div id="main" class="container">
+    <div class="row main-header">
+        <div class="col">
+            <span>
+                <h1 class="display-4">Amphoræ</h1>
+                <a asp-page="/amphorae/create"><button class="btn btn-primary">Create</button></a>
+            </span>
+        </div>
     </div>
-    
-    <div>
-        <ul class="list-group">
-        @foreach (var amphora in Model.Amphorae)
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                $@amphora.Price
-                <b> @amphora.Title </b>
-                @amphora.Description
-                <span class="badge badge-primary badge-pill">14</span>
-                <a asp-page="/Amphorae/Detail" asp-route-id="@amphora.Id"><button class="btn btn-secondary">Detail</button></a>
-            </li>
-        }
-        </ul>
+    <div class="row">
+        <div class="col-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Side Pane</h5>
+                </div>
+                <div class="card-body">
+                    Put something here                                                 
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <ul class="list-group">
+            @foreach (var amphora in Model.Amphorae)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    $@amphora.Price
+                    <b> @amphora.Title </b>
+                    @amphora.Description
+                    <span class="badge badge-primary badge-pill">14</span>
+                    <a asp-page="/Amphorae/Detail" asp-route-id="@amphora.Id"><button class="btn btn-secondary">Detail</button></a>
+                </li>
+            }
+            </ul>
+        </div>
     </div>
 </div>
 
