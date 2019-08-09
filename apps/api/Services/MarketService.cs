@@ -32,23 +32,16 @@ namespace Amphora.Api.Services
                 marketEntities.AddRange(await temporaStore.ListAsync());
             }
             if (string.IsNullOrEmpty(term)) return marketEntities;
-            var result = marketEntities
+            // string matching
+            var results = marketEntities
                 .Where( i =>
                     (i.Title?.ToLower()?.Contains(term?.ToLower()) ?? false)
                      ||
                     (i.Description?.ToLower()?.Contains(term?.ToLower()) ?? false)
                     );
-            return result;
-        }
-
-        private IEnumerable<MarketEntity> FilterByTitle(IEnumerable<MarketEntity> input, string term)
-        {
-            return input.Where(i => i.Title?.ToLower()?.Contains(term?.ToLower()) ?? false);
-        }
-
-        private IEnumerable<MarketEntity> FilterByDescription(IEnumerable<MarketEntity> input, string term)
-        {
-            return input.Where(i => i.Description?.ToLower()?.Contains(term?.ToLower()) ?? false);
+            // price filter
+            results = results.Where(i => searchParams.PriceFilter(i.Price));
+            return results;
         }
     }
 }
