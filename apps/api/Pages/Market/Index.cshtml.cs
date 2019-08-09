@@ -17,10 +17,12 @@ namespace Amphora.Api.Pages.Market
         }
 
         public string Term { get; set; }
+        public bool ShowAmphorae { get; set; }
+        public bool ShowTemporae { get; set; }
 
         public IEnumerable<MarketEntity> Entities { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string term)
+        public async Task<IActionResult> OnGetAsync(string term, bool amphorae = true, bool temporae = true)
         {
             this.Term = term;
             this.Entities = await marketService.FindAsync(term);
