@@ -8,6 +8,7 @@ a.navbar-brand {
 }
 
 .navbar { background-color: rgba(0, 0, 0, 0.91) !important; }
+.navbar .dropdown-menu {background-color: rgba(0, 0, 0, 0.91); }
 .navbar #title-amphora { color: #FFFFFF ;}
 .navbar #title-data { color: #B31818 ;}
 .navbar .navbar-brand img {
@@ -22,6 +23,10 @@ a.navbar-brand {
 
 .navbar .avatar a {
   height: 100%;
+}
+
+.navbar .avatar {
+  margin-left: 10px;
 }
 
 /* Sticky footer styles
