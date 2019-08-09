@@ -10,19 +10,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
+using Amphora.Api.Contracts;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<LoginModel> _logger;
+        private readonly ISignInManager<ApplicationUser> signInManager;
+        private readonly ILogger<LoginModel> logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(ISignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
         {
-            _signInManager = signInManager;
-            _logger = logger;
+            this.signInManager = signInManager;
+            this.logger = logger;
         }
 
         [BindProperty]
@@ -58,12 +59,24 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
             returnUrl = returnUrl ?? Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await TrySignOutAsync();
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
+        }
+
+        private async Task TrySignOutAsync()
+        {
+            try
+            {
+                // Clear the existing external cookie to ensure a clean login process
+                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.LogWarning("Invalid signout", ex);
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -74,10 +87,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -86,7 +99,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
+                    logger.LogWarning("User account locked out.");
                     return RedirectToPage("./Lockout");
                 }
                 else

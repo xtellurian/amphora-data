@@ -55,12 +55,9 @@ namespace Amphora.Api
                 UseInMemoryStores(services);
             }
             // wrap the user services
-            services.AddSingleton<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
-            services.AddSingleton<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
-            if (!string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
-            {
-                SetupUserIdentities(services);
-            }
+
+
+            SetupUserIdentities(services);
 
             SetupToDoServices(services);
 
@@ -87,7 +84,7 @@ namespace Amphora.Api
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
             }
-                
+
 
             ConfigureOptions(services);
 
@@ -105,31 +102,42 @@ namespace Amphora.Api
 
         private void SetupUserIdentities(IServiceCollection services)
         {
-            System.Console.WriteLine("Setting Up User Identities");
-            services.Configure<CookiePolicyOptions>(options =>
+            services.AddSingleton<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
+            services.AddSingleton<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
+            if (HostingEnvironment.IsProduction())
             {
+                Console.WriteLine("Disabling Dev SignIn for production");
+                Models.Development.DevSignInResult.Disabled = true;
+            }
+            if (!string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
+            {
+
+                System.Console.WriteLine("Setting Up User Identities");
+                services.Configure<CookiePolicyOptions>(options =>
+                {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-            services.AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>((options) =>
-            {
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddAzureTableStoresV2<ApplicationDbContext>(new Func<IdentityConfiguration>(() =>
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                });
+                services.AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>((options) =>
                 {
-                    IdentityConfiguration idconfig = new IdentityConfiguration();
-                    idconfig.TablePrefix = Configuration.GetSection("IdentityConfiguration:TablePrefix").Value;
-                    idconfig.StorageConnectionString = Configuration.GetSection("StorageConnectionString").Value;
-                    idconfig.LocationMode = Configuration.GetSection("IdentityConfiguration:LocationMode").Value;
-                    idconfig.IndexTableName = Configuration.GetSection("IdentityConfiguration:IndexTableName").Value; // default: AspNetIndex
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddAzureTableStoresV2<ApplicationDbContext>(new Func<IdentityConfiguration>(() =>
+                    {
+                        IdentityConfiguration idconfig = new IdentityConfiguration();
+                        idconfig.TablePrefix = Configuration.GetSection("IdentityConfiguration:TablePrefix").Value;
+                        idconfig.StorageConnectionString = Configuration.GetSection("StorageConnectionString").Value;
+                        idconfig.LocationMode = Configuration.GetSection("IdentityConfiguration:LocationMode").Value;
+                        idconfig.IndexTableName = Configuration.GetSection("IdentityConfiguration:IndexTableName").Value; // default: AspNetIndex
                     idconfig.RoleTableName = Configuration.GetSection("IdentityConfiguration:RoleTableName").Value;   // default: AspNetRoles
                     idconfig.UserTableName = Configuration.GetSection("IdentityConfiguration:UserTableName").Value;   // default: AspNetUsers
                     return idconfig;
-                }))
-                .AddDefaultTokenProviders()
-                .AddDefaultUI(UIFramework.Bootstrap4)
-                .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
+                    }))
+                    .AddDefaultTokenProviders()
+                    .AddDefaultUI(UIFramework.Bootstrap4)
+                    .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
+            }
         }
 
         private void ConfigureOptions(IServiceCollection services)
