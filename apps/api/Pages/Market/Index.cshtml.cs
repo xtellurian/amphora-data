@@ -16,16 +16,35 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
         }
 
+        [BindProperty(SupportsGet = true)]
         public string Term { get; set; }
-        public bool ShowAmphorae { get; set; }
+
+        [BindProperty]
+        public bool ShowAmphorae{ get; set; }
+        [BindProperty]
         public bool ShowTemporae { get; set; }
 
         public IEnumerable<MarketEntity> Entities { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string term, bool amphorae = true, bool temporae = true)
+        public async Task<IActionResult> OnGetAsync()
         {
-            this.Term = term;
-            this.Entities = await marketService.FindAsync(term);
+            this.Entities = await marketService.FindAsync(Term,
+                new Models.SearchParams
+                {
+                    IncludeAmphorae = true,
+                    IncludeTemporae = true
+                });
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            this.Entities = await marketService.FindAsync(Term,
+                new Models.SearchParams
+                {
+                    IncludeAmphorae = this.ShowAmphorae,
+                    IncludeTemporae = this.ShowTemporae
+                });
             return Page();
         }
     }

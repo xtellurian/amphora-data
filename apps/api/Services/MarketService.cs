@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models;
 using Amphora.Common.Models;
 namespace Amphora.Api.Services
 {
@@ -19,11 +20,17 @@ namespace Amphora.Api.Services
             this.temporaStore = temporaStore;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.MarketEntity>> FindAsync(string term)
+        public async Task<IEnumerable<Amphora.Common.Models.MarketEntity>> FindAsync(string term, SearchParams searchParams)
         {
             var marketEntities = new List<MarketEntity>();
-            marketEntities.AddRange(await amphoraStore.ListAsync());
-            marketEntities.AddRange(await temporaStore.ListAsync());
+            if(searchParams?.IncludeAmphorae ?? true )
+            {
+                marketEntities.AddRange(await amphoraStore.ListAsync());
+            }
+            if(searchParams?.IncludeTemporae ?? true) 
+            {
+                marketEntities.AddRange(await temporaStore.ListAsync());
+            }
             if (string.IsNullOrEmpty(term)) return marketEntities;
             var result = marketEntities
                 .Where( i =>

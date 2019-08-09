@@ -7,12 +7,12 @@
 <div class="container">
     <div class="row">
         <div class="col text-center">
-            <h1 class="display-4">Data Market</h1>
+            <h2 class="display-4">Data Market</h2>
         </div>
     </div>
     <div class="row">
         <div class="col text-center">
-            <form asp-route-term="@Model.Term" method="get">
+            <form id="searchform" method="post" >
                 <div class="input-group mb-4 border rounded-pill p-1">
                     <input type="search" placeholder="What're you searching for?" asp-for="Term" aria-describedby="button-addon3" class="form-control bg-none border-0">
                     <div class="input-group-append border-0">
@@ -29,14 +29,14 @@
                     <p class="card-title">Filters</p>
                 </div>
                 <div class="card-body">
-                        <div class="form-group"> 
-                            <input id="show-amphorae" asp-for="ShowTemporae" type="checkbox">
-                            <label for="show-amphorae">Amphorae</label>
-                        </div>
-                        <div class="form-group"> 
-                            <input id="show-temporae" asp-for="ShowAmphorae" type="checkbox">
-                            <label for="show-temporae">Temporae</label>
-                        </div>
+                    <div class="form-group"> 
+                        <input form="searchform" id="show-amphorae" asp-for="ShowAmphorae" value="true">
+                        <label for="show-amphorae">Amphorae</label>
+                    </div>
+                    <div class="form-group"> 
+                        <input form="searchform" id="show-temporae" asp-for="ShowTemporae" value="true">
+                        <label for="show-temporae">Temporae</label>
+                    </div>
                 </div>
             </div>
         </div>

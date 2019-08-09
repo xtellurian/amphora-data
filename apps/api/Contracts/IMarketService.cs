@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.Models;
 using Amphora.Common.Models;
 
 namespace Amphora.Api.Contracts
 {
     public interface IMarketService
     {
-        Task<IEnumerable<MarketEntity>> FindAsync(string term);
+        Task<IEnumerable<MarketEntity>> FindAsync(string term, SearchParams searchParams);
     }
 }
