@@ -66,17 +66,17 @@ namespace api.Store
         public virtual async Task<T> CreateAsync(T model)
         {
             await InitTableAsync();
-            if(string.IsNullOrEmpty(model.Id)) model.Id = System.Guid.NewGuid().ToString();
+            model.Id = System.Guid.NewGuid().ToString();
             var entity = mapper.Map<TTableEntity>(model);
 
             // try the insertion
             try
             {
                 // Create the InsertOrReplace table operation
-                var insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+                var insertOrMergeOperation = TableOperation.Insert(entity);
 
                 // Execute the operation.
-                var result = table.Execute(insertOrMergeOperation);
+                var result = await table.ExecuteAsync(insertOrMergeOperation);
                 var inserted = result.Result as TTableEntity;
 
                 // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
@@ -117,9 +117,31 @@ namespace api.Store
             return mapper.Map<T>(queryOutput.Results.FirstOrDefault());
         }
 
-        public virtual Task<T> UpdateAsync(T entity)
+        public virtual async Task<T> UpdateAsync(T model)
         {
-            throw new System.NotImplementedException();
+            var entity = mapper.Map<TTableEntity>(model);
+            try
+            {
+                // Create the InsertOrReplace table operation
+                var insertOrMergeOperation = TableOperation.Merge(entity);
+
+                // Execute the operation.
+                var result = await table.ExecuteAsync(insertOrMergeOperation);
+                var inserted = result.Result as TTableEntity;
+
+                // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
+                if (result.RequestCharge.HasValue)
+                {
+                    System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + result.RequestCharge);
+                }
+
+                return mapper.Map<T>(inserted);
+            }
+            catch (StorageException e)
+            {
+                System.Console.WriteLine(e.Message);
+                throw;
+            }
         }
 
         public virtual Task DeleteAsync(T entity)

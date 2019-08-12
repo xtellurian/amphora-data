@@ -45,5 +45,15 @@ namespace Amphora.Tests.Unit.Automapper
             var amphora = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
             Assert.NotNull(amphora);
         }
+        [Fact]
+        public void MapTableStoreEntityToTempora()
+        {
+            var tableEntity = new TemporaTableEntity()
+            {
+                // set random things
+            };
+            var amphora = mapper.Map<Amphora.Common.Models.Tempora>(tableEntity);
+            Assert.NotNull(amphora);
+        }
     }
 }
