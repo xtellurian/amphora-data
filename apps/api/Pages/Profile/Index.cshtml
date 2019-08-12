@@ -1,9 +1,32 @@
 ﻿@page
+@model Amphora.Api.Pages.Profile.IndexModel
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Your Profile</h1>
-    <p>This shows who you are</p>
+<div id="main" class="container">
+
+    <div class="row">
+        <div class="col text-center">
+            <h1 class="display-4">Your Profile</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Side Pane</h5>
+                </div>
+                <div class="card-body">
+                    Put something here                                                 
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <p>Username: @Model.AppUser.UserName</p>
+            <p>Organisation Id: @Model.AppUser.OrgId</p>
+        </div>
+    </div>
 </div>
+

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models;
 using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,6 +10,11 @@ namespace Amphora.Api.Services
     public class UserManagerWrapper<T> : IUserManager<T> where T : IdentityUserV2, new()
     {
         private readonly UserManager<T> userManager;
+        private readonly ApplicationUser dev = new ApplicationUser
+        {
+            UserName = "Developer",
+            OrgId = "Developer"
+        };
 
         public UserManagerWrapper()
         {
@@ -38,7 +44,7 @@ namespace Amphora.Api.Services
 
         public async Task<T> GetUserAsync(ClaimsPrincipal principal)
         {
-            if (userManager == null) return new T();
+            if (userManager == null) return dev as T;
             return await userManager.GetUserAsync(principal);
         }
     }

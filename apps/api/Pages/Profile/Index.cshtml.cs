@@ -1,0 +1,28 @@
+using System.Threading.Tasks;
+using Amphora.Api.Contracts;
+using Amphora.Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace Amphora.Api.Pages.Profile
+{
+    public class IndexModel : PageModel
+    {
+        private readonly IUserManager<ApplicationUser> userManager;
+
+        public IndexModel(IUserManager<ApplicationUser> userManager)
+        {
+            this.userManager = userManager;
+        }
+
+        [BindProperty]
+        public ApplicationUser AppUser { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            this.AppUser = await userManager.GetUserAsync(User);
+            return Page();
+        }
+
+    }
+}
