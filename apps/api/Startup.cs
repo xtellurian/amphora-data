@@ -21,6 +21,7 @@ using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Amphora.Common.Models.Domains;
 
 namespace Amphora.Api
 {
@@ -61,7 +62,6 @@ namespace Amphora.Api
             SetupMarket(services);
             SetupToDoServices(services);
 
-            services.AddTransient<ITemporaPayloadValidationService, TemporaPayloadValidationService>();
             services.AddScoped<ITsiService, RealTsiService>();
             services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
 
@@ -159,10 +159,6 @@ namespace Amphora.Api
             {
                 p.TableName = "temporae";
             });
-            services.Configure<EntityTableStoreOptions<SchemaTableEntity>>(p =>
-            {
-                p.TableName = "schemas";
-            });
         }
 
         private void UsePersistentStores(IServiceCollection services)
@@ -171,13 +167,9 @@ namespace Amphora.Api
             services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
             services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Tempora>, AzTableOrgEntityStore<Amphora.Common.Models.Tempora, TemporaTableEntity>>();
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, Datum>, TemporaEventHubDataStore>();
             // TODO (these are in memory)
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
-
-            // schemas 
-            // using in memory for now (not implemented properly)
-            services.AddSingleton<IEntityStore<Schema>, AzTableEntityStore<Schema, SchemaTableEntity>>();
 
         }
         private static void UseInMemoryStores(IServiceCollection services)
@@ -185,13 +177,10 @@ namespace Amphora.Api
             services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, InMemoryOrgEntityStore<Amphora.Common.Models.Amphora>>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, InMemoryDataStore<Amphora.Common.Models.Tempora, JObject>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, Datum>, InMemoryDataStore<Amphora.Common.Models.Tempora, Datum>>();
 
             //temporae
             services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Tempora>, InMemoryOrgEntityStore<Amphora.Common.Models.Tempora>>();
-
-            // schemas
-            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
 
             // orgs
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();

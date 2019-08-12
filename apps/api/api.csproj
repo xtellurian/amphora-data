@@ -25,7 +25,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\schemas\schemas.csproj" />
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>
 

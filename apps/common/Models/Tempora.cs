@@ -8,7 +8,7 @@ namespace Amphora.Common.Models
         {
             this.OrgId = "default";
         }
-        public string SchemaId { get; set; }
+        public string DomainId { get; set; }
 
         public override DataEntityTypes GetEntityType()
         {

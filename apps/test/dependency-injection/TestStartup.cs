@@ -37,8 +37,6 @@ namespace Amphora.Tests.Unit
 
             // tempora validation tests
             services.AddSingleton<IOrgScopedEntityStore<Tempora>, InMemoryOrgEntityStore<Tempora>>();
-            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
-            services.AddSingleton<ITemporaPayloadValidationService, TemporaPayloadValidationService>();
         }
     }
 }

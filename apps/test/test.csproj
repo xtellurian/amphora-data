@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\schemas\schemas.csproj" />
     <ProjectReference Include="..\api\api.csproj" />
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>

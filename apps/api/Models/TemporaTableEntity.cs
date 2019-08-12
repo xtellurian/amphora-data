@@ -10,7 +10,7 @@ namespace Amphora.Api.Models
         {
         }
         public string Id { get; set; }
-        public string SchemaId { get; set; }
+        public string DomainId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

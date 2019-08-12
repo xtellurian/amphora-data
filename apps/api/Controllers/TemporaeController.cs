@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Domains;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -12,20 +13,17 @@ namespace Amphora.Api.Controllers
     public class TemporaeController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
-        private readonly ITemporaPayloadValidationService payloadValidation;
-        private readonly IDataStore<Tempora, JObject> dataStore;
+        private readonly IDataStore<Tempora, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public TemporaeController(
             IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
-            ITemporaPayloadValidationService payloadValidation,
-            IDataStore<Amphora.Common.Models.Tempora, JObject> dataStore,
+            IDataStore<Amphora.Common.Models.Tempora, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper)
         {
             this.temporaEntityStore = temporaEntityStore;
-            this.payloadValidation = payloadValidation;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
@@ -63,12 +61,13 @@ namespace Amphora.Api.Controllers
                 return NotFound("Invalid Tempora Id");
             }
 
-            var isValid = await payloadValidation.IsValidAsync(entity, jObj);
-            if (isValid)
+            var domain = Domain.GetDomain(entity.DomainId);
+            if (domain.IsValid(jObj))
             {
-                var jObjResult = dataStore.SetData(entity, jObj);
+                var jObjResult = dataStore.SetData(entity, domain.ToDatum(jObj));
                 return Ok(jObjResult);
             }
+
             else
             {
                 return BadRequest("Invalid Schema");

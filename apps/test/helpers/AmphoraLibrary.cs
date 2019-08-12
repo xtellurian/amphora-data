@@ -1,5 +1,6 @@
 using System;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Domains;
 
 namespace Amphora.Tests.Helpers
 {
@@ -22,7 +23,8 @@ namespace Amphora.Tests.Helpers
             {
                 Description = "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
-                Title = "Valid Amphora - title"
+                Title = "Valid Amphora - title",
+                DomainId = "dev"
             };
         }
 
@@ -32,7 +34,8 @@ namespace Amphora.Tests.Helpers
             {
                 Description = null,
                 Price = -1 * rnd.Next(0, 99),
-                Title = null
+                Title = null,
+                DomainId = null
             };
         }
     }

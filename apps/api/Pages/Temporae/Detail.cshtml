@@ -45,11 +45,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                             @foreach(var p in @Model.Schema?.JSchema?.Properties.Keys ?? new List<string>() )
+                             @foreach(var p in @Model.Domain?.GetDomainSchema()?.Properties.Keys ?? new List<string>() )
                             {
                                 <tr>
                                 <th scope="row">@p</th>
-                                <td>@Model.Schema.JSchema.Properties[p].Type</td>
+                                <td>@Model.Domain.GetDomainSchema().Properties[p].Type</td>
                             </tr>
                             }  
                         </tbody>
