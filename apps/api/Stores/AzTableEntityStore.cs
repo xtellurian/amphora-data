@@ -15,9 +15,9 @@ namespace api.Store
     {
         private readonly CloudStorageAccount storageAccount;
         private readonly CloudTableClient tableClient;
-        private protected string tableName;
-        private protected IMapper mapper;
-        private protected ILogger<AzTableEntityStore<T, TTableEntity>> logger;
+        protected string tableName;
+        protected IMapper mapper;
+        protected ILogger<AzTableEntityStore<T, TTableEntity>> logger;
         protected CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
         public AzTableEntityStore(
