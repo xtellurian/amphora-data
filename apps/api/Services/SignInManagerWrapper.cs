@@ -12,7 +12,7 @@ namespace Amphora.Api.Services
     public class SignInManagerWrapper<T> : ISignInManager<T> where T: IdentityUserV2
     {
         private readonly SignInManager<T> signInManager;
-        private bool isSignedIn = false;
+        private static bool isSignedIn = false;
 
         public SignInManagerWrapper()
         {
