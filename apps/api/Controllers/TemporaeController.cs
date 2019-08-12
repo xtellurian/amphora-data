@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Api.Models;
-using Amphora.Api.ViewModels;
 using Amphora.Common.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;

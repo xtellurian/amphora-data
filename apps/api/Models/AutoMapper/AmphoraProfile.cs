@@ -1,6 +1,5 @@
 using AutoMapper;
 using Amphora.Api.Models;
-using Amphora.Api.ViewModels;
 
 namespace api.Models.AutoMapper
 {
@@ -21,9 +20,6 @@ namespace api.Models.AutoMapper
                 {
                     opt.MapFrom((src) => src.OrgId);
                 })
-                .ReverseMap();
-
-            CreateMap<Amphora.Common.Models.Amphora, AmphoraViewModel>()
                 .ReverseMap();
         }
     }

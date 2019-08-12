@@ -1,6 +1,5 @@
 using AutoMapper;
 using Amphora.Api.Models;
-using Amphora.Api.ViewModels;
 
 namespace api.Models.AutoMapper
 {
@@ -23,8 +22,6 @@ namespace api.Models.AutoMapper
                 })
                 .ReverseMap();
 
-            CreateMap<Amphora.Common.Models.Tempora, TemporaViewModel>()
-                .ReverseMap();
         }
     }
 
