@@ -2,6 +2,7 @@ using Newtonsoft.Json.Schema.Generation;
 using Amphora.Common.Models;
 using Newtonsoft.Json.Serialization;
 using System;
+using Newtonsoft.Json;
 
 namespace Amphora.Schemas.Library
 {
@@ -11,6 +12,7 @@ namespace Amphora.Schemas.Library
         {
             return string.Equals(id, IdValueSchema.LibraryId);
         }
+
         public Schema Load(string id)
         {
             if (IsInLibrary(id))
@@ -34,9 +36,14 @@ namespace Amphora.Schemas.Library
             public const string LibraryId = "IdValue";
             class IdValue
             {
+                [JsonProperty(Required = Required.Default)]
+                public DateTime T { get; set; }
+                [JsonProperty(Required = Required.Always)]
                 public string Id { get; set; }
+                [JsonProperty(Required = Required.Always)]
                 public double Value { get; set; }
             }
+
             public IdValueSchema()
             {
                 var generator = new JSchemaGenerator();

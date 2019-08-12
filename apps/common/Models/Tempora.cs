@@ -2,7 +2,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Models
 {
-    public class Tempora : MarketEntity, IOrgEntity
+    public class Tempora : MarketEntity, IOrgScoped
     {
         public Tempora()
         {

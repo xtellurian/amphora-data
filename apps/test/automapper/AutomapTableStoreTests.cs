@@ -53,14 +53,14 @@ namespace Amphora.Tests.Unit.Automapper
             {
                 // set random things
             };
-            var tableEntity = mapper.Map<AmphoraSchemaTableEntity>(schema);
+            var tableEntity = mapper.Map<SchemaTableEntity>(schema);
             Assert.NotNull(tableEntity);
         }
 
         [Fact]
         public void MapTableStoreEntityToSchema()
         {
-            var tableEntity = new AmphoraSchemaTableEntity()
+            var tableEntity = new SchemaTableEntity()
             {
                 // set random things
             };

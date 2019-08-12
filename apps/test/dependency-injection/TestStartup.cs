@@ -2,6 +2,8 @@ using System.Net.Http;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services;
+using Amphora.Api.Stores;
+using Amphora.Common.Models;
 using Amphora.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -32,7 +34,11 @@ namespace Amphora.Tests.Unit
             mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             services.AddSingleton<IHttpClientFactory>(mockFactory.Object);
 
-            // IOptionsMonitor<TsiOptions> options, IHttpClientFactory clientFactory, ILogger<RealTsiService> logger
+
+            // tempora validation tests
+            services.AddSingleton<IOrgScopedEntityStore<Tempora>, InMemoryOrgEntityStore<Tempora>>();
+            services.AddSingleton<IEntityStore<Schema>, InMemoryEntityStore<Schema>>();
+            services.AddSingleton<ITemporaPayloadValidationService, TemporaPayloadValidationService>();
         }
     }
 }

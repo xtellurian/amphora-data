@@ -14,13 +14,13 @@ namespace Amphora.Api.Pages.Temporae
 {
     public class DetailModel : PageModel
     {
-        private readonly IOrgEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
         private readonly IDataStore<Common.Models.Tempora, JObject> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public DetailModel(
-            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
             IDataStore<Amphora.Common.Models.Tempora, JObject> dataStore,
             ITsiService tsiService,
             IMapper mapper)

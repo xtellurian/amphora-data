@@ -11,47 +11,15 @@ using System.Linq;
 
 namespace api.Store
 {
-    public class AzTableOrgEntityStore<T, TTableEntity> : IOrgEntityStore<T> where T : class, IOrgEntity where TTableEntity : class, ITableEntity, new()
+    public class AzTableOrgEntityStore<T, TTableEntity> : AzTableEntityStore<T,TTableEntity>, 
+        IOrgScopedEntityStore<T> where T : class, IOrgScoped where TTableEntity : class, ITableEntity, new()
     {
-        private readonly CloudStorageAccount storageAccount;
-        private readonly CloudTableClient tableClient;
-        private readonly string tableName;
-        private readonly IMapper mapper;
-        private readonly ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger;
-        private CloudTable table;
-        private bool isInit = false; // start non-initialised. Will run the first time.
         public AzTableOrgEntityStore(
             IOptionsMonitor<TableStoreOptions> options,
             IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
-            ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger)
+            ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger) : base(options, tableOptions, mapper, logger)
         {
-            if (string.IsNullOrEmpty(tableOptions.CurrentValue.TableName))
-            {
-                throw new System.ArgumentException("null or empty", nameof(tableOptions.CurrentValue.TableName));
-            }
-
-            this.storageAccount = CloudStorageAccount.Parse(options.CurrentValue.StorageConnectionString);
-            this.tableClient = this.storageAccount.CreateCloudTableClient();
-            this.tableName = tableOptions.CurrentValue.TableName;
-            this.mapper = mapper;
-            this.logger = logger;
-        }
-
-        private async Task InitTableAsync()
-        {
-            if (isInit && this.table != null) return;
-
-            this.table = tableClient.GetTableReference(tableName);
-            if (await table.CreateIfNotExistsAsync())
-            {
-                logger.LogWarning("Created Table named: {0}", tableName);
-            }
-            else
-            {
-                logger.LogInformation("Table {0} already exists", tableName);
-            }
-            this.isInit = true;
         }
 
         public async Task<IList<T>> ListAsync(string orgId)
@@ -65,69 +33,6 @@ namespace api.Store
 
             return mapper.Map<List<T>>(queryOutput.Results);
 
-        }
-
-        public async Task<IList<T>> ListAsync()
-        {
-            await InitTableAsync();
-            var query = new TableQuery<TTableEntity>(); // empty query - list everything
-            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null);
-
-            return mapper.Map<List<T>>(queryOutput.Results);
-        }
-
-        public async Task<T> CreateAsync(T model)
-        {
-            await InitTableAsync();
-            if(string.IsNullOrEmpty(model.Id)) model.Id = System.Guid.NewGuid().ToString();
-            var entity = mapper.Map<TTableEntity>(model);
-
-            // try the insertion
-            try
-            {
-                // Create the InsertOrReplace table operation
-                var insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
-
-                // Execute the operation.
-                var result = table.Execute(insertOrMergeOperation);
-                var inserted = result.Result as TTableEntity;
-
-                // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
-                if (result.RequestCharge.HasValue)
-                {
-                    System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + result.RequestCharge);
-                }
-
-                return mapper.Map<T>(inserted);
-            }
-            catch (StorageException e)
-            {
-                System.Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
-         public async Task<T> ReadAsync(string id)
-        {
-            await InitTableAsync();
-
-            var query = new TableQuery<TTableEntity>()
-                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
-
-            var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null); // TODO
-
-            // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
-            if (queryOutput.RequestCharge.HasValue)
-            {
-                System.Console.WriteLine("Request Charge of InsertOrMerge Operation: " + queryOutput.RequestCharge);
-            }
-
-            if (queryOutput.Results.Count > 1)
-            {
-                logger.LogWarning($"{id} exists twice");
-            }
-
-            return mapper.Map<T>(queryOutput.Results.FirstOrDefault());
         }
 
         public async Task<T> ReadAsync(string id, string orgId = "default")
@@ -157,16 +62,6 @@ namespace api.Store
                 throw;
             }
 
-        }
-
-        public Task<T> UpdateAsync(T entity)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task DeleteAsync(T entity)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

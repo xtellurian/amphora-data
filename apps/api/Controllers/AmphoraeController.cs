@@ -16,12 +16,12 @@ namespace Amphora.Api.Controllers
 {
     public class AmphoraeController : Controller
     {
-        private readonly IOrgEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public AmphoraeController(
-            IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IMapper mapper)
         {

@@ -10,10 +10,10 @@ namespace Amphora.Api.Pages.Temporae
 {
     public class IndexModel : PageModel
     {
-        private readonly IOrgEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
 
         public IndexModel(
-            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore)
+            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore)
         {
             this.temporaEntityStore = temporaEntityStore;
             this.Temporae = new List<Amphora.Common.Models.Tempora>();

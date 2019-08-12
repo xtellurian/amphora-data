@@ -14,12 +14,12 @@ namespace Amphora.Api.Pages.Amphorae
 {
     public class DetailModel : PageModel
     {
-        private readonly IOrgEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public DetailModel(
-            IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IMapper mapper)
         {

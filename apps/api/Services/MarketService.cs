@@ -9,12 +9,12 @@ namespace Amphora.Api.Services
 {
     public class MarketService : IMarketService
     {
-        private readonly IOrgEntityStore<Common.Models.Amphora> amphoraStore;
-        private readonly IOrgEntityStore<Tempora> temporaStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraStore;
+        private readonly IOrgScopedEntityStore<Tempora> temporaStore;
 
         public MarketService(
-            IOrgEntityStore<Amphora.Common.Models.Amphora> amphoraStore,
-            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaStore )
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaStore )
         {
             this.amphoraStore = amphoraStore;
             this.temporaStore = temporaStore;

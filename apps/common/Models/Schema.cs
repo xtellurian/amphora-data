@@ -1,3 +1,4 @@
+using System;
 using Amphora.Common.Contracts;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -7,6 +8,7 @@ namespace Amphora.Common.Models
     public class Schema : Entity, IEntity
     {
         protected JSchema _jSchema;
+        private JSchema timeProperty => JSchema.Parse("{'type': 'date-time'}");
         public Schema() { }
         public Schema(JSchema jSchema)
         {

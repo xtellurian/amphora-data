@@ -9,11 +9,11 @@ namespace Amphora.Api.Pages.Temporae
     [ValidateAntiForgeryToken]
     public class CreateModel : PageModel
     {
-        private readonly IOrgEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
         private readonly IMapper mapper;
 
         public CreateModel(
-            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
             IMapper mapper)
         {
             this.temporaEntityStore = temporaEntityStore;

@@ -7,7 +7,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryOrgEntityStore<T> : InMemoryEntityStore<T>, IOrgEntityStore<T> where T : class, IOrgEntity
+    public class InMemoryOrgEntityStore<T> : InMemoryEntityStore<T>, IOrgScopedEntityStore<T> where T : class, IOrgScoped
     {
         public Task<T> ReadAsync(string id, string orgId)
         {

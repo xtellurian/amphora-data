@@ -16,19 +16,21 @@ namespace Amphora.Api.Controllers
 {
     public class TemporaeController : Controller
     {
-        private readonly IOrgEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly ITemporaPayloadValidationService payloadValidation;
         private readonly IDataStore<Tempora, JObject> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public TemporaeController(
-            IOrgEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
-            IEntityStore<Schema> schemaStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            ITemporaPayloadValidationService payloadValidation,
             IDataStore<Amphora.Common.Models.Tempora, JObject> dataStore,
             ITsiService tsiService,
             IMapper mapper)
         {
             this.temporaEntityStore = temporaEntityStore;
+            this.payloadValidation = payloadValidation;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
@@ -66,17 +68,16 @@ namespace Amphora.Api.Controllers
                 return NotFound("Invalid Tempora Id");
             }
 
-            // var schema = schemaStore.Get(entity.SchemaId);
-            // if(schema == null)
-            // {
-            //     return BadRequest("Schema is null");
-            // }
-            // if (jObj.IsValid(schema.JSchema)) 
-            // {
-            //     return BadRequest("Invalid Payload");
-            // }
-            var jObjResult = dataStore.SetData(entity, jObj);
-            return Ok(jObjResult);
+            var isValid = await payloadValidation.IsValidAsync(entity, jObj);
+            if (isValid)
+            {
+                var jObjResult = dataStore.SetData(entity, jObj);
+                return Ok(jObjResult);
+            }
+            else
+            {
+                return BadRequest("Invalid Schema");
+            }
         }
 
         [HttpGet("api/temporae/{id}/download")]

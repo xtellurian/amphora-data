@@ -5,14 +5,15 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryDataStore<T, TData> : IDataStore<T,TData> where T: class, IOrgEntity
+    public class InMemoryDataStore<T, TData> : IDataStore<T,TData> where T: class, IOrgScoped
     {
-        private Dictionary<T, TData> store = new Dictionary<T, TData>();
+        private Dictionary<string, TData> store = new Dictionary<string, TData>();
         public TData GetData(T entity)
         {
-            if(store.ContainsKey(entity))
+            if(entity?.Id == null) throw new ArgumentException();
+            if(store.ContainsKey(entity.Id))
             {
-                return store[entity];
+                return store[entity.Id];
             }
             else
             {
@@ -26,7 +27,7 @@ namespace Amphora.Api.Stores
             {
                 entity.Id = Guid.NewGuid().ToString();
             }
-            store[entity] = data;
+            store[entity.Id] = data;
             return data;
         }
     }
