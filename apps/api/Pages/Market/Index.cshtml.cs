@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.Market
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IMarketService marketService;

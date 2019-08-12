@@ -6,12 +6,14 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.Amphorae
 {
+    [Authorize]
     public class DetailModel : PageModel
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;

@@ -1,17 +1,14 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Pages.Temporae
 {
+    [Authorize]
     public class DetailModel : PageModel
     {
         private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;

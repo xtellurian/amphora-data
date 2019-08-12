@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Pages.Temporae
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;

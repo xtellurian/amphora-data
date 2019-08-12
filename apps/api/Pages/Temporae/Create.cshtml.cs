@@ -1,12 +1,14 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.Temporae
 {
     [ValidateAntiForgeryToken]
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
