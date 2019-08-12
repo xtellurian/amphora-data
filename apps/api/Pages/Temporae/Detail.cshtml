@@ -35,8 +35,25 @@
                     <h5 class="card-title">Details</h5>
                 </div>
                 <div class="card-body">
-                    @Model.Tempora.Description   
-                    $@Model.Tempora.Price                                                  
+                    @Model.Tempora.Description
+                    $@Model.Tempora.Price           
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Key</th>
+                                <th scope="col">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             @foreach(var p in @Model.Schema?.JSchema?.Properties.Keys ?? new List<string>() )
+                            {
+                                <tr>
+                                <th scope="row">@p</th>
+                                <td>@Model.Schema.JSchema.Properties[p].Type</td>
+                            </tr>
+                            }  
+                        </tbody>
+                    </table>                                     
                 </div>
             </div>
         </div>

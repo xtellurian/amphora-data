@@ -3,11 +3,20 @@ using Amphora.Common.Models;
 using Newtonsoft.Json.Serialization;
 using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Amphora.Schemas.Library
 {
     public class SchemaLibrary
     {
+
+        public List<Schema> List()
+        {
+            return new List<Schema>
+            {
+                Load(IdValueSchema.LibraryId)
+            };
+        }
         public bool IsInLibrary(string id)
         {
             return string.Equals(id, IdValueSchema.LibraryId);
