@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
@@ -9,7 +11,8 @@ namespace Amphora.Common.Models.Domains
 {
     public abstract class Domain
     {
-        public abstract string Id { get; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public abstract DomainId Id { get; }
         public abstract string Name { get; }
         public abstract bool IsValid(JObject o);
         public abstract Datum ToDatum(JObject o);
@@ -23,7 +26,7 @@ namespace Amphora.Common.Models.Domains
             };
         }
 
-        public static Domain GetDomain(string id)
+        public static Domain GetDomain(DomainId id)
         {
             var allDomains = GetAllDomains();
             return allDomains.FirstOrDefault(d => string.Equals(id, d.Id ));

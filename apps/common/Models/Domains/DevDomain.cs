@@ -12,7 +12,7 @@ namespace Amphora.Common.Models.Domains
 
         public override string Name => "Development Domain";
 
-        public override string Id => "dev";
+        public override DomainId Id => DomainId.Dev;
 
         public override JSchema GetDomainSchema()
         {

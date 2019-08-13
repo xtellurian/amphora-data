@@ -1,4 +1,7 @@
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Domains;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models
 {
@@ -8,7 +11,8 @@ namespace Amphora.Common.Models
         {
             this.OrgId = "default";
         }
-        public string DomainId { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public DomainId DomainId { get; set; }
 
         public override DataEntityTypes GetEntityType()
         {

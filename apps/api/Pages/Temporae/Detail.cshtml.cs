@@ -43,15 +43,9 @@ namespace Amphora.Api.Pages.Temporae
                 return RedirectToPage("/amphorae/index");
             }
 
-            LoadDomain(Tempora.DomainId);
+            Domain = Common.Models.Domains.Domain.GetDomain(Tempora.DomainId);
 
             return Page();
         }
-
-        private void LoadDomain(string domainId)
-        {
-            Domain = Common.Models.Domains.Domain.GetDomain(domainId);
-        }
-
     }
 }

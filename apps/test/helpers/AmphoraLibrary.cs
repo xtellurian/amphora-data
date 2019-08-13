@@ -24,7 +24,7 @@ namespace Amphora.Tests.Helpers
                 Description = "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
                 Title = "Valid Amphora - title",
-                DomainId = "dev"
+                DomainId = DomainId.Dev
             };
         }
 
@@ -35,7 +35,7 @@ namespace Amphora.Tests.Helpers
                 Description = null,
                 Price = -1 * rnd.Next(0, 99),
                 Title = null,
-                DomainId = null
+                DomainId = DomainId.Dev
             };
         }
     }

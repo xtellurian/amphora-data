@@ -37,23 +37,7 @@
                 <div class="card-body">
                     @Model.Tempora.Description
                     $@Model.Tempora.Price           
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Key</th>
-                                <th scope="col">Type</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                             @foreach(var p in @Model.Domain?.GetDomainSchema()?.Properties.Keys ?? new List<string>() )
-                            {
-                                <tr>
-                                <th scope="row">@p</th>
-                                <td>@Model.Domain.GetDomainSchema().Properties[p].Type</td>
-                            </tr>
-                            }  
-                        </tbody>
-                    </table>                                     
+                                                      
                 </div>
             </div>
         </div>

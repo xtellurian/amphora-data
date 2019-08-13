@@ -16,7 +16,6 @@ namespace Amphora.Api.Extensions
                 tempora != null &&
                 ! string.IsNullOrEmpty(tempora.Title) &&
                 ! string.IsNullOrEmpty(tempora.Description)  &&
-                ! string.IsNullOrEmpty(tempora.DomainId)  &&
                 tempora.Price >= 0;
         }
     }
