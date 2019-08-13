@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Common.Models.Domains
@@ -14,16 +14,18 @@ namespace Amphora.Common.Models.Domains
 
         public override DomainId Id => DomainId.Dev;
 
-        public override JSchema GetDomainSchema()
-        {
-            var generator = new JSchemaGenerator();
-            generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            return generator.Generate(typeof(DevDatum));
-        }
+        public override SortedDictionary<string, Type> DatumColumns =>
+
+            new SortedDictionary<string, Type>(
+                typeof(DevDatum)
+                .GetProperties()
+                .ToDictionary(x => x.Name, y => y.PropertyType)
+            );
 
         public override bool IsValid(JObject o)
         {
-            return o.IsValid(this.GetDomainSchema());
+            var datum = ToDatum(o);
+            return datum.IsValid();
         }
 
         public override Datum ToDatum(JObject o)
@@ -31,9 +33,9 @@ namespace Amphora.Common.Models.Domains
             return o?.ToObject<DevDatum>();
         }
 
-        public class DevDatum: Datum
+        public class DevDatum : Datum
         {
-            
+
             [JsonProperty(Required = Required.Always)]
             public string Id { get; set; }
             [JsonProperty(Required = Required.Always)]

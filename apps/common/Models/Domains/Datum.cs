@@ -13,6 +13,10 @@ namespace Amphora.Common.Models.Domains
         {
             Tempora = tempora;
         }
+        public virtual bool IsValid()
+        {
+            return this.T != null && this.Tempora != null;
+        }
         [JsonProperty(Required = Required.Default)]        
         public DateTime T { get; set; }
         public string Tempora { get; set; }

@@ -5,7 +5,6 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
 
 namespace Amphora.Common.Models.Domains
 {
@@ -14,9 +13,9 @@ namespace Amphora.Common.Models.Domains
         [JsonConverter(typeof(StringEnumConverter))]
         public abstract DomainId Id { get; }
         public abstract string Name { get; }
+        public abstract SortedDictionary<string, Type> DatumColumns { get; }
         public abstract bool IsValid(JObject o);
         public abstract Datum ToDatum(JObject o);
-        public abstract JSchema GetDomainSchema();
 
         public static List<Domain> GetAllDomains()
         {
@@ -29,7 +28,7 @@ namespace Amphora.Common.Models.Domains
         public static Domain GetDomain(DomainId id)
         {
             var allDomains = GetAllDomains();
-            return allDomains.FirstOrDefault(d => string.Equals(id, d.Id ));
+            return allDomains.FirstOrDefault(d => string.Equals(id, d.Id));
         }
 
     }

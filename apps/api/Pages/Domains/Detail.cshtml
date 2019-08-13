@@ -7,8 +7,8 @@
 
 <div id="main" class="container">
     <div class="row">
-        <div class="col-3">
-            <h2>Domain: @Model.Domain.Name</h2>
+        <div class="col-8">
+            <h1>Domain: @Model.Domain.Name</h1>
         </div>
         <div class="col">
             <span>
@@ -30,7 +30,7 @@
 
         <div class="col-9">
              <div class="card bg-light mb-3">
-                <div class="card-header">Domain Details</div>
+                <div class="card-header">Available Properties</div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
@@ -40,11 +40,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var p in @Model.Domain.GetDomainSchema()?.Properties.Keys ?? new List<string>() )
+                                @foreach(var p in @Model.Domain.DatumColumns )
                                 {
                                     <tr>
-                                    <th scope="row">@p</th>
-                                    <td>@Model.Domain.GetDomainSchema().Properties[p].Type</td>
+                                    <th scope="row">@p.Key</th>
+                                    <td>@p.Value.Name</td>
                                 </tr>
                                 }  
                             </tbody>
