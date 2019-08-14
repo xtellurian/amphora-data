@@ -8,6 +8,7 @@ import {
 import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
 import { AzureConfig } from "../azure-config/azure-config";
+import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("application");
 
@@ -33,6 +34,7 @@ export class Application extends pulumi.ComponentResource
   private _acr: azure.containerservice.Registry;
   private _eventHubCollections: EventHubCollection[] = [];
   private _plan: azure.appservice.Plan;
+  tsi: Tsi;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
   }
@@ -80,6 +82,17 @@ export class Application extends pulumi.ComponentResource
     this.createAppSvc(rg, this._state.kv, image);
     this.createEventHubs(rg);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
+    this.createTsi();
+  }
+  createTsi() {
+    this.tsi = new Tsi("testtsi", {
+      eh_namespace: this.eventHubCollections[0].namespace, // very fragile code
+      eh: this.eventHubCollections[0].hubs[0],
+      appSvc: this.appSvc,
+      state: this._state
+    }, {
+        parent: this
+      });
   }
   createAcr(rg: azure.core.ResourceGroup) {
     const acr = new azure.containerservice.Registry(

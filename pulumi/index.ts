@@ -5,7 +5,7 @@ import { State, StateParams } from "./components/state/state";
 import { Monitoring, MonitoringParams } from "./components/monitoring/monitoring";
 import { AzureConfig } from "./components/azure-config/azure-config";
 
-import { Tsi } from "./components/tsi/tsi";
+import { Tsi } from "./components/application/tsi/tsi";
 
 const azureConfig = new AzureConfig();
 // do not create or reference container anywhere but here!
@@ -13,8 +13,7 @@ const azureConfig = new AzureConfig();
 interface MainResult {
   monitoring: Monitoring;
   state: State;
-  application: Application;
-  tsi: Tsi;
+  application: Application
 }
 
 async function main(): Promise<MainResult> {
@@ -27,18 +26,11 @@ async function main(): Promise<MainResult> {
 
   const application = new Application(new ApplicationParams(), monitoring, state, azureConfig);
 
-  const tsi = new Tsi("testtsi", {
-    eh_namespace: application.eventHubCollections[0].namespace, // very fragile code
-    eh: application.eventHubCollections[0].hubs[0],
-    appSvc: application.appSvc,
-    state: state
-  })
 
   return {
     monitoring,
     state,
-    application,
-    tsi
+    application
   };
 }
 
@@ -63,7 +55,7 @@ export let appSvcSku = result.then(r =>
 );
 
 export let tsiFqdn = result.then(r =>
-  r.tsi ? r.tsi.dataAccessFqdn : null
+  r.application.tsi.dataAccessFqdn
 );
 
 // export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )
