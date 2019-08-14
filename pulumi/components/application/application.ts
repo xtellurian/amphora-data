@@ -11,6 +11,12 @@ import { AzureConfig } from "../azure-config/azure-config";
 import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("application");
+const azTags = {
+  source: "pulumi",
+  component: "application",
+  stack: pulumi.getStack(),
+  project: pulumi.getProject(),
+}
 
 // lives in here for now
 export class ApplicationParams implements IComponentParams {
@@ -18,28 +24,19 @@ export class ApplicationParams implements IComponentParams {
   opts?: pulumi.ComponentResourceOptions | undefined = undefined;
 }
 
-interface EventHubCollection {
-  namespace: azure.eventhub.EventHubNamespace;
-  hubs: azure.eventhub.EventHub[];
-}
 export interface IApplication {
   appSvc: azure.appservice.AppService;
   plan: azure.appservice.Plan;
-  eventHubCollections: EventHubCollection[];
 }
 
 export class Application extends pulumi.ComponentResource
   implements IApplication {
   private _appSvc: azure.appservice.AppService;
   private _acr: azure.containerservice.Registry;
-  private _eventHubCollections: EventHubCollection[] = [];
   private _plan: azure.appservice.Plan;
   tsi: Tsi;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
-  }
-  get eventHubCollections(): EventHubCollection[] {
-    return this._eventHubCollections;
   }
   get plan(): azure.appservice.Plan {
     return this._plan;
@@ -56,22 +53,14 @@ export class Application extends pulumi.ComponentResource
       console.log("WTF");
     }
     this.create();
-    this.resolve();
   }
 
-  resolve() {
-    this.registerOutputs({
-      outputyy: "Done creating Application"
-    });
-  }
   create() {
     const rg = new azure.core.ResourceGroup(
       config.require("rg"),
       {
         location: config.require("location"),
-        tags: {
-          source: "pulumi"
-        }
+        tags: azTags
       },
       {
         parent: this
@@ -80,20 +69,20 @@ export class Application extends pulumi.ComponentResource
     this._acr = this.createAcr(rg);
     const image = this.buildApp(this._acr);
     this.createAppSvc(rg, this._state.kv, image);
-    this.createEventHubs(rg);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
   }
   createTsi() {
-    this.tsi = new Tsi("testtsi", {
-      eh_namespace: this.eventHubCollections[0].namespace, // very fragile code
-      eh: this.eventHubCollections[0].hubs[0],
+    this.tsi = new Tsi("tsi", {
+      eh_namespace: this._state.ehns, 
+      eh: this._state.eh,
       appSvc: this.appSvc,
       state: this._state
     }, {
         parent: this
       });
   }
+
   createAcr(rg: azure.core.ResourceGroup) {
     const acr = new azure.containerservice.Registry(
       "acr",
@@ -101,9 +90,10 @@ export class Application extends pulumi.ComponentResource
         location: config.require("location"),
         resourceGroupName: rg.name,
         adminEnabled: true,
-        sku: "Standard"
+        sku: "Standard",
+        tags: azTags
       },
-      { parent: this }
+      { parent: rg }
     );
     return acr;
   }
@@ -145,10 +135,11 @@ export class Application extends pulumi.ComponentResource
           tier: config.require("appSvcPlanTier")
         },
         kind: "Linux",
-        reserved: true
+        reserved: true,
+        tags: azTags
       },
       {
-        parent: this
+        parent: rg
       }
     );
 
@@ -176,10 +167,11 @@ export class Application extends pulumi.ComponentResource
           alwaysOn: true,
           linuxFxVersion: pulumi.interpolate`DOCKER|${image.imageName}`
         },
-        httpsOnly: true
+        httpsOnly: true,
+        tags: azTags
       },
       {
-        parent: this
+        parent: this._plan
       }
     );
   }
@@ -197,73 +189,11 @@ export class Application extends pulumi.ComponentResource
           identity =>
             identity.principalId || "11111111-1111-1111-1111-111111111111"
         ), // https://github.com/pulumi/pulumi-azure/issues/192
-        tenantId: this._azConfig.clientConfig.tenantId
+        tenantId: this._azConfig.clientConfig.tenantId,
       },
       {
-        parent: this
+        parent: appSvc
       }
-    );
-  }
-
-  private createEventHubs(rg: azure.core.ResourceGroup) {
-    const ehns = new azure.eventhub.EventHubNamespace(
-      "amphoradhns",
-      {
-        capacity: 1,
-        resourceGroupName: rg.name,
-        location: rg.location,
-        sku: "Standard",
-        tags: {
-          environment: "Development"
-        }
-      },
-      {
-        parent: this
-      }
-    );
-
-    const eh = new azure.eventhub.EventHub(
-      "eventHub",
-      {
-        resourceGroupName: rg.name,
-        messageRetention: 1,
-        namespaceName: ehns.name,
-        partitionCount: 4
-      },
-      {
-        parent: this
-      }
-    );
-
-    const ehAuthRule = new azure.eventhub.EventHubAuthorizationRule("ehAuthRule", {
-      eventhubName: eh.name,
-      listen: true,
-      manage: false,
-      namespaceName: ehns.name,
-      resourceGroupName: rg.name,
-      send: true,
-    }, {
-        parent: this
-      });
-
-    this.storeInVault("EventHubConnectionString", ehAuthRule.primaryConnectionString);
-    this.storeInVault("EventHubName", eh.name);
-
-    this._eventHubCollections.push({
-      namespace: ehns,
-      hubs: [eh]
-    });
-  }
-
-  storeInVault(name: string, value: pulumi.Input<string> | string) {
-    return new azure.keyvault.Secret(
-      name,
-      {
-        value: value,
-        keyVaultId: this._state.kv.id,
-        name: name
-      },
-      { parent: this }
     );
   }
 }

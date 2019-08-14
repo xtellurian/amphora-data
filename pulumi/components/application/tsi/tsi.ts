@@ -2,7 +2,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
 import * as random from "@pulumi/random";
 
-import { getTsiTemplate } from "./tsi_template";
+import { environmentTemplate } from "./tsi_environment";
+import { eventSourceTemplate } from "./tsi_eventsource";
+import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { State } from "../../state/state";
 
 const config = new pulumi.Config("tsi");
@@ -21,7 +23,6 @@ export interface ITsi {
 
 export class Tsi extends pulumi.ComponentResource implements ITsi {
   env_name: random.RandomString;
-  template: azure.core.TemplateDeployment;
   dataAccessFqdn: pulumi.Output<any>;
   constructor(
     private name: string,
@@ -35,7 +36,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
 
   create() {
     const rg = new azure.core.ResourceGroup(
-      "d-tsi",
+      "tsi",
       {
         location: config.require("location"),
         tags: {
@@ -56,20 +57,23 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
       { parent: this }
     );
 
-    // var nnn = "aljksdssdfnlsdkgnld"
-
-    const coldStorage = new azure.storage.Account("coldStorage", {
-      accountReplicationType: "GRS",
-      accountTier: "Standard",
-      location: rg.location,
-      resourceGroupName: rg.name,
-      tags: {
-        source: "pulumi",
+    const envTemplate = new azure.core.TemplateDeployment(
+      this.name + "_env",
+      {
+        resourceGroupName: rg.name,
+        deploymentMode: "Incremental",
+        parameters: {
+          location: config.require("location"),
+          environmentName: this.env_name.result,
+          storageAccountName: this._params.state.storageAccount.name,
+        },
+        templateBody: JSON.stringify(environmentTemplate())
       },
-    }, { parent: this });
+      { parent: rg }
+    );
 
-    this.template = new azure.core.TemplateDeployment(
-      this.name + "_template",
+    const eventSource = new azure.core.TemplateDeployment(
+      this.name + "_eventSrc",
       {
         resourceGroupName: rg.name,
         deploymentMode: "Incremental",
@@ -79,20 +83,33 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
           eventHubName: this._params.eh.name,
           eventHubResourceId: this._params.eh.id,
           environmentName: this.env_name.result,
-          storageAccountName: coldStorage.name,
           keyName: "RootManageSharedAccessKey",
           sharedAccessKey: this._params.eh_namespace.defaultPrimaryKey,
+          timestampPropertyName: "t"
+        },
+        templateBody: JSON.stringify(eventSourceTemplate())
+      },
+      { parent: rg }
+    );
+
+    const accessPolicy = new azure.core.TemplateDeployment(
+      this.name + "_accessPolicy",
+      {
+        resourceGroupName: rg.name,
+        deploymentMode: "Incremental",
+        parameters: {
+          environmentName: this.env_name.result,
           accessPolicyReaderObjectId: this._params.appSvc.identity.apply(
             identity =>
             identity.principalId || "11111111-1111-1111-1111-111111111111"
           ), // https://github.com/pulumi/pulumi-azure/issues/192)
         },
-        templateBody: JSON.stringify(getTsiTemplate())
+        templateBody: JSON.stringify(accessPolicyTemplate())
       },
-      { parent: this }
+      { parent: rg }
     );
 
-    this.dataAccessFqdn = this.template.outputs["dataAccessFqdn"];
+    this.dataAccessFqdn = envTemplate.outputs["dataAccessFqdn"];
 
     this._params.state.storeInVault("DataAccessFqdn", this.dataAccessFqdn, this);
   }

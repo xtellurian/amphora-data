@@ -10,6 +10,12 @@ import { Monitoring } from "../monitoring/monitoring";
 
 const config = new pulumi.Config("state");
 const authConfig = new pulumi.Config("authentication");
+const azTags = {
+  source: "pulumi",
+  component: "state",
+  stack: pulumi.getStack(),
+  project: pulumi.getProject(),
+}
 
 export class StateParams implements IComponentParams {
   name: string = "d-state-component";
@@ -18,7 +24,9 @@ export class StateParams implements IComponentParams {
 
 export class State extends pulumi.ComponentResource {
   private _kv: azure.keyvault.KeyVault;
-  private _storageAccount: azure.storage.Account;
+  storageAccount: azure.storage.Account;
+  ehns: azure.eventhub.EventHubNamespace;
+  eh: azure.eventhub.EventHub;
   get kv(): azure.keyvault.KeyVault {
     return this._kv;
   }
@@ -31,13 +39,6 @@ export class State extends pulumi.ComponentResource {
     super("amphora:State", params.name, {}, params.opts);
 
     this.create();
-    this.resolve();
-  }
-
-  
-
-  resolve() {
-    console.log("Done creating state");
   }
 
   create() {
@@ -46,20 +47,18 @@ export class State extends pulumi.ComponentResource {
       config.require("rg"),
       {
         location: config.require("location"),
-        tags: {
-          source: "pulumi"
-        }
+        tags: azTags
       },
       { parent: this }
     );
 
     this._kv = this.keyvault(stateRg);
-    this._storageAccount = this.createStorage(stateRg);
-
+    this.storageAccount = this.createStorage(stateRg);
     const secret = this.storeInVault(
       CONSTANTS.AzStorage_KV_CS_SecretName,
-      this._storageAccount.primaryConnectionString
+      this.storageAccount.primaryConnectionString
     );
+    this.createEventHubs(stateRg);
   }
 
   storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource ) {
@@ -68,9 +67,10 @@ export class State extends pulumi.ComponentResource {
       {
         value: value,
         keyVaultId: this._kv.id,
-        name: name
+        name: name,
+        tags: azTags
       },
-      { parent: parent || this }
+      { parent: parent || this.kv }
     );
   }
 
@@ -82,10 +82,12 @@ export class State extends pulumi.ComponentResource {
         resourceGroupName: rg.name,
         accountReplicationType: "LRS",
         accountTier: "Standard",
-        accountKind: "StorageV2"
+        accountKind: "StorageV2",
+        enableHttpsTrafficOnly: true,
+        tags: azTags
       },
       {
-        parent: this
+        parent: rg
       }
     );
 
@@ -135,9 +137,10 @@ export class State extends pulumi.ComponentResource {
         ],
         resourceGroupName: rg.name,
         tenantId: this.azConfig.clientConfig.tenantId,
-        skuName: "standard"
+        skuName: "standard",
+        tags: azTags
       },
-      { parent: this }
+      { parent: rg }
     );
 
 
@@ -163,11 +166,56 @@ export class State extends pulumi.ComponentResource {
         ],
         name: "example",
         logAnalyticsWorkspaceId: this.monitoring.logAnalyticsWorkspace.id,
-        targetResourceId: kv.id
+        targetResourceId: kv.id,
       },
-      { parent: this }
+      { parent: rg }
     );
     return kv;
+  }
+
+
+  private createEventHubs(rg: azure.core.ResourceGroup) {
+    this.ehns = new azure.eventhub.EventHubNamespace(
+      "amphoradhns",
+      {
+        capacity: 1,
+        resourceGroupName: rg.name,
+        location: rg.location,
+        sku: "Standard",
+        tags: azTags
+      },
+      {
+        parent: rg
+      }
+    );
+
+    this.eh = new azure.eventhub.EventHub(
+      "eventHub",
+      {
+        resourceGroupName: rg.name,
+        messageRetention: 1,
+        namespaceName: this.ehns.name,
+        partitionCount: 4,
+      },
+      {
+        parent: this.ehns
+      }
+    );
+
+    const ehAuthRule = new azure.eventhub.EventHubAuthorizationRule("ehAuthRule", {
+      eventhubName: this.eh.name,
+      listen: true,
+      manage: false,
+      namespaceName: this.ehns.name,
+      resourceGroupName: rg.name,
+      send: true,
+    }, {
+        parent: this.eh
+      });
+
+    this.storeInVault("EventHubConnectionString", ehAuthRule.primaryConnectionString);
+    this.storeInVault("EventHubName", this.eh.name);
+
   }
 
   linkCosmosToLogAnalytics(
@@ -202,7 +250,7 @@ export class State extends pulumi.ComponentResource {
               enabled: true
             }
           }
-        ]
+        ],
       },
       {
         parent: this

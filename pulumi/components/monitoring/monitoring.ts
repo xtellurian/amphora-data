@@ -3,6 +3,12 @@ import * as azure from "@pulumi/azure";
 import { IComponentParams, COMPONENT_PARAMS } from "../../components";
 
 import { getDashboardTemplate } from "./dashboards-arm";
+const azTags = {
+  source: "pulumi",
+  component: "monitoring",
+  stack: pulumi.getStack(),
+  project: pulumi.getProject(),
+}
 
 const config = new pulumi.Config("monitoring");
 
@@ -34,26 +40,31 @@ export class Monitoring extends pulumi.ComponentResource {
   private create() {
     const rg = new azure.core.ResourceGroup(
       config.require("rg"),
-      { tags: { source: "pulumi" }, location: config.require("location") },
+      { 
+        tags: azTags, 
+        location: config.require("location") 
+      },
       { parent: this }
     );
     this._logAnalyticsWorkspace = new azure.operationalinsights.AnalyticsWorkspace(
       "logAnalytics",
       {
         resourceGroupName: rg.name,
-        sku: "PerGB2018"
+        sku: "PerGB2018",
+        tags: azTags
       },
-      { parent: this }
+      { parent: rg }
     );
 
     this._applicationInsights = new azure.appinsights.Insights(
       "appInsights",
       {
+        tags: azTags,
         applicationType: "web",
         location: "AustraliaEast", // only supported region in AUS
         resourceGroupName: rg.name
       },
-      { parent: this }
+      { parent: rg }
     );
 
     // new azure.core.TemplateDeployment("dashboard", {
