@@ -54,7 +54,7 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Amphora Id");
             }
 
-            dataStore.SetData(entity, await Request.Body.ReadFullyAsync());
+            await dataStore.SetDataAsync(entity, await Request.Body.ReadFullyAsync());
             return Ok();
         }
 
@@ -64,7 +64,7 @@ namespace Amphora.Api.Controllers
             if (string.IsNullOrEmpty(id)) return BadRequest();
             var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null) return NotFound("Amphora not found");
-            var data = dataStore.GetData(entity);
+            var data = await dataStore.GetDataAsync(entity);
             if (data == null) return NotFound("Data not found.");
             return File(data, entity.ContentType ?? "application/octet-stream", entity.FileName);
         }

@@ -57,7 +57,7 @@
         var tsiClient = new TsiClient();
         var linechartTsqExpressions = [];
         var startDate = new Date();
-        startDate.setMonth(startDate.getMonth()-1);
+        startDate.setFullYear(startDate.getFullYear()-25);
         var endDate = new Date();
         console.log(endDate);
 
@@ -65,33 +65,33 @@
             {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
             {Max: {
                 kind: 'numeric',
-                value: {tsx: '$event.value.Double'},
+                value: {tsx: '$event.rainfall_mm'},
                 filter: null,
                 aggregation: {tsx: 'max($value)'}
             }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            { from: startDate, to: endDate, bucketSize: '7d' }, // search span
             '#60B9AE', // color
             'MaxValue')); // alias
         linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
             {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
             {Avg: {
                 kind: 'numeric',
-                value: {tsx: '$event.value.Double'},
+                value: {tsx: '$event.rainfall_mm'},
                 filter: null,
-                aggregation: {tsx: 'avg($value)'}
+                aggregation: {tsx: 'sum($value)'}
             }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            { from: startDate, to: endDate, bucketSize: '14d' }, // search span
             '#D869CB', // color
-            'AvgValue')); // 
+            'Sum')); // 
         linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
             {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
             {Min: {
                 kind: 'numeric',
-                value: {tsx: '$event.value.Double'},
+                value: {tsx: '$event.rainfall_mm'},
                 filter: null,
                 aggregation: {tsx: 'min($value)'}
             }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '1d' }, // search span
+            { from: startDate, to: endDate, bucketSize: '7d' }, // search span
             '#BD1509', // color
             'MinValue')); // 
         

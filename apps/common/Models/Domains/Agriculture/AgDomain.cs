@@ -15,7 +15,7 @@ namespace Amphora.Common.Models.Domains.Agriculture
              new SortedDictionary<string, Type>(
                 typeof(AgDatum)
                 .GetProperties()
-                .ToDictionary(x => x.Name, y => y.PropertyType)
+                .ToDictionary(x => Char.ToLowerInvariant(x.Name[0]) + x.Name.Substring(1), y => y.PropertyType) // camelCase
             );
 
         public override bool IsValid(JObject o)

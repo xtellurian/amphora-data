@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -8,6 +9,7 @@ using Microsoft.Azure.EventHubs;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Api.Stores
 {
@@ -27,25 +29,21 @@ namespace Amphora.Api.Stores
             }
 
         }
-        public Datum GetData(Tempora entity)
+        public Task<Datum> GetDataAsync(Tempora entity)
         {
             throw new System.NotImplementedException();
         }
 
-        public Datum SetData(Tempora entity, Datum data)
+        public async Task<Datum> SetDataAsync(Tempora entity, Datum data)
         {
             var content = JsonConvert.SerializeObject(data,
                                 Newtonsoft.Json.Formatting.None,
                                 new JsonSerializerSettings
                                 {
-                                    NullValueHandling = NullValueHandling.Ignore
+                                    NullValueHandling = NullValueHandling.Ignore,
+                                    ContractResolver = new CamelCasePropertyNamesContractResolver()
                                 });
-            eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content))).Wait();
-            return data;
-        }
-        public async Task<string> SetDataAsync(Tempora entity, string data)
-        {
-            await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(data)));
+            await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
             return data;
         }
     }

@@ -62,7 +62,7 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     await formFile.CopyToAsync(stream);
                     stream.Seek(0, SeekOrigin.Begin);
-                    this.dataStore.SetData(entity, await stream.ReadFullyAsync());
+                    await this.dataStore.SetDataAsync(entity, await stream.ReadFullyAsync());
                 }
                 entity.FileName = formFile.FileName;
                 await amphoraEntityStore.UpdateAsync(entity);

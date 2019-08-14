@@ -57,7 +57,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
       { parent: this }
     );
 
-    const envTemplate = new azure.core.TemplateDeployment(
+    const env = new azure.core.TemplateDeployment(
       this.name + "_env",
       {
         resourceGroupName: rg.name,
@@ -66,6 +66,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
           location: config.require("location"),
           environmentName: this.env_name.result,
           storageAccountName: this._params.state.storageAccount.name,
+          storageAccountResourceId: this._params.state.storageAccount.id,
         },
         templateBody: JSON.stringify(environmentTemplate())
       },
@@ -89,7 +90,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
         },
         templateBody: JSON.stringify(eventSourceTemplate())
       },
-      { parent: rg }
+      { parent: rg, dependsOn: env}
     );
 
     const accessPolicy = new azure.core.TemplateDeployment(
@@ -106,10 +107,10 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
         },
         templateBody: JSON.stringify(accessPolicyTemplate())
       },
-      { parent: rg }
+      { parent: rg, dependsOn: eventSource }
     );
 
-    this.dataAccessFqdn = envTemplate.outputs["dataAccessFqdn"];
+    this.dataAccessFqdn = env.outputs["dataAccessFqdn"];
 
     this._params.state.storeInVault("DataAccessFqdn", this.dataAccessFqdn, this);
   }

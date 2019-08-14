@@ -41,9 +41,6 @@ export function eventSourceTemplate() {
                 apiVersion: "2018-08-15-preview",
                 name: "[concat(parameters('environmentName'), '/data')]",
                 location: "[parameters('location')]",
-                dependsOn: [
-                    "[resourceId('Microsoft.TimeSeriesInsights/environments', parameters('environmentName'))]"
-                ],
                 kind: "Microsoft.EventHub",
                 properties: {
                     // eventSourceResourceId:

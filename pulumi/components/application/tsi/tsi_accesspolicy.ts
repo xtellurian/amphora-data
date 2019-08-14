@@ -23,10 +23,7 @@ export function accessPolicyTemplate() {
                 properties: {
                     principalObjectId: "[parameters('accessPolicyReaderObjectId')]",
                     roles: ["Reader", "Contributor"]
-                },
-                dependsOn: [
-                    "[concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))]"
-                ]
+                }
             },
         ],
         outputs: {}

@@ -13,6 +13,9 @@ export function environmentTemplate() {
             storageAccountName: {
                 type: "String"
             },
+            storageAccountResourceId: {
+                type: "String"
+            },
         },
         variables: {},
         resources: [
@@ -30,7 +33,7 @@ export function environmentTemplate() {
                     storageConfiguration: {
                         accountName: "[parameters('storageAccountName')]",
                         managementKey:
-                            "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2018-02-01').keys[0].value]"
+                            "[listKeys(parameters('storageAccountResourceId'), '2018-02-01').keys[0].value]"
                     },
                     timeSeriesIdProperties: [
                         {
