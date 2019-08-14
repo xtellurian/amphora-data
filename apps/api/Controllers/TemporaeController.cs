@@ -77,6 +77,8 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Schema");
             }
         }
+
+        [ApiExplorerSettings(IgnoreApi = true)] // JArray causes issues with swashbucke :(
         [HttpPost("api/temporae/{id}/uploadMany")]
         public async Task<IActionResult> UploadMany(string id, [FromBody] JArray jArray)
         {
@@ -111,7 +113,7 @@ namespace Amphora.Api.Controllers
                 return NotFound("Invalid Tempora Id");
             }
 
-            throw new NotImplementedException();
+            return NotFound("not implemented");
         }
     }
 }
