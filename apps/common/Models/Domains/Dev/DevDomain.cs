@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Amphora.Common.Models.Domains
+namespace Amphora.Common.Models.Domains.Dev
 {
     public class DevDomain : Domain
     {
