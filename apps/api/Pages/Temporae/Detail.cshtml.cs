@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
@@ -6,7 +9,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TimeSeriesInsightsClient.Queries;
 
 namespace Amphora.Api.Pages.Temporae
 {
@@ -30,6 +35,8 @@ namespace Amphora.Api.Pages.Temporae
             this.mapper = mapper;
         }
 
+        public string QueryResponse {get; set; }
+
         [BindProperty]
         public Amphora.Common.Models.Tempora Tempora { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
@@ -44,7 +51,21 @@ namespace Amphora.Api.Pages.Temporae
             }
 
             Domain = Common.Models.Domains.Domain.GetDomain(Tempora.DomainId);
-
+            var response = new List<QueryResponse>();
+            foreach(var col in Domain.DatumColumns.Keys)
+            {
+                // then we can do a thing
+                if(string.Equals(col, "t")) continue; // skip t // TODO remove hardcoding
+                var r = await tsiService
+                    .WeeklyAverageAsync(
+                        Tempora.Id, 
+                        col, 
+                        DateTime.UtcNow.AddDays(-365),
+                        DateTime.UtcNow
+                    );
+                response.Add(r);
+            }
+            QueryResponse = JsonConvert.SerializeObject(response);
             return Page();
         }
     }

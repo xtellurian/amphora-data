@@ -43,7 +43,15 @@
         </div>
     </div>
     <div class="row">
-        <div id="chart1" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+        <div class="col">
+           
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <h3> Weekly Averages</h3>
+        </div>
+        <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
     </div>
 </div>
 
@@ -54,53 +62,43 @@
 <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
 
 <script>
-        var tsiClient = new TsiClient();
-        var linechartTsqExpressions = [];
-        var startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear()-25);
-        var endDate = new Date();
-        console.log(endDate);
+    var scheme = new ColorScheme;
 
+    var tsiClient = new TsiClient();
+    var startDate = new Date();
+    startDate.setMonth( startDate.getMonth() - 12);
+    endDate = new Date();
+    var linechartTsqExpressions = [];
+
+    var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Domain.DatumColumns.Keys));
+    scheme.from_hue(cols.length)         
+        .scheme('triade')   
+        .variation('soft');
+
+
+    var colors = scheme.colors();
+    let count = 0;
+    cols.forEach((col) => {
         linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
-            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
-            {Max: {
-                kind: 'numeric',
-                value: {tsx: '$event.rainfall_mm'},
-                filter: null,
-                aggregation: {tsx: 'max($value)'}
-            }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '7d' }, // search span
-            '#60B9AE', // color
-            'MaxValue')); // alias
-        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
-            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
-            {Avg: {
-                kind: 'numeric',
-                value: {tsx: '$event.rainfall_mm'},
-                filter: null,
-                aggregation: {tsx: 'sum($value)'}
-            }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '14d' }, // search span
-            '#D869CB', // color
-            'Sum')); // 
-        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
-            {timeSeriesId: ["@Model.Tempora.Id"]}, // instance json
-            {Min: {
-                kind: 'numeric',
-                value: {tsx: '$event.rainfall_mm'},
-                filter: null,
-                aggregation: {tsx: 'min($value)'}
-            }}, // variable json
-            { from: startDate, to: endDate, bucketSize: '7d' }, // search span
-            '#BD1509', // color
-            'MinValue')); // 
-        
-            console.log(linechartTsqExpressions);
-            tsiClient.server.getTsqResults("@Model.Token", window.location.host +"/tsi", linechartTsqExpressions.map(function(ae){return ae.toTsq()})).then(function(result){
-                console.log(result);
-                var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart1'));
-                lineChart.render(transformedResult, {theme: 'light', grid: true, tooltip: true, legend: 'compact'}, linechartTsqExpressions);
-            });
+            {}, 
+            {Avg: {}}, 
+            { 
+                from: startDate, 
+                to: endDate 
+            }, 
+            '#' + colors[count++], // color
+            col)); // 
+    });
+    
+    console.log("linechartTsqExpressions");
+    console.log(linechartTsqExpressions);
+    var response = @Html.Raw(@Model.QueryResponse);
+    console.log("response");
+    console.log(response);
+    var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(response, linechartTsqExpressions);
+    console.log(transformedResult);
+    console.log(transformedResult);
+    var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
+    lineChart.render(transformedResult, {theme: 'light', grid: true, tooltip: true, legend: 'shown', yAxisState: 'overlap'}, linechartTsqExpressions);
 </script>
 }
