@@ -35,16 +35,20 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Key</th>
+                                    <th scope="col">Name</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Units</th>
+                                    <th scope="col">Description</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var p in @Model.Domain.DatumColumns )
+                                @foreach(var p in @Model.Domain.GetDatumMembers() )
                                 {
                                     <tr>
-                                    <th scope="row">@p.Key</th>
-                                    <td>@p.Value.Name</td>
+                                    <th scope="row">@p.Name</th>
+                                    <td>@p.Type</td>
+                                    <td>@p.Units</td>
+                                    <td>@p.Description</td>
                                 </tr>
                                 }  
                             </tbody>

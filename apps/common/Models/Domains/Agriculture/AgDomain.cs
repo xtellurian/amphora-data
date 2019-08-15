@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amphora.Common.Attributes;
 using Newtonsoft.Json.Linq;
 
 namespace Amphora.Common.Models.Domains.Agriculture
@@ -11,12 +12,10 @@ namespace Amphora.Common.Models.Domains.Agriculture
 
         public override string Name => "Agriculture";
 
-        public override SortedDictionary<string, Type> DatumColumns =>
-             new SortedDictionary<string, Type>(
-                typeof(AgDatum)
-                .GetProperties()
-                .ToDictionary(x => Char.ToLowerInvariant(x.Name[0]) + x.Name.Substring(1), y => y.PropertyType) // camelCase
-            );
+        public override List<DatumMemberAttribute> GetDatumMembers()
+        {
+            return this.GetDatumMembers(typeof(AgDatum));
+        }
 
         public override bool IsValid(JObject o)
         {

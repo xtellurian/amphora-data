@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Amphora.Common.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -14,13 +16,10 @@ namespace Amphora.Common.Models.Domains.Dev
 
         public override DomainId Id => DomainId.Dev;
 
-        public override SortedDictionary<string, Type> DatumColumns =>
-
-            new SortedDictionary<string, Type>(
-                typeof(DevDatum)
-                .GetProperties()
-                .ToDictionary(x => x.Name, y => y.PropertyType)
-            );
+        public override List<DatumMemberAttribute> GetDatumMembers()
+        {
+            return base.GetDatumMembers(typeof(DevDatum));
+        }
 
         public override bool IsValid(JObject o)
         {
@@ -37,8 +36,10 @@ namespace Amphora.Common.Models.Domains.Dev
         {
 
             [JsonProperty(Required = Required.Always)]
+            [DatumMember("id", "string")]
             public string Id { get; set; }
             [JsonProperty(Required = Required.Always)]
+            [DatumMember("value", "double", "any", "Whatever you like")]
             public double Value { get; set; }
 
         }

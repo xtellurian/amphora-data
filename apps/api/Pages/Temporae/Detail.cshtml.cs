@@ -52,14 +52,14 @@ namespace Amphora.Api.Pages.Temporae
 
             Domain = Common.Models.Domains.Domain.GetDomain(Tempora.DomainId);
             var response = new List<QueryResponse>();
-            foreach(var col in Domain.DatumColumns.Keys)
+            foreach(var member in Domain.GetDatumMembers())
             {
                 // then we can do a thing
-                if(string.Equals(col, "t")) continue; // skip t // TODO remove hardcoding
+                if(string.Equals(member.Name, "t")) continue; // skip t // TODO remove hardcoding
                 var r = await tsiService
                     .WeeklyAverageAsync(
                         Tempora.Id, 
-                        col, 
+                        member.Name, 
                         DateTime.UtcNow.AddDays(-365),
                         DateTime.UtcNow
                     );
