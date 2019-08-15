@@ -39,15 +39,14 @@ namespace Amphora.Api.Services
             }
             else
             {
-
                 if (!fqdn.StartsWith("https"))
                 {
                     fqdn = $"https://{fqdn}";
                 }
                 client.BaseAddress = new System.Uri(fqdn);
-
-                this.client = new TsiClient(client);
             }
+            
+            this.client = new TsiClient(client);
         }
 
         public async Task<string> GetAccessTokenAsync()
@@ -73,7 +72,7 @@ namespace Amphora.Api.Services
             return response;
         }
 
-        public async Task<QueryResponse> WeeklyAverageAsync(string id, string property, DateTime start, DateTime end )
+        public async Task<QueryResponse> WeeklyAverageAsync(string id, string property, DateTime start, DateTime end)
         {
             await GetAccessTokenAsync(); // make sure the token is loaded.
             var variableName = "Avg";
@@ -81,7 +80,7 @@ namespace Amphora.Api.Services
             {
                 AggregateSeries = new AggregateSeries
                 {
-                    TimeSeriesId = new List<string>{id},
+                    TimeSeriesId = new List<string> { id },
                     Interval = "P7D",
                     SearchSpan = new SearchSpan
                     {
@@ -97,11 +96,11 @@ namespace Amphora.Api.Services
                             Aggregation = new Aggregation { Tsx = "avg($value)"}
                         }}
                     },
-                    ProjectedVariables = new List<string> {variableName}
+                    ProjectedVariables = new List<string> { variableName }
                 }
             };
             var response = await client.QueryAsync(query);
-           
+
             return response;
         }
     }
