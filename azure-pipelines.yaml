@@ -10,14 +10,14 @@ variables:
 
 steps:
   - script: curl -fsSL https://get.pulumi.com | sh
-  condition: eq(variables['Build.Reason'], 'Manual')
+    condition: eq(variables['Build.Reason'], 'Manual')
     displayName: Install Pulumi 
 
   - script: npm install
     condition: eq(variables['Build.Reason'], 'Manual')
     workingDirectory: pulumi
     displayName: NPM install
-    
+
   - task: Pulumi@0
     condition: eq(variables['Build.Reason'], 'Manual')
     inputs:
