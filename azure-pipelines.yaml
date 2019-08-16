@@ -10,7 +10,7 @@ variables:
 
 steps:
   - task: Pulumi@0
-    condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+    condition: eq(variables['Build.Reason'], 'Manual')
     inputs:
       azureSubscription: "amphoradata1"
       command: "preview"
@@ -18,7 +18,7 @@ steps:
       stack: "xtellurian/amphora/test"
 
   - task: Pulumi@0
-    condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+    condition: eq(variables['Build.Reason'], 'Manual')
     inputs:
       azureSubscription: "amphoradata1"
       command: "up"
