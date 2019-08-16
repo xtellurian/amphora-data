@@ -6,7 +6,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  key: k
+  - group: Pulumi xtellurian
 
 steps:
   - task: Pulumi@0
