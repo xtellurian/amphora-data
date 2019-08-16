@@ -9,6 +9,14 @@ variables:
   - group: Pulumi xtellurian
 
 steps:
+  - script: |
+    if [ "$(action)" == "up" ] || [ "$(action)" == "destroy" ] ; then
+        echo "Action is valid"
+    else
+        echo "Action $(action) is invalid. Choose 'up' or 'destroy' "
+    fi
+    displayName: Check pulumi action is valid
+
   - script: curl -fsSL https://get.pulumi.com | sh
     condition: eq(variables['Build.Reason'], 'Manual')
     displayName: Install Pulumi 
