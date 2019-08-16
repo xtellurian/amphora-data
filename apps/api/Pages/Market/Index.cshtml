@@ -45,27 +45,40 @@
             <table id="market-table" class="table">
                 <thead>
                     <tr>
-                    <th scope="col">Type</th>
                     <th scope="col">Title</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Description</th>
-                    <th onclick="w3.sortHTML('#market-table','.market-item', 'td:nth-child(4)')" scope="col">Price ($)</th>
+                    <th scope="col">Price ($)</th>
                     <th> Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var entity in Model.Entities)
                     {
+                    var entityType = entity.GetEntityType();
                      <tr class="market-item">
-                        <th scope="row">@entity.GetEntityType()</th>
-                        <td>@entity.Title</td>
+                        <th scope="row">@entity.Title</th>
+                        <td>@entityType</td>
                         <td>@entity.Description</td>
                         <td>@entity.Price</td>
-                        <td> <button class="btn btn-link text-success">Buy</button> </td>
+                        @if(entityType == Amphora.Common.Models.DataEntityTypes.Tempora)
+                        {
+                            <td> <a asp-page="/temporae/Detail" asp-route-id="@entity.Id">
+                                    <button class="btn btn-link text-success">More</button> 
+                                </a>
+                            </td>
+                        }
+                        @if(entityType == Amphora.Common.Models.DataEntityTypes.Amphora)
+                        {
+                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
+                                    <button class="btn btn-link text-success">More</button> 
+                                </a>
+                            </td>
+                        }
                     </tr>
                     }
                 </tbody>
             </table>
-
         </div>
     </div>
   </div>
