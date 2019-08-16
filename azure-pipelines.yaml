@@ -1,0 +1,26 @@
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  key: k
+
+steps:
+  - task: Pulumi@0
+    condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+    inputs:
+      azureSubscription: "amphoradata1"
+      command: "preview"
+      cwd: "pulumi/"
+      stack: "xtellurian/amphora/test"
+
+  - task: Pulumi@0
+    condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+    inputs:
+      azureSubscription: "amphoradata1"
+      command: "up"
+      cwd: "pulumi/"
+      stack: "xtellurian/amphora/test"
