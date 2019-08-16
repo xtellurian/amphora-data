@@ -14,7 +14,7 @@
         </div>
         <div class="col">
             <span>
-                <a asp-page="/Temporae/Index"><button class="btn btn-secondary">Back</button></a>
+                <a asp-page="/Temporae/Index"><button class="btn btn-secondary">Temporae</button></a>
             </span>
         </div>
     </div>
@@ -32,12 +32,10 @@
         <div class="col">
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Details</h5>
+                    <h5 class="card-title">Details <button class="btn btn-primary" onclick="alert('Data is now available for download.')"> Buy ($@Model.Tempora.Price) </button></h5>
                 </div>
                 <div class="card-body">
-                    @Model.Tempora.Description
-                    $@Model.Tempora.Price           
-                                                      
+                    @Model.Tempora.Description                         
                 </div>
             </div>
         </div>
@@ -87,7 +85,7 @@
                 to: endDate 
             }, 
             '#' + colors[count++], // color
-            col)); // 
+            col.Name)); // 
     });
     
     console.log("linechartTsqExpressions");
@@ -96,7 +94,7 @@
     console.log("response");
     console.log(response);
     var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(response, linechartTsqExpressions);
-    console.log(transformedResult);
+    console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
     lineChart.render(transformedResult, {theme: 'light', grid: true, tooltip: true, legend: 'shown', yAxisState: 'overlap'}, linechartTsqExpressions);
