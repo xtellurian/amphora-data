@@ -42,19 +42,30 @@
         </div>
     <div class="col-9">
         <div>
-            <div>
-                <ul class="list-group">
-                @foreach (var entity in Model.Entities)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="badge badge-primary badge-pill">$@entity.Price</span>
-                        @entity.GetEntityType()
-                        <b> @entity.Title </b>
-                        @entity.Description
-                    </li>
-                }
-                </ul>
-            </div>
+            <table id="market-table" class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th onclick="w3.sortHTML('#market-table','.market-item', 'td:nth-child(4)')" scope="col">Price ($)</th>
+                    <th> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entity in Model.Entities)
+                    {
+                     <tr class="market-item">
+                        <th scope="row">@entity.GetEntityType()</th>
+                        <td>@entity.Title</td>
+                        <td>@entity.Description</td>
+                        <td>@entity.Price</td>
+                        <td> <button class="btn btn-link text-success">Buy</button> </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
         </div>
     </div>
   </div>
