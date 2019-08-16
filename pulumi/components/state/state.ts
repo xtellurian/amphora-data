@@ -143,6 +143,18 @@ export class State extends pulumi.ComponentResource {
       { parent: rg }
     );
 
+    if( this.azConfig.clientConfig.servicePrincipalObjectId )
+    {
+      const spAccess = new azure.keyvault.AccessPolicy("sp-access", 
+      {
+        objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
+        tenantId: this.azConfig.clientConfig.tenantId,
+        keyPermissions: ["create", "get"],
+        secretPermissions: ["list", "set", "get", "delete"]
+      })
+    }
+    
+
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
