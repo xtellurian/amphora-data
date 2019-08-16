@@ -9,6 +9,9 @@ variables:
   - group: Pulumi xtellurian
 
 steps:
+  - script: curl -fsSL https://get.pulumi.com | sh
+    displayName: Install Pulumi 
+    
   - script: npm install
     workingDirectory: pulumi
     displayName: NPM install
