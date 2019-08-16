@@ -8,6 +8,12 @@ import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { State } from "../../state/state";
 
 const config = new pulumi.Config("tsi");
+const azTags = {
+  source: "pulumi",
+  component: "state",
+  stack: pulumi.getStack(),
+  project: pulumi.getProject(),
+}
 
 export interface TsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
@@ -39,9 +45,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
       "tsi",
       {
         location: config.require("location"),
-        tags: {
-          source: "pulumi"
-        }
+        tags: azTags
       },
       { parent: this }
     );
