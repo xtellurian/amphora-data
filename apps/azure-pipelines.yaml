@@ -11,13 +11,6 @@ variables:
 
 steps:
 
-- task: NuGetCommand@2
-  displayName: 'Authenticate with Azure DevOps NuGet'
-  inputs:
-    command: custom
-    arguments: sources update -Name "TimeSeriesInsightsClient" -Username "vsts" -Password "$(System.AccessToken)" -StorePasswordInClearText -ConfigFile ./NuGet.Config
-
-
 - script: dotnet build --configuration $(buildConfiguration)
   workingDirectory: apps
   displayName: 'dotnet build $(buildConfiguration)'
