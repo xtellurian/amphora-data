@@ -17,6 +17,7 @@ const azTags = {
   stack: pulumi.getStack(),
   project: pulumi.getProject(),
 }
+const rgName = pulumi.getStack() + "-app";
 
 // lives in here for now
 export class ApplicationParams implements IComponentParams {
@@ -57,7 +58,7 @@ export class Application extends pulumi.ComponentResource
 
   create() {
     const rg = new azure.core.ResourceGroup(
-      config.require("rg"),
+      rgName,
       {
         location: config.require("location"),
         tags: azTags

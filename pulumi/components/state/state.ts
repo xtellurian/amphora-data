@@ -16,6 +16,7 @@ const azTags = {
   stack: pulumi.getStack(),
   project: pulumi.getProject(),
 }
+const rgName = pulumi.getStack() + "-app";
 
 export class StateParams implements IComponentParams {
   name: string = "d-state-component";
@@ -44,7 +45,7 @@ export class State extends pulumi.ComponentResource {
   create() {
     // Create an Azure Resource Group
     const stateRg = new azure.core.ResourceGroup(
-      config.require("rg"),
+      rgName,
       {
         location: config.require("location"),
         tags: azTags

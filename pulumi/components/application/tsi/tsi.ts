@@ -14,6 +14,7 @@ const azTags = {
   stack: pulumi.getStack(),
   project: pulumi.getProject(),
 }
+const rgName = pulumi.getStack() + "-tsi";
 
 export interface TsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
@@ -42,7 +43,7 @@ export class Tsi extends pulumi.ComponentResource implements ITsi {
 
   create() {
     const rg = new azure.core.ResourceGroup(
-      "tsi",
+      rgName,
       {
         location: config.require("location"),
         tags: azTags

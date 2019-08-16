@@ -11,6 +11,7 @@ const azTags = {
 }
 
 const config = new pulumi.Config("monitoring");
+const rgName = pulumi.getStack() + "-monitor";
 
 export class MonitoringParams implements IComponentParams {
   name: string = "d-monitoring-component";
@@ -39,7 +40,7 @@ export class Monitoring extends pulumi.ComponentResource {
 
   private create() {
     const rg = new azure.core.ResourceGroup(
-      config.require("rg"),
+      rgName,
       { 
         tags: azTags, 
         location: config.require("location") 
