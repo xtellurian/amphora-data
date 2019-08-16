@@ -11,7 +11,7 @@ variables:
 steps:
   - script: curl -fsSL https://get.pulumi.com | sh
     displayName: Install Pulumi 
-    
+
   - script: npm install
     workingDirectory: pulumi
     displayName: NPM install
@@ -27,6 +27,6 @@ steps:
     condition: eq(variables['Build.Reason'], 'Manual')
     inputs:
       azureSubscription: "amphoradata1"
-      command: "up"
+      command: "$(action)"
       cwd: "pulumi/"
       stack: "xtellurian/amphora/test"
