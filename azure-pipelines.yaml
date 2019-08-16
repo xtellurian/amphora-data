@@ -11,8 +11,8 @@ variables:
 
 steps:
   - script: |
-      if [ "$(action)" == "up" ] || [ "$(action)" == "destroy" ] ; then
-          echo "Action is valid"
+      if [ "$(action)" == "up" ] || [ "$(action)" == "preview" ] || [ "$(action)" == "destroy" ]; then
+          echo "$(action) is a valid Pulumi action"
       else
           echo "Action $(action) is invalid. Choose 'up' or 'destroy' "
       fi
@@ -26,14 +26,6 @@ steps:
     condition: eq(variables['Build.Reason'], 'Manual')
     workingDirectory: pulumi
     displayName: NPM install
-
-  - task: Pulumi@0
-    condition: eq(variables['Build.Reason'], 'Manual')
-    inputs:
-      azureSubscription: "amphoradata1"
-      command: "preview"
-      cwd: "pulumi/"
-      stack: "xtellurian/amphora/test"
 
   - task: Pulumi@0
     condition: eq(variables['Build.Reason'], 'Manual')
