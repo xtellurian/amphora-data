@@ -9,7 +9,7 @@ namespace Amphora.Common.Models.Domains.Agriculture
         [DatumMember("rainfall", "float?", "mm")]
         public float? Rainfall{ get; set; }
         [DatumMember("storagePercent", "float?", "%")]
-        public float? Storage { get; set; }
+        public float? StoragePercent { get; set; }
         [DatumMember("volume", "float?", "GL")]
         public float? Volume { get; set; }
         [DatumMember("waterLevel", "float?", "metres")]
