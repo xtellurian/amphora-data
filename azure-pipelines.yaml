@@ -1,6 +1,7 @@
-
 trigger:
-- master
+  branches:
+    exclude:
+    - '*'  # exclude always - should just trigger manually
 
 pool:
   vmImage: 'ubuntu-latest'
