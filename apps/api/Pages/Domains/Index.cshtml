@@ -5,11 +5,10 @@
 }
 
 <div id="main" class="container">
-    <div class="row main-header">
+    <div class="row">
         <div class="col">
             <span>
-                <h1 class="display-4">Amphoræ</h1>
-                <a asp-page="/amphorae/create"><button class="btn btn-primary">Create</button></a>
+                <h1 class="display-4">Domains</h1>
             </span>
         </div>
     </div>
@@ -17,10 +16,16 @@
         <div class="col-4">
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Side Pane</h5>
+                    <h5 class="card-title">Information</h5>
                 </div>
                 <div class="card-body">
-                    Put something here                                                 
+                    <p> 
+                        <em>Amphora Domains</em> help categorise data. If you're just getting started, use the 
+                        <a asp-page="./Detail" asp-route-id="Dev">Development Domain</a> as a sandbox.
+                    </p>
+                    <p>
+                        The <a asp-page="./Detail" asp-route-id="Agriculture">Agriculture Domain</a> defines what kinds of data are produced and consumed on farms and related industries.
+                    </p>
                 </div>
             </div>
         </div>
