@@ -1,41 +1,41 @@
-trigger:
-  branches:
-    include:
-    - master
-  paths:
-    include:
-    - apps/*
+# trigger:
+#   branches:
+#     include:
+#     - master
+#   paths:
+#     include:
+#     - apps/*
 
-pool:
-  vmImage: 'ubuntu-latest'
+# pool:
+#   vmImage: 'ubuntu-latest'
 
-variables:
-  imageName: api
-  imageTag: latest
-  buildConfiguration: 'Release'
+# variables:
+#   imageName: api
+#   imageTag: latest
+#   buildConfiguration: 'Release'
 
-steps:
+# steps:
 
-- script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: apps
-  displayName: 'dotnet build $(buildConfiguration)'
+# - script: dotnet build --configuration $(buildConfiguration)
+#   workingDirectory: apps
+#   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
-  workingDirectory: apps
-  displayName: dotnet test
+# - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
+#   workingDirectory: apps
+#   displayName: dotnet test
 
-- task: PublishTestResults@2
-  condition: always() 
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**/*.trx'
+# - task: PublishTestResults@2
+#   condition: always() 
+#   inputs:
+#     testRunner: VSTest
+#     testResultsFiles: '**/*.trx'
 
-- task: PublishCodeCoverageResults@1
-  displayName: Publish Code Coverage Report
-  inputs:
-    summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
-    codecoverageTool: cobertura
+# - task: PublishCodeCoverageResults@1
+#   displayName: Publish Code Coverage Report
+#   inputs:
+#     summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
+#     codecoverageTool: cobertura
 
-- script: docker build .
-  workingDirectory: apps
-  displayName: Build docker image
+# - script: docker build .
+#   workingDirectory: apps
+#   displayName: Build docker image
