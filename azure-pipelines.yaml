@@ -27,8 +27,10 @@ jobs:
         ARM_SUBSCRIPTION_ID: $(subscription)
         ARM_TENANT_ID: $(tenant)
 
-    - script: echo $(pulumi.kvUri)
-      displayName: echo the var
+    - script: |
+        echo $(pulumi.kvUri)
+        echo $(pulumi.pulumiStack)
+      displayName: echo the vars
 
 - job: apps
   dependsOn: infrastructure
