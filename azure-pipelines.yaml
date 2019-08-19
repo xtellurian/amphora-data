@@ -94,7 +94,6 @@ jobs:
     displayName: 'dotnet build $(buildConfiguration)'
 
   - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
-    condition: ne(variables['build.sourceBranch'], 'refs/heads/master')
     workingDirectory: apps
     displayName: dotnet test
     env:
