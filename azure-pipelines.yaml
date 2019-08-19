@@ -24,15 +24,20 @@ jobs:
     - script: |
         chmod +x infra/scripts/*.sh
         ./infra/scripts/setup.sh
-        ./infra/scripts/run-pulumi.sh
       displayName: 'Install pulumi and run infra code'
       name: pulumi
+
+    - task: AzureCLI@1
       env:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-        ARM_CLIENT_SECRET: $(arm.client.secret)
-        ARM_SUBSCRIPTION_ID: $(arm.subscription.id)
-        ARM_CLIENT_ID: $(arm.client.id)
-        ARM_TENANT_ID: $(arm.tenant.id)
+      inputs:
+        azureSubscription: amphoradata1
+        scriptLocation: 'scriptPath' # Options: inlineScript, scriptPath
+        scriptPath: ./infra/scripts/run-pulumi.sh # Required when scriptLocation == ScriptPath
+        #addSpnToEnvironment: false # Optional
+        #useGlobalConfig: false # Optional
+        #workingDirectory: # Optional
+        #failOnStandardError: false # Optional
 
 - job: apps
   dependsOn: infrastructure
