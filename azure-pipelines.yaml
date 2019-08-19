@@ -21,24 +21,30 @@ jobs:
         fi
       displayName: Check pulumi action is valid
 
-    - script: curl -fsSL https://get.pulumi.com | sh
-      condition: eq(variables['Build.Reason'], 'Manual')
-      displayName: Install Pulumi 
-
-    - script: npm install
-      condition: eq(variables['Build.Reason'], 'Manual')
-      workingDirectory: pulumi
-      displayName: NPM install
-
-    - task: Pulumi@0
-      condition: eq(variables['Build.Reason'], 'Manual')
-      inputs:
-        azureSubscription: "amphoradata1"
-        command: "$(action)"
-        cwd: "pulumi/"
-        stack: "xtellurian/amphora/test"
+    - script: |
+        chmod +x infra/scripts/*.sh
+        ./infra/scripts/setup.sh
+        ./infra/scripts/run-pulumi.sh
+      displayName: 'Install pulumi and run infra code'
+      name: pulumi
+      env:
+        PULUMI_ACCESS_TOKEN: $(pulumi.access.token)
+        ARM_CLIENT_SECRET: $(arm.client.secret)
+        ARM_SUBSCRIPTION_ID: $(arm.subscription.id)
+        ARM_CLIENT_ID: $(arm.client.id)
+        ARM_TENANT_ID: $(arm.tenant.id)
 
 - job: apps
+  dependsOn: infrastructure
+  strategy:
+    matrix:
+      InMemory:
+        UsePersistentStore: ''
+        KvUri: ''
+      Persistent:
+        UsePersistentStore: 'true'
+        KvUri: $[ dependencies.infrastructure.outputs['outputs.kvUri'] ]
+    maxParallel: 2
   condition: always()
   pool:
     vmImage: 'ubuntu-latest'
