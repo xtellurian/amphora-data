@@ -73,10 +73,10 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
-    var imageName = this.acr.loginServer +  "/" + customImage + ":" + imageTag;
+    var imageName: Input<string> | string  = this.acr.loginServer +  "/" + customImage + ":" + imageTag;
     if (config.getBoolean("buildContainer")) {
       const image = this.buildApp(this.acr);
-      var imagename = image.imageName;
+      imageName = image.imageName;
     }
 
     this.createAppSvc(rg, this._state.kv, imageName);
@@ -134,7 +134,7 @@ export class Application extends pulumi.ComponentResource
   private createAppSvc(
     rg: azure.core.ResourceGroup,
     kv: azure.keyvault.KeyVault,
-    imageName: Input<string>
+    imageName: Input<string> | string
   ) {
     this._plan = new azure.appservice.Plan(
       "appSvcPlan",
