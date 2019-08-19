@@ -41,13 +41,19 @@ pulumi stack select ci
 
 echo build reason is $BUILD_REASON
 
+oldImage = $(pulumi stack output image)
+
+if [[ ! -z "$var" ]] ; then
+  docker pull $oldImage
+fi
+
 pulumi up --yes
 
-stack=$(pulumi stack output kvUri)
-echo stack is $stack
+kvUri=$(pulumi stack output kvUri)
+echo stack is $kvUri
 
 # Save the stack output variables to job variables.
-echo "##vso[task.setvariable variable=kvUri; isOutput=true]$stack"
+echo "##vso[task.setvariable variable=kvUri; isOutput=true]$kvUri"
 echo "##vso[task.setvariable variable=pulumiStack; isOutput=true]ci" # see above where stack is selected
 
 popd
