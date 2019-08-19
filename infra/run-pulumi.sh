@@ -30,14 +30,14 @@ set_special_stack () {
 # the default stack
 pulumi stack select ci
 
-if [ $BUILD_REASON == "PullRequest" ] ; then
-  set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
-  echo "Previewing special target stack!"
-  pulumi preview
-  pulumi stack select ci
-else 
-  set_special_stack $BUILD_SOURCEBRANCH
-fi
+# if [ $BUILD_REASON == "PullRequest" ] ; then
+#   set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
+#   echo "Previewing special target stack!"
+#   pulumi preview
+#   pulumi stack select ci
+# else 
+#   set_special_stack $BUILD_SOURCEBRANCH
+# fi
 
 echo build reason is $BUILD_REASON
 
