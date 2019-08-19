@@ -58,8 +58,13 @@ export let tsiFqdn = result.then(r =>
   r.application.tsi.dataAccessFqdn
 );
 
-export let image = result.then(r =>
-  r.application.image
+export let imageName = result.then(r =>
+  r.application.image.imageName
 );
+
+export let acrName = result.then(r =>
+  r.application.acr.name
+);
+
 
 // export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )

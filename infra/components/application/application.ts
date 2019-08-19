@@ -33,8 +33,8 @@ export interface IApplication {
 export class Application extends pulumi.ComponentResource
   implements IApplication {
   private _appSvc: azure.appservice.AppService;
-  private _acr: azure.containerservice.Registry;
   private _plan: azure.appservice.Plan;
+  acr: azure.containerservice.Registry;
   tsi: Tsi;
   image: docker.Image;
   get appSvc(): azure.appservice.AppService {
@@ -68,8 +68,8 @@ export class Application extends pulumi.ComponentResource
         parent: this
       }
     );
-    this._acr = this.createAcr(rg);
-    const image = this.buildApp(this._acr);
+    this.acr = this.createAcr(rg);
+    const image = this.buildApp(this.acr);
     this.createAppSvc(rg, this._state.kv, image);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
@@ -160,10 +160,10 @@ export class Application extends pulumi.ComponentResource
             .instrumentationKey,
           WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
-            this._acr.loginServer
+            this.acr.loginServer
             }`,
-          DOCKER_REGISTRY_SERVER_USERNAME: this._acr.adminUsername,
-          DOCKER_REGISTRY_SERVER_PASSWORD: this._acr.adminPassword,
+          DOCKER_REGISTRY_SERVER_USERNAME: this.acr.adminUsername,
+          DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           WEBSITES_PORT: 80
         },
         siteConfig: {
