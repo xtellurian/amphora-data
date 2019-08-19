@@ -28,7 +28,7 @@ jobs:
       displayName: 'Install pulumi and run infra code'
       name: pulumi
       env:
-        PULUMI_ACCESS_TOKEN: $(pulumi.access.token)
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
         ARM_CLIENT_SECRET: $(arm.client.secret)
         ARM_SUBSCRIPTION_ID: $(arm.subscription.id)
         ARM_CLIENT_ID: $(arm.client.id)
@@ -45,7 +45,7 @@ jobs:
         PersistentStores: 'true'
         KvUri: $[ dependencies.infrastructure.outputs['outputs.kvUri'] ]
     maxParallel: 2
-  condition: always()
+  condition: succeeded()
   pool:
     vmImage: 'ubuntu-latest'
 
