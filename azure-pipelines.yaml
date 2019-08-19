@@ -30,7 +30,7 @@ jobs:
     - script: |
         set -e
         echo "$(pulumi.kvUri)"
-        echo "$(pulumi.pulumiStack)""
+        echo "$(pulumi.pulumiStack)"
       displayName: echo the vars
 
 - job: apps
