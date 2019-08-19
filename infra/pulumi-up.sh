@@ -41,8 +41,8 @@ pulumi stack select ci
 
 echo build reason is $BUILD_REASON
 
-oldImageName = $(pulumi stack output imageName)
-acrName = $(pulumi stack output acrName)
+oldImageName=$(pulumi stack output imageName)
+acrName=$(pulumi stack output acrName)
 
 if [[ ! -z $oldImageName ]] ; then
   echo "Attempting pulling cache"
