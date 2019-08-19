@@ -155,7 +155,7 @@ export class State extends pulumi.ComponentResource {
         keyPermissions: ["create", "get"],
         secretPermissions: ["list", "set", "get", "delete"]
       })
-      const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access", 
+      const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access_objectId", 
       {
         keyVaultId: kv.id,
         objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
