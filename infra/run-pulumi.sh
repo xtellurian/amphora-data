@@ -16,31 +16,32 @@ pulumi login
 npm install
 # npm run build
 
-set_stack () {
+# only sets stack if on develop or master
+set_special_stack () {
   if [ $1 == "refs/heads/develop" ]; then
+    echo "Special Stack: Develop"
     pulumi stack select develop
   elif [ $1 == "refs/heads/master" ]; then
+      echo "Special Stack: Master"
       pulumi stack select master
-  else:
-    pulumi stack select ci
   fi
 }
 
+# the default stack
+pulumi stack select ci
 
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
-case $BUILD_REASON in
-  PullRequest)
-      set_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
-      pulumi preview
-    ;;
-  BuildCompletion|BatchedCI|IndividualCI)
-      set_stack $BUILD_SOURCEBRANCH
-      pulumi up --yes
-    ;;
-  *)
-esac
+if [ $BUILD_REASON == "PullRequest" ] ; then
+  set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
+  echo "Previewing special target stack!"
+  pulumi preview
+  pulumi stack select ci
+else 
+  set_special_stack $BUILD_SOURCEBRANCH
+fi
 
 echo build reason is $BUILD_REASON
+
+pulumi up --yes
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri; isOutput=true]$(pulumi stack output kvUri)"
