@@ -61,7 +61,7 @@ jobs:
 
   - script: |
       echo PersistentStores - $(PersistentStores)
-      echo kvUri - $(kvUri)
+      echo kvUri - "$(kvUri)"
       if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
         then
               echo "PersistentStores is set, with no kvUri. Exiting with error"
