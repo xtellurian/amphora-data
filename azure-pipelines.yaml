@@ -60,10 +60,15 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   variables:
-    imageName: api
-    imageTag: latest
-    buildConfiguration: 'Release'
-    kvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
+    - group: AzureDeploySP
+    - name: imageName
+      value: api
+    - name: imageTag
+      value: latest
+    - name: buildConfiguration
+      value: 'Release'
+    - name: kvUri
+      value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
 
   steps:
   - script: |
