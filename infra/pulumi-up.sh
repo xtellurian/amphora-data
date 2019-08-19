@@ -45,5 +45,6 @@ pulumi up --yes
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri; isOutput=true]$(pulumi stack output kvUri)"
+echo "##vso[task.setvariable variable=pulumiStack; isOutput=true]ci" # see above where stack is selected
 
 popd

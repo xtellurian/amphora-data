@@ -15,17 +15,9 @@ jobs:
 
   steps:
     - script: |
-        if [ "$(action)" == "up" ] || [ "$(action)" == "preview" ] || [ "$(action)" == "destroy" ]; then
-            echo "$(action) is a valid Pulumi action"
-        else
-            echo "Action $(action) is invalid. Choose 'up' or 'destroy' "
-        fi
-      displayName: Check pulumi action is valid
-
-    - script: |
         chmod +x ./infra/*.sh
         ./infra/setup.sh
-        ./infra/run-pulumi.sh
+        ./infra/pulumi-up.sh
       displayName: 'Install pulumi & run pulumi up'
       env:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
@@ -58,7 +50,6 @@ jobs:
     buildConfiguration: 'Release'
 
   steps:
-
   - script: |
       echo PersistentStores - $(PersistentStores)
       echo kvUri - "$(kvUri)"
@@ -95,3 +86,31 @@ jobs:
   - script: docker build .
     workingDirectory: apps
     displayName: Build docker image
+
+- job: destroyInfra
+  condition: always()
+  pool:
+    vmImage: 'ubuntu-latest'
+  dependsOn: infrastructure
+  variables:
+  - group: Pulumi xtellurian
+  - group: AzureDeploySP
+  - name: stack
+    value: $[ dependencies.infrastructure.outputs['pulumi.pulumiStack'] ]
+
+  steps:
+    - script: |
+        chmod +x ./infra/*.sh
+        ./infra/setup.sh
+        ./infra/pulumi-destroy.sh
+      displayName: 'Install pulumi & run pulumi up'
+      env:
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        ARM_CLIENT_ID: $(appId)
+        ARM_CLIENT_SECRET: $(password)
+        ARM_SUBSCRIPTION_ID: $(subscription)
+        ARM_TENANT_ID: $(tenant)
+        STACK: $(stack)
+
+    - script: echo $(pulumi.kvUri)
+      displayName: echo the var
