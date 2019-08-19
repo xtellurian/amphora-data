@@ -9,7 +9,6 @@ set -e -x
 export PATH=$PATH:$HOME/.pulumi/bin
 
 # should pop to ./infra
-popd
 pwd
 
 pulumi login
@@ -34,5 +33,3 @@ echo build reason is $BUILD_REASON
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$(pulumi stack output kvUri)"
-
-popd
