@@ -27,24 +27,19 @@ set_special_stack () {
   fi
 }
 
-# the default stack
-pulumi stack select ci
-
-# if [ $BUILD_REASON == "PullRequest" ] ; then
-#   set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
-#   echo "Previewing special target stack!"
-#   pulumi preview
-#   pulumi stack select ci
-# else 
-#   set_special_stack $BUILD_SOURCEBRANCH
-# fi
-
 echo build reason is $BUILD_REASON
 
-pulumi up --yes
+if [ $BUILD_REASON == "PullRequest" ] ; then
+  set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
+  echo "Previewing special target stack!"
+  pulumi preview
+fi
 
-kvUri=$(pulumi stack output kvUri)
-echo kvUri is $kvUri
+# spin up the source branch stack
+set_special_stack $BUILD_SOURCEBRANCH
+
+
+pulumi up --yes
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
