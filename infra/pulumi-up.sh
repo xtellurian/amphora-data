@@ -40,16 +40,6 @@ pulumi stack select ci
 # fi
 
 echo build reason is $BUILD_REASON
-set +e
-oldImageName=$(pulumi stack output imageName)
-acrName=$(pulumi stack output acrName)
-set -e
-if [[ ! -z $oldImageName ]] ; then
-  echo "Attempting pulling cache"
-  az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
-  az acr login -n $acrName
-  docker pull $oldImageName
-fi
 
 pulumi up --yes
 
