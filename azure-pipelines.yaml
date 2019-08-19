@@ -52,10 +52,8 @@ jobs:
     matrix:
       InMemory:
         PersistentStores: ''
-        kvUri: ''
       Persistent:
         PersistentStores: 'true'
-        kvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
     maxParallel: 2
   condition: succeeded()
   pool:
@@ -65,6 +63,7 @@ jobs:
     imageName: api
     imageTag: latest
     buildConfiguration: 'Release'
+    kvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
 
   steps:
   - script: |
