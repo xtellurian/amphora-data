@@ -108,30 +108,30 @@ jobs:
 #           Destroy Instrastructure
 ##################################################################
 
-- job: destroyInfra
-  condition: always()
-  pool:
-    vmImage: 'ubuntu-latest'
-  dependsOn: infrastructure
-  variables:
-  - group: Pulumi xtellurian
-  - group: AzureDeploySP
-  - name: stack
-    value: $[ dependencies.infrastructure.outputs['pulumi.pulumiStack'] ]
+# - job: destroyInfra
+#   condition: always()
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   dependsOn: infrastructure
+#   variables:
+#   - group: Pulumi xtellurian
+#   - group: AzureDeploySP
+#   - name: stack
+#     value: $[ dependencies.infrastructure.outputs['pulumi.pulumiStack'] ]
 
-  steps:
-    - script: |
-        chmod +x ./infra/*.sh
-        ./infra/setup.sh
-        ./infra/pulumi-destroy.sh
-      displayName: 'Install pulumi & run pulumi up'
-      env:
-        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-        ARM_CLIENT_ID: $(appId)
-        ARM_CLIENT_SECRET: $(password)
-        ARM_SUBSCRIPTION_ID: $(subscription)
-        ARM_TENANT_ID: $(tenant)
-        STACK: $(stack)
+#   steps:
+#     - script: |
+#         chmod +x ./infra/*.sh
+#         ./infra/setup.sh
+#         ./infra/pulumi-destroy.sh
+#       displayName: 'Install pulumi & run pulumi up'
+#       env:
+#         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+#         ARM_CLIENT_ID: $(appId)
+#         ARM_CLIENT_SECRET: $(password)
+#         ARM_SUBSCRIPTION_ID: $(subscription)
+#         ARM_TENANT_ID: $(tenant)
+#         STACK: $(stack)
 
-    - script: echo $(pulumi.kvUri)
-      displayName: echo the var
+#     - script: echo $(pulumi.kvUri)
+#       displayName: echo the var
