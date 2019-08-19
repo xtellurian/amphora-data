@@ -18,6 +18,8 @@ npm install
 
 pulumi stack select ci
 
+echo BUILD_SOURCEBRANCH
+
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
 case $BUILD_REASON in
   PullRequest)
