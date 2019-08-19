@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this should run in CI
+
 # exit if a command returns a non-zero exit code and also print the commands and their args as they are executed
 set -e -x
 
@@ -11,7 +13,7 @@ pushd infra/
 npm install
 # npm run build
 
-pulumi stack select test
+pulumi stack select ci
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
 case $BUILD_REASON in

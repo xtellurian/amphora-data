@@ -1,0 +1,13 @@
+config:
+  azure:environment: public
+
+  application:location: AustraliaSoutheast
+  application:appSvcPlanTier: Basic
+  application:appSvcPlanSize: B1
+
+  monitoring:location: AustraliaSoutheast
+
+  state:failoverLocation: AustraliaEast
+  state:location: AustraliaSoutheast
+
+  tsi:location: AustraliaSoutheast
