@@ -25,7 +25,6 @@ jobs:
         chmod +x infra/scripts/*.sh
         ./infra/scripts/setup.sh
       displayName: 'Install pulumi and run infra code'
-      name: pulumi
 
     - task: AzureCLI@1
       name: pulumi
