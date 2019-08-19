@@ -16,16 +16,25 @@ pulumi login
 npm install
 # npm run build
 
-pulumi stack select ci
+set_stack () {
+  if [ $1 == "refs/heads/develop" ]; then
+    pulumi stack select develop
+  elif [ $1 == "refs/heads/master" ]; then
+      pulumi stack select master
+  else:
+    pulumi stack select ci
+  fi
+}
 
-echo $BUILD_SOURCEBRANCH
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
 case $BUILD_REASON in
   PullRequest)
+      set_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
       pulumi preview
     ;;
-  BuildCompletion|BatchedCI)
+  BuildCompletion|BatchedCI|IndividualCI)
+      set_stack $BUILD_SOURCEBRANCH
       pulumi up --yes
     ;;
   *)
@@ -34,4 +43,4 @@ esac
 echo build reason is $BUILD_REASON
 
 # Save the stack output variables to job variables.
-echo "##vso[task.setvariable variable=kvUri;isOutput=true]$(pulumi stack output kvUri)"
+echo "##vso[task.setvariable variable=kvUri; isOutput=true]$(pulumi stack output kvUri)"

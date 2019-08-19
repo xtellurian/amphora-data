@@ -38,6 +38,9 @@ jobs:
         #useGlobalConfig: false # Optional
         #failOnStandardError: false # Optional
 
+    - script: echo $(pulumi.kvUri)
+      displayName: echo the var
+
 - job: apps
   dependsOn: infrastructure
   strategy:
