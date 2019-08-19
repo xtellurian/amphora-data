@@ -73,13 +73,9 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
-    var imageName: Input<string> | string  = this.acr.loginServer +  "/" + customImage + ":" + imageTag;
-    if (config.getBoolean("buildContainer")) {
-      const image = this.buildApp(this.acr);
-      imageName = image.imageName;
-    }
+    const image = this.buildApp(this.acr);
 
-    this.createAppSvc(rg, this._state.kv, imageName);
+    this.createAppSvc(rg, this._state.kv, image);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
   }
@@ -134,7 +130,7 @@ export class Application extends pulumi.ComponentResource
   private createAppSvc(
     rg: azure.core.ResourceGroup,
     kv: azure.keyvault.KeyVault,
-    imageName: Input<string> | string
+    image: docker.Image
   ) {
     this._plan = new azure.appservice.Plan(
       "appSvcPlan",
@@ -176,7 +172,7 @@ export class Application extends pulumi.ComponentResource
         },
         siteConfig: {
           alwaysOn: true,
-          linuxFxVersion: pulumi.interpolate`DOCKER|${imageName}`
+          linuxFxVersion: pulumi.interpolate`DOCKER|${image.imageName}`
         },
         httpsOnly: true,
         tags: azTags
