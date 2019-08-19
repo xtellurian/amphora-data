@@ -76,6 +76,14 @@ jobs:
         fi
     displayName: Check params set correctly
 
+  # required to access KV in testing
+  - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    displayName: Az Login
+    env: 
+      NAME: $(name)
+      PASSWORD: $(password)
+      TENANT: $(tenant)
+
   - script: dotnet build --configuration $(buildConfiguration)
     workingDirectory: apps
     displayName: 'dotnet build $(buildConfiguration)'
