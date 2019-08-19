@@ -22,8 +22,8 @@ jobs:
       displayName: Check pulumi action is valid
 
     - script: |
-        chmod +x ./infra/scripts/*.sh
-        ./infra/scripts/setup.sh
+        chmod +x ./infra/*.sh
+        ./infra/setup.sh
       displayName: 'Install pulumi'
 
     - task: AzureCLI@1
@@ -33,8 +33,7 @@ jobs:
       inputs:
         azureSubscription: amphoradata1
         scriptLocation: 'scriptPath' # Options: inlineScript, scriptPath
-        scriptPath: ./infra/scripts/run-pulumi.sh # Required when scriptLocation == ScriptPath
-        workingDirectory: $(Build.SourcesDirectory)
+        scriptPath: ./infra/run-pulumi.sh # Required when scriptLocation == ScriptPath
         #addSpnToEnvironment: false # Optional
         #useGlobalConfig: false # Optional
         #failOnStandardError: false # Optional
