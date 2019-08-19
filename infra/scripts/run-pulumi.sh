@@ -11,7 +11,7 @@ pushd infra/
 npm install
 npm run build
 
-pulumi stack select acmeCorp/acmeProject/acme-ui
+pulumi stack select test
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
 case $BUILD_REASON in

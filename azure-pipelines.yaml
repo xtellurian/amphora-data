@@ -6,7 +6,7 @@ trigger:
 
 jobs:
 - job: infrastructure
-  condition: and(eq(variables['Build.Reason'], 'Manual'), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  # condition: and(eq(variables['Build.Reason'], 'Manual'), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   pool:
     vmImage: 'ubuntu-latest'
   variables:
