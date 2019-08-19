@@ -46,7 +46,7 @@ namespace Amphora.Api
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            if (HostingEnvironment.IsProduction() || Configuration["PersistantStores"] == "true")
+            if (HostingEnvironment.IsProduction() || Configuration["PersistentStores"] == "true")
             {
                 UsePersistentStores(services);
             }

@@ -39,10 +39,10 @@ jobs:
   strategy:
     matrix:
       InMemory:
-        UsePersistentStore: ''
+        PersistentStores: ''
         KvUri: ''
       Persistent:
-        UsePersistentStore: 'true'
+        PersistentStores: 'true'
         KvUri: $[ dependencies.infrastructure.outputs['outputs.kvUri'] ]
     maxParallel: 2
   condition: always()
@@ -63,6 +63,9 @@ jobs:
   - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
     workingDirectory: apps
     displayName: dotnet test
+    env:
+      ASPNETCORE_kvUri: $(kvUri)
+      ASPNETCORE_PersistentStores: $(PersistentStores)
 
   - task: PublishTestResults@2
     condition: always() 

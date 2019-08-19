@@ -9,7 +9,7 @@ export PATH=$PATH:$HOME/.pulumi/bin
 pushd infra/
 
 npm install
-npm run build
+# npm run build
 
 pulumi stack select test
 
@@ -23,6 +23,8 @@ case $BUILD_REASON in
     ;;
   *)
 esac
+
+echo build reason is $BUILD_REASON
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$(pulumi stack output kvUri)"
