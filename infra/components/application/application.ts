@@ -100,7 +100,7 @@ export class Application extends pulumi.ComponentResource
   }
 
   private buildApp(registry: azure.containerservice.Registry): docker.Image {
-    const customImage = "hello-world";
+    const customImage = "webapp";
     const myImage = new docker.Image(
       "acrImage",
       {
