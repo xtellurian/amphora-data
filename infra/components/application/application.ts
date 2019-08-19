@@ -36,6 +36,7 @@ export class Application extends pulumi.ComponentResource
   private _acr: azure.containerservice.Registry;
   private _plan: azure.appservice.Plan;
   tsi: Tsi;
+  image: docker.Image;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
   }
@@ -118,6 +119,7 @@ export class Application extends pulumi.ComponentResource
       },
       { parent: this }
     );
+    this.image = myImage;
     return myImage;
   }
 
