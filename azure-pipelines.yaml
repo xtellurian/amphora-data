@@ -44,10 +44,11 @@ jobs:
     matrix:
       InMemory:
         PersistentStores: ''
-        KvUri: ''
-      Persistent:
-        PersistentStores: 'true'
-        KvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
+        kvUri: ''
+      ${{ if dependencies.infrastructure.outputs['pulumi.kvUri'] }}:
+        Persistent:
+          PersistentStores: 'true'
+          kvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
     maxParallel: 2
   condition: succeeded()
   pool:
