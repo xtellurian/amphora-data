@@ -8,6 +8,9 @@ set -e -x
 # Add the pulumi CLI to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
 
+pwd
+ls
+
 pushd infra/
 
 pulumi login
