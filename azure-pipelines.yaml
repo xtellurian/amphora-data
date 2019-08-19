@@ -22,9 +22,9 @@ jobs:
       displayName: Check pulumi action is valid
 
     - script: |
-        chmod +x infra/scripts/*.sh
+        chmod +x ./infra/scripts/*.sh
         ./infra/scripts/setup.sh
-      displayName: 'Install pulumi and run infra code'
+      displayName: 'Install pulumi'
       env:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
