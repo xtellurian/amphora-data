@@ -16,7 +16,7 @@ const azTags = {
   stack: pulumi.getStack(),
   project: pulumi.getProject(),
 }
-const rgName = pulumi.getStack() + "-app";
+const rgName = pulumi.getStack() + "-state";
 
 export class StateParams implements IComponentParams {
   name: string = "d-state-component";
