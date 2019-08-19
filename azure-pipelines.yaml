@@ -28,8 +28,9 @@ jobs:
         ARM_TENANT_ID: $(tenant)
 
     - script: |
-        echo $(pulumi.kvUri)
-        echo $(pulumi.pulumiStack)
+        set -e
+        echo "$(pulumi.kvUri)"
+        echo "$(pulumi.pulumiStack)""
       displayName: echo the vars
 
 - job: apps
