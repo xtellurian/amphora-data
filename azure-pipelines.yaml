@@ -28,6 +28,7 @@ jobs:
       name: pulumi
 
     - task: AzureCLI@1
+      name: pulumi
       env:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
       inputs:
@@ -48,7 +49,7 @@ jobs:
         KvUri: ''
       Persistent:
         PersistentStores: 'true'
-        KvUri: $[ dependencies.infrastructure.outputs['outputs.kvUri'] ]
+        KvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
     maxParallel: 2
   condition: succeeded()
   pool:
