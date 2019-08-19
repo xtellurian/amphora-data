@@ -45,7 +45,7 @@ jobs:
       InMemory:
         PersistentStores: ''
         kvUri: ''
-      ${{ if dependencies.infrastructure.outputs['pulumi.kvUri'] }}:
+      ${{ if $[dependencies.infrastructure.outputs['pulumi.kvUri'] ] }}:
         Persistent:
           PersistentStores: 'true'
           kvUri: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
