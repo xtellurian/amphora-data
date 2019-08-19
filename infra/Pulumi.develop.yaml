@@ -4,6 +4,7 @@ config:
   application:location: AustraliaSoutheast
   application:appSvcPlanTier: Basic
   application:appSvcPlanSize: B1
+  application:buildContainer: "true"
 
   authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
 

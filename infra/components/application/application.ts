@@ -9,6 +9,7 @@ import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
 import { AzureConfig } from "../azure-config/azure-config";
 import { Tsi } from "./tsi/tsi";
+import { Input } from "@pulumi/pulumi";
 
 const config = new pulumi.Config("application");
 const azTags = {
@@ -18,6 +19,8 @@ const azTags = {
   project: pulumi.getProject(),
 }
 const rgName = pulumi.getStack() + "-app";
+const imageTag = "v1.0.0";
+const customImage = "webapp";
 
 // lives in here for now
 export class ApplicationParams implements IComponentParams {
@@ -69,14 +72,20 @@ export class Application extends pulumi.ComponentResource
       }
     );
     this.acr = this.createAcr(rg);
-    const image = this.buildApp(this.acr);
-    this.createAppSvc(rg, this._state.kv, image);
+
+    var imageName = this.acr.loginServer +  "/" + customImage + ":" + imageTag;
+    if (config.getBoolean("buildContainer")) {
+      const image = this.buildApp(this.acr);
+      var imagename = image.imageName;
+    }
+
+    this.createAppSvc(rg, this._state.kv, imageName);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
   }
   createTsi() {
     this.tsi = new Tsi("tsi", {
-      eh_namespace: this._state.ehns, 
+      eh_namespace: this._state.ehns,
       eh: this._state.eh,
       appSvc: this.appSvc,
       state: this._state
@@ -101,7 +110,6 @@ export class Application extends pulumi.ComponentResource
   }
 
   private buildApp(registry: azure.containerservice.Registry): docker.Image {
-    const customImage = "webapp";
     const myImage = new docker.Image(
       "acrImage",
       {
@@ -126,7 +134,7 @@ export class Application extends pulumi.ComponentResource
   private createAppSvc(
     rg: azure.core.ResourceGroup,
     kv: azure.keyvault.KeyVault,
-    image: docker.Image
+    imageName: Input<string>
   ) {
     this._plan = new azure.appservice.Plan(
       "appSvcPlan",
@@ -168,7 +176,7 @@ export class Application extends pulumi.ComponentResource
         },
         siteConfig: {
           alwaysOn: true,
-          linuxFxVersion: pulumi.interpolate`DOCKER|${image.imageName}`
+          linuxFxVersion: pulumi.interpolate`DOCKER|${imageName}`
         },
         httpsOnly: true,
         tags: azTags
