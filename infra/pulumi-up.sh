@@ -46,6 +46,7 @@ acrName=$(pulumi stack output acrName)
 set -e
 if [[ ! -z $oldImageName ]] ; then
   echo "Attempting pulling cache"
+  az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
   az acr login -n $acrName
   docker pull $oldImageName
 fi
