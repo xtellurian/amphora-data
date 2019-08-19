@@ -146,6 +146,7 @@ export class State extends pulumi.ComponentResource {
 
     if( this.azConfig.clientConfig.servicePrincipalObjectId )
     {
+      // there needs to be 2 here, because pulumi and dotnet do it differently... 
       const spAccess = new azure.keyvault.AccessPolicy("sp-access", 
       {
         keyVaultId: kv.id,
