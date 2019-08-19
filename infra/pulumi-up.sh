@@ -42,10 +42,12 @@ pulumi stack select ci
 echo build reason is $BUILD_REASON
 
 pulumi up --yes
-pulumi stack output kvUri
+
+stack=$(pulumi stack output kvUri)
+echo stack is $stack
 
 # Save the stack output variables to job variables.
-echo "##vso[task.setvariable variable=kvUri; isOutput=true]$(pulumi stack output kvUri)"
+echo "##vso[task.setvariable variable=kvUri; isOutput=true]$stack"
 echo "##vso[task.setvariable variable=pulumiStack; isOutput=true]ci" # see above where stack is selected
 
 popd
