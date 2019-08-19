@@ -10,6 +10,8 @@ export PATH=$PATH:$HOME/.pulumi/bin
 
 pushd infra/
 
+pulumi login
+
 npm install
 # npm run build
 
