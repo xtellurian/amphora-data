@@ -146,7 +146,7 @@ export class Application extends pulumi.ComponentResource
       }
     );
 
-    this.imageName = pulumi.interpolate`${this.acr.loginServer}${config.require("imageName")}:latest`;
+    this.imageName = pulumi.interpolate`${this.acr.loginServer}/${config.require("imageName")}:latest`;
     this._appSvc = new azure.appservice.AppService(
       "appSvc",
       {
