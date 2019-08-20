@@ -18,10 +18,12 @@
         "forceConsistentCasingInFileNames": true,
         "strictNullChecks": true
     },
-    "files": [
-        "index.ts"
+    "include": [
+        "index.ts",
+        "components.ts",
+        "components/**/*.ts"
     ],
     "exclude": [
-        "node_modules/**"
+        "node_modules/**/*.ts"
     ]
 }
