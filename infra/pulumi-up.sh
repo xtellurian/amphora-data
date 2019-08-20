@@ -19,12 +19,12 @@ npm install
 # only sets stack if on develop or master
 set_special_stack () {
   if [ $1 == "refs/heads/develop" ]; then
-    echo "Special Stack: Develop"
-    pulumi stack select develop
+    STACK="develop"
   elif [ $1 == "refs/heads/master" ]; then
-      echo "Special Stack: Master"
-      pulumi stack select master
+    STACK="master"
   fi
+  echo "Selected Stack: $STACK"
+  pulumi stack select $STACK
 }
 
 echo build reason is $BUILD_REASON
@@ -33,16 +33,21 @@ if [ $BUILD_REASON == "PullRequest" ] ; then
   set_special_stack $SYSTEM_PULLREQUEST_TARGETBRANCH
   echo "Previewing special target stack!"
   pulumi preview
+  echo "Source Branch (Pull Request) is $SYSTEM_PULLREQUEST_SOURCEBRANCH"
+  set_special_stack $SYSTEM_PULLREQUEST_SOURCEBRANCH
+else
+  # spin up the source branch stack
+  echo "Source Branch is $BUILD_SOURCEBRANCH"
+  set_special_stack $BUILD_SOURCEBRANCH
 fi
-
-# spin up the source branch stack
-set_special_stack $BUILD_SOURCEBRANCH
-
 
 pulumi up --yes
 
+kvUri=$(pulumi stack output kvUri)
+echo "kvUri is $kvUri"
+
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
-echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]ci" # see above where stack is selected
+echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]$STACK" # see above where stack is selected
 
 popd
