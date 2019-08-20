@@ -9,7 +9,7 @@ using Amphora.Common.Contracts;
 using Amphora.Api.Contracts;
 using System.Linq;
 
-namespace api.Store
+namespace Amphora.Api.Stores
 {
     public class AzTableEntityStore<T, TTableEntity> : IEntityStore<T> where T : class, IEntity where TTableEntity : class, ITableEntity, new()
     {
@@ -21,7 +21,7 @@ namespace api.Store
         protected CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
         public AzTableEntityStore(
-            IOptionsMonitor<TableStoreOptions> options,
+            IOptionsMonitor<AzureStorageAccountOptions> options,
             IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
             ILogger<AzTableEntityStore<T, TTableEntity>> logger)
@@ -120,6 +120,12 @@ namespace api.Store
         public virtual async Task<T> UpdateAsync(T model)
         {
             var entity = mapper.Map<TTableEntity>(model);
+            if(string.IsNullOrEmpty(entity.ETag))
+            {
+                //TODO: ETag cache per session
+                logger.LogWarning("ETag is null. Setting as wildcard *");
+                entity.ETag = "*";
+            }
             try
             {
                 // Create the InsertOrReplace table operation

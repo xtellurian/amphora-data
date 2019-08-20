@@ -4,52 +4,53 @@ export function environmentTemplate() {
             "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
         parameters: {
-            location: {
-                type: "String"
-            },
             environmentName: {
-                type: "String"
+                type: "String",
+            },
+            location: {
+                type: "String",
             },
             storageAccountName: {
-                type: "String"
+                type: "String",
             },
             storageAccountResourceId: {
-                type: "String"
+                type: "String",
             },
         },
         variables: {},
+        // tslint:disable-next-line: object-literal-sort-keys
         resources: [
             {
-                type: "Microsoft.TimeSeriesInsights/environments",
                 apiVersion: "2018-08-15-preview",
-                name: "[parameters('environmentName')]",
-                location: "[parameters('location')]",
-                sku: {
-                    name: "L1",
-                    capacity: 1
-                },
                 kind: "LongTerm",
+                location: "[parameters('location')]",
+                name: "[parameters('environmentName')]",
                 properties: {
                     storageConfiguration: {
                         accountName: "[parameters('storageAccountName')]",
                         managementKey:
-                            "[listKeys(parameters('storageAccountResourceId'), '2018-02-01').keys[0].value]"
+                            "[listKeys(parameters('storageAccountResourceId'), '2018-02-01').keys[0].value]",
                     },
                     timeSeriesIdProperties: [
                         {
                             name: "tempora",
-                            type: "string"
-                        }
-                    ]
-                }
-            }
+                            type: "string",
+                        },
+                    ],
+                },
+                sku: {
+                    capacity: 1,
+                    name: "L1",
+                },
+                type: "Microsoft.TimeSeriesInsights/environments",
+            },
         ],
         outputs: {
             dataAccessFqdn: {
                 type: "string",
-                value: "[reference(concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))).dataAccessFqdn]"
-            }
-        }
+                // tslint:disable-next-line: max-line-length
+                value: "[reference(concat('Microsoft.TimeSeriesInsights/environments/', parameters('environmentName'))).dataAccessFqdn]",
+            },
+        },
     };
 }
-

@@ -4,58 +4,56 @@ export function eventSourceTemplate() {
             "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
         parameters: {
-            location: {
-                type: "String"
-            },
-            eventHubNamespaceName: {
-                type: "String"
-            },
-            eventHubName: {
-                type: "String"
-            },
-            eventHubResourceId: {
-                type: "String"
-            },
             eh_consumer_group: {
                 defaultValue: "$default",
-                type: "String"
+                type: "String",
             },
             environmentName: {
-                type: "String"
+                type: "String",
+            },
+            eventHubName: {
+                type: "String",
+            },
+            eventHubNamespaceName: {
+                type: "String",
+            },
+            eventHubResourceId: {
+                type: "String",
             },
             keyName: {
-                type: "String"
+                type: "String",
+            },
+            location: {
+                type: "String",
             },
             sharedAccessKey: {
-                type: "String"
+                type: "String",
             },
             timestampPropertyName: {
+                defaultValue: "t",
                 type: "String",
-                defaultValue: "t"
-            }
+            },
         },
         variables: {},
+        // tslint:disable-next-line: object-literal-sort-keys
         resources: [
             {
-                type: "Microsoft.TimeSeriesInsights/environments/eventsources",
                 apiVersion: "2018-08-15-preview",
-                name: "[concat(parameters('environmentName'), '/data')]",
-                location: "[parameters('location')]",
                 kind: "Microsoft.EventHub",
+                location: "[parameters('location')]",
+                name: "[concat(parameters('environmentName'), '/data')]",
                 properties: {
-                    // eventSourceResourceId:
-                    //   "[concat(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespaceName')), '/EventHub/' , parameters('eventHubName'))]",
-                    eventSourceResourceId: "[parameters('eventHubResourceId')]",
                     consumerGroupName: "[parameters('eh_consumer_group')]",
-                    keyName: "[parameters('keyName')]",
-                    timestampPropertyName: "[parameters('timestampPropertyName')]",
                     eventHubName: "[parameters('eventHubName')]",
+                    eventSourceResourceId: "[parameters('eventHubResourceId')]",
+                    keyName: "[parameters('keyName')]",
                     serviceBusNamespace: "[parameters('eventHubNamespaceName')]",
                     sharedAccessKey: "[parameters('sharedAccessKey')]",
-                }
-            }
+                    timestampPropertyName: "[parameters('timestampPropertyName')]",
+                },
+                type: "Microsoft.TimeSeriesInsights/environments/eventsources",
+            },
         ],
-        outputs: {}
+        outputs: {},
     };
 }
-

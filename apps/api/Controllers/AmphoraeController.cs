@@ -46,27 +46,27 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/amphorae/{id}/upload")]
-        public async Task<IActionResult> UploadToAmphora(string id)
+        public async Task<IActionResult> UploadToAmphora(string id, string name)
         {
             var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null)
+            if (entity == null || string.IsNullOrEmpty(name))
             {
                 return BadRequest("Invalid Amphora Id");
             }
 
-            await dataStore.SetDataAsync(entity, await Request.Body.ReadFullyAsync());
+            await dataStore.SetDataAsync(entity, await Request.Body.ReadFullyAsync(), name);
             return Ok();
         }
 
         [HttpGet("api/amphorae/{id}/download")]
-        public async Task<IActionResult> Download(string id)
+        public async Task<IActionResult> Download(string id, string name)
         {
             if (string.IsNullOrEmpty(id)) return BadRequest();
             var entity = await amphoraEntityStore.ReadAsync(id);
             if (entity == null) return NotFound("Amphora not found");
-            var data = await dataStore.GetDataAsync(entity);
+            var data = await dataStore.GetDataAsync(entity, name);
             if (data == null) return NotFound("Data not found.");
-            return File(data, entity.ContentType ?? "application/octet-stream", entity.FileName);
+            return File(data, entity.ContentType ?? "application/octet-stream", name);
         }
     }
 }

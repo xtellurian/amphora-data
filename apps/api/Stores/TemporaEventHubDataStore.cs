@@ -29,12 +29,18 @@ namespace Amphora.Api.Stores
             }
 
         }
-        public Task<Datum> GetDataAsync(Tempora entity)
+
+        public Task<Datum> GetDataAsync(Tempora entity, string name)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public async Task<Datum> SetDataAsync(Tempora entity, Datum data)
+        public Task<IEnumerable<string>> ListNamesAsync(Tempora entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Datum> SetDataAsync(Tempora entity, Datum data, string name)
         {
             var content = JsonConvert.SerializeObject(data,
                                 Newtonsoft.Json.Formatting.None,
@@ -46,5 +52,6 @@ namespace Amphora.Api.Stores
             await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
             return data;
         }
+
     }
 }

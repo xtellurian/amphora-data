@@ -7,10 +7,11 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static Amphora.Common.Models.Amphora GetValidAmphora()
+        public static Amphora.Common.Models.Amphora GetValidAmphora(string id = null)
         {
             return new Amphora.Common.Models.Amphora()
             {
+                Id = id,
                 Description = "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
                 Title = "Valid Amphora - title"

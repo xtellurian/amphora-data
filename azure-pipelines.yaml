@@ -33,13 +33,14 @@ jobs:
         ARM_TENANT_ID: $(tenant)
 
     - script: |
-        echo $kvUri
-        echo "$(pulumi.kvUri)"
-        echo $pulumiStack
-      displayName: echo the vars
+        echo "$appUrl"
+        echo "$kvUri"
+        echo "$pulumiStack"
+      displayName: Important Variables
       env: 
         kvUri: $(pulumi.kvUri)
         pulumiStack: $(pulumi.pulumiStack)
+        appUrl: $(pulumi.appUrl)
 
 
 ##################################################################
@@ -69,6 +70,8 @@ jobs:
       value: 'Release'
     - name: kvUri
       value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
+    - name: acrName
+      value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
 
   steps:
   - script: |
@@ -112,10 +115,15 @@ jobs:
       summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
       codecoverageTool: cobertura
 
-  - script: docker build .
-    workingDirectory: apps
-    displayName: Build docker image
-
+  - script: |
+      chmod +x ./apps/*.sh
+      ./apps/acr-task.sh
+    displayName: Create ACR Build Task
+    env:
+      TASK_NAME: BuildAndPushWebApp
+      BRANCH: $(Build.SourceBranchName)
+      ACR_NAME: $(acrName)
+      ACCESS_TOKEN: $(System.AccessToken)
 
 ##################################################################
 #           Destroy Instrastructure

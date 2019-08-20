@@ -7,18 +7,18 @@ export interface IComponentParams {
 
 const COMPONENTS = {
   Application: Symbol.for("Application"),
+  Monitoring: Symbol.for("Monitoring"),
   State: Symbol.for("State"),
-  Monitoring: Symbol.for("Monitoring")
 };
 
 const COMPONENT_PARAMS = {
   ApplicationParams: Symbol.for("ApplicationParams"),
+  MonitoringParams: Symbol.for("MonitoringParams"),
   StateParams: Symbol.for("StateParams"),
-  MonitoringParams: Symbol.for("MonitoringParams")
 };
 
 const CONSTANTS = {
-  AzStorage_KV_CS_SecretName: "StorageConnectionString"
-}
+  AzStorage_KV_CS_SecretName: "StorageConnectionString",
+};
 
 export { COMPONENTS, COMPONENT_PARAMS, CONSTANTS };

@@ -27,13 +27,14 @@ namespace Amphora.Tests.Integration
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
+            var name = Guid.NewGuid().ToString();
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var uploadResponse = await client.PostAsync($"{url}/{amphora.Id}/upload", requestBody);
+            var uploadResponse = await client.PostAsync($"{url}/{amphora.Id}/upload?name={name}", requestBody);
             uploadResponse.EnsureSuccessStatusCode();
 
-            var downloadResponse = await client.GetAsync($"{url}/{amphora.Id}/download");
+            var downloadResponse = await client.GetAsync($"{url}/{amphora.Id}/download?name={name}");
             downloadResponse.EnsureSuccessStatusCode();
 
             // Assert

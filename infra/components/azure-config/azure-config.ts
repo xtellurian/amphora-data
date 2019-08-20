@@ -5,13 +5,16 @@ export interface IAzureConfig {
 }
 
 export class AzureConfig {
-    clientConfig: azure.core.GetClientConfigResult;
+    public clientConfig: azure.core.GetClientConfigResult;
 
-    async init() {
-        let c = await azure.core.getClientConfig();
+    public async init() {
+        const c = await azure.core.getClientConfig();
         this.clientConfig = c;
-        console.log("servicePrincipalApplicationId: " + c.servicePrincipalApplicationId)
-        console.log("servicePrincipalObjectId: " + c.servicePrincipalObjectId)
-        console.log("clientId: " + c.clientId)
+        // tslint:disable-next-line: no-console
+        console.log("servicePrincipalApplicationId: " + c.servicePrincipalApplicationId);
+        // tslint:disable-next-line: no-console
+        console.log("servicePrincipalObjectId: " + c.servicePrincipalObjectId);
+        // tslint:disable-next-line: no-console
+        console.log("clientId: " + c.clientId);
     }
 }

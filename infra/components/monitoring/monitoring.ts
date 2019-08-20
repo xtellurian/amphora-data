@@ -1,37 +1,29 @@
-import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
-import { IComponentParams, COMPONENT_PARAMS } from "../../components";
+import * as pulumi from "@pulumi/pulumi";
+import { IComponentParams } from "../../components";
 
 import { getDashboardTemplate } from "./dashboards-arm";
 const azTags = {
-  source: "pulumi",
   component: "monitoring",
-  stack: pulumi.getStack(),
   project: pulumi.getProject(),
-}
+  source: "pulumi",
+  stack: pulumi.getStack(),
+};
 
 const config = new pulumi.Config("monitoring");
 const rgName = pulumi.getStack() + "-monitor";
 
-export class MonitoringParams implements IComponentParams {
-  name: string = "d-monitoring-component";
-  opts?: pulumi.ComponentResourceOptions | undefined;
-}
+// export class MonitoringParams implements IComponentParams {
+//   name: string = "d-monitoring-component";
+//   opts?: pulumi.ComponentResourceOptions | undefined;
+// }
 
 export class Monitoring extends pulumi.ComponentResource {
-  private _logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
-  private _applicationInsights: azure.appinsights.Insights;
-
-
-  get logAnalyticsWorkspace(): azure.operationalinsights.AnalyticsWorkspace {
-    return this._logAnalyticsWorkspace;
-  }
-  get appInsights(): azure.appinsights.Insights {
-    return this._applicationInsights;
-  }
+  public logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
+  public applicationInsights: azure.appinsights.Insights;
 
   constructor(
-    params: IComponentParams
+    params: IComponentParams,
   ) {
     super("amphora:Monitoring", params.name, {}, params.opts);
 
@@ -41,31 +33,31 @@ export class Monitoring extends pulumi.ComponentResource {
   private create() {
     const rg = new azure.core.ResourceGroup(
       rgName,
-      { 
-        tags: azTags, 
-        location: config.require("location") 
+      {
+        location: config.require("location"),
+        tags: azTags,
       },
-      { parent: this }
+      { parent: this },
     );
-    this._logAnalyticsWorkspace = new azure.operationalinsights.AnalyticsWorkspace(
+    this.logAnalyticsWorkspace = new azure.operationalinsights.AnalyticsWorkspace(
       "logAnalytics",
       {
         resourceGroupName: rg.name,
         sku: "PerGB2018",
-        tags: azTags
+        tags: azTags,
       },
-      { parent: rg }
+      { parent: rg },
     );
 
-    this._applicationInsights = new azure.appinsights.Insights(
+    this.applicationInsights = new azure.appinsights.Insights(
       "appInsights",
       {
-        tags: azTags,
         applicationType: "web",
         location: "AustraliaEast", // only supported region in AUS
-        resourceGroupName: rg.name
+        resourceGroupName: rg.name,
+        tags: azTags,
       },
-      { parent: rg }
+      { parent: rg },
     );
 
     // new azure.core.TemplateDeployment("dashboard", {

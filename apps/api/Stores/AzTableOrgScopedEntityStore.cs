@@ -9,13 +9,13 @@ using Amphora.Common.Contracts;
 using Amphora.Api.Contracts;
 using System.Linq;
 
-namespace api.Store
+namespace Amphora.Api.Stores
 {
     public class AzTableOrgEntityStore<T, TTableEntity> : AzTableEntityStore<T,TTableEntity>, 
         IOrgScopedEntityStore<T> where T : class, IOrgScoped where TTableEntity : class, ITableEntity, new()
     {
         public AzTableOrgEntityStore(
-            IOptionsMonitor<TableStoreOptions> options,
+            IOptionsMonitor<AzureStorageAccountOptions> options,
             IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
             ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger) : base(options, tableOptions, mapper, logger)

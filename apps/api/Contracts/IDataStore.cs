@@ -6,7 +6,8 @@ namespace Amphora.Api.Contracts
 {
     public interface IDataStore<T,TData> where T: IOrgScoped
     {
-        Task<TData> GetDataAsync(T entity);
-        Task<TData> SetDataAsync(T entity, TData data);
+        Task<TData> GetDataAsync(T entity, string name);
+        Task<IEnumerable<string>> ListNamesAsync(T entity);
+        Task<TData> SetDataAsync(T entity, TData data, string name);
     }
 }

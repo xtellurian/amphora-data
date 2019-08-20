@@ -40,7 +40,7 @@
         </div>
 
         <div class="col-9">
-             <div class="card bg-light mb-3">
+            <div class="card bg-light mb-3">
                 <div class="card-header">Amphora Details</div>
                     <div class="card-body">
                         <h5 class="card-title">Description</h5>
@@ -51,16 +51,27 @@
                         <div class="col-sm">
                             $@Model.Amphora.Price 
                         </div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm">
-                            <span class="card-text">
-                                Filename: @Model.Amphora.FileName
-                                <a asp-route-id="@Model.Amphora.Id" asp-controller="Amphorae" asp-action="Download"><button class="btn btn-primary">Download</button></a>
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
+
+            <table id="market-table" class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Filename</th>
+                    <th> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var n in Model.Names)
+                    {
+                     <tr class="file-item">
+                        <th scope="row">@n</th>
+                        <td><a asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-controller="Amphorae" asp-action="Download"><button class="btn btn-primary">Download</button></a></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
     

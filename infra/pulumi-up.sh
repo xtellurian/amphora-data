@@ -13,7 +13,11 @@ pushd infra
 
 pulumi login
 
+echo "Running NPM install + lint + build"
 npm install
+npm run lint
+
+# annoying - weird error where it's finding broken types in node_modules
 # npm run build
 
 # only sets stack if on develop or master
@@ -44,10 +48,13 @@ fi
 pulumi up --yes
 
 kvUri=$(pulumi stack output kvUri)
-echo "kvUri is $kvUri"
+appUrl=$(pulumi stack output appUrl)
+acrName=$(pulumi stack output acrName)
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
-echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]$STACK" # see above where stack is selected
+echo "##vso[task.setvariable variable=appUrl;isOutput=true]$appUrl" 
+echo "##vso[task.setvariable variable=acrName;isOutput=true]$acrName" 
+echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]$STACK" 
 
 popd
