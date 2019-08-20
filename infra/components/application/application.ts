@@ -9,7 +9,6 @@ import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
 import { AzureConfig } from "../azure-config/azure-config";
 import { Tsi } from "./tsi/tsi";
-import { Input } from "@pulumi/pulumi";
 
 const config = new pulumi.Config("application");
 const azTags = {
@@ -19,8 +18,6 @@ const azTags = {
   project: pulumi.getProject(),
 }
 const rgName = pulumi.getStack() + "-app";
-const imageTag = "v1.0.0";
-const customImage = "webapp";
 
 // lives in here for now
 export class ApplicationParams implements IComponentParams {
@@ -73,9 +70,9 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
-    const image = this.buildApp(this.acr);
+    //const image = this.buildApp(this.acr);
 
-    this.createAppSvc(rg, this._state.kv, image);
+    this.createAppSvc(rg, this._state.kv);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
   }
@@ -105,32 +102,31 @@ export class Application extends pulumi.ComponentResource
     return acr;
   }
 
-  private buildApp(registry: azure.containerservice.Registry): docker.Image {
-    const myImage = new docker.Image(
-      "acrImage",
-      {
-        imageName: pulumi.interpolate`${
-          registry.loginServer
-          }/${customImage}:v1.0.0`,
-        build: {
-          context: `../apps`
-        },
-        registry: {
-          server: registry.loginServer,
-          username: registry.adminUsername,
-          password: registry.adminPassword
-        }
-      },
-      { parent: this }
-    );
-    this.image = myImage;
-    return myImage;
-  }
+  // private buildApp(registry: azure.containerservice.Registry): docker.Image {
+  //   const myImage = new docker.Image(
+  //     "acrImage",
+  //     {
+  //       imageName: pulumi.interpolate`${
+  //         registry.loginServer
+  //         }/${customImage}:v1.0.0`,
+  //       build: {
+  //         context: `../apps`
+  //       },
+  //       registry: {
+  //         server: registry.loginServer,
+  //         username: registry.adminUsername,
+  //         password: registry.adminPassword
+  //       }
+  //     },
+  //     { parent: this }
+  //   );
+  //   this.image = myImage;
+  //   return myImage;
+  // }
 
   private createAppSvc(
     rg: azure.core.ResourceGroup,
-    kv: azure.keyvault.KeyVault,
-    image: docker.Image
+    kv: azure.keyvault.KeyVault
   ) {
     this._plan = new azure.appservice.Plan(
       "appSvcPlan",
@@ -150,6 +146,8 @@ export class Application extends pulumi.ComponentResource
       }
     );
 
+    let fullImageName = pulumi.interpolate`${this.acr.loginServer}${config.require("imageName")}:latest`;
+    console.log(fullImageName);
     this._appSvc = new azure.appservice.AppService(
       "appSvc",
       {
@@ -172,7 +170,7 @@ export class Application extends pulumi.ComponentResource
         },
         siteConfig: {
           alwaysOn: true,
-          linuxFxVersion: pulumi.interpolate`DOCKER|${image.imageName}`
+          linuxFxVersion: pulumi.interpolate`DOCKER|${fullImageName}`
         },
         httpsOnly: true,
         tags: azTags
