@@ -52,11 +52,18 @@ namespace Amphora.Api.Stores
             });
         }
 
-        public Task<IEnumerable<string>> ListNames(T entity)
+        public Task<IEnumerable<string>> ListNamesAsync(T entity)
         {
             return Task<IEnumerable<string>>.Factory.StartNew( () => {
-                var entityData = store[entity.Id];
-                return entityData.Keys;
+                if(store.ContainsKey(entity.Id))
+                {
+                    var entityData = store[entity.Id];
+                    return entityData.Keys;
+                }
+                else
+                {
+                    return new List<string>();
+                }
             });
         }
     }

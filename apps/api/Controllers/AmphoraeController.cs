@@ -66,7 +66,7 @@ namespace Amphora.Api.Controllers
             if (entity == null) return NotFound("Amphora not found");
             var data = await dataStore.GetDataAsync(entity, name);
             if (data == null) return NotFound("Data not found.");
-            return File(data, entity.ContentType ?? "application/octet-stream", entity.FileName);
+            return File(data, entity.ContentType ?? "application/octet-stream", name);
         }
     }
 }

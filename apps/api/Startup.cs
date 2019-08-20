@@ -146,7 +146,7 @@ namespace Amphora.Api
 
         private void ConfigureOptions(IServiceCollection services)
         {
-            services.Configure<TableStoreOptions>(Configuration);
+            services.Configure<AzureStorageAccountOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration);
             services.Configure<TsiOptions>(Configuration);
             services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>(p =>
@@ -167,7 +167,7 @@ namespace Amphora.Api
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, Datum>, TemporaEventHubDataStore>();
             // TODO (these are in memory)
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, AzBlobAmphoraDataStore>();
 
         }
         private static void UseInMemoryStores(IServiceCollection services)

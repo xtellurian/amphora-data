@@ -15,7 +15,7 @@ namespace Amphora.Api.Stores
         IOrgScopedEntityStore<T> where T : class, IOrgScoped where TTableEntity : class, ITableEntity, new()
     {
         public AzTableOrgEntityStore(
-            IOptionsMonitor<TableStoreOptions> options,
+            IOptionsMonitor<AzureStorageAccountOptions> options,
             IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
             ILogger<AzTableOrgEntityStore<T, TTableEntity>> logger) : base(options, tableOptions, mapper, logger)

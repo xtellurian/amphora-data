@@ -21,7 +21,7 @@ namespace Amphora.Api.Stores
         protected CloudTable table;
         private bool isInit = false; // start non-initialised. Will run the first time.
         public AzTableEntityStore(
-            IOptionsMonitor<TableStoreOptions> options,
+            IOptionsMonitor<AzureStorageAccountOptions> options,
             IOptionsMonitor<EntityTableStoreOptions<TTableEntity>> tableOptions,
             IMapper mapper,
             ILogger<AzTableEntityStore<T, TTableEntity>> logger)

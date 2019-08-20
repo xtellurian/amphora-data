@@ -35,7 +35,7 @@ namespace Amphora.Api.Stores
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ListNames(Tempora entity)
+        public Task<IEnumerable<string>> ListNamesAsync(Tempora entity)
         {
             throw new NotImplementedException();
         }

@@ -51,19 +51,27 @@
                         <div class="col-sm">
                             $@Model.Amphora.Price 
                         </div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm">
-                            @foreach(var n in Model.Names)
-                            {
-                            <span class="card-text">
-                                Filename: @n
-                                <a asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-controller="Amphorae" asp-action="Download"><button class="btn btn-primary">Download</button></a>
-                            </span>
-                            }
-                        </div>
                     </div>
                 </div>
             </div>
+
+            <table id="market-table" class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Filename</th>
+                    <th> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var n in Model.Names)
+                    {
+                     <tr class="file-item">
+                        <th scope="row">@n</th>
+                        <td><a asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-controller="Amphorae" asp-action="Download"><button class="btn btn-primary">Download</button></a></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
     

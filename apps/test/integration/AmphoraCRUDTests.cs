@@ -98,7 +98,6 @@ namespace Amphora.Tests.Integration
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
             Assert.Equal(b.Title, c.Title);
-            Assert.Equal(b.FileName, c.FileName);
         }
     
     }

@@ -1,7 +1,7 @@
 
 namespace Amphora.Api.Options
 {
-    public class TableStoreOptions
+    public class AzureStorageAccountOptions
     {
         public string StorageConnectionString { get; set; }
     }

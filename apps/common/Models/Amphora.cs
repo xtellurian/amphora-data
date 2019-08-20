@@ -11,7 +11,6 @@ namespace Amphora.Common.Models
             OrgId = "default";
         }
         public string ContentType { get; set; }
-        public string FileName { get; set; } = "data";
 
         public override DataEntityTypes GetEntityType()
         {

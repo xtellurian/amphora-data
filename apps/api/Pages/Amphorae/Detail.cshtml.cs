@@ -41,7 +41,7 @@ namespace Amphora.Api.Pages.Amphorae
             {
                 return RedirectToPage("/amphorae/index");
             }
-            Names = await dataStore.ListNames(Amphora);
+            Names = await dataStore.ListNamesAsync(Amphora);
             return Page();
         }
 
@@ -68,7 +68,7 @@ namespace Amphora.Api.Pages.Amphorae
                 }
             }
             this.Amphora = entity;
-
+            this.Names = await dataStore.ListNamesAsync(entity);
             return Page();
         }
 
