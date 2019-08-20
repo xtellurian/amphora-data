@@ -5,51 +5,52 @@ export function getDashboardTemplate() {
     contentVersion: "1.0.0.0",
     parameters: {
       storageAccountType: {
-        type: "string",
-        defaultValue: "Standard_LRS",
         allowedValues: ["Standard_LRS", "Standard_GRS", "Standard_ZRS"],
+        defaultValue: "Standard_LRS",
         metadata: {
-          description: "Storage Account type"
-        }
-      }
+          description: "Storage Account type",
+        },
+        type: "string",
+      },
     },
     variables: {
+      apiVersion: "2015-06-15",
       location: "[resourceGroup().location]",
-      storageAccountName:
-        "[concat(uniquestring(resourceGroup().id), 'storage')]",
       publicIPAddressName:
         "[concat('myPublicIp', uniquestring(resourceGroup().id))]",
       publicIPAddressType: "Dynamic",
-      apiVersion: "2015-06-15"
+      storageAccountName:
+        "[concat(uniquestring(resourceGroup().id), 'storage')]",
     },
+    // tslint:disable-next-line: object-literal-sort-keys
     resources: [
       {
-        type: "Microsoft.Storage/storageAccounts",
-        name: "[variables('storageAccountName')]",
         apiVersion: "[variables('apiVersion')]",
         location: "[variables('location')]",
+        name: "[variables('storageAccountName')]",
         properties: {
-          accountType: "[parameters('storageAccountType')]"
-        }
+          accountType: "[parameters('storageAccountType')]",
+        },
+        type: "Microsoft.Storage/storageAccounts",
       },
       {
-        type: "Microsoft.Network/publicIPAddresses",
         apiVersion: "[variables('apiVersion')]",
-        name: "[variables('publicIPAddressName')]",
         location: "[variables('location')]",
+        name: "[variables('publicIPAddressName')]",
         properties: {
-          publicIPAllocationMethod: "[variables('publicIPAddressType')]",
           dnsSettings: {
-            domainNameLabel: "[variables('dnsLabelPrefix')]"
-          }
-        }
-      }
+            domainNameLabel: "[variables('dnsLabelPrefix')]",
+          },
+          publicIPAllocationMethod: "[variables('publicIPAddressType')]",
+        },
+        type: "Microsoft.Network/publicIPAddresses",
+      },
     ],
     outputs: {
       storageAccountName: {
         type: "string",
-        value: "[variables('storageAccountName')]"
-      }
-    }
+        value: "[variables('storageAccountName')]",
+      },
+    },
   };
 }

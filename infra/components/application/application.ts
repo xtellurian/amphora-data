@@ -1,29 +1,26 @@
-import * as pulumi from "@pulumi/pulumi";
-import * as docker from "@pulumi/docker";
 import * as azure from "@pulumi/azure";
-import {
-  IComponentParams,
-  CONSTANTS
-} from "../../components";
+import * as docker from "@pulumi/docker";
+import * as pulumi from "@pulumi/pulumi";
+import { CONSTANTS, IComponentParams } from "../../components";
+import { AzureConfig } from "../azure-config/azure-config";
 import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
-import { AzureConfig } from "../azure-config/azure-config";
 import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("application");
 const azTags = {
-  source: "pulumi",
   component: "application",
-  stack: pulumi.getStack(),
   project: pulumi.getProject(),
-}
+  source: "pulumi",
+  stack: pulumi.getStack(),
+};
 const rgName = pulumi.getStack() + "-app";
 
 // lives in here for now
-export class ApplicationParams implements IComponentParams {
-  name: string = "d-app-component";
-  opts?: pulumi.ComponentResourceOptions | undefined = undefined;
-}
+// export class ApplicationParams implements IComponentParams {
+//   public name: string = "d-app-component";
+//   public opts?: pulumi.ComponentResourceOptions | undefined = undefined;
+// }
 
 export interface IApplication {
   appSvc: azure.appservice.AppService;
@@ -32,72 +29,63 @@ export interface IApplication {
 
 export class Application extends pulumi.ComponentResource
   implements IApplication {
-  private _appSvc: azure.appservice.AppService;
-  private _plan: azure.appservice.Plan;
-  acr: azure.containerservice.Registry;
-  tsi: Tsi;
-  imageName: pulumi.Output<string>;
-  get appSvc(): azure.appservice.AppService {
-    return this._appSvc;
-  }
-  get plan(): azure.appservice.Plan {
-    return this._plan;
-  }
+  public appSvc: azure.appservice.AppService;
+  public plan: azure.appservice.Plan;
+  public acr: azure.containerservice.Registry;
+  public tsi: Tsi;
+  public imageName: pulumi.Output<string>;
 
   constructor(
     params: IComponentParams,
-    private _monitoring: Monitoring,
-    private _state: State,
-    private _azConfig: AzureConfig
+    private monitoring: Monitoring,
+    private state: State,
+    private azConfig: AzureConfig,
   ) {
     super("amphora:Application", params.name, {}, params.opts);
-    if (_state.kv == null) {
-      console.log("WTF");
-    }
     this.create();
   }
 
-  create() {
+  private create() {
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
         location: config.require("location"),
-        tags: azTags
+        tags: azTags,
       },
       {
-        parent: this
-      }
+        parent: this,
+      },
     );
     this.acr = this.createAcr(rg);
 
-    //const image = this.buildApp(this.acr);
+    // const image = this.buildApp(this.acr);
 
-    this.createAppSvc(rg, this._state.kv);
-    this.accessPolicyKeyVault(this._state.kv, this._appSvc);
+    this.createAppSvc(rg, this.state.kv);
+    this.accessPolicyKeyVault(this.state.kv, this.appSvc);
     this.createTsi();
   }
-  createTsi() {
+  private createTsi() {
     this.tsi = new Tsi("tsi", {
-      eh_namespace: this._state.ehns,
-      eh: this._state.eh,
       appSvc: this.appSvc,
-      state: this._state
+      eh: this.state.eh,
+      eh_namespace: this.state.ehns,
+      state: this.state,
     }, {
-        parent: this
+        parent: this,
       });
   }
 
-  createAcr(rg: azure.core.ResourceGroup) {
+  private createAcr(rg: azure.core.ResourceGroup) {
     const acr = new azure.containerservice.Registry(
       "acr",
       {
+        adminEnabled: true,
         location: config.require("location"),
         resourceGroupName: rg.name,
-        adminEnabled: true,
         sku: "Standard",
-        tags: azTags
+        tags: azTags,
       },
-      { parent: rg }
+      { parent: rg },
     );
     return acr;
   }
@@ -126,78 +114,77 @@ export class Application extends pulumi.ComponentResource
 
   private createAppSvc(
     rg: azure.core.ResourceGroup,
-    kv: azure.keyvault.KeyVault
+    kv: azure.keyvault.KeyVault,
   ) {
-    this._plan = new azure.appservice.Plan(
+    this.plan = new azure.appservice.Plan(
       "appSvcPlan",
       {
+        kind: "Linux",
         location: rg.location,
+        reserved: true,
         resourceGroupName: rg.name,
         sku: {
           size: config.require("appSvcPlanSize"),
-          tier: config.require("appSvcPlanTier")
+          tier: config.require("appSvcPlanTier"),
         },
-        kind: "Linux",
-        reserved: true,
-        tags: azTags
+        tags: azTags,
       },
       {
-        parent: rg
-      }
+        parent: rg,
+      },
     );
 
     this.imageName = pulumi.interpolate`${this.acr.loginServer}/${config.require("imageName")}:latest`;
-    this._appSvc = new azure.appservice.AppService(
+    this.appSvc = new azure.appservice.AppService(
       "appSvc",
       {
-        location: rg.location,
-        resourceGroupName: rg.name,
-        appServicePlanId: this._plan.id,
-        identity: { type: "SystemAssigned" },
+        appServicePlanId: this.plan.id,
         appSettings: {
-          kvUri: kv.vaultUri,
-          kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
-          APPINSIGHTS_INSTRUMENTATIONKEY: this._monitoring.appInsights
-            .instrumentationKey,
-          WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
+          APPINSIGHTS_INSTRUMENTATIONKEY: this.monitoring.applicationInsights.instrumentationKey,
+          DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
             this.acr.loginServer
             }`,
           DOCKER_REGISTRY_SERVER_USERNAME: this.acr.adminUsername,
-          DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
-          WEBSITES_PORT: 80
-        },
-        siteConfig: {
-          alwaysOn: true,
-          linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`
+          WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
+          WEBSITES_PORT: 80,
+          kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
+          kvUri: kv.vaultUri,
         },
         httpsOnly: true,
-        tags: azTags
+        identity: { type: "SystemAssigned" },
+        location: rg.location,
+        resourceGroupName: rg.name,
+        siteConfig: {
+          alwaysOn: true,
+          linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`,
+        },
+        tags: azTags,
       },
       {
-        parent: this._plan
-      }
+        parent: this.plan,
+      },
     );
   }
 
   private accessPolicyKeyVault(
     kv: azure.keyvault.KeyVault,
-    appSvc: azure.appservice.AppService
+    appSvc: azure.appservice.AppService,
   ) {
     return new azure.keyvault.AccessPolicy(
       "appSvc-access",
       {
         keyVaultId: kv.id,
-        secretPermissions: ["get", "list"],
         objectId: appSvc.identity.apply(
-          identity =>
-            identity.principalId || "11111111-1111-1111-1111-111111111111"
+          (identity) =>
+            identity.principalId || "11111111-1111-1111-1111-111111111111",
         ), // https://github.com/pulumi/pulumi-azure/issues/192
-        tenantId: this._azConfig.clientConfig.tenantId,
+        secretPermissions: ["get", "list"],
+        tenantId: this.azConfig.clientConfig.tenantId,
       },
       {
-        parent: appSvc
-      }
+        parent: appSvc,
+      },
     );
   }
 }

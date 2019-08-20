@@ -4,28 +4,29 @@ export function accessPolicyTemplate() {
             "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
         parameters: {
-            environmentName: {
-                type: "String"
-            },
             accessPolicyReaderObjectId: {
+                defaultValue: "",
                 type: "String",
-                defaultValue: ""
+            },
+            environmentName: {
+                type: "String",
             },
         },
         variables: {},
+        // tslint:disable-next-line: object-literal-sort-keys
         resources: [
             {
-                condition: "[not(empty(parameters('accessPolicyReaderObjectId')))]",
                 apiVersion: "2018-08-15-preview",
+                condition: "[not(empty(parameters('accessPolicyReaderObjectId')))]",
                 name:
                     "[concat(parameters('environmentName'), '/', 'ownerAccessPolicy')]",
-                type: "Microsoft.TimeSeriesInsights/environments/accesspolicies",
                 properties: {
                     principalObjectId: "[parameters('accessPolicyReaderObjectId')]",
-                    roles: ["Reader", "Contributor"]
-                }
+                    roles: ["Reader", "Contributor"],
+                },
+                type: "Microsoft.TimeSeriesInsights/environments/accesspolicies",
             },
         ],
-        outputs: {}
+        outputs: {},
     };
 }

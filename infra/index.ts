@@ -1,70 +1,64 @@
 import * as pulumi from "@pulumi/pulumi";
 
-import { Application, ApplicationParams } from "./components/application/application";
-import { State, StateParams } from "./components/state/state";
-import { Monitoring, MonitoringParams } from "./components/monitoring/monitoring";
+import { Application } from "./components/application/application";
 import { AzureConfig } from "./components/azure-config/azure-config";
-
-import { Tsi } from "./components/application/tsi/tsi";
+import { Monitoring } from "./components/monitoring/monitoring";
+import { State } from "./components/state/state";
 
 const azureConfig = new AzureConfig();
 // do not create or reference container anywhere but here!
 
-interface MainResult {
+interface IMainResult {
+  application: Application;
   monitoring: Monitoring;
   state: State;
-  application: Application
 }
 
-async function main(): Promise<MainResult> {
+async function main(): Promise<IMainResult> {
 
   await azureConfig.init();
 
-  const monitoring = new Monitoring(new MonitoringParams());
+  const monitoring = new Monitoring({ name: "monitoring" });
 
-  const state = new State(new StateParams(), monitoring, azureConfig);
+  const state = new State({ name: "state" }, monitoring, azureConfig);
 
-  const application = new Application(new ApplicationParams(), monitoring, state, azureConfig);
-
+  const application = new Application({ name: "application" }, monitoring, state, azureConfig);
 
   return {
+    application,
     monitoring,
     state,
-    application
   };
 }
 
 // async workaround
 // https://github.com/pulumi/pulumi/issues/2910
-const result: Promise<MainResult> = main();
+const result: Promise<IMainResult> = main();
 
-export let instrumentatonKey = result.then(r =>
-  r.monitoring ? r.monitoring.appInsights.instrumentationKey : null
+export let instrumentatonKey = result.then((r) =>
+  r.monitoring.applicationInsights.instrumentationKey,
 );
 
-export let appUrl = result.then(r =>
-  r.application ? pulumi.interpolate`https://${r.application.appSvc.defaultSiteHostname}` : null
+export let appUrl = result.then((r) =>
+  pulumi.interpolate`https://${r.application.appSvc.defaultSiteHostname}`,
 );
 
-export let kvUri = result.then(r =>
-  r.state ? r.state.kv.vaultUri : null
+export let kvUri = result.then((r) =>
+  r.state.kv.vaultUri,
 );
 
-export let appSvcSku = result.then(r =>
-  r.application ? r.application.plan.sku : null
+export let appSvcSku = result.then((r) =>
+  r.application.plan.sku,
 );
 
-export let tsiFqdn = result.then(r =>
-  r.application.tsi.dataAccessFqdn
+export let tsiFqdn = result.then((r) =>
+  r.application.tsi.dataAccessFqdn,
 );
 
-export let imageName = result.then(r =>
-  r.application.imageName
+export let imageName = result.then((r) =>
+  r.application.imageName,
 );
 
-export let acrName = result.then(r =>
-  r.application.acr.name
+export let acrName = result.then((r) =>
+  r.application.acr.name,
 );
-
-
-// export let instrumentatonKey = result.then(r => r.monitoring ?  r.monitoring.appInsights.instrumentationKey : null  )

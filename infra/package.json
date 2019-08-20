@@ -1,10 +1,12 @@
 {
     "name": "azure-typescript",
     "scripts": {
-        "build": "tsc -p ."
+        "build": "tsc --noEmit",
+        "lint": "tslint -c tslint.json './**/*.ts'"
     },
     "devDependencies": {
-        "@types/node": "latest"
+        "@types/node": "latest",
+        "tslint": "^5.18.0"
     },
     "dependencies": {
         "@pulumi/azure": "latest",

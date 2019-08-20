@@ -13,7 +13,9 @@ pushd infra
 
 pulumi login
 
+echo "Running NPM install + lint + build"
 npm install
+npm run lint
 npm run build
 
 # only sets stack if on develop or master
