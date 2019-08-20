@@ -59,7 +59,7 @@ export let tsiFqdn = result.then(r =>
 );
 
 export let imageName = result.then(r =>
-  r.application.image.imageName
+  r.application.imageName
 );
 
 export let acrName = result.then(r =>

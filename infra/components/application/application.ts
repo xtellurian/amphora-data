@@ -36,7 +36,7 @@ export class Application extends pulumi.ComponentResource
   private _plan: azure.appservice.Plan;
   acr: azure.containerservice.Registry;
   tsi: Tsi;
-  image: docker.Image;
+  imageName: pulumi.Output<string>;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
   }
@@ -146,8 +146,7 @@ export class Application extends pulumi.ComponentResource
       }
     );
 
-    let fullImageName = pulumi.interpolate`${this.acr.loginServer}${config.require("imageName")}:latest`;
-    console.log(fullImageName);
+    this.imageName = pulumi.interpolate`${this.acr.loginServer}${config.require("imageName")}:latest`;
     this._appSvc = new azure.appservice.AppService(
       "appSvc",
       {
@@ -170,7 +169,7 @@ export class Application extends pulumi.ComponentResource
         },
         siteConfig: {
           alwaysOn: true,
-          linuxFxVersion: pulumi.interpolate`DOCKER|${fullImageName}`
+          linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`
         },
         httpsOnly: true,
         tags: azTags
