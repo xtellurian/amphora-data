@@ -33,13 +33,14 @@ jobs:
         ARM_TENANT_ID: $(tenant)
 
     - script: |
-        echo $kvUri
-        echo "$(pulumi.kvUri)"
-        echo $pulumiStack
-      displayName: echo the vars
+        echo "$appUrl"
+        echo "$kvUri"
+        echo "$pulumiStack"
+      displayName: Important Variables
       env: 
         kvUri: $(pulumi.kvUri)
         pulumiStack: $(pulumi.pulumiStack)
+        appUrl: $(pulumi.appUrl)
 
 
 ##################################################################

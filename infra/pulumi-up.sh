@@ -44,10 +44,12 @@ fi
 pulumi up --yes
 
 kvUri=$(pulumi stack output kvUri)
+appUrl=$(pulumi stack output appUrl)
 echo "kvUri is $kvUri"
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
+echo "##vso[task.setvariable variable=appUrl;isOutput=true]$appUrl" # see above where stack is selected
 echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]$STACK" # see above where stack is selected
 
 popd
