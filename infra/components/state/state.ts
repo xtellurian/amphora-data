@@ -63,7 +63,7 @@ export class State extends pulumi.ComponentResource {
     this.createEventHubs(stateRg);
   }
 
-  storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource ) {
+  storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource) {
     return new azure.keyvault.Secret(
       name,
       {
@@ -72,8 +72,10 @@ export class State extends pulumi.ComponentResource {
         name: name,
         tags: azTags
       },
-      { parent: parent || this.kv, 
-        dependsOn: this.accessPolicies }
+      {
+        parent: parent || this.kv,
+        dependsOn: this.accessPolicies
+      }
     );
   }
 
@@ -146,32 +148,31 @@ export class State extends pulumi.ComponentResource {
       { parent: rg }
     );
 
-    
-    if( this.azConfig.clientConfig.servicePrincipalObjectId )
-    {
+
+    if (this.azConfig.clientConfig.servicePrincipalObjectId) {
       // there needs to be 2 here, because pulumi and dotnet do it differently... 
-      const spAccess = new azure.keyvault.AccessPolicy("sp-access", 
-      {
-        keyVaultId: kv.id,
-        applicationId: this.azConfig.clientConfig.servicePrincipalApplicationId,
-        objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
-        tenantId: this.azConfig.clientConfig.tenantId,
-        keyPermissions: ["create", "get"],
-        secretPermissions: ["list", "set", "get", "delete"]
-      });
+      const spAccess = new azure.keyvault.AccessPolicy("sp-access",
+        {
+          keyVaultId: kv.id,
+          applicationId: this.azConfig.clientConfig.servicePrincipalApplicationId,
+          objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
+          tenantId: this.azConfig.clientConfig.tenantId,
+          keyPermissions: ["create", "get"],
+          secretPermissions: ["list", "set", "get", "delete"]
+        },
+        { parent: this });
       this.accessPolicies.push(spAccess);
-      const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access_objectId", 
-      {
-        keyVaultId: kv.id,
-        objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
-        tenantId: this.azConfig.clientConfig.tenantId,
-        keyPermissions: ["create", "get"],
-        secretPermissions: ["list", "set", "get", "delete"]
-      });
+      const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access_objectId",
+        {
+          keyVaultId: kv.id,
+          objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
+          tenantId: this.azConfig.clientConfig.tenantId,
+          keyPermissions: ["create", "get"],
+          secretPermissions: ["list", "set", "get", "delete"]
+        },
+        { parent: this });
       this.accessPolicies.push(spAccess_objectId);
     }
-
-    
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
