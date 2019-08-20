@@ -36,6 +36,7 @@ if [ $BUILD_REASON == "PullRequest" ] ; then
 fi
 
 # spin up the source branch stack
+echo "Source Branch is $BUILD_SOURCEBRANCH"
 set_special_stack $BUILD_SOURCEBRANCH
 
 pulumi up --yes
