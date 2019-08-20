@@ -16,7 +16,9 @@ pulumi login
 echo "Running NPM install + lint + build"
 npm install
 npm run lint
-npm run build
+
+# annoying - weird error where it's finding broken types in node_modules
+# npm run build
 
 # only sets stack if on develop or master
 set_special_stack () {
