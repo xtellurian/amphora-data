@@ -24,6 +24,7 @@
         "components/**/*.ts"
     ],
     "exclude": [
-        "node_modules/**/*.ts"
+        "node_modules/**/*.ts",
+        "**/*.d.ts"
     ]
 }
