@@ -1,5 +1,8 @@
 {
     "name": "azure-typescript",
+    "scripts": {
+        "build": "tsc -p ."
+    },
     "devDependencies": {
         "@types/node": "latest"
     },

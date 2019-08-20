@@ -14,7 +14,7 @@ pushd infra
 pulumi login
 
 npm install
-# npm run build
+npm run build
 
 # only sets stack if on develop or master
 set_special_stack () {
