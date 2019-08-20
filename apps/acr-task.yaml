@@ -1,4 +1,4 @@
 version: v1.0.0
 steps:
-  - build: -t {{.Run.Registry}}/webapp:{{.Run.ID}} -f Dockerfile .
+  - build: -t {{.Run.Registry}}/webapp:{{.Run.ID}} apps
   - push: ["{{.Run.Registry}}/webapp:{{.Run.ID}}"]
