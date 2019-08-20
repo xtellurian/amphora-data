@@ -19,6 +19,7 @@ namespace Amphora.Api
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
+                    config.AddEnvironmentVariables();
                     var builtConfig = config.Build();
                     KeyVaultConfigProvider(config, builtConfig);
                 })

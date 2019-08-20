@@ -10,5 +10,8 @@ export class AzureConfig {
     async init() {
         let c = await azure.core.getClientConfig();
         this.clientConfig = c;
+        console.log("servicePrincipalApplicationId: " + c.servicePrincipalApplicationId)
+        console.log("servicePrincipalObjectId: " + c.servicePrincipalObjectId)
+        console.log("clientId: " + c.clientId)
     }
 }

@@ -1,0 +1,15 @@
+config:
+  azure:environment: public
+
+  application:location: AustraliaSoutheast
+  application:appSvcPlanTier: Basic
+  application:appSvcPlanSize: B1
+
+  authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+
+  monitoring:location: AustraliaSoutheast
+
+  state:failoverLocation: AustraliaEast
+  state:location: AustraliaSoutheast
+
+  tsi:location: AustraliaSoutheast

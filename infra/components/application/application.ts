@@ -9,6 +9,7 @@ import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
 import { AzureConfig } from "../azure-config/azure-config";
 import { Tsi } from "./tsi/tsi";
+import { Input } from "@pulumi/pulumi";
 
 const config = new pulumi.Config("application");
 const azTags = {
@@ -18,6 +19,8 @@ const azTags = {
   project: pulumi.getProject(),
 }
 const rgName = pulumi.getStack() + "-app";
+const imageTag = "v1.0.0";
+const customImage = "webapp";
 
 // lives in here for now
 export class ApplicationParams implements IComponentParams {
@@ -33,9 +36,10 @@ export interface IApplication {
 export class Application extends pulumi.ComponentResource
   implements IApplication {
   private _appSvc: azure.appservice.AppService;
-  private _acr: azure.containerservice.Registry;
   private _plan: azure.appservice.Plan;
+  acr: azure.containerservice.Registry;
   tsi: Tsi;
+  image: docker.Image;
   get appSvc(): azure.appservice.AppService {
     return this._appSvc;
   }
@@ -67,15 +71,17 @@ export class Application extends pulumi.ComponentResource
         parent: this
       }
     );
-    this._acr = this.createAcr(rg);
-    const image = this.buildApp(this._acr);
+    this.acr = this.createAcr(rg);
+
+    const image = this.buildApp(this.acr);
+
     this.createAppSvc(rg, this._state.kv, image);
     this.accessPolicyKeyVault(this._state.kv, this._appSvc);
     this.createTsi();
   }
   createTsi() {
     this.tsi = new Tsi("tsi", {
-      eh_namespace: this._state.ehns, 
+      eh_namespace: this._state.ehns,
       eh: this._state.eh,
       appSvc: this.appSvc,
       state: this._state
@@ -100,7 +106,6 @@ export class Application extends pulumi.ComponentResource
   }
 
   private buildApp(registry: azure.containerservice.Registry): docker.Image {
-    const customImage = "hello-world";
     const myImage = new docker.Image(
       "acrImage",
       {
@@ -118,6 +123,7 @@ export class Application extends pulumi.ComponentResource
       },
       { parent: this }
     );
+    this.image = myImage;
     return myImage;
   }
 
@@ -158,10 +164,10 @@ export class Application extends pulumi.ComponentResource
             .instrumentationKey,
           WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
-            this._acr.loginServer
+            this.acr.loginServer
             }`,
-          DOCKER_REGISTRY_SERVER_USERNAME: this._acr.adminUsername,
-          DOCKER_REGISTRY_SERVER_PASSWORD: this._acr.adminPassword,
+          DOCKER_REGISTRY_SERVER_USERNAME: this.acr.adminUsername,
+          DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           WEBSITES_PORT: 80
         },
         siteConfig: {

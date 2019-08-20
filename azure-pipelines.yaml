@@ -1,36 +1,150 @@
 trigger:
   branches:
-    exclude:
-    - '*'  # exclude always - should just trigger manually
+    include:
+    - master
+    - develop
 
-pool:
-  vmImage: 'ubuntu-latest'
+jobs:
 
-variables:
+##################################################################
+#           Deploy Infrastructure
+##################################################################
+
+- job: infrastructure
+  # condition: and(eq(variables['Build.Reason'], 'Manual'), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
   - group: Pulumi xtellurian
+  - group: AzureDeploySP
 
-steps:
+  steps:
+    - script: |
+        chmod +x ./infra/*.sh
+        ./infra/setup.sh
+        ./infra/pulumi-up.sh
+      displayName: 'Install pulumi & run pulumi up'
+      name: pulumi
+      env:
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        ARM_CLIENT_ID: $(appId)
+        ARM_CLIENT_SECRET: $(password)
+        ARM_SUBSCRIPTION_ID: $(subscription)
+        ARM_TENANT_ID: $(tenant)
+
+    - script: |
+        echo $kvUri
+        echo "$(pulumi.kvUri)"
+        echo $pulumiStack
+      displayName: echo the vars
+      env: 
+        kvUri: $(pulumi.kvUri)
+        pulumiStack: $(pulumi.pulumiStack)
+
+
+##################################################################
+#           Build Apps
+##################################################################
+
+- job: apps
+  dependsOn: infrastructure
+  strategy:
+    matrix:
+      InMemory:
+        PersistentStores: ''
+      Persistent:
+        PersistentStores: 'true'
+    maxParallel: 2
+  condition: succeeded()
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  variables:
+    - group: AzureDeploySP
+    - name: imageName
+      value: api
+    - name: imageTag
+      value: latest
+    - name: buildConfiguration
+      value: 'Release'
+    - name: kvUri
+      value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
+
+  steps:
   - script: |
-      if [ "$(action)" == "up" ] || [ "$(action)" == "preview" ] || [ "$(action)" == "destroy" ]; then
-          echo "$(action) is a valid Pulumi action"
-      else
-          echo "Action $(action) is invalid. Choose 'up' or 'destroy' "
-      fi
-    displayName: Check pulumi action is valid
+      echo PersistentStores - $(PersistentStores)
+      echo kvUri - "$(kvUri)"
+      if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
+        then
+              echo "PersistentStores is set, with no kvUri. Exiting with error"
+              exit 1
+        fi
+    displayName: Check params set correctly
 
-  - script: curl -fsSL https://get.pulumi.com | sh
-    condition: eq(variables['Build.Reason'], 'Manual')
-    displayName: Install Pulumi 
+  # required to access KV in testing
+  - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    displayName: Az Login
+    env: 
+      NAME: $(name)
+      PASSWORD: $(password)
+      TENANT: $(tenant)
 
-  - script: npm install
-    condition: eq(variables['Build.Reason'], 'Manual')
-    workingDirectory: pulumi
-    displayName: NPM install
+  - script: dotnet build --configuration $(buildConfiguration)
+    workingDirectory: apps
+    displayName: 'dotnet build $(buildConfiguration)'
 
-  - task: Pulumi@0
-    condition: eq(variables['Build.Reason'], 'Manual')
+  - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
+    workingDirectory: apps
+    displayName: dotnet test
+    env:
+      ASPNETCORE_kvUri: $(kvUri)
+      ASPNETCORE_PersistentStores: $(PersistentStores)
+
+  - task: PublishTestResults@2
+    condition: always() 
     inputs:
-      azureSubscription: "amphoradata1"
-      command: "$(action)"
-      cwd: "pulumi/"
-      stack: "xtellurian/amphora/test"
+      testRunner: VSTest
+      testResultsFiles: '**/*.trx'
+
+  - task: PublishCodeCoverageResults@1
+    displayName: Publish Code Coverage Report
+    inputs:
+      summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
+      codecoverageTool: cobertura
+
+  - script: docker build .
+    workingDirectory: apps
+    displayName: Build docker image
+
+
+##################################################################
+#           Destroy Instrastructure
+##################################################################
+
+# - job: destroyInfra
+#   condition: always()
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   dependsOn: infrastructure
+#   variables:
+#   - group: Pulumi xtellurian
+#   - group: AzureDeploySP
+#   - name: stack
+#     value: $[ dependencies.infrastructure.outputs['pulumi.pulumiStack'] ]
+
+#   steps:
+#     - script: |
+#         chmod +x ./infra/*.sh
+#         ./infra/setup.sh
+#         ./infra/pulumi-destroy.sh
+#       displayName: 'Install pulumi & run pulumi up'
+#       env:
+#         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+#         ARM_CLIENT_ID: $(appId)
+#         ARM_CLIENT_SECRET: $(password)
+#         ARM_SUBSCRIPTION_ID: $(subscription)
+#         ARM_TENANT_ID: $(tenant)
+#         STACK: $(stack)
+
+#     - script: echo $(pulumi.kvUri)
+#       displayName: echo the var

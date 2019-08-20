@@ -16,7 +16,7 @@ const azTags = {
   stack: pulumi.getStack(),
   project: pulumi.getProject(),
 }
-const rgName = pulumi.getStack() + "-app";
+const rgName = pulumi.getStack() + "-state";
 
 export class StateParams implements IComponentParams {
   name: string = "d-state-component";
@@ -146,7 +146,17 @@ export class State extends pulumi.ComponentResource {
 
     if( this.azConfig.clientConfig.servicePrincipalObjectId )
     {
+      // there needs to be 2 here, because pulumi and dotnet do it differently... 
       const spAccess = new azure.keyvault.AccessPolicy("sp-access", 
+      {
+        keyVaultId: kv.id,
+        applicationId: this.azConfig.clientConfig.servicePrincipalApplicationId,
+        objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
+        tenantId: this.azConfig.clientConfig.tenantId,
+        keyPermissions: ["create", "get"],
+        secretPermissions: ["list", "set", "get", "delete"]
+      })
+      const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access_objectId", 
       {
         keyVaultId: kv.id,
         objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
@@ -155,8 +165,8 @@ export class State extends pulumi.ComponentResource {
         secretPermissions: ["list", "set", "get", "delete"]
       })
     }
-    
 
+    
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
