@@ -32,18 +32,20 @@ namespace Amphora.Api.Pages.Amphorae
 
         [BindProperty]
         public Amphora.Common.Models.Amphora Amphora { get; set; }
+        public IEnumerable<string> Names { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             Amphora = await amphoraEntityStore.ReadAsync(id);
-            if(Amphora == null)
+            if (Amphora == null)
             {
                 return RedirectToPage("/amphorae/index");
             }
+            Names = await dataStore.ListNames(Amphora);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string id,  List<IFormFile> files)
+        public async Task<IActionResult> OnPostAsync(string id, List<IFormFile> files)
         {
             if (files == null || files.Count > 1)
             {
@@ -62,10 +64,8 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     await formFile.CopyToAsync(stream);
                     stream.Seek(0, SeekOrigin.Begin);
-                    await this.dataStore.SetDataAsync(entity, await stream.ReadFullyAsync());
+                    await this.dataStore.SetDataAsync(entity, await stream.ReadFullyAsync(), formFile.FileName);
                 }
-                entity.FileName = formFile.FileName;
-                await amphoraEntityStore.UpdateAsync(entity);
             }
             this.Amphora = entity;
 

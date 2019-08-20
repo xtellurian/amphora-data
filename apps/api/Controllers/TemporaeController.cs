@@ -69,7 +69,7 @@ namespace Amphora.Api.Controllers
             var domain = Domain.GetDomain(entity.DomainId);
             if (domain.IsValid(jObj))
             {
-                var jObjResult = await dataStore.SetDataAsync(entity, domain.ToDatum(jObj));
+                var jObjResult = await dataStore.SetDataAsync(entity, domain.ToDatum(jObj), null);
                 return Ok(jObjResult);
             }
             else
@@ -89,12 +89,12 @@ namespace Amphora.Api.Controllers
             }
             var domain = Domain.GetDomain(entity.DomainId);
             var results = new List<Datum>();
-            foreach(JObject jObj in jArray)
+            foreach (JObject jObj in jArray)
             {
                 jObj["tempora"] = id;
                 if (domain.IsValid(jObj))
                 {
-                    results.Add( await dataStore.SetDataAsync(entity, domain.ToDatum(jObj)));
+                    results.Add(await dataStore.SetDataAsync(entity, domain.ToDatum(jObj), null));
                 }
                 else
                 {
