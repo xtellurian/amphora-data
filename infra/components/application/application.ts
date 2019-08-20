@@ -1,5 +1,4 @@
 import * as azure from "@pulumi/azure";
-import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 import { CONSTANTS, IComponentParams } from "../../components";
 import { AzureConfig } from "../azure-config/azure-config";
@@ -89,28 +88,6 @@ export class Application extends pulumi.ComponentResource
     );
     return acr;
   }
-
-  // private buildApp(registry: azure.containerservice.Registry): docker.Image {
-  //   const myImage = new docker.Image(
-  //     "acrImage",
-  //     {
-  //       imageName: pulumi.interpolate`${
-  //         registry.loginServer
-  //         }/${customImage}:v1.0.0`,
-  //       build: {
-  //         context: `../apps`
-  //       },
-  //       registry: {
-  //         server: registry.loginServer,
-  //         username: registry.adminUsername,
-  //         password: registry.adminPassword
-  //       }
-  //     },
-  //     { parent: this }
-  //   );
-  //   this.image = myImage;
-  //   return myImage;
-  // }
 
   private createAppSvc(
     rg: azure.core.ResourceGroup,
