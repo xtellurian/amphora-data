@@ -25,6 +25,7 @@ export class StateParams implements IComponentParams {
 
 export class State extends pulumi.ComponentResource {
   private _kv: azure.keyvault.KeyVault;
+  private accessPolicies: azure.keyvault.AccessPolicy[] = [];
   storageAccount: azure.storage.Account;
   ehns: azure.eventhub.EventHubNamespace;
   eh: azure.eventhub.EventHub;
@@ -71,7 +72,8 @@ export class State extends pulumi.ComponentResource {
         name: name,
         tags: azTags
       },
-      { parent: parent || this.kv }
+      { parent: parent || this.kv, 
+        dependsOn: this.accessPolicies }
     );
   }
 
@@ -144,6 +146,7 @@ export class State extends pulumi.ComponentResource {
       { parent: rg }
     );
 
+    
     if( this.azConfig.clientConfig.servicePrincipalObjectId )
     {
       // there needs to be 2 here, because pulumi and dotnet do it differently... 
@@ -155,7 +158,8 @@ export class State extends pulumi.ComponentResource {
         tenantId: this.azConfig.clientConfig.tenantId,
         keyPermissions: ["create", "get"],
         secretPermissions: ["list", "set", "get", "delete"]
-      })
+      });
+      this.accessPolicies.push(spAccess);
       const spAccess_objectId = new azure.keyvault.AccessPolicy("sp-access_objectId", 
       {
         keyVaultId: kv.id,
@@ -163,7 +167,8 @@ export class State extends pulumi.ComponentResource {
         tenantId: this.azConfig.clientConfig.tenantId,
         keyPermissions: ["create", "get"],
         secretPermissions: ["list", "set", "get", "delete"]
-      })
+      });
+      this.accessPolicies.push(spAccess_objectId);
     }
 
     
