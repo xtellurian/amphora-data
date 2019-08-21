@@ -1,5 +1,7 @@
 version: v1.0.0
 steps:
   - build: -t {{.Run.Registry}}/webapp:{{.Run.ID}} -t {{.Run.Registry}}/webapp:latest -t {{.Run.Registry}}/webapp:{{.Values.GitHash}} --build-arg gitHash={{.Values.GitHash}} apps
-  - push: ["{{.Run.Registry}}/webapp:{{.Run.ID}}"]
-  - push: ["{{.Run.Registry}}/webapp:latest"]
+  - push: 
+    - {{.Run.Registry}}/webapp:{{.Run.ID}}
+    - {{.Run.Registry}}/webapp:latest
+    - {{.Run.Registry}}/webapp:{{.Values.GitHash}}
