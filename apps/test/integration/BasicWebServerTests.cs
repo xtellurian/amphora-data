@@ -22,9 +22,6 @@ namespace Amphora.Tests.Integration
         [InlineData("/Amphorae")]
         [InlineData("/Amphorae/Create")]
         [InlineData("/Amphorae/Detail")]
-        [InlineData("/Temporae")]
-        [InlineData("/Temporae/Create")]
-        [InlineData("/Temporae/Detail")]
         [InlineData("/Identity/Account/Login")]
         [InlineData("/Identity/Account/Register")]
         public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)

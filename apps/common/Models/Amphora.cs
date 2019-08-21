@@ -1,20 +1,23 @@
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Domains;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models
 {
-    public class Amphora : MarketEntity, IOrgScoped
+    public class Amphora : Entity, IOrgScoped
     {
         public Amphora()
         {
             // set some defaults
-            ContentType = ContentTypes.OctetStream;
             OrgId = "default";
         }
-        public string ContentType { get; set; }
 
-        public override DataEntityTypes GetEntityType()
-        {
-            return DataEntityTypes.Amphora;
-        }
+        public string Description { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public DomainId DomainId { get; set; }
+        public string OrgId { get; set; }
+        public double Price { get; set; }
+        public string Title { get; set; }
     }
 }

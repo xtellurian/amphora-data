@@ -1,11 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 
 import { Application } from "./components/application/application";
-import { AzureConfig } from "./components/azure-config/azure-config";
 import { Monitoring } from "./components/monitoring/monitoring";
 import { State } from "./components/state/state";
 
-const azureConfig = new AzureConfig();
 // do not create or reference container anywhere but here!
 
 interface IMainResult {
@@ -16,13 +14,11 @@ interface IMainResult {
 
 async function main(): Promise<IMainResult> {
 
-  await azureConfig.init();
-
   const monitoring = new Monitoring({ name: "monitoring" });
 
-  const state = new State({ name: "state" }, monitoring, azureConfig);
+  const state = new State({ name: "state" }, monitoring);
 
-  const application = new Application({ name: "application" }, monitoring, state, azureConfig);
+  const application = new Application({ name: "application" }, monitoring, state);
 
   return {
     application,

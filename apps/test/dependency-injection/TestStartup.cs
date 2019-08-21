@@ -34,9 +34,7 @@ namespace Amphora.Tests.Unit
             mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             services.AddSingleton<IHttpClientFactory>(mockFactory.Object);
 
-
-            // tempora validation tests
-            services.AddSingleton<IOrgScopedEntityStore<Tempora>, InMemoryOrgEntityStore<Tempora>>();
+            services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, InMemoryOrgEntityStore<Amphora.Common.Models.Amphora>>();
         }
     }
 }

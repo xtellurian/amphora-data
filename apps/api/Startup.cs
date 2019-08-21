@@ -153,19 +153,14 @@ namespace Amphora.Api
             {
                 p.TableName = "amphorae";
             });
-            services.Configure<EntityTableStoreOptions<TemporaTableEntity>>(p =>
-            {
-                p.TableName = "temporae";
-            });
         }
 
         private void UsePersistentStores(IServiceCollection services)
         {
             // org entity store
             services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
-            services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Tempora>, AzTableOrgEntityStore<Amphora.Common.Models.Tempora, TemporaTableEntity>>();
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, Datum>, TemporaEventHubDataStore>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, AzBlobAmphoraDataStore>();
 
@@ -175,15 +170,10 @@ namespace Amphora.Api
             services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, InMemoryOrgEntityStore<Amphora.Common.Models.Amphora>>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, Datum>, InMemoryDataStore<Amphora.Common.Models.Tempora, Datum>>();
-
-            //temporae
-            services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Tempora>, InMemoryOrgEntityStore<Amphora.Common.Models.Tempora>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, InMemoryDataStore<Amphora.Common.Models.Amphora, Datum>>();
 
             // orgs
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
-            // this isnt actually in memory :()
-            // services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -31,6 +31,11 @@ namespace Amphora.Api.Services
             return await userManager.CreateAsync(user, password);
         }
 
+        public async Task<T> FindByNameAsync(string userName)
+        {
+            if (userManager == null) return dev as T;
+            return await userManager.FindByNameAsync(userName);
+        }
         public async Task<string> GenerateEmailConfirmationTokenAsync(T user)
         {
             if (userManager == null) return "_blank";

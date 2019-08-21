@@ -20,9 +20,20 @@ namespace Amphora.Api.Pages.Profile
         [BindProperty]
         public ApplicationUser AppUser { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string userName)
         {
-            this.AppUser = await userManager.GetUserAsync(User);
+            if (string.IsNullOrEmpty(userName))
+            {
+                this.AppUser = await userManager.GetUserAsync(User);
+            }
+            else
+            {
+                AppUser = await userManager.FindByNameAsync(userName);
+            }
+            if (AppUser == null)
+            {
+                return RedirectToPage("./Missing");
+            }
             return Page();
         }
 

@@ -7,6 +7,6 @@ namespace Amphora.Api.Contracts
 {
     public interface IMarketService
     {
-        Task<IEnumerable<MarketEntity>> FindAsync(string term, SearchParams searchParams);
+        Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(string term, SearchParams searchParams);
     }
 }

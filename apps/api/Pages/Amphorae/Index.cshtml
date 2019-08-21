@@ -32,7 +32,8 @@
                     <tr>
                     <th scope="col">Title</th>
                     <th scope="col">Description</th>
-                    <th onclick="w3.sortHTML('#entity-table','.entity-item', 'td:nth-child(4)')" scope="col">Price ($)</th>
+                    <th scope="col">Domain</th>
+                    <th scope="col">Price ($)</th>
                     <th scope="col"></th>
                     </tr>
                 </thead>
@@ -42,6 +43,7 @@
                      <tr class="entity-item">
                         <th scope="row"> @entity.Title </th>
                         <td>@entity.Description</td>
+                        <td>@entity.DomainId</td>
                         <td>@entity.Price</td>
                         <td>  
                             <a asp-page="/Amphorae/Detail" asp-route-id="@entity.Id"> 

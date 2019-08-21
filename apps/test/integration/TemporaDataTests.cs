@@ -6,18 +6,18 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class TemporaDataTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraSignalDataTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public TemporaDataTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public AmphoraSignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
             _factory = factory;
         }
 
         [Theory]
-        [InlineData("/api/temporae")]
-        public async Task UploadTo_MissingTempora(string url)
+        [InlineData("/api/amphorae")]
+        public async Task UploadSignalTo_MissingAmphora(string url)
         {
              // Arrange
             var client = _factory.CreateClient();
@@ -27,23 +27,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PostAsync($"{url}/{id}/upload", content);
-
-            // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound , response.StatusCode);
-        }
-
-        [Theory]
-        [InlineData("/api/temporae")]
-        public async Task DownloadFrom_MissingTempora(string url)
-        {
-             // Arrange
-            var client = _factory.CreateClient();
-            var id = System.Guid.NewGuid();
-
-            // Act
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.GetAsync($"{url}/{id}/download");
+            var response = await client.PostAsync($"{url}/{id}/signals", content);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound , response.StatusCode);

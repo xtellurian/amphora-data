@@ -1,6 +1,16 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* BRAND COLOURS */
+
+:root {
+  --amphora-red: #BC312A;
+  --amphora-black: #181717;
+  --amphora-white: #FFFEFD;
+}
+
+/* NAV BAR */
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -8,9 +18,9 @@ a.navbar-brand {
 }
 
 .navbar { background-color: rgba(0, 0, 0, 0.91) !important; }
-.navbar .dropdown-menu {background-color: rgba(0, 0, 0, 0.91); }
-.navbar #title-amphora { color: #FFFFFF ;}
-.navbar #title-data { color: #B31818 ;}
+.navbar .dropdown-menu {background-color: var(--amphora-black); }
+.navbar #title-amphora { color: var(--amphora-white) ;}
+.navbar #title-data { color: var(--amphora-red) ;}
 .navbar .navbar-brand img {
   max-height:100%; max-width:20px; margin-right: 10px;
 }
@@ -45,14 +55,14 @@ html {
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid var(--amphora-white);
 }
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--amphora-white);
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+  box-shadow: 0 .25rem .75rem var(--amphora-black);
 }
 
 button.accept-policy {

@@ -13,11 +13,11 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Api.Stores
 {
-    public class TemporaEventHubDataStore : IDataStore<Amphora.Common.Models.Tempora, Datum>
+    public class SignalEventHubDataStore : IDataStore<Amphora.Common.Models.Amphora, Datum>
     {
         private readonly EventHubClient eventHubClient;
 
-        public TemporaEventHubDataStore(IOptionsMonitor<Options.EventHubOptions> options)
+        public SignalEventHubDataStore(IOptionsMonitor<Options.EventHubOptions> options)
         {
             if (options.CurrentValue.EventHubConnectionString != null)
             {
@@ -30,17 +30,17 @@ namespace Amphora.Api.Stores
 
         }
 
-        public Task<Datum> GetDataAsync(Tempora entity, string name)
+        public Task<Datum> GetDataAsync(Common.Models.Amphora entity, string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ListNamesAsync(Tempora entity)
+        public Task<IEnumerable<string>> ListNamesAsync(Common.Models.Amphora entity)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Datum> SetDataAsync(Tempora entity, Datum data, string name)
+        public async Task<Datum> SetDataAsync(Common.Models.Amphora entity, Datum data, string name)
         {
             var content = JsonConvert.SerializeObject(data,
                                 Newtonsoft.Json.Formatting.None,
@@ -52,6 +52,5 @@ namespace Amphora.Api.Stores
             await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
             return data;
         }
-
     }
 }

@@ -94,7 +94,6 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(responseBody);
             var c = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(responseBody);
             Assert.Equal(b.Id, c.Id);
-            Assert.Equal(b.ContentType, c.ContentType);
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
             Assert.Equal(b.Title, c.Title);

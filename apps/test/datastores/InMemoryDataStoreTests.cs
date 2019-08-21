@@ -4,7 +4,7 @@ using Amphora.Api.Stores;
 using Amphora.Tests.Helpers;
 using Xunit;
 
-namespace Amphora.Tests.Datastores
+namespace Amphora.Tests.Unit.Datastores
 {
     public class InMemoryDataStoreTests
     {

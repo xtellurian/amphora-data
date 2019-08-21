@@ -1,13 +1,12 @@
 import * as azure from "@pulumi/azure";
-import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 import { CONSTANTS, IComponentParams } from "../../components";
-import { AzureConfig } from "../azure-config/azure-config";
 import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
 import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("application");
+const authConfig = new pulumi.Config("authentication");
 const azTags = {
   component: "application",
   project: pulumi.getProject(),
@@ -15,12 +14,6 @@ const azTags = {
   stack: pulumi.getStack(),
 };
 const rgName = pulumi.getStack() + "-app";
-
-// lives in here for now
-// export class ApplicationParams implements IComponentParams {
-//   public name: string = "d-app-component";
-//   public opts?: pulumi.ComponentResourceOptions | undefined = undefined;
-// }
 
 export interface IApplication {
   appSvc: azure.appservice.AppService;
@@ -39,7 +32,6 @@ export class Application extends pulumi.ComponentResource
     params: IComponentParams,
     private monitoring: Monitoring,
     private state: State,
-    private azConfig: AzureConfig,
   ) {
     super("amphora:Application", params.name, {}, params.opts);
     this.create();
@@ -57,8 +49,6 @@ export class Application extends pulumi.ComponentResource
       },
     );
     this.acr = this.createAcr(rg);
-
-    // const image = this.buildApp(this.acr);
 
     this.createAppSvc(rg, this.state.kv);
     this.accessPolicyKeyVault(this.state.kv, this.appSvc);
@@ -89,28 +79,6 @@ export class Application extends pulumi.ComponentResource
     );
     return acr;
   }
-
-  // private buildApp(registry: azure.containerservice.Registry): docker.Image {
-  //   const myImage = new docker.Image(
-  //     "acrImage",
-  //     {
-  //       imageName: pulumi.interpolate`${
-  //         registry.loginServer
-  //         }/${customImage}:v1.0.0`,
-  //       build: {
-  //         context: `../apps`
-  //       },
-  //       registry: {
-  //         server: registry.loginServer,
-  //         username: registry.adminUsername,
-  //         password: registry.adminPassword
-  //       }
-  //     },
-  //     { parent: this }
-  //   );
-  //   this.image = myImage;
-  //   return myImage;
-  // }
 
   private createAppSvc(
     rg: azure.core.ResourceGroup,
@@ -180,7 +148,7 @@ export class Application extends pulumi.ComponentResource
             identity.principalId || "11111111-1111-1111-1111-111111111111",
         ), // https://github.com/pulumi/pulumi-azure/issues/192
         secretPermissions: ["get", "list"],
-        tenantId: this.azConfig.clientConfig.tenantId,
+        tenantId: authConfig.require("tenantId"),
       },
       {
         parent: appSvc,

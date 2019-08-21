@@ -8,6 +8,7 @@ namespace Amphora.Api.Contracts
     public interface IUserManager<T> where T : IdentityUserV2
     {
         Task<IdentityResult> CreateAsync(T user, string password);
+        Task<T> FindByNameAsync(string userName);
         Task<string> GenerateEmailConfirmationTokenAsync(T user);
         Task<T> GetUserAsync(ClaimsPrincipal principal);
         string GetUserName(ClaimsPrincipal principal);
