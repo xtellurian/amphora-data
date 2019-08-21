@@ -2,7 +2,6 @@ import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 import { CONSTANTS, IComponentParams } from "../../components";
 
-import { IAzureConfig } from "../azure-config/azure-config";
 import { Monitoring } from "../monitoring/monitoring";
 
 const config = new pulumi.Config("state");
@@ -20,12 +19,10 @@ export class State extends pulumi.ComponentResource {
   public ehns: azure.eventhub.EventHubNamespace;
   public kv: azure.keyvault.KeyVault;
   public storageAccount: azure.storage.Account;
-  private accessPolicies: azure.keyvault.AccessPolicy[] = [];
 
   constructor(
     params: IComponentParams,
     private monitoring: Monitoring,
-    private azConfig: IAzureConfig,
   ) {
     super("amphora:State", params.name, {}, params.opts);
 
@@ -42,7 +39,6 @@ export class State extends pulumi.ComponentResource {
         value,
       },
       {
-        dependsOn: this.accessPolicies,
         parent: parent || this.kv,
       },
     );
@@ -127,41 +123,30 @@ export class State extends pulumi.ComponentResource {
             keyPermissions: ["create", "get"],
             objectId: authConfig.require("rian"),
             secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: this.azConfig.clientConfig.tenantId,
+            tenantId: authConfig.require("tenantId"),
           },
+          {
+            applicationId: authConfig.require("spAppId"),
+            keyPermissions: ["create", "get"],
+            objectId: authConfig.require("spObjectId"),
+            secretPermissions: ["list", "set", "get", "delete"],
+            tenantId: authConfig.require("tenantId"),
+          },
+          {
+            keyPermissions: ["create", "get"],
+            objectId: authConfig.require("spObjectId"),
+            secretPermissions: ["list", "set", "get", "delete"],
+            tenantId: authConfig.require("tenantId"),
+          },
+
         ],
         resourceGroupName: rg.name,
         skuName: "standard",
         tags: azTags,
-        tenantId: this.azConfig.clientConfig.tenantId,
+        tenantId: authConfig.require("tenantId"),
       },
       { parent: rg },
     );
-
-    if (this.azConfig.clientConfig.servicePrincipalObjectId) {
-      // there needs to be 2 here, because pulumi and dotnet do it differently...
-      const spAccess = new azure.keyvault.AccessPolicy("sp-access",
-        {
-          applicationId: this.azConfig.clientConfig.servicePrincipalApplicationId,
-          keyPermissions: ["create", "get"],
-          keyVaultId: kv.id,
-          objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
-          secretPermissions: ["list", "set", "get", "delete"],
-          tenantId: this.azConfig.clientConfig.tenantId,
-        },
-        { parent: this });
-      this.accessPolicies.push(spAccess);
-      const spAccessObjectId = new azure.keyvault.AccessPolicy("sp-access_objectId",
-        {
-          keyPermissions: ["create", "get"],
-          keyVaultId: kv.id,
-          objectId: this.azConfig.clientConfig.servicePrincipalObjectId,
-          secretPermissions: ["list", "set", "get", "delete"],
-          tenantId: this.azConfig.clientConfig.tenantId,
-        },
-        { parent: this });
-      this.accessPolicies.push(spAccessObjectId);
-    }
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",

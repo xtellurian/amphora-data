@@ -13,11 +13,6 @@ const azTags = {
 const config = new pulumi.Config("monitoring");
 const rgName = pulumi.getStack() + "-monitor";
 
-// export class MonitoringParams implements IComponentParams {
-//   name: string = "d-monitoring-component";
-//   opts?: pulumi.ComponentResourceOptions | undefined;
-// }
-
 export class Monitoring extends pulumi.ComponentResource {
   public logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
   public applicationInsights: azure.appinsights.Insights;
@@ -39,6 +34,7 @@ export class Monitoring extends pulumi.ComponentResource {
       },
       { parent: this },
     );
+
     this.logAnalyticsWorkspace = new azure.operationalinsights.AnalyticsWorkspace(
       "logAnalytics",
       {
@@ -46,7 +42,10 @@ export class Monitoring extends pulumi.ComponentResource {
         sku: "PerGB2018",
         tags: azTags,
       },
-      { parent: rg },
+      {
+        dependsOn: rg,
+        parent: rg,
+      },
     );
 
     this.applicationInsights = new azure.appinsights.Insights(
@@ -57,7 +56,10 @@ export class Monitoring extends pulumi.ComponentResource {
         resourceGroupName: rg.name,
         tags: azTags,
       },
-      { parent: rg },
+      {
+        dependsOn: rg,
+        parent: rg,
+      },
     );
 
     // new azure.core.TemplateDeployment("dashboard", {

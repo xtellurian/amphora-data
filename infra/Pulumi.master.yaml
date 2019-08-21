@@ -7,6 +7,9 @@ config:
   application:imageName: webapp
 
   authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+  authentication:spAppId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
+  authentication:spObjectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
+  authentication:tenantId: 617bc365-674a-436e-8a27-5bacbe6df190
 
   monitoring:location: AustraliaSoutheast
 
