@@ -25,18 +25,16 @@ namespace Amphora.Api.Pages.Profile
             if (string.IsNullOrEmpty(userName))
             {
                 this.AppUser = await userManager.GetUserAsync(User);
-                return Page();
             }
             else
             {
-                var user = await userManager.FindByNameAsync(userName);
-                if (user == null)
-                {
-                    return RedirectToPage("./Missing");
-                }
-                this.AppUser = user;
-                return Page();
+                AppUser = await userManager.FindByNameAsync(userName);
             }
+            if (AppUser == null)
+            {
+                return RedirectToPage("./Missing");
+            }
+            return Page();
         }
 
     }
