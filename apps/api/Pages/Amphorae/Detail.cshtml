@@ -6,11 +6,11 @@
 
 
 <div id="main" class="container">
-    <div class="row">
-        <div class="col-3">
-            <h2>Amphora: @Model.Amphora.Title</h2>
+    <div class="row lower-margin border-bottom">
+        <div class="col-9">
+            <h2>@Model.Amphora.Title</h2>
         </div>
-        <div class="col">
+        <div class="col-3">
             <span>
                 <a asp-page="./Index"><button class="btn btn-secondary">Amphorae</button></a>
             </span>
@@ -74,5 +74,23 @@
             </table>
         </div>
     </div>
-    
+    <div class="row">
+        <div class="col">
+            <h3>Signals</h3>
+            <small>Weekly Average</small>
+        </div>
+        <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+    </div>
 </div>
+
+
+@section Scripts {
+    <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+    <script src="~/js/tsi.js"></script>
+
+    <script>
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Domain.GetDatumMembers()));
+        var response = @Html.Raw(@Model.QueryResponse);
+        tsi(cols, response)
+    </script>
+}
