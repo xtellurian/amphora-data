@@ -16,8 +16,10 @@
                     <small id="fullNameHelp" class="form-text text-muted">Your Full Name</small>
                 </div>
                 <div class="form-group">
-                    <label asp-for="About" class="control-label"></label>
-                    <input asp-for="About" class="form-control" placeholder="A little about yourself" />
+                    <div class="form-group-prepend">
+                        <label asp-for="About" class="control-label"></label>
+                    </div>
+                    <textarea asp-for="About" class="form-control" aria-label="About You"></textarea>
                     <span asp-validation-for="About" class="text-danger"></span>
                     <small id="aboutHelp" class="form-text text-muted">A little about yourself</small>
                 </div>
