@@ -62,10 +62,6 @@ jobs:
 
   variables:
     - group: AzureDeploySP
-    - name: imageName
-      value: api
-    - name: imageTag
-      value: latest
     - name: buildConfiguration
       value: 'Release'
     - name: kvUri
@@ -125,11 +121,23 @@ jobs:
   dependsOn: 
     - infrastructure
     - apps
+  pool:
+    vmImage: 'ubuntu-latest'
+
   variables:
+  - group: AzureDeploySP
   - name: acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
 
   steps:
+
+  - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    displayName: Az Login
+    env: 
+      NAME: $(name)
+      PASSWORD: $(password)
+      TENANT: $(tenant)
+
   - script: |
       chmod +x ./apps/*.sh
       ./apps/acr-task.sh
