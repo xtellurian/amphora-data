@@ -12,6 +12,6 @@ namespace Amphora.Api.Contracts
         Task<string> GenerateEmailConfirmationTokenAsync(T user);
         Task<T> GetUserAsync(ClaimsPrincipal principal);
         string GetUserName(ClaimsPrincipal principal);
-        
+        Task<IdentityResult> UpdateAsync(T user);
     }
 }

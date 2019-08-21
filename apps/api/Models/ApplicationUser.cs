@@ -7,5 +7,6 @@ namespace Amphora.Api.Models
     {
         public string About { get; set; } = "I'm a happy little doge";
         public string OrgId { get; set; }
+        public string FullName { get; set; }
     }
 }
