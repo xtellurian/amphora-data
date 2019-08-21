@@ -12,55 +12,32 @@ using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Controllers
 {
-    public class TemporaeController : Controller
+    public class SignalController : Controller
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
-        private readonly IDataStore<Tempora, Datum> dataStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
-        private readonly ILogger<TemporaeController> logger;
+        private readonly ILogger<SignalController> logger;
 
-        public TemporaeController(
-            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
-            IDataStore<Amphora.Common.Models.Tempora, Datum> dataStore,
+        public SignalController(
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> entityStore,
+            IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper,
-            ILogger<TemporaeController> logger)
+            ILogger<SignalController> logger)
         {
-            this.temporaEntityStore = temporaEntityStore;
+            this.entityStore = entityStore;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        [HttpGet("api/temporae/")]
-        public async Task<IActionResult> ListTemporaAsync()
-        {
-            return Ok(await this.temporaEntityStore.ListAsync());
-        }
-
-
-        [HttpGet("api/temporae/{id}")]
-        public async Task<IActionResult> GetInformationAsync(string id)
-        {
-            return Ok(await this.temporaEntityStore.ReadAsync(id));
-        }
-
-        [HttpPut("api/temporae")]
-        public async Task<IActionResult> CreateTemporaAsync([FromBody] Amphora.Common.Models.Tempora model)
-        {
-            if (model == null || !model.IsValid())
-            {
-                return BadRequest("Invalid Model");
-            }
-            return Ok(await this.temporaEntityStore.CreateAsync(model));
-        }
-
-        [HttpPost("api/temporae/{id}/upload")]
+        [HttpPost("api/amphorae/{id}/signals")]
         public async Task<IActionResult> Upload(string id, [FromBody] JObject jObj)
         {
-            var entity = await temporaEntityStore.ReadAsync(id);
+            var entity = await entityStore.ReadAsync(id);
             if (entity == null)
             {
                 return NotFound("Invalid Tempora Id");
@@ -79,10 +56,10 @@ namespace Amphora.Api.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)] // JArray causes issues with swashbucke :(
-        [HttpPost("api/temporae/{id}/uploadMany")]
+        [HttpPost("api/amphorae/{id}/uploadMany")]
         public async Task<IActionResult> UploadMany(string id, [FromBody] JArray jArray)
         {
-            var entity = await temporaEntityStore.ReadAsync(id);
+            var entity = await entityStore.ReadAsync(id);
             if (entity == null)
             {
                 return NotFound("Invalid Tempora Id");
@@ -102,18 +79,6 @@ namespace Amphora.Api.Controllers
                 }
             }
             return Ok();
-        }
-
-        [HttpGet("api/temporae/{id}/download")]
-        public async Task<IActionResult> Download(string id)
-        {
-            var entity = await temporaEntityStore.ReadAsync(id);
-            if (entity == null)
-            {
-                return NotFound("Invalid Tempora Id");
-            }
-
-            return NotFound("not implemented");
         }
     }
 }

@@ -18,14 +18,14 @@ namespace Amphora.Api.Pages.Temporae
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
-        private readonly IDataStore<Common.Models.Tempora, Datum> dataStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> temporaEntityStore;
+        private readonly IDataStore<Common.Models.Amphora, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public DetailModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
-            IDataStore<Amphora.Common.Models.Tempora, Datum> dataStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> temporaEntityStore,
+            IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper)
         {
@@ -38,7 +38,7 @@ namespace Amphora.Api.Pages.Temporae
         public string QueryResponse {get; set; }
 
         [BindProperty]
-        public Amphora.Common.Models.Tempora Tempora { get; set; }
+        public Amphora.Common.Models.Amphora Tempora { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string Token { get; set; } = "blank for now";
 

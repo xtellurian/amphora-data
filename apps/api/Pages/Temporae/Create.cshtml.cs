@@ -14,11 +14,11 @@ namespace Amphora.Api.Pages.Temporae
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> temporaEntityStore;
         private readonly IMapper mapper;
 
         public CreateModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> temporaEntityStore,
             IMapper mapper)
         {
             this.temporaEntityStore = temporaEntityStore;
@@ -26,7 +26,7 @@ namespace Amphora.Api.Pages.Temporae
         }
 
         [BindProperty]
-        public Amphora.Common.Models.Tempora Tempora { get; set; }
+        public Amphora.Common.Models.Amphora Tempora { get; set; }
         public IEnumerable<Domain> Domains { get; set; }
 
         public IActionResult OnGet()
@@ -39,7 +39,7 @@ namespace Amphora.Api.Pages.Temporae
         {
             if (ModelState.IsValid)
             {
-                var entity = mapper.Map<Amphora.Common.Models.Tempora>(Tempora);
+                var entity = mapper.Map<Amphora.Common.Models.Amphora>(Tempora);
                 var setResult = await temporaEntityStore.CreateAsync(entity);
                 return RedirectToPage("/Temporae/Index");
             }

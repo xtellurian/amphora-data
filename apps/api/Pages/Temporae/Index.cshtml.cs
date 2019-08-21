@@ -10,17 +10,17 @@ namespace Amphora.Api.Pages.Temporae
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Tempora> temporaEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> temporaEntityStore;
 
         public IndexModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaEntityStore)
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> temporaEntityStore)
         {
             this.temporaEntityStore = temporaEntityStore;
-            this.Temporae = new List<Amphora.Common.Models.Tempora>();
+            this.Temporae = new List<Amphora.Common.Models.Amphora>();
         }
 
         [BindProperty]
-        public IEnumerable<Amphora.Common.Models.Tempora> Temporae { get; set; }
+        public IEnumerable<Amphora.Common.Models.Amphora> Temporae { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string orgId)
         {

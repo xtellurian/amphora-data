@@ -18,25 +18,14 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static Amphora.Common.Models.Tempora GetValidTempora()
+        public static Amphora.Common.Models.Amphora GetInalidAmphora(string id = null)
         {
-            return new Amphora.Common.Models.Tempora()
+            return new Amphora.Common.Models.Amphora()
             {
-                Description = "Valid Amphora - description",
-                Price = rnd.Next(0, 99),
-                Title = "Valid Amphora - title",
-                DomainId = DomainId.Dev
-            };
-        }
-
-        public static Amphora.Common.Models.Tempora GetInvalidTempora()
-        {
-            return new Amphora.Common.Models.Tempora()
-            {
+                Id = id,
                 Description = null,
-                Price = -1 * rnd.Next(0, 99),
-                Title = null,
-                DomainId = DomainId.Dev
+                Price =  -1 * rnd.Next(0, 99),
+                Title = ""
             };
         }
     }

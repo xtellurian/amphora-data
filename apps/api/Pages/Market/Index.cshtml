@@ -55,26 +55,14 @@
                 <tbody>
                     @foreach (var entity in Model.Entities)
                     {
-                    var entityType = entity.GetEntityType();
-                     <tr class="market-item">
+                    <tr class="market-item">
                         <th scope="row">@entity.Title</th>
-                        <td>@entityType</td>
                         <td>@entity.Description</td>
                         <td>@entity.Price</td>
-                        @if(entityType == Amphora.Common.Models.DataEntityTypes.Tempora)
-                        {
-                            <td> <a asp-page="/temporae/Detail" asp-route-id="@entity.Id">
-                                    <button class="btn btn-link text-success">More</button> 
-                                </a>
-                            </td>
-                        }
-                        @if(entityType == Amphora.Common.Models.DataEntityTypes.Amphora)
-                        {
-                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
-                                    <button class="btn btn-link text-success">More</button> 
-                                </a>
-                            </td>
-                        }
+                        <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
+                                <button class="btn btn-link text-success">More</button> 
+                            </a>
+                        </td>
                     </tr>
                     }
                 </tbody>

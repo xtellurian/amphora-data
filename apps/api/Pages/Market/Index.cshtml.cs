@@ -26,7 +26,7 @@ namespace Amphora.Api.Pages.Market
         [BindProperty]
         public bool ShowTemporae { get; set; }
 
-        public IEnumerable<MarketEntity> Entities { get; set; }
+        public IEnumerable<Amphora.Common.Models.Amphora> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {

@@ -10,27 +10,21 @@ namespace Amphora.Api.Services
     public class MarketService : IMarketService
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraStore;
-        private readonly IOrgScopedEntityStore<Tempora> temporaStore;
 
         public MarketService(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore,
-            IOrgScopedEntityStore<Amphora.Common.Models.Tempora> temporaStore )
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore )
         {
             this.amphoraStore = amphoraStore;
-            this.temporaStore = temporaStore;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.MarketEntity>> FindAsync(string term, SearchParams searchParams)
+        public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(string term, SearchParams searchParams)
         {
-            var marketEntities = new List<MarketEntity>();
+            var marketEntities = new List<Amphora.Common.Models.Amphora>();
             if(searchParams?.IncludeAmphorae ?? true )
             {
                 marketEntities.AddRange(await amphoraStore.ListAsync());
             }
-            if(searchParams?.IncludeTemporae ?? true) 
-            {
-                marketEntities.AddRange(await temporaStore.ListAsync());
-            }
+
             if (string.IsNullOrEmpty(term)) return marketEntities;
             // string matching
             var results = marketEntities
