@@ -5,27 +5,61 @@
 }
 
 <div id="main" class="container">
-
-    <div class="row">
-        <div class="col text-center">
-            <h1 class="display-4">Your Profile</h1>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="card-title">Side Pane</h5>
-                </div>
+            <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
-                    Put something here                                                 
+                    <div class="text-center mb-3">
+                        <img src="~/images/doge.jpg" />
+                    </div>
+                    <p><strong>@Model.AppUser?.UserName </strong>
+                    <small>@Model.AppUser?.UserName </small></p>
+
+                    <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
+                    <p>@Model.AppUser.About</p>
+                    <p><i class="fas fa-user-friends"></i>@Model.AppUser.OrgId</p>                   
                 </div>
             </div>
         </div>
         <div class="col-8">
-            <p>Username: @Model.AppUser?.UserName</p>
-            <p>Organisation Id: @Model.AppUser?.OrgId</p>
+           <div>
+               <h4>Overview</h4>
+               <p><small>Pinned</small></p>
+               <!-- Grid of pinned Amphora -->
+               <div class="container">
+                    <div class="row m-4">
+                        <div class="col-sm mr-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"><strong>Albury Wodonga Rainfall</strong></span>
+                        </div>
+
+                        <div class="col-sm ml-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"> <strong> Byron Bay Rainfall</strong></span>
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-sm mr-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"><strong>Australia Wide Rainfall</strong></span>
+                        </div>
+                        <div class="col-sm ml-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"><strong>Australian Dam Levels from 1975</strong></span>
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-sm mr-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"><strong>Queensland Soil Moisture</strong></span>
+                        </div>
+                        <div class="col-sm ml-2 border border-dark rounded">
+                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
+                            <span class="float-right pb-1"><strong>Victorian Soil Moisture</strong></span>
+                        </div>
+                    </div>
+                </div>
+           </div>
         </div>
     </div>
 </div>
