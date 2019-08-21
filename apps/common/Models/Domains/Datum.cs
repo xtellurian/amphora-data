@@ -9,18 +9,18 @@ namespace Amphora.Common.Models.Domains
         {
             T = DateTime.Now;
         }
-        public Datum(string tempora): this()
+        public Datum(string amphora): this()
         {
-            Tempora = tempora;
+            Amphora = amphora;
         }
         public virtual bool IsValid()
         {
-            return this.T != null && this.Tempora != null;
+            return this.T != null && this.Amphora != null;
         }
         
         [JsonProperty(Required = Required.Default)]        
         public DateTime T { get; set; }
-        public string Tempora { get; set; }
+        public string Amphora { get; set; }
 
     }
 }

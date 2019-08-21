@@ -153,10 +153,6 @@ namespace Amphora.Api
             {
                 p.TableName = "amphorae";
             });
-            services.Configure<EntityTableStoreOptions<TemporaTableEntity>>(p =>
-            {
-                p.TableName = "temporae";
-            });
         }
 
         private void UsePersistentStores(IServiceCollection services)
@@ -178,8 +174,6 @@ namespace Amphora.Api
 
             // orgs
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
-            // this isnt actually in memory :()
-            // services.AddSingleton<IDataStore<Amphora.Common.Models.Tempora, JObject>, TemporaEventHubDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

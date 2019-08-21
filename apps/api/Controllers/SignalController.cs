@@ -40,9 +40,9 @@ namespace Amphora.Api.Controllers
             var entity = await entityStore.ReadAsync(id);
             if (entity == null)
             {
-                return NotFound("Invalid Tempora Id");
+                return NotFound("Invalid Id");
             }
-            jObj["tempora"] = id;
+            jObj["amphora"] = id;
             var domain = Domain.GetDomain(entity.DomainId);
             if (domain.IsValid(jObj))
             {
@@ -62,13 +62,13 @@ namespace Amphora.Api.Controllers
             var entity = await entityStore.ReadAsync(id);
             if (entity == null)
             {
-                return NotFound("Invalid Tempora Id");
+                return NotFound("Invalid Id");
             }
             var domain = Domain.GetDomain(entity.DomainId);
             var results = new List<Datum>();
             foreach (JObject jObj in jArray)
             {
-                jObj["tempora"] = id;
+                jObj["amphora"] = id;
                 if (domain.IsValid(jObj))
                 {
                     results.Add(await dataStore.SetDataAsync(entity, domain.ToDatum(jObj), null));

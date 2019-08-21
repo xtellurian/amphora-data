@@ -23,30 +23,20 @@ namespace Amphora.Api.Pages.Market
 
         [BindProperty]
         public bool ShowAmphorae{ get; set; }
-        [BindProperty]
-        public bool ShowTemporae { get; set; }
 
         public IEnumerable<Amphora.Common.Models.Amphora> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             this.Entities = await marketService.FindAsync(Term,
-                new Models.SearchParams
-                {
-                    IncludeAmphorae = true,
-                    IncludeTemporae = true
-                });
+                new Models.SearchParams());
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             this.Entities = await marketService.FindAsync(Term,
-                new Models.SearchParams
-                {
-                    IncludeAmphorae = this.ShowAmphorae,
-                    IncludeTemporae = this.ShowTemporae
-                });
+                new Models.SearchParams());
             return Page();
         }
     }

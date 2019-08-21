@@ -12,7 +12,7 @@ namespace Amphora.Api.Services
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraStore;
 
         public MarketService(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore )
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore)
         {
             this.amphoraStore = amphoraStore;
         }
@@ -20,18 +20,17 @@ namespace Amphora.Api.Services
         public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(string term, SearchParams searchParams)
         {
             var marketEntities = new List<Amphora.Common.Models.Amphora>();
-            if(searchParams?.IncludeAmphorae ?? true )
-            {
-                marketEntities.AddRange(await amphoraStore.ListAsync());
-            }
+
+            marketEntities.AddRange(await amphoraStore.ListAsync());
+
 
             if (string.IsNullOrEmpty(term)) return marketEntities;
             // string matching
             var results = marketEntities
-                .Where( i =>
-                    (i.Title?.ToLower()?.Contains(term?.ToLower()) ?? false)
-                     ||
-                    (i.Description?.ToLower()?.Contains(term?.ToLower()) ?? false)
+                .Where(i =>
+                   (i.Title?.ToLower()?.Contains(term?.ToLower()) ?? false)
+                    ||
+                   (i.Description?.ToLower()?.Contains(term?.ToLower()) ?? false)
                     );
             // price filter
             results = results.Where(i => searchParams.PriceFilter(i.Price));
