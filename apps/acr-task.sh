@@ -6,4 +6,4 @@ az acr task create -n $TASK_NAME -r $ACR_NAME --branch $BRANCH -f apps/acr-task.
 
 echo "Githash is $GITHASH"
 
-az acr task run -n $TASK_NAME -r $ACR_NAME --arg "gitHash=$GITHASH"
+az acr task run -n $TASK_NAME -r $ACR_NAME --arg gitHash=$GITHASH
