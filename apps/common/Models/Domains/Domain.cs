@@ -22,7 +22,7 @@ namespace Amphora.Common.Models.Domains
         {
             return new List<Domain>
             {
-                new Dev.DevDomain(),
+                new Dev.DefaultDomain(),
                 new Agriculture.AgDomain()
             };
         }

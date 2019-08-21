@@ -7,10 +7,10 @@ namespace Amphora.Tests.Unit
     public class DatumAttributeTests
     {
         [Fact]
-        public void GetColumnsUsingDatumMember_DevDomain()
+        public void GetColumnsUsingDatumMember_DefaultDomain()
         {
-            var devDomain = new DevDomain();
-            var members = devDomain.GetDatumMembers();
+            var defaultDomain = new DefaultDomain();
+            var members = defaultDomain.GetDatumMembers();
             Assert.True(members.Count > 0);
             Assert.Contains(members, m => string.Equals(m.Name, "id"));
         }

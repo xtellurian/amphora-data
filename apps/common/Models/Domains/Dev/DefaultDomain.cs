@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Common.Models.Domains.Dev
 {
-    public class DevDomain : Domain
+    public class DefaultDomain : Domain
     {
 
         public override string Name => "Development Domain";
@@ -18,7 +18,7 @@ namespace Amphora.Common.Models.Domains.Dev
 
         public override List<DatumMemberAttribute> GetDatumMembers()
         {
-            return base.GetDatumMembers(typeof(DevDatum));
+            return base.GetDatumMembers(typeof(DefaultDatum));
         }
 
         public override bool IsValid(JObject o)
@@ -29,10 +29,10 @@ namespace Amphora.Common.Models.Domains.Dev
 
         public override Datum ToDatum(JObject o)
         {
-            return o?.ToObject<DevDatum>();
+            return o?.ToObject<DefaultDatum>();
         }
 
-        public class DevDatum : Datum
+        public class DefaultDatum : Datum
         {
 
             [JsonProperty(Required = Required.Always)]
