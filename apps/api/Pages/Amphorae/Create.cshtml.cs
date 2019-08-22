@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +24,42 @@ namespace Amphora.Api.Pages.Amphorae
             this.mapper = mapper;
         }
 
+        public class InputModel
+        {
+            [Required]
+            public string Title {get; set; }
+            [Required]
+            [DataType(DataType.MultilineText)]
+            public string Description {get; set; }
+            [Required]
+            [DataType(DataType.Currency)]
+            public double Price {get; set; }
+
+            [Display(Name = "Latitude")]
+            public double? Lat {get;set ;}
+            [Display(Name = "Longitude")]
+            public double? Lon {get;set ;}
+        }
         [BindProperty]
-        public Amphora.Common.Models.Amphora Amphora { get; set; }
+        public InputModel Input {get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
             {
-                var entity = mapper.Map<Amphora.Common.Models.Amphora>(Amphora);
+                Position position = null;
+                if(Input.Lat.HasValue && Input.Lon.HasValue)
+                {
+                    position = new Position(Input.Lat.Value, Input.Lon.Value);
+                }
+                var entity = new Amphora.Common.Models.Amphora
+                {
+                    Title = Input.Title,
+                    Description = Input.Description,
+                    Position = position,
+                    Price = Input.Price,
+                };
+
                 var setResult = await amphoraEntityStore.CreateAsync(entity);
                 return RedirectToPage("/Amphorae/Index");
             }

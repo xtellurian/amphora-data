@@ -45,5 +45,20 @@ namespace Amphora.Tests.Unit.Automapper
             var amphora = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
             Assert.NotNull(amphora);
         }
+
+        [Fact]
+        public void TestPositionMapping()
+        {
+            var pos = new Position { Lat = 25.1, Lon = 66.7 };
+            var amphora = new Amphora.Common.Models.Amphora()
+            {
+                Position = pos
+            };
+            var tableEntity = mapper.Map<AmphoraTableEntity>(amphora);
+            Assert.NotNull(tableEntity);
+            var entity = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
+            Assert.Equal(pos.Lat, entity.Position.Lat);
+            Assert.Equal(pos.Lon, entity.Position.Lon);
+        }
     }
 }

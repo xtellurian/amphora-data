@@ -1,5 +1,7 @@
 using AutoMapper;
 using Amphora.Api.Models;
+using Newtonsoft.Json;
+using Amphora.Common.Models;
 
 namespace api.Models.AutoMapper
 {
@@ -20,7 +22,14 @@ namespace api.Models.AutoMapper
                 {
                     opt.MapFrom((src) => src.OrgId);
                 })
-                .ReverseMap();
+                .ForMember(dest => dest.Lat, opt => {
+                    opt.MapFrom(src => src.Position.Lat);
+                })
+                .ForMember(dest => dest.Lon, opt => {
+                    opt.MapFrom(src => src.Position.Lon);
+                })
+                .ReverseMap()
+                .ForPath(s => s.Position, opt => opt.MapFrom(src => new Position(src.Lat, src.Lon)));
         }
     }
 
