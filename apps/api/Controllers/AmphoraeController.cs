@@ -24,8 +24,12 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet("api/amphorae")]
-        public async Task<IActionResult> ListAmphoraAsync()
+        public async Task<IActionResult> ListAmphoraAsync(string geoHash)
         {
+            if(! string.IsNullOrEmpty(geoHash))
+            {
+                return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
+            }
             return Ok(await this.amphoraEntityStore.ListAsync());
         }
 

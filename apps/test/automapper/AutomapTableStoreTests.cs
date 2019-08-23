@@ -1,7 +1,9 @@
+using System;
 using Amphora.Api;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
 using AutoMapper;
+using NGeoHash;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Automapper
@@ -9,6 +11,7 @@ namespace Amphora.Tests.Unit.Automapper
     public class AutomapTableStoreTests
     {
         private IMapper mapper;
+        private Random rnd = new Random();
 
         public AutomapTableStoreTests()
         {
@@ -49,16 +52,15 @@ namespace Amphora.Tests.Unit.Automapper
         [Fact]
         public void TestPositionMapping()
         {
-            var pos = new Position { Lat = 25.1, Lon = 66.7 };
+            var geoHash = GeoHash.Encode(rnd.Next(0,180), rnd.Next(0,180));
             var amphora = new Amphora.Common.Models.Amphora()
             {
-                Position = pos
+                GeoHash = geoHash
             };
             var tableEntity = mapper.Map<AmphoraTableEntity>(amphora);
             Assert.NotNull(tableEntity);
             var entity = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
-            Assert.Equal(pos.Lat, entity.Position.Lat);
-            Assert.Equal(pos.Lon, entity.Position.Lon);
+            Assert.Equal(geoHash, entity.GeoHash);
         }
     }
 }

@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NGeoHash;
 
 namespace Amphora.Api.Pages.Amphorae
 {
@@ -47,16 +48,16 @@ namespace Amphora.Api.Pages.Amphorae
         {
             if (ModelState.IsValid)
             {
-                Position position = null;
+                string geoHash = null;
                 if(Input.Lat.HasValue && Input.Lon.HasValue)
                 {
-                    position = new Position(Input.Lat.Value, Input.Lon.Value);
+                    geoHash = GeoHash.Encode(Input.Lat.Value, Input.Lon.Value);
                 }
                 var entity = new Amphora.Common.Models.Amphora
                 {
                     Title = Input.Title,
                     Description = Input.Description,
-                    Position = position,
+                    GeoHash = geoHash,
                     Price = Input.Price,
                 };
 
