@@ -1,8 +1,10 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+
 import { CONSTANTS, IComponentParams } from "../../components";
 import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
+import { AzureMaps } from "./maps/azure-maps";
 import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("application");
@@ -27,6 +29,7 @@ export class Application extends pulumi.ComponentResource
   public acr: azure.containerservice.Registry;
   public tsi: Tsi;
   public imageName: pulumi.Output<string>;
+  public AzureMaps: AzureMaps;
 
   constructor(
     params: IComponentParams,
@@ -53,6 +56,7 @@ export class Application extends pulumi.ComponentResource
     this.createAppSvc(rg, this.state.kv);
     this.accessPolicyKeyVault(this.state.kv, this.appSvc);
     this.createTsi();
+    this.createAzureMaps(rg);
   }
   private createTsi() {
     this.tsi = new Tsi("tsi", {
@@ -155,5 +159,9 @@ export class Application extends pulumi.ComponentResource
         parent: appSvc,
       },
     );
+  }
+
+  private createAzureMaps(rg: azure.core.ResourceGroup) {
+    this.AzureMaps = new AzureMaps("azMaps", { rg }, { parent: this });
   }
 }

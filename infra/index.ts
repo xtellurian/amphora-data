@@ -58,3 +58,7 @@ export let imageName = result.then((r) =>
 export let acrName = result.then((r) =>
   r.application.acr.name,
 );
+
+export let AzureMapsClientId = result.then((r) =>
+  r.application.AzureMaps.clientId,
+);
