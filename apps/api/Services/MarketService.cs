@@ -17,20 +17,29 @@ namespace Amphora.Api.Services
             this.amphoraStore = amphoraStore;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(string term, SearchParams searchParams)
+        public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(SearchParams searchParams)
         {
-            var marketEntities = new List<Amphora.Common.Models.Amphora>();
-
-            marketEntities.AddRange(await amphoraStore.ListAsync());
-
-
-            if (string.IsNullOrEmpty(term)) return marketEntities;
+            IList<Amphora.Common.Models.Amphora> entities;
+            if(searchParams == null) return new List<Amphora.Common.Models.Amphora>();
+            
+            if(searchParams.IsGeoSearch)
+            {
+                entities = await amphoraStore.StartsWithQueryAsync(
+                    nameof(Amphora.Common.Models.Amphora.GeoHash), 
+                    searchParams.GeoHashStartsWith);
+            }
+            else
+            {
+                entities = await amphoraStore.ListAsync();
+            }
+            
             // string matching
-            var results = marketEntities
+            if(string.IsNullOrEmpty(searchParams.SearchTerm)) return entities;
+            var results = entities
                 .Where(i =>
-                   (i.Title?.ToLower()?.Contains(term?.ToLower()) ?? false)
+                   (i.Title?.ToLower()?.Contains(searchParams?.SearchTerm?.ToLower()) ?? false)
                     ||
-                   (i.Description?.ToLower()?.Contains(term?.ToLower()) ?? false)
+                   (i.Description?.ToLower()?.Contains(searchParams.SearchTerm?.ToLower()) ?? false)
                     );
             // price filter
             results = results.Where(i => searchParams.PriceFilter(i.Price));

@@ -19,49 +19,59 @@
                         <button id="button-addon3" type="submit" class="btn btn-link text-success"><i class="icon fa fa-search"></i></button>
                     </div>
                 </div>
+                <div class="card mb-2">
+                    <a class="float-left" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                        <i class="fas fa-angle-down"></i>
+                    </a>
+
+                    <div class="collapse" id="collapseExample">
+                        <div class="container card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <label asp-for="Input.Lat" class="control-label"></label>
+                                    <input asp-for="Input.Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="Input.Lat" class="text-danger"></span>
+                                </div>
+                                <div class="col">
+                                    <label asp-for="Input.Lon" class="control-label"></label>
+                                    <input asp-for="Input.Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="Input.Lon" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <div class="card">
-                <div class="card-header text-center">
-                    <p class="card-title">Filters</p>
-                </div>
-                <div class="card-body">
-                    Need something here
-                </div>
-            </div>
-        </div>
-    <div class="col-9">
-        <div>
-            <table id="market-table" class="table">
-                <thead>
-                    <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Price ($)</th>
-                    <th> Action</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div>
+                <table id="market-table" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Price ($)</th>
+                            <th> Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     @foreach (var entity in Model.Entities)
                     {
-                    <tr class="market-item">
-                        <th scope="row">@entity.Title</th>
-                        <td>@entity.Description</td>
-                        <td>@entity.Price</td>
-                        <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
-                                <button class="btn btn-link text-success">More</button> 
-                            </a>
-                        </td>
-                    </tr>
+                        <tr class="market-item">
+                            <th scope="row">@entity.Title</th>
+                            <td>@entity.Description</td>
+                            <td>@entity.Price</td>
+                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
+                                    <button class="btn btn-link text-success">More</button> 
+                                </a>
+                            </td>
+                        </tr>
                     }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-  </div>
 </div>
-

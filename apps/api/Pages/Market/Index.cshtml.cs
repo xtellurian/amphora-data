@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
@@ -18,26 +19,50 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
         }
 
+        public class InputModel
+        {
+            [BindProperty]
+            [Display(Name = "Latitude")]
+            public double? Lat { get; set; }
+            [BindProperty]
+            [Display(Name = "Longitude")]
+            public double? Lon { get; set; }
+        }
+
         [BindProperty(SupportsGet = true)]
         public string Term { get; set; }
 
         [BindProperty]
-        public bool ShowAmphorae{ get; set; }
+        public InputModel Input { get; set; }
 
         public IEnumerable<Amphora.Common.Models.Amphora> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            this.Entities = await marketService.FindAsync(Term,
-                new Models.SearchParams());
+            await RunSearch();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            this.Entities = await marketService.FindAsync(Term,
-                new Models.SearchParams());
+            await RunSearch();
             return Page();
+        }
+
+        private async Task RunSearch()
+        {
+            string geoHashStartsWith = null;
+            if (Input != null && Input.Lat.HasValue && Input.Lon.HasValue)
+            {
+                geoHashStartsWith = NGeoHash.GeoHash.Encode(Input.Lat.Value, Input.Lon.Value, 2); // accuracy of 2 for now - should scale it
+            }
+            this.Entities = await marketService.FindAsync(
+                new Models.SearchParams
+                {
+                    SearchTerm = Term,
+                    GeoHashStartsWith = geoHashStartsWith,
+                    IsGeoSearch = geoHashStartsWith != null
+                });
         }
     }
 }

@@ -8,7 +8,9 @@ namespace Amphora.Api.Models
         {
 
         }
-
+        public string SearchTerm { get; set; }
         public Predicate<double> PriceFilter { get; set; } = (p) => true;
+        public bool IsGeoSearch { get; set; }
+        public string GeoHashStartsWith { get; set; }
     }
 }
