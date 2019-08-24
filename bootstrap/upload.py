@@ -5,7 +5,7 @@ import requests
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--baseurl', metavar='u', help='Amphora base url')
-parser.add_argument('id', metavar='i', help='Tempora id')
+parser.add_argument('id', metavar='i', help='Amphora id')
 parser.add_argument('file', metavar='f', help='CSV file')
 
 args = parser.parse_args()
@@ -33,7 +33,7 @@ with open(args.file, newline='', encoding="UTF8") as csvfile:
             payload.append(payloadRow)
 
 
-    r = requests.post(f"{args.baseurl}/api/temporae/{args.id}/uploadMany", data=json.dumps(payload), headers = http_headers, verify=False)
+    r = requests.post(f"{args.baseurl}/api/amphorae/{args.id}/signals", data=json.dumps(payload), headers = http_headers, verify=False)
     if(r.status_code > 299):
         print(r.status_code)
         print(r.text)
