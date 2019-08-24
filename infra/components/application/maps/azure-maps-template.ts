@@ -27,6 +27,11 @@ export function azureMapsTemplate() {
                 // tslint:disable-next-line: max-line-length
                 value: "[reference(concat('Microsoft.Maps/accounts/', parameters('account_name')))['x-ms-client-id']]",
             },
+            resourceId: {
+                type: "string",
+                // tslint:disable-next-line: max-line-length
+                value: "[resourceId('Microsoft.Maps/accounts/', parameters('account_name'))]",
+            },
         },
     };
 }

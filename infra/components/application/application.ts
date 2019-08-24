@@ -113,6 +113,7 @@ export class Application extends pulumi.ComponentResource
         appServicePlanId: this.plan.id,
         appSettings: {
           APPINSIGHTS_INSTRUMENTATIONKEY: this.monitoring.applicationInsights.instrumentationKey,
+          AzureMapsClientId: this.AzureMaps.clientId,
           DOCKER_ENABLE_CI: "true",
           DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
@@ -163,5 +164,28 @@ export class Application extends pulumi.ComponentResource
 
   private createAzureMaps(rg: azure.core.ResourceGroup) {
     this.AzureMaps = new AzureMaps("azMaps", { rg }, { parent: this });
+
+    const subId = authConfig.require("subscriptionId");
+    // tslint:disable-next-line: max-line-length
+    const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
+    const appRole = new azure.role.Assignment("appRole",
+      {
+        principalId: authConfig.require("spObjectId"),
+        roleDefinitionId: roleId,
+        scope: this.AzureMaps.resourceId,
+      },
+      {
+        parent: this,
+      });
+
+    const rianRole = new azure.role.Assignment("rianRole",
+      {
+        principalId: authConfig.require("rian"),
+        roleDefinitionId: roleId,
+        scope: this.AzureMaps.resourceId,
+      },
+      {
+        parent: this,
+      });
   }
 }

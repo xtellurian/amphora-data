@@ -12,6 +12,7 @@ export interface IAzureMapsParams {
 export class AzureMaps extends pulumi.ComponentResource {
     public mapsName: random.RandomString;
     public clientId: pulumi.Output<any>;
+    public resourceId: pulumi.Output<any>;
     /**
      *
      */
@@ -52,5 +53,6 @@ export class AzureMaps extends pulumi.ComponentResource {
         );
 
         this.clientId = maps.outputs.clientId;
+        this.resourceId = maps.outputs.resourceId;
     }
 }
