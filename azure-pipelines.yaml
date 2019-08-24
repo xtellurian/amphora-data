@@ -138,16 +138,28 @@ jobs:
       PASSWORD: $(password)
       TENANT: $(tenant)
 
-  - script: |
-      chmod +x ./apps/*.sh
-      ./apps/acr-task.sh
-    displayName: Create ACR Build Task
-    env:
-      TASK_NAME: BuildAndPushWebApp
-      BRANCH: $(Build.SourceBranchName)
-      ACR_NAME: $(acrName)
-      ACCESS_TOKEN: $(System.AccessToken)
-      GITHASH: $(Build.SourceVersion)
+  - task: Docker@2
+    displayName: Build and Push Image
+    inputs:
+      command: buildAndPush
+      repository: $(acrName).azurecr.io/webapp
+      buildContext: $(Build.SourcesDirectory)/apps
+      tags: |
+        latest
+        $(Build.SourceVersion)
+        $(Build.SourceBranchName)
+        $(Build.BuildNumber)
+
+  # - script: |
+  #     chmod +x ./apps/*.sh
+  #     ./apps/acr-task.sh
+  #   displayName: Create ACR Build Task
+  #   env:
+  #     TASK_NAME: BuildAndPushWebApp
+  #     BRANCH: $(Build.SourceBranchName)
+  #     ACR_NAME: $(acrName)
+  #     ACCESS_TOKEN: $(System.AccessToken)
+  #     GITHASH: $(Build.SourceVersion)
 
 ##################################################################
 #           Destroy Instrastructure
