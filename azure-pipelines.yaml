@@ -140,7 +140,7 @@ jobs:
 
   - script: |
       az acr login -n $ACR_NAME
-      docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD $CONTEXT
+      docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
       docker push $IMAGE:latest
       docker push $IMAGE:$GITHASH
       docker push $IMAGE:$BUILD 
@@ -152,16 +152,6 @@ jobs:
       GITHASH: $(Build.SourceVersion)
       BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
 
-  # - script: |
-  #     chmod +x ./apps/*.sh
-  #     ./apps/acr-task.sh
-  #   displayName: Create ACR Build Task
-  #   env:
-  #     TASK_NAME: BuildAndPushWebApp
-  #     BRANCH: $(Build.SourceBranchName)
-  #     ACR_NAME: $(acrName)
-  #     ACCESS_TOKEN: $(System.AccessToken)
-  #     GITHASH: $(Build.SourceVersion)
 
 ##################################################################
 #           Destroy Instrastructure
