@@ -70,13 +70,15 @@ export class Application extends pulumi.ComponentResource
   }
 
   private createAcr(rg: azure.core.ResourceGroup) {
+    let sku = config.get("acrSku");
+    if (!sku) { sku = "Basic"; } // default SKU is basic
     const acr = new azure.containerservice.Registry(
       "acr",
       {
         adminEnabled: true,
         location: config.require("location"),
         resourceGroupName: rg.name,
-        sku: "Standard",
+        sku,
         tags: azTags,
       },
       { parent: rg },

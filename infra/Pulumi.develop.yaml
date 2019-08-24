@@ -5,6 +5,7 @@ config:
   application:appSvcPlanTier: Basic
   application:appSvcPlanSize: B1
   application:imageName: webapp
+  application:acrSku: Basic # use basic SKU in develop (default is basic)
 
   authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
   authentication:spAppId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
