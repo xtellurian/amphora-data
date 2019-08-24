@@ -53,10 +53,10 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
+    this.createAzureMaps(rg);
     this.createAppSvc(rg, this.state.kv);
     this.accessPolicyKeyVault(this.state.kv, this.appSvc);
     this.createTsi();
-    this.createAzureMaps(rg);
   }
   private createTsi() {
     this.tsi = new Tsi("tsi", {
