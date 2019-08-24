@@ -138,11 +138,6 @@ jobs:
       PASSWORD: $(password)
       TENANT: $(tenant)
 
-  - script: 
-    displayName: Az ACR Login
-    env:
-      ACR_NAME: $(acrName)
-
   - script: |
       az acr login -n $ACR_NAME
       docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD $CONTEXT
@@ -151,6 +146,7 @@ jobs:
       docker push $IMAGE:$BUILD 
     displayName: Build and Push Docker Image
     env:
+      ACR_NAME: $(acrName)
       CONTEXT: $(Build.SourcesDirectory)/apps
       IMAGE: $(acrName).azurecr.io/webapp
       GITHASH: $(Build.SourceVersion)
