@@ -62,3 +62,7 @@ export let acrName = result.then((r) =>
 export let AzureMapsClientId = result.then((r) =>
   r.application.AzureMaps.clientId,
 );
+
+export let webAppResourceId = result.then((r) =>
+  r.application.appSvc.id,
+);

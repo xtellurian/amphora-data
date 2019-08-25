@@ -116,7 +116,6 @@ export class Application extends pulumi.ComponentResource
         appSettings: {
           APPINSIGHTS_INSTRUMENTATIONKEY: this.monitoring.applicationInsights.instrumentationKey,
           AzureMapsClientId: this.AzureMaps.clientId,
-          DOCKER_ENABLE_CI: "true",
           DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
             this.acr.loginServer

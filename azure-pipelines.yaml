@@ -36,11 +36,13 @@ jobs:
         echo "$appUrl"
         echo "$kvUri"
         echo "$pulumiStack"
+        echo "$webAppResourceId"
       displayName: Important Variables
       env: 
         kvUri: $(pulumi.kvUri)
         pulumiStack: $(pulumi.pulumiStack)
         appUrl: $(pulumi.appUrl)
+        webAppResourceId: $(pulumi.webAppResourceId)
 
 
 ##################################################################
@@ -128,6 +130,8 @@ jobs:
   - group: AzureDeploySP
   - name: acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+  - name: webAppResourceId
+    value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
 
   steps:
 
@@ -144,6 +148,10 @@ jobs:
       docker push $IMAGE:latest
       docker push $IMAGE:$GITHASH
       docker push $IMAGE:$BUILD 
+      echo "Setting CI for web app"
+      WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
+      echo "Webhook is $WEBHOOKURI"
+      az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
     displayName: Build and Push Docker Image
     env:
       ACR_NAME: $(acrName)
@@ -151,6 +159,7 @@ jobs:
       IMAGE: $(acrName).azurecr.io/webapp
       GITHASH: $(Build.SourceVersion)
       BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+      WEBAPPID: $(webAppResourceId)
 
 
 ##################################################################
