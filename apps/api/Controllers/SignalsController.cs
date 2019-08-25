@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiController]
+    [Authorize]
     public class SignalController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
