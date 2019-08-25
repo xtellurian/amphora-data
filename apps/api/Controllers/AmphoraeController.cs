@@ -2,11 +2,15 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace Amphora.Api.Controllers
 {
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AmphoraeController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;

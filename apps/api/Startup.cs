@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Amphora.Common.Models.Domains;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api
 {
@@ -59,7 +61,7 @@ namespace Amphora.Api
             SetupUserIdentities(services);
             SetupMarket(services);
             SetupToDoServices(services);
-
+            SetupAuthentication(services);
             services.AddScoped<ITsiService, RealTsiService>();
             services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
 
@@ -72,6 +74,7 @@ namespace Amphora.Api
             {
                 services.AddMvc(opts =>
                 {
+                    // this let's you work with the pages when in dev mode
                     opts.Filters.Add(new AllowAnonymousFilter());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
@@ -94,6 +97,29 @@ namespace Amphora.Api
 
         }
 
+        private void SetupAuthentication(IServiceCollection services)
+        {
+            services.Configure<TokenManagementOptions>(Configuration.GetSection("tokenManagement"));
+            var token = Configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
+
+            services.AddAuthentication()
+            .AddJwtBearer(x =>
+           {
+               x.RequireHttpsMetadata = HostingEnvironment.IsProduction();
+               x.SaveToken = true;
+               x.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
+                   ValidIssuer = token.Issuer,
+                   ValidAudience = token.Audience,
+                   ValidateIssuer = false,
+                   ValidateAudience = false
+               };
+           }).AddCookie();
+            services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
+        }
+
         private void SetupMarket(IServiceCollection services)
         {
             services.AddScoped<IMarketService, MarketService>();
@@ -111,17 +137,19 @@ namespace Amphora.Api
             if (HostingEnvironment.IsProduction())
             {
                 Console.WriteLine("Disabling Dev SignIn for production");
-                Models.Development.DevSignInResult.Disabled = true;
+                //Models.Development.DevSignInResult.Disabled = true;
             }
+
             if (!string.IsNullOrEmpty(Configuration["StorageConnectionString"]))
             {
 
                 System.Console.WriteLine("Setting Up User Identities");
                 services.Configure<CookiePolicyOptions>(options =>
                 {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => false;
+                    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                    options.CheckConsentNeeded = context => false;
                     options.MinimumSameSitePolicy = SameSiteMode.None;
+
                 });
                 services.AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>((options) =>
                 {
@@ -134,9 +162,9 @@ namespace Amphora.Api
                         idconfig.StorageConnectionString = Configuration.GetSection("StorageConnectionString").Value;
                         idconfig.LocationMode = Configuration.GetSection("IdentityConfiguration:LocationMode").Value;
                         idconfig.IndexTableName = Configuration.GetSection("IdentityConfiguration:IndexTableName").Value; // default: AspNetIndex
-                    idconfig.RoleTableName = Configuration.GetSection("IdentityConfiguration:RoleTableName").Value;   // default: AspNetRoles
-                    idconfig.UserTableName = Configuration.GetSection("IdentityConfiguration:UserTableName").Value;   // default: AspNetUsers
-                    return idconfig;
+                        idconfig.RoleTableName = Configuration.GetSection("IdentityConfiguration:RoleTableName").Value;   // default: AspNetRoles
+                        idconfig.UserTableName = Configuration.GetSection("IdentityConfiguration:UserTableName").Value;   // default: AspNetUsers
+                        return idconfig;
                     }))
                     .AddDefaultTokenProviders()
                     .AddDefaultUI(UIFramework.Bootstrap4)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Domains;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SignalController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
