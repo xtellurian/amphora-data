@@ -12,7 +12,7 @@ namespace Amphora.Common.Models.Domains.Dev
     public class DefaultDomain : Domain
     {
 
-        public override string Name => "Development Domain";
+        public override string Name => "Default Domain";
 
         public override DomainId Id => DomainId.Dev;
 
