@@ -55,8 +55,10 @@ jobs:
     matrix:
       InMemory:
         PersistentStores: ''
+        disableKv: 'true'
       Persistent:
         PersistentStores: 'true'
+        disableKv: ''
     maxParallel: 2
   condition: succeeded()
   pool:
@@ -105,6 +107,7 @@ jobs:
     env:
       ASPNETCORE_kvUri: $(kvUri)
       ASPNETCORE_PersistentStores: $(PersistentStores)
+      ASPNETCORE_disableKv: $(disableKv)
 
   - task: PublishTestResults@2
     condition: always() 

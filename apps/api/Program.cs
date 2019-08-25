@@ -26,9 +26,10 @@ namespace Amphora.Api
                 .UseStartup<Startup>();
 
         public const string kvUri = "kvUri";
+        public const string disableKv = "disableKv";
         private static void KeyVaultConfigProvider(IConfigurationBuilder config, IConfigurationRoot builtConfig)
         {
-            if (!string.IsNullOrEmpty(builtConfig[kvUri]))
+            if (!string.IsNullOrEmpty(builtConfig[kvUri]) && string.IsNullOrEmpty(builtConfig[disableKv]))
             {
                 System.Console.WriteLine($"Using KeyVault {builtConfig[kvUri]} as Config Provider");
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
