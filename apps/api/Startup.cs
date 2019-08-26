@@ -24,6 +24,7 @@ namespace Amphora.Api
             this.AuthenticationModule = new AuthenticationModule(configuration, env);
             this.IdentityModule = new IdentityModule(configuration, env);
             this.StorageModule = new StorageModule(configuration, env);
+            this.GeoModule = new GeoModule(configuration, env);
         }
 
         public IConfiguration Configuration { get; }
@@ -32,6 +33,7 @@ namespace Amphora.Api
         private readonly AuthenticationModule AuthenticationModule;
         private readonly IdentityModule IdentityModule;
         private readonly StorageModule StorageModule;
+        private readonly GeoModule GeoModule;
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -40,6 +42,7 @@ namespace Amphora.Api
             this.StorageModule.ConfigureServices(services);
             this.IdentityModule.ConfigureServices(services);
             this.AuthenticationModule.ConfigureServices(services);
+            this.GeoModule.ConfigureServices(services);
 
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
             services.AddScoped<IMarketService, MarketService>();
@@ -48,9 +51,6 @@ namespace Amphora.Api
             services.AddScoped<ITsiService, RealTsiService>();
 
             services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
-
-            services.Configure<AzureMapsOptions>(Configuration);
-            services.AddSingleton<IMapService, AzureMapService>();
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
