@@ -9,44 +9,50 @@
 
 <h4>Amphora</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Input.Title" class="control-label"></label>
-                <input asp-for="Input.Title" class="form-control" />
-                <span asp-validation-for="Input.Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Description" class="control-label"></label>
-                <input asp-for="Input.Description" class="form-control" />
-                <span asp-validation-for="Input.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Price" class="control-label"></label>
-                <input asp-for="Input.Price" class="form-control" />
-                <span asp-validation-for="Input.Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Lat" class="control-label"></label>
-                <input asp-for="Input.Lat" class="form-control" />
-                <span asp-validation-for="Input.Lat" class="text-danger"></span>
-                <label asp-for="Input.Lon" class="control-label"></label>
-                <input asp-for="Input.Lon" class="form-control" />
-                <span asp-validation-for="Input.Lon" class="text-danger"></span>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Title" class="control-label"></label>
+                    <input asp-for="Input.Title" class="form-control" />
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Description" class="control-label"></label>
+                    <input asp-for="Input.Description" class="form-control" />
+                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Price" class="control-label"></label>
+                    <input asp-for="Input.Price" class="form-control" />
+                    <span asp-validation-for="Input.Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="body ui-widget">
+                        <input id="autoComplete" type="text" tabindex="1">
+                    </div>
+                    <div class="selection"></div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="Input.Lat" class="control-label"></label>
+                        <input id="lat" asp-for="Input.Lat" class="form-control" />
+                        <span asp-validation-for="Input.Lat" class="text-danger"></span>
+                        </div>
+                        <div class="col">
+                            <label asp-for="Input.Lon" class="control-label"></label>
+                            <input id="lon" asp-for="Input.Lon" class="form-control" />
+                            <span asp-validation-for="Input.Lon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
 
-             <div class="body ui-widget">
-                <label>Autocomplete Example: </label>
-                <input id="autoComplete" type="text" tabindex="1">
-            </div>
-            <div class="selection"></div>
-           
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -78,7 +84,7 @@
                     // flatten a bit
                     element.freeformAddress = element.address.freeformAddress
                 });
-                console.log(data.results);
+                //console.log(data.results);
                 return data.results;
             },
             key: ["freeformAddress"],
@@ -102,7 +108,10 @@
         selector: "#autoComplete",
         threshold: 0,
         debounce: 0,
-        searchEngine: "strict",
+        //searchEngine: "loose",
+        customEngine: (query, record) => {
+            return record;
+        },
         highlight: true,
         maxResults: 10,
         resultsList: {
@@ -116,7 +125,8 @@
         },
         resultItem: {
             content: function(data, source) {
-            source.innerHTML = data.match;
+                console.log(data);
+                source.innerHTML = data.match;
             },
             element: "li",
         },
@@ -135,6 +145,9 @@
             document.querySelector("#autoComplete").value = "";
             // Change placeholder with the selected value
             document.querySelector("#autoComplete").setAttribute("placeholder", selection);
+            // set lat and lon
+            document.querySelector("#lat").setAttribute("value", feedback.selection.value.position.lat);
+            document.querySelector("#lon").setAttribute("value", feedback.selection.value.position.lon);
             // Concole log autoComplete data feedback
             console.log(feedback);
         },

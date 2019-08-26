@@ -17,6 +17,8 @@ namespace Amphora.Api.Services
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<AzureMapService> logger;
         private const string apiVersion = "1.0";
+        private const string countrySet = "AU";
+
 
         public AzureMapService(IHttpClientFactory factory,
             IAzureServiceTokenProvider tokenProvider,
@@ -45,7 +47,7 @@ namespace Amphora.Api.Services
             await InitAsync();
             try
             {
-                var queryString = $"api-version={apiVersion}&query={query}";
+                var queryString = $"api-version={apiVersion}&countrySet={countrySet}&query={query}";
                 var response = await client.GetAsync($"search/fuzzy/json?{queryString}");
 
                 var content = await response.Content.ReadAsStringAsync();
