@@ -47,12 +47,7 @@ namespace Amphora.Api.Services
             {
                 var queryString = $"api-version={apiVersion}&query={query}";
                 var response = await client.GetAsync($"search/fuzzy/json?{queryString}");
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    this.isInit = false;
-                    logger.LogWarning("Refreshing Token for Azure Maps");
-                    return await FuzzySearchAsync(query);
-                }
+
                 var content = await response.Content.ReadAsStringAsync();
                 var o = JsonConvert.DeserializeObject<FuzzySearchResponse>(content);
                 return o;
