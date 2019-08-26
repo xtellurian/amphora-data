@@ -63,7 +63,8 @@ namespace Amphora.Api
             SetupToDoServices(services);
             SetupAuthentication(services);
             services.AddScoped<ITsiService, RealTsiService>();
-            services.AddScoped<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
+            services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
+            services.AddSingleton<IMapService, AzureMapService>();
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
@@ -181,6 +182,7 @@ namespace Amphora.Api
             {
                 p.TableName = "amphorae";
             });
+            services.Configure<AzureMapsOptions>(Configuration);
         }
 
         private void UsePersistentStores(IServiceCollection services)

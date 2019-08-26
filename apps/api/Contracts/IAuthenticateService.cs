@@ -5,6 +5,7 @@ namespace Amphora.Api.Contracts
 {
     public interface IAuthenticateService
     {
+        Task<(bool success, string token)> GetToken(System.Security.Claims.ClaimsPrincipal user);
         Task<(bool success, string token)> IsAuthenticated(TokenRequest request);
     }
 }

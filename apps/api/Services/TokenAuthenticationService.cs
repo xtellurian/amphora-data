@@ -26,15 +26,35 @@ namespace Amphora.Api.Services
             this.userManager = userManager;
             this.tokenManagement = tokenManagement;
         }
+
+        public async Task<(bool success, string token)> GetToken(ClaimsPrincipal user)
+        {
+            if (signInManager.IsSignedIn(user))
+            {
+                var obj = await userManager.GetUserAsync(user);
+                return (true, GenerateToken(obj.UserName));
+            }
+            else
+            {
+                return (false, null);
+            }
+        }
         public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
         {
             var token = string.Empty;
             var signInResult = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
-            if(! signInResult.Succeeded) return (false, token);
+            if (!signInResult.Succeeded) return (false, token);
 
+            token = GenerateToken(request.Username);
+            return (true, token);
+        }
+
+        private string GenerateToken(string username)
+        {
+            string token;
             var claim = new[]
-            {
-                new Claim(ClaimTypes.Name, request.Username)
+{
+                new Claim(ClaimTypes.Name, username)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenManagement.CurrentValue.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -47,7 +67,7 @@ namespace Amphora.Api.Services
                 signingCredentials: credentials
             );
             token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-            return (true, token);
+            return token;
         }
     }
 }

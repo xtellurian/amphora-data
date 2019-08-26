@@ -188,5 +188,7 @@ export class Application extends pulumi.ComponentResource
       {
         parent: this,
       });
+
+    this.state.storeInVault("AzureMapsClientId", this.AzureMaps.clientId);
   }
 }

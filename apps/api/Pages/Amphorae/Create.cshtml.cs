@@ -15,13 +15,16 @@ namespace Amphora.Api.Pages.Amphorae
     public class CreateModel : PageModel
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IAuthenticateService authenticateService;
         private readonly IMapper mapper;
 
         public CreateModel(
             IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IAuthenticateService authenticateService,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;
+            this.authenticateService = authenticateService;
             this.mapper = mapper;
         }
 
@@ -43,6 +46,17 @@ namespace Amphora.Api.Pages.Amphorae
         }
         [BindProperty]
         public InputModel Input {get; set; }
+        public string Token {get; set; }
+
+        public async Task<IActionResult> OnGetAync()
+        {
+            var response = await authenticateService.GetToken(User);
+            if(response.success)
+            {
+                Token = response.token;
+            }
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
