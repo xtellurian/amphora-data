@@ -22,7 +22,7 @@ a.navbar-brand {
 .navbar #title-amphora { color: var(--amphora-white) ;}
 .navbar #title-data { color: var(--amphora-red) ;}
 .navbar .navbar-brand img {
-  max-height:100%; max-width:20px; margin-right: 10px;
+  max-height:100%; margin-right: 10px;  max-width:220px; 
 }
 
 .navbar .avatar a img {
@@ -48,6 +48,10 @@ html {
   html {
     font-size: 16px;
   }
+}
+
+body {
+  font-family: 'Fjalla One', sans-serif;
 }
 
 .footer {
