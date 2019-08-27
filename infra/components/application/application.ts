@@ -108,7 +108,7 @@ export class Application extends pulumi.ComponentResource
         parent: rg,
       },
     );
-
+    const secretString = cfg.requireSecret("tokenManagement__secret");
     this.imageName = pulumi.interpolate`${this.acr.loginServer}/${config.require("imageName")}:latest`;
     this.appSvc = new azure.appservice.AppService(
       "appSvc",
@@ -126,6 +126,7 @@ export class Application extends pulumi.ComponentResource
           WEBSITES_PORT: 80,
           kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
           kvUri: kv.vaultUri,
+          tokenManagement__secret: secretString,
         },
         httpsOnly: true,
         identity: { type: "SystemAssigned" },
@@ -142,8 +143,8 @@ export class Application extends pulumi.ComponentResource
       },
     );
 
-    const secretString = cfg.requireSecret("tokenManagement__secret");
-    this.state.storeInVault("jwtToken", "tokenManagement__secret", secretString);
+    // broken because name cannot have underscores :(
+    // this.state.storeInVault("jwtToken", "tokenManagement__secret", secretString);
   }
 
   private accessPolicyKeyVault(

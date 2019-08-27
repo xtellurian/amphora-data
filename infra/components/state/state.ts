@@ -34,7 +34,7 @@ export class State extends pulumi.ComponentResource {
       name,
       {
         keyVaultId: this.kv.id,
-        name,
+        name: key,
         tags: azTags,
         value,
       },

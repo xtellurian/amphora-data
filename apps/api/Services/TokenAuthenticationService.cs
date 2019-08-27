@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,16 +20,18 @@ namespace Amphora.Api.Services
         private readonly IUserManager<ApplicationUser> userManager;
         private readonly IOptionsMonitor<TokenManagementOptions> tokenManagement;
         private readonly ILogger<TokenAuthenticationService> logger;
+        private static string secret;
 
         public TokenAuthenticationService(ISignInManager<ApplicationUser> signInManager,
                                           IUserManager<ApplicationUser> userManager,
-                                          IOptionsMonitor<TokenManagementOptions> tokenManagement, 
+                                          IOptionsMonitor<TokenManagementOptions> tokenManagement,
                                           ILogger<TokenAuthenticationService> logger)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.tokenManagement = tokenManagement;
             this.logger = logger;
+            secret = tokenManagement.CurrentValue.Secret ?? (secret ?? RandomString(20));
         }
 
         public async Task<(bool success, string token)> GetToken(ClaimsPrincipal user)
@@ -53,6 +56,14 @@ namespace Amphora.Api.Services
             return (true, token);
         }
 
+
+        private static Random random = new Random();
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         private string GenerateToken(string username)
         {
             logger.LogInformation($"Generating token for {username}");
@@ -61,7 +72,7 @@ namespace Amphora.Api.Services
             {
                 new Claim(ClaimTypes.Name, username)
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenManagement.CurrentValue.Secret));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwtToken = new JwtSecurityToken(
