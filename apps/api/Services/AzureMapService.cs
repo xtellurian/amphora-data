@@ -16,6 +16,7 @@ namespace Amphora.Api.Services
         private readonly HttpClient client;
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<AzureMapService> logger;
+        private readonly string subscriptionKey;
         private const string apiVersion = "1.0";
         private const string countrySet = "AU";
 
@@ -27,7 +28,15 @@ namespace Amphora.Api.Services
         {
             this.client = factory.CreateClient("azure-maps");
             client.BaseAddress = new System.Uri("https://atlas.microsoft.com");
-            client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.AzureMapsClientId);
+            if(options.CurrentValue.AzureMapsKey != null)
+            {
+                this.subscriptionKey = options.CurrentValue.AzureMapsKey;
+                isInit = true;
+            }
+            else
+            {
+                client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.AzureMapsClientId);
+            }
             this.tokenProvider = tokenProvider;
             this.logger = logger;
         }
@@ -48,6 +57,10 @@ namespace Amphora.Api.Services
             try
             {
                 var queryString = $"api-version={apiVersion}&countrySet={countrySet}&query={query}";
+                if(subscriptionKey != null)
+                {
+                    queryString += $"&subscription-key={subscriptionKey}";
+                }
                 var response = await client.GetAsync($"search/fuzzy/json?{queryString}");
 
                 var content = await response.Content.ReadAsStringAsync();
