@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class LocationTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class GeoTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public LocationTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
             _factory = factory;
         }
