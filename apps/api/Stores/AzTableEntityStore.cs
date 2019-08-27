@@ -153,9 +153,15 @@ namespace Amphora.Api.Stores
             }
         }
 
-        public virtual Task DeleteAsync(T entity)
+        public virtual async Task DeleteAsync(T entity)
         {
-            throw new System.NotImplementedException();
+            var tableEntity = mapper.Map<TTableEntity>(entity);
+            if( tableEntity.ETag == null )
+            {
+                tableEntity.ETag = "*";
+            }
+            TableOperation deleteOperation = TableOperation.Delete(tableEntity);
+            TableResult result = await table.ExecuteAsync(deleteOperation);
         }
 
         public async Task<IList<T>> StartsWithQueryAsync(string propertyName, string givenValue)

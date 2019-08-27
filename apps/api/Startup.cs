@@ -46,7 +46,6 @@ namespace Amphora.Api
 
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
             services.AddScoped<IMarketService, MarketService>();
-            
             services.Configure<TsiOptions>(Configuration);
             services.AddScoped<ITsiService, RealTsiService>();
 

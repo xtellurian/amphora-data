@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraeTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraeTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
@@ -18,25 +18,30 @@ namespace Amphora.Tests.Integration
         }
 
         [Theory]
-        [InlineData("amphorae", "default")]
+        [InlineData("api/amphorae", "default")]
         public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
         {
             // Arrange
             var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var a = Helpers.EntityLibrary.GetValidAmphora(description: nameof(Get_MyAmphorae_ByOrgId));
             a.OrgId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PutAsync("api/amphorae", requestBody);
+            var createResponse = await client.PutAsync(url, requestBody);
+            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            a = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
 
             // Act
             var response = await client.GetAsync($"{url}?orgId={orgId}");
             response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var amphorae = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(content);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+            Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id) );
+
+            await DeleteAmphora(client, a.Id);
 
         }
 
@@ -50,7 +55,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var a = Helpers.EntityLibrary.GetValidAmphora(description: nameof(Get_QueryAmphoraByGeohash));
             a.GeoHash = geoHash;// set the geohash
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -67,15 +72,25 @@ namespace Amphora.Tests.Integration
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var entities = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseContent);
-            if(success)
+            if (success)
             {
                 Assert.Contains(entities, e => string.Equals(amphora.Id, e.Id));
-            } 
+            }
             else
             {
                 Assert.DoesNotContain(entities, e => string.Equals(amphora.Id, e.Id));
             }
 
+            await DeleteAmphora(client, amphora.Id);
+
+        }
+
+        private async Task DeleteAmphora(HttpClient client, string id)
+        {
+            var res = await client.DeleteAsync($"/api/amphorae/{id}");
+            res.EnsureSuccessStatusCode();
+            var response = await client.GetAsync($"api/amphorae/{id}");
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

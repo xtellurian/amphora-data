@@ -30,7 +30,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae")]
         public async Task<IActionResult> ListAmphoraAsync(string geoHash)
         {
-            if(! string.IsNullOrEmpty(geoHash))
+            if (!string.IsNullOrEmpty(geoHash))
             {
                 return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
             }
@@ -40,7 +40,9 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
-            return Ok(await this.amphoraEntityStore.ReadAsync(id));
+            var a = await this.amphoraEntityStore.ReadAsync(id);
+            if (a == null) return NotFound();
+            return Ok(a);
         }
 
         [HttpPut("api/amphorae")]
@@ -51,6 +53,15 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Model");
             }
             return Ok(await this.amphoraEntityStore.CreateAsync(model));
+        }
+
+        [HttpDelete("api/amphorae/{id}")]
+        public async Task<IActionResult> Delete_Api(string id)
+        {
+            var entity = await amphoraEntityStore.ReadAsync(id);
+            if (entity == null) return NotFound();
+            await this.amphoraEntityStore.DeleteAsync(entity);
+            return Ok();
         }
 
         [HttpPost("api/amphorae/{id}/upload")]

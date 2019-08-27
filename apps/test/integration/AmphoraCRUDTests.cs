@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.Title, b.Title);
+
+            await DeleteAmphora(client, b.Id);
         }
 
         [Theory]
@@ -50,7 +53,12 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            await this.Put_CreatesAmphora(url); // create an amphora for the test
+            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await client.PutAsync(url, requestBody);
+            var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
+
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.GetAsync(url);
@@ -60,11 +68,13 @@ namespace Amphora.Tests.Integration
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
-            
+
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
             var b = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseBody);
             Assert.True(b.Count > 0);
+
+            await DeleteAmphora(client, amphora.Id);
         }
 
         [Theory]
@@ -89,7 +99,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
-            
+
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
             var c = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(responseBody);
@@ -97,7 +107,18 @@ namespace Amphora.Tests.Integration
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
             Assert.Equal(b.Title, c.Title);
+
+            // cleanup
+            await DeleteAmphora(client, b.Id);
         }
-    
+
+        private async Task DeleteAmphora(HttpClient client, string id)
+        {
+            var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
+            deleteResponse.EnsureSuccessStatusCode();
+            var response = await client.GetAsync($"api/amphorae/{id}");
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
     }
 }
