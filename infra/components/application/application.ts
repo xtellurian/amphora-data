@@ -126,7 +126,7 @@ export class Application extends pulumi.ComponentResource
           WEBSITES_PORT: 80,
           kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
           kvUri: kv.vaultUri,
-          tokenManagement__secret: secretString,
+          // tokenManagement__secret: secretString,
         },
         httpsOnly: true,
         identity: { type: "SystemAssigned" },
@@ -143,8 +143,8 @@ export class Application extends pulumi.ComponentResource
       },
     );
 
-    // broken because name cannot have underscores :(
-    // this.state.storeInVault("jwtToken", "tokenManagement__secret", secretString);
+    // section--key
+    this.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
   }
 
   private accessPolicyKeyVault(
