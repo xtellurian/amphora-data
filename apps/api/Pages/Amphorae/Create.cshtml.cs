@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 using NGeoHash;
 
 namespace Amphora.Api.Pages.Amphorae
@@ -16,15 +17,18 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IAuthenticateService authenticateService;
+        private readonly ILogger<CreateModel> logger;
         private readonly IMapper mapper;
 
         public CreateModel(
             IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IAuthenticateService authenticateService,
+            ILogger<CreateModel> logger,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;
             this.authenticateService = authenticateService;
+            this.logger = logger;
             this.mapper = mapper;
         }
 
@@ -48,12 +52,16 @@ namespace Amphora.Api.Pages.Amphorae
         public InputModel Input {get; set; }
         public string Token {get; set; }
 
-        public async Task<IActionResult> OnGetAync()
+        public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
             if(response.success)
             {
                 Token = response.token;
+            }
+            else
+            {
+                logger.LogError("Couldn't get token");
             }
             return Page();
         }

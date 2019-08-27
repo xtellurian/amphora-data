@@ -14,7 +14,6 @@ function autocompleteGeoSearch(token, url) {
                     // 'Content-Type': 'application/x-www-form-urlencoded',
                     }
                 });
-            //const source = await fetch("https://tarekraafat.github.io/autoComplete.js/demo/db/generic.json");
             const data = await source.json();
             // Returns Fetched data
             data.results.forEach(function(element) {
