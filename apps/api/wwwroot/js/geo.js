@@ -43,8 +43,8 @@ function autocompleteGeoSearch(token, url) {
     },
     placeHolder: "Geo Search",
     selector: "#autoComplete",
-    threshold: 0,
-    debounce: 0,
+    threshold: 3,
+    debounce: 250,
     //searchEngine: "loose",
     customEngine: (query, record) => {
         return record;
