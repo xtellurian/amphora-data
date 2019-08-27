@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,14 +18,17 @@ namespace Amphora.Api.Services
         private readonly ISignInManager<ApplicationUser> signInManager;
         private readonly IUserManager<ApplicationUser> userManager;
         private readonly IOptionsMonitor<TokenManagementOptions> tokenManagement;
+        private readonly ILogger<TokenAuthenticationService> logger;
 
         public TokenAuthenticationService(ISignInManager<ApplicationUser> signInManager,
                                           IUserManager<ApplicationUser> userManager,
-                                          IOptionsMonitor<TokenManagementOptions> tokenManagement)
+                                          IOptionsMonitor<TokenManagementOptions> tokenManagement, 
+                                          ILogger<TokenAuthenticationService> logger)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.tokenManagement = tokenManagement;
+            this.logger = logger;
         }
 
         public async Task<(bool success, string token)> GetToken(ClaimsPrincipal user)
@@ -51,9 +55,10 @@ namespace Amphora.Api.Services
 
         private string GenerateToken(string username)
         {
+            logger.LogInformation($"Generating token for {username}");
             string token;
             var claim = new[]
-{
+            {
                 new Claim(ClaimTypes.Name, username)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenManagement.CurrentValue.Secret));

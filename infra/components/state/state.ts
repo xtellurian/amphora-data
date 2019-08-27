@@ -29,7 +29,7 @@ export class State extends pulumi.ComponentResource {
     this.create();
   }
 
-  public storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource) {
+  public storeInVault(name: string, key: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource) {
     return new azure.keyvault.Secret(
       name,
       {
@@ -58,6 +58,7 @@ export class State extends pulumi.ComponentResource {
     this.kv = this.keyvault(stateRg);
     this.storageAccount = this.createStorage(stateRg);
     const secret = this.storeInVault(
+      CONSTANTS.AzStorage_KV_CS_SecretName,
       CONSTANTS.AzStorage_KV_CS_SecretName,
       this.storageAccount.primaryConnectionString,
     );
@@ -216,8 +217,8 @@ export class State extends pulumi.ComponentResource {
         parent: this.eh,
       });
 
-    this.storeInVault("EventHubConnectionString", ehAuthRule.primaryConnectionString);
-    this.storeInVault("EventHubName", this.eh.name);
+    this.storeInVault("EventHubConnectionString", "EventHubConnectionString", ehAuthRule.primaryConnectionString);
+    this.storeInVault("EventHubName", "EventHubName", this.eh.name);
 
   }
 

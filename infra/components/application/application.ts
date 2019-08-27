@@ -7,6 +7,7 @@ import { State } from "../state/state";
 import { AzureMaps } from "./maps/azure-maps";
 import { Tsi } from "./tsi/tsi";
 
+const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
 const authConfig = new pulumi.Config("authentication");
 const azTags = {
@@ -140,6 +141,9 @@ export class Application extends pulumi.ComponentResource
         parent: this.plan,
       },
     );
+
+    const secretString = cfg.requireSecret("tokenManagement__secret");
+    this.state.storeInVault("jwtToken", "tokenManagement__secret", secretString);
   }
 
   private accessPolicyKeyVault(
@@ -189,6 +193,6 @@ export class Application extends pulumi.ComponentResource
         parent: this,
       });
 
-    this.state.storeInVault("AzureMapsClientId", this.AzureMaps.clientId);
+    this.state.storeInVault("AzureMapsClientId", "AzureMapsClientId", this.AzureMaps.clientId);
   }
 }
