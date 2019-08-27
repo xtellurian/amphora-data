@@ -26,15 +26,19 @@
 
                     <div class="collapse" id="collapseExample">
                         <div class="container card-body">
+                            <div class="row mb-2">
+                                <div class="col-4 body ui-widget">
+                                    <input id="autoComplete" type="text" tabindex="1">
+                                </div>
+                                <div class="col selection"></div>
+                            </div>
                             <div class="row">
                                 <div class="col">
-                                    <label asp-for="Input.Lat" class="control-label"></label>
-                                    <input asp-for="Input.Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                                    <input id="lat" asp-for="Input.Lat" placeholder="Latitude" class="form-control bg-none border-1">
                                     <span asp-validation-for="Input.Lat" class="text-danger"></span>
                                 </div>
                                 <div class="col">
-                                    <label asp-for="Input.Lon" class="control-label"></label>
-                                    <input asp-for="Input.Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                                    <input id="lon" asp-for="Input.Lon" placeholder="Longitude" class="form-control bg-none border-1">
                                     <span asp-validation-for="Input.Lon" class="text-danger"></span>
                                 </div>
                             </div>
@@ -75,3 +79,13 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const token = '@Model.Token';
+        const url = '@Url.Action("LookupLocationAsync", "Market")';
+        autocompleteGeoSearch(token, url)
+    </script>
+}

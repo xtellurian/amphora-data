@@ -41,7 +41,7 @@ function autocompleteGeoSearch(token, url) {
         return query.replace("pizza", "burger");
         }
     },
-    placeHolder: "Food & Drinks",
+    placeHolder: "Geo Search",
     selector: "#autoComplete",
     threshold: 0,
     debounce: 0,

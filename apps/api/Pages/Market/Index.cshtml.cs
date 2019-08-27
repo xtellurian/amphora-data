@@ -13,10 +13,12 @@ namespace Amphora.Api.Pages.Market
     public class IndexModel : PageModel
     {
         private readonly IMarketService marketService;
+        private readonly IAuthenticateService authenticateService;
 
-        public IndexModel(IMarketService marketService)
+        public IndexModel(IMarketService marketService, IAuthenticateService authenticateService)
         {
             this.marketService = marketService;
+            this.authenticateService = authenticateService;
         }
 
         public class InputModel
@@ -35,10 +37,18 @@ namespace Amphora.Api.Pages.Market
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public string Token { get; set; }
+
         public IEnumerable<Amphora.Common.Models.Amphora> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
+            var response = await authenticateService.GetToken(User);
+            if(response.success)
+            {
+                Token = response.token;
+            }
+
             await RunSearch();
             return Page();
         }
