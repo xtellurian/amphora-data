@@ -42,6 +42,9 @@ export let appUrl = result.then((r) =>
 export let kvUri = result.then((r) =>
   r.state.kv.vaultUri,
 );
+export let kvName = result.then((r) =>
+  r.state.kv.name,
+);
 
 export let appSvcSku = result.then((r) =>
   r.application.plan.sku,
@@ -61,6 +64,12 @@ export let acrName = result.then((r) =>
 
 export let AzureMapsClientId = result.then((r) =>
   r.application.AzureMaps.clientId,
+);
+export let AzureMapsAccountName = result.then((r) =>
+  r.application.AzureMaps.accountName,
+);
+export let AzureMapsResourceGroup = result.then((r) =>
+  r.application.AzureMaps.resourceGroup,
 );
 
 export let webAppResourceId = result.then((r) =>

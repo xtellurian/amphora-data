@@ -13,6 +13,8 @@ export class AzureMaps extends pulumi.ComponentResource {
     public mapsName: random.RandomString;
     public clientId: pulumi.Output<any>;
     public resourceId: pulumi.Output<any>;
+    public resourceGroup: pulumi.Output<any>;
+    public accountName: pulumi.Output<string>;
     /**
      *
      */
@@ -54,5 +56,7 @@ export class AzureMaps extends pulumi.ComponentResource {
 
         this.clientId = maps.outputs.clientId;
         this.resourceId = maps.outputs.resourceId;
+        this.accountName = this.mapsName.result;
+        this.resourceGroup = rg.name;
     }
 }
