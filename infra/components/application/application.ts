@@ -189,7 +189,7 @@ export class Application extends pulumi.ComponentResource
         parent: this,
       });
 
-    const spRole = new azure.role.Assignment("rianRole",
+    const spRole = new azure.role.Assignment("spRole",
       {
         principalId: authConfig.require("spObjectId"),
         roleDefinitionId: roleId,
