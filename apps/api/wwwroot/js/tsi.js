@@ -3,7 +3,7 @@ function tsi(cols, response) {
     var scheme = new ColorScheme;
     var tsiClient = new TsiClient();
     var startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 12);
+    startDate.setDate(startDate.getDate() - 7);
     endDate = new Date();
     var linechartTsqExpressions = [];
 
