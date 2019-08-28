@@ -11,8 +11,6 @@ using Microsoft.OpenApi.Models;
 using Amphora.Api.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Amphora.Api.StartupModules;
-using Microsoft.AspNetCore.Authorization;
-using Amphora.Api.Authorization;
 
 namespace Amphora.Api
 {
@@ -23,7 +21,7 @@ namespace Amphora.Api
             Configuration = configuration;
             HostingEnvironment = env;
 
-            this.AuthenticationModule = new AuthenticationModule(configuration, env);
+            this.AuthenticationModule = new AuthModule(configuration, env);
             this.IdentityModule = new IdentityModule(configuration, env);
             this.StorageModule = new StorageModule(configuration, env);
             this.GeoModule = new GeoModule(configuration, env);
@@ -32,7 +30,7 @@ namespace Amphora.Api
         public IConfiguration Configuration { get; }
         public IHostingEnvironment HostingEnvironment { get; }
 
-        private readonly AuthenticationModule AuthenticationModule;
+        private readonly AuthModule AuthenticationModule;
         private readonly IdentityModule IdentityModule;
         private readonly StorageModule StorageModule;
         private readonly GeoModule GeoModule;
@@ -41,18 +39,18 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
+            
             this.StorageModule.ConfigureServices(services);
             this.IdentityModule.ConfigureServices(services);
             this.AuthenticationModule.ConfigureServices(services);
             this.GeoModule.ConfigureServices(services);
 
-            services.AddSingleton<IAuthorizationHandler, AmphoraAuthorizationHandler>();
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
             services.AddScoped<IMarketService, MarketService>();
             services.Configure<TsiOptions>(Configuration);
             services.AddScoped<ITsiService, RealTsiService>();
 
-            services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();

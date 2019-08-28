@@ -1,7 +1,9 @@
 using System.Text;
+using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,12 +13,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api.StartupModules
 {
-    public class AuthenticationModule
+    public class AuthModule
     {
         private readonly IHostingEnvironment HostingEnvironment;
         private readonly IConfiguration Configuration;
 
-        public AuthenticationModule(IConfiguration configuration, IHostingEnvironment env)
+        public AuthModule(IConfiguration configuration, IHostingEnvironment env)
         {
             this.HostingEnvironment = env;
             this.Configuration = configuration;
@@ -51,6 +53,7 @@ namespace Amphora.Api.StartupModules
            }).AddCookie();
            
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
+            services.AddSingleton<IAuthorizationHandler, AmphoraAuthorizationHandler>();
         }
     }
 }
