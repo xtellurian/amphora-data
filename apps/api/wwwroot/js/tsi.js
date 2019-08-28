@@ -37,5 +37,5 @@ function tsi(cols, response) {
     console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
-    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'shown', yAxisState: 'overlap' }, linechartTsqExpressions);
+    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'shown', yAxisState: 'shared' }, linechartTsqExpressions);
 }
