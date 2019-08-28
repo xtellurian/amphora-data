@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using AutoMapper;
@@ -15,15 +16,18 @@ namespace Amphora.Api.Controllers
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IAuthorizationService authorizationService;
         private readonly IMapper mapper;
 
         public AmphoraeController(
             IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IAuthorizationService authorizationService,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;
             this.dataStore = dataStore;
+            this.authorizationService = authorizationService;
             this.mapper = mapper;
         }
 
@@ -41,6 +45,8 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> ReadAsync(string id)
         {
             var a = await this.amphoraEntityStore.ReadAsync(id);
+            var authorizationResult = await authorizationService
+                .AuthorizeAsync(User, a, Operations.Read);
             if (a == null) return NotFound();
             return Ok(a);
         }
