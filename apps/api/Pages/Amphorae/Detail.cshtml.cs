@@ -79,6 +79,7 @@ namespace Amphora.Api.Pages.Amphorae
             }
             this.Amphora = entity;
             this.Names = await dataStore.ListNamesAsync(entity);
+            this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
             return Page();
         }
 

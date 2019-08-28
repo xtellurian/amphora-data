@@ -44,6 +44,7 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound("Invalid Id");
             }
+            logger.LogInformation($"Signal Upload for {id}");
             jObj["amphora"] = id;
             var domain = Domain.GetDomain(entity.DomainId);
             if (domain.IsValid(jObj))
