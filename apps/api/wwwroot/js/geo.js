@@ -61,7 +61,6 @@ function autocompleteGeoSearch(token, url) {
     },
     resultItem: {
         content: function(data, source) {
-            console.log(data);
             source.innerHTML = data.match;
         },
         element: "li",
@@ -85,7 +84,6 @@ function autocompleteGeoSearch(token, url) {
         document.querySelector("#lat").setAttribute("value", feedback.selection.value.position.lat);
         document.querySelector("#lon").setAttribute("value", feedback.selection.value.position.lon);
         // Concole log autoComplete data feedback
-        console.log(feedback);
     },
     });
 }

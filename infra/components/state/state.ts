@@ -250,7 +250,7 @@ export class State extends pulumi.ComponentResource {
   });
 
     this.storeInVault("cosmosAccountKey", "Cosmos--Key", this.cosmosDb.primaryMasterKey);
-    this.storeInVault("cosmosAccountName", "Cosmos--Name", this.cosmosDb.name);
+    this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
     this.storeInVault("cosmosSqlDbName", "Cosmos--Database", sql.name);
 
     this.linkCosmosToLogAnalytics(this.cosmosDb, this.monitoring.logAnalyticsWorkspace);

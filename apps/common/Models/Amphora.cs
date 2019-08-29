@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models
 {
-    public class Amphora : Entity, IOrgScoped
+    public class Amphora : Entity, IOrgScoped, IAmphoraModel
     {
         public Amphora()
         {

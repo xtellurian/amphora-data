@@ -26,6 +26,7 @@ namespace Amphora.Api.StartupModules
         {
             services.Configure<AzureStorageAccountOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration);
+            services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
             services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>(p =>
             {
                 p.TableName = "amphorae";
@@ -44,11 +45,13 @@ namespace Amphora.Api.StartupModules
         private void UsePersistentStores(IServiceCollection services)
         {
             // org entity store
-            services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
+            // services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
+            services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, AzBlobAmphoraDataStore>();
+            
 
         }
 
