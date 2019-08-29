@@ -2,12 +2,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services
 {
-    public class UserManagerWrapper<T> : IUserManager<T> where T : IdentityUserV2, new()
+    public class UserManagerWrapper<T> : IUserManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser, new()
     {
         private readonly UserManager<T> userManager;
         private readonly ApplicationUser dev = new ApplicationUser

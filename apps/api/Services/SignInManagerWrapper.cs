@@ -3,13 +3,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Development;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services
 {
-    public class SignInManagerWrapper<T> : ISignInManager<T> where T: IdentityUserV2
+    public class SignInManagerWrapper<T> : ISignInManager<T> where T: Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
     {
         private readonly SignInManager<T> signInManager;
         private static bool isSignedIn = false;

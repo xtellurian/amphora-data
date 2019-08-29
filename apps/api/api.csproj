@@ -7,9 +7,9 @@
 
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Identity.DocumentDB" Version="2.0.0-beta7" />
     <PackageReference Include="automapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
-    <PackageReference Include="ElCamino.AspNetCore.Identity.AzureTable" Version="2.2.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />

@@ -1,11 +1,10 @@
 using Amphora.Common.Contracts;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
 
 namespace Amphora.Api.Models
 {
-    public class ApplicationUser : IdentityUserV2, IOrgScoped
+    public class ApplicationUser : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser, IOrgScoped
     {
-        public string About { get; set; } = "I'm a happy little doge";
+        public string About { get; set; } = "I'm a happy cosmic doge";
         public string OrgId { get; set; }
         public string FullName { get; set; }
     }

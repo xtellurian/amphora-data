@@ -244,7 +244,7 @@ export class State extends pulumi.ComponentResource {
       resourceGroupName: rg.name,
     });
 
-    const sql = new azure.cosmosdb.SqlDatabase("example", {
+    const sql = new azure.cosmosdb.SqlDatabase("cosmosSql", {
       accountName: this.cosmosDb.name,
       resourceGroupName: rg.name,
   });
