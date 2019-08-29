@@ -29,7 +29,9 @@ namespace Amphora.Api.StartupModules
             var endpoint = Configuration.GetSection("Cosmos")["Endpoint"];
             var database = Configuration.GetSection("Cosmos")["Database"];
 
-            services.AddIdentityWithDocumentDBStores<ApplicationUser, Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole>(
+            if(key != null && endpoint != null && database != null)
+            {
+                services.AddIdentityWithDocumentDBStores<ApplicationUser, Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole>(
                 dbOptions =>
                 {
                     dbOptions.DocumentUrl = endpoint;
@@ -46,6 +48,7 @@ namespace Amphora.Api.StartupModules
                 })
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(UIFramework.Bootstrap4);
+            }
         }
     }
 }
