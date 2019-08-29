@@ -1,38 +1,54 @@
 using System.Threading.Tasks;
+using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace Amphora.Api.Controllers
 {
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AmphoraeController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IAuthorizationService authorizationService;
         private readonly IMapper mapper;
 
         public AmphoraeController(
             IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IAuthorizationService authorizationService,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;
             this.dataStore = dataStore;
+            this.authorizationService = authorizationService;
             this.mapper = mapper;
         }
 
         [HttpGet("api/amphorae")]
-        public async Task<IActionResult> ListAmphoraAsync()
+        public async Task<IActionResult> ListAmphoraAsync(string geoHash)
         {
+            if (!string.IsNullOrEmpty(geoHash))
+            {
+                return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
+            }
             return Ok(await this.amphoraEntityStore.ListAsync());
         }
 
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
-            return Ok(await this.amphoraEntityStore.ReadAsync(id));
+            var a = await this.amphoraEntityStore.ReadAsync(id);
+            var authorizationResult = await authorizationService
+                .AuthorizeAsync(User, a, Operations.Read);
+            if (a == null) return NotFound();
+            return Ok(a);
         }
 
         [HttpPut("api/amphorae")]
@@ -43,6 +59,15 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Model");
             }
             return Ok(await this.amphoraEntityStore.CreateAsync(model));
+        }
+
+        [HttpDelete("api/amphorae/{id}")]
+        public async Task<IActionResult> Delete_Api(string id)
+        {
+            var entity = await amphoraEntityStore.ReadAsync(id);
+            if (entity == null) return NotFound();
+            await this.amphoraEntityStore.DeleteAsync(entity);
+            return Ok();
         }
 
         [HttpPost("api/amphorae/{id}/upload")]

@@ -1,5 +1,8 @@
 using AutoMapper;
 using Amphora.Api.Models;
+using Newtonsoft.Json;
+using Amphora.Common.Models;
+using NGeoHash;
 
 namespace api.Models.AutoMapper
 {

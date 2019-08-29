@@ -72,6 +72,36 @@ namespace Amphora.Api.Services
             return response;
         }
 
+        public async Task<QueryResponse> FullSet(string id, string property, DateTime start, DateTime end)
+        {
+            await GetAccessTokenAsync(); // make sure the token is loaded.
+            var variableName = "Avg";
+            var query = new Query
+            {
+                GetSeries = new GetSeries 
+                {
+                    TimeSeriesId = new List<string> { id },
+                    SearchSpan = new SearchSpan
+                    {
+                        From = start,
+                        To = end
+                    },
+                    InlineVariables = new Dictionary<string, InlineVariable>
+                    {
+                        {variableName, new InlineVariable
+                        {
+                            Kind= "numeric",
+                            Value = new Aggregation { Tsx = $"$event.{property}"},
+                        }}
+                    },
+                    ProjectedVariables = new List<string> { variableName }
+                }
+            };
+            var response = await client.QueryAsync(query);
+
+            return response;
+        }
+
         public async Task<QueryResponse> WeeklyAverageAsync(string id, string property, DateTime start, DateTime end)
         {
             await GetAccessTokenAsync(); // make sure the token is loaded.

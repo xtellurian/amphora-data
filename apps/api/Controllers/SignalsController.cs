@@ -2,16 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SignalController : Controller
     {
         private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
@@ -42,6 +44,7 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound("Invalid Id");
             }
+            logger.LogInformation($"Signal Upload for {id}");
             jObj["amphora"] = id;
             var domain = Domain.GetDomain(entity.DomainId);
             if (domain.IsValid(jObj))

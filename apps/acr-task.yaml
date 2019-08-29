@@ -1,5 +1,0 @@
-version: v1.0.0
-steps:
-  - build: -t {{.Run.Registry}}/webapp:{{.Run.ID}} -t {{.Run.Registry}}/webapp:latest apps
-  - push: ["{{.Run.Registry}}/webapp:{{.Run.ID}}"]
-  - push: ["{{.Run.Registry}}/webapp:latest"]

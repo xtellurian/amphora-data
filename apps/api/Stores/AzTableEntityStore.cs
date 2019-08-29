@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Api.Contracts;
 using System.Linq;
+using Amphora.Api.Models.Queries;
+using System.Text;
+using System;
 
 namespace Amphora.Api.Stores
 {
@@ -94,12 +97,12 @@ namespace Amphora.Api.Stores
             }
         }
 
-         public virtual async Task<T> ReadAsync(string id)
+        public virtual async Task<T> ReadAsync(string id)
         {
             await InitTableAsync();
 
             var query = new TableQuery<TTableEntity>()
-                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
+                .Where(TableQuery.GenerateFilterCondition("RowKey", Microsoft.Azure.Cosmos.Table.QueryComparisons.Equal, id));
 
             var queryOutput = table.ExecuteQuerySegmented<TTableEntity>(query, null); // TODO
 
@@ -120,7 +123,7 @@ namespace Amphora.Api.Stores
         public virtual async Task<T> UpdateAsync(T model)
         {
             var entity = mapper.Map<TTableEntity>(model);
-            if(string.IsNullOrEmpty(entity.ETag))
+            if (string.IsNullOrEmpty(entity.ETag))
             {
                 //TODO: ETag cache per session
                 logger.LogWarning("ETag is null. Setting as wildcard *");
@@ -150,9 +153,49 @@ namespace Amphora.Api.Stores
             }
         }
 
-        public virtual Task DeleteAsync(T entity)
+        public virtual async Task DeleteAsync(T entity)
         {
-            throw new System.NotImplementedException();
+            var tableEntity = mapper.Map<TTableEntity>(entity);
+            if( tableEntity.ETag == null )
+            {
+                tableEntity.ETag = "*";
+            }
+            TableOperation deleteOperation = TableOperation.Delete(tableEntity);
+            TableResult result = await table.ExecuteAsync(deleteOperation);
         }
+
+        public async Task<IList<T>> StartsWithQueryAsync(string propertyName, string givenValue)
+        {
+            await InitTableAsync();
+            var tq = new TableQuery<TTableEntity>().Where(GetStartsWithFilter(propertyName, givenValue));
+
+            TableContinuationToken token = null;
+            var entities = new List<TTableEntity>();
+            do
+            {
+                var segment = await table.ExecuteQuerySegmentedAsync(tq, token);
+                entities.AddRange(segment.Results);
+                token = segment.ContinuationToken;
+            }
+            while (token != null);
+
+            return mapper.Map<List<T>>(entities);
+
+        }
+
+        private static string GetStartsWithFilter(string columnName, string startsWith)
+        {
+            var length = startsWith.Length - 1;
+            var nextChar = startsWith[length] + 1;
+
+            var startWithEnd = startsWith.Substring(0, length) + (char)nextChar;
+            var filter = TableQuery.CombineFilters(
+                TableQuery.GenerateFilterCondition(columnName, Microsoft.Azure.Cosmos.Table.QueryComparisons.GreaterThanOrEqual, startsWith),
+                TableOperators.And,
+                TableQuery.GenerateFilterCondition(columnName, Microsoft.Azure.Cosmos.Table.QueryComparisons.LessThan, startWithEnd));
+
+            return filter;
+        }
+
     }
 }

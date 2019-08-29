@@ -6,6 +6,7 @@ namespace Amphora.Api.Contracts
 {
     public interface ITsiService
     {
+        Task<QueryResponse> FullSet(string id, string property, System.DateTime start, System.DateTime end);
         System.Threading.Tasks.Task<string> GetAccessTokenAsync();
         string GetDataAccessFqdn();
         Task<HttpResponseMessage> ProxyQueryAsync(string uri, System.Net.Http.HttpContent content);

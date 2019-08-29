@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Queries;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
@@ -73,6 +74,15 @@ namespace Amphora.Api.Stores
                     throw new ArgumentException("id null of entity update.");
                 }
                 this.store.RemoveAll(o => o.Id == entity.Id);
+            });
+        }
+
+        public Task<IList<T>> StartsWithQueryAsync(string propertyName, string givenValue)
+        {
+            return Task<IList<T>>.Factory.StartNew(() =>
+            {
+                var prop = typeof(T).GetProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName));
+                return store.Where(s => prop.GetValue(s).ToString().StartsWith(givenValue)).ToList(); ;
             });
         }
     }

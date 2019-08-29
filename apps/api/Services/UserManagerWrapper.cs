@@ -52,5 +52,11 @@ namespace Amphora.Api.Services
             if (userManager == null) return dev as T;
             return await userManager.GetUserAsync(principal);
         }
+
+        public async Task<IdentityResult> UpdateAsync(T user)
+        {
+            if(userManager==null) return new IdentityResult();
+            return await userManager.UpdateAsync(user);
+        }
     }
 }

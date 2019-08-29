@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models
 {
-    public class Amphora : Entity, IOrgScoped
+    public class Amphora : Entity, IOrgScoped, IAmphoraModel
     {
         public Amphora()
         {
@@ -17,6 +17,7 @@ namespace Amphora.Common.Models
         [JsonConverter(typeof(StringEnumConverter))]
         public DomainId DomainId { get; set; }
         public string OrgId { get; set; }
+        public string GeoHash {get; set; }
         public double Price { get; set; }
         public string Title { get; set; }
     }

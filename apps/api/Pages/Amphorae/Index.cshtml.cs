@@ -15,18 +15,18 @@ namespace Amphora.Api.Pages.Amphorae
     public class IndexModel : PageModel
     {
         private readonly IUserManager<ApplicationUser> userManager;
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public IndexModel(
             IUserManager<ApplicationUser> userManager,
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> entityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IMapper mapper)
         {
             this.userManager = userManager;
-            this.amphoraEntityStore = amphoraEntityStore;
+            this.entityStore = entityStore;
             this.dataStore = dataStore;
             this.mapper = mapper;
             this.Amphorae = new List<Amphora.Common.Models.Amphora>();
@@ -35,16 +35,22 @@ namespace Amphora.Api.Pages.Amphorae
         [BindProperty]
         public IEnumerable<Amphora.Common.Models.Amphora> Amphorae { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string orgId)
+        public async Task<IActionResult> OnGetAsync(string orgId, string geoHash)
         {
             var user = await this.userManager.GetUserAsync(User);
+
+            if(! string.IsNullOrEmpty(geoHash))
+            {
+                this.Amphorae = await this.entityStore.StartsWithQueryAsync("GeoHash", geoHash);
+                return Page();
+            }
             if (orgId != null)
             {
-                this.Amphorae = await amphoraEntityStore.ListAsync(orgId);
+                this.Amphorae = await entityStore.ListAsync(orgId);
             }
             else
             {
-                this.Amphorae = await amphoraEntityStore.ListAsync();
+                this.Amphorae = await entityStore.ListAsync();
             }
             
             return Page();

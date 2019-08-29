@@ -79,6 +79,7 @@ namespace Amphora.Api.Pages.Amphorae
             }
             this.Amphora = entity;
             this.Names = await dataStore.ListNamesAsync(entity);
+            this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
             return Page();
         }
 
@@ -89,13 +90,20 @@ namespace Amphora.Api.Pages.Amphorae
             {
                 // then we can do a thing
                 if(string.Equals(member.Name, "t")) continue; // skip t // TODO remove hardcoding
-                var r = await tsiService
-                    .WeeklyAverageAsync(
+                // var r = await tsiService
+                //     .WeeklyAverageAsync(
+                //         Amphora.Id, 
+                //         member.Name, 
+                //         DateTime.UtcNow.AddDays(-365),
+                //         DateTime.UtcNow
+                //     );
+                var r = await tsiService.FullSet(
                         Amphora.Id, 
                         member.Name, 
-                        DateTime.UtcNow.AddDays(-365),
+                        DateTime.UtcNow.AddDays(-7),
                         DateTime.UtcNow
                     );
+
                 response.Add(r);
             }
             return JsonConvert.SerializeObject(response);

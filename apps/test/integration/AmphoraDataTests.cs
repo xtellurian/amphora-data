@@ -39,6 +39,9 @@ namespace Amphora.Tests.Integration
 
             // Assert
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
+
+            // cleanup
+            await DeleteAmphora(client, amphora.Id);
         }
         [Theory]
         [InlineData("/api/amphorae")]
@@ -55,7 +58,7 @@ namespace Amphora.Tests.Integration
             var fillResponse = await client.PostAsync($"{url}/{Guid.NewGuid()}/upload", requestBody);
 
             // Assert
-            Assert.Equal( System.Net.HttpStatusCode.BadRequest ,fillResponse.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, fillResponse.StatusCode);
         }
 
         private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
@@ -69,6 +72,13 @@ namespace Amphora.Tests.Integration
                 await createResponse.Content.ReadAsStringAsync()
                 );
             return amphora;
+        }
+
+        private async Task DeleteAmphora(HttpClient client, string id)
+        {
+            var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
+            var response = await client.GetAsync($"api/amphorae/{id}");
+            deleteResponse.EnsureSuccessStatusCode();
         }
     }
 }

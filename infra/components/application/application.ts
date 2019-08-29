@@ -1,10 +1,13 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+
 import { CONSTANTS, IComponentParams } from "../../components";
 import { Monitoring } from "../monitoring/monitoring";
 import { State } from "../state/state";
+import { AzureMaps } from "./maps/azure-maps";
 import { Tsi } from "./tsi/tsi";
 
+const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
 const authConfig = new pulumi.Config("authentication");
 const azTags = {
@@ -27,6 +30,7 @@ export class Application extends pulumi.ComponentResource
   public acr: azure.containerservice.Registry;
   public tsi: Tsi;
   public imageName: pulumi.Output<string>;
+  public AzureMaps: AzureMaps;
 
   constructor(
     params: IComponentParams,
@@ -50,6 +54,7 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
+    this.createAzureMaps(rg);
     this.createAppSvc(rg, this.state.kv);
     this.accessPolicyKeyVault(this.state.kv, this.appSvc);
     this.createTsi();
@@ -66,13 +71,15 @@ export class Application extends pulumi.ComponentResource
   }
 
   private createAcr(rg: azure.core.ResourceGroup) {
+    let sku = config.get("acrSku");
+    if (!sku) { sku = "Basic"; } // default SKU is basic
     const acr = new azure.containerservice.Registry(
       "acr",
       {
         adminEnabled: true,
         location: config.require("location"),
         resourceGroupName: rg.name,
-        sku: "Standard",
+        sku,
         tags: azTags,
       },
       { parent: rg },
@@ -101,7 +108,7 @@ export class Application extends pulumi.ComponentResource
         parent: rg,
       },
     );
-
+    const secretString = cfg.requireSecret("tokenManagement__secret");
     this.imageName = pulumi.interpolate`${this.acr.loginServer}/${config.require("imageName")}:latest`;
     this.appSvc = new azure.appservice.AppService(
       "appSvc",
@@ -109,6 +116,7 @@ export class Application extends pulumi.ComponentResource
         appServicePlanId: this.plan.id,
         appSettings: {
           APPINSIGHTS_INSTRUMENTATIONKEY: this.monitoring.applicationInsights.instrumentationKey,
+          AzureMapsClientId: this.AzureMaps.clientId,
           DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
             this.acr.loginServer
@@ -118,6 +126,7 @@ export class Application extends pulumi.ComponentResource
           WEBSITES_PORT: 80,
           kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
           kvUri: kv.vaultUri,
+          // tokenManagement__secret: secretString,
         },
         httpsOnly: true,
         identity: { type: "SystemAssigned" },
@@ -133,6 +142,9 @@ export class Application extends pulumi.ComponentResource
         parent: this.plan,
       },
     );
+
+    // section--key
+    this.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
   }
 
   private accessPolicyKeyVault(
@@ -154,5 +166,34 @@ export class Application extends pulumi.ComponentResource
         parent: appSvc,
       },
     );
+  }
+
+  private createAzureMaps(rg: azure.core.ResourceGroup) {
+    this.AzureMaps = new AzureMaps("azMaps", { rg }, { parent: this });
+
+    const subId = authConfig.require("subscriptionId");
+    // tslint:disable-next-line: max-line-length
+    const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
+    const appRole = new azure.role.Assignment("appRole",
+      {
+        principalId: authConfig.require("spObjectId"),
+        roleDefinitionId: roleId,
+        scope: this.AzureMaps.resourceId,
+      },
+      {
+        parent: this,
+      });
+
+    const rianRole = new azure.role.Assignment("rianRole",
+      {
+        principalId: authConfig.require("rian"),
+        roleDefinitionId: roleId,
+        scope: this.AzureMaps.resourceId,
+      },
+      {
+        parent: this,
+      });
+
+    this.state.storeInVault("AzureMapsClientId", "AzureMapsClientId", this.AzureMaps.clientId);
   }
 }

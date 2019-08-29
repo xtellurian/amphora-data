@@ -33,7 +33,7 @@ export function environmentTemplate() {
                     },
                     timeSeriesIdProperties: [
                         {
-                            name: "tempora",
+                            name: "amphora",
                             type: "string",
                         },
                     ],

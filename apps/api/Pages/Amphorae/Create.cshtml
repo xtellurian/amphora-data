@@ -9,29 +9,59 @@
 
 <h4>Amphora</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Amphora.Id" />
-            <div class="form-group">
-                <label asp-for="Amphora.Title" class="control-label"></label>
-                <input asp-for="Amphora.Title" class="form-control" />
-                <span asp-validation-for="Amphora.Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Amphora.Description" class="control-label"></label>
-                <input asp-for="Amphora.Description" class="form-control" />
-                <span asp-validation-for="Amphora.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Amphora.Price" class="control-label"></label>
-                <input asp-for="Amphora.Price" class="form-control" />
-                <span asp-validation-for="Amphora.Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Title" class="control-label"></label>
+                    <input asp-for="Input.Title" class="form-control" />
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Description" class="control-label"></label>
+                    <input asp-for="Input.Description" class="form-control" />
+                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Price" class="control-label"></label>
+                    <input asp-for="Input.Price" class="form-control" />
+                    <span asp-validation-for="Input.Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="body ui-widget">
+                        <input id="autoComplete" type="text" tabindex="1">
+                    </div>
+                    <div class="selection"></div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="Input.Lat" class="control-label"></label>
+                            <input id="lat" asp-for="Input.Lat" class="form-control" />
+                            <span asp-validation-for="Input.Lat" class="text-danger"></span>
+                        </div>
+                        <div class="col">
+                            <label asp-for="Input.Lon" class="control-label"></label>
+                            <input id="lon" asp-for="Input.Lon" class="form-control" />
+                            <span asp-validation-for="Input.Lon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const token = '@Model.Token';
+        const url = '@Url.Action("LookupLocationAsync", "Market")';
+        autocompleteGeoSearch(token, url)
+    </script>
+}

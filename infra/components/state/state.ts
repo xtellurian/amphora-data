@@ -19,6 +19,7 @@ export class State extends pulumi.ComponentResource {
   public ehns: azure.eventhub.EventHubNamespace;
   public kv: azure.keyvault.KeyVault;
   public storageAccount: azure.storage.Account;
+  public cosmosDb: azure.cosmosdb.Account;
 
   constructor(
     params: IComponentParams,
@@ -29,12 +30,12 @@ export class State extends pulumi.ComponentResource {
     this.create();
   }
 
-  public storeInVault(name: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource) {
+  public storeInVault(name: string, key: string, value: pulumi.Input<string> | string, parent?: pulumi.Resource) {
     return new azure.keyvault.Secret(
       name,
       {
         keyVaultId: this.kv.id,
-        name,
+        name: key,
         tags: azTags,
         value,
       },
@@ -59,9 +60,11 @@ export class State extends pulumi.ComponentResource {
     this.storageAccount = this.createStorage(stateRg);
     const secret = this.storeInVault(
       CONSTANTS.AzStorage_KV_CS_SecretName,
+      CONSTANTS.AzStorage_KV_CS_SecretName,
       this.storageAccount.primaryConnectionString,
     );
     this.createEventHubs(stateRg);
+    this.createCosmosDb(stateRg);
   }
 
   private createStorage(rg: azure.core.ResourceGroup): azure.storage.Account {
@@ -216,9 +219,41 @@ export class State extends pulumi.ComponentResource {
         parent: this.eh,
       });
 
-    this.storeInVault("EventHubConnectionString", ehAuthRule.primaryConnectionString);
-    this.storeInVault("EventHubName", this.eh.name);
+    this.storeInVault("EventHubConnectionString", "EventHubConnectionString", ehAuthRule.primaryConnectionString);
+    this.storeInVault("EventHubName", "EventHubName", this.eh.name);
 
+  }
+
+  private createCosmosDb(rg: azure.core.ResourceGroup) {
+    this.cosmosDb = new azure.cosmosdb.Account("cosmosDb", {
+      consistencyPolicy: {
+        consistencyLevel: "BoundedStaleness",
+        maxIntervalInSeconds: 10,
+        maxStalenessPrefix: 200,
+      },
+      enableAutomaticFailover: true,
+      geoLocations: [
+        {
+          failoverPriority: 0,
+          location: rg.location,
+        },
+      ],
+      kind: "GlobalDocumentDB",
+      location: rg.location,
+      offerType: "Standard",
+      resourceGroupName: rg.name,
+    });
+
+    const sql = new azure.cosmosdb.SqlDatabase("example", {
+      accountName: this.cosmosDb.name,
+      resourceGroupName: rg.name,
+  });
+
+    this.storeInVault("cosmosAccountKey", "Cosmos--Key", this.cosmosDb.primaryMasterKey);
+    this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
+    this.storeInVault("cosmosSqlDbName", "Cosmos--Database", sql.name);
+
+    this.linkCosmosToLogAnalytics(this.cosmosDb, this.monitoring.logAnalyticsWorkspace);
   }
 
   private linkCosmosToLogAnalytics(

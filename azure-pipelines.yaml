@@ -35,12 +35,33 @@ jobs:
     - script: |
         echo "$appUrl"
         echo "$kvUri"
+        echo "$kvName"
         echo "$pulumiStack"
+        echo "$webAppResourceId"
+        echo "$AzureMapsResourceGroup"
+        echo "$AzureMapsAccountName"
       displayName: Important Variables
       env: 
         kvUri: $(pulumi.kvUri)
+        kvName: $(pulumi.kvName)
         pulumiStack: $(pulumi.pulumiStack)
         appUrl: $(pulumi.appUrl)
+        webAppResourceId: $(pulumi.webAppResourceId)
+        AzureMapsResourceGroup: $(pulumi.AzureMapsResourceGroup)
+        AzureMapsAccountName: $(pulumi.AzureMapsAccountName)
+
+    - script: |
+        az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+        key=$(az maps account keys list -g $AzureMapsResourceGroup -n $AzureMapsAccountName --query primaryKey -o tsv)
+        az keyvault secret set --vault-name $kvName --name AzureMapsKey --value $key
+      displayName: Create Maps Secret in Azure
+      env:
+        NAME: $(name)
+        PASSWORD: $(password)
+        TENANT: $(tenant)
+        AzureMapsResourceGroup: $(pulumi.AzureMapsResourceGroup)
+        AzureMapsAccountName: $(pulumi.AzureMapsAccountName)
+        kvName: $(pulumi.kvName)
 
 
 ##################################################################
@@ -53,8 +74,10 @@ jobs:
     matrix:
       InMemory:
         PersistentStores: ''
+        disableKv: 'true'
       Persistent:
         PersistentStores: 'true'
+        disableKv: ''
     maxParallel: 2
   condition: succeeded()
   pool:
@@ -62,16 +85,10 @@ jobs:
 
   variables:
     - group: AzureDeploySP
-    - name: imageName
-      value: api
-    - name: imageTag
-      value: latest
     - name: buildConfiguration
       value: 'Release'
     - name: kvUri
       value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
-    - name: acrName
-      value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
 
   steps:
   - script: |
@@ -83,6 +100,13 @@ jobs:
               exit 1
         fi
     displayName: Check params set correctly
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk v 2.2.300'
+    inputs:
+      packageType: sdk
+      version: 2.2.300
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   # required to access KV in testing
   - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
@@ -102,6 +126,7 @@ jobs:
     env:
       ASPNETCORE_kvUri: $(kvUri)
       ASPNETCORE_PersistentStores: $(PersistentStores)
+      ASPNETCORE_disableKv: $(disableKv)
 
   - task: PublishTestResults@2
     condition: always() 
@@ -115,15 +140,49 @@ jobs:
       summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
       codecoverageTool: cobertura
 
+
+- job: deploy
+  dependsOn: 
+    - infrastructure
+    - apps
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  variables:
+  - group: AzureDeploySP
+  - name: acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+  - name: webAppResourceId
+    value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+
+  steps:
+
+  - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    displayName: Az Login
+    env: 
+      NAME: $(name)
+      PASSWORD: $(password)
+      TENANT: $(tenant)
+
   - script: |
-      chmod +x ./apps/*.sh
-      ./apps/acr-task.sh
-    displayName: Create ACR Build Task
+      az acr login -n $ACR_NAME
+      docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
+      docker push $IMAGE:latest
+      docker push $IMAGE:$GITHASH
+      docker push $IMAGE:$BUILD 
+      echo "Setting CI for web app"
+      WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
+      echo "Webhook is $WEBHOOKURI"
+      az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
+    displayName: Build and Push Docker Image
     env:
-      TASK_NAME: BuildAndPushWebApp
-      BRANCH: $(Build.SourceBranchName)
       ACR_NAME: $(acrName)
-      ACCESS_TOKEN: $(System.AccessToken)
+      CONTEXT: $(Build.SourcesDirectory)/apps
+      IMAGE: $(acrName).azurecr.io/webapp
+      GITHASH: $(Build.SourceVersion)
+      BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+      WEBAPPID: $(webAppResourceId)
+
 
 ##################################################################
 #           Destroy Instrastructure
