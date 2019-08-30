@@ -1,0 +1,25 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
+namespace Amphora.Api.Controllers
+{
+    public class HealthzController : ControllerBase
+    {
+        private readonly ILogger<HealthzController> logger;
+
+        public HealthzController(ILogger<HealthzController> logger)
+        {
+            this.logger = logger;
+        }
+        [HttpGet("healthz")]
+        public Task<IActionResult> HealthCheckAsync()
+        {
+            return Task<IActionResult>.Factory.StartNew(() =>
+            {
+                logger.LogInformation("Healthz ping");
+                return Ok();
+            });
+        }
+    }
+}
