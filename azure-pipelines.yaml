@@ -165,15 +165,8 @@ jobs:
       TENANT: $(tenant)
 
   - script: |
-      az acr login -n $ACR_NAME
-      docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
-      docker push $IMAGE:latest
-      docker push $IMAGE:$GITHASH
-      docker push $IMAGE:$BUILD 
-      echo "Setting CI for web app"
-      WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
-      echo "Webhook is $WEBHOOKURI"
-      az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
+      chmod +x infra/deploy-app.sh
+      ./infra/deploy-app.sh
     displayName: Build and Push Docker Image
     env:
       ACR_NAME: $(acrName)
