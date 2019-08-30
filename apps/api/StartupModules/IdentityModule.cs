@@ -1,5 +1,6 @@
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Options;
 using Amphora.Api.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,7 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<RegistrationOptions>(Configuration.GetSection("Registration"));
             services.AddScoped<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
             services.AddScoped<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
 

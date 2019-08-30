@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
 using Amphora.Api.Contracts;
+using Microsoft.Extensions.Options;
+using Amphora.Api.Options;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {
@@ -19,9 +21,13 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> logger;
         private readonly IEmailSender emailSender;
 
+        [BindProperty]
+        public string ServerToken { get; }
+
         public RegisterModel(
             IUserManager<ApplicationUser> userManager,
             ISignInManager<ApplicationUser> signInManager,
+            IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -29,6 +35,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             this.signInManager = signInManager;
             this.logger = logger;
             this.emailSender = emailSender;
+            this.ServerToken = registrationOptions.CurrentValue.Token;
         }
 
         [BindProperty]
@@ -62,6 +69,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Registration Token")]
+            public string ClientToken { get; set; }
         }
 
         public void OnGet(string returnUrl = null)
@@ -74,12 +85,17 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
+                if (!string.Equals(Input.ClientToken, ServerToken))
+                {
+                    ModelState.AddModelError("Input.ClientToken", "Registration Key is Invalid");
+                    return Page();
+                }
                 var user = new ApplicationUser
-                { 
-                    UserName = Input.Email, 
-                    Email = Input.Email, 
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
                     About = Input.About,
-                    FullName = Input.FullName 
+                    FullName = Input.FullName
                 };
                 var result = await userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
