@@ -3,11 +3,13 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { CONSTANTS, IComponentParams } from "../../components";
 import { Monitoring } from "../monitoring/monitoring";
+import { Network } from "../network/network";
 import { State } from "../state/state";
 import { AzureMaps } from "./maps/azure-maps";
 import { Tsi } from "./tsi/tsi";
 
 const cfg = new pulumi.Config();
+const locationConfig = new pulumi.Config("location");
 const config = new pulumi.Config("application");
 const authConfig = new pulumi.Config("authentication");
 const azTags = {
@@ -35,6 +37,7 @@ export class Application extends pulumi.ComponentResource
   constructor(
     params: IComponentParams,
     private monitoring: Monitoring,
+    private network: Network,
     private state: State,
   ) {
     super("amphora:Application", params.name, {}, params.opts);
@@ -45,7 +48,7 @@ export class Application extends pulumi.ComponentResource
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         tags: azTags,
       },
       {
@@ -77,7 +80,7 @@ export class Application extends pulumi.ComponentResource
       "acr",
       {
         adminEnabled: true,
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         resourceGroupName: rg.name,
         sku,
         tags: azTags,
@@ -122,6 +125,7 @@ export class Application extends pulumi.ComponentResource
             this.acr.loginServer
             }`,
           DOCKER_REGISTRY_SERVER_USERNAME: this.acr.adminUsername,
+          Registration__Token: "AmphoraData",
           WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
           WEBSITES_PORT: 80,
           kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
@@ -145,6 +149,7 @@ export class Application extends pulumi.ComponentResource
 
     // section--key
     this.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
+    this.network.AddCNameRecord("primary", this.appSvc.defaultSiteHostname);
   }
 
   private accessPolicyKeyVault(

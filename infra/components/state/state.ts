@@ -4,6 +4,7 @@ import { CONSTANTS, IComponentParams } from "../../components";
 
 import { Monitoring } from "../monitoring/monitoring";
 
+const locationConfig = new pulumi.Config("location");
 const config = new pulumi.Config("state");
 const authConfig = new pulumi.Config("authentication");
 const azTags = {
@@ -50,7 +51,7 @@ export class State extends pulumi.ComponentResource {
     const stateRg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         tags: azTags,
       },
       { parent: this },
@@ -75,7 +76,7 @@ export class State extends pulumi.ComponentResource {
         accountReplicationType: "LRS",
         accountTier: "Standard",
         enableHttpsTrafficOnly: true,
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         resourceGroupName: rg.name,
         tags: azTags,
       },

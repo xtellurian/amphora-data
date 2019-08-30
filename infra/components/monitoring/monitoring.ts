@@ -10,7 +10,7 @@ const azTags = {
   stack: pulumi.getStack(),
 };
 
-const config = new pulumi.Config("monitoring");
+const locationConfig = new pulumi.Config("location");
 const rgName = pulumi.getStack() + "-monitor";
 
 export class Monitoring extends pulumi.ComponentResource {
@@ -29,7 +29,7 @@ export class Monitoring extends pulumi.ComponentResource {
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         tags: azTags,
       },
       { parent: this },

@@ -7,7 +7,7 @@ import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { environmentTemplate } from "./tsi_environment";
 import { eventSourceTemplate } from "./tsi_eventsource";
 
-const config = new pulumi.Config("tsi");
+const locationConfig = new pulumi.Config("location");
 const azTags = {
   component: "state",
   project: pulumi.getProject(),
@@ -40,7 +40,7 @@ export class Tsi extends pulumi.ComponentResource {
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: config.require("location"),
+        location: locationConfig.require("primary"),
         tags: azTags,
       },
       { parent: this },
@@ -63,7 +63,7 @@ export class Tsi extends pulumi.ComponentResource {
         deploymentMode: "Incremental",
         parameters: {
           environmentName: this.envName.result,
-          location: config.require("location"),
+          location: locationConfig.require("primary"),
           storageAccountName: this.params.state.storageAccount.name,
           storageAccountResourceId: this.params.state.storageAccount.id,
         },
@@ -83,7 +83,7 @@ export class Tsi extends pulumi.ComponentResource {
           eventHubNamespaceName: this.params.eh_namespace.name,
           eventHubResourceId: this.params.eh.id,
           keyName: "RootManageSharedAccessKey",
-          location: config.require("location"),
+          location: locationConfig.require("primary"),
           sharedAccessKey: this.params.eh_namespace.defaultPrimaryKey,
           timestampPropertyName: "t",
         },

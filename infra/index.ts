@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { Application } from "./components/application/application";
 import { Monitoring } from "./components/monitoring/monitoring";
+import { Network } from "./components/network/network";
 import { State } from "./components/state/state";
 
 // do not create or reference container anywhere but here!
@@ -16,9 +17,11 @@ async function main(): Promise<IMainResult> {
 
   const monitoring = new Monitoring({ name: "monitoring" });
 
+  const network = new Network({ name: "network" });
+
   const state = new State({ name: "state" }, monitoring);
 
-  const application = new Application({ name: "application" }, monitoring, state);
+  const application = new Application({ name: "application" }, monitoring, network, state);
 
   return {
     application,
@@ -26,7 +29,6 @@ async function main(): Promise<IMainResult> {
     state,
   };
 }
-
 // async workaround
 // https://github.com/pulumi/pulumi/issues/2910
 const result: Promise<IMainResult> = main();
