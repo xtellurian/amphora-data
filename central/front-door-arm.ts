@@ -140,6 +140,10 @@ export function frontDoorArm() {
                                         // tslint:disable-next-line: max-line-length
                                         id: "[resourceId('Microsoft.Network/frontDoors/backendPools', parameters('frontDoorName'), 'squarespaceBackend')]",
                                     },
+                                    "cacheConfiguration": {
+                                        dynamicCompression: "Enabled",
+                                        queryParameterStripDirective: "StripNone",
+                                    },
                                     "forwardingProtocol": "HttpsOnly", // could be MatchRequest
                                 },
                             },

@@ -11,12 +11,18 @@ const tags = {
     stack: pulumi.getStack(),
 };
 
+const opts = {
+    protect: true,
+};
+
 const rg = new azure.core.ResourceGroup("constant",
     {
         location: "AustraliaSoutheast",
         name: "amphora-central",
         tags,
-    });
+    },
+    opts,
+);
 
 const kv = new azure.keyvault.KeyVault("central-keyVault",
     {
@@ -46,14 +52,18 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
         skuName: "standard",
         tags,
         tenantId: authConfig.require("tenantId"),
-    });
+    },
+    opts,
+);
 
 const dnsZone = new azure.dns.Zone("centralDnsZone",
     {
         name: "amphoradata.com",
         resourceGroupName: rg.name,
         tags,
-    });
+    },
+    opts,
+);
 
 const template = new azure.core.TemplateDeployment("frontDoorArm",
     {
@@ -66,6 +76,7 @@ const template = new azure.core.TemplateDeployment("frontDoorArm",
     },
     {
         dependsOn: dnsZone,
+        protect: true,
     });
 
 const wwwCName = new azure.dns.CNameRecord("wwwCName",
@@ -76,7 +87,9 @@ const wwwCName = new azure.dns.CNameRecord("wwwCName",
         tags,
         ttl: 30,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 
 // these come from O365
 
@@ -88,7 +101,9 @@ const sipDirCName = new azure.dns.CNameRecord("sipDir",
         tags,
         ttl: 30,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 const linqDiscoverCName = new azure.dns.CNameRecord("linqDiscover",
     {
         name: "lyncdiscover",
@@ -97,7 +112,9 @@ const linqDiscoverCName = new azure.dns.CNameRecord("linqDiscover",
         tags,
         ttl: 30,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 
 const githubChallengeTxt = new azure.dns.TxtRecord("githubChallenge",
     {
@@ -111,7 +128,9 @@ const githubChallengeTxt = new azure.dns.TxtRecord("githubChallenge",
         tags,
         ttl: 30,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 
 // directly from o365
 const mxRecord = new azure.dns.MxRecord("outlookMx",
@@ -127,7 +146,9 @@ const mxRecord = new azure.dns.MxRecord("outlookMx",
         tags,
         ttl: 3600,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 
 const autodoscoverCName = new azure.dns.CNameRecord("autodiscoverCName",
     {
@@ -137,7 +158,9 @@ const autodoscoverCName = new azure.dns.CNameRecord("autodiscoverCName",
         tags,
         ttl: 3600,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
 
 const txtRecord = new azure.dns.TxtRecord("outlookTxtRecord",
     {
@@ -154,4 +177,19 @@ const txtRecord = new azure.dns.TxtRecord("outlookTxtRecord",
         tags,
         ttl: 3600,
         zoneName: dnsZone.name,
-    });
+    },
+    opts,
+);
+
+// squarespace
+const verifyCName = new azure.dns.CNameRecord("verifySquarespace",
+    {
+        name: "4cexeacc9y5xc84bxj78",
+        record: "verify.squarespace.com",
+        resourceGroupName: rg.name,
+        tags,
+        ttl: 60,
+        zoneName: dnsZone.name,
+    },
+    opts,
+);
