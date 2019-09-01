@@ -10,9 +10,9 @@ namespace Amphora.Tests.Unit
 {
     public class MarketServiceTests
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> store;
+        private readonly IEntityStore<Common.Models.Amphora> store;
 
-        public MarketServiceTests(IOrgScopedEntityStore<Amphora.Common.Models.Amphora> store)
+        public MarketServiceTests(IEntityStore<Amphora.Common.Models.Amphora> store)
         {
             this.store = store;
         }

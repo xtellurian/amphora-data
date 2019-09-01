@@ -19,13 +19,13 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public DetailModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             ITsiService tsiService,
             IMapper mapper)

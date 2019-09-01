@@ -16,14 +16,14 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SignalController : Controller
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IEntityStore<Common.Models.Amphora> entityStore;
         private readonly IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
         private readonly ILogger<SignalController> logger;
 
         public SignalController(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> entityStore,
+            IEntityStore<Amphora.Common.Models.Amphora> entityStore,
             IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper,

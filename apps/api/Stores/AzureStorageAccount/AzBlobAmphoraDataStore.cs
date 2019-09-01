@@ -47,6 +47,11 @@ namespace Amphora.Api.Stores
             return buffer.ToArray();
         }
 
+        public Task<IList<Common.Models.Amphora>> ListAsync(string orgId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<string>> ListNamesAsync(Common.Models.Amphora entity)
         {
             var container = cloudBlobClient.GetContainerReference(entity.Id);

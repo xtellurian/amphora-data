@@ -9,10 +9,10 @@ namespace Amphora.Api.Services
 {
     public class MarketService : IMarketService
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraStore;
+        private readonly IEntityStore<Common.Models.Amphora> amphoraStore;
 
         public MarketService(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraStore)
+            IEntityStore<Amphora.Common.Models.Amphora> amphoraStore)
         {
             this.amphoraStore = amphoraStore;
         }

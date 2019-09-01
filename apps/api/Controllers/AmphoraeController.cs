@@ -14,13 +14,13 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AmphoraeController : Controller
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
         private readonly IMapper mapper;
 
         public AmphoraeController(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IAuthorizationService authorizationService,
             IMapper mapper)

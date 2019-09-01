@@ -10,13 +10,13 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class FileModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IEntityStore<Common.Models.Amphora> entityStore;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public FileModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> entityStore,
+            IEntityStore<Amphora.Common.Models.Amphora> entityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             ITsiService tsiService,
             IMapper mapper)

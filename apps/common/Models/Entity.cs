@@ -7,5 +7,6 @@ namespace Amphora.Common.Models
     {
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
+        public string OrganisationId { get; set; }
     }
 }

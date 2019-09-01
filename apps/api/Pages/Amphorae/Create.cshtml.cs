@@ -15,13 +15,13 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly IOrgScopedEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IAuthenticateService authenticateService;
         private readonly ILogger<CreateModel> logger;
         private readonly IMapper mapper;
 
         public CreateModel(
-            IOrgScopedEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IAuthenticateService authenticateService,
             ILogger<CreateModel> logger,
             IMapper mapper)

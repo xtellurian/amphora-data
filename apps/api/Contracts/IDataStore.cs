@@ -4,7 +4,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Contracts
 {
-    public interface IDataStore<T,TData> where T: IOrgScoped
+    public interface IDataStore<T,TData> where T: IEntity
     {
         Task<TData> GetDataAsync(T entity, string name);
         Task<IEnumerable<string>> ListNamesAsync(T entity);

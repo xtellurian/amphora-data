@@ -12,7 +12,7 @@ namespace Amphora.Api.Services
         private readonly ApplicationUser dev = new ApplicationUser
         {
             UserName = "Developer",
-            OrgId = "Developer"
+            OrganisationId = "Developer"
         };
 
         public UserManagerWrapper()

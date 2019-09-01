@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
 {
-    public class InMemoryDataStore<T, TData> : IDataStore<T, TData> where T : class, IOrgScoped
+    public class InMemoryDataStore<T, TData> : IDataStore<T, TData> where T : class, IEntity
     {
         private Dictionary<string, Dictionary<string,TData>> store = new Dictionary<string, Dictionary<string, TData>>();
         public Task<TData> GetDataAsync(T entity, string name)

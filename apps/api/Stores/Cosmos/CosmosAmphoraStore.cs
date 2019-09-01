@@ -7,26 +7,22 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amphora.Api.Stores
+namespace Amphora.Api.Stores.Cosmos
 {
-    public class CosmosAmphoraStore : IOrgScopedEntityStore<Amphora.Common.Models.Amphora>
+    public class CosmosAmphoraStore : CosmosStoreBase, IEntityStore<Amphora.Common.Models.Amphora>
     {
-        private readonly CosmosClient client;
-        private readonly Database database;
         private readonly ILogger<CosmosAmphoraStore> logger;
         private Container container;
 
-        public CosmosAmphoraStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosAmphoraStore> logger)
+        public CosmosAmphoraStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosAmphoraStore> logger): base(options)
         {
-            this.client = new CosmosClient(options.CurrentValue.Endpoint, options.CurrentValue.Key);
-            this.database = client.GetDatabase(options.CurrentValue.Database);
             this.logger = logger;
         }
 
         private async Task Init()
         {
             if (this.container != null) return;
-            var response = await this.database.CreateContainerIfNotExistsAsync("Amphora", "/OrgId");
+            var response = await this.Database.CreateContainerIfNotExistsAsync("Amphora", "/OrganisationId");
             container = response.Container;
         }
 

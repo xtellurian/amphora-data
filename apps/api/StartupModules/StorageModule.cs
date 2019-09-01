@@ -2,6 +2,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Options;
 using Amphora.Api.Stores;
+using Amphora.Api.Stores.Cosmos;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
 using Microsoft.AspNetCore.Hosting;
@@ -42,7 +43,7 @@ namespace Amphora.Api.StartupModules
         {
             // org entity store
             // services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
-            services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
+            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)
@@ -53,7 +54,7 @@ namespace Amphora.Api.StartupModules
 
         private static void UseInMemoryStores(IServiceCollection services)
         {
-            services.AddSingleton<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, InMemoryOrgEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, InMemoryDataStore<Amphora.Common.Models.Amphora, Datum>>();
