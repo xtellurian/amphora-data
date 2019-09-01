@@ -27,10 +27,6 @@ namespace Amphora.Api.StartupModules
             services.Configure<AzureStorageAccountOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration);
             services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
-            services.Configure<EntityTableStoreOptions<AmphoraTableEntity>>(p =>
-            {
-                p.TableName = "amphorae";
-            });
 
             if (HostingEnvironment.IsProduction() || Configuration["PersistentStores"] == "true")
             {

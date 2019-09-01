@@ -27,40 +27,5 @@ namespace Amphora.Tests.Unit.Automapper
         {
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
-        [Fact]
-        public void MapAmphoraToTableStoreEntity()
-        {
-            var amphora = new Amphora.Common.Models.Amphora()
-            {
-                // set random things
-            };
-            var tableEntity = mapper.Map<AmphoraTableEntity>(amphora);
-            Assert.NotNull(tableEntity);
-        }
-
-        [Fact]
-        public void MapTableStoreEntityToAmphora()
-        {
-            var tableEntity = new AmphoraTableEntity()
-            {
-                // set random things
-            };
-            var amphora = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
-            Assert.NotNull(amphora);
-        }
-
-        [Fact]
-        public void TestPositionMapping()
-        {
-            var geoHash = GeoHash.Encode(rnd.Next(0,180), rnd.Next(0,180));
-            var amphora = new Amphora.Common.Models.Amphora()
-            {
-                GeoHash = geoHash
-            };
-            var tableEntity = mapper.Map<AmphoraTableEntity>(amphora);
-            Assert.NotNull(tableEntity);
-            var entity = mapper.Map<Amphora.Common.Models.Amphora>(tableEntity);
-            Assert.Equal(geoHash, entity.GeoHash);
-        }
     }
 }
