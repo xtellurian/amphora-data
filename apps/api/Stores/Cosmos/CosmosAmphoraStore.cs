@@ -33,7 +33,10 @@ namespace Amphora.Api.Stores
         public async Task<Common.Models.Amphora> CreateAsync(Common.Models.Amphora entity)
         {
             await Init();
-            if (string.IsNullOrEmpty(entity.Id)) entity.Id = System.Guid.NewGuid().ToString();
+            // set the ids
+            entity.AmphoraId =  System.Guid.NewGuid().ToString();
+            entity.Id = "Amphora|" + entity.AmphoraId;
+            // store the item
             var response = await this.container.CreateItemAsync(entity);
             return response.Resource;
         }
