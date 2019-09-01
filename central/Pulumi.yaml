@@ -1,0 +1,4 @@
+name: central
+runtime: nodejs
+description: Central Infra for Amphora
+main: central.ts

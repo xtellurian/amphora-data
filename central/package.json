@@ -1,0 +1,11 @@
+{
+    "name": "azure-typescript",
+    "devDependencies": {
+        "@types/node": "latest",
+        "tslint": "^5.19.0"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "^0.17.28",
+        "@pulumi/azure": "^0.19.5"
+    }
+}
