@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
+using Amphora.Common.Extensions;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,8 +24,7 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             // set the ids
-            entity.AmphoraId =  System.Guid.NewGuid().ToString();
-            entity.Id = "Amphora|" + entity.AmphoraId;
+            entity.SetIds();
             // store the item
             var response = await this.Container.CreateItemAsync(entity);
             return response.Resource;
@@ -48,6 +48,7 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<Common.Models.Amphora> ReadAsync(string id)
         {
             await Init();
+            id = id.AsQualifiedId(typeof(Common.Models.Amphora));
             try
             {
                 var sqlQueryText = $"SELECT * FROM c WHERE c.id = '{id}'";
@@ -117,6 +118,7 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<Common.Models.Amphora> ReadAsync(string id, string orgId)
         {
             await Init();
+            id = id.AsQualifiedId(typeof(Common.Models.Amphora));
             var response = await Container.ReadItemAsync<Common.Models.Amphora>(id, new PartitionKey(orgId));
             return response.Resource;
         }

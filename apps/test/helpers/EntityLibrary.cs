@@ -10,7 +10,7 @@ namespace Amphora.Tests.Helpers
         private static Random rnd = new Random();
         public static Amphora.Common.Models.Amphora GetValidAmphora(string id = null, string description = null)
         {
-            var geoHash = GeoHash.Encode(rnd.Next(0,180), rnd.Next(0,180));
+            var geoHash = GeoHash.Encode(rnd.Next(0, 180), rnd.Next(0, 180));
             return new Amphora.Common.Models.Amphora()
             {
                 Id = id,
@@ -21,14 +21,23 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static Amphora.Common.Models.Amphora GetInalidAmphora(string id = null)
+        public static Amphora.Common.Models.Amphora GetInvalidAmphora(string id = null)
         {
             return new Amphora.Common.Models.Amphora()
             {
                 Id = id,
                 Description = null,
-                Price =  -1 * rnd.Next(0, 99),
+                Price = -1 * rnd.Next(0, 99),
                 Title = ""
+            };
+        }
+
+        public static Organisation GetOrganisation()
+        {
+            return new Organisation
+            {
+                Name = "Test Org",
+                InviteCode = "Welcome to the world"
             };
         }
     }

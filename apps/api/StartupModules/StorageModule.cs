@@ -41,9 +41,9 @@ namespace Amphora.Api.StartupModules
 
         private void UsePersistentStores(IServiceCollection services)
         {
-            // org entity store
-            // services.AddScoped<IOrgScopedEntityStore<Amphora.Common.Models.Amphora>, AzTableOrgEntityStore<Amphora.Common.Models.Amphora, AmphoraTableEntity>>();
+            // COSMOS stores
             services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
+            services.AddScoped<IEntityStore<Amphora.Common.Models.Organisation>, CosmosOrganisationStore>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)

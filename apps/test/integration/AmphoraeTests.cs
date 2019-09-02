@@ -27,8 +27,9 @@ namespace Amphora.Tests.Integration
             a.OrgId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PutAsync(url, requestBody);
+            var createResponse = await client.PostAsync(url, requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            createResponse.EnsureSuccessStatusCode();
             a = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
 
             // Act
@@ -59,9 +60,10 @@ namespace Amphora.Tests.Integration
             a.GeoHash = geoHash;// set the geohash
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PutAsync("api/amphorae", requestBody);
+            var createResponse = await client.PostAsync("api/amphorae", requestBody);
             var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
                 await createResponse.Content.ReadAsStringAsync());
+            createResponse.EnsureSuccessStatusCode();
             Assert.NotNull(amphora);
             Assert.NotNull(amphora.Id);
 

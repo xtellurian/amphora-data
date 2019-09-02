@@ -65,9 +65,10 @@ namespace Amphora.Tests.Integration
         {
             var amphora = Helpers.EntityLibrary.GetValidAmphora();
             // create an amphora for us to work with
-            var createResponse = await client.PutAsync(url,
+            var createResponse = await client.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
                 );
+            createResponse.EnsureSuccessStatusCode();
             amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
                 await createResponse.Content.ReadAsStringAsync()
                 );

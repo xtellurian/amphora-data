@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Queries;
+using Amphora.Common.Extensions;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores
@@ -25,10 +25,7 @@ namespace Amphora.Api.Stores
         {
             return Task<T>.Factory.StartNew(() =>
             {
-                if (string.IsNullOrEmpty(entity.Id))
-                {
-                    entity.Id = Guid.NewGuid().ToString();
-                }
+                entity.SetIds();
                 if (this.store.Any(o => o.Id == entity.Id))
                 {
                     this.store.RemoveAll(o => o.Id == entity.Id);
@@ -43,7 +40,9 @@ namespace Amphora.Api.Stores
         {
             return Task<T>.Factory.StartNew(() =>
             {
-                return store.FirstOrDefault(e => string.Equals(e.Id, id));
+                if (id == null) return default(T);
+                var qualifiedId = id.AsQualifiedId(typeof(T));
+                return store.FirstOrDefault(e => string.Equals(e.Id, qualifiedId));
             });
         }
 
@@ -90,6 +89,8 @@ namespace Amphora.Api.Stores
         {
             return Task<T>.Factory.StartNew(() =>
             {
+                if (id == null) return default(T);
+                var qualifiedId = id.AsQualifiedId(typeof(T));
                 return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
             });
         }

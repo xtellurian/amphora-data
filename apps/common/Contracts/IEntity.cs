@@ -5,6 +5,6 @@ namespace Amphora.Common.Contracts
     {
         string Id { get; set; }
         string OrganisationId { get; set; }
-
+        void SetIds();
     }
-}
+}   

@@ -20,7 +20,7 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Put_CreatesAmphora(string url)
+        public async Task Post_CreatesAmphora(string url)
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -29,7 +29,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PutAsync(url, requestBody);
+            var response = await client.PostAsync(url, requestBody);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -56,9 +56,9 @@ namespace Amphora.Tests.Integration
             var a = Helpers.EntityLibrary.GetValidAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PutAsync(url, requestBody);
+            var createResponse = await client.PostAsync(url, requestBody);
             var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
-
+            createResponse.EnsureSuccessStatusCode();
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.GetAsync(url);
@@ -86,7 +86,7 @@ namespace Amphora.Tests.Integration
             var a = Helpers.EntityLibrary.GetValidAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PutAsync(url, requestBody);
+            var createResponse = await client.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode();
             var b = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
 

@@ -51,7 +51,24 @@ namespace Amphora.Api.Controllers
             return Ok(a);
         }
 
-        [HttpPut("api/amphorae")]
+        [HttpPut("api/amphorae/{id}")]
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.Amphora model)
+        {
+            var a = await this.amphoraEntityStore.ReadAsync(id);
+            var authorizationResult = await authorizationService
+                .AuthorizeAsync(User, a, Operations.Read);
+            if(authorizationResult.Succeeded)
+            {
+                if (a == null) return NotFound();
+                model.Id = a.Id;
+                model.AmphoraId = a.AmphoraId;
+                var result = await amphoraEntityStore.UpdateAsync(model);
+                return Ok(result);
+            }
+            return Forbid();
+        }
+
+        [HttpPost("api/amphorae")]
         public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.Amphora model)
         {
             if (model == null || !model.IsValid())
