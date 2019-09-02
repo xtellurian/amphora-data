@@ -115,6 +115,7 @@ export function frontDoorArm() {
                             properties: {
                                 acceptedProtocols: [
                                     "Https",
+                                    "Http",
                                 ],
                                 enabledState: "Enabled",
                                 frontendEndpoints: [
