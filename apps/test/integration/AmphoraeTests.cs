@@ -24,7 +24,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             var a = Helpers.EntityLibrary.GetValidAmphora(description: nameof(Get_MyAmphorae_ByOrgId));
-            a.OrgId = orgId;
+            a.OrganisationId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);

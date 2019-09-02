@@ -3,14 +3,18 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Common.Models;
+using Amphora.Common.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Amphora.Api.Stores.Cosmos
 {
     public class CosmosOrganisationStore : CosmosStoreBase, IEntityStore<Organisation>
     {
-        public CosmosOrganisationStore(IOptionsMonitor<CosmosOptions> options) 
-            : base(options)
+
+        public CosmosOrganisationStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosOrganisationStore> logger) 
+            : base(options, logger)
         {
         }
 
@@ -25,24 +29,32 @@ namespace Amphora.Api.Stores.Cosmos
             return response.Resource;
         }
 
-        public Task DeleteAsync(Organisation entity)
+        public async Task DeleteAsync(Organisation entity)
         {
-            throw new System.NotImplementedException();
+            await Init();
+            var deleteResponse = await DeleteAsync<Organisation>(entity);
         }
 
-        public Task<IList<Organisation>> ListAsync()
+        public async Task<IList<Organisation>> ListAsync()
         {
-            throw new System.NotImplementedException();
+            await Init();
+            return await base.ListAsync<Organisation>();
         }
 
-        public Task<IList<Organisation>> ListAsync(string orgId)
+        public async Task<IList<Organisation>> ListAsync(string orgId)
         {
-            throw new System.NotImplementedException();
+            await Init();
+            return Container.GetItemLinqQueryable<Organisation>()
+                .Where(a => a.OrganisationId == orgId)
+                .ToList(); // TODO - performance
         }
 
-        public Task<Organisation> ReadAsync(string id)
+        public async Task<Organisation> ReadAsync(string id)
         {
-            throw new System.NotImplementedException();
+            await Init();
+            if (id == null) return null;
+            id = id.AsQualifiedId(typeof(Organisation));
+            return await this.ReadAsync<Organisation>(id);
         }
 
         public Task<Organisation> ReadAsync(string id, string orgId)
@@ -55,9 +67,10 @@ namespace Amphora.Api.Stores.Cosmos
             throw new System.NotImplementedException();
         }
 
-        public Task<Organisation> UpdateAsync(Organisation entity)
+        public async Task<Organisation> UpdateAsync(Organisation entity)
         {
-            throw new System.NotImplementedException();
+            await Init();
+            return await base.UpdateAsync<Organisation>(entity);
         }
     }
 }

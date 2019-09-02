@@ -35,7 +35,7 @@ namespace Amphora.Api.Stores
         }
         public async Task<byte[]> GetDataAsync(Common.Models.Amphora entity, string name)
         {
-            var container = cloudBlobClient.GetContainerReference(entity.Id);
+            var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);
             if (!await container.ExistsAsync())
             {
                 return null; // empty
@@ -47,14 +47,9 @@ namespace Amphora.Api.Stores
             return buffer.ToArray();
         }
 
-        public Task<IList<Common.Models.Amphora>> ListAsync(string orgId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<string>> ListNamesAsync(Common.Models.Amphora entity)
         {
-            var container = cloudBlobClient.GetContainerReference(entity.Id);
+            var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);
             if (!await container.ExistsAsync())
             {
                 return new List<string>(); // empty
@@ -78,13 +73,13 @@ namespace Amphora.Api.Stores
         public async Task<byte[]> SetDataAsync(Common.Models.Amphora entity, byte[] data, string name)
         {
             // 1 container per amphora
-            var container = cloudBlobClient.GetContainerReference(entity.Id);
+            var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);
             await container.CreateIfNotExistsAsync();
             var blob = container.GetBlockBlobReference(name);
             if (await blob.ExistsAsync())
             {
-                logger.LogError($"{name} already exists in {entity.Id}. ${blob.Uri}");
-                throw new ArgumentException($"{name} already exists in {entity.Id}. ${blob.Uri}");
+                logger.LogError($"{name} already exists in {entity.AmphoraId}. ${blob.Uri}");
+                throw new ArgumentException($"{name} already exists in {entity.AmphoraId}. ${blob.Uri}");
             }
             await blob.UploadFromByteArrayAsync(data, 0, data.Length);
             return data;
