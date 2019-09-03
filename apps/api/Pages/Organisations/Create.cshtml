@@ -1,0 +1,55 @@
+@page
+@model Amphora.Api.Pages.Organisations.CreateModel
+
+@{
+    ViewData["Title"] = "Create Organisation";
+}
+
+<h1>Create</h1>
+
+<h4>Organisation</h4>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Name" class="control-label"></label>
+                    <input asp-for="Input.Name" class="form-control" />
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Description" class="control-label"></label>
+                    <input asp-for="Input.Description" class="form-control" />
+                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Website" class="control-label"></label>
+                    <input asp-for="Input.Website" class="form-control" />
+                    <span asp-validation-for="Input.Website" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>Address</div>
+                    <div class="body ui-widget">
+                        <input id="autoComplete" asp-for="Input.Address" class="form-control" type="text" tabindex="1">
+                    </div>
+                    <div class="selection"></div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const token = '@Model.Token';
+        const url = '@Url.Action("LookupLocationAsync", "Market")';
+        autocompleteGeoSearch(token, url)
+    </script>
+}

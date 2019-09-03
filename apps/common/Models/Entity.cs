@@ -8,7 +8,7 @@ namespace Amphora.Common.Models
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
         public string OrganisationId { get; set; }
-        public string EntityId => Id?.Split('|')[1]; // gets what's after the pipe - i.e. the id
+        public string GetEntityId() => Id?.Split('|')[1]; // gets what's after the pipe - i.e. the id
         // should set both the Ids. Only use on create.
         public abstract void SetIds();
     }

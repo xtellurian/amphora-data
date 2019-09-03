@@ -62,6 +62,6 @@
     <script>
         const token = '@Model.Token';
         const url = '@Url.Action("LookupLocationAsync", "Market")';
-        autocompleteGeoSearch(token, url)
+        autocompleteGeoSearch(token, url, "#lat", "#lon")
     </script>
 }

@@ -1,4 +1,4 @@
-function autocompleteGeoSearch(token, url) {
+function autocompleteGeoSearch(token, url, latSelector, lonSelector) {
 
     const autoCompletejs = new autoComplete({
     data: {
@@ -81,8 +81,10 @@ function autocompleteGeoSearch(token, url) {
         // Change placeholder with the selected value
         document.querySelector("#autoComplete").setAttribute("placeholder", selection);
         // set lat and lon
-        document.querySelector("#lat").setAttribute("value", feedback.selection.value.position.lat);
-        document.querySelector("#lon").setAttribute("value", feedback.selection.value.position.lon);
+        if(latSelector && lonSelector) {
+            document.querySelector(latSelector).setAttribute("value", feedback.selection.value.position.lat);
+            document.querySelector(lonSelector).setAttribute("value", feedback.selection.value.position.lon);
+        }
         // Concole log autoComplete data feedback
     },
     });
