@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Options;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -88,8 +89,9 @@ namespace Amphora.Api.Stores.Cosmos
         protected async Task<List<T>> ListAsync<T>()
         {
             var results = new List<T>(); // todo
-
-            var x = Container.GetItemQueryIterator<T>();
+            var prefix = typeof(T).GetEntityPrefix();
+            var queryText = $"SELECT * FROM c WHERE STARTSWITH(c.id, '{prefix}')";
+            var x = Container.GetItemQueryIterator<T>(queryText);
             while (x.HasMoreResults)
             {
                 var returned = await x.ReadNextAsync();

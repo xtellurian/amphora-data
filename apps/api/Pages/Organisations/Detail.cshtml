@@ -1,0 +1,28 @@
+@page
+@model Amphora.Api.Pages.Organisations.DetailModel
+@{
+    ViewData["Title"] = "Organisation - " + @Model.Organisation.Name;
+}
+
+<div id="main" class="container">
+    <div class="row">
+        <div class="col-8">
+            <h1>@Model.Organisation.Name</h1>
+        </div>
+        <div class="col">
+            <span>
+                <a asp-page="./Index"><button class="btn btn-secondary">Organisations</button></a>
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div> 
+            <p>
+                @Model.Organisation.Description </div>
+            </p>
+        </div>
+        <div>
+            @Model.Organisation.Address
+        </div>
+    </div>  
+</div>
