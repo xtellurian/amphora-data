@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,12 +21,7 @@ namespace Amphora.Api.Stores.Cosmos
 
         public async Task<Common.Models.Amphora> CreateAsync(Common.Models.Amphora entity)
         {
-            await Init();
-            // set the ids
-            entity.SetIds();
-            // store the item
-            var response = await this.Container.CreateItemAsync(entity);
-            return response.Resource;
+            return await base.CreateAsync<Common.Models.Amphora>(entity);
         }
 
         public async Task<IList<Common.Models.Amphora>> ListAsync()
@@ -92,6 +88,11 @@ namespace Amphora.Api.Stores.Cosmos
             return Container.GetItemLinqQueryable<Common.Models.Amphora>()
                 .Where(a => a.OrganisationId == orgId)
                 .ToList(); // TODO - performance
+        }
+
+        public Task<IEnumerable<Common.Models.Amphora>> QueryAsync(Func<Common.Models.Amphora, bool> where)
+        {
+            return base.QueryAsync(where);
         }
     }
 }

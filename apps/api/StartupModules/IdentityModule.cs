@@ -25,13 +25,13 @@ namespace Amphora.Api.StartupModules
         {
             services.Configure<RegistrationOptions>(Configuration.GetSection("Registration"));
             services.AddScoped<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
-            services.AddScoped<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
+            services.AddTransient<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
 
             var key = Configuration.GetSection("Cosmos")["Key"];
             var endpoint = Configuration.GetSection("Cosmos")["Endpoint"];
             var database = Configuration.GetSection("Cosmos")["Database"];
 
-            if(key != null && endpoint != null && database != null)
+            if (key != null && endpoint != null && database != null)
             {
                 services.AddIdentityWithDocumentDBStores<ApplicationUser, Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole>(
                 dbOptions =>

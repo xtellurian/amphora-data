@@ -7,6 +7,7 @@ namespace Amphora.Api.Contracts
     public interface IUserManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
     {
         Task<IdentityResult> CreateAsync(T user, string password);
+        Task<IdentityResult> DeleteAsync(T user);
         Task<T> FindByNameAsync(string userName);
         Task<string> GenerateEmailConfirmationTokenAsync(T user);
         Task<T> GetUserAsync(ClaimsPrincipal principal);

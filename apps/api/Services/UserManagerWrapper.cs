@@ -30,6 +30,12 @@ namespace Amphora.Api.Services
             return await userManager.CreateAsync(user, password);
         }
 
+        public async Task<IdentityResult> DeleteAsync(T user)
+        {
+            if (userManager == null) return new IdentityResult();
+            return await userManager.DeleteAsync(user);
+        }
+
         public async Task<T> FindByNameAsync(string userName)
         {
             if (userManager == null) return dev as T;

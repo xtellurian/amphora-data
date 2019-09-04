@@ -85,6 +85,15 @@ namespace Amphora.Api.Stores
             });
         }
 
+        public Task<IEnumerable<T>> QueryAsync(Func<T, bool> where)
+        {
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
+            {
+                if(where == null) return null;
+                return this.store.Where(where);
+            });
+        }
+
         public Task<T> ReadAsync(string id, string orgId)
         {
             return Task<T>.Factory.StartNew(() =>

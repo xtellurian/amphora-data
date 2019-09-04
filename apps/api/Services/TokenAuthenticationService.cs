@@ -39,7 +39,7 @@ namespace Amphora.Api.Services
             if (signInManager.IsSignedIn(user))
             {
                 var obj = await userManager.GetUserAsync(user);
-                return (true, GenerateToken(obj.UserName));
+                return (true, GenerateToken(obj));
             }
             else
             {
@@ -51,8 +51,8 @@ namespace Amphora.Api.Services
             var token = string.Empty;
             var signInResult = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
             if (!signInResult.Succeeded) return (false, token);
-
-            token = GenerateToken(request.Username);
+            var user = await userManager.FindByNameAsync(request.Username);
+            token = GenerateToken(user);
             return (true, token);
         }
 
@@ -64,13 +64,14 @@ namespace Amphora.Api.Services
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-        private string GenerateToken(string username)
+        private string GenerateToken(ApplicationUser user)
         {
-            logger.LogInformation($"Generating token for {username}");
+            logger.LogInformation($"Generating token for {user.UserName}");
             string token;
             var claim = new[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

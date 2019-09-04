@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Options;
 using Amphora.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Controllers
 {
@@ -11,10 +13,12 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrganisationsController : Controller
     {
+        private readonly IOptionsMonitor<CreateOptions> options;
         private readonly IEntityStore<Organisation> entityStore;
 
-        public OrganisationsController(IEntityStore<Organisation> entityStore)
+        public OrganisationsController(IOptionsMonitor<CreateOptions> options,IEntityStore<Organisation> entityStore)
         {
+            this.options = options;
             this.entityStore = entityStore;
         }
 
@@ -28,8 +32,16 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/organisations")]
         public async Task<IActionResult> CreateOrganisation([FromBody]Organisation org)
         {
-            var result = await entityStore.CreateAsync(org);
-            return Ok(result);
+            // check the key
+            if(Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
+            {
+                var result = await entityStore.CreateAsync(org);
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized("Create Key Required");
+            }
         }
 
         [HttpPut("api/organisations/{id}")]

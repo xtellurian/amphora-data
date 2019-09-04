@@ -14,5 +14,6 @@ namespace Amphora.Api.Contracts
         Task DeleteAsync(T entity);
         Task<IList<T>> StartsWithQueryAsync(string propertyName, string givenValue);
         Task<T> ReadAsync(string id, string orgId);
+        Task<IEnumerable<T>> QueryAsync(System.Func<T, bool> where);
     }
 }

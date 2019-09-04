@@ -53,7 +53,7 @@ namespace Amphora.Api.StartupModules
            }).AddCookie();
            
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
-            services.AddSingleton<IAuthorizationHandler, AmphoraAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
         }
     }
 }

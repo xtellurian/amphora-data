@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,6 +42,14 @@ namespace Amphora.Api.Stores.Cosmos
             Container = response.Container;
         }
 
+        protected async Task<T> CreateAsync<T>(T entity) where T : IEntity
+        {
+            await Init();
+            entity.SetIds();
+            var response = await this.Container.CreateItemAsync(entity);
+            return response.Resource;
+        }
+
         protected async Task<T> ReadAsync<T>(string id)
         {
             await Init();
@@ -77,6 +86,12 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             return await Container.DeleteItemAsync<T>(entity.Id, new PartitionKey(entity.OrganisationId));
+        }
+        protected async Task<IEnumerable<T>> QueryAsync<T>(Func<T, bool> where)
+        {
+            await Init();
+            if (where == null) return null;
+            return this.Container.GetItemLinqQueryable<T>().Where(where);
         }
 
         protected async Task<T> UpdateAsync<T>(T entity)

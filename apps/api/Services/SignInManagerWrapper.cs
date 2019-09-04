@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services
 {
-    public class SignInManagerWrapper<T> : ISignInManager<T> where T: Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
+    public class SignInManagerWrapper<T> : ISignInManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
     {
         private readonly SignInManager<T> signInManager;
         private static bool isSignedIn = false;
 
         public SignInManagerWrapper()
         {
-            
+
         }
         public SignInManagerWrapper(SignInManager<T> signInManager)
         {
@@ -28,15 +28,22 @@ namespace Amphora.Api.Services
             return signInManager.IsSignedIn(principal);
         }
 
-        public async Task<IEnumerable<AuthenticationScheme>> GetExternalAuthenticationSchemesAsync()
+        public async Task<ClaimsPrincipal> CreateUserPrincipalAsync(T user)
         {
-            if(signInManager == null) return new List<AuthenticationScheme>();
-            return await signInManager.GetExternalAuthenticationSchemesAsync() ;
+            if (signInManager == null) return new ClaimsPrincipal();
+            return await this.signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure )
+        public async Task<IEnumerable<AuthenticationScheme>> GetExternalAuthenticationSchemesAsync()
         {
-            if(signInManager == null) {
+            if (signInManager == null) return new List<AuthenticationScheme>();
+            return await signInManager.GetExternalAuthenticationSchemesAsync();
+        }
+
+        public async Task<SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure)
+        {
+            if (signInManager == null)
+            {
                 isSignedIn = true;
                 return new DevSignInResult(true);
             }
@@ -51,7 +58,7 @@ namespace Amphora.Api.Services
 
         public async Task SignOutAsync()
         {
-            if(signInManager == null) 
+            if (signInManager == null)
             {
                 isSignedIn = false;
                 return;

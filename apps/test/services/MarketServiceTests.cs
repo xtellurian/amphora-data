@@ -46,7 +46,7 @@ namespace Amphora.Tests.Unit
 
         private async Task<Amphora.Common.Models.Amphora> AddToStore()
         {
-            var amphora = EntityLibrary.GetValidAmphora();
+            var amphora = EntityLibrary.GetAmphora();
             return await store.CreateAsync(amphora);
         }
     }

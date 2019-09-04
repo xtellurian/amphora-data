@@ -4,19 +4,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Common.Models;
+using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class OrganisationCRUDTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class OrganisationCRUDTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
-
-        public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
-            _factory = factory;
         }
 
         [Theory]
@@ -25,7 +23,10 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.AddCreateToken();
+
             var a = Helpers.EntityLibrary.GetOrganisation();
+
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
@@ -54,6 +55,8 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.AddCreateToken();
+
             var a = Helpers.EntityLibrary.GetOrganisation();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");

@@ -8,13 +8,11 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraeTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraeTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public AmphoraeTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public AmphoraeTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-            _factory = factory;
         }
 
         [Theory]
@@ -22,8 +20,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
         {
             // Arrange
-            var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora(description: nameof(Get_MyAmphorae_ByOrgId));
+            var client = await GetAuthenticatedClientAsync();
+
+            var a = Helpers.EntityLibrary.GetAmphora(description: nameof(Get_MyAmphorae_ByOrgId));
             a.OrganisationId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -40,9 +39,10 @@ namespace Amphora.Tests.Integration
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id) );
+            Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
 
             await DeleteAmphora(client, a.Id);
+            await DestroyUser(client);
 
         }
 
@@ -55,8 +55,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_QueryAmphoraByGeohash(string geoHash, string queryGeoHash, bool success)
         {
             // Arrange
-            var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora(description: nameof(Get_QueryAmphoraByGeohash));
+            var client = await GetAuthenticatedClientAsync();
+
+            var a = Helpers.EntityLibrary.GetAmphora(description: nameof(Get_QueryAmphoraByGeohash));
             a.GeoHash = geoHash;// set the geohash
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -84,7 +85,7 @@ namespace Amphora.Tests.Integration
             }
 
             await DeleteAmphora(client, amphora.Id);
-
+            await DestroyUser(client);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

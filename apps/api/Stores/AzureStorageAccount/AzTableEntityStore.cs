@@ -238,5 +238,10 @@ namespace Amphora.Api.Stores
             }
 
         }
+
+        public Task<IEnumerable<T>> QueryAsync(Func<T, bool> where)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Amphora.Api.Contracts
 {
     public interface ISignInManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
     {
+        Task<ClaimsPrincipal> CreateUserPrincipalAsync(T user);
         Task<IEnumerable<AuthenticationScheme>> GetExternalAuthenticationSchemesAsync();
         bool IsSignedIn(ClaimsPrincipal principal);
         Task<SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure);

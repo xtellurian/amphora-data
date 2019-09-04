@@ -3,28 +3,25 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraCRUDTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraCRUDTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
+        public AmphoraCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory) { }
 
-        public AmphoraCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory)
-        {
-            _factory = factory;
-        }
 
         [Theory]
         [InlineData("/api/amphorae")]
         public async Task Post_CreatesAmphora(string url)
         {
             // Arrange
-            var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var client = await GetAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
@@ -45,6 +42,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Title, b.Title);
 
             await DeleteAmphora(client, b.Id);
+            await DestroyUser(client);
         }
 
         [Theory]
@@ -52,8 +50,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_ListsAmphorae(string url)
         {
             // Arrange
-            var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var client = await GetAuthenticatedClientAsync();
+
+            var a = Helpers.EntityLibrary.GetAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
@@ -75,6 +74,7 @@ namespace Amphora.Tests.Integration
             Assert.True(b.Count > 0);
 
             await DeleteAmphora(client, amphora.Id);
+            await DestroyUser(client);
         }
 
         [Theory]
@@ -82,8 +82,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_ReadsAmphora(string url)
         {
             // Arrange
-            var client = _factory.CreateClient();
-            var a = Helpers.EntityLibrary.GetValidAmphora();
+            var client = await GetAuthenticatedClientAsync();
+
+            var a = Helpers.EntityLibrary.GetAmphora();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
@@ -96,11 +97,11 @@ namespace Amphora.Tests.Integration
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
+            var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
 
-            var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
             var c = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(responseBody);
             Assert.Equal(b.Id, c.Id);
@@ -110,6 +111,7 @@ namespace Amphora.Tests.Integration
 
             // cleanup
             await DeleteAmphora(client, b.Id);
+            await base.DestroyUser(client);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

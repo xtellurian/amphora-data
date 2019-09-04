@@ -8,13 +8,11 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraDataTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class AmphoraDataTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
-            _factory = factory;
         }
 
         [Theory]
@@ -22,7 +20,8 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadAndDownload_HappyPath(string url)
         {
             // Arrange
-            var client = _factory.CreateClient();
+            var client = await GetAuthenticatedClientAsync();
+            
             var amphora = await CreateAmphoraAsync(client, url);
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -48,7 +47,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadToAmphora_MissingEntity(string url)
         {
             // Arrange
-            var client = _factory.CreateClient();
+            var client = await GetAuthenticatedClientAsync();
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
@@ -63,7 +62,7 @@ namespace Amphora.Tests.Integration
 
         private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
         {
-            var amphora = Helpers.EntityLibrary.GetValidAmphora();
+            var amphora = Helpers.EntityLibrary.GetAmphora();
             // create an amphora for us to work with
             var createResponse = await client.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")

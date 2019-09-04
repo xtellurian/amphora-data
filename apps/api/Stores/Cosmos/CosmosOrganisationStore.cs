@@ -7,6 +7,7 @@ using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System;
 
 namespace Amphora.Api.Stores.Cosmos
 {
@@ -20,13 +21,7 @@ namespace Amphora.Api.Stores.Cosmos
 
         public async Task<Organisation> CreateAsync(Organisation entity)
         {
-            await Init();
-            // set the ids
-            entity.OrganisationId =  System.Guid.NewGuid().ToString();
-            entity.Id = "Organisation|" + entity.OrganisationId;
-            // store the item
-            var response = await this.Container.CreateItemAsync(entity);
-            return response.Resource;
+           return await base.CreateAsync(entity);
         }
 
         public async Task DeleteAsync(Organisation entity)
@@ -47,6 +42,11 @@ namespace Amphora.Api.Stores.Cosmos
             return Container.GetItemLinqQueryable<Organisation>()
                 .Where(a => a.OrganisationId == orgId)
                 .ToList(); // TODO - performance
+        }
+
+        public Task<IEnumerable<Organisation>> QueryAsync(Func<Organisation, bool> where)
+        {
+            return base.QueryAsync(where);
         }
 
         public async Task<Organisation> ReadAsync(string id)

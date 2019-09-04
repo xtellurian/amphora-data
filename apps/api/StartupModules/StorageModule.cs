@@ -42,25 +42,28 @@ namespace Amphora.Api.StartupModules
         private void UsePersistentStores(IServiceCollection services)
         {
             // COSMOS stores
-            services.AddScoped<IEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
-            services.AddScoped<IEntityStore<Amphora.Common.Models.Organisation>, CosmosOrganisationStore>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.Organisation>, CosmosOrganisationStore>();
+            // consumed by some singletons
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.ResourceAuthorization>, CosmosResourceAuthorizationStore>();
+
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, AzBlobAmphoraDataStore>();
-            
 
         }
 
         private static void UseInMemoryStores(IServiceCollection services)
         {
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
             services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, InMemoryDataStore<Amphora.Common.Models.Amphora, Datum>>();
 
-            // orgs
+            // entity stores
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
+            services.AddSingleton<IEntityStore<ResourceAuthorization>, InMemoryEntityStore<ResourceAuthorization>>();
         }
 
 

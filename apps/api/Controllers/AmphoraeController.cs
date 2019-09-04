@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,19 +16,25 @@ namespace Amphora.Api.Controllers
     public class AmphoraeController : Controller
     {
         private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
+        private readonly IUserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
 
         public AmphoraeController(
             IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IAuthorizationService authorizationService,
+            IUserManager<ApplicationUser> userManager,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;
+            this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.authorizationService = authorizationService;
+            this.userManager = userManager;
             this.mapper = mapper;
         }
 
@@ -48,7 +55,14 @@ namespace Amphora.Api.Controllers
             var authorizationResult = await authorizationService
                 .AuthorizeAsync(User, a, Operations.Read);
             if (a == null) return NotFound();
-            return Ok(a);
+            if(authorizationResult.Succeeded)
+            {
+                return Ok(a);
+            }
+            else
+            {
+                return Forbid();
+            }
         }
 
         [HttpPut("api/amphorae/{id}")]
@@ -75,7 +89,9 @@ namespace Amphora.Api.Controllers
             {
                 return BadRequest("Invalid Model");
             }
-            return Ok(await this.amphoraEntityStore.CreateAsync(model));
+
+            var amphora = await amphoraeService.CreateAsync(model, User);
+            return Ok(amphora);
         }
 
         [HttpDelete("api/amphorae/{id}")]
