@@ -12,14 +12,17 @@ namespace Amphora.Api.Controllers
     [ApiController]
     public class UsersController : Controller
     {
+        private readonly IUserService userService;
         private readonly IUserManager<ApplicationUser> userManager;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly ILogger<UsersController> logger;
 
-        public UsersController(IUserManager<ApplicationUser> userManager,
+        public UsersController(IUserService userService,
+                               IUserManager<ApplicationUser> userManager,
                                IOptionsMonitor<CreateOptions> options,
                                ILogger<UsersController> logger)
         {
+            this.userService = userService;
             this.userManager = userManager;
             this.options = options;
             this.logger = logger;
@@ -34,7 +37,7 @@ namespace Amphora.Api.Controllers
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await userManager.CreateAsync(user, password);
+                    var result = await userService.CreateUserAsync(user, password);
                     if (result.Succeeded)
                     {
                         return Ok(password);
@@ -44,7 +47,7 @@ namespace Amphora.Api.Controllers
                         logger.LogError("Failed to create user!");
                         foreach (var e in result.Errors)
                         {
-                            logger.LogError(e.Description);
+                            logger.LogError(e);
                         }
                     }
                     return BadRequest(JsonConvert.SerializeObject(result.Errors));

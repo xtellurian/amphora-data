@@ -36,8 +36,8 @@ namespace Amphora.Tests.Helpers
         {
             return new Organisation
             {
-                Name = "Test Org",
-                InviteCode = "Welcome to the world"
+                Name =  Guid.NewGuid().ToString(),
+                InviteCode = Guid.NewGuid().ToString()
             };
         }
     }

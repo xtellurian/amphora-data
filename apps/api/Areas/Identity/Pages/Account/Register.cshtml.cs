@@ -18,6 +18,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     {
         private readonly ISignInManager<ApplicationUser> signInManager;
         private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserService userService;
         private readonly ILogger<RegisterModel> logger;
         private readonly IEmailSender emailSender;
 
@@ -26,12 +27,14 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         public RegisterModel(
             IUserManager<ApplicationUser> userManager,
+            IUserService userService,
             ISignInManager<ApplicationUser> signInManager,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             this.userManager = userManager;
+            this.userService = userService;
             this.signInManager = signInManager;
             this.logger = logger;
             this.emailSender = emailSender;
@@ -73,6 +76,11 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             [Display(Name = "Registration Token")]
             public string ClientToken { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Organisation ID")]
+            public string OrganisationId { get; set; }
         }
 
         public void OnGet(string returnUrl = null)
@@ -95,9 +103,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     About = Input.About,
-                    FullName = Input.FullName
+                    FullName = Input.FullName,
+                    OrganisationId = Input.OrganisationId
                 };
-                var result = await userManager.CreateAsync(user, Input.Password);
+                var result = await userService.CreateUserAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User created a new account with password.");
@@ -117,7 +126,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                 }
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, error);
                 }
             }
 

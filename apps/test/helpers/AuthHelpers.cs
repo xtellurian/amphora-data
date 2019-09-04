@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Common.Models;
 using Newtonsoft.Json;
 
 namespace Amphora.Tests.Helpers
@@ -17,24 +18,41 @@ namespace Amphora.Tests.Helpers
                 client.DefaultRequestHeaders.Add("Create", "dev");
             }
         }
-        public static async Task<(ApplicationUser User, string Password)> CreateUserAsync(this HttpClient client)
+        public static async Task<(ApplicationUser User, Organisation Org, string Password)> CreateUserAsync(this HttpClient client, Organisation org = null)
         {
             client.AddCreateToken();
-            // Act
+            // first, create an organisation
+            if(org == null)
+            {
+                org = await client.CreateOrganisationAsync();
+            }
+
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var user = new ApplicationUser
             {
                 UserName = email,
-                Email = email
+                Email = email,
+                OrganisationId = org.OrganisationId
             };
-            var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
+            var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/users", content);
             var password = await response.Content.ReadAsStringAsync();
 
             response.EnsureSuccessStatusCode(); // Status Code 200-299
 
-            return (User: user, Password: password);
+            return (User: user, Org: org, Password: password);
+        }
+
+        public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client)
+        {
+            var a = Helpers.EntityLibrary.GetOrganisation();
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("api/organisations", requestBody);
+            var createResponseContent = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
+            var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
+            return org;
         }
 
         public static async Task GetTokenAsync(this HttpClient client, ApplicationUser user, string password)

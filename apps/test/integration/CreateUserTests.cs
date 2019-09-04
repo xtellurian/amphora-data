@@ -2,19 +2,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class CreateUserTests : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class CreateUserTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
-
-        public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
-            _factory = factory;
         }
 
 
@@ -25,12 +23,16 @@ namespace Amphora.Tests.Integration
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add("Create", "dev");
 
+            // first we have to create an org
+            var org = await client.CreateOrganisationAsync();
+
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var user = new ApplicationUser
             {
                 UserName = email,
-                Email = email
+                Email = email,
+                OrganisationId = org.OrganisationId
             };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 

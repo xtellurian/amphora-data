@@ -42,7 +42,8 @@ namespace Amphora.Tests.Integration
             Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
 
             await DeleteAmphora(client, a.Id);
-            await DestroyUser(client);
+            await DestroyUserAsync(client);
+            await DestroyOrganisationAsync(client);
 
         }
 
@@ -85,7 +86,8 @@ namespace Amphora.Tests.Integration
             }
 
             await DeleteAmphora(client, amphora.Id);
-            await DestroyUser(client);
+            await DestroyUserAsync(client);
+            await DestroyOrganisationAsync(client);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

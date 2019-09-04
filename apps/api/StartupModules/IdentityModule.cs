@@ -26,6 +26,7 @@ namespace Amphora.Api.StartupModules
             services.Configure<RegistrationOptions>(Configuration.GetSection("Registration"));
             services.AddScoped<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
             services.AddTransient<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
+            services.AddTransient<IUserService, UserService>();
 
             var key = Configuration.GetSection("Cosmos")["Key"];
             var endpoint = Configuration.GetSection("Cosmos")["Endpoint"];
