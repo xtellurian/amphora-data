@@ -40,7 +40,7 @@ namespace Amphora.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
-            
+
             this.StorageModule.ConfigureServices(services);
             this.IdentityModule.ConfigureServices(services);
             this.AuthenticationModule.ConfigureServices(services);
@@ -50,6 +50,8 @@ namespace Amphora.Api
             services.AddScoped<IMarketService, MarketService>();
             services.Configure<TsiOptions>(Configuration);
             services.AddScoped<ITsiService, RealTsiService>();
+            services.Configure<CreateOptions>(Configuration.GetSection("Create"));
+            services.AddTransient<IAmphoraeService, AmphoraeService>();
 
 
             services.AddHttpClient();
