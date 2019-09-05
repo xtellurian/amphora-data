@@ -13,16 +13,16 @@ namespace Amphora.Api.Authorization
     public class AmphoraAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Amphora.Common.Models.Amphora>
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
-        private readonly IEntityStore<ResourceAuthorization> entityStore;
+        private readonly IPermissionService permissionService;
         private readonly IUserManager userManager;
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased?view=aspnetcore-2.2
         public AmphoraAuthorizationHandler(ILogger<AmphoraAuthorizationHandler> logger,
-                                           IEntityStore<ResourceAuthorization> entityStore,
+                                           IPermissionService permissionService,
                                            IUserManager userManager)
         {
             this.logger = logger;
-            this.entityStore = entityStore;
+            this.permissionService = permissionService;
             this.userManager = userManager;
         }
 
@@ -30,21 +30,18 @@ namespace Amphora.Api.Authorization
                                                     OperationAuthorizationRequirement requirement,
                                                        Amphora.Common.Models.Amphora entity)
         {
-            var userEntity = await userManager.GetUserAsync(context.User);
+            var user = await userManager.GetUserAsync(context.User);
 
-            var matching = await entityStore.QueryAsync(p => 
-                string.Equals(p.ResourcePermission, requirement.Name)
-                && string.Equals(p.TargetResourceId, entity.Id) 
-                && string.Equals(p.UserId, userEntity.Id )
-                );
-            if(matching == null || matching.Count() == 0)
-            {
-                logger.LogInformation($"Access Denied to {entity.Id}");
-            }
-            else
+            var isAuthorized = await permissionService.IsAuthorized(user, entity, requirement.Name);
+
+            if (isAuthorized)
             {
                 context.Succeed(requirement);
                 logger.LogInformation($"Access granted to {entity.Id}");
+            }
+            else
+            {
+                logger.LogInformation($"Access Denied to {entity.Id}");
             }
         }
     }

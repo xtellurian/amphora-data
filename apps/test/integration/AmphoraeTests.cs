@@ -20,9 +20,8 @@ namespace Amphora.Tests.Integration
         public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
-
-            var a = Helpers.EntityLibrary.GetAmphora(description: nameof(Get_MyAmphorae_ByOrgId));
+            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId, description: nameof(Get_MyAmphorae_ByOrgId));
             a.OrganisationId = orgId;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -56,9 +55,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_QueryAmphoraByGeohash(string geoHash, string queryGeoHash, bool success)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await GetAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(description: nameof(Get_QueryAmphoraByGeohash));
+            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId, description: nameof(Get_QueryAmphoraByGeohash));
             a.GeoHash = geoHash;// set the geohash
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");

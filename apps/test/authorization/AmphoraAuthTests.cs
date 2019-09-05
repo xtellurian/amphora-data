@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Services;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
 using Amphora.Tests.Helpers;
@@ -19,10 +20,13 @@ namespace Amphora.Tests.Unit.Authorization
     public class AmphoraAuthTests
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
+        private readonly ILogger<PermissionService> permissionServiceLogger;
 
-        public AmphoraAuthTests(ILogger<AmphoraAuthorizationHandler> logger)
+        public AmphoraAuthTests(ILogger<AmphoraAuthorizationHandler> logger,
+                                ILogger<PermissionService> permissionServiceLogger)
         {
             this.logger = logger;
+            this.permissionServiceLogger = permissionServiceLogger;
         }
 
         [Fact]
@@ -30,16 +34,21 @@ namespace Amphora.Tests.Unit.Authorization
         {
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
-            var user = new ApplicationUser { Id = Guid.NewGuid().ToString() };
+            var org = EntityLibrary.GetOrganisation();
+            var orgStore = new InMemoryEntityStore<Organisation>();
+            org = await orgStore.CreateAsync(org);
+            var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
-            var a = EntityLibrary.GetAmphora();
+            var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var authStore = new InMemoryEntityStore<ResourceAuthorization>();
-            var handler = new AmphoraAuthorizationHandler(logger, authStore, userManager.Object);
+            var store = new InMemoryEntityStore<PermissionCollection>();
+            var permissionService = new PermissionService(permissionServiceLogger, store);
+            var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
+
             var readReq = new List<IAuthorizationRequirement> { Operations.Read };
             var createReq = new List<IAuthorizationRequirement> { Operations.Create };
             var updateReq = new List<IAuthorizationRequirement> { Operations.Update };
@@ -64,25 +73,32 @@ namespace Amphora.Tests.Unit.Authorization
         {
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
-            var user = new ApplicationUser { Id = Guid.NewGuid().ToString() };
+            var org = EntityLibrary.GetOrganisation();
+            var orgStore = new InMemoryEntityStore<Organisation>();
+            org = await orgStore.CreateAsync(org);
+            var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
-            var a = EntityLibrary.GetAmphora();
+            var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var authStore = new InMemoryEntityStore<ResourceAuthorization>();
+            var store = new InMemoryEntityStore<PermissionCollection>();
+            var permissionService = new PermissionService(permissionServiceLogger, store);
+
+            var collection = new PermissionCollection(a.OrganisationId);
             var readPermission = new ResourceAuthorization()
             {
                 ResourcePermission = ResourcePermissions.Read,
                 TargetResourceId = a.Id,
                 UserId = user.Id
             };
+            collection.ResourceAuthorizations.Add(readPermission);
 
-            await authStore.CreateAsync(readPermission);
+            await store.CreateAsync(collection);
 
-            var handler = new AmphoraAuthorizationHandler(logger, authStore, userManager.Object);
+            var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
             var requirements = new List<IAuthorizationRequirement> { Operations.Read };
             var context = new AuthorizationHandlerContext(requirements, principal, a);
             await handler.HandleAsync(context);

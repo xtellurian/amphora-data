@@ -55,7 +55,7 @@ namespace Amphora.Api.Controllers
             var authorizationResult = await authorizationService
                 .AuthorizeAsync(User, a, Operations.Read);
             if (a == null) return NotFound();
-            if(authorizationResult.Succeeded)
+            if (authorizationResult.Succeeded)
             {
                 return Ok(a);
             }
@@ -71,7 +71,7 @@ namespace Amphora.Api.Controllers
             var a = await this.amphoraEntityStore.ReadAsync(id);
             var authorizationResult = await authorizationService
                 .AuthorizeAsync(User, a, Operations.Read);
-            if(authorizationResult.Succeeded)
+            if (authorizationResult.Succeeded)
             {
                 if (a == null) return NotFound();
                 model.Id = a.Id;
@@ -85,7 +85,7 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/amphorae")]
         public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.Amphora model)
         {
-            if (model == null || !model.IsValid())
+            if (model == null || !model.IsValidDto())
             {
                 return BadRequest("Invalid Model");
             }

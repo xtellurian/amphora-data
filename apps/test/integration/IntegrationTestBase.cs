@@ -21,14 +21,14 @@ namespace Amphora.Tests.Integration
             this.orgLoans = new Dictionary<HttpClient, Organisation>();
         }
 
-        protected async Task<HttpClient> GetAuthenticatedClientAsync()
+        protected async Task<(HttpClient client, IApplicationUser user, Organisation org)> GetAuthenticatedClientAsync()
         {
             var client = _factory.CreateClient();
             var (user, org, password) = await client.CreateUserAsync();
             userLoans[client] = user;
             orgLoans[client] = org;
             await client.GetTokenAsync(user, password);
-            return client;
+            return (client, user, org);
         }
 
         protected async Task DestroyUserAsync(HttpClient client)

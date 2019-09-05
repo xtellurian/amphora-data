@@ -20,8 +20,8 @@ namespace Amphora.Tests.Integration
         public async Task Post_CreatesAmphora(string url)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphora();
+            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
@@ -51,9 +51,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_ListsAmphorae(string url)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await GetAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora();
+            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
@@ -84,9 +84,9 @@ namespace Amphora.Tests.Integration
         public async Task Get_ReadsAmphora(string url)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await GetAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora();
+            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);

@@ -11,7 +11,7 @@ namespace Amphora.Tests.Integration
     public class AmphoraDataTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
 
-        public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -20,9 +20,18 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadAndDownload_HappyPath(string url)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
-            
-            var amphora = await CreateAmphoraAsync(client, url);
+            var (client, user, org) = await GetAuthenticatedClientAsync();
+
+            var amphora = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
+            // create an amphora for us to work with
+            var createResponse = await client.PostAsync(url,
+                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
+                );
+            createResponse.EnsureSuccessStatusCode();
+            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
+                await createResponse.Content.ReadAsStringAsync()
+                );
+
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
@@ -47,7 +56,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadToAmphora_MissingEntity(string url)
         {
             // Arrange
-            var client = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await GetAuthenticatedClientAsync();
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
@@ -58,20 +67,6 @@ namespace Amphora.Tests.Integration
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.BadRequest, fillResponse.StatusCode);
-        }
-
-        private async Task<Amphora.Common.Models.Amphora> CreateAmphoraAsync(HttpClient client, string url)
-        {
-            var amphora = Helpers.EntityLibrary.GetAmphora();
-            // create an amphora for us to work with
-            var createResponse = await client.PostAsync(url,
-                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
-                );
-            createResponse.EnsureSuccessStatusCode();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
-                await createResponse.Content.ReadAsStringAsync()
-                );
-            return amphora;
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)
