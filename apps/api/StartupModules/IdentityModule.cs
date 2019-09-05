@@ -4,7 +4,9 @@ using Amphora.Api.Options;
 using Amphora.Api.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,16 +26,16 @@ namespace Amphora.Api.StartupModules
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RegistrationOptions>(Configuration.GetSection("Registration"));
-            services.AddScoped<ISignInManager<ApplicationUser>, SignInManagerWrapper<ApplicationUser>>();
-            services.AddTransient<IUserManager<ApplicationUser>, UserManagerWrapper<ApplicationUser>>();
             services.AddTransient<IUserService, UserService>();
 
             var key = Configuration.GetSection("Cosmos")["Key"];
             var endpoint = Configuration.GetSection("Cosmos")["Endpoint"];
             var database = Configuration.GetSection("Cosmos")["Database"];
-
             if (key != null && endpoint != null && database != null)
             {
+                services.AddScoped<ISignInManager, SignInManagerWrapper<ApplicationUser>>();
+                services.AddTransient<IUserManager, UserManagerWrapper<ApplicationUser>>();
+
                 services.AddIdentityWithDocumentDBStores<ApplicationUser, Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole>(
                 dbOptions =>
                 {
@@ -52,6 +54,30 @@ namespace Amphora.Api.StartupModules
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(UIFramework.Bootstrap4);
             }
+            else
+            {
+                services.AddScoped<ISignInManager, SignInManagerWrapper<TestApplicationUser>>();
+                services.AddTransient<IUserManager, UserManagerWrapper<TestApplicationUser>>();
+
+
+                services.AddDefaultIdentity<TestApplicationUser>()
+                    .AddDefaultUI(UIFramework.Bootstrap4)
+                    .AddEntityFrameworkStores<TestUserContext>();
+
+                services.AddDbContext<TestUserContext>(options => options.UseInMemoryDatabase("test_users"));
+            }
+
+
+        }
+        public class TestUserContext : IdentityDbContext<TestApplicationUser>
+        {
+            public TestUserContext()
+            { }
+
+            public TestUserContext(DbContextOptions<TestUserContext> options)
+                : base(options)
+            { }
+
         }
     }
 }

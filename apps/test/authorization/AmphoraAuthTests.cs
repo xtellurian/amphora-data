@@ -29,10 +29,10 @@ namespace Amphora.Tests.Unit.Authorization
         public async Task DenyAllByDefault()
         {
             var principal = new TestPrincipal();
-            var userManager = new Mock<IUserManager<ApplicationUser>>();
+            var userManager = new Mock<IUserManager>();
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString() };
 
-            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
+            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
             var a = EntityLibrary.GetAmphora();
@@ -63,10 +63,10 @@ namespace Amphora.Tests.Unit.Authorization
         public async Task AllowReadOnAmphora()
         {
             var principal = new TestPrincipal();
-            var userManager = new Mock<IUserManager<ApplicationUser>>();
+            var userManager = new Mock<IUserManager>();
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString() };
 
-            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
+            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
             var a = EntityLibrary.GetAmphora();

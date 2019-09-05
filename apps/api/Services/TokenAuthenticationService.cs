@@ -16,14 +16,14 @@ namespace Amphora.Api.Services
 
     public class TokenAuthenticationService : IAuthenticateService
     {
-        private readonly ISignInManager<ApplicationUser> signInManager;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly ISignInManager signInManager;
+        private readonly IUserManager userManager;
         private readonly IOptionsMonitor<TokenManagementOptions> tokenManagement;
         private readonly ILogger<TokenAuthenticationService> logger;
         private static string secret;
 
-        public TokenAuthenticationService(ISignInManager<ApplicationUser> signInManager,
-                                          IUserManager<ApplicationUser> userManager,
+        public TokenAuthenticationService(ISignInManager signInManager,
+                                          IUserManager userManager,
                                           IOptionsMonitor<TokenManagementOptions> tokenManagement,
                                           ILogger<TokenAuthenticationService> logger)
         {
@@ -64,7 +64,7 @@ namespace Amphora.Api.Services
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-        private string GenerateToken(ApplicationUser user)
+        private string GenerateToken(IApplicationUser user)
         {
             logger.LogInformation($"Generating token for {user.UserName}");
             string token;

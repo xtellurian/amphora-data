@@ -11,41 +11,55 @@ namespace Amphora.Api.Services
     {
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<Organisation> orgStore;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<Organisation> orgStore,
-                           IUserManager<ApplicationUser> userManager)
+                           IUserManager userManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
             this.userManager = userManager;
         }
 
-        public async Task<EntityOperationResult<ApplicationUser>> CreateUserAsync(ApplicationUser user, string password)
+        public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user, string password)
         {
             if(user.Validate())
             {
-                var org = orgStore.ReadAsync(user.OrganisationId);
+                var org = await orgStore.ReadAsync(user.OrganisationId);
                 if(org == null)
                 {
-                    return new EntityOperationResult<ApplicationUser>("Unknown Organisation");
+                    return new EntityOperationResult<IApplicationUser>("Unknown Organisation");
                 }
                 var result = await userManager.CreateAsync(user, password);
                 if(result.Succeeded)
                 {
-                    return new EntityOperationResult<ApplicationUser>(user);
+                    return new EntityOperationResult<IApplicationUser>(user);
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                    return new EntityOperationResult<IApplicationUser>(result.Errors.Select(e => e.Description));
                 }
             }
             else
             {
-                return new EntityOperationResult<ApplicationUser>("Invalid User");
+                return new EntityOperationResult<IApplicationUser>("Invalid User");
             }
 
+        }
+
+        public async Task<EntityOperationResult<IApplicationUser>> DeleteAsync(IApplicationUser user)
+        {
+            // todo - permissions
+            var result = await userManager.DeleteAsync(user);
+            if(result.Succeeded)
+            {
+                return new EntityOperationResult<IApplicationUser>();
+            }
+            else
+            {
+                return new EntityOperationResult<IApplicationUser>(result.Errors.Select(e => e.Description));
+            }
         }
     }
 }

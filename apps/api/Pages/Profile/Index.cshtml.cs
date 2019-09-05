@@ -10,15 +10,15 @@ namespace Amphora.Api.Pages.Profile
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
-        public IndexModel(IUserManager<ApplicationUser> userManager)
+        public IndexModel(IUserManager userManager)
         {
             this.userManager = userManager;
         }
 
         [BindProperty]
-        public ApplicationUser AppUser { get; set; }
+        public IApplicationUser AppUser { get; set; }
         public bool IsSelf {get; set; }
 
         public async Task<IActionResult> OnGetAsync(string userName)

@@ -16,8 +16,8 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly ISignInManager<ApplicationUser> signInManager;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly ISignInManager signInManager;
+        private readonly IUserManager userManager;
         private readonly IUserService userService;
         private readonly ILogger<RegisterModel> logger;
         private readonly IEmailSender emailSender;
@@ -26,9 +26,9 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         public string ServerToken { get; }
 
         public RegisterModel(
-            IUserManager<ApplicationUser> userManager,
+            IUserManager userManager,
             IUserService userService,
-            ISignInManager<ApplicationUser> signInManager,
+            ISignInManager signInManager,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
@@ -106,7 +106,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     FullName = Input.FullName,
                     OrganisationId = Input.OrganisationId
                 };
-                var result = await userService.CreateUserAsync(user, Input.Password);
+                var result = await userService.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User created a new account with password.");

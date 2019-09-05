@@ -8,9 +8,9 @@ namespace Amphora.Api.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ISignInManager<ApplicationUser> signInManager;
+        private readonly ISignInManager signInManager;
 
-        public IndexModel(ISignInManager<ApplicationUser> signInManager)
+        public IndexModel(ISignInManager signInManager)
         {
             this.signInManager = signInManager;
         }

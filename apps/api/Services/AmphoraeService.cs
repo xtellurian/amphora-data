@@ -11,12 +11,12 @@ namespace Amphora.Api.Services
     {
         private readonly IEntityStore<Common.Models.Amphora> amphoraStore;
         private readonly IEntityStore<Common.Models.ResourceAuthorization> resourceAuthorizationStore;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
         private readonly ILogger<AmphoraeService> logger;
 
         public AmphoraeService(IEntityStore<Common.Models.Amphora> amphoraStore,
                                IEntityStore<Common.Models.ResourceAuthorization> resourceAuthorizationStore,
-                               IUserManager<ApplicationUser> userManager,
+                               IUserManager userManager,
                                ILogger<AmphoraeService> logger)
         {
             this.amphoraStore = amphoraStore;

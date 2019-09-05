@@ -14,12 +14,12 @@ namespace Amphora.Api.Authorization
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
         private readonly IEntityStore<ResourceAuthorization> entityStore;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased?view=aspnetcore-2.2
         public AmphoraAuthorizationHandler(ILogger<AmphoraAuthorizationHandler> logger,
                                            IEntityStore<ResourceAuthorization> entityStore,
-                                           IUserManager<ApplicationUser> userManager)
+                                           IUserManager userManager)
         {
             this.logger = logger;
             this.entityStore = entityStore;

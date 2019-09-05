@@ -15,10 +15,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly ISignInManager<ApplicationUser> _signInManager;
+        private readonly ISignInManager _signInManager;
         private readonly ILogger<LogoutModel> _logger;
 
-        public LogoutModel(ISignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(ISignInManager signInManager, ILogger<LogoutModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

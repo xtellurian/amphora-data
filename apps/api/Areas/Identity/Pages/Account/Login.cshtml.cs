@@ -17,10 +17,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly ISignInManager<ApplicationUser> signInManager;
+        private readonly ISignInManager signInManager;
         private readonly ILogger<LoginModel> logger;
 
-        public LoginModel(ISignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(ISignInManager signInManager, ILogger<LoginModel> logger)
         {
             this.signInManager = signInManager;
             this.logger = logger;

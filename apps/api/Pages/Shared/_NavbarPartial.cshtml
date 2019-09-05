@@ -1,13 +1,13 @@
 @using Microsoft.AspNetCore.Identity
 @using Amphora.Api.Contracts
-@inject ISignInManager<Amphora.Api.Models.ApplicationUser> SignInManager
-@inject IUserManager<Amphora.Api.Models.ApplicationUser> UserManager
+@inject ISignInManager SignInManager
+@inject IUserManager UserManager
 
 <ul class="navbar-nav flex-grow-1 justify-content-end">
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <!-- <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!! </a> -->
+
     </li>
     <li class="nav-item">
         <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a>

@@ -2,66 +2,57 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services
 {
-    public class UserManagerWrapper<T> : IUserManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser, new()
+    public class UserManagerWrapper<T> : IUserManager where T : class, IApplicationUser
     {
         private readonly UserManager<T> userManager;
-        private readonly ApplicationUser dev = new ApplicationUser
-        {
-            UserName = "Developer",
-            OrganisationId = "Developer"
-        };
+        private readonly IMapper mapper;
 
-        public UserManagerWrapper()
-        {
-
-        }
-        public UserManagerWrapper(UserManager<T> userManager)
+        public UserManagerWrapper(UserManager<T> userManager, IMapper mapper)
         {
             this.userManager = userManager;
+            this.mapper = mapper;
         }
 
-        public async Task<IdentityResult> CreateAsync(T user, string password)
+        public async Task<IdentityResult> CreateAsync(IApplicationUser user, string password)
         {
-            if (userManager == null) return new IdentityResult();
-            return await userManager.CreateAsync(user, password);
+            var mapped = mapper.Map<T>(user);
+            return await userManager.CreateAsync(mapped, password);
         }
 
-        public async Task<IdentityResult> DeleteAsync(T user)
+        public async Task<IdentityResult> DeleteAsync(IApplicationUser user)
         {
-            if (userManager == null) return new IdentityResult();
-            return await userManager.DeleteAsync(user);
+            var mapped = mapper.Map<T>(user);
+            return await userManager.DeleteAsync(mapped);
         }
 
-        public async Task<T> FindByNameAsync(string userName)
+        public async Task<IApplicationUser> FindByNameAsync(string userName)
         {
-            if (userManager == null) return dev as T;
             return await userManager.FindByNameAsync(userName);
         }
-        public async Task<string> GenerateEmailConfirmationTokenAsync(T user)
+        public async Task<string> GenerateEmailConfirmationTokenAsync(IApplicationUser user)
         {
-            if (userManager == null) return "_blank";
-            return await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var mapped = mapper.Map<T>(user);
+            return await userManager.GenerateEmailConfirmationTokenAsync(mapped);
         }
 
         public string GetUserName(ClaimsPrincipal principal)
         {
-            return userManager?.GetUserName(principal) ?? "Default User";
+            return userManager.GetUserName(principal);
         }
 
-        public async Task<T> GetUserAsync(ClaimsPrincipal principal)
+        public async Task<IApplicationUser> GetUserAsync(ClaimsPrincipal principal)
         {
-            if (userManager == null) return dev as T;
             return await userManager.GetUserAsync(principal);
         }
 
-        public async Task<IdentityResult> UpdateAsync(T user)
+        public async Task<IdentityResult> UpdateAsync(IApplicationUser user)
         {
-            if(userManager==null) return new IdentityResult();
-            return await userManager.UpdateAsync(user);
+            return await userManager.UpdateAsync((T)user);
         }
     }
 }

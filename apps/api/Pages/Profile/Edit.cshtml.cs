@@ -10,16 +10,16 @@ namespace Amphora.Api.Pages.Profile
     [Authorize]
     public class EditModel : PageModel
     {
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
-        public ApplicationUser AppUser { get; set; }
+        public IApplicationUser AppUser { get; set; }
         [BindProperty]
         public string FullName { get; set; }
         [BindProperty]
         public string About { get; set; }
         [TempData]
         public string ErrorMessage { get; set; }
-        public EditModel(IUserManager<ApplicationUser> userManager)
+        public EditModel(IUserManager userManager)
         {
             this.userManager = userManager;
         }

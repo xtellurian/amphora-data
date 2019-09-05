@@ -19,7 +19,7 @@ namespace Amphora.Api.Controllers
         private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
         private readonly IMapper mapper;
 
         public AmphoraeController(
@@ -27,7 +27,7 @@ namespace Amphora.Api.Controllers
             IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IAuthorizationService authorizationService,
-            IUserManager<ApplicationUser> userManager,
+            IUserManager userManager,
             IMapper mapper)
         {
             this.amphoraEntityStore = amphoraEntityStore;

@@ -13,12 +13,12 @@ namespace Amphora.Api.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService userService;
-        private readonly IUserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly ILogger<UsersController> logger;
 
         public UsersController(IUserService userService,
-                               IUserManager<ApplicationUser> userManager,
+                               IUserManager userManager,
                                IOptionsMonitor<CreateOptions> options,
                                ILogger<UsersController> logger)
         {
@@ -37,7 +37,7 @@ namespace Amphora.Api.Controllers
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await userService.CreateUserAsync(user, password);
+                    var result = await userService.CreateAsync(user, password);
                     if (result.Succeeded)
                     {
                         return Ok(password);
@@ -74,7 +74,7 @@ namespace Amphora.Api.Controllers
                     if (username == null) return BadRequest("id/ username is required");
                     var user = await userManager.FindByNameAsync(username);
                     if (user == null) return NotFound();
-                    var result = await userManager.DeleteAsync(user);
+                    var result = await userService.DeleteAsync(user);
                     if (result.Succeeded)
                     {
                         return Ok();
@@ -84,7 +84,7 @@ namespace Amphora.Api.Controllers
                         logger.LogError("Failed to create user!");
                         foreach (var e in result.Errors)
                         {
-                            logger.LogError(e.Description);
+                            logger.LogError(e);
                         }
                     }
                     return BadRequest(JsonConvert.SerializeObject(result.Errors));

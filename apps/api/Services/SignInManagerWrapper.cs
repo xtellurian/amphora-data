@@ -2,67 +2,54 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models;
 using Amphora.Api.Models.Development;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services
 {
-    public class SignInManagerWrapper<T> : ISignInManager<T> where T : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser
+    public class SignInManagerWrapper<T> : ISignInManager where T : class, IApplicationUser
     {
         private readonly SignInManager<T> signInManager;
-        private static bool isSignedIn = false;
+        private readonly IMapper mapper;
 
-        public SignInManagerWrapper()
-        {
-
-        }
-        public SignInManagerWrapper(SignInManager<T> signInManager)
+        public SignInManagerWrapper(SignInManager<T> signInManager, IMapper mapper)
         {
             this.signInManager = signInManager;
+            this.mapper = mapper;
         }
 
         public bool IsSignedIn(ClaimsPrincipal principal)
         {
-            if (signInManager == null) return isSignedIn;
             return signInManager.IsSignedIn(principal);
         }
 
-        public async Task<ClaimsPrincipal> CreateUserPrincipalAsync(T user)
+        public async Task<ClaimsPrincipal> CreateUserPrincipalAsync(IApplicationUser user)
         {
-            if (signInManager == null) return new ClaimsPrincipal();
-            return await this.signInManager.CreateUserPrincipalAsync(user);
+            var mapped = mapper.Map<T>(user);
+            return await this.signInManager.CreateUserPrincipalAsync(mapped);
         }
 
         public async Task<IEnumerable<AuthenticationScheme>> GetExternalAuthenticationSchemesAsync()
         {
-            if (signInManager == null) return new List<AuthenticationScheme>();
             return await signInManager.GetExternalAuthenticationSchemesAsync();
         }
 
         public async Task<SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure)
         {
-            if (signInManager == null)
-            {
-                isSignedIn = true;
-                return new DevSignInResult(true);
-            }
             return await signInManager.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
         }
 
-        public async Task SignInAsync(T user, bool isPersistent, string authenticationMethod = null)
+        public async Task SignInAsync(IApplicationUser user, bool isPersistent, string authenticationMethod = null)
         {
-            if (signInManager == null) return;
-            await signInManager.SignInAsync(user, isPersistent, authenticationMethod);
+            var mapped = mapper.Map<T>(user);
+            await signInManager.SignInAsync(mapped, isPersistent, authenticationMethod);
         }
 
         public async Task SignOutAsync()
         {
-            if (signInManager == null)
-            {
-                isSignedIn = false;
-                return;
-            };
             await signInManager.SignOutAsync();
         }
     }
