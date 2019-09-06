@@ -27,7 +27,7 @@ namespace Amphora.Api.Services
                 entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
                 entity.OrganisationId);
 
-            if (collection.ResourceAuthorizations != null)
+            if (collection?.ResourceAuthorizations != null)
             {
                 var auth = collection.ResourceAuthorizations.FirstOrDefault(p =>
                     string.Equals(p.ResourcePermission, resourcePermission)
