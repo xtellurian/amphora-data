@@ -117,6 +117,31 @@ namespace Amphora.Tests.Integration
             await DestroyOrganisationAsync(adminClient);
         }
 
+        [Theory]
+        [InlineData("/api/amphorae")]
+        public async Task Get_PublicAmphora_AllowAccessToAny(string url)
+        {
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            a.IsPublic = true;
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync(url, requestBody);
+            a = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
+            createResponse.EnsureSuccessStatusCode();
+            // Act
+            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var response = await client.GetAsync($"{url}/{a.Id}");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var b = JsonConvert.DeserializeObject<Common.Models.Amphora>(responseContent);
+            Assert.NotNull(b);
+            Assert.Equal(a.Id, b.Id);
+        }
+
         private async Task DeleteAmphora(HttpClient client, string id)
         {
             var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");

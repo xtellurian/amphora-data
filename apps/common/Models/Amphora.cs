@@ -13,6 +13,7 @@ namespace Amphora.Common.Models
         [JsonConverter(typeof(StringEnumConverter))]
         public DomainId DomainId { get; set; }
         public string GeoHash { get; set; }
+        public bool IsPublic {get; set; }
         public double Price { get; set; }
         public string Title { get; set; }
 

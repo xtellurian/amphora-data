@@ -67,6 +67,11 @@ namespace Amphora.Api.Services
                 logger.LogError($"{id} Not Found");
                 return new EntityOperationResult<Common.Models.Amphora>($"{id} Not Found");
             }
+            if(entity.IsPublic) 
+            {
+                logger.LogInformation($"Permission granted to public entity {entity.Id}");
+                return new EntityOperationResult<Common.Models.Amphora>(entity);
+            }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Read);
             if (authorized)
