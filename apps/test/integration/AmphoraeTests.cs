@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -16,22 +17,22 @@ namespace Amphora.Tests.Integration
         }
 
         [Theory]
-        [InlineData("api/amphorae", "default")]
-        public async Task Get_MyAmphorae_ByOrgId(string url, string orgId)
+        [InlineData("api/amphorae")]
+        public async Task GetAmphorae_ByOrgId_AsUser(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId, description: nameof(Get_MyAmphorae_ByOrgId));
-            a.OrganisationId = orgId;
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+            var (client, user, org) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.User, adminOrg);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(GetAmphorae_ByOrgId_AsUser));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PostAsync(url, requestBody);
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var createResponse = await adminClient.PostAsync(url, requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
             a = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
 
             // Act
-            var response = await client.GetAsync($"{url}?orgId={orgId}");
+            var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var amphorae = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(content);
@@ -55,13 +56,13 @@ namespace Amphora.Tests.Integration
         public async Task Get_QueryAmphoraByGeohash(string geoHash, string queryGeoHash, bool success)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
 
-            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId, description: nameof(Get_QueryAmphoraByGeohash));
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_QueryAmphoraByGeohash));
             a.GeoHash = geoHash;// set the geohash
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PostAsync("api/amphorae", requestBody);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
                 await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
@@ -69,7 +70,7 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(amphora.Id);
 
             // Act
-            var response = await client.GetAsync($"api/amphorae?geoHash={queryGeoHash}");
+            var response = await adminClient.GetAsync($"api/amphorae?geoHash={queryGeoHash}");
 
             //Assert
             response.EnsureSuccessStatusCode();
@@ -84,9 +85,9 @@ namespace Amphora.Tests.Integration
                 Assert.DoesNotContain(entities, e => string.Equals(amphora.Id, e.Id));
             }
 
-            await DeleteAmphora(client, amphora.Id);
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DeleteAmphora(adminClient, amphora.Id);
+            await DestroyUserAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

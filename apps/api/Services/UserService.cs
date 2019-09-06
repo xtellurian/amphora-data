@@ -11,18 +11,23 @@ namespace Amphora.Api.Services
     {
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<Organisation> orgStore;
+        private readonly IPermissionService permissionService;
         private readonly IUserManager userManager;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<Organisation> orgStore,
+                           IPermissionService permissionService,
                            IUserManager userManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
+            this.permissionService = permissionService;
             this.userManager = userManager;
         }
 
-        public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user, string password)
+        public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user,
+                                                                               string password,
+                                                                               RoleAssignment.Roles role = RoleAssignment.Roles.User)
         {
             if(user.Validate())
             {
@@ -34,6 +39,10 @@ namespace Amphora.Api.Services
                 var result = await userManager.CreateAsync(user, password);
                 if(result.Succeeded)
                 {
+                    user = await userManager.FindByNameAsync(user.UserName);
+                    if(user == null) throw new System.Exception("Unable to retrieve user");
+                    // create role here
+                    await permissionService.CreateOrganisationalRole(user, role, org);
                     return new EntityOperationResult<IApplicationUser>(user);
                 }
                 else

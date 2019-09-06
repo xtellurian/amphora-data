@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -20,7 +21,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadAndDownload_HappyPath(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
 
             var amphora = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
             // create an amphora for us to work with
@@ -28,9 +29,8 @@ namespace Amphora.Tests.Integration
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
                 );
             createResponse.EnsureSuccessStatusCode();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
-                await createResponse.Content.ReadAsStringAsync()
-                );
+            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);

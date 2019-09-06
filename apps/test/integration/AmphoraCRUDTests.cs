@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Common.Models;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -17,16 +18,16 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_CreatesAmphora(string url)
+        public async Task Post_CreatesAmphora_AsAdmin(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PostAsync(url, requestBody);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.PostAsync(url, requestBody);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -41,27 +42,27 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.Title, b.Title);
 
-            await DeleteAmphora(client, b.Id);
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DeleteAmphora(adminClient, b.Id);
+            await DestroyUserAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient);
         }
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Get_ListsAmphorae(string url)
+        public async Task Get_ListsAmphorae_AsAdmin(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
 
-            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PostAsync(url, requestBody);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync(url, requestBody);
             var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
             // Act
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.GetAsync(url);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.GetAsync(url);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -74,28 +75,28 @@ namespace Amphora.Tests.Integration
             var b = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseBody);
             Assert.True(b.Count > 0);
 
-            await DeleteAmphora(client, amphora.Id);
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DeleteAmphora(adminClient, amphora.Id);
+            await DestroyUserAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient);
         }
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Get_ReadsAmphora(string url)
+        public async Task Get_ReadsAmphora_AsAdmin(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
 
-            var a = Helpers.EntityLibrary.GetAmphora(org.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await client.PostAsync(url, requestBody);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode();
             var b = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(await createResponse.Content.ReadAsStringAsync());
 
             // Act
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.GetAsync($"{url}/{b.Id}");
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.GetAsync($"{url}/{b.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -112,9 +113,9 @@ namespace Amphora.Tests.Integration
             Assert.Equal(b.Title, c.Title);
 
             // cleanup
-            await DeleteAmphora(client, b.Id);
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DeleteAmphora(adminClient, b.Id);
+            await DestroyUserAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

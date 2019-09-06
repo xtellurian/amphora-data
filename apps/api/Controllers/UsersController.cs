@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Options;
+using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,15 +30,29 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser_Key([FromBody] ApplicationUser user)
+        public async Task<IActionResult> CreateUser_Key([FromBody] ApplicationUser user, string role)
         {
+            var assignedRole = RoleAssignment.Roles.User; // default role
+
+            if (role != null)
+            {
+                if (System.Enum.TryParse(typeof(RoleAssignment.Roles), role, true, out var r))
+                {
+                    assignedRole = (RoleAssignment.Roles)r;
+                }
+                else
+                {
+                    return BadRequest($"{role} is an invalid role");
+                }
+            }
+
             string password = System.Guid.NewGuid().ToString() + "!1A";
             if (Request.Headers.ContainsKey("Create"))
             {
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await userService.CreateAsync(user, password);
+                    var result = await userService.CreateAsync(user, password, assignedRole);
                     if (result.Succeeded)
                     {
                         return Ok(password);

@@ -17,6 +17,11 @@ namespace Amphora.Common.Extensions
             {typeof(Amphora.Common.Models.ResourceAuthorization), nameof(Amphora.Common.Models.ResourceAuthorization)},
         };
 
+        public static string AsQualifiedId<T>(this string id) where T: IEntity
+        {
+            return id.AsQualifiedId(typeof(T));
+        }
+
         public static string AsQualifiedId(this string id, Type t)
         {
             if(id == null) throw new ArgumentException("Cannot qualify a null Id");

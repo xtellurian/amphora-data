@@ -28,5 +28,6 @@ namespace Amphora.Api.Models
         public T Entity { get; }
         public List<string> Errors { get; }
         public bool Succeeded { get; }
+        public bool WasForbidden {get; set; }
     }
 }

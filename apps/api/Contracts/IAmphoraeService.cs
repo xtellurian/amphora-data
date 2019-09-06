@@ -1,7 +1,10 @@
+using System.Security.Claims;
+using System.Threading.Tasks;
+
 namespace Amphora.Api.Contracts
 {
     public interface IAmphoraeService
     {
-        System.Threading.Tasks.Task<Common.Models.Amphora> CreateAsync(Common.Models.Amphora model, System.Security.Claims.ClaimsPrincipal creator);
+        Task<Models.EntityOperationResult<Common.Models.Amphora>> CreateAsync(Common.Models.Amphora model, ClaimsPrincipal creator);
     }
 }

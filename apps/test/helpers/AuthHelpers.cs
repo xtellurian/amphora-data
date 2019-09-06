@@ -18,7 +18,10 @@ namespace Amphora.Tests.Helpers
                 client.DefaultRequestHeaders.Add("Create", "dev");
             }
         }
-        public static async Task<(ApplicationUser User, Organisation Org, string Password)> CreateUserAsync(this HttpClient client, Organisation org = null)
+        public static async Task<(ApplicationUser User, Organisation Org, string Password)> CreateUserAsync(
+            this HttpClient client,
+            Organisation org = null,
+            RoleAssignment.Roles role = RoleAssignment.Roles.User)
         {
             client.AddCreateToken();
             // first, create an organisation
@@ -36,7 +39,7 @@ namespace Amphora.Tests.Helpers
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/users", content);
+            var response = await client.PostAsync($"api/users?role={role}", content);
             var password = await response.Content.ReadAsStringAsync();
 
             response.EnsureSuccessStatusCode(); // Status Code 200-299

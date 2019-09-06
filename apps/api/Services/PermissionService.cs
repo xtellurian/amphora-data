@@ -6,6 +6,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Microsoft.Extensions.Logging;
 using Amphora.Common.Extensions;
+using static Amphora.Common.Models.RoleAssignment;
 
 namespace Amphora.Api.Services
 {
@@ -26,7 +27,26 @@ namespace Amphora.Api.Services
             var collection = await permissionStore.ReadAsync(
                 entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
                 entity.OrganisationId);
+            if(collection == null) 
+            {
+                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection))} not found");
+                return false;
+            }
+            // check if user is in Admin role
+            var usersAssignment = collection.RoleAssignments.FirstOrDefault(r => string.Equals(r.UserId, user.Id));
 
+            if (usersAssignment != null && usersAssignment.Role == Roles.Administrator)
+            {
+                logger.LogInformation($"Authorization succeeded for user {user.Id} as Admin for entity {entity.Id}");
+                return true;
+            }
+            else if(usersAssignment != null && usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
+            {
+                logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
+                return true;
+            }
+
+            // check if CRUD permission exists
             if (collection?.ResourceAuthorizations != null)
             {
                 var auth = collection.ResourceAuthorizations.FirstOrDefault(p =>
@@ -36,31 +56,45 @@ namespace Amphora.Api.Services
                 );
                 if (auth != null)
                 {
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} to entity {entity.Id}");
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} for entity {entity.Id}");
                     return true;
                 }
             }
-            logger.LogInformation($"Authorization denied for user {user.Id} to entity {entity.Id}");
+            logger.LogInformation($"Authorization denied for user {user.Id} for entity {entity.Id}");
             return false;
         }
 
         public async Task<PermissionCollection> SetIsOwner(IApplicationUser user, IEntity entity)
         {
-            var collection = await permissionStore.ReadAsync(
-                entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
-                entity.OrganisationId
-            );
-            if (collection == null)
-            {
-                collection = new PermissionCollection(entity.OrganisationId);
-                collection = await permissionStore.CreateAsync(collection);
-            }
+            var collection = await CreateIfNotExistsCollection(entity);
 
             collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Read));
             collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Update));
             collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Delete));
 
             return await permissionStore.UpdateAsync(collection);
+        }
+
+        public async Task<PermissionCollection> CreateOrganisationalRole(IApplicationUser user, Roles role, Organisation org)
+        {
+            var assignment = new RoleAssignment(user.Id, role);
+            var collection = await CreateIfNotExistsCollection(org);
+            collection.RoleAssignments.Add(assignment);
+            return await permissionStore.UpdateAsync(collection);
+        }
+
+        private async Task<PermissionCollection> CreateIfNotExistsCollection(IEntity entity)
+        {
+            var collection = await permissionStore.ReadAsync(
+                            entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
+                            entity.OrganisationId
+                        );
+            if (collection == null)
+            {
+                collection = new PermissionCollection(entity.OrganisationId);
+                collection = await permissionStore.CreateAsync(collection);
+            }
+            return collection;
         }
     }
 }

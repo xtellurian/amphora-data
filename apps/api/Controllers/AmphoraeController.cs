@@ -61,7 +61,7 @@ namespace Amphora.Api.Controllers
             }
             else
             {
-                return Forbid();
+                return StatusCode(403);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Amphora.Api.Controllers
                 var result = await amphoraEntityStore.UpdateAsync(model);
                 return Ok(result);
             }
-            return Forbid();
+            return StatusCode(403);
         }
 
         [HttpPost("api/amphorae")]
@@ -90,8 +90,19 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Model");
             }
 
-            var amphora = await amphoraeService.CreateAsync(model, User);
-            return Ok(amphora);
+            var result = await amphoraeService.CreateAsync(model, User);
+            if(result.Succeeded)
+            {
+                return Ok(result.Entity);
+            }
+            else if(result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
         }
 
         [HttpDelete("api/amphorae/{id}")]
