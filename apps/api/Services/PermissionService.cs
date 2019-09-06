@@ -22,24 +22,26 @@ namespace Amphora.Api.Services
         }
         public async Task<bool> IsAuthorized(IApplicationUser user, IEntity entity, string resourcePermission)
         {
-            var collection = await permissionStore.QueryAsync(c => string.Equals(c.OrganisationId, entity.OrganisationId));
-            bool succeeded = false;
-            foreach (var c in collection)
+            // var collection = await permissionStore.QueryAsync(c => string.Equals(c.OrganisationId, entity.OrganisationId));
+            var collection = await permissionStore.ReadAsync(
+                entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
+                entity.OrganisationId);
+
+            if (collection.ResourceAuthorizations != null)
             {
-                var auth = c.ResourceAuthorizations.FirstOrDefault(p =>
+                var auth = collection.ResourceAuthorizations.FirstOrDefault(p =>
                     string.Equals(p.ResourcePermission, resourcePermission)
                     && string.Equals(p.TargetResourceId, entity.Id)
                     && string.Equals(p.UserId, user.Id)
                 );
                 if (auth != null)
                 {
-                    succeeded = true;
                     logger.LogInformation($"Authorization succeeded for user {user.Id} to entity {entity.Id}");
-                    break;
+                    return true;
                 }
             }
-
-            return succeeded;
+            logger.LogInformation($"Authorization denied for user {user.Id} to entity {entity.Id}");
+            return false;
         }
 
         public async Task<PermissionCollection> SetIsOwner(IApplicationUser user, IEntity entity)

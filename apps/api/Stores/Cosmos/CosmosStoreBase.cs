@@ -42,12 +42,11 @@ namespace Amphora.Api.Stores.Cosmos
             Container = response.Container;
         }
 
-        protected async Task<T> CreateAsync<T>(T entity) where T : IEntity
+        protected async Task<ItemResponse<T>> CreateAsync<T>(T entity) where T : IEntity
         {
             await Init();
             entity.SetIds();
-            var response = await this.Container.CreateItemAsync(entity);
-            return response.Resource;
+            return await this.Container.CreateItemAsync(entity);
         }
 
         protected async Task<T> ReadAsync<T>(string id)
@@ -80,6 +79,13 @@ namespace Amphora.Api.Stores.Cosmos
                 logger.LogError("Error Retrieving Entity", ex);
                 throw ex;
             }
+        }
+
+        public async Task<T> ReadAsync<T>(string id, string partitionKey) where T: IEntity
+        {
+            await Init();
+            var item = await this.Container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));
+            return item.Resource;
         }
 
         protected async Task<ItemResponse<T>> DeleteAsync<T>(T entity) where T : IEntity

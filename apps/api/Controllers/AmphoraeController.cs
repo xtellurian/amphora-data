@@ -52,9 +52,9 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> ReadAsync(string id)
         {
             var a = await this.amphoraEntityStore.ReadAsync(id);
+            if (a == null) return NotFound();
             var authorizationResult = await authorizationService
                 .AuthorizeAsync(User, a, Operations.Read);
-            if (a == null) return NotFound();
             if (authorizationResult.Succeeded)
             {
                 return Ok(a);
