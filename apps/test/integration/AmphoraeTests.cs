@@ -41,9 +41,9 @@ namespace Amphora.Tests.Integration
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
 
-            await DeleteAmphora(client, a.Id);
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DeleteAmphora(adminClient, a.Id);
+            await DestroyUserAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient);
 
         }
 

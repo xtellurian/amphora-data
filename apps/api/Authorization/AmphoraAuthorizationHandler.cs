@@ -32,7 +32,7 @@ namespace Amphora.Api.Authorization
         {
             var user = await userManager.GetUserAsync(context.User);
 
-            var isAuthorized = await permissionService.IsAuthorized(user, entity, requirement.Name);
+            var isAuthorized = await permissionService.IsAuthorizedAsync(user, entity, requirement.Name);
 
             if (isAuthorized)
             {

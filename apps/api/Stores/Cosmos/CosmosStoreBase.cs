@@ -97,7 +97,7 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             if (where == null) return null;
-            return this.Container.GetItemLinqQueryable<T>().Where(where);
+            return this.Container.GetItemLinqQueryable<T>(true).Where(where);
         }
 
         protected async Task<T> UpdateAsync<T>(T entity)

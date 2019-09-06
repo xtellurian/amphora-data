@@ -78,8 +78,12 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             id = id.AsQualifiedId(typeof(Common.Models.Amphora));
-            var response = await Container.ReadItemAsync<Common.Models.Amphora>(id, new PartitionKey(orgId));
-            return response.Resource;
+            if (orgId == null) return await this.ReadAsync(id);
+            else
+            {
+                var response = await Container.ReadItemAsync<Common.Models.Amphora>(id, new PartitionKey(orgId));
+                return response.Resource;
+            }
         }
 
         public async Task<IList<Common.Models.Amphora>> ListAsync(string orgId)

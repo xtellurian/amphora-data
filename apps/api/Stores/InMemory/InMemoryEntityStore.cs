@@ -89,19 +89,26 @@ namespace Amphora.Api.Stores
         {
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                if(where == null) return null;
+                if (where == null) return null;
                 return this.store.Where(where);
             });
         }
 
         public Task<T> ReadAsync(string id, string orgId)
         {
-            return Task<T>.Factory.StartNew(() =>
+            if (orgId == null)
             {
-                if (id == null) return default(T);
-                var qualifiedId = id.AsQualifiedId(typeof(T));
-                return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
-            });
+                return this.ReadAsync(id);
+            }
+            else
+            {
+                return Task<T>.Factory.StartNew(() =>
+                {
+                    if (id == null) return default(T);
+                    var qualifiedId = id.AsQualifiedId(typeof(T));
+                    return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
+                });
+            }
         }
 
         public Task<IList<T>> ListAsync(string orgId)

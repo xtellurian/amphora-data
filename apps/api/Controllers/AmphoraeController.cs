@@ -43,43 +43,11 @@ namespace Amphora.Api.Controllers
         {
             if (!string.IsNullOrEmpty(geoHash))
             {
-                return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
+                var result = await amphoraEntityStore.QueryAsync(a => a.GeoHash?.StartsWith(geoHash) ?? false);
+                return Ok(result);
+                //return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
             }
             return Ok(await this.amphoraEntityStore.ListAsync());
-        }
-
-        [HttpGet("api/amphorae/{id}")]
-        public async Task<IActionResult> ReadAsync(string id)
-        {
-            var a = await this.amphoraEntityStore.ReadAsync(id);
-            if (a == null) return NotFound();
-            var authorizationResult = await authorizationService
-                .AuthorizeAsync(User, a, Operations.Read);
-            if (authorizationResult.Succeeded)
-            {
-                return Ok(a);
-            }
-            else
-            {
-                return StatusCode(403);
-            }
-        }
-
-        [HttpPut("api/amphorae/{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.Amphora model)
-        {
-            var a = await this.amphoraEntityStore.ReadAsync(id);
-            var authorizationResult = await authorizationService
-                .AuthorizeAsync(User, a, Operations.Read);
-            if (authorizationResult.Succeeded)
-            {
-                if (a == null) return NotFound();
-                model.Id = a.Id;
-                model.AmphoraId = a.AmphoraId;
-                var result = await amphoraEntityStore.UpdateAsync(model);
-                return Ok(result);
-            }
-            return StatusCode(403);
         }
 
         [HttpPost("api/amphorae")]
@@ -90,8 +58,47 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Model");
             }
 
-            var result = await amphoraeService.CreateAsync(model, User);
-            if(result.Succeeded)
+            var result = await amphoraeService.CreateAsync(User, model);
+            if (result.Succeeded)
+            {
+                return Ok(result.Entity);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return NotFound(result);
+            }
+        }
+
+        [HttpGet("api/amphorae/{id}")]
+        public async Task<IActionResult> ReadAsync(string id)
+        {
+            var result = await this.amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                return Ok(result.Entity);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return NotFound(result.Errors);
+            }
+        }
+
+        [HttpPut("api/amphorae/{id}")]
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.Amphora model)
+        {
+            var a = await this.amphoraeService.ReadAsync(User, id);
+            if (a == null) return NotFound();
+
+            var result = await this.amphoraeService.UpdateAsync(User, model);
+            if (result.Succeeded)
             {
                 return Ok(result.Entity);
             }
@@ -101,19 +108,32 @@ namespace Amphora.Api.Controllers
             }
             else
             {
-                return BadRequest(result);
+                return BadRequest(result.Errors);
             }
         }
 
         [HttpDelete("api/amphorae/{id}")]
         public async Task<IActionResult> Delete_Api(string id)
         {
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return NotFound();
-            await this.amphoraEntityStore.DeleteAsync(entity);
-            return Ok();
+            var readResult = await amphoraeService.ReadAsync(User, id);
+            if (! readResult.Succeeded) return NotFound();
+            var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
+            if(result.Succeeded)
+            {
+                return Ok();
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
 
+// NEED TO ADD PERMISSIONS TO THESE
+        
         [HttpPost("api/amphorae/{id}/upload")]
         public async Task<IActionResult> UploadToAmphora(string id, string name)
         {

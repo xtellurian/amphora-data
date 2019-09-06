@@ -21,7 +21,7 @@ namespace Amphora.Api.Services
             this.logger = logger;
             this.permissionStore = permissionStore;
         }
-        public async Task<bool> IsAuthorized(IApplicationUser user, IEntity entity, string resourcePermission)
+        public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, string resourcePermission)
         {
             // var collection = await permissionStore.QueryAsync(c => string.Equals(c.OrganisationId, entity.OrganisationId));
             var collection = await permissionStore.ReadAsync(
