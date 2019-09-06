@@ -17,6 +17,7 @@ namespace Amphora.Api.Controllers
     {
         private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IAmphoraeService amphoraeService;
+        private readonly IAmphoraFileService amphoraFileService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserManager userManager;
@@ -25,6 +26,7 @@ namespace Amphora.Api.Controllers
         public AmphoraeController(
             IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IAmphoraeService amphoraeService,
+            IAmphoraFileService amphoraFileService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IAuthorizationService authorizationService,
             IUserManager userManager,
@@ -32,6 +34,7 @@ namespace Amphora.Api.Controllers
         {
             this.amphoraEntityStore = amphoraEntityStore;
             this.amphoraeService = amphoraeService;
+            this.amphoraFileService = amphoraFileService;
             this.dataStore = dataStore;
             this.authorizationService = authorizationService;
             this.userManager = userManager;
@@ -102,7 +105,7 @@ namespace Amphora.Api.Controllers
             {
                 return Ok(result.Entity);
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
                 return StatusCode(403);
             }
@@ -116,9 +119,9 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Delete_Api(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
-            if (! readResult.Succeeded) return NotFound();
+            if (!readResult.Succeeded) return NotFound();
             var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 return Ok();
             }
@@ -132,30 +135,62 @@ namespace Amphora.Api.Controllers
             }
         }
 
-// NEED TO ADD PERMISSIONS TO THESE
-        
-        [HttpPost("api/amphorae/{id}/upload")]
-        public async Task<IActionResult> UploadToAmphora(string id, string name)
+        [HttpGet("api/amphorae/{id}/files/{file}")]
+        public async Task<IActionResult> DownloadFile(string id, string file)
         {
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null || string.IsNullOrEmpty(name))
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
             {
-                return BadRequest("Invalid Amphora Id");
+                var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
+                if (fileResult.Succeeded)
+                {
+                    return File(fileResult.Entity, "application/octet-stream", file);
+                }
+                else
+                {
+                    return StatusCode(403, fileResult.Errors);
+                }
             }
-
-            await dataStore.SetDataAsync(entity, await Request.Body.ReadFullyAsync(), name);
-            return Ok();
+            else if(result.WasForbidden)
+            {
+                return StatusCode(403, result.Errors);
+            }
+            else
+            {
+                return NotFound("Amphora not found");
+            }
         }
 
-        [HttpGet("api/amphorae/{id}/download")]
-        public async Task<IActionResult> Download(string id, string name)
+        [HttpPut("api/amphorae/{id}/files/{file}")]
+        public async Task<IActionResult> UploadToAmphora(string id, string file)
         {
-            if (string.IsNullOrEmpty(id)) return BadRequest();
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return NotFound("Amphora not found");
-            var data = await dataStore.GetDataAsync(entity, name);
-            if (data == null) return NotFound("Data not found.");
-            return File(data, "application/octet-stream", name);
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);
+                if(fileResult.Succeeded)
+                {
+                    return Ok();
+                }
+                else if (result.WasForbidden)
+                {
+                    return StatusCode(403, result.Errors);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Errors);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
+
+
     }
 }

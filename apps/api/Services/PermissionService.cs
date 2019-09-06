@@ -34,16 +34,23 @@ namespace Amphora.Api.Services
             }
             // check if user is in Admin role
             var usersAssignment = collection.RoleAssignments.FirstOrDefault(r => string.Equals(r.UserId, user.Id));
-
-            if (usersAssignment != null && usersAssignment.Role == Roles.Administrator)
+            if (usersAssignment != null)
             {
-                logger.LogInformation($"Authorization succeeded for user {user.Id} as Admin for entity {entity.Id}");
-                return true;
-            }
-            else if(usersAssignment != null && usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
-            {
-                logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
-                return true;
+                if (usersAssignment.Role == Roles.Administrator)
+                {
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Admin for entity {entity.Id}");
+                    return true;
+                }
+                else if(usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
+                {
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
+                    return true;
+                }
+                else if(usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.ReadContents))
+                {
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
+                    return true;
+                }
             }
 
             // check if CRUD permission exists

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Models
 {

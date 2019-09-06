@@ -52,6 +52,7 @@ namespace Amphora.Api
             services.AddScoped<ITsiService, RealTsiService>();
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
             services.AddTransient<IAmphoraeService, AmphoraeService>();
+            services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IPermissionService, PermissionService>();
 
 
