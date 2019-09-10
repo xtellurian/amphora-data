@@ -9,7 +9,8 @@ namespace Amphora.Tests.Unit
         [Theory]
         [InlineData("Amphora", typeof(Amphora.Common.Models.Amphora))]
         [InlineData("Organisation", typeof(Amphora.Common.Models.Organisation))]
-        [InlineData("OrganisationMembership", typeof(Amphora.Common.Models.OrganisationMembership))]
+        [InlineData("PermissionCollection", typeof(Amphora.Common.Models.PermissionCollection))]
+        [InlineData("OnboardingState", typeof(Amphora.Common.Models.OnboardingState))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {
             var id = System.Guid.NewGuid().ToString();

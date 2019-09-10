@@ -11,11 +11,12 @@ namespace Amphora.Api.Services.Amphorae
 {
     public class AmphoraeService : IAmphoraeService
     {
-        private readonly IEntityStore<Common.Models.Amphora> amphoraStore;
         private readonly IEntityStore<Organisation> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserManager userManager;
         private readonly ILogger<AmphoraeService> logger;
+
+        public IEntityStore<Common.Models.Amphora> AmphoraStore { get; }
 
         public AmphoraeService(IEntityStore<Common.Models.Amphora> amphoraStore,
                                IEntityStore<Organisation> organisationStore,
@@ -23,7 +24,7 @@ namespace Amphora.Api.Services.Amphorae
                                IUserManager userManager,
                                ILogger<AmphoraeService> logger)
         {
-            this.amphoraStore = amphoraStore;
+            AmphoraStore = amphoraStore;
             this.organisationStore = organisationStore;
             this.permissionService = permissionService;
             this.userManager = userManager;
@@ -48,7 +49,7 @@ namespace Amphora.Api.Services.Amphorae
             var isAuthorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Create);
             if (isAuthorized)
             {
-                model = await amphoraStore.CreateAsync(model);
+                model = await AmphoraStore.CreateAsync(model);
                 await permissionService.SetIsOwner(user, model);
                 return new EntityOperationResult<Common.Models.Amphora>(model);
             }
@@ -100,7 +101,7 @@ namespace Amphora.Api.Services.Amphorae
             {
                 if (string.Equals(entity.OrganisationId, existingEntity.OrganisationId))
                 {
-                    var result = await amphoraStore.UpdateAsync(entity);
+                    var result = await AmphoraStore.UpdateAsync(entity);
                     return new EntityOperationResult<Common.Models.Amphora>(result);
                 }
                 else
@@ -126,7 +127,7 @@ namespace Amphora.Api.Services.Amphorae
             var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Delete);
             if (authorized)
             {
-                await amphoraStore.DeleteAsync(entity);
+                await AmphoraStore.DeleteAsync(entity);
                 return new EntityOperationResult<Common.Models.Amphora>();
             }
             else
@@ -139,7 +140,7 @@ namespace Amphora.Api.Services.Amphorae
         {
             id = id.AsQualifiedId<Common.Models.Amphora>();
             var user = await userManager.GetUserAsync(principal);
-            var entity = await amphoraStore.ReadAsync(id, orgId);
+            var entity = await AmphoraStore.ReadAsync(id, orgId);
             return (user, entity);
         }
     }

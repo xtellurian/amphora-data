@@ -9,12 +9,12 @@ namespace Amphora.Api.Services.Market
 {
     public class MarketService : IMarketService
     {
-        private readonly IEntityStore<Common.Models.Amphora> amphoraStore;
+        private readonly IAmphoraeService amphoraeService;
 
         public MarketService(
-            IEntityStore<Amphora.Common.Models.Amphora> amphoraStore)
+            IAmphoraeService amphoraeService)
         {
-            this.amphoraStore = amphoraStore;
+            this.amphoraeService = amphoraeService;
         }
 
         public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(SearchParams searchParams)
@@ -24,13 +24,13 @@ namespace Amphora.Api.Services.Market
             
             if(searchParams.IsGeoSearch)
             {
-                entities = await amphoraStore.StartsWithQueryAsync(
+                entities = await amphoraeService.AmphoraStore.StartsWithQueryAsync(
                     nameof(Amphora.Common.Models.Amphora.GeoHash), 
                     searchParams.GeoHashStartsWith);
             }
             else
             {
-                entities = await amphoraStore.ListAsync();
+                entities = await amphoraeService.AmphoraStore.ListAsync();
             }
             
             // string matching

@@ -13,7 +13,6 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AmphoraeController : Controller
     {
-        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
         private readonly IAmphoraeService amphoraeService;
         private readonly IAmphoraFileService amphoraFileService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
@@ -22,7 +21,6 @@ namespace Amphora.Api.Controllers
         private readonly IMapper mapper;
 
         public AmphoraeController(
-            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
             IAmphoraeService amphoraeService,
             IAmphoraFileService amphoraFileService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
@@ -30,7 +28,6 @@ namespace Amphora.Api.Controllers
             IUserManager userManager,
             IMapper mapper)
         {
-            this.amphoraEntityStore = amphoraEntityStore;
             this.amphoraeService = amphoraeService;
             this.amphoraFileService = amphoraFileService;
             this.dataStore = dataStore;
@@ -44,11 +41,11 @@ namespace Amphora.Api.Controllers
         {
             if (!string.IsNullOrEmpty(geoHash))
             {
-                var result = await amphoraEntityStore.QueryAsync(a => a.GeoHash?.StartsWith(geoHash) ?? false);
+                var result = await amphoraeService.AmphoraStore.QueryAsync(a => a.GeoHash?.StartsWith(geoHash) ?? false);
                 return Ok(result);
                 //return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
             }
-            return Ok(await this.amphoraEntityStore.ListAsync());
+            return Ok(await this.amphoraeService.AmphoraStore.ListAsync());
         }
 
         [HttpPost("api/amphorae")]

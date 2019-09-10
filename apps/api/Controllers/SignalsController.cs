@@ -16,20 +16,20 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SignalController : Controller
     {
-        private readonly IEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
         private readonly ILogger<SignalController> logger;
 
         public SignalController(
-            IEntityStore<Amphora.Common.Models.Amphora> entityStore,
+            IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper,
             ILogger<SignalController> logger)
         {
-            this.entityStore = entityStore;
+            this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
@@ -39,7 +39,8 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/amphorae/{id}/signals")]
         public async Task<IActionResult> Upload(string id, [FromBody] JObject jObj)
         {
-            var entity = await entityStore.ReadAsync(id);
+
+            var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
                 return NotFound("Invalid Id");
@@ -62,7 +63,7 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/amphorae/{id}/uploadMany")]
         public async Task<IActionResult> UploadMany(string id, [FromBody] JArray jArray)
         {
-            var entity = await entityStore.ReadAsync(id);
+            var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
                 return NotFound("Invalid Id");

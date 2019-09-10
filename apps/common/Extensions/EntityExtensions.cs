@@ -12,9 +12,7 @@ namespace Amphora.Common.Extensions
         {
             {typeof(Amphora.Common.Models.Amphora), nameof(Amphora.Common.Models.Amphora)},
             {typeof(Amphora.Common.Models.Organisation), nameof(Amphora.Common.Models.Organisation)},
-            {typeof(Amphora.Common.Models.OrganisationMembership), nameof(Amphora.Common.Models.OrganisationMembership)},
             {typeof(Amphora.Common.Models.PermissionCollection), nameof(Amphora.Common.Models.PermissionCollection)},
-            {typeof(Amphora.Common.Models.ResourceAuthorization), nameof(Amphora.Common.Models.ResourceAuthorization)},
             {typeof(Amphora.Common.Models.OnboardingState), nameof(Amphora.Common.Models.OnboardingState)},
         };
 

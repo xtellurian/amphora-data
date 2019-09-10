@@ -10,18 +10,18 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class FileModel : PageModel
     {
-        private readonly IEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public FileModel(
-            IEntityStore<Amphora.Common.Models.Amphora> entityStore,
+            IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             ITsiService tsiService,
             IMapper mapper)
         {
-            this.entityStore = entityStore;
+            this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
@@ -30,7 +30,7 @@ namespace Amphora.Api.Pages.Amphorae
         public async Task<IActionResult> OnGetAsync(string id, string name)
         {
             if(string.IsNullOrEmpty(name)) return RedirectToPage("./Detail", new {Id = id});
-            var entity = await entityStore.ReadAsync(id);
+            var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
                 return RedirectToPage("/amphorae/index");

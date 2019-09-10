@@ -15,18 +15,19 @@ namespace Amphora.Api.Pages.Amphorae
     public class IndexModel : PageModel
     {
         private readonly IUserManager userManager;
-        private readonly IEntityStore<Common.Models.Amphora> entityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public IndexModel(
             IUserManager userManager,
+            IAmphoraeService amphoraeService,
             IEntityStore<Amphora.Common.Models.Amphora> entityStore,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
             IMapper mapper)
         {
             this.userManager = userManager;
-            this.entityStore = entityStore;
+            this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.mapper = mapper;
             this.Amphorae = new List<Amphora.Common.Models.Amphora>();
@@ -41,16 +42,16 @@ namespace Amphora.Api.Pages.Amphorae
 
             if(! string.IsNullOrEmpty(geoHash))
             {
-                this.Amphorae = await this.entityStore.StartsWithQueryAsync("GeoHash", geoHash);
+                this.Amphorae = await this.amphoraeService.AmphoraStore.StartsWithQueryAsync("GeoHash", geoHash);
                 return Page();
             }
             if (orgId != null)
             {
-                this.Amphorae = await entityStore.ListAsync(orgId);
+                this.Amphorae = await amphoraeService.AmphoraStore.ListAsync(orgId);
             }
             else
             {
-                this.Amphorae = await entityStore.ListAsync();
+                this.Amphorae = await amphoraeService.AmphoraStore.ListAsync();
             }
             
             return Page();
