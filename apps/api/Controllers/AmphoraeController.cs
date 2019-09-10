@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Api.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

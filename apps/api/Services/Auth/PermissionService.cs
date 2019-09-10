@@ -9,7 +9,7 @@ using Amphora.Common.Extensions;
 using static Amphora.Common.Models.RoleAssignment;
 using System;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Auth
 {
     public class PermissionService : IPermissionService
     {

@@ -1,8 +1,7 @@
 using System.Text;
-using Amphora.Api.Authorization;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
-using Amphora.Api.Services;
+using Amphora.Api.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,6 +53,7 @@ namespace Amphora.Api.StartupModules
            
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
+            services.AddTransient<IPermissionService, PermissionService>();
         }
     }
 }

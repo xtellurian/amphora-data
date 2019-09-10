@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.AzureMaps;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Azure
 {
     public class InMemoryMapService : IMapService
     {

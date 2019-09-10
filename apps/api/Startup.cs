@@ -11,6 +11,10 @@ using Microsoft.OpenApi.Models;
 using Amphora.Api.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Amphora.Api.StartupModules;
+using Amphora.Api.Services.Amphorae;
+using Amphora.Api.Services.Azure;
+using Amphora.Api.Services.Market;
+using Amphora.Api.Services.Organisations;
 
 namespace Amphora.Api
 {
@@ -53,7 +57,7 @@ namespace Amphora.Api
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
-            services.AddTransient<IPermissionService, PermissionService>();
+            
             services.AddTransient<IOnboardingService, OnboardingService>();
 
 

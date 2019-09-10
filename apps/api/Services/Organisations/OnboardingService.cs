@@ -6,7 +6,7 @@ using Amphora.Api.Models;
 using Amphora.Common.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Organisations
 {
     // step 1: create user
     // step 2: create Org and asign user to that org

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Models;
-namespace Amphora.Api.Services
+
+namespace Amphora.Api.Services.Market
 {
     public class MarketService : IMarketService
     {

@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Api.Services;
-using Amphora.Common.Models;
+using Amphora.Api.Services.Market;
 using Amphora.Tests.Helpers;
 using Xunit;
 

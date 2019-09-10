@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Azure
 {
     public class AzureMapService : IMapService
     {

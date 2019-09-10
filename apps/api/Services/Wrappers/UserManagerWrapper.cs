@@ -5,7 +5,7 @@ using Amphora.Api.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Wrappers
 {
     public class UserManagerWrapper<T> : IUserManager where T : class, IApplicationUser
     {

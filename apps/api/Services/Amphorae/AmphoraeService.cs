@@ -7,7 +7,7 @@ using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Amphorae
 {
     public class AmphoraeService : IAmphoraeService
     {

@@ -1,19 +1,15 @@
-using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Azure.KeyVault;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
 using System.Net.Http;
-using System.IO;
 using Microsoft.Extensions.Logging;
 using TimeSeriesInsightsClient;
 using TimeSeriesInsightsClient.Queries;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Azure
 {
     public class RealTsiService : ITsiService
     {

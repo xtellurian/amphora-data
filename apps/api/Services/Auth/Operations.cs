@@ -1,7 +1,7 @@
 using Amphora.Common.Models;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace Amphora.Api.Authorization
+namespace Amphora.Api.Services.Auth
 {
     public static class Operations
     {

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Auth
 {
 
     public class TokenAuthenticationService : IAuthenticateService

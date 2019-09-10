@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Azure
 {
     public class AzureServiceTokenProviderWrapper: IAzureServiceTokenProvider
     {

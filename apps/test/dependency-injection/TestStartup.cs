@@ -1,9 +1,8 @@
 using System.Net.Http;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
-using Amphora.Api.Services;
+using Amphora.Api.Services.Azure;
 using Amphora.Api.Stores;
-using Amphora.Common.Models;
 using Amphora.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

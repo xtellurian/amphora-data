@@ -3,12 +3,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Api.Models.Development;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Wrappers
 {
     public class SignInManagerWrapper<T> : ISignInManager where T : class, IApplicationUser
     {

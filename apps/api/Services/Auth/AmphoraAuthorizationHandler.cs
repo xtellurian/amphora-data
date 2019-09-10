@@ -1,14 +1,10 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
-using Amphora.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.Azure.Documents.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Authorization
+namespace Amphora.Api.Services.Auth
 {
     public class AmphoraAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Amphora.Common.Models.Amphora>
     {

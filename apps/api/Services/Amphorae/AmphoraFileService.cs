@@ -5,7 +5,7 @@ using Amphora.Api.Models;
 using Amphora.Common.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Services
+namespace Amphora.Api.Services.Amphorae
 {
     public class AmphoraFileService : IAmphoraFileService
     {
