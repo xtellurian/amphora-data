@@ -17,7 +17,7 @@ namespace Amphora.Tests.Helpers
                 OrganisationId = orgId,
                 Description = description ?? "Valid Amphora - description",
                 Price = rnd.Next(0, 99),
-                Title = "Valid Amphora - title",
+                Name = "Valid Amphora - title",
                 GeoHash = geoHash
             };
         }
@@ -29,7 +29,7 @@ namespace Amphora.Tests.Helpers
                 Id = id,
                 Description = null,
                 Price = -1 * rnd.Next(0, 99),
-                Title = ""
+                Name = ""
             };
         }
 

@@ -39,7 +39,7 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(b.Id);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
-            Assert.Equal(a.Title, b.Title);
+            Assert.Equal(a.Name, b.Name);
 
             await DeleteAmphora(adminClient, b.Id);
             await DestroyUserAsync(adminClient);
@@ -109,7 +109,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(b.Id, c.Id);
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
-            Assert.Equal(b.Title, c.Title);
+            Assert.Equal(b.Name, c.Name);
 
             // cleanup
             await DeleteAmphora(adminClient, b.Id);

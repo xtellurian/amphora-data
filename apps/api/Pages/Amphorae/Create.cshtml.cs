@@ -35,7 +35,7 @@ namespace Amphora.Api.Pages.Amphorae
         public class InputModel
         {
             [Required]
-            public string Title { get; set; }
+            public string Name { get; set; }
             [Required]
             [DataType(DataType.MultilineText)]
             public string Description { get; set; }
@@ -77,7 +77,7 @@ namespace Amphora.Api.Pages.Amphorae
                 }
                 var entity = new Amphora.Common.Models.Amphora
                 {
-                    Title = Input.Title,
+                    Name = Input.Name,
                     Description = Input.Description,
                     GeoHash = geoHash,
                     Price = Input.Price,

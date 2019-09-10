@@ -15,7 +15,7 @@ namespace Amphora.Tests.Unit
             var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
             var a = new Amphora.Common.Models.Amphora()
             {
-                Title = "Test Title",
+                Name = "Test Name",
                 Description = "Test Description",
                 Price = 42
             };
@@ -29,7 +29,7 @@ namespace Amphora.Tests.Unit
             var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
             var a = new Amphora.Common.Models.Amphora()
             {
-                Title = "Test Title",
+                Name = "Test Name",
                 Description = "Test Description",
                 Price = 42
             };

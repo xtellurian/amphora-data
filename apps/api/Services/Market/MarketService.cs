@@ -37,7 +37,7 @@ namespace Amphora.Api.Services.Market
             if(string.IsNullOrEmpty(searchParams.SearchTerm)) return entities;
             var results = entities
                 .Where(i =>
-                   (i.Title?.ToLower()?.Contains(searchParams?.SearchTerm?.ToLower()) ?? false)
+                   (i.Name?.ToLower()?.Contains(searchParams?.SearchTerm?.ToLower()) ?? false)
                     ||
                    (i.Description?.ToLower()?.Contains(searchParams.SearchTerm?.ToLower()) ?? false)
                     );

@@ -22,7 +22,7 @@ namespace Amphora.Tests.Helpers
             var entity = new Amphora.Common.Models.Amphora
             {
                 Price = -1,
-                Title = null,
+                Name = null,
                 Description = null,
             };
             return JsonConvert.SerializeObject(entity);

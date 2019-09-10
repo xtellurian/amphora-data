@@ -64,7 +64,7 @@
                     @foreach (var entity in Model.Entities)
                     {
                         <tr class="market-item">
-                            <th scope="row">@entity.Title</th>
+                            <th scope="row">@entity.Name</th>
                             <td>@entity.Description</td>
                             <td>@entity.Price</td>
                             <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.AmphoraId">
