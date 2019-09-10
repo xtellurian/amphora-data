@@ -15,18 +15,18 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IAuthenticateService authenticateService;
         private readonly ILogger<CreateModel> logger;
         private readonly IMapper mapper;
 
         public CreateModel(
-            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IAmphoraeService amphoraeService,
             IAuthenticateService authenticateService,
             ILogger<CreateModel> logger,
             IMapper mapper)
         {
-            this.amphoraEntityStore = amphoraEntityStore;
+            this.amphoraeService = amphoraeService;
             this.authenticateService = authenticateService;
             this.logger = logger;
             this.mapper = mapper;
@@ -35,27 +35,27 @@ namespace Amphora.Api.Pages.Amphorae
         public class InputModel
         {
             [Required]
-            public string Title {get; set; }
+            public string Title { get; set; }
             [Required]
             [DataType(DataType.MultilineText)]
-            public string Description {get; set; }
+            public string Description { get; set; }
             [Required]
             [DataType(DataType.Currency)]
-            public double Price {get; set; }
+            public double Price { get; set; }
 
             [Display(Name = "Latitude")]
-            public double? Lat {get;set ;}
+            public double? Lat { get; set; }
             [Display(Name = "Longitude")]
-            public double? Lon {get;set ;}
+            public double? Lon { get; set; }
         }
         [BindProperty]
-        public InputModel Input {get; set; }
-        public string Token {get; set; }
+        public InputModel Input { get; set; }
+        public string Token { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
-            if(response.success)
+            if (response.success)
             {
                 Token = response.token;
             }
@@ -71,7 +71,7 @@ namespace Amphora.Api.Pages.Amphorae
             if (ModelState.IsValid)
             {
                 string geoHash = null;
-                if(Input.Lat.HasValue && Input.Lon.HasValue)
+                if (Input.Lat.HasValue && Input.Lon.HasValue)
                 {
                     geoHash = GeoHash.Encode(Input.Lat.Value, Input.Lon.Value);
                 }
@@ -83,8 +83,19 @@ namespace Amphora.Api.Pages.Amphorae
                     Price = Input.Price,
                 };
 
-                var setResult = await amphoraEntityStore.CreateAsync(entity);
-                return RedirectToPage("/Amphorae/Index");
+                var setResult = await amphoraeService.CreateAsync(User, entity);
+                if (setResult.Succeeded)
+                {
+                    return RedirectToPage("/Amphorae/Index");
+                }
+                else
+                {
+                    foreach(var e in setResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, e);
+                    }
+                    return Page();
+                }
             }
             else
             {

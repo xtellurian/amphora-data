@@ -15,11 +15,16 @@ namespace Amphora.Api.Controllers
     {
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly IEntityStore<Organisation> entityStore;
+        private readonly IOnboardingService onboardingService;
 
-        public OrganisationsController(IOptionsMonitor<CreateOptions> options,IEntityStore<Organisation> entityStore)
+        public OrganisationsController(
+            IOptionsMonitor<CreateOptions> options,
+            IEntityStore<Organisation> entityStore,
+            IOnboardingService onboardingService)
         {
             this.options = options;
             this.entityStore = entityStore;
+            this.onboardingService = onboardingService;
         }
 
         [HttpGet("api/organisations")]
@@ -33,10 +38,21 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> CreateOrganisation([FromBody]Organisation org)
         {
             // check the key
-            if(Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
+            if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
             {
-                var result = await entityStore.CreateAsync(org);
-                return Ok(result);
+                var result = await onboardingService.CreateOrganisationAsync(User, org);
+                if (result.Succeeded)
+                {
+                    return Ok(result.Entity);
+                }
+                else if (result.WasForbidden)
+                {
+                    return StatusCode(403, result.Message);
+                }
+                else
+                {
+                    return BadRequest(result.Message);
+                }
             }
             else
             {
@@ -45,7 +61,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/organisations/{id}")]
-        public async Task<IActionResult> CreateOrganisation(string id, [FromBody]Organisation org)
+        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]Organisation org)
         {
             var entity = await entityStore.ReadAsync(id);
             if (entity == null) return NotFound();
@@ -61,6 +77,24 @@ namespace Amphora.Api.Controllers
             var org = await entityStore.ReadAsync(id);
             if (org == null) return NotFound();
             else return Ok(org);
+        }
+
+        [HttpPost("api/organisations/{id}/invite/{email}")]
+        public async Task<IActionResult> InviteToOrganisation(string id, string email)
+        {
+            var response = await onboardingService.InviteToOrganisation(User, email);
+            if(response.Succeeded)
+            {
+                return Ok(response.Entity);
+            }
+            else if(response.WasForbidden)
+            {
+                return StatusCode(403, response.Message);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
         }
 
         [HttpDelete("api/organisations/{id}")]

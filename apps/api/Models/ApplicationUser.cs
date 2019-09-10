@@ -6,6 +6,8 @@ namespace Amphora.Api.Models
     public interface IApplicationUser
     {
         string Id { get; set; }
+        string OnboardingId { get; set; }
+        bool IsOnboarding { get; set; }
         string UserName { get; set; }
         string Email { get; set; }
         string About { get; set; }
@@ -19,10 +21,13 @@ namespace Amphora.Api.Models
         public string About { get; set; } = "I'm a happy cosmic doge";
         public string FullName { get; set; }
         public string OrganisationId { get; set; }
+        public bool IsOnboarding { get; set; }
+        public string OnboardingId { get; set; }
 
         public bool Validate()
         {
-            return !string.IsNullOrEmpty(OrganisationId);
+            if (IsOnboarding) return true;
+            else return !string.IsNullOrEmpty(OrganisationId);
         }
     }
 
@@ -31,10 +36,13 @@ namespace Amphora.Api.Models
         public string About { get; set; }
         public string FullName { get; set; }
         public string OrganisationId { get; set; }
+        public string OnboardingId { get; set; }
+        public bool IsOnboarding { get; set; }
 
         public bool Validate()
         {
-            return !string.IsNullOrEmpty(OrganisationId);
+            if (IsOnboarding) return true;
+            else return !string.IsNullOrEmpty(OrganisationId);
         }
     }
 }

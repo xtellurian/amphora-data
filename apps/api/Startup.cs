@@ -54,6 +54,7 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IPermissionService, PermissionService>();
+            services.AddTransient<IOnboardingService, OnboardingService>();
 
 
             services.AddHttpClient();

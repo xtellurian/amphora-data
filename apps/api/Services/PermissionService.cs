@@ -7,6 +7,7 @@ using Amphora.Common.Models;
 using Microsoft.Extensions.Logging;
 using Amphora.Common.Extensions;
 using static Amphora.Common.Models.RoleAssignment;
+using System;
 
 namespace Amphora.Api.Services
 {
@@ -71,6 +72,7 @@ namespace Amphora.Api.Services
             return false;
         }
 
+        [Obsolete]
         public async Task<PermissionCollection> SetIsOwner(IApplicationUser user, IEntity entity)
         {
             var collection = await CreateIfNotExistsCollection(entity);

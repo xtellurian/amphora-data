@@ -15,6 +15,7 @@ namespace Amphora.Common.Extensions
             {typeof(Amphora.Common.Models.OrganisationMembership), nameof(Amphora.Common.Models.OrganisationMembership)},
             {typeof(Amphora.Common.Models.PermissionCollection), nameof(Amphora.Common.Models.PermissionCollection)},
             {typeof(Amphora.Common.Models.ResourceAuthorization), nameof(Amphora.Common.Models.ResourceAuthorization)},
+            {typeof(Amphora.Common.Models.OnboardingState), nameof(Amphora.Common.Models.OnboardingState)},
         };
 
         public static string AsQualifiedId<T>(this string id) where T: IEntity

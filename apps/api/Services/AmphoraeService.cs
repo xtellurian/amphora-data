@@ -32,8 +32,9 @@ namespace Amphora.Api.Services
         public async Task<EntityOperationResult<Common.Models.Amphora>> CreateAsync(ClaimsPrincipal principal, Common.Models.Amphora model)
         {
             logger.LogInformation($"Creating new Amphora");
-            if (!model.IsValidDto()) throw new NullReferenceException("Invalid Amphora Model");
             var user = await userManager.GetUserAsync(principal);
+            if (string.IsNullOrEmpty(model.OrganisationId)) model.OrganisationId = user.OrganisationId;
+            if (!model.IsValidDto()) throw new NullReferenceException("Invalid Amphora Model");
             if (model.OrganisationId == null)
             {
                 model.OrganisationId = user.OrganisationId;
@@ -67,7 +68,7 @@ namespace Amphora.Api.Services
                 logger.LogError($"{id} Not Found");
                 return new EntityOperationResult<Common.Models.Amphora>($"{id} Not Found");
             }
-            if(entity.IsPublic) 
+            if (entity.IsPublic)
             {
                 logger.LogInformation($"Permission granted to public entity {entity.Id}");
                 return new EntityOperationResult<Common.Models.Amphora>(entity);

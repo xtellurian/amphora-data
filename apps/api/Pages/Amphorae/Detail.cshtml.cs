@@ -19,21 +19,18 @@ namespace Amphora.Api.Pages.Amphorae
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly IEntityStore<Common.Models.Amphora> amphoraEntityStore;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
         private readonly ITsiService tsiService;
-        private readonly IMapper mapper;
 
         public DetailModel(
-            IEntityStore<Amphora.Common.Models.Amphora> amphoraEntityStore,
+            IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
-            ITsiService tsiService,
-            IMapper mapper)
+            ITsiService tsiService)
         {
-            this.amphoraEntityStore = amphoraEntityStore;
+            this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.tsiService = tsiService;
-            this.mapper = mapper;
         }
 
         [BindProperty]
@@ -44,15 +41,29 @@ namespace Amphora.Api.Pages.Amphorae
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            Amphora = await amphoraEntityStore.ReadAsync(id);
-            if (Amphora == null)
+            if(id == null) return RedirectToPage("./Index");
+            var result = await amphoraeService.ReadAsync(User, id);
+            if(result.WasForbidden)
             {
-                return RedirectToPage("/amphorae/index");
+                return RedirectToPage("./Forbidden");
             }
-            Names = await dataStore.ListNamesAsync(Amphora);
-            Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
-            QueryResponse = await GetQueryResponse();
-            return Page();
+            else if (result.Succeeded)
+            {
+                Amphora = result.Entity;
+                if (Amphora == null)
+                {
+                    return RedirectToPage("./Index");
+                }
+
+                Names = await dataStore.ListNamesAsync(Amphora);
+                Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
+                QueryResponse = await GetQueryResponse();
+                return Page();
+            }
+            else
+            {
+                return RedirectToPage("./Index");
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string id, List<IFormFile> files)
@@ -62,25 +73,38 @@ namespace Amphora.Api.Pages.Amphorae
                 throw new System.ArgumentException("Only 1 file is supported");
             }
 
-            if (string.IsNullOrEmpty(id)) return RedirectToAction("/Amphorae/Index");
-            var entity = await amphoraEntityStore.ReadAsync(id);
-            if (entity == null) return RedirectToPage("/Amphorae/Index");
-
-            var formFile = files.FirstOrDefault();
-
-            if (formFile != null && formFile.Length > 0)
+            if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
+            
+            var result = await amphoraeService.ReadAsync(User, id);
+            if(result.Succeeded)
             {
-                using (var stream = new MemoryStream())
+                if (result.Entity == null) return RedirectToPage("./Index");
+
+                var formFile = files.FirstOrDefault();
+
+                if (formFile != null && formFile.Length > 0)
                 {
-                    await formFile.CopyToAsync(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    await this.dataStore.SetDataAsync(entity, await stream.ReadFullyAsync(), formFile.FileName);
+                    using (var stream = new MemoryStream())
+                    {
+                        await formFile.CopyToAsync(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        await this.dataStore.SetDataAsync(result.Entity, await stream.ReadFullyAsync(), formFile.FileName);
+                    }
                 }
+                this.Amphora = result.Entity;
+                this.Names = await dataStore.ListNamesAsync(result.Entity);
+                this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
+                return Page();
             }
-            this.Amphora = entity;
-            this.Names = await dataStore.ListNamesAsync(entity);
-            this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
-            return Page();
+            else if(result.WasForbidden)
+            {
+                return RedirectToPage("./Forbidden");
+            }
+            else
+            {
+                return RedirectToPage(".Index");
+            }
+
         }
 
         private async Task<string> GetQueryResponse()

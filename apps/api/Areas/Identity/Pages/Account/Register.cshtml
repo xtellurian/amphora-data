@@ -8,9 +8,17 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <form asp-route-returnUrl="@Model.ReturnUrl" asp-route-onboardingId="@Model.OnboardingId" method="post">
             <h4>Create a new account.</h4>
             <hr />
+            @if(Model.Organisation != null)
+            {
+                <small> You are joining @Model.Organisation.Name </small>
+            } 
+            else
+            {
+                <small> You will be promted to create a new organsation. If you wish to join an existing organsation, you should request an invition and *not* continue. </small>
+            }
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Input.Email"></label>
@@ -41,16 +49,7 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.ClientToken"></label>
-                <input asp-for="Input.ClientToken" class="form-control" />
-                <span asp-validation-for="Input.ClientToken" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.OrganisationId"></label>
-                <input asp-for="Input.OrganisationId" class="form-control" />
-                <span asp-validation-for="Input.OrganisationId" class="text-danger"></span>
-            </div>
+
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>

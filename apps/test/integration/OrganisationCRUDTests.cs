@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models;
 using Amphora.Common.Models;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -24,6 +25,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.AddCreateToken();
+            var (user, _) = await client.CreateUserAsync();
 
             var a = Helpers.EntityLibrary.GetOrganisation();
 
@@ -32,13 +34,13 @@ namespace Amphora.Tests.Integration
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.PostAsync(url, requestBody);
+            var responseBody = await response.Content.ReadAsStringAsync();
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
-            var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
             var b = JsonConvert.DeserializeObject<Organisation>(responseBody);
             Assert.NotNull(b.Id);
@@ -56,7 +58,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.AddCreateToken();
-
+            var (user, _) = await client.CreateUserAsync();
             var a = Helpers.EntityLibrary.GetOrganisation();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -79,6 +81,41 @@ namespace Amphora.Tests.Integration
 
             await DeleteOrganisation(a, client);
 
+        }
+
+        [Theory]
+        [InlineData("/api/organisations")]
+        public async Task CanInviteToOrganisation(string url)
+        {
+             // Arrange
+            var client = _factory.CreateClient();
+            client.AddCreateToken();
+            var (user, _) = await client.CreateUserAsync();
+            var org = Helpers.EntityLibrary.GetOrganisation();
+            var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await client.PostAsync(url, requestBody);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            Assert.NotNull(responseBody);
+            org = JsonConvert.DeserializeObject<Organisation>(responseBody);
+
+
+            var client2 = _factory.CreateClient();
+            var (otherUser, _) = await client2.CreateUserAsync();
+
+            var inviteResponse = await client.PostAsync($"{url}/{org.OrganisationId}/invite/{otherUser.Email}", new StringContent(""));
+            var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
+            inviteResponse.EnsureSuccessStatusCode();
+
+            var selfResponse = await client2.GetAsync("api/users/self");
+            var selfContent = await selfResponse.Content.ReadAsStringAsync();
+            selfResponse.EnsureSuccessStatusCode();
+            var self = JsonConvert.DeserializeObject<ApplicationUser>(selfContent);
+            Assert.Equal(org.OrganisationId, self.OrganisationId);
         }
 
         private async Task DeleteOrganisation(Organisation a, HttpClient client)

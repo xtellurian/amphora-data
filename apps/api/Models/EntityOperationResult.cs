@@ -28,5 +28,6 @@ namespace Amphora.Api.Models
         public List<string> Errors { get; }
         public bool Succeeded { get; }
         public bool WasForbidden {get; set; }
+        public string Message => string.Join(';', this.Errors);
     }
 }

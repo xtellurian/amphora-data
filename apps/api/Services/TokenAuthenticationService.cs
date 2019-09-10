@@ -34,12 +34,13 @@ namespace Amphora.Api.Services
             secret = tokenManagement.CurrentValue.Secret ?? (secret ?? RandomString(20));
         }
 
-        public async Task<(bool success, string token)> GetToken(ClaimsPrincipal user)
+        public async Task<(bool success, string token)> GetToken(ClaimsPrincipal principal)
         {
-            if (signInManager.IsSignedIn(user))
+            if (signInManager.IsSignedIn(principal))
             {
-                var obj = await userManager.GetUserAsync(user);
-                return (true, GenerateToken(obj));
+                var user = await userManager.GetUserAsync(principal);
+                if (user == null) return (false, null);
+                return (true, GenerateToken(user));
             }
             else
             {
@@ -66,6 +67,10 @@ namespace Amphora.Api.Services
         }
         private string GenerateToken(IApplicationUser user)
         {
+            if (user == null)
+            {
+                throw new NullReferenceException("Cannot generate token for null user");
+            }
             logger.LogInformation($"Generating token for {user.UserName}");
             string token;
             var claim = new[]

@@ -12,20 +12,23 @@ namespace Amphora.Api.Pages.Organisations
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly IEntityStore<Organisation> entityStore;
+        private readonly IOnboardingService onboardingService;
         private readonly IAuthenticateService authenticateService;
+        private readonly ISignInManager signInManager;
         private readonly ILogger<CreateModel> logger;
 
-        public CreateModel(IEntityStore<Organisation> entityStore,
+        public CreateModel(IOnboardingService onboardingService,
                            IAuthenticateService authenticateService,
+                           ISignInManager signInManager,
                            ILogger<CreateModel> logger)
         {
-            this.entityStore = entityStore;
+            this.onboardingService = onboardingService;
             this.authenticateService = authenticateService;
+            this.signInManager = signInManager;
             this.logger = logger;
         }
 
-        public string Token {get; set; }
+        public string Token { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; }
@@ -45,7 +48,7 @@ namespace Amphora.Api.Pages.Organisations
         public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
-            if(response.success)
+            if (response.success)
             {
                 Token = response.token;
             }
@@ -65,8 +68,20 @@ namespace Amphora.Api.Pages.Organisations
                 WebsiteUrl = Input.Website,
                 Address = Input.Address,
             };
-            org = await entityStore.CreateAsync(org);
-            return RedirectToPage("./Detail", new { Id = org.OrganisationId });
+
+            var result = await onboardingService.CreateOrganisationAsync(User, org);
+            if (result.Succeeded)
+            {
+                return RedirectToPage("/Organisations/Detail");
+            }
+            else
+            {
+                foreach (var e in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, e);
+                }
+                return Page();
+            }
         }
     }
 }

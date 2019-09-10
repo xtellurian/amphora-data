@@ -22,7 +22,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadDownloadFiles_AsAdmin(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
             var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
             // create an amphora for us to work with
@@ -60,7 +60,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_DownloadFiles_AsOtherUsers(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
             var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
             // create an amphora for us to work with
@@ -82,13 +82,13 @@ namespace Amphora.Tests.Integration
 
             // Act and Assert
             // now let's download by someone in the same org - should work
-            var (sameOrgClient, sameOrgUser, sameOrgOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.User, adminOrg);
+            var (sameOrgClient, sameOrgUser, sameOrgOrg) = await base.GetNewClientInOrg(adminClient, adminOrg);
             var downloadResponse = await sameOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
             downloadResponse.EnsureSuccessStatusCode();
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
             // other org user is denied access
-            var (otherOrgClient, otherOrgUser, otherOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.User);
+            var (otherOrgClient, otherOrgUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
             downloadResponse = await otherOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
             Assert.Equal(HttpStatusCode.Forbidden,  downloadResponse.StatusCode);
 
@@ -107,7 +107,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_UploadToAmphora_MissingEntity(string url)
         {
             // Arrange
-            var (client, user, org) = await GetAuthenticatedClientAsync();
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);

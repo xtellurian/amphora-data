@@ -38,7 +38,11 @@ namespace Amphora.Api.Stores.Cosmos
         protected virtual async Task Init()
         {
             if (this.Container != null) return;
-            var response = await this.Database.CreateContainerIfNotExistsAsync(ContainerName, PartitionKey);
+            var properties = new ContainerProperties(ContainerName, PartitionKey)
+            {
+                DefaultTimeToLive = -1,
+            };
+            var response = await this.Database.CreateContainerIfNotExistsAsync(properties);
             Container = response.Container;
         }
 
@@ -81,7 +85,7 @@ namespace Amphora.Api.Stores.Cosmos
             }
         }
 
-        public async Task<T> ReadAsync<T>(string id, string partitionKey) where T: IEntity
+        public async Task<T> ReadAsync<T>(string id, string partitionKey) where T : IEntity
         {
             await Init();
             var item = await this.Container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));

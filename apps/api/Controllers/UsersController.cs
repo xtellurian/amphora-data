@@ -13,46 +13,44 @@ namespace Amphora.Api.Controllers
     [ApiController]
     public class UsersController : Controller
     {
+        private readonly IOnboardingService onboardingService;
         private readonly IUserService userService;
-        private readonly IUserManager userManager;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly ILogger<UsersController> logger;
 
-        public UsersController(IUserService userService,
+        public UsersController(IOnboardingService onboardingService,
                                IUserManager userManager,
+                               IUserService userService,
                                IOptionsMonitor<CreateOptions> options,
                                ILogger<UsersController> logger)
         {
+            this.onboardingService = onboardingService;
             this.userService = userService;
-            this.userManager = userManager;
             this.options = options;
             this.logger = logger;
         }
 
-        [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser_Key([FromBody] ApplicationUser user, string role)
+        [HttpGet("api/users/self")]
+        public async Task<IActionResult> ReadSelf()
         {
-            var assignedRole = RoleAssignment.Roles.User; // default role
-
-            if (role != null)
+            var user = await userService.UserManager.GetUserAsync(User);
+            if(user == null)
             {
-                if (System.Enum.TryParse(typeof(RoleAssignment.Roles), role, true, out var r))
-                {
-                    assignedRole = (RoleAssignment.Roles)r;
-                }
-                else
-                {
-                    return BadRequest($"{role} is an invalid role");
-                }
+                return NotFound();
             }
+            return Ok(user as IApplicationUser);
+        }
 
+        [HttpPost("api/users")]
+        public async Task<IActionResult> CreateUser([FromBody] ApplicationUser user, string onboardingId)
+        {
             string password = System.Guid.NewGuid().ToString() + "!1A";
             if (Request.Headers.ContainsKey("Create"))
             {
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await userService.CreateAsync(user, password, assignedRole);
+                    var result = await onboardingService.CreateUserAsync(user, password, onboardingId);
                     if (result.Succeeded)
                     {
                         return Ok(password);
@@ -87,7 +85,7 @@ namespace Amphora.Api.Controllers
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
                     if (username == null) return BadRequest("id/ username is required");
-                    var user = await userManager.FindByNameAsync(username);
+                    var user = await userService.UserManager.FindByNameAsync(username);
                     if (user == null) return NotFound();
                     var result = await userService.DeleteAsync(user);
                     if (result.Succeeded)

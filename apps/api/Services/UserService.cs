@@ -12,7 +12,6 @@ namespace Amphora.Api.Services
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<Organisation> orgStore;
         private readonly IPermissionService permissionService;
-        private readonly IUserManager userManager;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<Organisation> orgStore,
@@ -22,27 +21,30 @@ namespace Amphora.Api.Services
             this.logger = logger;
             this.orgStore = orgStore;
             this.permissionService = permissionService;
-            this.userManager = userManager;
+            this.UserManager = userManager;
+
         }
+
+        public IUserManager UserManager {get; protected set;}
 
         public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user,
                                                                                string password,
                                                                                RoleAssignment.Roles role = RoleAssignment.Roles.User)
         {
-            if(user.Validate())
+            if (user.Validate())
             {
                 var org = await orgStore.ReadAsync(user.OrganisationId);
-                if(org == null)
+                if (org == null && !user.IsOnboarding)
                 {
                     return new EntityOperationResult<IApplicationUser>("Unknown Organisation");
                 }
-                var result = await userManager.CreateAsync(user, password);
-                if(result.Succeeded)
+                var result = await UserManager.CreateAsync(user, password);
+                if (result.Succeeded)
                 {
-                    user = await userManager.FindByNameAsync(user.UserName);
-                    if(user == null) throw new System.Exception("Unable to retrieve user");
+                    user = await UserManager.FindByNameAsync(user.UserName);
+                    if (user == null) throw new System.Exception("Unable to retrieve user");
                     // create role here
-                    await permissionService.CreateOrganisationalRole(user, role, org);
+                    if (!user.IsOnboarding) await permissionService.CreateOrganisationalRole(user, role, org);
                     return new EntityOperationResult<IApplicationUser>(user);
                 }
                 else
@@ -60,8 +62,8 @@ namespace Amphora.Api.Services
         public async Task<EntityOperationResult<IApplicationUser>> DeleteAsync(IApplicationUser user)
         {
             // todo - permissions
-            var result = await userManager.DeleteAsync(user);
-            if(result.Succeeded)
+            var result = await UserManager.DeleteAsync(user);
+            if (result.Succeeded)
             {
                 return new EntityOperationResult<IApplicationUser>();
             }

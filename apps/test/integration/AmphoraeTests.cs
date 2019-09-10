@@ -21,8 +21,8 @@ namespace Amphora.Tests.Integration
         public async Task GetAmphorae_ByOrgId_AsUser(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
-            var (client, user, org) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.User, adminOrg);
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
             var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(GetAmphorae_ByOrgId_AsUser));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
@@ -56,7 +56,7 @@ namespace Amphora.Tests.Integration
         public async Task Get_QueryAmphoraByGeohash(string geoHash, string queryGeoHash, bool success)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await GetAuthenticatedClientAsync(RoleAssignment.Roles.Administrator);
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
             var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_QueryAmphoraByGeohash));
             a.GeoHash = geoHash;// set the geohash
