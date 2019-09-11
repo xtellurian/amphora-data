@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth

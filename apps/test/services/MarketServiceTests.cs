@@ -6,6 +6,7 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -25,7 +26,7 @@ namespace Amphora.Tests.Unit
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
             this.amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
-            this.orgStore = new InMemoryEntityStore<Amphora.Common.Models.OrganisationModel>();
+            this.orgStore = new InMemoryEntityStore<OrganisationModel>();
             this.permissionStore = new InMemoryEntityStore<Amphora.Common.Models.PermissionModel>();
             this.mockUserManager = new Mock<IUserManager>();
             this.permissionService = new PermissionService(permissionLogger, permissionStore);

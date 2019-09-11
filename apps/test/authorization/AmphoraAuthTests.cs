@@ -7,6 +7,7 @@ using Amphora.Api.Models;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using Microsoft.AspNetCore.Authorization;

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

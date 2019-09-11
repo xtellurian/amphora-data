@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Amphora.Common.Extensions;
 using static Amphora.Common.Models.RoleAssignment;
 using System;
+using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Api.Services.Auth
 {

@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System;
+using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Api.Stores.Cosmos
 {

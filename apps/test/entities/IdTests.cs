@@ -1,5 +1,7 @@
 using System;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Xunit;
 
 namespace Amphora.Tests.Unit
@@ -7,10 +9,10 @@ namespace Amphora.Tests.Unit
     public class IdTests
     {
         [Theory]
-        [InlineData("Amphora", typeof(Amphora.Common.Models.AmphoraModel))]
-        [InlineData("Organisation", typeof(Amphora.Common.Models.OrganisationModel))]
-        [InlineData("PermissionCollection", typeof(Amphora.Common.Models.PermissionModel))]
-        [InlineData("OnboardingState", typeof(Amphora.Common.Models.OnboardingState))]
+        [InlineData("Amphora", typeof(AmphoraModel))]
+        [InlineData("Organisation", typeof(OrganisationModel))]
+        [InlineData("PermissionCollection", typeof(PermissionModel))]
+        [InlineData("OnboardingState", typeof(OnboardingState))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {
             var id = System.Guid.NewGuid().ToString();

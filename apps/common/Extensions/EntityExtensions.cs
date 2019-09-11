@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Common.Extensions
 {
@@ -11,7 +12,7 @@ namespace Amphora.Common.Extensions
         private static readonly Dictionary<Type, string> prefixes = new Dictionary<Type, string>
         {
             {typeof(Amphora.Common.Models.AmphoraModel), nameof(Amphora.Common.Models.AmphoraModel)},
-            {typeof(Amphora.Common.Models.OrganisationModel), nameof(Amphora.Common.Models.OrganisationModel)},
+            {typeof(OrganisationModel), nameof(OrganisationModel)},
             {typeof(Amphora.Common.Models.PermissionModel), nameof(Amphora.Common.Models.PermissionModel)},
             {typeof(Amphora.Common.Models.OnboardingState), nameof(Amphora.Common.Models.OnboardingState)},
         };

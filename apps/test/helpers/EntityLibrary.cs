@@ -1,6 +1,7 @@
 using System;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
+using Amphora.Common.Models.Organisations;
 using NGeoHash;
 
 namespace Amphora.Tests.Helpers

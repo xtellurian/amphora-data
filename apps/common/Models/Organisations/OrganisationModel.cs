@@ -1,7 +1,7 @@
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 
-namespace Amphora.Common.Models
+namespace Amphora.Common.Models.Organisations
 {
     public class OrganisationModel : Entity, IEntity
     {
