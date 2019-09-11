@@ -9,7 +9,7 @@ namespace Amphora.Tests.Unit
         [Theory]
         [InlineData("Amphora", typeof(Amphora.Common.Models.AmphoraModel))]
         [InlineData("Organisation", typeof(Amphora.Common.Models.OrganisationModel))]
-        [InlineData("PermissionCollection", typeof(Amphora.Common.Models.PermissionCollection))]
+        [InlineData("PermissionCollection", typeof(Amphora.Common.Models.PermissionModel))]
         [InlineData("OnboardingState", typeof(Amphora.Common.Models.OnboardingState))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {

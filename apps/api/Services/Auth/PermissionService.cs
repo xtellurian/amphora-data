@@ -14,10 +14,10 @@ namespace Amphora.Api.Services.Auth
     public class PermissionService : IPermissionService
     {
         private readonly ILogger<PermissionService> logger;
-        private readonly IEntityStore<PermissionCollection> permissionStore;
+        private readonly IEntityStore<PermissionModel> permissionStore;
 
         public PermissionService(ILogger<PermissionService> logger,
-                                 IEntityStore<PermissionCollection> permissionStore)
+                                 IEntityStore<PermissionModel> permissionStore)
         {
             this.logger = logger;
             this.permissionStore = permissionStore;
@@ -26,11 +26,11 @@ namespace Amphora.Api.Services.Auth
         {
             // var collection = await permissionStore.QueryAsync(c => string.Equals(c.OrganisationId, entity.OrganisationId));
             var collection = await permissionStore.ReadAsync(
-                entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
+                entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
                 entity.OrganisationId);
             if(collection == null) 
             {
-                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection))} not found");
+                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionModel))} not found");
                 return false;
             }
             // check if user is in Admin role
@@ -73,7 +73,7 @@ namespace Amphora.Api.Services.Auth
         }
 
         [Obsolete]
-        public async Task<PermissionCollection> SetIsOwner(IApplicationUser user, IEntity entity)
+        public async Task<PermissionModel> SetIsOwner(IApplicationUser user, IEntity entity)
         {
             var collection = await CreateIfNotExistsCollection(entity);
 
@@ -84,7 +84,7 @@ namespace Amphora.Api.Services.Auth
             return await permissionStore.UpdateAsync(collection);
         }
 
-        public async Task<PermissionCollection> CreateOrganisationalRole(IApplicationUser user, Roles role, OrganisationModel org)
+        public async Task<PermissionModel> CreateOrganisationalRole(IApplicationUser user, Roles role, OrganisationModel org)
         {
             var assignment = new RoleAssignment(user.Id, role);
             var collection = await CreateIfNotExistsCollection(org);
@@ -92,15 +92,15 @@ namespace Amphora.Api.Services.Auth
             return await permissionStore.UpdateAsync(collection);
         }
 
-        private async Task<PermissionCollection> CreateIfNotExistsCollection(IEntity entity)
+        private async Task<PermissionModel> CreateIfNotExistsCollection(IEntity entity)
         {
             var collection = await permissionStore.ReadAsync(
-                            entity.OrganisationId.AsQualifiedId(typeof(PermissionCollection)),
+                            entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
                             entity.OrganisationId
                         );
             if (collection == null)
             {
-                collection = new PermissionCollection(entity.OrganisationId);
+                collection = new PermissionModel(entity.OrganisationId);
                 collection = await permissionStore.CreateAsync(collection);
             }
             return collection;

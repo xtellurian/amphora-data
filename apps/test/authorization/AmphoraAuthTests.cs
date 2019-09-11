@@ -44,7 +44,7 @@ namespace Amphora.Tests.Unit.Authorization
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var store = new InMemoryEntityStore<PermissionCollection>();
+            var store = new InMemoryEntityStore<PermissionModel>();
             var permissionService = new PermissionService(permissionServiceLogger, store);
             var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
 
@@ -83,10 +83,10 @@ namespace Amphora.Tests.Unit.Authorization
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var store = new InMemoryEntityStore<PermissionCollection>();
+            var store = new InMemoryEntityStore<PermissionModel>();
             var permissionService = new PermissionService(permissionServiceLogger, store);
 
-            var collection = new PermissionCollection(a.OrganisationId);
+            var collection = new PermissionModel(a.OrganisationId);
             var readPermission = new ResourceAuthorization()
             {
                 ResourcePermission = ResourcePermissions.Read,

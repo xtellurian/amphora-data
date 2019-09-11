@@ -18,7 +18,7 @@ namespace Amphora.Tests.Unit
         private readonly ILogger<AmphoraeService> amphoraLogger;
         private InMemoryEntityStore<Common.Models.AmphoraModel> amphoraStore;
         private InMemoryEntityStore<OrganisationModel> orgStore;
-        private InMemoryEntityStore<PermissionCollection> permissionStore;
+        private InMemoryEntityStore<PermissionModel> permissionStore;
         private Mock<IUserManager> mockUserManager;
         private PermissionService permissionService;
 
@@ -26,7 +26,7 @@ namespace Amphora.Tests.Unit
         {
             this.amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             this.orgStore = new InMemoryEntityStore<Amphora.Common.Models.OrganisationModel>();
-            this.permissionStore = new InMemoryEntityStore<Amphora.Common.Models.PermissionCollection>();
+            this.permissionStore = new InMemoryEntityStore<Amphora.Common.Models.PermissionModel>();
             this.mockUserManager = new Mock<IUserManager>();
             this.permissionService = new PermissionService(permissionLogger, permissionStore);
             this.amphoraLogger = amphoraLogger;

@@ -4,10 +4,10 @@ using Amphora.Common.Extensions;
 
 namespace Amphora.Common.Models
 {
-    public class PermissionCollection : Entity, IEntity
+    public class PermissionModel : Entity, IEntity
     {
-        public PermissionCollection() { }
-        public PermissionCollection(string organisationId)
+        public PermissionModel() { }
+        public PermissionModel(string organisationId)
         {
             this.OrganisationId = organisationId;
             this.ResourceAuthorizations = new List<ResourceAuthorization>();
@@ -20,9 +20,9 @@ namespace Amphora.Common.Models
         {
             if (string.IsNullOrEmpty(this.OrganisationId))
             {
-                throw new System.NullReferenceException($"SetIds() cannot be called in a {nameof(PermissionCollection)} when OrganisationId null");
+                throw new System.NullReferenceException($"SetIds() cannot be called in a {nameof(PermissionModel)} when OrganisationId null");
             }
-            this.Id = this.OrganisationId.AsQualifiedId(typeof(PermissionCollection));
+            this.Id = this.OrganisationId.AsQualifiedId(typeof(PermissionModel));
         }
     }
 }
