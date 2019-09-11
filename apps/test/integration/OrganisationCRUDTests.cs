@@ -106,9 +106,13 @@ namespace Amphora.Tests.Integration
             var client2 = _factory.CreateClient();
             var (otherUser, _) = await client2.CreateUserAsync();
 
-            var inviteResponse = await client.PostAsync($"{url}/{org.OrganisationId}/invite/{otherUser.Email}", new StringContent(""));
+            var inviteResponse = await client.PostAsJsonAsync($"{url}/{org.OrganisationId}/invitations/",
+                new Invitation(otherUser.Email));
             var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
             inviteResponse.EnsureSuccessStatusCode();
+
+            var acceptResponse = await client2.GetAsync($"api/organisations/{org.OrganisationId}/invitations");
+            acceptResponse.EnsureSuccessStatusCode();
 
             var selfResponse = await client2.GetAsync("api/users/self");
             var selfContent = await selfResponse.Content.ReadAsStringAsync();

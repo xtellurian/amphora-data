@@ -10,6 +10,7 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -17,7 +18,7 @@ using Xunit;
 
 namespace Amphora.Tests.Unit.Authorization
 {
-    public class AmphoraAuthTests
+    public class AmphoraAuthTests: UnitTestBase
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
         private readonly ILogger<PermissionService> permissionServiceLogger;
@@ -35,17 +36,17 @@ namespace Amphora.Tests.Unit.Authorization
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
             var org = EntityLibrary.GetOrganisation();
-            var orgStore = new InMemoryEntityStore<OrganisationModel>();
+            var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var store = new InMemoryEntityStore<PermissionModel>();
+            var store = new InMemoryEntityStore<PermissionModel>(Mapper);
             var permissionService = new PermissionService(permissionServiceLogger, store);
             var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
 
@@ -74,17 +75,17 @@ namespace Amphora.Tests.Unit.Authorization
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
             var org = EntityLibrary.GetOrganisation();
-            var orgStore = new InMemoryEntityStore<OrganisationModel>();
+            var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
-            var store = new InMemoryEntityStore<PermissionModel>();
+            var store = new InMemoryEntityStore<PermissionModel>(Mapper);
             var permissionService = new PermissionService(permissionServiceLogger, store);
 
             var collection = new PermissionModel(a.OrganisationId);

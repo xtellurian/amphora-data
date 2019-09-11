@@ -3,16 +3,17 @@ using Amphora.Api.Stores;
 using Amphora.Api.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Common.Models;
 
 namespace Amphora.Tests.Unit
 {
-    public class AmphoraEntityTests
+    public class AmphoraEntityTests: UnitTestBase
     {
 
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
             var a = new Amphora.Common.Models.AmphoraModel()
             {
                 Name = "Test Name",
@@ -26,8 +27,8 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryEntityStoreListAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
-            var a = new Amphora.Common.Models.AmphoraModel()
+            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
+            var a = new AmphoraModel()
             {
                 Name = "Test Name",
                 Description = "Test Description",
@@ -40,7 +41,7 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryEntityStoreReturnsNullAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
             await GetMissingAmphoraAsync(sut);
         }
 

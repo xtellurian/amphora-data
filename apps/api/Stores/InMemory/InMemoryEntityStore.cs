@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Contracts;
+using AutoMapper;
 
 namespace Amphora.Api.Stores
 {
     public class InMemoryEntityStore<T> : IEntityStore<T> where T : class, IEntity
     {
+        public InMemoryEntityStore(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
         protected List<T> store = new List<T>();
+        private readonly IMapper mapper;
 
         public Task<IList<T>> ListAsync()
         {
@@ -105,7 +111,7 @@ namespace Amphora.Api.Stores
                 return Task<T>.Factory.StartNew(() =>
                 {
                     if (id == null) return default(T);
-                    var qualifiedId = id.AsQualifiedId(typeof(T));
+                    id= id.AsQualifiedId(typeof(T));
                     return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
                 });
             }
@@ -117,6 +123,13 @@ namespace Amphora.Api.Stores
            {
                return new ReadOnlyCollection<T>(this.store.Where(o => string.Equals(orgId, o.OrganisationId)).ToList());
            });
+        }
+
+        public async Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended : class, T
+        {
+            var entity = await this.ReadAsync(id, orgId);
+            if(entity is TExtended) return entity as TExtended;
+            else return mapper.Map<TExtended>(entity);
         }
     }
 }

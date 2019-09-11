@@ -58,6 +58,11 @@ namespace Amphora.Api.Stores.Cosmos
             return await base.ReadAsync<OrganisationModel>(id);
         }
 
+        Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id, string orgId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<OrganisationModel> ReadAsync(string id, string orgId)
         {
             await Init();

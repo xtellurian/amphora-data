@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,35 +20,35 @@ namespace Amphora.Api.Stores.Cosmos
         {
         }
 
-        public async Task<Common.Models.AmphoraModel> CreateAsync(Common.Models.AmphoraModel entity)
+        public async Task<AmphoraModel> CreateAsync(AmphoraModel entity)
         {
-            return await base.CreateAsync<Common.Models.AmphoraModel>(entity);
+            return await base.CreateAsync<AmphoraModel>(entity);
         }
 
-        public async Task<IList<Common.Models.AmphoraModel>> ListAsync()
+        public async Task<IList<AmphoraModel>> ListAsync()
         {
             await Init();
-            return await base.ListAsync<Common.Models.AmphoraModel>();
+            return await base.ListAsync<AmphoraModel>();
         }
 
-        public async Task<Common.Models.AmphoraModel> ReadAsync(string id)
+        public async Task<AmphoraModel> ReadAsync(string id)
         {
             await Init();
             if (id == null) return null;
-            id = id.AsQualifiedId(typeof(Common.Models.AmphoraModel));
-            return await ReadAsync<Common.Models.AmphoraModel>(id);
+            id = id.AsQualifiedId(typeof(AmphoraModel));
+            return await ReadAsync<AmphoraModel>(id);
         }
 
-        public async Task<Common.Models.AmphoraModel> UpdateAsync(Common.Models.AmphoraModel entity)
+        public async Task<AmphoraModel> UpdateAsync(AmphoraModel entity)
         {
             await Init();
-            return await this.UpdateAsync<Common.Models.AmphoraModel>(entity);
+            return await this.UpdateAsync<AmphoraModel>(entity);
         }
 
-        public async Task DeleteAsync(Common.Models.AmphoraModel entity)
+        public async Task DeleteAsync(AmphoraModel entity)
         {
             await Init();
-            await this.DeleteAsync<Common.Models.AmphoraModel>(entity);
+            await this.DeleteAsync<AmphoraModel>(entity);
         }
 
         public async Task<IList<Common.Models.AmphoraModel>> StartsWithQueryAsync(string propertyName, string givenValue)
@@ -57,10 +58,10 @@ namespace Amphora.Api.Stores.Cosmos
             logger.LogInformation("Running query: {0}\n", sqlQueryText);
 
             QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
-            FeedIterator<Common.Models.AmphoraModel> queryResultSetIterator =
-                this.Container.GetItemQueryIterator<Common.Models.AmphoraModel>(queryDefinition);
+            FeedIterator<AmphoraModel> queryResultSetIterator =
+                this.Container.GetItemQueryIterator<AmphoraModel>(queryDefinition);
 
-            var entities = new List<Common.Models.AmphoraModel>();
+            var entities = new List<AmphoraModel>();
 
             while (queryResultSetIterator.HasMoreResults)
             {
@@ -74,27 +75,31 @@ namespace Amphora.Api.Stores.Cosmos
             return entities;
         }
 
-        public async Task<Common.Models.AmphoraModel> ReadAsync(string id, string orgId)
+        public async Task<AmphoraModel> ReadAsync(string id, string orgId)
         {
             await Init();
-            id = id.AsQualifiedId(typeof(Common.Models.AmphoraModel));
+            id = id.AsQualifiedId(typeof(AmphoraModel));
             if (orgId == null) return await this.ReadAsync(id);
             else
             {
-                var response = await Container.ReadItemAsync<Common.Models.AmphoraModel>(id, new PartitionKey(orgId));
+                var response = await Container.ReadItemAsync<AmphoraModel>(id, new PartitionKey(orgId));
                 return response.Resource;
             }
         }
+        Task<TExtended> IEntityStore<AmphoraModel>.ReadAsync<TExtended>(string id, string orgId)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<IList<Common.Models.AmphoraModel>> ListAsync(string orgId)
+        public async Task<IList<AmphoraModel>> ListAsync(string orgId)
         {
             await Init();
-            return Container.GetItemLinqQueryable<Common.Models.AmphoraModel>()
+            return Container.GetItemLinqQueryable<AmphoraModel>()
                 .Where(a => a.OrganisationId == orgId)
                 .ToList(); // TODO - performance
         }
 
-        public Task<IEnumerable<Common.Models.AmphoraModel>> QueryAsync(Func<Common.Models.AmphoraModel, bool> where)
+        public Task<IEnumerable<AmphoraModel>> QueryAsync(Func<AmphoraModel, bool> where)
         {
             return base.QueryAsync(where);
         }

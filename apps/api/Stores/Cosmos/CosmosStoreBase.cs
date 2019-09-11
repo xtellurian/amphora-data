@@ -53,7 +53,7 @@ namespace Amphora.Api.Stores.Cosmos
             return await this.Container.CreateItemAsync(entity);
         }
 
-        protected async Task<T> ReadAsync<T>(string id)
+        protected async Task<T> ReadAsync<T>(string id) where T : IEntity
         {
             await Init();
             try
@@ -76,7 +76,7 @@ namespace Amphora.Api.Stores.Cosmos
                         logger.LogInformation("\tRead {0}\n", entity);
                     }
                 }
-                return entities.FirstOrDefault(); ;
+                return entities.FirstOrDefault();
             }
             catch (System.Exception ex)
             {

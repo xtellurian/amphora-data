@@ -9,10 +9,9 @@ namespace Amphora.Tests.Unit
     public class IdTests
     {
         [Theory]
-        [InlineData("Amphora", typeof(AmphoraModel))]
-        [InlineData("Organisation", typeof(OrganisationModel))]
-        [InlineData("PermissionCollection", typeof(PermissionModel))]
-        [InlineData("OnboardingState", typeof(OnboardingState))]
+        [InlineData("AmphoraModel", typeof(AmphoraModel))]
+        [InlineData("OrganisationModel", typeof(OrganisationModel))]
+        [InlineData("PermissionModel", typeof(PermissionModel))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {
             var id = System.Guid.NewGuid().ToString();

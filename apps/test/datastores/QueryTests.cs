@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Queries;
 using Amphora.Api.Stores;
+using Amphora.Common.Models;
 using Amphora.Tests.Helpers;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Datastores
 {
-    public class QueryTests
+    public class QueryTests: UnitTestBase
     {
         [Fact]
         public async Task QueryAmphoraByLatLon()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
             
             var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
 

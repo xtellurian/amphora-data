@@ -13,17 +13,17 @@ namespace Amphora.Api.Pages.Organisations
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly IOnboardingService onboardingService;
+        private readonly IOrganisationService organisationService;
         private readonly IAuthenticateService authenticateService;
         private readonly ISignInManager signInManager;
         private readonly ILogger<CreateModel> logger;
 
-        public CreateModel(IOnboardingService onboardingService,
+        public CreateModel(IOrganisationService organisationService,
                            IAuthenticateService authenticateService,
                            ISignInManager signInManager,
                            ILogger<CreateModel> logger)
         {
-            this.onboardingService = onboardingService;
+            this.organisationService = organisationService;
             this.authenticateService = authenticateService;
             this.signInManager = signInManager;
             this.logger = logger;
@@ -70,7 +70,7 @@ namespace Amphora.Api.Pages.Organisations
                 Address = Input.Address,
             };
 
-            var result = await onboardingService.CreateOrganisationAsync(User, org);
+            var result = await organisationService.CreateOrganisationAsync(User, org);
             if (result.Succeeded)
             {
                 return RedirectToPage("/Organisations/Detail");

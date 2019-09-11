@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Common.Extensions
@@ -11,10 +12,9 @@ namespace Amphora.Common.Extensions
         // prefixes
         private static readonly Dictionary<Type, string> prefixes = new Dictionary<Type, string>
         {
-            {typeof(Amphora.Common.Models.AmphoraModel), nameof(Amphora.Common.Models.AmphoraModel)},
+            {typeof(AmphoraModel), nameof(AmphoraModel)},
             {typeof(OrganisationModel), nameof(OrganisationModel)},
-            {typeof(Amphora.Common.Models.PermissionModel), nameof(Amphora.Common.Models.PermissionModel)},
-            {typeof(Amphora.Common.Models.OnboardingState), nameof(Amphora.Common.Models.OnboardingState)},
+            {typeof(PermissionModel), nameof(PermissionModel)},
         };
 
         public static string AsQualifiedId<T>(this string id) where T: IEntity

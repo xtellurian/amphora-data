@@ -26,38 +26,24 @@ namespace Amphora.Api.Services.Auth
 
         }
 
-        public IUserManager UserManager {get; protected set;}
+        public IUserManager UserManager { get; protected set; }
 
         public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user,
                                                                                string password,
                                                                                RoleAssignment.Roles role = RoleAssignment.Roles.User)
         {
-            if (user.Validate())
+            var result = await UserManager.CreateAsync(user, password);
+            if (result.Succeeded)
             {
-                var org = await orgStore.ReadAsync(user.OrganisationId);
-                if (org == null && !user.IsOnboarding)
-                {
-                    return new EntityOperationResult<IApplicationUser>("Unknown Organisation");
-                }
-                var result = await UserManager.CreateAsync(user, password);
-                if (result.Succeeded)
-                {
-                    user = await UserManager.FindByNameAsync(user.UserName);
-                    if (user == null) throw new System.Exception("Unable to retrieve user");
-                    // create role here
-                    if (!user.IsOnboarding) await permissionService.CreateOrganisationalRole(user, role, org);
-                    return new EntityOperationResult<IApplicationUser>(user);
-                }
-                else
-                {
-                    return new EntityOperationResult<IApplicationUser>(result.Errors.Select(e => e.Description));
-                }
+                user = await UserManager.FindByNameAsync(user.UserName);
+                if (user == null) throw new System.Exception("Unable to retrieve user");
+                // create role here
+                return new EntityOperationResult<IApplicationUser>(user);
             }
             else
             {
-                return new EntityOperationResult<IApplicationUser>("Invalid User");
+                return new EntityOperationResult<IApplicationUser>(result.Errors.Select(e => e.Description));
             }
-
         }
 
         public async Task<EntityOperationResult<IApplicationUser>> DeleteAsync(IApplicationUser user)

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Amphora.Tests.Unit
 {
-    public class MarketServiceTests
+    public class MarketServiceTests: UnitTestBase
     {
         private readonly ILogger<AmphoraeService> amphoraLogger;
         private InMemoryEntityStore<Common.Models.AmphoraModel> amphoraStore;
@@ -25,9 +25,9 @@ namespace Amphora.Tests.Unit
 
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
-            this.amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
-            this.orgStore = new InMemoryEntityStore<OrganisationModel>();
-            this.permissionStore = new InMemoryEntityStore<Amphora.Common.Models.PermissionModel>();
+            this.amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
+            this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
+            this.permissionStore = new InMemoryEntityStore<PermissionModel>(Mapper);
             this.mockUserManager = new Mock<IUserManager>();
             this.permissionService = new PermissionService(permissionLogger, permissionStore);
             this.amphoraLogger = amphoraLogger;

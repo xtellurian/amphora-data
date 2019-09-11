@@ -18,9 +18,9 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
+        private readonly IUserService userService;
         private readonly ISignInManager signInManager;
-        private readonly IUserManager userManager;
-        private readonly IOnboardingService onboardingService;
+        private readonly IOrganisationService organisationService;
         private readonly ILogger<RegisterModel> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEmailSender emailSender;
@@ -28,16 +28,16 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         public RegisterModel(
             IUserManager userManager,
             IUserService userService,
-            IOnboardingService onboardingService,
             ISignInManager signInManager,
+            IOrganisationService organisationService,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEntityStore<OrganisationModel> orgStore,
             IEmailSender emailSender)
         {
-            this.userManager = userManager;
-            this.onboardingService = onboardingService;
+            this.userService = userService;
             this.signInManager = signInManager;
+            this.organisationService = organisationService;
             this.logger = logger;
             this.orgStore = orgStore;
             this.emailSender = emailSender;
@@ -79,15 +79,9 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         }
 
-        public async Task<IActionResult> OnGetAsync(string onboardingId, string returnUrl = null)
+        public void OnGet( string returnUrl = null)
         {
-            this.OnboardingId = onboardingId;
-            if(! string.IsNullOrEmpty(onboardingId))
-            {
-                this.Organisation = await onboardingService.GetOrganisationFromOnboardingId(onboardingId);
-            }
             ReturnUrl = returnUrl;
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string onboardingId, string returnUrl = null)
@@ -102,17 +96,16 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     About = Input.About,
                     FullName = Input.FullName,
-                    IsOnboarding = true
                 };
 
-                var result = await onboardingService.CreateUserAsync(user, Input.Password, onboardingId);
+                var result = await userService.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User created a new account with password.");
                     await SendConfirmationEmailAsync(result.Entity);
                     if (string.IsNullOrEmpty(result.Entity.OrganisationId))
                     {
-                        return RedirectToPage("/Organisations/Create", new { OnboardingId = result.Entity.OnboardingId });
+                        return RedirectToPage("/Organisations/Create");
                     }
                     return RedirectToPage(returnUrl);
                 }
@@ -131,7 +124,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         private async Task SendConfirmationEmailAsync(IApplicationUser user)
         {
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(user); // bug here
+            var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user); // bug here
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,

@@ -13,18 +13,14 @@ namespace Amphora.Api.Controllers
     [ApiController]
     public class UsersController : Controller
     {
-        private readonly IOnboardingService onboardingService;
         private readonly IUserService userService;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly ILogger<UsersController> logger;
 
-        public UsersController(IOnboardingService onboardingService,
-                               IUserManager userManager,
-                               IUserService userService,
+        public UsersController(IUserService userService,
                                IOptionsMonitor<CreateOptions> options,
                                ILogger<UsersController> logger)
         {
-            this.onboardingService = onboardingService;
             this.userService = userService;
             this.options = options;
             this.logger = logger;
@@ -50,7 +46,7 @@ namespace Amphora.Api.Controllers
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await onboardingService.CreateUserAsync(user, password, onboardingId);
+                    var result = await userService.CreateAsync(user, password);
                     if (result.Succeeded)
                     {
                         return Ok(password);

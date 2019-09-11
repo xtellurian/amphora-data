@@ -56,6 +56,11 @@ namespace Amphora.Api.Stores.Cosmos
             }
         }
 
+        Task<TExtended> IEntityStore<PermissionModel>.ReadAsync<TExtended>(string id, string orgId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<PermissionModel> ReadAsync(string id, string orgId)
         {
             try

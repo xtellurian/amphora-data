@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
+using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,16 +16,16 @@ namespace Amphora.Api.Controllers
     {
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly IEntityStore<OrganisationModel> entityStore;
-        private readonly IOnboardingService onboardingService;
+        private readonly IOrganisationService organisationService;
 
         public OrganisationsController(
             IOptionsMonitor<CreateOptions> options,
             IEntityStore<OrganisationModel> entityStore,
-            IOnboardingService onboardingService)
+            IOrganisationService organisationService)
         {
             this.options = options;
             this.entityStore = entityStore;
-            this.onboardingService = onboardingService;
+            this.organisationService = organisationService;
         }
 
         [HttpGet("api/organisations")]
@@ -41,7 +41,7 @@ namespace Amphora.Api.Controllers
             // check the key
             if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
             {
-                var result = await onboardingService.CreateOrganisationAsync(User, org);
+                var result = await organisationService.CreateOrganisationAsync(User, org);
                 if (result.Succeeded)
                 {
                     return Ok(result.Entity);
@@ -80,23 +80,35 @@ namespace Amphora.Api.Controllers
             else return Ok(org);
         }
 
-        [HttpPost("api/organisations/{id}/invite/{email}")]
-        public async Task<IActionResult> InviteToOrganisation(string id, string email)
+        [HttpPost("api/organisations/{id}/invitations/")]
+        public async Task<IActionResult> InviteToOrganisation(string id, [FromBody] Invitation invitation)
         {
-            var response = await onboardingService.InviteToOrganisation(User, email);
-            if(response.Succeeded)
+            try
             {
-                return Ok(response.Entity);
+                await organisationService.InviteToOrganisationAsync(User, id, invitation.TargetEmail);
+                return Ok();
             }
-            else if(response.WasForbidden)
+            catch (PermissionDeniedException permEx)
             {
-                return StatusCode(403, response.Message);
-            }
-            else
-            {
-                return BadRequest(response.Message);
+                return StatusCode(403, permEx.Message);
             }
         }
+
+        [HttpGet("api/organisations/{id}/invitations/")]
+        public async Task<IActionResult> AcceptInvitation(string id)
+        {
+            try
+            {
+                await organisationService.AcceptInvitation(User, id);
+                return Ok();
+            }
+            catch (PermissionDeniedException permEx)
+            {
+                return StatusCode(403, permEx.Message);
+            }
+        }
+
+
 
         [HttpDelete("api/organisations/{id}")]
         public async Task<IActionResult> DeleteOrganisation(string id)
