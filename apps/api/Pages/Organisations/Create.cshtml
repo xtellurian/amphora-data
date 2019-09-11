@@ -1,17 +1,17 @@
 @page
+@using Newtonsoft.Json
 @model Amphora.Api.Pages.Organisations.CreateModel
 
 @{
     ViewData["Title"] = "Create Organisation";
 }
 
-<h1>Create</h1>
 
-<h4>Organisation</h4>
 <hr />
 <div class="container">
     <div class="row">
         <div class="col-md-4">
+            <h3>Create a new Organisation</h3>
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
@@ -41,15 +41,39 @@
                 </div>
             </form>
         </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <h3>OR</h3>
+        </div>
+
+        <div class="col-md-4 justify-content-center">
+            <h3>Join an existing Organisation</h3>
+            <div class="form-group">
+                <div class="ui-widget">
+                    <input id="autoComplete" class="form-control autoCompleteWorkaround" type="text" tabindex="2">
+                </div>
+                <a id="joinButton"> <button type="button" class="btn btn-primary">Join</button></a>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
     <script src="~/js/geo.js"></script>
+    <script src="~/js/autoComplete.js"></script>
     <script>
         const token = '@Model.Token';
         const url = '@Url.Action("LookupLocationAsync", "Market")';
         autocompleteGeoSearch(token, url)
+    </script>
+    <script>
+        var content = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Organisations));
+        onSelect = (feedback) => {
+            console.log('hello')
+            console.log(feedback)
+            document.querySelector(".autoCompleteWorkaround").value = feedback.selection.value.Name
+            document.querySelector("#joinButton").setAttribute("href", `/organisations/AcceptInvitation/?organisationId=${feedback.selection.value.OrganisationId}`)
+        }
+        staticAutocomplete(".autoCompleteWorkaround", content, "Name", onSelect)
     </script>
 }

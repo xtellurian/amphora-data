@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
@@ -24,22 +25,30 @@ namespace Amphora.Api.Pages.Organisations
             this.permissionService = permissionService;
             this.userManager = userManager;
         }
-        public OrganisationModel Organisation { get; set; }
-        public bool CanEdit { get; set; }
+        public OrganisationExtendedModel Organisation { get; set; }
+        public bool CanEdit { get; private set; }
+        public bool CanInvite { get; private set; }
+        public bool CanAcceptInvite { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
+            var user = await userManager.GetUserAsync(User);
             if (string.IsNullOrEmpty(id))
             {
-                var user = await userManager.GetUserAsync(User);
-                this.Organisation = await entityStore.ReadAsync(user.OrganisationId);
-                this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
+                this.Organisation = await entityStore.ReadAsync<OrganisationExtendedModel>(user.OrganisationId, user.OrganisationId);
             }
             else
             {
-                this.Organisation = await entityStore.ReadAsync(id);
+                this.Organisation = await entityStore.ReadAsync<OrganisationExtendedModel>(id, id);
             }
             if (this.Organisation == null) return RedirectToPage("/Index");
+
+            this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
+            this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
+            if(this.Organisation.Invitations != null)
+            {
+                this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), user.Email.ToLower()));
+            }
             return Page();
         }
     }

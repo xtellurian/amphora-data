@@ -1,0 +1,11 @@
+@page
+@model Amphora.Api.Pages.Organisations.AcceptInvitationModel
+
+@if(Model.InvitationAccepted)
+{
+    <h1>You're now a member of @Model.Organisation.Name !</h1>
+}
+else
+{
+    <h1>I'm sorry, something went wrong </h1>
+}

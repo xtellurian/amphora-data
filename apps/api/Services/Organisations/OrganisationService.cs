@@ -18,7 +18,7 @@ namespace Amphora.Api.Services.Organisations
     {
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
-        private readonly IEntityStore<OrganisationModel> orgStore;
+        public IEntityStore<OrganisationModel> Store { get; }
         private readonly ILogger<OrganisationService> logger;
 
         public OrganisationService(
@@ -29,15 +29,15 @@ namespace Amphora.Api.Services.Organisations
         {
             this.userService = userService;
             this.permissionService = permissionService;
-            this.orgStore = orgStore;
+            this.Store = orgStore;
             this.logger = logger;
         }
 
         public async Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
-            var org = await orgStore.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
-            var invitation = org.Invitations.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), user.Email.ToUpper()));
+            var org = await Store.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
+            var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), user.Email.ToUpper()));
 
             if(invitation != null)
             {
@@ -47,7 +47,7 @@ namespace Amphora.Api.Services.Organisations
                 {
                     logger.LogInformation($"{user.Email} redeemed an invitation to {org.Id}");
                     org.Invitations.Remove(invitation);
-                    await orgStore.UpdateAsync(org);
+                    await Store.UpdateAsync(org);
                     await permissionService.CreateOrganisationalRole(user, RoleAssignment.Roles.User, org);
                     return true;
                 }
@@ -67,13 +67,13 @@ namespace Amphora.Api.Services.Organisations
         public async Task InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
-            var org = await orgStore.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
+            var org = await Store.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
             var authorized = await permissionService.IsAuthorizedAsync(user, org, ResourcePermissions.Create);
             if (authorized)
             {
                 var invitation = new Invitation(email);
                 org.AddInvitation(email);
-                var result = await orgStore.UpdateAsync(org);
+                var result = await Store.UpdateAsync(org);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace Amphora.Api.Services.Organisations
             if (user == null) return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login");
 
             // we good - create an org
-            org = await orgStore.CreateAsync(org);
+            org = await Store.CreateAsync(org);
             if (org != null)
             {
                 // update user with org id
@@ -110,7 +110,7 @@ namespace Amphora.Api.Services.Organisations
                 {
                     logger.LogError($"Error creating org during onboarding. Will delete {org.Id}", ex);
                     // delete the org here incase something went wrong
-                    await orgStore.DeleteAsync(org);
+                    await Store.DeleteAsync(org);
                     throw ex;
                 }
             }

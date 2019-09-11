@@ -48,7 +48,6 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         public InputModel Input { get; set; }
         public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
-        public string OnboardingId { get; private set; }
 
         public class InputModel
         {

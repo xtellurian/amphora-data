@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -33,6 +34,7 @@ namespace Amphora.Api.Pages.Organisations
 
         [BindProperty]
         public InputModel Input { get; set; }
+        public IList<OrganisationModel> Organisations { get; set; }
 
         public class InputModel
         {
@@ -49,6 +51,7 @@ namespace Amphora.Api.Pages.Organisations
         public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
+            Organisations = await organisationService.Store.ListAsync();
             if (response.success)
             {
                 Token = response.token;

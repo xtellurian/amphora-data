@@ -10,11 +10,19 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img src="~/images/doge.jpg" />
+                        <img src="~/images/amphora_1.jpg" class="img-fluid"/>
                     </div>
                     <div class="w-100"><strong>@Model.Organisation.Name</strong></div>
 
                     <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
+                    @if (@Model.CanInvite)
+                    {
+                        <span><a asp-page="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
+                    }
+                    @if (@Model.CanAcceptInvite)
+                    {
+                        <span><a asp-asp-controller="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
+                    }
                     <p>@Model.Organisation.About</p>                 
                 </div>
             </div>
