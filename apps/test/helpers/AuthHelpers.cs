@@ -42,14 +42,14 @@ namespace Amphora.Tests.Helpers
             return (User: user, Password: password);
         }
 
-        public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client)
+        public static async Task<OrganisationModel> CreateOrganisationAsync(this HttpClient client)
         {
             var a = Helpers.EntityLibrary.GetOrganisation();
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var createResponseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
-            var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
+            var org = JsonConvert.DeserializeObject<OrganisationModel>(createResponseContent);
             return org;
         }
 

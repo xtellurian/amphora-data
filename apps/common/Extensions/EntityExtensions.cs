@@ -11,7 +11,7 @@ namespace Amphora.Common.Extensions
         private static readonly Dictionary<Type, string> prefixes = new Dictionary<Type, string>
         {
             {typeof(Amphora.Common.Models.AmphoraModel), nameof(Amphora.Common.Models.AmphoraModel)},
-            {typeof(Amphora.Common.Models.Organisation), nameof(Amphora.Common.Models.Organisation)},
+            {typeof(Amphora.Common.Models.OrganisationModel), nameof(Amphora.Common.Models.OrganisationModel)},
             {typeof(Amphora.Common.Models.PermissionCollection), nameof(Amphora.Common.Models.PermissionCollection)},
             {typeof(Amphora.Common.Models.OnboardingState), nameof(Amphora.Common.Models.OnboardingState)},
         };

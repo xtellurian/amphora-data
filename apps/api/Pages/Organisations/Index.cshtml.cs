@@ -11,14 +11,14 @@ namespace Amphora.Api.Pages.Organisations
     [Authorize]
     public class IndexModel: PageModel
     {
-        private readonly IEntityStore<Organisation> entityStore;
+        private readonly IEntityStore<OrganisationModel> entityStore;
 
-        public IndexModel(IEntityStore<Organisation> entityStore)
+        public IndexModel(IEntityStore<OrganisationModel> entityStore)
         {
             this.entityStore = entityStore;
         }
 
-        public IList<Organisation> Orgs {get; set;}
+        public IList<OrganisationModel> Orgs {get; set;}
 
         public async Task<IActionResult> OnGetAsync()
         {

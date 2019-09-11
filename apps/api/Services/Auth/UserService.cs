@@ -10,11 +10,11 @@ namespace Amphora.Api.Services.Auth
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> logger;
-        private readonly IEntityStore<Organisation> orgStore;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
 
         public UserService(ILogger<UserService> logger,
-                           IEntityStore<Organisation> orgStore,
+                           IEntityStore<OrganisationModel> orgStore,
                            IPermissionService permissionService,
                            IUserManager userManager)
         {

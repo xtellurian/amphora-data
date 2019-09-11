@@ -34,7 +34,7 @@ namespace Amphora.Tests.Unit.Authorization
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
             var org = EntityLibrary.GetOrganisation();
-            var orgStore = new InMemoryEntityStore<Organisation>();
+            var orgStore = new InMemoryEntityStore<OrganisationModel>();
             org = await orgStore.CreateAsync(org);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 
@@ -73,7 +73,7 @@ namespace Amphora.Tests.Unit.Authorization
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
             var org = EntityLibrary.GetOrganisation();
-            var orgStore = new InMemoryEntityStore<Organisation>();
+            var orgStore = new InMemoryEntityStore<OrganisationModel>();
             org = await orgStore.CreateAsync(org);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
 

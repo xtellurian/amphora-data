@@ -11,7 +11,7 @@ namespace Amphora.Api.Services.Amphorae
 {
     public class AmphoraeService : IAmphoraeService
     {
-        private readonly IEntityStore<Organisation> organisationStore;
+        private readonly IEntityStore<OrganisationModel> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserManager userManager;
         private readonly ILogger<AmphoraeService> logger;
@@ -19,7 +19,7 @@ namespace Amphora.Api.Services.Amphorae
         public IEntityStore<Common.Models.AmphoraModel> AmphoraStore { get; }
 
         public AmphoraeService(IEntityStore<Common.Models.AmphoraModel> amphoraStore,
-                               IEntityStore<Organisation> organisationStore,
+                               IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserManager userManager,
                                ILogger<AmphoraeService> logger)
@@ -43,7 +43,7 @@ namespace Amphora.Api.Services.Amphorae
             }
             // check permission to create amphora
             var organisation = await organisationStore.ReadAsync(
-                model.OrganisationId.AsQualifiedId(typeof(Organisation)),
+                model.OrganisationId.AsQualifiedId(typeof(OrganisationModel)),
                 model.OrganisationId);
 
             var isAuthorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Create);

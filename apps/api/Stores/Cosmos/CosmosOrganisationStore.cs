@@ -11,7 +11,7 @@ using System;
 
 namespace Amphora.Api.Stores.Cosmos
 {
-    public class CosmosOrganisationStore : CosmosStoreBase, IEntityStore<Organisation>
+    public class CosmosOrganisationStore : CosmosStoreBase, IEntityStore<OrganisationModel>
     {
 
         public CosmosOrganisationStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosOrganisationStore> logger) 
@@ -19,61 +19,61 @@ namespace Amphora.Api.Stores.Cosmos
         {
         }
 
-        public async Task<Organisation> CreateAsync(Organisation entity)
+        public async Task<OrganisationModel> CreateAsync(OrganisationModel entity)
         {
            return await base.CreateAsync(entity);
         }
 
-        public async Task DeleteAsync(Organisation entity)
+        public async Task DeleteAsync(OrganisationModel entity)
         {
             await Init();
-            var deleteResponse = await DeleteAsync<Organisation>(entity);
+            var deleteResponse = await DeleteAsync<OrganisationModel>(entity);
         }
 
-        public async Task<IList<Organisation>> ListAsync()
+        public async Task<IList<OrganisationModel>> ListAsync()
         {
             await Init();
-            return await base.ListAsync<Organisation>();
+            return await base.ListAsync<OrganisationModel>();
         }
 
-        public async Task<IList<Organisation>> ListAsync(string orgId)
+        public async Task<IList<OrganisationModel>> ListAsync(string orgId)
         {
             await Init();
-            return Container.GetItemLinqQueryable<Organisation>()
+            return Container.GetItemLinqQueryable<OrganisationModel>()
                 .Where(a => a.OrganisationId == orgId)
                 .ToList(); // TODO - performance
         }
 
-        public Task<IEnumerable<Organisation>> QueryAsync(Func<Organisation, bool> where)
+        public Task<IEnumerable<OrganisationModel>> QueryAsync(Func<OrganisationModel, bool> where)
         {
             return base.QueryAsync(where);
         }
 
-        public async Task<Organisation> ReadAsync(string id)
+        public async Task<OrganisationModel> ReadAsync(string id)
         {
             await Init();
             if (id == null) return null;
-            id = id.AsQualifiedId(typeof(Organisation));
-            return await base.ReadAsync<Organisation>(id);
+            id = id.AsQualifiedId(typeof(OrganisationModel));
+            return await base.ReadAsync<OrganisationModel>(id);
         }
 
-        public async Task<Organisation> ReadAsync(string id, string orgId)
+        public async Task<OrganisationModel> ReadAsync(string id, string orgId)
         {
             await Init();
             if(id == null) return null;
-            id = id.AsQualifiedId(typeof(Organisation));
-            return await base.ReadAsync<Organisation>(id, orgId);
+            id = id.AsQualifiedId(typeof(OrganisationModel));
+            return await base.ReadAsync<OrganisationModel>(id, orgId);
         }
 
-        public Task<IList<Organisation>> StartsWithQueryAsync(string propertyName, string givenValue)
+        public Task<IList<OrganisationModel>> StartsWithQueryAsync(string propertyName, string givenValue)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<Organisation> UpdateAsync(Organisation entity)
+        public async Task<OrganisationModel> UpdateAsync(OrganisationModel entity)
         {
             await Init();
-            return await base.UpdateAsync<Organisation>(entity);
+            return await base.UpdateAsync<OrganisationModel>(entity);
         }
     }
 }

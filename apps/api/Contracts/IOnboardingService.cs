@@ -7,9 +7,9 @@ namespace Amphora.Api.Contracts
 {
     public interface IOnboardingService
     {
-        Task<EntityOperationResult<Organisation>> CreateOrganisationAsync(ClaimsPrincipal principal, Organisation org);
+        Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org);
         Task<EntityOperationResult<IApplicationUser>> CreateUserAsync(IApplicationUser user, string password,  string onboardingId);
-        Task<Organisation> GetOrganisationFromOnboardingId(string onboardingId);
+        Task<OrganisationModel> GetOrganisationFromOnboardingId(string onboardingId);
         Task<EntityOperationResult<OnboardingState>> InviteToOrganisation(ClaimsPrincipal principal, string email);
     }
 }

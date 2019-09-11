@@ -84,7 +84,7 @@ namespace Amphora.Api.Services.Auth
             return await permissionStore.UpdateAsync(collection);
         }
 
-        public async Task<PermissionCollection> CreateOrganisationalRole(IApplicationUser user, Roles role, Organisation org)
+        public async Task<PermissionCollection> CreateOrganisationalRole(IApplicationUser user, Roles role, OrganisationModel org)
         {
             var assignment = new RoleAssignment(user.Id, role);
             var collection = await CreateIfNotExistsCollection(org);

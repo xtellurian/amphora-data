@@ -12,17 +12,17 @@ namespace Amphora.Tests.Integration
     {
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
         private readonly Dictionary<HttpClient, ApplicationUser> userLoans;
-        private readonly Dictionary<HttpClient, Organisation> orgLoans;
+        private readonly Dictionary<HttpClient, OrganisationModel> orgLoans;
 
         public IntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
             _factory = factory;
             this.userLoans = new Dictionary<HttpClient, ApplicationUser>();
-            this.orgLoans = new Dictionary<HttpClient, Organisation>();
+            this.orgLoans = new Dictionary<HttpClient, OrganisationModel>();
         }
 
 
-        protected async Task<(HttpClient client, IApplicationUser user, Organisation org)> GetNewClientInOrg(HttpClient currentClient, Organisation org)
+        protected async Task<(HttpClient client, IApplicationUser user, OrganisationModel org)> GetNewClientInOrg(HttpClient currentClient, OrganisationModel org)
         {
             var client = _factory.CreateClient();
             var (user, password) = await client.CreateUserAsync();
@@ -32,7 +32,7 @@ namespace Amphora.Tests.Integration
             orgLoans[client] = org;
             return (client, user, org);
         }
-        protected async Task<(HttpClient client, IApplicationUser user, Organisation org)> NewOrgAuthenticatedClientAsync()
+        protected async Task<(HttpClient client, IApplicationUser user, OrganisationModel org)> NewOrgAuthenticatedClientAsync()
         {
             var client = _factory.CreateClient();
             var (user, password) = await client.CreateUserAsync();

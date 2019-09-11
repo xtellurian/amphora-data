@@ -21,7 +21,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         private readonly IUserManager userManager;
         private readonly IOnboardingService onboardingService;
         private readonly ILogger<RegisterModel> logger;
-        private readonly IEntityStore<Organisation> orgStore;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEmailSender emailSender;
 
         public RegisterModel(
@@ -31,7 +31,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             ISignInManager signInManager,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
-            IEntityStore<Organisation> orgStore,
+            IEntityStore<OrganisationModel> orgStore,
             IEmailSender emailSender)
         {
             this.userManager = userManager;
@@ -45,7 +45,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         [BindProperty]
         public InputModel Input { get; set; }
-        public Organisation Organisation { get; private set; }
+        public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
         public string OnboardingId { get; private set; }
 

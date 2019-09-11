@@ -14,12 +14,12 @@ namespace Amphora.Api.Controllers
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;
-        private readonly IEntityStore<Organisation> entityStore;
+        private readonly IEntityStore<OrganisationModel> entityStore;
         private readonly IOnboardingService onboardingService;
 
         public OrganisationsController(
             IOptionsMonitor<CreateOptions> options,
-            IEntityStore<Organisation> entityStore,
+            IEntityStore<OrganisationModel> entityStore,
             IOnboardingService onboardingService)
         {
             this.options = options;
@@ -35,7 +35,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/organisations")]
-        public async Task<IActionResult> CreateOrganisation([FromBody]Organisation org)
+        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationModel org)
         {
             // check the key
             if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
@@ -61,7 +61,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/organisations/{id}")]
-        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]Organisation org)
+        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationModel org)
         {
             var entity = await entityStore.ReadAsync(id);
             if (entity == null) return NotFound();

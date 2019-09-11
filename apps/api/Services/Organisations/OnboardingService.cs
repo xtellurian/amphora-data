@@ -15,14 +15,14 @@ namespace Amphora.Api.Services.Organisations
         private readonly IEntityStore<OnboardingState> stateStore;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
-        private readonly IEntityStore<Organisation> orgStore;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly ILogger<OnboardingService> logger;
 
         public OnboardingService(
             IEntityStore<OnboardingState> stateStore,
             IUserService userService,
             IPermissionService permissionService,
-            IEntityStore<Organisation> orgStore,
+            IEntityStore<OrganisationModel> orgStore,
             ILogger<OnboardingService> logger)
         {
             this.stateStore = stateStore;
@@ -87,15 +87,15 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<Organisation>> CreateOrganisationAsync(ClaimsPrincipal principal, Organisation org)
+        public async Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org)
         {
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
-            if(user == null) return new EntityOperationResult<Organisation>("Cannot find user. Please login");
+            if(user == null) return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login");
             var state = await stateStore.ReadAsync(user.OnboardingId);
             if(state == null)
             {
-                return new EntityOperationResult<Organisation>("Invalid onboarding Id");
+                return new EntityOperationResult<OrganisationModel>("Invalid onboarding Id");
             }
 
             if(string.Equals(state.State, OnboardingState.States.AwaitingOrganisation))
@@ -121,7 +121,7 @@ namespace Amphora.Api.Services.Organisations
                         // close out onboarding
                         user.IsOnboarding = false;
                         await userService.UserManager.UpdateAsync(user);
-                        return new EntityOperationResult<Organisation>(org);
+                        return new EntityOperationResult<OrganisationModel>(org);
                     }
                     catch(Exception ex)
                     {
@@ -133,12 +133,12 @@ namespace Amphora.Api.Services.Organisations
                 }
                 else
                 {
-                    return new EntityOperationResult<Organisation>("Failed to create organisation");
+                    return new EntityOperationResult<OrganisationModel>("Failed to create organisation");
                 }
             }
             else
             {
-                return new EntityOperationResult<Organisation>("Onboarding State did not expect Organisation Creation");
+                return new EntityOperationResult<OrganisationModel>("Onboarding State did not expect Organisation Creation");
             }
         }
 
@@ -177,7 +177,7 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<Organisation> GetOrganisationFromOnboardingId(string onboardingId)
+        public async Task<OrganisationModel> GetOrganisationFromOnboardingId(string onboardingId)
         {
             var state = await stateStore.ReadAsync(onboardingId);
             if(state == null) return null;

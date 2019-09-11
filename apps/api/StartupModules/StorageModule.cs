@@ -43,7 +43,7 @@ namespace Amphora.Api.StartupModules
         {
             // COSMOS stores
             services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, CosmosAmphoraStore>();
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Organisation>, CosmosOrganisationStore>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.OrganisationModel>, CosmosOrganisationStore>();
             services.AddSingleton<IEntityStore<Amphora.Common.Models.OnboardingState>, CosmosOnboardingStateStore>();
             // consumed by some singletons
             services.AddSingleton<IEntityStore<Amphora.Common.Models.PermissionCollection>, CosmosPermissionCollectionStore>();
@@ -63,7 +63,7 @@ namespace Amphora.Api.StartupModules
 
             // entity stores
             services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();
-            services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
+            services.AddSingleton<IEntityStore<OrganisationModel>, InMemoryEntityStore<OrganisationModel>>();
             services.AddSingleton<IEntityStore<PermissionCollection>, InMemoryEntityStore<PermissionCollection>>();
             services.AddSingleton<IEntityStore<OnboardingState>, InMemoryEntityStore<OnboardingState>>();
         }

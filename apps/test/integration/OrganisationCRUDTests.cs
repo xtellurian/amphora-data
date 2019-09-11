@@ -42,7 +42,7 @@ namespace Amphora.Tests.Integration
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<Organisation>(responseBody);
+            var b = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Name, b.Name);
             Assert.Equal(a.InviteCode, b.InviteCode);
@@ -65,14 +65,14 @@ namespace Amphora.Tests.Integration
             var createResponse = await client.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode(); // Status Code 200-299
             var responseBody = await createResponse.Content.ReadAsStringAsync();
-            a = JsonConvert.DeserializeObject<Organisation>(responseBody);
+            a = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
 
             // Act
             a.Name = Guid.NewGuid().ToString();
             requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var updateResponse = await client.PutAsync(url + "/" + a.OrganisationId, requestBody);
             updateResponse.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<Organisation>(await updateResponse.Content.ReadAsStringAsync());
+            var b = JsonConvert.DeserializeObject<OrganisationModel>(await updateResponse.Content.ReadAsStringAsync());
 
             // Assert
             Assert.Equal(a.Id, b.Id);
@@ -101,7 +101,7 @@ namespace Amphora.Tests.Integration
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            org = JsonConvert.DeserializeObject<Organisation>(responseBody);
+            org = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
 
 
             var client2 = _factory.CreateClient();
@@ -118,7 +118,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(org.OrganisationId, self.OrganisationId);
         }
 
-        private async Task DeleteOrganisation(Organisation a, HttpClient client)
+        private async Task DeleteOrganisation(OrganisationModel a, HttpClient client)
         {
             var deleteResponse = await client.DeleteAsync($"api/organisations/{a.OrganisationId}");
             deleteResponse.EnsureSuccessStatusCode();

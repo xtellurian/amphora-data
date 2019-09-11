@@ -10,15 +10,15 @@ namespace Amphora.Api.Pages.Organisations
     [Authorize]
     public class DetailModel : PageModel
     {
-        private readonly IEntityStore<Organisation> entityStore;
+        private readonly IEntityStore<OrganisationModel> entityStore;
         private readonly IUserManager userManager;
 
-        public DetailModel(IEntityStore<Organisation> entityStore, IUserManager userManager)
+        public DetailModel(IEntityStore<OrganisationModel> entityStore, IUserManager userManager)
         {
             this.entityStore = entityStore;
             this.userManager = userManager;
         }
-        public Organisation Organisation { get; set; }
+        public OrganisationModel Organisation { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {

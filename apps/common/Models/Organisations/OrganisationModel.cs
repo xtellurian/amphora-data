@@ -3,7 +3,7 @@ using Amphora.Common.Extensions;
 
 namespace Amphora.Common.Models
 {
-    public class Organisation : Entity, IEntity
+    public class OrganisationModel : Entity, IEntity
     {
         // needs nothing as of now
         public string InviteCode { get; set; }
@@ -14,7 +14,7 @@ namespace Amphora.Common.Models
         public override void SetIds()
         {
             this.OrganisationId = System.Guid.NewGuid().ToString();
-            this.Id = this.OrganisationId.AsQualifiedId(typeof(Organisation));
+            this.Id = this.OrganisationId.AsQualifiedId(typeof(OrganisationModel));
         }
 
         // Address

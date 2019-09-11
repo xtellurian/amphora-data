@@ -84,14 +84,14 @@ namespace Amphora.Tests.Integration
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var org = new Organisation()
+            var org = new OrganisationModel()
             {
                 Name = nameof(CreateUserTests),
             };
             
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();
-            var createdOrg = JsonConvert.DeserializeObject<Organisation>(orgCreateContent);
+            var createdOrg = JsonConvert.DeserializeObject<OrganisationModel>(orgCreateContent);
 
             // now delete the org
             await client.DeleteAsync($"api/organisations/{createdOrg.OrganisationId}");
