@@ -1,0 +1,30 @@
+@page
+@model Amphora.Api.Pages.Organisations.EditModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div id="main" class="container center">
+    <div class="row">
+        <div class="col">
+            <p class="text-danger">@Model.ErrorMessage</p>
+            <form method="post" asp-route-id="@Model.OrganisationId">
+                <div class="form-group">
+                    <label asp-for="Input.Name" class="control-label"></label>
+                    <input asp-for="Input.Name" class="form-control" placeholder="Jane Citizen" />
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    <small id="fullNameHelp" class="form-text text-muted">Your Full Name</small>
+                </div>
+                <div class="form-group">
+                    <div class="form-group-prepend">
+                        <label asp-for="Input.About" class="control-label"></label>
+                    </div>
+                    <textarea asp-for="Input.About" class="form-control" aria-label="About You"></textarea>
+                    <span asp-validation-for="Input.About" class="text-danger"></span>
+                    <small id="aboutHelp" class="form-text text-muted">A little about yourself</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Amphora.Api.Pages.Profile
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class DetailModel : PageModel
     {
         private readonly IUserManager userManager;
 
-        public IndexModel(IUserManager userManager)
+        public DetailModel(IUserManager userManager)
         {
             this.userManager = userManager;
         }

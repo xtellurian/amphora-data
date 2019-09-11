@@ -12,9 +12,9 @@ namespace Amphora.Common.Extensions
         // prefixes
         private static readonly Dictionary<Type, string> prefixes = new Dictionary<Type, string>
         {
-            {typeof(AmphoraModel), nameof(AmphoraModel)},
-            {typeof(OrganisationModel), nameof(OrganisationModel)},
-            {typeof(PermissionModel), nameof(PermissionModel)},
+            {typeof(AmphoraModel), "Amphora"},
+            {typeof(OrganisationModel), "Organisation"},
+            {typeof(PermissionModel), "Permission"},
         };
 
         public static string AsQualifiedId<T>(this string id) where T: IEntity

@@ -9,9 +9,9 @@ namespace Amphora.Tests.Unit
     public class IdTests
     {
         [Theory]
-        [InlineData("AmphoraModel", typeof(AmphoraModel))]
-        [InlineData("OrganisationModel", typeof(OrganisationModel))]
-        [InlineData("PermissionModel", typeof(PermissionModel))]
+        [InlineData("Amphora", typeof(AmphoraModel))]
+        [InlineData("Organisation", typeof(OrganisationModel))]
+        [InlineData("Permission", typeof(PermissionModel))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {
             var id = System.Guid.NewGuid().ToString();
@@ -26,7 +26,7 @@ namespace Amphora.Tests.Unit
         public void IdShouldBeginWithOnError()
         {
             string x = null;
-            Assert.Throws<System.ArgumentException>(() => x.AsQualifiedId(typeof(Amphora.Common.Models.AmphoraModel)));
+            Assert.Throws<System.ArgumentException>(() => x.AsQualifiedId(typeof(AmphoraModel)));
             var y = Guid.NewGuid().ToString();
             Assert.Throws<System.ArgumentException>(() => y.AsQualifiedId(typeof(string)));
         }

@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Pages.Organisations.DetailModel
+@model Amphora.Api.Pages.Profile.DetailModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -12,16 +12,18 @@
                     <div class="text-center mb-3">
                         <img src="~/images/doge.jpg" />
                     </div>
-                    <div class="w-100"><strong>@Model.Organisation.Name</strong></div>
+                    <div class="w-100"><strong>@Model.AppUser.FullName</strong></div>
+                    <div class="w-100 mb-2"><small>@Model.AppUser.UserName </small></div>
 
                     <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
-                    <p>@Model.Organisation.About</p>                 
+                    <p>@Model.AppUser.About</p>
+                    <p><i class="fas fa-user-friends"></i>@Model.AppUser.OrganisationId</p>                   
                 </div>
             </div>
         </div>
         <div class="col-8">
            <div>
-               @if(Model.CanEdit)
+               @if(Model.IsSelf)
                {
                 <a class="float-right" asp-page="./Edit"><i class="fas fa-user-edit"></i></a>
                }

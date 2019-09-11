@@ -39,7 +39,7 @@ namespace Amphora.Api.Pages.Organisations
             [DataType(DataType.Text)]
             public string Name { get; set; }
             [DataType(DataType.MultilineText)]
-            public string Description { get; set; }
+            public string About { get; set; }
             [DataType(DataType.Url)]
             public string Website { get; set; }
             [DataType(DataType.Text)]
@@ -65,7 +65,7 @@ namespace Amphora.Api.Pages.Organisations
             var org = new OrganisationModel
             {
                 Name = Input.Name,
-                Description = Input.Description,
+                About = Input.About,
                 WebsiteUrl = Input.Website,
                 Address = Input.Address,
             };
