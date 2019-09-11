@@ -39,7 +39,7 @@ namespace Amphora.Api.Pages.Market
 
         public string Token { get; set; }
 
-        public IEnumerable<Amphora.Common.Models.Amphora> Entities { get; set; }
+        public IEnumerable<Amphora.Common.Models.AmphoraModel> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {

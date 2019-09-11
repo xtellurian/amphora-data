@@ -16,25 +16,25 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IUserManager userManager;
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public IndexModel(
             IUserManager userManager,
             IAmphoraeService amphoraeService,
-            IEntityStore<Amphora.Common.Models.Amphora> entityStore,
-            IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IEntityStore<Amphora.Common.Models.AmphoraModel> entityStore,
+            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             IMapper mapper)
         {
             this.userManager = userManager;
             this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
             this.mapper = mapper;
-            this.Amphorae = new List<Amphora.Common.Models.Amphora>();
+            this.Amphorae = new List<Amphora.Common.Models.AmphoraModel>();
         }
 
         [BindProperty]
-        public IEnumerable<Amphora.Common.Models.Amphora> Amphorae { get; set; }
+        public IEnumerable<Amphora.Common.Models.AmphoraModel> Amphorae { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string orgId, string geoHash)
         {

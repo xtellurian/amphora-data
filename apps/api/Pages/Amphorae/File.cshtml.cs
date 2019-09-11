@@ -11,13 +11,13 @@ namespace Amphora.Api.Pages.Amphorae
     public class FileModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public FileModel(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             ITsiService tsiService,
             IMapper mapper)
         {

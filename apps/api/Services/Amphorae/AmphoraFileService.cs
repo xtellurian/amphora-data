@@ -10,14 +10,14 @@ namespace Amphora.Api.Services.Amphorae
     public class AmphoraFileService : IAmphoraFileService
     {
         private readonly IPermissionService permissionService;
-        private readonly IDataStore<Common.Models.Amphora, byte[]> store;
+        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> store;
         private readonly IUserManager userManager;
         private readonly ILogger<AmphoraFileService> logger;
 
         public AmphoraFileService(
             ILogger<AmphoraFileService> logger,
             IPermissionService permissionService,
-            IDataStore<Amphora.Common.Models.Amphora, byte[]> store,
+            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> store,
             IUserManager userManager)
         {
             this.permissionService = permissionService;
@@ -26,7 +26,7 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, Amphora.Common.Models.Amphora entity, string file)
+        public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, Amphora.Common.Models.AmphoraModel entity, string file)
         {
             var user = await userManager.GetUserAsync(principal);
             var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
@@ -44,7 +44,7 @@ namespace Amphora.Api.Services.Amphorae
         }
         public async Task<EntityOperationResult<byte[]>> WriteFileAsync(
             ClaimsPrincipal principal,
-            Amphora.Common.Models.Amphora entity,
+            Amphora.Common.Models.AmphoraModel entity,
             byte[] contents,
             string file)
         {

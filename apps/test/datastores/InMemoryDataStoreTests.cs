@@ -12,9 +12,9 @@ namespace Amphora.Tests.Unit.Datastores
         [Fact]
         public async Task ListNamesTest_Amphora()
         {
-            var sut = new InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>();
+            var sut = new InMemoryDataStore<Amphora.Common.Models.AmphoraModel, byte[]>();
             var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
-            entity.Id = Guid.NewGuid().ToString().AsQualifiedId<Amphora.Common.Models.Amphora>();
+            entity.Id = Guid.NewGuid().ToString().AsQualifiedId<Amphora.Common.Models.AmphoraModel>();
             var names = await sut.ListNamesAsync(entity);
             Assert.Empty(names);
 

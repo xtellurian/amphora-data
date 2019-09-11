@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models
 {
-    public class Amphora : Entity
+    public class AmphoraModel : Entity
     {
         public string AmphoraId { get; set; }
         public string Name { get; set; }
@@ -20,7 +20,7 @@ namespace Amphora.Common.Models
         public override void SetIds()
         {
             this.AmphoraId = System.Guid.NewGuid().ToString();
-            this.Id = this.AmphoraId.AsQualifiedId(typeof(Amphora));
+            this.Id = this.AmphoraId.AsQualifiedId(typeof(AmphoraModel));
         }
     }
 }

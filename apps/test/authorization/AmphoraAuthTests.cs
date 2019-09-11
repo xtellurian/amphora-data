@@ -40,7 +40,7 @@ namespace Amphora.Tests.Unit.Authorization
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 
@@ -79,7 +79,7 @@ namespace Amphora.Tests.Unit.Authorization
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             var a = EntityLibrary.GetAmphora(org.OrganisationId);
             a = await amphoraStore.CreateAsync(a);
 

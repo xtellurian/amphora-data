@@ -17,15 +17,15 @@ namespace Amphora.Api.Services.Market
             this.amphoraeService = amphoraeService;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.Amphora>> FindAsync(SearchParams searchParams)
+        public async Task<IEnumerable<Amphora.Common.Models.AmphoraModel>> FindAsync(SearchParams searchParams)
         {
-            IList<Amphora.Common.Models.Amphora> entities;
-            if(searchParams == null) return new List<Amphora.Common.Models.Amphora>();
+            IList<Amphora.Common.Models.AmphoraModel> entities;
+            if(searchParams == null) return new List<Amphora.Common.Models.AmphoraModel>();
             
             if(searchParams.IsGeoSearch)
             {
                 entities = await amphoraeService.AmphoraStore.StartsWithQueryAsync(
-                    nameof(Amphora.Common.Models.Amphora.GeoHash), 
+                    nameof(Amphora.Common.Models.AmphoraModel.GeoHash), 
                     searchParams.GeoHashStartsWith);
             }
             else

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores
 {
-    public class AzBlobAmphoraDataStore : IDataStore<Amphora.Common.Models.Amphora, byte[]>
+    public class AzBlobAmphoraDataStore : IDataStore<Amphora.Common.Models.AmphoraModel, byte[]>
     {
         private readonly ILogger<AzBlobAmphoraDataStore> logger;
         private readonly CloudBlobClient cloudBlobClient;
@@ -33,7 +33,7 @@ namespace Amphora.Api.Stores
                 throw new ArgumentNullException(nameof(options.CurrentValue.StorageConnectionString));
             }
         }
-        public async Task<byte[]> GetDataAsync(Common.Models.Amphora entity, string name)
+        public async Task<byte[]> GetDataAsync(Common.Models.AmphoraModel entity, string name)
         {
             var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);
             if (!await container.ExistsAsync())
@@ -47,7 +47,7 @@ namespace Amphora.Api.Stores
             return buffer.ToArray();
         }
 
-        public async Task<IEnumerable<string>> ListNamesAsync(Common.Models.Amphora entity)
+        public async Task<IEnumerable<string>> ListNamesAsync(Common.Models.AmphoraModel entity)
         {
             var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);
             if (!await container.ExistsAsync())
@@ -70,7 +70,7 @@ namespace Amphora.Api.Stores
             return names;
         }
 
-        public async Task<byte[]> SetDataAsync(Common.Models.Amphora entity, byte[] data, string name)
+        public async Task<byte[]> SetDataAsync(Common.Models.AmphoraModel entity, byte[] data, string name)
         {
             // 1 container per amphora
             var container = cloudBlobClient.GetContainerReference(entity.AmphoraId);

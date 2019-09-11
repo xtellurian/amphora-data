@@ -33,7 +33,7 @@ namespace Amphora.Tests.Unit
             mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             services.AddSingleton<IHttpClientFactory>(mockFactory.Object);
 
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();
         }
     }
 }

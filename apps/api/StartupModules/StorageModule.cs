@@ -42,27 +42,27 @@ namespace Amphora.Api.StartupModules
         private void UsePersistentStores(IServiceCollection services)
         {
             // COSMOS stores
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, CosmosAmphoraStore>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, CosmosAmphoraStore>();
             services.AddSingleton<IEntityStore<Amphora.Common.Models.Organisation>, CosmosOrganisationStore>();
             services.AddSingleton<IEntityStore<Amphora.Common.Models.OnboardingState>, CosmosOnboardingStateStore>();
             // consumed by some singletons
             services.AddSingleton<IEntityStore<Amphora.Common.Models.PermissionCollection>, CosmosPermissionCollectionStore>();
 
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, SignalEventHubDataStore>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, SignalEventHubDataStore>();
             // TODO (these are in memory)
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, AzBlobAmphoraDataStore>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, byte[]>, AzBlobAmphoraDataStore>();
 
         }
 
         private static void UseInMemoryStores(IServiceCollection services)
         {
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, byte[]>, InMemoryDataStore<Amphora.Common.Models.Amphora, byte[]>>();
-            services.AddSingleton<IDataStore<Amphora.Common.Models.Amphora, Datum>, InMemoryDataStore<Amphora.Common.Models.Amphora, Datum>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, byte[]>, InMemoryDataStore<Amphora.Common.Models.AmphoraModel, byte[]>>();
+            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, InMemoryDataStore<Amphora.Common.Models.AmphoraModel, Datum>>();
 
             // entity stores
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.Amphora>, InMemoryEntityStore<Amphora.Common.Models.Amphora>>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();
             services.AddSingleton<IEntityStore<Organisation>, InMemoryEntityStore<Organisation>>();
             services.AddSingleton<IEntityStore<PermissionCollection>, InMemoryEntityStore<PermissionCollection>>();
             services.AddSingleton<IEntityStore<OnboardingState>, InMemoryEntityStore<OnboardingState>>();

@@ -75,7 +75,7 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     geoHash = GeoHash.Encode(Input.Lat.Value, Input.Lon.Value);
                 }
-                var entity = new Amphora.Common.Models.Amphora
+                var entity = new Amphora.Common.Models.AmphoraModel
                 {
                     Name = Input.Name,
                     Description = Input.Description,

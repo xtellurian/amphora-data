@@ -31,7 +31,7 @@ namespace Amphora.Tests.Integration
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -69,7 +69,7 @@ namespace Amphora.Tests.Integration
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);

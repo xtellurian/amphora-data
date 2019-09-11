@@ -16,7 +16,7 @@ namespace Amphora.Tests.Unit
     public class MarketServiceTests
     {
         private readonly ILogger<AmphoraeService> amphoraLogger;
-        private InMemoryEntityStore<Common.Models.Amphora> amphoraStore;
+        private InMemoryEntityStore<Common.Models.AmphoraModel> amphoraStore;
         private InMemoryEntityStore<Organisation> orgStore;
         private InMemoryEntityStore<PermissionCollection> permissionStore;
         private Mock<IUserManager> mockUserManager;
@@ -24,7 +24,7 @@ namespace Amphora.Tests.Unit
 
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
-            this.amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            this.amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             this.orgStore = new InMemoryEntityStore<Amphora.Common.Models.Organisation>();
             this.permissionStore = new InMemoryEntityStore<Amphora.Common.Models.PermissionCollection>();
             this.mockUserManager = new Mock<IUserManager>();
@@ -61,7 +61,7 @@ namespace Amphora.Tests.Unit
             Assert.Contains(response, e => e.Id == entity.Id);
         }
 
-        private async Task<Amphora.Common.Models.Amphora> AddToStore()
+        private async Task<Amphora.Common.Models.AmphoraModel> AddToStore()
         {
             var amphora = EntityLibrary.GetAmphora("1234"); // dumy org id
             return await amphoraStore.CreateAsync(amphora);

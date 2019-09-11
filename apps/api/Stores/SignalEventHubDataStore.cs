@@ -13,7 +13,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Api.Stores
 {
-    public class SignalEventHubDataStore : IDataStore<Amphora.Common.Models.Amphora, Datum>
+    public class SignalEventHubDataStore : IDataStore<Amphora.Common.Models.AmphoraModel, Datum>
     {
         private readonly EventHubClient eventHubClient;
 
@@ -30,17 +30,17 @@ namespace Amphora.Api.Stores
 
         }
 
-        public Task<Datum> GetDataAsync(Common.Models.Amphora entity, string name)
+        public Task<Datum> GetDataAsync(Common.Models.AmphoraModel entity, string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ListNamesAsync(Common.Models.Amphora entity)
+        public Task<IEnumerable<string>> ListNamesAsync(Common.Models.AmphoraModel entity)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Datum> SetDataAsync(Common.Models.Amphora entity, Datum data, string name)
+        public async Task<Datum> SetDataAsync(Common.Models.AmphoraModel entity, Datum data, string name)
         {
             var content = JsonConvert.SerializeObject(data,
                                 Newtonsoft.Json.Formatting.None,

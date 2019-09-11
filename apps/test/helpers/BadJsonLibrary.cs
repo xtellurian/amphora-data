@@ -19,7 +19,7 @@ namespace Amphora.Tests.Helpers
 
         private static string BadlyFormedAmphora()
         {
-            var entity = new Amphora.Common.Models.Amphora
+            var entity = new Amphora.Common.Models.AmphoraModel
             {
                 Price = -1,
                 Name = null,

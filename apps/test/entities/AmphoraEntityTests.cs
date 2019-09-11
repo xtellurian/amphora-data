@@ -12,8 +12,8 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
-            var a = new Amphora.Common.Models.Amphora()
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var a = new Amphora.Common.Models.AmphoraModel()
             {
                 Name = "Test Name",
                 Description = "Test Description",
@@ -26,8 +26,8 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryEntityStoreListAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
-            var a = new Amphora.Common.Models.Amphora()
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
+            var a = new Amphora.Common.Models.AmphoraModel()
             {
                 Name = "Test Name",
                 Description = "Test Description",
@@ -40,17 +40,17 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryEntityStoreReturnsNullAsync()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             await GetMissingAmphoraAsync(sut);
         }
 
-        private async Task GetMissingAmphoraAsync(IEntityStore<Amphora.Common.Models.Amphora> sut)
+        private async Task GetMissingAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut)
         {
             var missing = await sut.ReadAsync("missing");
             Assert.Null(missing);
         }
 
-        private async Task ListAmphoraAsync(IEntityStore<Amphora.Common.Models.Amphora> sut, Amphora.Common.Models.Amphora a)
+        private async Task ListAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut, Amphora.Common.Models.AmphoraModel a)
         {
             var emptyList = await sut.ListAsync();
             Assert.Empty(emptyList);
@@ -61,7 +61,7 @@ namespace Amphora.Tests.Unit
             Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
         }
 
-        private async Task StoreAndRetrieveAmphoraAsync(IEntityStore<Amphora.Common.Models.Amphora> sut, Amphora.Common.Models.Amphora a)
+        private async Task StoreAndRetrieveAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut, Amphora.Common.Models.AmphoraModel a)
         {
             var setResult = await sut.CreateAsync(a);
             Assert.NotNull(setResult);

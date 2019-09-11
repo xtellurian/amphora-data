@@ -13,7 +13,7 @@ namespace Amphora.Tests.Unit.Datastores
         [Fact]
         public async Task QueryAmphoraByLatLon()
         {
-            var sut = new InMemoryEntityStore<Amphora.Common.Models.Amphora>();
+            var sut = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>();
             
             var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
 

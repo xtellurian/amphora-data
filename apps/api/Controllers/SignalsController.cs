@@ -17,14 +17,14 @@ namespace Amphora.Api.Controllers
     public class SignalController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore;
+        private readonly IDataStore<Amphora.Common.Models.AmphoraModel, Datum> dataStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
         private readonly ILogger<SignalController> logger;
 
         public SignalController(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.Amphora, Datum> dataStore,
+            IDataStore<Amphora.Common.Models.AmphoraModel, Datum> dataStore,
             ITsiService tsiService,
             IMapper mapper,
             ILogger<SignalController> logger)

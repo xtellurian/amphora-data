@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
 {
-    public class AmphoraAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Amphora.Common.Models.Amphora>
+    public class AmphoraAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Amphora.Common.Models.AmphoraModel>
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
         private readonly IPermissionService permissionService;
@@ -24,7 +24,7 @@ namespace Amphora.Api.Services.Auth
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                     OperationAuthorizationRequirement requirement,
-                                                       Amphora.Common.Models.Amphora entity)
+                                                       Amphora.Common.Models.AmphoraModel entity)
         {
             var user = await userManager.GetUserAsync(context.User);
 

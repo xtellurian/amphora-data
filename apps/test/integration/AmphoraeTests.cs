@@ -29,13 +29,13 @@ namespace Amphora.Tests.Integration
             var createResponse = await adminClient.PostAsync(url, requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
-            a = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(createResponseContent);
+            a = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(createResponseContent);
 
             // Act
             var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var amphorae = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(content);
+            var amphorae = JsonConvert.DeserializeObject<List<Amphora.Common.Models.AmphoraModel>>(content);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -63,7 +63,7 @@ namespace Amphora.Tests.Integration
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
-            var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.Amphora>(
+            var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(
                 await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
             Assert.NotNull(amphora);
@@ -75,7 +75,7 @@ namespace Amphora.Tests.Integration
             //Assert
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
-            var entities = JsonConvert.DeserializeObject<List<Amphora.Common.Models.Amphora>>(responseContent);
+            var entities = JsonConvert.DeserializeObject<List<Amphora.Common.Models.AmphoraModel>>(responseContent);
             if (success)
             {
                 Assert.Contains(entities, e => string.Equals(amphora.Id, e.Id));

@@ -8,10 +8,10 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static Amphora.Common.Models.Amphora GetAmphora(string orgId, string description = null)
+        public static Amphora.Common.Models.AmphoraModel GetAmphora(string orgId, string description = null)
         {
             var geoHash = GeoHash.Encode(rnd.Next(0, 180), rnd.Next(0, 180));
-            return new Amphora.Common.Models.Amphora()
+            return new Amphora.Common.Models.AmphoraModel()
             {
                 Id = null,
                 OrganisationId = orgId,
@@ -22,9 +22,9 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static Amphora.Common.Models.Amphora GetInvalidAmphora(string id = null)
+        public static Amphora.Common.Models.AmphoraModel GetInvalidAmphora(string id = null)
         {
-            return new Amphora.Common.Models.Amphora()
+            return new Amphora.Common.Models.AmphoraModel()
             {
                 Id = id,
                 Description = null,

@@ -20,12 +20,12 @@ namespace Amphora.Api.Pages.Amphorae
     public class DetailModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly ITsiService tsiService;
 
         public DetailModel(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             ITsiService tsiService)
         {
             this.amphoraeService = amphoraeService;
@@ -34,7 +34,7 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         [BindProperty]
-        public Amphora.Common.Models.Amphora Amphora { get; set; }
+        public Amphora.Common.Models.AmphoraModel Amphora { get; set; }
         public IEnumerable<string> Names { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse {get; set; }

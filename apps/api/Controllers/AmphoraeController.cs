@@ -15,7 +15,7 @@ namespace Amphora.Api.Controllers
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IAmphoraFileService amphoraFileService;
-        private readonly IDataStore<Common.Models.Amphora, byte[]> dataStore;
+        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserManager userManager;
         private readonly IMapper mapper;
@@ -23,7 +23,7 @@ namespace Amphora.Api.Controllers
         public AmphoraeController(
             IAmphoraeService amphoraeService,
             IAmphoraFileService amphoraFileService,
-            IDataStore<Amphora.Common.Models.Amphora, byte[]> dataStore,
+            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             IAuthorizationService authorizationService,
             IUserManager userManager,
             IMapper mapper)
@@ -49,7 +49,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/amphorae")]
-        public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.Amphora model)
+        public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.AmphoraModel model)
         {
             if (model == null || !model.IsValidDto())
             {
@@ -90,7 +90,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/amphorae/{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.Amphora model)
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.AmphoraModel model)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
             if (a == null) return NotFound();
