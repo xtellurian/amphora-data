@@ -1,6 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { IComponentParams, CONSTANTS } from "../../components";
+import { CONSTANTS, IComponentParams } from "../../components";
 
 const azTags = {
   component: "network",

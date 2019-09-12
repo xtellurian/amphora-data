@@ -2,11 +2,11 @@ import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
 
+import { CONSTANTS } from "../../../components";
 import { State } from "../../state/state";
 import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { environmentTemplate } from "./tsi_environment";
 import { eventSourceTemplate } from "./tsi_eventsource";
-import { CONSTANTS } from "../../../components";
 
 const azTags = {
   component: "state",
