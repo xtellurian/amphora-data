@@ -5,13 +5,13 @@
         "lint": "tslint -c tslint.json './**/*.ts'"
     },
     "devDependencies": {
-        "@types/node": "latest",
-        "tslint": "^5.18.0"
+        "@types/node": "^12.7.5",
+        "tslint": "^5.20.0"
     },
     "dependencies": {
-        "@pulumi/azure": "latest",
-        "@pulumi/pulumi": "latest",
-        "@pulumi/random": "^0.5.6",
+        "@pulumi/azure": "^1.0.0",
+        "@pulumi/pulumi": "^1.1.0",
+        "@pulumi/random": "^0.5.8",
         "reflect-metadata": "^0.1.13"
     }
 }
