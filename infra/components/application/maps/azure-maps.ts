@@ -1,6 +1,5 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import * as random from "@pulumi/random";
 
 // tslint:disable-next-line: no-empty-interface
 export interface IAzureMapsParams {
@@ -21,8 +20,8 @@ export class AzureMaps extends pulumi.ComponentResource {
      *
      */
     constructor(
-        private name: string,
-        private params: IAzureMapsParams,
+        name: string,
+        params: IAzureMapsParams,
         opts?: pulumi.ComponentResourceOptions,
     ) {
         super("amphora:AzureMaps", name, {}, opts);
