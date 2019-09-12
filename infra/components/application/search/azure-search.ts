@@ -23,7 +23,6 @@ export class AzureSearch extends pulumi.ComponentResource {
         opts?: pulumi.ComponentResourceOptions) {
 
         super("amphora:AzureSearch", name, {}, opts);
-
         this.create(params.rg);
     }
 
