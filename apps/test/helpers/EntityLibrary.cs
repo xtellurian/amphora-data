@@ -36,10 +36,9 @@ namespace Amphora.Tests.Helpers
 
         public static OrganisationModel GetOrganisation()
         {
-            return new OrganisationModel
+            return new OrganisationExtendedModel
             {
-                Name =  Guid.NewGuid().ToString(),
-                InviteCode = Guid.NewGuid().ToString()
+                Name =  Guid.NewGuid().ToString()
             };
         }
     }

@@ -41,6 +41,10 @@ namespace Amphora.Api.Stores
                 return entity;
             });
         }
+        async Task<TExtended> IEntityStore<T>.CreateAsync<TExtended>(TExtended entity)
+        {
+            return (TExtended) await this.CreateAsync(entity);
+        }
 
         public Task<T> ReadAsync(string id)
         {

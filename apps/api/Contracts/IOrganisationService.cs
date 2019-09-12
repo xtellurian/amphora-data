@@ -8,7 +8,7 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<OrganisationModel> Store { get; }
         Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId);
-        Task<Models.EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org);
+        Task<Models.EntityOperationResult<OrganisationExtendedModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationExtendedModel org);
         Task InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email);
     }
 }

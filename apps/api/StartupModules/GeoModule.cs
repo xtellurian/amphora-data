@@ -20,7 +20,7 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AzureMapsOptions>(Configuration);
+            services.Configure<AzureMapsOptions>(Configuration.GetSection("AzureMaps"));
 
             if (HostingEnvironment.IsProduction() || Configuration["PersistentStores"] == "true")
             {

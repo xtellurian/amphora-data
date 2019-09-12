@@ -9,6 +9,7 @@ namespace Amphora.Api.Contracts
         Task<IList<T>> ListAsync();
         Task<IList<T>> ListAsync(string orgId);
         Task<T> CreateAsync(T entity);
+        Task<TExtended> CreateAsync<TExtended>(TExtended entity) where TExtended: class, T;
         Task<T> ReadAsync(string id);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);

@@ -65,7 +65,7 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var org = new OrganisationModel
+            var org = new OrganisationExtendedModel
             {
                 Name = Input.Name,
                 About = Input.About,

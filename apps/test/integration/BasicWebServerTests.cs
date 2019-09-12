@@ -17,7 +17,7 @@ namespace Amphora.Tests.Integration
         [Theory]
         [InlineData("/")]
         [InlineData("/Home/Privacy")]
-        [InlineData("/Profile")]
+        [InlineData("/Profile/Detail")]
         [InlineData("/Profile/Edit")]
         [InlineData("/Market")]
         [InlineData("/Amphorae")]

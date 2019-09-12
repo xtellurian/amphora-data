@@ -5,12 +5,8 @@ namespace Amphora.Common.Models.Organisations
 {
     public class OrganisationModel : Entity, IEntity
     {
-        // needs nothing as of now
-        public string InviteCode { get; set; }
         public string Name { get; set; }
-        public string About { get; set; }
-        public string WebsiteUrl { get; set; }
-        public string Address { get; set; }
+        
         public override void SetIds()
         {
             this.OrganisationId = System.Guid.NewGuid().ToString();

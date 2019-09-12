@@ -29,9 +29,6 @@
                 <thead>
                     <tr>
                     <th scope="col">Org Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Address</th>
-                    <th scope="col">Website</th>
                     <th scope="col"></th>
                     </tr>
                 </thead>
@@ -40,9 +37,6 @@
                     {
                      <tr class="entity-item">
                         <th scope="row"> @entity.Name </th>
-                        <td>@entity.About</td>
-                        <td>@entity.Address</td>
-                        <td><a href="@entity.WebsiteUrl"> @entity.WebsiteUrl </a></td>
                         <td>  
                             <a asp-page="/Organisations/Detail" asp-route-id="@entity.OrganisationId"> 
                                 <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 

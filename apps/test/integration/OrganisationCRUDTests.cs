@@ -44,7 +44,6 @@ namespace Amphora.Tests.Integration
             var b = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Name, b.Name);
-            Assert.Equal(a.InviteCode, b.InviteCode);
 
             await DeleteOrganisation(b, client);
 

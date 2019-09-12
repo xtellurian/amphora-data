@@ -46,7 +46,7 @@ namespace Amphora.Api.StartupModules
             services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, CosmosAmphoraStore>();
             services.AddSingleton<IEntityStore<OrganisationModel>, CosmosOrganisationStore>();
             // consumed by some singletons
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.PermissionModel>, CosmosPermissionCollectionStore>();
+            services.AddSingleton<IEntityStore<Amphora.Common.Models.PermissionModel>, CosmosPermissionStore>();
 
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, SignalEventHubDataStore>();

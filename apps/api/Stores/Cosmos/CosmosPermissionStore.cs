@@ -10,9 +10,9 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores.Cosmos
 {
-    public class CosmosPermissionCollectionStore : CosmosStoreBase, IEntityStore<PermissionModel>
+    public class CosmosPermissionStore : CosmosStoreBase, IEntityStore<PermissionModel>
     {
-        public CosmosPermissionCollectionStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosStoreBase> logger)
+        public CosmosPermissionStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosStoreBase> logger)
             : base(options, logger)
         {
         }
@@ -20,6 +20,10 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<PermissionModel> CreateAsync(PermissionModel entity)
         {
             return await base.CreateAsync(entity);
+        }
+        async Task<TExtended> IEntityStore<PermissionModel>.CreateAsync<TExtended>(TExtended entity)
+        {
+            return await base.CreateAsync<TExtended>(entity);
         }
 
         public Task DeleteAsync(PermissionModel entity)

@@ -23,6 +23,10 @@ namespace Amphora.Api.Stores.Cosmos
         {
            return await base.CreateAsync(entity);
         }
+        async Task<TExtended> IEntityStore<OrganisationModel>.CreateAsync<TExtended>(TExtended entity)
+        {
+           return await base.CreateAsync<TExtended>(entity);
+        }
 
         public async Task DeleteAsync(OrganisationModel entity)
         {
@@ -57,9 +61,11 @@ namespace Amphora.Api.Stores.Cosmos
             return await base.ReadAsync<OrganisationModel>(id);
         }
 
-        Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id, string orgId)
+        async Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id, string orgId)
         {
-            throw new NotImplementedException();
+            await Init();
+            id = id.AsQualifiedId<OrganisationModel>();
+            return await base.ReadAsync<TExtended>(id, orgId);
         }
 
         public async Task<OrganisationModel> ReadAsync(string id, string orgId)

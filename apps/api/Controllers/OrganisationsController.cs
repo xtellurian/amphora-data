@@ -36,7 +36,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/organisations")]
-        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationModel org)
+        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationExtendedModel org)
         {
             // check the key
             if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))

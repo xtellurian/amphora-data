@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores.Cosmos
 {
-    public class CosmosAmphoraStore : CosmosStoreBase, IEntityStore<Amphora.Common.Models.AmphoraModel>
+    public class CosmosAmphoraStore : CosmosStoreBase, IEntityStore<AmphoraModel>
     {
 
         public CosmosAmphoraStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosAmphoraStore> logger)
@@ -23,6 +23,10 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<AmphoraModel> CreateAsync(AmphoraModel entity)
         {
             return await base.CreateAsync<AmphoraModel>(entity);
+        }
+        async Task<TExtended> IEntityStore<AmphoraModel>.CreateAsync<TExtended>(TExtended entity)
+        {
+            return await base.CreateAsync<TExtended>(entity);
         }
 
         public async Task<IList<AmphoraModel>> ListAsync()
@@ -86,9 +90,10 @@ namespace Amphora.Api.Stores.Cosmos
                 return response.Resource;
             }
         }
-        Task<TExtended> IEntityStore<AmphoraModel>.ReadAsync<TExtended>(string id, string orgId)
+        async Task<TExtended> IEntityStore<AmphoraModel>.ReadAsync<TExtended>(string id, string orgId)
         {
-            throw new NotImplementedException();
+           await Init();
+           return await base.ReadAsync<TExtended>(id, orgId);
         }
 
         public async Task<IList<AmphoraModel>> ListAsync(string orgId)

@@ -81,14 +81,16 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org)
+        public async Task<EntityOperationResult<OrganisationExtendedModel>> CreateOrganisationAsync(
+            ClaimsPrincipal principal,
+            OrganisationExtendedModel org)
         {
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
-            if (user == null) return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login");
+            if (user == null) return new EntityOperationResult<OrganisationExtendedModel>("Cannot find user. Please login");
 
             // we good - create an org
-            org = await Store.CreateAsync(org);
+            org = await Store.CreateAsync<OrganisationExtendedModel>(org);
             if (org != null)
             {
                 // update user with org id
@@ -104,7 +106,7 @@ namespace Amphora.Api.Services.Organisations
                     // give this user admin on the org
                     await permissionService.CreateOrganisationalRole(user, RoleAssignment.Roles.Administrator, org);
 
-                    return new EntityOperationResult<OrganisationModel>(org);
+                    return new EntityOperationResult<OrganisationExtendedModel>(org);
                 }
                 catch (Exception ex)
                 {
@@ -116,7 +118,7 @@ namespace Amphora.Api.Services.Organisations
             }
             else
             {
-                return new EntityOperationResult<OrganisationModel>("Failed to create organisation");
+                return new EntityOperationResult<OrganisationExtendedModel>("Failed to create organisation");
             }
 
         }
