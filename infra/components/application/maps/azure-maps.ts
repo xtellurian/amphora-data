@@ -1,7 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
-// tslint:disable-next-line: no-empty-interface
 export interface IAzureMapsParams {
     rg: azure.core.ResourceGroup;
 }

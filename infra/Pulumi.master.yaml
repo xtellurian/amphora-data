@@ -5,3 +5,4 @@ config:
   application:appSvcPlanSize: B1
   application:appSvcPlanTier: Basic
   azure:environment: public
+  azuresearch:sku: standard

@@ -6,18 +6,20 @@ import { Monitoring } from "../monitoring/monitoring";
 import { Network } from "../network/network";
 import { State } from "../state/state";
 import { AzureMaps } from "./maps/azure-maps";
+import { AzureSearch } from "./search/azure-search";
 import { Tsi } from "./tsi/tsi";
 
 const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
 
-const azTags = {
+const tags = {
   component: "application",
   project: pulumi.getProject(),
   source: "pulumi",
   stack: pulumi.getStack(),
 };
 const rgName = pulumi.getStack() + "-app";
+const searchRgName = pulumi.getStack() + "-search";
 
 export interface IApplication {
   appSvc: azure.appservice.AppService;
@@ -48,7 +50,7 @@ export class Application extends pulumi.ComponentResource
       rgName,
       {
         location: CONSTANTS.location.primary,
-        tags: azTags,
+        tags,
       },
       {
         parent: this,
@@ -60,7 +62,27 @@ export class Application extends pulumi.ComponentResource
     this.createAppSvc(rg, this.state.kv);
     this.accessPolicyKeyVault(this.state.kv, this.appSvc);
     this.createTsi();
+
+    const searchRg = new azure.core.ResourceGroup(searchRgName,
+      {
+        location: CONSTANTS.location.secondary,
+        tags,
+      }, { parent: this });
+
+    this.createSearch(searchRg);
   }
+
+  private createSearch(rg: azure.core.ResourceGroup) {
+    const search = new AzureSearch("azure-search", {
+      rg,
+    },
+      { parent: this });
+
+    this.state.storeInVault("AzureSearchName", "AzureSearch--Name", search.service.name);
+    this.state.storeInVault("AzureSearchPrimaryKey", "AzureSearch--PrimaryKey", search.service.primaryKey);
+    this.state.storeInVault("AzureSearchSecondaryKey", "AzureSearch--SecondaryKey", search.service.secondaryKey);
+  }
+
   private createTsi() {
     this.tsi = new Tsi("tsi", {
       appSvc: this.appSvc,
@@ -68,8 +90,8 @@ export class Application extends pulumi.ComponentResource
       eh_namespace: this.state.ehns,
       state: this.state,
     }, {
-        parent: this,
-      });
+      parent: this,
+    });
   }
 
   private createAcr(rg: azure.core.ResourceGroup) {
@@ -82,7 +104,7 @@ export class Application extends pulumi.ComponentResource
         location: CONSTANTS.location.primary,
         resourceGroupName: rg.name,
         sku,
-        tags: azTags,
+        tags,
       },
       { parent: rg },
     );
@@ -104,7 +126,7 @@ export class Application extends pulumi.ComponentResource
           size: config.require("appSvcPlanSize"),
           tier: config.require("appSvcPlanTier"),
         },
-        tags: azTags,
+        tags,
       },
       {
         parent: rg,
@@ -139,7 +161,7 @@ export class Application extends pulumi.ComponentResource
           alwaysOn: true,
           linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`,
         },
-        tags: azTags,
+        tags,
       },
       {
         parent: this.plan,
