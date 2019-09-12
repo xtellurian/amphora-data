@@ -119,7 +119,7 @@ export class Application extends pulumi.ComponentResource
         appServicePlanId: this.plan.id,
         appSettings: {
           APPINSIGHTS_INSTRUMENTATIONKEY: this.monitoring.applicationInsights.instrumentationKey,
-          AzureMapsClientId: this.AzureMaps.clientId,
+          AzureMapsClientId: this.AzureMaps.maps.xMsClientId,
           DOCKER_REGISTRY_SERVER_PASSWORD: this.acr.adminPassword,
           DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
             this.acr.loginServer
@@ -183,7 +183,7 @@ export class Application extends pulumi.ComponentResource
       {
         principalId: authConfig.require("spObjectId"),
         roleDefinitionId: roleId,
-        scope: this.AzureMaps.resourceId,
+        scope: this.AzureMaps.maps.id,
       },
       {
         parent: this,
@@ -193,12 +193,13 @@ export class Application extends pulumi.ComponentResource
       {
         principalId: authConfig.require("rian"),
         roleDefinitionId: roleId,
-        scope: this.AzureMaps.resourceId,
+        scope: this.AzureMaps.maps.id,
       },
       {
         parent: this,
       });
 
-    this.state.storeInVault("AzureMapsClientId", "AzureMapsClientId", this.AzureMaps.clientId);
+    this.state.storeInVault("AzureMapsKey", "AzureMaps--Key", this.AzureMaps.maps.primaryAccessKey);
+    this.state.storeInVault("AzureMapsClientId", "AzureMaps--ClientId", this.AzureMaps.maps.xMsClientId);
   }
 }

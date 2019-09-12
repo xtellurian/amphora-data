@@ -28,14 +28,14 @@ namespace Amphora.Api.Services.Azure
         {
             this.client = factory.CreateClient("azure-maps");
             client.BaseAddress = new System.Uri("https://atlas.microsoft.com");
-            if(options.CurrentValue.AzureMapsKey != null)
+            if(options.CurrentValue.Key != null)
             {
-                this.subscriptionKey = options.CurrentValue.AzureMapsKey;
+                this.subscriptionKey = options.CurrentValue.Key;
                 isInit = true;
             }
             else
             {
-                client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.AzureMapsClientId);
+                client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.Key);
             }
             this.tokenProvider = tokenProvider;
             this.logger = logger;

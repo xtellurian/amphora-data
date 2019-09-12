@@ -38,8 +38,6 @@ jobs:
         echo "$kvName"
         echo "$pulumiStack"
         echo "$webAppResourceId"
-        echo "$AzureMapsResourceGroup"
-        echo "$AzureMapsAccountName"
       displayName: Important Variables
       env: 
         kvUri: $(pulumi.kvUri)
@@ -47,21 +45,19 @@ jobs:
         pulumiStack: $(pulumi.pulumiStack)
         appUrl: $(pulumi.appUrl)
         webAppResourceId: $(pulumi.webAppResourceId)
-        AzureMapsResourceGroup: $(pulumi.AzureMapsResourceGroup)
-        AzureMapsAccountName: $(pulumi.AzureMapsAccountName)
 
-    - script: |
-        az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
-        key=$(az maps account keys list -g $AzureMapsResourceGroup -n $AzureMapsAccountName --query primaryKey -o tsv)
-        az keyvault secret set --vault-name $kvName --name AzureMapsKey --value $key
-      displayName: Create Maps Secret in Azure
-      env:
-        NAME: $(name)
-        PASSWORD: $(password)
-        TENANT: $(tenant)
-        AzureMapsResourceGroup: $(pulumi.AzureMapsResourceGroup)
-        AzureMapsAccountName: $(pulumi.AzureMapsAccountName)
-        kvName: $(pulumi.kvName)
+    # - script: |
+    #     az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    #     key=$(az maps account keys list -g $AzureMapsResourceGroup -n $AzureMapsAccountName --query primaryKey -o tsv)
+    #     az keyvault secret set --vault-name $kvName --name AzureMapsKey --value $key
+    #   displayName: Create Maps Secret in Azure
+    #   env:
+    #     NAME: $(name)
+    #     PASSWORD: $(password)
+    #     TENANT: $(tenant)
+    #     AzureMapsResourceGroup: $(pulumi.AzureMapsResourceGroup)
+    #     AzureMapsAccountName: $(pulumi.AzureMapsAccountName)
+    #     kvName: $(pulumi.kvName)
 
 
 ##################################################################

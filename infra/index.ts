@@ -64,16 +64,6 @@ export let acrName = result.then((r) =>
   r.application.acr.name,
 );
 
-export let AzureMapsClientId = result.then((r) =>
-  r.application.AzureMaps.clientId,
-);
-export let AzureMapsAccountName = result.then((r) =>
-  r.application.AzureMaps.accountName,
-);
-export let AzureMapsResourceGroup = result.then((r) =>
-  r.application.AzureMaps.resourceGroup,
-);
-
 export let webAppResourceId = result.then((r) =>
   r.application.appSvc.id,
 );
