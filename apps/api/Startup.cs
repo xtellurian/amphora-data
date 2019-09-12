@@ -15,6 +15,7 @@ using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Services.Organisations;
+using Amphora.Api.Services.FeatureFlags;
 
 namespace Amphora.Api
 {
@@ -57,8 +58,14 @@ namespace Amphora.Api
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
+
+            services.Configure<AzureSearchOptions>(Configuration.GetSection("AzureSearch"));
+            services.AddTransient<ISearchService, AzureSearchService>();
             
             services.AddTransient<IOrganisationService, OrganisationService>();
+
+            services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
+            services.AddSingleton<FeatureFlagService>();
 
 
             services.AddHttpClient();

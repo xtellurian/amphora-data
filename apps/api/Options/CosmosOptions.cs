@@ -5,5 +5,7 @@ namespace Amphora.Api.Options
         public string Key {get; set; }
         public string Endpoint {get; set;}
         public string Database {get; set;}
+
+        public string ConnectionString => $"AccountEndpoint={Endpoint};AccountKey={Key};";
     }
 }

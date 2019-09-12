@@ -1,5 +1,6 @@
 @page
 @model Amphora.Api.Pages.Amphorae.DetailModel
+@inject Amphora.Api.Services.FeatureFlags.FeatureFlagService FeatureFlags
 @{
     ViewData["Title"] = "Amphora -";
 }
@@ -79,6 +80,8 @@
             </table>
         </div>
     </div>
+    @if(FeatureFlags.IsEnabled("signals"))
+    {
     <div class="row">
         <div class="col">
             <h3>Signals</h3>
@@ -86,10 +89,13 @@
         </div>
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
     </div>
+    }
 </div>
 
 
 @section Scripts {
+    @if(FeatureFlags.IsEnabled("signals"))
+    {
     <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
     <script src="~/js/tsi.js"></script>
 
@@ -98,4 +104,5 @@
         var response = @Html.Raw(@Model.QueryResponse);
         tsi(cols, response)
     </script>
+    }
 }

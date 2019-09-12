@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Common.Models;
-using AutoMapper;
+using Amphora.Api.Services.FeatureFlags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,15 +20,18 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
+        private readonly FeatureFlagService featureFlags;
         private readonly ITsiService tsiService;
 
         public DetailModel(
             IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
+            FeatureFlagService featureFlags,
             ITsiService tsiService)
         {
             this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
+            this.featureFlags = featureFlags;
             this.tsiService = tsiService;
         }
 
@@ -37,13 +39,13 @@ namespace Amphora.Api.Pages.Amphorae
         public Amphora.Common.Models.AmphoraModel Amphora { get; set; }
         public IEnumerable<string> Names { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
-        public string QueryResponse {get; set; }
+        public string QueryResponse { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if(id == null) return RedirectToPage("./Index");
+            if (id == null) return RedirectToPage("./Index");
             var result = await amphoraeService.ReadAsync(User, id);
-            if(result.WasForbidden)
+            if (result.WasForbidden)
             {
                 return RedirectToPage("./Forbidden");
             }
@@ -74,9 +76,9 @@ namespace Amphora.Api.Pages.Amphorae
             }
 
             if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
-            
+
             var result = await amphoraeService.ReadAsync(User, id);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 if (result.Entity == null) return RedirectToPage("./Index");
 
@@ -96,7 +98,7 @@ namespace Amphora.Api.Pages.Amphorae
                 this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 return Page();
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
                 return RedirectToPage("./Forbidden");
             }
@@ -109,28 +111,27 @@ namespace Amphora.Api.Pages.Amphorae
 
         private async Task<string> GetQueryResponse()
         {
-            var response = new List<QueryResponse>();
-            foreach(var member in Domain.GetDatumMembers())
+            if (featureFlags.IsEnabled("signals"))
             {
-                // then we can do a thing
-                if(string.Equals(member.Name, "t")) continue; // skip t // TODO remove hardcoding
-                // var r = await tsiService
-                //     .WeeklyAverageAsync(
-                //         Amphora.Id, 
-                //         member.Name, 
-                //         DateTime.UtcNow.AddDays(-365),
-                //         DateTime.UtcNow
-                //     );
-                var r = await tsiService.FullSet(
-                        Amphora.Id, 
-                        member.Name, 
-                        DateTime.UtcNow.AddDays(-7),
-                        DateTime.UtcNow
-                    );
+                var response = new List<QueryResponse>();
 
-                response.Add(r);
+                foreach (var member in Domain.GetDatumMembers())
+                {
+                    // then we can do a thing
+                    if (string.Equals(member.Name, "t")) continue; // skip t // TODO remove hardcoding
+
+                    var r = await tsiService.FullSet(
+                            Amphora.Id,
+                            member.Name,
+                            DateTime.UtcNow.AddDays(-7),
+                            DateTime.UtcNow
+                        );
+
+                    response.Add(r);
+                }
+                return JsonConvert.SerializeObject(response);
             }
-            return JsonConvert.SerializeObject(response);
+            else return "";
         }
     }
 }
