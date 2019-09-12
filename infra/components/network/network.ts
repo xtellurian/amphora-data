@@ -1,6 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { IComponentParams } from "../../components";
+import { IComponentParams, CONSTANTS } from "../../components";
 
 const azTags = {
   component: "network",
@@ -9,7 +9,6 @@ const azTags = {
   stack: pulumi.getStack(),
 };
 
-const locationConfig = new pulumi.Config("location");
 const rgName = pulumi.getStack() + "-network";
 
 export class Network extends pulumi.ComponentResource {
@@ -42,7 +41,7 @@ export class Network extends pulumi.ComponentResource {
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: locationConfig.require("primary"),
+        location: CONSTANTS.location.primary,
         tags: azTags,
       },
       { parent: this },

@@ -9,9 +9,8 @@ import { AzureMaps } from "./maps/azure-maps";
 import { Tsi } from "./tsi/tsi";
 
 const cfg = new pulumi.Config();
-const locationConfig = new pulumi.Config("location");
 const config = new pulumi.Config("application");
-const authConfig = new pulumi.Config("authentication");
+
 const azTags = {
   component: "application",
   project: pulumi.getProject(),
@@ -48,7 +47,7 @@ export class Application extends pulumi.ComponentResource
     const rg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: locationConfig.require("primary"),
+        location: CONSTANTS.location.primary,
         tags: azTags,
       },
       {
@@ -80,7 +79,7 @@ export class Application extends pulumi.ComponentResource
       "acr",
       {
         adminEnabled: true,
-        location: locationConfig.require("primary"),
+        location: CONSTANTS.location.primary,
         resourceGroupName: rg.name,
         sku,
         tags: azTags,
@@ -112,7 +111,7 @@ export class Application extends pulumi.ComponentResource
       },
     );
     const secretString = cfg.requireSecret("tokenManagement__secret");
-    this.imageName = pulumi.interpolate`${this.acr.loginServer}/${config.require("imageName")}:latest`;
+    this.imageName = pulumi.interpolate`${this.acr.loginServer}/${CONSTANTS.application.imageName}:latest`;
     this.appSvc = new azure.appservice.AppService(
       "appSvc",
       {
@@ -165,7 +164,7 @@ export class Application extends pulumi.ComponentResource
             identity.principalId || "11111111-1111-1111-1111-111111111111",
         ), // https://github.com/pulumi/pulumi-azure/issues/192
         secretPermissions: ["get", "list"],
-        tenantId: authConfig.require("tenantId"),
+        tenantId: CONSTANTS.authentication.tenantId,
       },
       {
         parent: appSvc,
@@ -176,12 +175,12 @@ export class Application extends pulumi.ComponentResource
   private createAzureMaps(rg: azure.core.ResourceGroup) {
     this.AzureMaps = new AzureMaps("azMaps", { rg }, { parent: this });
 
-    const subId = authConfig.require("subscriptionId");
+    const subId = CONSTANTS.authentication.subscriptionId;
     // tslint:disable-next-line: max-line-length
     const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
     const appRole = new azure.role.Assignment("appRole",
       {
-        principalId: authConfig.require("spObjectId"),
+        principalId: CONSTANTS.authentication.spObjectId,
         roleDefinitionId: roleId,
         scope: this.AzureMaps.maps.id,
       },
@@ -191,7 +190,7 @@ export class Application extends pulumi.ComponentResource
 
     const rianRole = new azure.role.Assignment("rianRole",
       {
-        principalId: authConfig.require("rian"),
+        principalId: CONSTANTS.authentication.rian,
         roleDefinitionId: roleId,
         scope: this.AzureMaps.maps.id,
       },

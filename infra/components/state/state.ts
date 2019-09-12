@@ -4,10 +4,7 @@ import { CONSTANTS, IComponentParams } from "../../components";
 
 import { Monitoring } from "../monitoring/monitoring";
 
-const locationConfig = new pulumi.Config("location");
-const config = new pulumi.Config("state");
-const authConfig = new pulumi.Config("authentication");
-const azTags = {
+const tags = {
   component: "state",
   project: pulumi.getProject(),
   source: "pulumi",
@@ -37,7 +34,7 @@ export class State extends pulumi.ComponentResource {
       {
         keyVaultId: this.kv.id,
         name: key,
-        tags: azTags,
+        tags,
         value,
       },
       {
@@ -51,8 +48,8 @@ export class State extends pulumi.ComponentResource {
     const stateRg = new azure.core.ResourceGroup(
       rgName,
       {
-        location: locationConfig.require("primary"),
-        tags: azTags,
+        location: CONSTANTS.location.primary,
+        tags,
       },
       { parent: this },
     );
@@ -76,9 +73,9 @@ export class State extends pulumi.ComponentResource {
         accountReplicationType: "LRS",
         accountTier: "Standard",
         enableHttpsTrafficOnly: true,
-        location: locationConfig.require("primary"),
+        location: CONSTANTS.location.primary,
         resourceGroupName: rg.name,
-        tags: azTags,
+        tags,
       },
       {
         parent: rg,
@@ -125,29 +122,29 @@ export class State extends pulumi.ComponentResource {
         accessPolicies: [
           {
             keyPermissions: ["create", "get"],
-            objectId: authConfig.require("rian"),
+            objectId: CONSTANTS.authentication.rian,
             secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: authConfig.require("tenantId"),
+            tenantId: CONSTANTS.authentication.tenantId,
           },
           {
-            applicationId: authConfig.require("spAppId"),
+            applicationId: CONSTANTS.authentication.spAppId,
             keyPermissions: ["create", "get"],
-            objectId: authConfig.require("spObjectId"),
+            objectId: CONSTANTS.authentication.spObjectId,
             secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: authConfig.require("tenantId"),
+            tenantId: CONSTANTS.authentication.tenantId,
           },
           {
             keyPermissions: ["create", "get"],
-            objectId: authConfig.require("spObjectId"),
+            objectId: CONSTANTS.authentication.spObjectId,
             secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: authConfig.require("tenantId"),
+            tenantId: CONSTANTS.authentication.tenantId,
           },
 
         ],
         resourceGroupName: rg.name,
         skuName: "standard",
-        tags: azTags,
-        tenantId: authConfig.require("tenantId"),
+        tags,
+        tenantId: CONSTANTS.authentication.tenantId,
       },
       { parent: rg },
     );
@@ -189,7 +186,7 @@ export class State extends pulumi.ComponentResource {
         location: rg.location,
         resourceGroupName: rg.name,
         sku: "Standard",
-        tags: azTags,
+        tags,
       },
       {
         parent: rg,
