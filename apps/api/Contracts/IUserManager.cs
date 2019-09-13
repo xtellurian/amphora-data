@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Amphora.Api.Models;
+using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Contracts

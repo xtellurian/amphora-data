@@ -14,25 +14,26 @@ namespace Amphora.Api.Pages.Organisations
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
         private readonly IPermissionService permissionService;
-        private readonly IUserManager userManager;
+        private readonly IUserService userService;
 
         public DetailModel(
             IEntityStore<OrganisationModel> entityStore,
             IPermissionService permissionService,
-            IUserManager userManager)
+            IUserService userService)
         {
             this.entityStore = entityStore;
             this.permissionService = permissionService;
-            this.userManager = userManager;
+            this.userService = userService;
         }
         public OrganisationExtendedModel Organisation { get; set; }
         public bool CanEdit { get; private set; }
         public bool CanInvite { get; private set; }
         public bool CanAcceptInvite { get; private set; }
+        public bool CanViewMembers { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userManager.GetUserAsync(User);
+            var user = await userService.UserManager.GetUserAsync(User);
             if (string.IsNullOrEmpty(id))
             {
                 this.Organisation = await entityStore.ReadAsync<OrganisationExtendedModel>(user.OrganisationId, user.OrganisationId);
@@ -43,9 +44,11 @@ namespace Amphora.Api.Pages.Organisations
             }
             if (this.Organisation == null) return RedirectToPage("/Index");
 
+            this.CanViewMembers = this.Organisation.IsInOrgansation(user);
+
             this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
-            if(this.Organisation.Invitations != null)
+            if (this.Organisation.Invitations != null)
             {
                 this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), user.Email.ToLower()));
             }

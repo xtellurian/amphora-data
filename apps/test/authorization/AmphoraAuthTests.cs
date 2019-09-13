@@ -6,6 +6,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
@@ -47,7 +48,7 @@ namespace Amphora.Tests.Unit.Authorization
             a = await amphoraStore.CreateAsync(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
-            var permissionService = new PermissionService(permissionServiceLogger, store);
+            var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
             var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
 
             var readReq = new List<IAuthorizationRequirement> { Operations.Read };
@@ -86,7 +87,7 @@ namespace Amphora.Tests.Unit.Authorization
             a = await amphoraStore.CreateAsync(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
-            var permissionService = new PermissionService(permissionServiceLogger, store);
+            var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
 
             var collection = new PermissionModel(a.OrganisationId);
             var readPermission = new ResourceAuthorization()

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Services.Amphorae;
@@ -8,6 +9,7 @@ using Amphora.Api.Stores;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -25,11 +27,17 @@ namespace Amphora.Tests.Unit
 
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddMaps(typeof(Startup));
+            });
+            var mapper = config.CreateMapper();
             this.amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
             this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             this.permissionStore = new InMemoryEntityStore<PermissionModel>(Mapper);
             this.mockUserManager = new Mock<IUserManager>();
-            this.permissionService = new PermissionService(permissionLogger, permissionStore);
+            this.orgStore = new InMemoryEntityStore<OrganisationModel>(mapper);
+            this.permissionService = new PermissionService(permissionLogger, orgStore , permissionStore);
             this.amphoraLogger = amphoraLogger;
         }
 

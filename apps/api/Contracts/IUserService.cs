@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Models;
-using Amphora.Common.Models;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Contracts
 {
@@ -8,8 +8,7 @@ namespace Amphora.Api.Contracts
     {
         IUserManager UserManager { get; }
         Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user,
-                                                                  string password,
-                                                                  RoleAssignment.Roles role = RoleAssignment.Roles.User);
+                                                                  string password);
         Task<EntityOperationResult<IApplicationUser>> DeleteAsync(IApplicationUser user);
     }
 }

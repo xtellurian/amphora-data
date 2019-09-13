@@ -3,15 +3,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Models
 {
-    public interface IApplicationUser
-    {
-        string Id { get; set; }
-        string UserName { get; set; }
-        string Email { get; set; }
-        string About { get; set; }
-        string FullName { get; set; }
-        string OrganisationId { get; set; }
-    }
 
     public class ApplicationUser : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser, IApplicationUser
     {

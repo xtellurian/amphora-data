@@ -10,8 +10,8 @@ using Amphora.Api.Models;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {

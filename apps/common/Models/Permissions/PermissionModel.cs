@@ -11,9 +11,7 @@ namespace Amphora.Common.Models
         {
             this.OrganisationId = organisationId;
             this.ResourceAuthorizations = new List<ResourceAuthorization>();
-            this.RoleAssignments = new List<RoleAssignment>();
         }
-        public List<RoleAssignment> RoleAssignments { get; set; }
         public List<ResourceAuthorization> ResourceAuthorizations { get; set; }
         public string PermissionCollectionId => this.OrganisationId;
         public override void SetIds() // org id and  permission id are the same!!

@@ -1,5 +1,6 @@
 using Amphora.Api;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
 using AutoMapper;
 using Xunit;
 

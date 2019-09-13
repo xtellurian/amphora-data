@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Models;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
 
@@ -29,8 +29,7 @@ namespace Amphora.Api.Services.Auth
         public IUserManager UserManager { get; protected set; }
 
         public async Task<EntityOperationResult<IApplicationUser>> CreateAsync(IApplicationUser user,
-                                                                               string password,
-                                                                               RoleAssignment.Roles role = RoleAssignment.Roles.User)
+                                                                               string password)
         {
             var result = await UserManager.CreateAsync(user, password);
             if (result.Succeeded)

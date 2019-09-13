@@ -47,8 +47,8 @@ namespace Amphora.Api.Services.Organisations
                 {
                     logger.LogInformation($"{user.Email} redeemed an invitation to {org.Id}");
                     org.Invitations.Remove(invitation);
+                    org.AddOrUpdateMembership(user);
                     await Store.UpdateAsync(org);
-                    await permissionService.CreateOrganisationalRole(user, RoleAssignment.Roles.User, org);
                     return true;
                 }
                 else
@@ -88,7 +88,7 @@ namespace Amphora.Api.Services.Organisations
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
             if (user == null) return new EntityOperationResult<OrganisationExtendedModel>("Cannot find user. Please login");
-
+            org.AddOrUpdateMembership(user, Roles.Administrator);
             // we good - create an org
             org = await Store.CreateAsync<OrganisationExtendedModel>(org);
             if (org != null)
@@ -102,9 +102,6 @@ namespace Amphora.Api.Services.Organisations
                         var result = await userService.UserManager.UpdateAsync(user);
                         if (!result.Succeeded) throw new Exception("Failed to update user id");
                     }
-
-                    // give this user admin on the org
-                    await permissionService.CreateOrganisationalRole(user, RoleAssignment.Roles.Administrator, org);
 
                     return new EntityOperationResult<OrganisationExtendedModel>(org);
                 }

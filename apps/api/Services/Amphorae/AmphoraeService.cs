@@ -7,6 +7,7 @@ using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Services.Amphorae
 {

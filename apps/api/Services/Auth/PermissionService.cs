@@ -6,7 +6,6 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Microsoft.Extensions.Logging;
 using Amphora.Common.Extensions;
-using static Amphora.Common.Models.RoleAssignment;
 using System;
 using Amphora.Common.Models.Organisations;
 
@@ -15,44 +14,48 @@ namespace Amphora.Api.Services.Auth
     public class PermissionService : IPermissionService
     {
         private readonly ILogger<PermissionService> logger;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEntityStore<PermissionModel> permissionStore;
 
         public PermissionService(ILogger<PermissionService> logger,
+                                IEntityStore<OrganisationModel> orgStore,
                                  IEntityStore<PermissionModel> permissionStore)
         {
             this.logger = logger;
+            this.orgStore = orgStore;
             this.permissionStore = permissionStore;
         }
         public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, string resourcePermission)
         {
-            // var collection = await permissionStore.QueryAsync(c => string.Equals(c.OrganisationId, entity.OrganisationId));
-            var collection = await permissionStore.ReadAsync(
-                entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
-                entity.OrganisationId);
-            if(collection == null) 
-            {
-                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionModel))} not found");
-                return false;
-            }
             // check if user is in Admin role
-            var usersAssignment = collection.RoleAssignments.FirstOrDefault(r => string.Equals(r.UserId, user.Id));
-            if (usersAssignment != null)
+            var org = await orgStore.ReadAsync<OrganisationExtendedModel>(entity.OrganisationId, entity.OrganisationId);
+            var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
+            if (membership != null) // if user is in the org
             {
-                if (usersAssignment.Role == Roles.Administrator)
+                if (membership.Role == Roles.Administrator)
                 {
                     logger.LogInformation($"Authorization succeeded for user {user.Id} as Admin for entity {entity.Id}");
                     return true;
                 }
-                else if(usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
+                else if (membership.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
                 {
                     logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
                     return true;
                 }
-                else if(usersAssignment.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.ReadContents))
+                else if (membership.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.ReadContents))
                 {
                     logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
                     return true;
                 }
+            }
+
+            var collection = await permissionStore.ReadAsync(
+                entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
+                entity.OrganisationId);
+            if (collection == null)
+            {
+                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionModel))} not found");
+                return false;
             }
 
             // check if CRUD permission exists
@@ -82,14 +85,6 @@ namespace Amphora.Api.Services.Auth
             collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Update));
             collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Delete));
 
-            return await permissionStore.UpdateAsync(collection);
-        }
-
-        public async Task<PermissionModel> CreateOrganisationalRole(IApplicationUser user, Roles role, OrganisationModel org)
-        {
-            var assignment = new RoleAssignment(user.Id, role);
-            var collection = await CreateIfNotExistsCollection(org);
-            collection.RoleAssignments.Add(assignment);
             return await permissionStore.UpdateAsync(collection);
         }
 
