@@ -2,12 +2,14 @@ using System;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Xunit;
 
 namespace Amphora.Tests.Unit
 {
     public class IdTests
     {
+        // this test helps with backwards compat
         [Theory]
         [InlineData("Amphora", typeof(AmphoraModel))]
         [InlineData("Organisation", typeof(OrganisationModel))]

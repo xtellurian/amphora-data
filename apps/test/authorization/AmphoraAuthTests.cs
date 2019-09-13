@@ -9,6 +9,7 @@ using Amphora.Api.Stores;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using AutoMapper;
@@ -71,14 +72,17 @@ namespace Amphora.Tests.Unit.Authorization
         }
 
         [Fact]
-        public async Task AllowReadOnAmphora()
+        public async Task OrgMember_ReadAccess_Amphora()
         {
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
             var org = EntityLibrary.GetOrganisation();
             var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
+            var extendedOrg = await orgStore.ReadAsync<OrganisationExtendedModel>(org.Id, org.OrganisationId);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
+            extendedOrg.AddOrUpdateMembership(user);
+            await orgStore.UpdateAsync(extendedOrg);
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
@@ -87,13 +91,14 @@ namespace Amphora.Tests.Unit.Authorization
             a = await amphoraStore.CreateAsync(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
+
             var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
 
             var collection = new PermissionModel(a.OrganisationId);
             var readPermission = new ResourceAuthorization()
             {
-                ResourcePermission = ResourcePermissions.Read,
-                TargetResourceId = a.Id,
+                AccessLevel = AccessLevels.Read,
+                TargetEntityId = a.Id,
                 UserId = user.Id
             };
             collection.ResourceAuthorizations.Add(readPermission);

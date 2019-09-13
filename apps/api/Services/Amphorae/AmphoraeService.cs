@@ -52,7 +52,6 @@ namespace Amphora.Api.Services.Amphorae
             if (isAuthorized)
             {
                 model = await AmphoraStore.CreateAsync(model);
-                await permissionService.SetIsOwner(user, model);
                 return new EntityOperationResult<Common.Models.AmphoraModel>(model);
             }
             else

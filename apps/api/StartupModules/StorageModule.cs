@@ -6,6 +6,7 @@ using Amphora.Api.Stores.Cosmos;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,7 @@ namespace Amphora.Api.StartupModules
             services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, CosmosAmphoraStore>();
             services.AddSingleton<IEntityStore<OrganisationModel>, CosmosOrganisationStore>();
             // consumed by some singletons
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.PermissionModel>, CosmosPermissionStore>();
+            services.AddSingleton<IEntityStore<PermissionModel>, CosmosPermissionStore>();
 
             // data stores
             services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, SignalEventHubDataStore>();

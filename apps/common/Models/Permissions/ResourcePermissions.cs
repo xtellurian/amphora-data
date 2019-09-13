@@ -1,14 +1,16 @@
+using Amphora.Common.Models.Permissions;
+
 namespace Amphora.Common.Models
 {
     public static class ResourcePermissions
     {
-        public static string Create => nameof(Create);
-        public static string Read => nameof(Read);
-        public static string Update => nameof(Update);
-        public static string Delete => nameof(Delete);
+        public static AccessLevels Create => AccessLevels.Administer;
+        public static AccessLevels Read => AccessLevels.Read;
+        public static AccessLevels Update => AccessLevels.Update;
+        public static AccessLevels Delete => AccessLevels.Administer;
 
         // specific to amphorae contents
-        public static string ReadContents => nameof(ReadContents);
-        public static string WriteContents => nameof(WriteContents);
+        public static AccessLevels ReadContents => AccessLevels.ReadContents;
+        public static AccessLevels WriteContents => AccessLevels.WriteContents;
     }
 }

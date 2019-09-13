@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Amphora.Common.Extensions;
 using System;
 using Amphora.Common.Models.Organisations;
+using System.Collections.Generic;
+using Amphora.Common.Models.Permissions;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -25,81 +27,88 @@ namespace Amphora.Api.Services.Auth
             this.orgStore = orgStore;
             this.permissionStore = permissionStore;
         }
-        public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, string resourcePermission)
+        public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, AccessLevels accessLevel)
         {
             // check if user is in Admin role
             var org = await orgStore.ReadAsync<OrganisationExtendedModel>(entity.OrganisationId, entity.OrganisationId);
             var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
+
             if (membership != null) // if user is in the org
             {
-                if (membership.Role == Roles.Administrator)
+                if (membership.Role.ToDefaultAccessLevel() >= accessLevel)
                 {
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Admin for entity {entity.Id}");
-                    return true;
-                }
-                else if (membership.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.Read))
-                {
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
-                    return true;
-                }
-                else if (membership.Role == Roles.User && string.Equals(resourcePermission, ResourcePermissions.ReadContents))
-                {
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} as Org User for entity {entity.Id}");
+                    // permission granted via role
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} as role {Enum.GetName(typeof(AccessLevels), membership.Role)} for entity {entity.Id}");
                     return true;
                 }
             }
-
-            var collection = await permissionStore.ReadAsync(
-                entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
-                entity.OrganisationId);
-            if (collection == null)
-            {
-                logger.LogWarning($"{entity.OrganisationId.AsQualifiedId(typeof(PermissionModel))} not found");
-                return false;
-            }
+            var authorizationForUser = await this.ReadUserAuthorizationAsync(entity, user);
+            if (authorizationForUser == null) return false;
 
             // check if CRUD permission exists
-            if (collection?.ResourceAuthorizations != null)
+            if (authorizationForUser.AccessLevel > accessLevel)
             {
-                var auth = collection.ResourceAuthorizations.FirstOrDefault(p =>
-                    string.Equals(p.ResourcePermission, resourcePermission)
-                    && string.Equals(p.TargetResourceId, entity.Id)
-                    && string.Equals(p.UserId, user.Id)
-                );
-                if (auth != null)
-                {
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} for entity {entity.Id}");
-                    return true;
-                }
+                logger.LogInformation($"Authorization succeeded for user {user.Id} for entity {entity.Id}");
+                return true;
             }
+
             logger.LogInformation($"Authorization denied for user {user.Id} for entity {entity.Id}");
             return false;
         }
 
-        [Obsolete]
-        public async Task<PermissionModel> SetIsOwner(IApplicationUser user, IEntity entity)
+        public async Task<IEnumerable<ResourceAuthorization>> ListAuthorizationsAsync(IEntity entity)
         {
-            var collection = await CreateIfNotExistsCollection(entity);
+            PermissionModel permissions = await ReadModelAsync(entity);
+            if (permissions == null) logger.LogWarning($"{entity?.OrganisationId.AsQualifiedId(typeof(PermissionModel))} permissions not found");
 
-            collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Read));
-            collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Update));
-            collection.ResourceAuthorizations.Add(new ResourceAuthorization(user.Id, entity, ResourcePermissions.Delete));
 
-            return await permissionStore.UpdateAsync(collection);
+            return permissions?.ResourceAuthorizations.Where(p =>
+                    string.Equals(p.TargetEntityId, entity?.Id)
+                );
         }
 
-        private async Task<PermissionModel> CreateIfNotExistsCollection(IEntity entity)
+        private async Task<PermissionModel> ReadModelAsync(IEntity entity)
         {
-            var collection = await permissionStore.ReadAsync(
-                            entity.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
-                            entity.OrganisationId
-                        );
-            if (collection == null)
+            var permission = await permissionStore.ReadAsync(
+                            entity?.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
+                            entity?.OrganisationId);
+            if(permission == null)
             {
-                collection = new PermissionModel(entity.OrganisationId);
-                collection = await permissionStore.CreateAsync(collection);
+                logger.LogWarning($"Creating new permission model for org {entity.OrganisationId}");
+                permission = new PermissionModel(entity.OrganisationId);
+                permission = await permissionStore.CreateAsync(permission);
             }
-            return collection;
+            return permission;
+        }
+
+        public async Task<ResourceAuthorization> ReadUserAuthorizationAsync(IEntity entity, IApplicationUser user)
+        {
+            var all = await this.ListAuthorizationsAsync(entity);
+            if (all == null) return null;
+            if (all.Count(u => string.Equals(u.UserId, user.Id)) > 1)
+            {
+                logger.LogWarning($"Multiple authorizations for {user.Id} on {entity.Id}");
+            }
+            return all.FirstOrDefault(u => string.Equals(u.UserId, user.Id));
+        }
+
+        public async Task UpdatePermissionAsync(IApplicationUser user, IEntity entity, AccessLevels level)
+        {
+            if(user == null)
+            {
+                throw new NullReferenceException("User was null");
+            }
+            var model = await ReadModelAsync(entity);
+            var authorizations = model.GetAuthorizations(entity);
+            var auth = authorizations.FirstOrDefault(a => string.Equals(a.UserId, user.Id));
+            if(auth == null)
+            {
+                auth = new ResourceAuthorization(user.Id, user.UserName, entity, AccessLevels.None );
+                model.ResourceAuthorizations.Add(auth);
+            }
+
+            auth.AccessLevel = level;
+            await permissionStore.UpdateAsync(model);
         }
     }
 }

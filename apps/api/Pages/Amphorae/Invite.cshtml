@@ -1,0 +1,23 @@
+@page
+@model Amphora.Api.Pages.Amphorae.InviteModel
+
+<h1>Invite a user to your organisation</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form asp-route-id="@Model.Amphora.AmphoraId" method="post">
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Invite</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

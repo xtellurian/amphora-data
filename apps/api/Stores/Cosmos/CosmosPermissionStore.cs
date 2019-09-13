@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Permissions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Services.FeatureFlags;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,17 +22,23 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
+        private readonly IUserService userService;
+        private readonly IPermissionService permissionService;
         private readonly FeatureFlagService featureFlags;
         private readonly ITsiService tsiService;
 
         public DetailModel(
             IAmphoraeService amphoraeService,
             IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
+            IUserService userService,
+            IPermissionService permissionService,
             FeatureFlagService featureFlags,
             ITsiService tsiService)
         {
             this.amphoraeService = amphoraeService;
             this.dataStore = dataStore;
+            this.userService = userService;
+            this.permissionService = permissionService;
             this.featureFlags = featureFlags;
             this.tsiService = tsiService;
         }
@@ -40,11 +48,14 @@ namespace Amphora.Api.Pages.Amphorae
         public IEnumerable<string> Names { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse { get; set; }
+        public bool CanEditPermissions { get; set; }
+        public IEnumerable<ResourceAuthorization> Authorizations { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             if (id == null) return RedirectToPage("./Index");
             var result = await amphoraeService.ReadAsync(User, id);
+            var user = await userService.UserManager.GetUserAsync(User);
             if (result.WasForbidden)
             {
                 return RedirectToPage("./Forbidden");
@@ -57,9 +68,14 @@ namespace Amphora.Api.Pages.Amphorae
                     return RedirectToPage("./Index");
                 }
 
-                Names = await dataStore.ListNamesAsync(Amphora);
+                Names = await dataStore.ListNamesAsync(Amphora);    
                 Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 QueryResponse = await GetQueryResponse();
+                CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
+                if(CanEditPermissions)
+                {
+                    this.Authorizations = await permissionService.ListAuthorizationsAsync(Amphora) ?? new List<ResourceAuthorization>();
+                }
                 return Page();
             }
             else

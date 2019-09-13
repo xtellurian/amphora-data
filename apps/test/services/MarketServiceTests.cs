@@ -8,6 +8,7 @@ using Amphora.Api.Services.Market;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
 using AutoMapper;
 using Microsoft.Extensions.Logging;

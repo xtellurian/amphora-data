@@ -1,21 +1,22 @@
 using System;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
 
-namespace Amphora.Common.Models
+namespace Amphora.Common.Models.Permissions
 {
     public class ResourceAuthorization
     {
         public ResourceAuthorization() { /* Empty Constructor */}
-        public ResourceAuthorization(string userId, IEntity target, string permission)
+        public ResourceAuthorization(string userId, string userName, IEntity target, AccessLevels accessLevel)
         {
             this.UserId = userId;
-            this.TargetResourceId = target.Id;
-            this.ResourcePermission = permission;
+            this.UserName = userName;
+            this.TargetEntityId = target.Id;
+            this.AccessLevel = accessLevel;
         }
-        public string TargetResourceId { get; set; }
+        public string TargetEntityId { get; set; }
         public string UserId { get; set; }
-        public string ResourcePermission { get; set; }
+        public string UserName { get; set; }
+        public AccessLevels AccessLevel {get; set; }
 
     }
 }
