@@ -1,6 +1,7 @@
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
+using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,15 +25,16 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IMarketService, MarketService>();
             
             var key = Configuration.GetSection("AzureSearch")["PrimaryKey"];
-            if(key != null)
+            if(string.IsNullOrEmpty(key))
+            {
+                // otherwise use basic search
+                services.AddTransient<ISearchService, BasicSearchService>();
+            }
+            else
             {
                 // use azure search
                 services.Configure<AzureSearchOptions>(Configuration.GetSection("AzureSearch"));
                 services.AddTransient<ISearchService, AzureSearchService>();
-            }
-            else
-            {
-                // otherwise use basic search
             }
         }
     }
