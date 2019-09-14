@@ -36,7 +36,7 @@ namespace Amphora.Api.Services.Azure
         public async Task CreateAmphoraIndexAsync()
         {
             var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
-            var cosmosDbConnectionString = cosmosOptions.CurrentValue.PrimaryReadonlyKey;
+            var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
             var dataSource = DataSource.CosmosDb("cosmos",
                                                  cosmosDbConnectionString,
                                                  "Amphora",
