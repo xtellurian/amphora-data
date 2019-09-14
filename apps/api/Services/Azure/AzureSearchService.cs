@@ -35,6 +35,8 @@ namespace Amphora.Api.Services.Azure
 
         public async Task CreateAmphoraIndexAsync()
         {
+            logger.LogWarning("Recreating the Amphora index");
+
             var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
             var dataSource = DataSource.CosmosDb("cosmos",
@@ -42,10 +44,9 @@ namespace Amphora.Api.Services.Azure
                                                  "Amphora",
                                                  query);
             dataSource.Validate();
-
             dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
-            var fields = new List<Field>();
 
+            var fields = new List<Field>();
             fields.Add(new Field(nameof(AmphoraModel.Id), DataType.String));
             fields.Add(new Field(nameof(AmphoraModel.AmphoraId), DataType.String)
             {
@@ -89,6 +90,12 @@ namespace Amphora.Api.Services.Azure
             var indexer = new Indexer("amphora-indexer", dataSource.Name, index.Name)
             {
                 Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
+                Parameters = new IndexingParameters{
+                    Configuration = new Dictionary<string, object>
+                    {
+                        {"assumeOrderByHighWaterMarkColumn", true}
+                    }
+                }
             };
             indexer.Validate();
 
