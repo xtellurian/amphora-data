@@ -30,6 +30,7 @@ namespace Amphora.Api
             this.IdentityModule = new IdentityModule(configuration, env);
             this.StorageModule = new StorageModule(configuration, env);
             this.GeoModule = new GeoModule(configuration, env);
+            this.MarketModule = new MarketModule(configuration, env);
         }
 
         public IConfiguration Configuration { get; }
@@ -39,6 +40,7 @@ namespace Amphora.Api
         private readonly IdentityModule IdentityModule;
         private readonly StorageModule StorageModule;
         private readonly GeoModule GeoModule;
+        private readonly MarketModule MarketModule;
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -50,18 +52,18 @@ namespace Amphora.Api
             this.IdentityModule.ConfigureServices(services);
             this.AuthenticationModule.ConfigureServices(services);
             this.GeoModule.ConfigureServices(services);
+            this.MarketModule.ConfigureServices(services);
 
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
-            services.AddScoped<IMarketService, MarketService>();
-            services.Configure<TsiOptions>(Configuration);
+            
+            services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
             services.AddScoped<ITsiService, RealTsiService>();
+
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
+
+            // logical services
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
-
-            services.Configure<AzureSearchOptions>(Configuration.GetSection("AzureSearch"));
-            services.AddTransient<ISearchService, AzureSearchService>();
-            
             services.AddTransient<IOrganisationService, OrganisationService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));

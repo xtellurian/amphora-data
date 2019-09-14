@@ -19,11 +19,11 @@ namespace Amphora.Api.Stores
 
         public SignalEventHubDataStore(IOptionsMonitor<Options.EventHubOptions> options)
         {
-            if (options.CurrentValue.EventHubConnectionString != null)
+            if (options.CurrentValue.ConnectionString != null)
             {
-                var connectionStringBuilder = new EventHubsConnectionStringBuilder(options.CurrentValue.EventHubConnectionString)
+                var connectionStringBuilder = new EventHubsConnectionStringBuilder(options.CurrentValue.ConnectionString)
                 {
-                    EntityPath = options.CurrentValue.EventHubName
+                    EntityPath = options.CurrentValue.Name
                 };
                 eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
             }

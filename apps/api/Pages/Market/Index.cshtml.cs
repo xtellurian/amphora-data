@@ -66,13 +66,7 @@ namespace Amphora.Api.Pages.Market
             {
                 geoHashStartsWith = NGeoHash.GeoHash.Encode(Input.Lat.Value, Input.Lon.Value, 2); // accuracy of 2 for now - should scale it
             }
-            this.Entities = await marketService.FindAsync(
-                new Models.SearchParams
-                {
-                    SearchTerm = Term,
-                    GeoHashStartsWith = geoHashStartsWith,
-                    IsGeoSearch = geoHashStartsWith != null
-                });
+            this.Entities = await marketService.FindAsync(Term);
         }
     }
 }

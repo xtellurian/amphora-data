@@ -27,7 +27,7 @@ namespace Amphora.Common.Models.Organisations
 
         public bool IsInOrgansation(IApplicationUser user)
         {
-            return this.Memberships.Any(u => string.Equals(u.UserId, user.Id));
+            return this.Memberships?.Any(u => string.Equals(u.UserId, user.Id)) ?? false;
         }
     }
 }

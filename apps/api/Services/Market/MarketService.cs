@@ -4,46 +4,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Search;
+using Amphora.Common.Models;
 
 namespace Amphora.Api.Services.Market
 {
     public class MarketService : IMarketService
     {
-        private readonly IAmphoraeService amphoraeService;
+        private readonly ISearchService searchService;
 
         public MarketService(
-            IAmphoraeService amphoraeService)
+            ISearchService searchService)
         {
-            this.amphoraeService = amphoraeService;
+            this.searchService = searchService;
         }
 
-        public async Task<IEnumerable<Amphora.Common.Models.AmphoraModel>> FindAsync(SearchParams searchParams)
+        public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm)
         {
-            IList<Amphora.Common.Models.AmphoraModel> entities;
-            if(searchParams == null) return new List<Amphora.Common.Models.AmphoraModel>();
-            
-            if(searchParams.IsGeoSearch)
-            {
-                entities = await amphoraeService.AmphoraStore.StartsWithQueryAsync(
-                    nameof(Amphora.Common.Models.AmphoraModel.GeoHash), 
-                    searchParams.GeoHashStartsWith);
-            }
-            else
-            {
-                entities = await amphoraeService.AmphoraStore.ListAsync();
-            }
-            
-            // string matching
-            if(string.IsNullOrEmpty(searchParams.SearchTerm)) return entities;
-            var results = entities
-                .Where(i =>
-                   (i.Name?.ToLower()?.Contains(searchParams?.SearchTerm?.ToLower()) ?? false)
-                    ||
-                   (i.Description?.ToLower()?.Contains(searchParams.SearchTerm?.ToLower()) ?? false)
-                    );
-            // price filter
-            results = results.Where(i => searchParams.PriceFilter(i.Price));
-            return results;
+            if(searchTerm == null) return new List<AmphoraModel>();
+            var p = new SearchParameters();
+            var result = await searchService.SearchAmphora(searchTerm, p);
+
+            return result.Results.Select(s => s.Entity);
         }
     }
 }

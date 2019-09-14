@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,10 +27,10 @@ namespace Amphora.Api.Controllers
             return Ok(response);
         }
 
-        [HttpPost("api/market")]
-        public async Task<IActionResult> FindAsync([FromBody] SearchParams p)
+        [HttpGet("api/market")]
+        public async Task<IActionResult> FindAsync(string query)
         {
-            var s = await marketService.FindAsync(p);
+            var s = await marketService.FindAsync(query);
             return Ok(s);
         }
     }

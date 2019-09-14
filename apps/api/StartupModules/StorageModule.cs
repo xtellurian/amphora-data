@@ -28,7 +28,7 @@ namespace Amphora.Api.StartupModules
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AzureStorageAccountOptions>(Configuration);
-            services.Configure<EventHubOptions>(Configuration);
+            services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
             services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
 
             if (HostingEnvironment.IsProduction() || Configuration["PersistentStores"] == "true")

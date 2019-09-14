@@ -4,6 +4,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Auth;
+using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
@@ -17,7 +18,7 @@ using Xunit;
 
 namespace Amphora.Tests.Unit
 {
-    public class MarketServiceTests: UnitTestBase
+    public class MarketServiceTests : UnitTestBase
     {
         private readonly ILogger<AmphoraeService> amphoraLogger;
         private InMemoryEntityStore<Common.Models.AmphoraModel> amphoraStore;
@@ -38,7 +39,7 @@ namespace Amphora.Tests.Unit
             this.permissionStore = new InMemoryEntityStore<PermissionModel>(Mapper);
             this.mockUserManager = new Mock<IUserManager>();
             this.orgStore = new InMemoryEntityStore<OrganisationModel>(mapper);
-            this.permissionService = new PermissionService(permissionLogger, orgStore , permissionStore);
+            this.permissionService = new PermissionService(permissionLogger, orgStore, permissionStore);
             this.amphoraLogger = amphoraLogger;
         }
 
@@ -46,7 +47,8 @@ namespace Amphora.Tests.Unit
         public async Task NullsReturnEmptyList()
         {
             await AddToStore();
-            var service = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object,  amphoraLogger );
+            var amphoraService = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object, amphoraLogger);
+            var service = new BasicSearchService(amphoraService);
             var sut = new MarketService(service) as IMarketService;
 
             var response = await sut.FindAsync(null);
@@ -57,15 +59,12 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task LookupByGeo()
         {
-            var service = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object,  amphoraLogger );
+            var amphoraService = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object, amphoraLogger);
+            var service = new BasicSearchService(amphoraService);
             var entity = await AddToStore();
             var sut = new MarketService(service) as IMarketService;
-            var searchParams = new SearchParams
-            {
-                IsGeoSearch = true,
-                GeoHashStartsWith = entity.GeoHash.Substring(0,4)
-            };
-            var response = await sut.FindAsync(searchParams);
+
+            var response = await sut.FindAsync("");
             Assert.NotNull(response);
             Assert.NotEmpty(response);
             Assert.Contains(response, e => e.Id == entity.Id);

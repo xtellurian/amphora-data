@@ -25,7 +25,7 @@ namespace Amphora.Api.Stores.Cosmos
         // partitionKey cannot be changed on an existing Cosmos database
         // be very careful changing the partitionKey without changing the containerName
         {
-            this.Client = new CosmosClient(options.CurrentValue.Endpoint, options.CurrentValue.Key);
+            this.Client = new CosmosClient(options.CurrentValue.Endpoint, options.CurrentValue.PrimaryKey);
             this.Database = Client.GetDatabase(options.CurrentValue.Database);
             this.logger = logger;
             ContainerName = containerName;

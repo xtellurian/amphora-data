@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Models
 {
+    [Obsolete]
     public class SearchParams
     {
         public SearchParams()
