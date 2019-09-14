@@ -112,6 +112,6 @@ export class Tsi extends pulumi.ComponentResource {
 
     this.dataAccessFqdn = env.outputs.dataAccessFqdn;
 
-    this.params.state.storeInVault("DataAccessFqdn", "DataAccessFqdn", this.dataAccessFqdn, this);
+    this.params.state.storeInVault("TsiDataAccessFqdn", "Tsi--DataAccessFqdn", this.dataAccessFqdn, this);
   }
 }
