@@ -217,8 +217,9 @@ export class State extends pulumi.ComponentResource {
         parent: this.eh,
       });
 
-    this.storeInVault("EventHubConnectionString", "EventHubConnectionString", ehAuthRule.primaryConnectionString);
-    this.storeInVault("EventHubName", "EventHubName", this.eh.name);
+    this.storeInVault("TsiEventHubConnectionString", "TsiEventHub--ConnectionString",
+      ehAuthRule.primaryConnectionString);
+    this.storeInVault("TsiEventHubName", "TsiEventHub--Name", this.eh.name);
 
   }
 
