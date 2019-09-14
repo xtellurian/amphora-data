@@ -247,7 +247,13 @@ export class State extends pulumi.ComponentResource {
       resourceGroupName: rg.name,
   });
 
-    this.storeInVault("cosmosAccountKey", "Cosmos--Key", this.cosmosDb.primaryMasterKey);
+    this.storeInVault("cosmosAccountPrimaryKey", "Cosmos--PrimaryKey", this.cosmosDb.primaryMasterKey);
+    this.storeInVault("cosmosAccountSecondaryKey", "Cosmos--SecondaryKey", this.cosmosDb.secondaryMasterKey);
+    this.storeInVault("cosmosAccountPrimaryReadonlyKey", "Cosmos--PrimaryReadonlyKey",
+      this.cosmosDb.primaryReadonlyMasterKey);
+    this.storeInVault("cosmosAccountSecondaryReadonlyKey", "Cosmos--SecondaryReadonlyKey",
+      this.cosmosDb.secondaryReadonlyMasterKey);
+
     this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
     this.storeInVault("cosmosSqlDbName", "Cosmos--Database", sql.name);
 
