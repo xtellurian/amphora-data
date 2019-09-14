@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -7,6 +8,7 @@ using Amphora.Common.Models;
 using AutoMapper;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Services.Azure
@@ -15,16 +17,19 @@ namespace Amphora.Api.Services.Azure
     {
         private readonly SearchServiceClient serviceClient;
         private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
+        private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
         private const string indexName = "amphora-index";
 
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
             IOptionsMonitor<CosmosOptions> cosmosOptions,
+            ILogger<AzureSearchService> logger,
             IMapper mapper)
         {
             this.serviceClient = new SearchServiceClient(options.CurrentValue.Name, new SearchCredentials(options.CurrentValue.PrimaryKey));
             this.cosmosOptions = cosmosOptions;
+            this.logger = logger;
             this.mapper = mapper;
         }
 
@@ -96,12 +101,25 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
+            if (!await serviceClient.Indexes.ExistsAsync(indexName))
+            {
+                logger.LogWarning($"{indexName} does not exist. Creating now");
+                try
+                {
+                    await this.CreateAmphoraIndexAsync();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogCritical($"Failed to created {indexName}", ex);
+                    throw;
+                }
+            }
+
             var indexClient = serviceClient.Indexes.GetClient(indexName);
 
             var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
 
             return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
-
         }
     }
 }

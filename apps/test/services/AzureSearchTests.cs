@@ -3,6 +3,7 @@ using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Amphora.Tests.Unit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -11,10 +12,11 @@ namespace Amphora.Tests.Services
 {
     public class AzureSearchTests: UnitTestBase
     {
+        private readonly ILogger<AzureSearchService> azureSearchLogger;
         private CosmosOptions cosmosOptions;
         private AzureSearchOptions searchOptions;
 
-        public AzureSearchTests()
+        public AzureSearchTests(ILogger<AzureSearchService> azureSearchLogger)
         {
             this.cosmosOptions = new CosmosOptions()
             {
@@ -27,7 +29,7 @@ namespace Amphora.Tests.Services
                 Name = "",
                 PrimaryKey = ""
             };
-            
+            this.azureSearchLogger = azureSearchLogger;
         }
         // these need keys are are hard to run automatically
         // [Fact]
@@ -37,6 +39,7 @@ namespace Amphora.Tests.Services
             var sut = new AzureSearchService( 
                 Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions) , 
                 Mock.Of<IOptionsMonitor<CosmosOptions>>(_ => _.CurrentValue == cosmosOptions),
+                azureSearchLogger,
                 Mapper);
             // act
             await sut.CreateAmphoraIndexAsync();
@@ -49,6 +52,7 @@ namespace Amphora.Tests.Services
              var sut = new AzureSearchService( 
                 Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions) , 
                 Mock.Of<IOptionsMonitor<CosmosOptions>>(_ => _.CurrentValue == cosmosOptions),
+                azureSearchLogger,
                 Mapper);
             
             var parameters = new SearchParameters();
