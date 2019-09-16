@@ -24,7 +24,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.AddCreateToken();
-            var (user, _) = await client.CreateUserAsync();
+            var (user, _) = await client.CreateUserAsync(nameof(CanCreateOrganisation));
 
             var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanCreateOrganisation));
 
@@ -46,6 +46,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Name, b.Name);
 
             await DeleteOrganisation(b, client);
+            await DestroyUserAsync(client);
 
         }
 
@@ -56,7 +57,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.AddCreateToken();
-            var (user, _) = await client.CreateUserAsync();
+            var (user, _) = await client.CreateUserAsync(nameof(CanUpdateOrganisation));
             var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -78,6 +79,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Name, b.Name);
 
             await DeleteOrganisation(a, client);
+            await DestroyUserAsync(client);
 
         }
 
@@ -88,7 +90,7 @@ namespace Amphora.Tests.Integration
              // Arrange
             var client = _factory.CreateClient();
             client.AddCreateToken();
-            var (user, _) = await client.CreateUserAsync();
+            var (user, _) = await client.CreateUserAsync(nameof(CanInviteToOrganisation));
             var org = Helpers.EntityLibrary.GetOrganisation(nameof(CanInviteToOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -103,7 +105,7 @@ namespace Amphora.Tests.Integration
 
 
             var client2 = _factory.CreateClient();
-            var (otherUser, _) = await client2.CreateUserAsync();
+            var (otherUser, _) = await client2.CreateUserAsync(nameof(CanInviteToOrganisation));
 
             var inviteResponse = await client.PostAsJsonAsync($"{url}/{org.OrganisationId}/invitations/",
                 new Invitation(otherUser.Email));

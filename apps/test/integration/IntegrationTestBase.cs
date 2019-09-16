@@ -26,7 +26,7 @@ namespace Amphora.Tests.Integration
         protected async Task<(HttpClient client, IApplicationUser user, OrganisationModel org)> GetNewClientInOrg(HttpClient currentClient, OrganisationModel org)
         {
             var client = _factory.CreateClient();
-            var (user, password) = await client.CreateUserAsync();
+            var (user, password) = await client.CreateUserAsync("type: " + this.GetType().ToString());
             var inviteResponse = await currentClient.PostAsJsonAsync($"api/organisations/{org.OrganisationId}/invitations/",
                 new Invitation(user.Email));
             inviteResponse.EnsureSuccessStatusCode();
@@ -40,7 +40,7 @@ namespace Amphora.Tests.Integration
         protected async Task<(HttpClient client, IApplicationUser user, OrganisationModel org)> NewOrgAuthenticatedClientAsync()
         {
             var client = _factory.CreateClient();
-            var (user, password) = await client.CreateUserAsync();
+            var (user, password) = await client.CreateUserAsync("type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             userLoans[client] = user;
             orgLoans[client] = org;

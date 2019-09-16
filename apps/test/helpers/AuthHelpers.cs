@@ -20,7 +20,8 @@ namespace Amphora.Tests.Helpers
             }
         }
         public static async Task<(ApplicationUser User, string Password)> CreateUserAsync(
-            this HttpClient client)
+            this HttpClient client,
+            string fullName)
         {
             client.AddCreateToken();
             // first, create an organisation
@@ -31,6 +32,7 @@ namespace Amphora.Tests.Helpers
             {
                 UserName = email,
                 Email = email,
+                FullName = fullName
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
