@@ -9,6 +9,7 @@ namespace Amphora.Common.Models
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
         public string OrganisationId { get; set; }
+        public string EntityType {get; set; }
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; }
         public string GetEntityId() => Id?.Split('|')[1]; // gets what's after the pipe - i.e. the id

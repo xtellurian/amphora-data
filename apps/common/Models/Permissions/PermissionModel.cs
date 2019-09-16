@@ -22,6 +22,7 @@ namespace Amphora.Common.Models.Permissions
                 throw new System.NullReferenceException($"SetIds() cannot be called in a {nameof(PermissionModel)} when OrganisationId null");
             }
             this.Id = this.OrganisationId.AsQualifiedId(typeof(PermissionModel));
+            this.EntityType = typeof(PermissionModel).GetEntityPrefix();
         }
 
         public IEnumerable<ResourceAuthorization> GetAuthorizations(IEntity entity)

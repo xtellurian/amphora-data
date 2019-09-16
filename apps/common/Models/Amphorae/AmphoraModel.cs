@@ -21,6 +21,7 @@ namespace Amphora.Common.Models
         {
             this.AmphoraId = System.Guid.NewGuid().ToString();
             this.Id = this.AmphoraId.AsQualifiedId(typeof(AmphoraModel));
+            this.EntityType = typeof(AmphoraModel).GetEntityPrefix();
         }
     }
 }

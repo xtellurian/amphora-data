@@ -11,6 +11,7 @@ namespace Amphora.Common.Models.Organisations
         {
             this.OrganisationId = System.Guid.NewGuid().ToString();
             this.Id = this.OrganisationId.AsQualifiedId(typeof(OrganisationModel));
+            this.EntityType = typeof(OrganisationModel).GetEntityPrefix();
         }
 
         // Address
