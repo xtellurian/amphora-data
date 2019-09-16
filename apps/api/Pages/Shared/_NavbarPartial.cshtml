@@ -24,7 +24,8 @@
 
     <li class="dropdown nav-item avatar">
         <a href="#" class="nav-link text-light dropdown-toggle p-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            <img src="~/images/doge.jpg" class="rounded-circle z-depth-0" alt="avatar image" >
+            @{var profileUri = (await UserManager.GetUserAsync(User)).GetProfilePictureUri().ToString(); }
+            <img src="@profileUri" class="rounded-circle z-depth-0" alt="avatar image"/>
         </a>
         <ul class="dropdown-menu">
             <li class="nav-item">
