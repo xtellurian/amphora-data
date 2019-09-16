@@ -8,7 +8,7 @@ namespace Amphora.Api.Models
 
     public class ApplicationUser : Microsoft.AspNetCore.Identity.DocumentDB.IdentityUser, IApplicationUser
     {
-        public string About { get; set; };
+        public string About { get; set; }
         public string FullName { get; set; }
         public string OrganisationId { get; set; }
 
