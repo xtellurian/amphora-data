@@ -2,6 +2,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Options;
 using Amphora.Api.Stores;
+using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.Cosmos;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Domains;
@@ -50,17 +51,16 @@ namespace Amphora.Api.StartupModules
             services.AddSingleton<IEntityStore<PermissionModel>, CosmosPermissionStore>();
 
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, SignalEventHubDataStore>();
-            // TODO (these are in memory)
-            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, byte[]>, AzBlobAmphoraDataStore>();
+            services.AddSingleton<IBlobStore<Amphora.Common.Models.AmphoraModel>, AmphoraBlobStore>();
+            services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
 
         }
 
         private static void UseInMemoryStores(IServiceCollection services)
         {
             // data stores
-            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, byte[]>, InMemoryDataStore<Amphora.Common.Models.AmphoraModel, byte[]>>();
-            services.AddSingleton<IDataStore<Amphora.Common.Models.AmphoraModel, Datum>, InMemoryDataStore<Amphora.Common.Models.AmphoraModel, Datum>>();
+            services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
+            services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
 
             // entity stores
             services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();

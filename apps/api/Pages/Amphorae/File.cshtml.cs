@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,18 +12,18 @@ namespace Amphora.Api.Pages.Amphorae
     public class FileModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
+        private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public FileModel(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
+            IBlobStore<AmphoraModel> blobStore,
             ITsiService tsiService,
             IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
-            this.dataStore = dataStore;
+            this.blobStore = blobStore;
             this.tsiService = tsiService;
             this.mapper = mapper;
         }
@@ -35,7 +36,7 @@ namespace Amphora.Api.Pages.Amphorae
             {
                 return RedirectToPage("/amphorae/index");
             }
-            var file = await dataStore.GetDataAsync(entity, name);
+            var file = await blobStore.ReadBytesAsync(entity, name);
             if(file == null || file.Length == 0) return RedirectToPage("./Detail", new {Id = id});
             return File(file, "application/octet-stream", name);
         }

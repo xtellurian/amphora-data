@@ -16,19 +16,16 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IUserManager userManager;
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly IMapper mapper;
 
         public IndexModel(
             IUserManager userManager,
             IAmphoraeService amphoraeService,
             IEntityStore<Amphora.Common.Models.AmphoraModel> entityStore,
-            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             IMapper mapper)
         {
             this.userManager = userManager;
             this.amphoraeService = amphoraeService;
-            this.dataStore = dataStore;
             this.mapper = mapper;
             this.Amphorae = new List<Amphora.Common.Models.AmphoraModel>();
         }

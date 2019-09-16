@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Extensions;
 using Amphora.Common.Exceptions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
@@ -18,6 +17,8 @@ namespace Amphora.Api.Services.Organisations
     {
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
+        private readonly IBlobStore<OrganisationModel> orgBlobStore;
+
         public IEntityStore<OrganisationModel> Store { get; }
         private readonly ILogger<OrganisationService> logger;
 
@@ -25,11 +26,13 @@ namespace Amphora.Api.Services.Organisations
             IUserService userService,
             IPermissionService permissionService,
             IEntityStore<OrganisationModel> orgStore,
+            IBlobStore<OrganisationModel> orgBlobStore,
             ILogger<OrganisationService> logger)
         {
             this.userService = userService;
             this.permissionService = permissionService;
             this.Store = orgStore;
+            this.orgBlobStore = orgBlobStore;
             this.logger = logger;
         }
 
@@ -117,7 +120,16 @@ namespace Amphora.Api.Services.Organisations
             {
                 return new EntityOperationResult<OrganisationExtendedModel>("Failed to create organisation");
             }
+        }
 
+        public async Task WriteProfilePictureJpg(OrganisationModel organisation, byte[] bytes)
+        {
+            await orgBlobStore.WriteBytesAsync(organisation, "profile.jpg", bytes);
+        }
+
+        public async Task<string> ProfilePictureUrl(OrganisationModel organisation)
+        {
+            return await orgBlobStore.GetPublicUrl(organisation, "profile.jpg");
         }
     }
 }

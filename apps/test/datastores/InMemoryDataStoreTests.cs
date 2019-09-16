@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Amphora.Api.Stores;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models;
 using Amphora.Tests.Helpers;
 using Xunit;
 
@@ -12,20 +13,19 @@ namespace Amphora.Tests.Unit.Datastores
         [Fact]
         public async Task ListNamesTest_Amphora()
         {
-            var sut = new InMemoryDataStore<Amphora.Common.Models.AmphoraModel, byte[]>();
+            var sut = new InMemoryBlobStore<AmphoraModel>();
             var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
-            entity.Id = Guid.NewGuid().ToString().AsQualifiedId<Amphora.Common.Models.AmphoraModel>();
-            var names = await sut.ListNamesAsync(entity);
+            entity.Id = Guid.NewGuid().ToString().AsQualifiedId<AmphoraModel>();
+            var names = await sut.ListBlobsAsync(entity);
             Assert.Empty(names);
 
             var generator = new RandomBufferGenerator(1024);
             var data = generator.GenerateBufferFromSeed(1024);
             var name = Guid.NewGuid().ToString();
 
-            var setResult = await sut.SetDataAsync(entity, data, name);
-            Assert.Equal(data, setResult);
+            await sut.WriteBytesAsync(entity, name, data);
 
-            var getResult = await sut.GetDataAsync(entity, name);
+            var getResult = await sut.ReadBytesAsync(entity, name);
             Assert.Equal(data, getResult);
         }
     }

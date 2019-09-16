@@ -56,6 +56,7 @@ namespace Amphora.Api
 
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
             
+            services.AddSingleton<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
             services.AddScoped<ITsiService, RealTsiService>();
 

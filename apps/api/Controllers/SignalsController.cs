@@ -17,20 +17,20 @@ namespace Amphora.Api.Controllers
     public class SignalController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Amphora.Common.Models.AmphoraModel, Datum> dataStore;
+        private readonly ISignalService signalService;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
         private readonly ILogger<SignalController> logger;
 
         public SignalController(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.AmphoraModel, Datum> dataStore,
+            ISignalService signalService,
             ITsiService tsiService,
             IMapper mapper,
             ILogger<SignalController> logger)
         {
             this.amphoraeService = amphoraeService;
-            this.dataStore = dataStore;
+            this.signalService = signalService;
             this.tsiService = tsiService;
             this.mapper = mapper;
             this.logger = logger;
@@ -50,39 +50,13 @@ namespace Amphora.Api.Controllers
             var domain = Domain.GetDomain(entity.DomainId);
             if (domain.IsValid(jObj))
             {
-                var jObjResult = await dataStore.SetDataAsync(entity, domain.ToDatum(jObj), null);
-                return Ok(jObjResult);
+                await signalService.WriteSignalAsync(entity, domain.ToDatum(jObj));
+                return Ok();
             }
             else
             {
                 return BadRequest("Invalid Schema");
             }
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)] // JArray causes issues with swashbucke :(
-        [HttpPost("api/amphorae/{id}/uploadMany")]
-        public async Task<IActionResult> UploadMany(string id, [FromBody] JArray jArray)
-        {
-            var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
-            if (entity == null)
-            {
-                return NotFound("Invalid Id");
-            }
-            var domain = Domain.GetDomain(entity.DomainId);
-            var results = new List<Datum>();
-            foreach (JObject jObj in jArray)
-            {
-                jObj["amphora"] = id;
-                if (domain.IsValid(jObj))
-                {
-                    results.Add(await dataStore.SetDataAsync(entity, domain.ToDatum(jObj), null));
-                }
-                else
-                {
-                    logger.LogWarning("Invalid Object in uploadMany");
-                }
-            }
-            return Ok();
         }
     }
 }

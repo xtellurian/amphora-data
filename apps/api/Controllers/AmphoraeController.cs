@@ -15,7 +15,6 @@ namespace Amphora.Api.Controllers
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IAmphoraFileService amphoraFileService;
-        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserManager userManager;
         private readonly IMapper mapper;
@@ -23,14 +22,12 @@ namespace Amphora.Api.Controllers
         public AmphoraeController(
             IAmphoraeService amphoraeService,
             IAmphoraFileService amphoraFileService,
-            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
             IAuthorizationService authorizationService,
             IUserManager userManager,
             IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
             this.amphoraFileService = amphoraFileService;
-            this.dataStore = dataStore;
             this.authorizationService = authorizationService;
             this.userManager = userManager;
             this.mapper = mapper;

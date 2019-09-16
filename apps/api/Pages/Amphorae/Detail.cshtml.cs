@@ -21,7 +21,7 @@ namespace Amphora.Api.Pages.Amphorae
     public class DetailModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IDataStore<Common.Models.AmphoraModel, byte[]> dataStore;
+        private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly FeatureFlagService featureFlags;
@@ -29,14 +29,14 @@ namespace Amphora.Api.Pages.Amphorae
 
         public DetailModel(
             IAmphoraeService amphoraeService,
-            IDataStore<Amphora.Common.Models.AmphoraModel, byte[]> dataStore,
+            IBlobStore<AmphoraModel> blobStore,
             IUserService userService,
             IPermissionService permissionService,
             FeatureFlagService featureFlags,
             ITsiService tsiService)
         {
             this.amphoraeService = amphoraeService;
-            this.dataStore = dataStore;
+            this.blobStore = blobStore;
             this.userService = userService;
             this.permissionService = permissionService;
             this.featureFlags = featureFlags;
@@ -68,7 +68,7 @@ namespace Amphora.Api.Pages.Amphorae
                     return RedirectToPage("./Index");
                 }
 
-                Names = await dataStore.ListNamesAsync(Amphora);    
+                Names = await blobStore.ListBlobsAsync(Amphora);    
                 Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 QueryResponse = await GetQueryResponse();
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
@@ -106,11 +106,11 @@ namespace Amphora.Api.Pages.Amphorae
                     {
                         await formFile.CopyToAsync(stream);
                         stream.Seek(0, SeekOrigin.Begin);
-                        await this.dataStore.SetDataAsync(result.Entity, await stream.ReadFullyAsync(), formFile.FileName);
+                        await this.blobStore.WriteBytesAsync(result.Entity, formFile.FileName, await stream.ReadFullyAsync());
                     }
                 }
                 this.Amphora = result.Entity;
-                this.Names = await dataStore.ListNamesAsync(result.Entity);
+                this.Names = await blobStore.ListBlobsAsync(result.Entity);
                 this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 return Page();
             }
