@@ -26,7 +26,7 @@ namespace Amphora.Tests.Integration
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync();
 
-            var a = Helpers.EntityLibrary.GetOrganisation();
+            var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanCreateOrganisation));
 
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
@@ -57,7 +57,7 @@ namespace Amphora.Tests.Integration
             var client = _factory.CreateClient();
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync();
-            var a = Helpers.EntityLibrary.GetOrganisation();
+            var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
@@ -89,7 +89,7 @@ namespace Amphora.Tests.Integration
             var client = _factory.CreateClient();
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync();
-            var org = Helpers.EntityLibrary.GetOrganisation();
+            var org = Helpers.EntityLibrary.GetOrganisation(nameof(CanInviteToOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.PostAsync(url, requestBody);
@@ -118,6 +118,10 @@ namespace Amphora.Tests.Integration
             selfResponse.EnsureSuccessStatusCode();
             var self = JsonConvert.DeserializeObject<ApplicationUser>(selfContent);
             Assert.Equal(org.OrganisationId, self.OrganisationId);
+
+            await DestroyOrganisationAsync(client);
+            await DestroyUserAsync(client);
+            await DestroyUserAsync(client2);
         }
 
         private async Task DeleteOrganisation(OrganisationModel a, HttpClient client)

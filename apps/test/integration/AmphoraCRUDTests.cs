@@ -21,7 +21,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_CreatesAmphora_AsAdmin));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
             // Act
@@ -53,7 +53,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ListsAmphorae_AsAdmin));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
@@ -86,7 +86,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ReadsAmphora_AsAdmin));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
@@ -124,7 +124,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_PublicAmphora_AllowAccessToAny));
             a.IsPublic = true;
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -140,6 +140,11 @@ namespace Amphora.Tests.Integration
             var b = JsonConvert.DeserializeObject<Common.Models.AmphoraModel>(responseContent);
             Assert.NotNull(b);
             Assert.Equal(a.Id, b.Id);
+
+            await DeleteAmphora(adminClient, a.AmphoraId);
+            await DestroyOrganisationAsync(adminClient);
+            await DestroyUserAsync(client);
+
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

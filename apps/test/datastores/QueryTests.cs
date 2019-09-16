@@ -16,7 +16,7 @@ namespace Amphora.Tests.Unit.Datastores
         {
             var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
             
-            var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
+            var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString(), nameof(QueryAmphoraByLatLon));
 
             entity = await sut.CreateAsync(entity);
 

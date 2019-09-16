@@ -127,9 +127,10 @@ namespace Amphora.Api.Services.Organisations
             await orgBlobStore.WriteBytesAsync(organisation, "profile.jpg", bytes);
         }
 
-        public async Task<string> ProfilePictureUrl(OrganisationModel organisation)
+        public async Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation)
         {
-            return await orgBlobStore.GetPublicUrl(organisation, "profile.jpg");
+            return await orgBlobStore.ReadBytesAsync(organisation, "profile.jpg") ?? new byte[0];
         }
+
     }
 }

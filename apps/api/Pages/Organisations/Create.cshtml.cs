@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -63,7 +67,7 @@ namespace Amphora.Api.Pages.Organisations
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(List<IFormFile> files)
         {
             var org = new OrganisationExtendedModel
             {
@@ -76,6 +80,18 @@ namespace Amphora.Api.Pages.Organisations
             var result = await organisationService.CreateOrganisationAsync(User, org);
             if (result.Succeeded)
             {
+                var formFile = files.FirstOrDefault();
+
+                if (formFile != null && formFile.Length > 0)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        await formFile.CopyToAsync(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        await this.organisationService.WriteProfilePictureJpg(result.Entity, await stream.ReadFullyAsync());
+                    }
+                }
+                
                 return RedirectToPage("/Organisations/Detail");
             }
             else

@@ -27,7 +27,7 @@ namespace Amphora.Tests.Integration
         {
             var client = _factory.CreateClient();
             var (user, password) = await client.CreateUserAsync();
-            var inviteResponse = await currentClient.PostAsJsonAsync($"api/organisations/{org.OrganisationId}/invitations/", 
+            var inviteResponse = await currentClient.PostAsJsonAsync($"api/organisations/{org.OrganisationId}/invitations/",
                 new Invitation(user.Email));
             inviteResponse.EnsureSuccessStatusCode();
             var accept = await client.GetAsync($"api/organisations/{org.OrganisationId}/invitations");
@@ -41,7 +41,7 @@ namespace Amphora.Tests.Integration
         {
             var client = _factory.CreateClient();
             var (user, password) = await client.CreateUserAsync();
-            var org = await client.CreateOrganisationAsync();
+            var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             userLoans[client] = user;
             orgLoans[client] = org;
             return (client, user, org);

@@ -37,7 +37,7 @@ namespace Amphora.Tests.Unit.Authorization
         {
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
-            var org = EntityLibrary.GetOrganisation();
+            var org = EntityLibrary.GetOrganisation(nameof(DenyAllByDefault));
             var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
             var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
@@ -45,7 +45,7 @@ namespace Amphora.Tests.Unit.Authorization
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
-            var a = EntityLibrary.GetAmphora(org.OrganisationId);
+            var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(DenyAllByDefault));
             a = await amphoraStore.CreateAsync(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
@@ -76,7 +76,7 @@ namespace Amphora.Tests.Unit.Authorization
         {
             var principal = new TestPrincipal();
             var userManager = new Mock<IUserManager>();
-            var org = EntityLibrary.GetOrganisation();
+            var org = EntityLibrary.GetOrganisation(nameof(OrgMember_ReadAccess_Amphora));
             var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
             var extendedOrg = await orgStore.ReadAsync<OrganisationExtendedModel>(org.Id, org.OrganisationId);
@@ -87,7 +87,7 @@ namespace Amphora.Tests.Unit.Authorization
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
             var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
-            var a = EntityLibrary.GetAmphora(org.OrganisationId);
+            var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(OrgMember_ReadAccess_Amphora));
             a = await amphoraStore.CreateAsync(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);

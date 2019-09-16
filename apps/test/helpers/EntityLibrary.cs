@@ -1,6 +1,4 @@
 using System;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
 using NGeoHash;
 
@@ -9,16 +7,16 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static Amphora.Common.Models.AmphoraModel GetAmphora(string orgId, string description = null)
+        public static Amphora.Common.Models.AmphoraModel GetAmphora(string orgId, string testName)
         {
             var geoHash = GeoHash.Encode(rnd.Next(0, 180), rnd.Next(0, 180));
             return new Amphora.Common.Models.AmphoraModel()
             {
                 Id = null,
                 OrganisationId = orgId,
-                Description = description ?? "Valid Amphora - description",
+                Description = DateTime.Now.ToString(),
                 Price = rnd.Next(0, 99),
-                Name = "Valid Amphora - title",
+                Name = "test: " + testName,
                 GeoHash = geoHash
             };
         }
@@ -34,11 +32,11 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static OrganisationModel GetOrganisation()
+        public static OrganisationModel GetOrganisation(string testName)
         {
             return new OrganisationExtendedModel
             {
-                Name =  Guid.NewGuid().ToString()
+                Name =  testName
             };
         }
     }

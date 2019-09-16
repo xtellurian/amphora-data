@@ -10,7 +10,7 @@ namespace Amphora.Api.Contracts
         Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId);
         Task<Models.EntityOperationResult<OrganisationExtendedModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationExtendedModel org);
         Task InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email);
-        Task<string> ProfilePictureUrl(OrganisationModel organisation);
+        Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation);
         Task WriteProfilePictureJpg(OrganisationModel organisation, byte[] bytes);
     }
 }

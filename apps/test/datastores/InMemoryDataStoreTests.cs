@@ -14,7 +14,7 @@ namespace Amphora.Tests.Unit.Datastores
         public async Task ListNamesTest_Amphora()
         {
             var sut = new InMemoryBlobStore<AmphoraModel>();
-            var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString());
+            var entity = EntityLibrary.GetAmphora(Guid.NewGuid().ToString(), nameof(ListNamesTest_Amphora));
             entity.Id = Guid.NewGuid().ToString().AsQualifiedId<AmphoraModel>();
             var names = await sut.ListBlobsAsync(entity);
             Assert.Empty(names);

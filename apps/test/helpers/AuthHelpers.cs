@@ -43,9 +43,9 @@ namespace Amphora.Tests.Helpers
             return (User: user, Password: password);
         }
 
-        public static async Task<OrganisationModel> CreateOrganisationAsync(this HttpClient client)
+        public static async Task<OrganisationModel> CreateOrganisationAsync(this HttpClient client, string testName)
         {
-            var a = Helpers.EntityLibrary.GetOrganisation();
+            var a = Helpers.EntityLibrary.GetOrganisation(testName);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var createResponseContent = await response.Content.ReadAsStringAsync();

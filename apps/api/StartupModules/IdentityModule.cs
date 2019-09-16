@@ -30,10 +30,10 @@ namespace Amphora.Api.StartupModules
             services.Configure<RegistrationOptions>(Configuration.GetSection("Registration"));
             services.AddTransient<IUserService, UserService>();
 
-            var key = Configuration.GetSection("Cosmos")["Key"];
+            var key = Configuration.GetSection("Cosmos")["PrimaryKey"];
             var endpoint = Configuration.GetSection("Cosmos")["Endpoint"];
             var database = Configuration.GetSection("Cosmos")["Database"];
-            if (key != null && endpoint != null && database != null)
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(database))
             {
                 services.AddScoped<ISignInManager, SignInManagerWrapper<ApplicationUser>>();
                 services.AddTransient<IUserManager, UserManagerWrapper<ApplicationUser>>();

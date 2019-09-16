@@ -24,7 +24,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_UploadDownloadFiles_AsAdmin));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
@@ -62,7 +62,7 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId);
+            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_DownloadFiles_AsOtherUsers));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
