@@ -46,7 +46,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Name, b.Name);
 
             await DeleteOrganisation(b, client);
-            await DestroyUserAsync(client);
+            await DestroyUserAsync(client, user);
 
         }
 
@@ -79,7 +79,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Name, b.Name);
 
             await DeleteOrganisation(a, client);
-            await DestroyUserAsync(client);
+            await DestroyUserAsync(client, user);
 
         }
 
@@ -121,9 +121,9 @@ namespace Amphora.Tests.Integration
             var self = JsonConvert.DeserializeObject<ApplicationUser>(selfContent);
             Assert.Equal(org.OrganisationId, self.OrganisationId);
 
-            await DestroyOrganisationAsync(client);
-            await DestroyUserAsync(client);
-            await DestroyUserAsync(client2);
+            await DestroyOrganisationAsync(client, org);
+            await DestroyUserAsync(client, user);
+            await DestroyUserAsync(client2, otherUser);
         }
 
         private async Task DeleteOrganisation(OrganisationModel a, HttpClient client)

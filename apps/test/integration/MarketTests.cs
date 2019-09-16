@@ -19,6 +19,9 @@ namespace Amphora.Tests.Integration
             var response = await client.GetAsync("api/market?query='{term}'");
 
             response.EnsureSuccessStatusCode();
+
+            await DestroyOrganisationAsync(client, org);
+            await DestroyUserAsync(client, user);
         }
     }
 }

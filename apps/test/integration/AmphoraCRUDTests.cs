@@ -42,8 +42,8 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Name, b.Name);
 
             await DeleteAmphora(adminClient, b.Id);
-            await DestroyUserAsync(adminClient);
-            await DestroyOrganisationAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Theory]
@@ -75,8 +75,8 @@ namespace Amphora.Tests.Integration
             Assert.True(b.Count > 0);
 
             await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyUserAsync(adminClient);
-            await DestroyOrganisationAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Theory]
@@ -113,8 +113,8 @@ namespace Amphora.Tests.Integration
 
             // cleanup
             await DeleteAmphora(adminClient, b.Id);
-            await DestroyUserAsync(adminClient);
-            await DestroyOrganisationAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Theory]
@@ -142,8 +142,10 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Id, b.Id);
 
             await DeleteAmphora(adminClient, a.AmphoraId);
-            await DestroyOrganisationAsync(adminClient);
-            await DestroyUserAsync(client);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+            await DestroyOrganisationAsync(client, org);
+            await DestroyUserAsync(client, user);
 
         }
 

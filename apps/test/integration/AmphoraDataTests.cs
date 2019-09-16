@@ -51,8 +51,8 @@ namespace Amphora.Tests.Integration
 
             // cleanup
             await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyUserAsync(adminClient);
-            await DestroyOrganisationAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Theory]
@@ -94,12 +94,12 @@ namespace Amphora.Tests.Integration
 
             // cleanup
             await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyUserAsync(adminClient);
-            await DestroyUserAsync(sameOrgClient);
-            await DestroyOrganisationAsync(adminClient);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+            await DestroyUserAsync(sameOrgClient, sameOrgUser);
 
-            await DestroyUserAsync(otherOrgClient);
-            await DestroyOrganisationAsync(otherOrgClient);
+            await DestroyOrganisationAsync(otherOrgClient, otherOrg);
+            await DestroyUserAsync(otherOrgClient, otherOrgUser);
         }
 
         [Theory]
@@ -119,8 +119,8 @@ namespace Amphora.Tests.Integration
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound, fillResponse.StatusCode);
 
-            await DestroyUserAsync(client);
-            await DestroyOrganisationAsync(client);
+            await DestroyOrganisationAsync(client, org);
+            await DestroyUserAsync(client, user);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)
