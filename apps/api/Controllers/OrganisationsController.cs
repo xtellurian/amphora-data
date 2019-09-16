@@ -80,14 +80,6 @@ namespace Amphora.Api.Controllers
             else return Ok(org);
         }
 
-        [HttpGet("api/organisations/{id}/profile.jpg")]
-        public async Task<IActionResult> GetOrganisationProfileImage(string id)
-        {
-            var org = await entityStore.ReadAsync(id);
-            if (org == null) return NotFound();
-            var image = await organisationService.ReadrofilePictureJpg(org);
-            return new FileContentResult(image, "image/jpeg");
-        }
 
         [HttpPost("api/organisations/{id}/invitations/")]
         public async Task<IActionResult> InviteToOrganisation(string id, [FromBody] Invitation invitation)
