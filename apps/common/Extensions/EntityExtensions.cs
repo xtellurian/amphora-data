@@ -5,6 +5,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.UserData;
 
 namespace Amphora.Common.Extensions
 {
@@ -16,6 +17,7 @@ namespace Amphora.Common.Extensions
             {typeof(AmphoraModel), "Amphora"},
             {typeof(OrganisationModel), "Organisation"},
             {typeof(PermissionModel), "Permission"},
+            {typeof(UserDataModel), "UserData"},
         };
 
         public static string AsQualifiedId<T>(this string id) where T: IEntity

@@ -18,7 +18,7 @@ namespace Amphora.Common.Models
 
         public bool IsValidDto() // throws if invalid
         {
-            return this.OrganisationId != null;
+            return !string.IsNullOrEmpty(OrganisationId);
         }
     }
 }
