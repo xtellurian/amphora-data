@@ -29,10 +29,10 @@ namespace Amphora.Api.Stores.Cosmos
             return await base.CreateAsync<TExtended>(entity);
         }
 
-        public async Task<IList<AmphoraModel>> ListAsync()
+        public async Task<IList<AmphoraModel>> TopAsync()
         {
             await Init();
-            return await base.ListAsync<AmphoraModel>();
+            return await base.TopAsync<AmphoraModel>();
         }
 
         public async Task<AmphoraModel> ReadAsync(string id)
@@ -57,7 +57,14 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             id = id.AsQualifiedId<AmphoraModel>();
-            return await base.ReadAsync<TExtended>(id, orgId);
+            if(orgId == null)
+            {
+                return await base.ReadAsync<TExtended>(id);
+            }
+            else
+            {
+                return await base.ReadAsync<TExtended>(id, orgId);
+            }
         }
 
         async Task<TExtended> IEntityStore<AmphoraModel>.ReadAsync<TExtended>(string id)
@@ -106,7 +113,7 @@ namespace Amphora.Api.Stores.Cosmos
 
         
 
-        public async Task<IList<AmphoraModel>> ListAsync(string orgId)
+        public async Task<IList<AmphoraModel>> TopAsync(string orgId)
         {
             await Init();
             return Container.GetItemLinqQueryable<AmphoraModel>()

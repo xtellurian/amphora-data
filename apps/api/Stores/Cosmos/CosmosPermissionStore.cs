@@ -32,12 +32,12 @@ namespace Amphora.Api.Stores.Cosmos
             throw new NotImplementedException();
         }
 
-        public Task<IList<PermissionModel>> ListAsync()
+        public Task<IList<PermissionModel>> TopAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IList<PermissionModel>> ListAsync(string orgId)
+        public Task<IList<PermissionModel>> TopAsync(string orgId)
         {
             throw new NotImplementedException();
         }

@@ -55,7 +55,7 @@ namespace Amphora.Api.Pages.Organisations
         public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
-            Organisations = await organisationService.Store.ListAsync();
+            Organisations = await organisationService.Store.TopAsync();
             if (response.success)
             {
                 Token = response.token;

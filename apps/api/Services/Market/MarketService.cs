@@ -12,7 +12,7 @@ namespace Amphora.Api.Services.Market
 {
     public class MarketService : IMarketService
     {
-        private readonly ISearchService searchService;
+        public ISearchService searchService { get; }
 
         public MarketService(
             ISearchService searchService)
@@ -22,7 +22,7 @@ namespace Amphora.Api.Services.Market
 
         public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm)
         {
-            if(searchTerm == null) return new List<AmphoraExtendedModel>();
+            if (searchTerm == null) return new List<AmphoraExtendedModel>();
             var p = new SearchParameters();
             var result = await searchService.SearchAmphora(searchTerm, p);
 

@@ -19,12 +19,19 @@ namespace Amphora.Api.Stores
         protected List<T> store = new List<T>();
         private readonly IMapper mapper;
 
-        public Task<IList<T>> ListAsync()
+        public Task<IList<T>> TopAsync()
         {
             return Task<IList<T>>.Factory.StartNew(() =>
             {
                 return new ReadOnlyCollection<T>(this.store);
             });
+        }
+         public Task<IList<T>> TopAsync(string orgId)
+        {
+            return Task<IList<T>>.Factory.StartNew(() =>
+           {
+               return new ReadOnlyCollection<T>(this.store.Where(o => string.Equals(orgId, o.OrganisationId)).ToList());
+           });
         }
 
         public Task<T> CreateAsync(T entity)
@@ -124,13 +131,6 @@ namespace Amphora.Api.Stores
             var entity = await ReadAsync(id, orgId);
             if (entity is TExtended) return entity as TExtended;
             else return mapper.Map<TExtended>(entity);
-        }
-        public Task<IList<T>> ListAsync(string orgId)
-        {
-            return Task<IList<T>>.Factory.StartNew(() =>
-           {
-               return new ReadOnlyCollection<T>(this.store.Where(o => string.Equals(orgId, o.OrganisationId)).ToList());
-           });
         }
 
 

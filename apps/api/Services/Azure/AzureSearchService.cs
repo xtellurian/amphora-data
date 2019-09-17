@@ -20,6 +20,7 @@ namespace Amphora.Api.Services.Azure
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
         private const string indexName = "amphora-index";
+        private const string indexerName = "amphora-indexer";
 
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
@@ -57,6 +58,7 @@ namespace Amphora.Api.Services.Azure
             {
                 IsFacetable = true,
                 IsRetrievable = true,
+                IsFilterable = true
             });
             // add name
             fields.Add(new Field(nameof(AmphoraExtendedModel.Name), DataType.String)
@@ -85,6 +87,13 @@ namespace Amphora.Api.Services.Azure
                 IsFacetable = true,
                 IsFilterable = true
             });
+            // Location
+            fields.Add(new Field(nameof(AmphoraExtendedModel.GeoLocation), DataType.GeographyPoint)
+            {
+                IsRetrievable = true,
+                IsSortable = true,
+                IsFilterable = true
+            });
 
 
             // add isPubic
@@ -102,10 +111,11 @@ namespace Amphora.Api.Services.Azure
             await serviceClient.Indexes.DeleteAsync(index.Name);
             index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
 
-            var indexer = new Indexer("amphora-indexer", dataSource.Name, index.Name)
+            var indexer = new Indexer(indexerName, dataSource.Name, index.Name)
             {
                 Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
-                Parameters = new IndexingParameters{
+                Parameters = new IndexingParameters
+                {
                     Configuration = new Dictionary<string, object>
                     {
                         {"assumeOrderByHighWaterMarkColumn", true}
@@ -117,8 +127,19 @@ namespace Amphora.Api.Services.Azure
             await serviceClient.Indexers.DeleteAsync(indexer.Name);
 
             indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
+        }
 
-
+        public async Task Reindex()
+        {
+            if (!await serviceClient.Indexers.ExistsAsync(indexerName))
+            {
+                await CreateAmphoraIndexAsync();
+            }
+            else
+            {
+                var indexer = await serviceClient.Indexers.GetAsync(indexerName);
+                await serviceClient.Indexers.RunAsync(indexer.Name);
+            }
         }
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)

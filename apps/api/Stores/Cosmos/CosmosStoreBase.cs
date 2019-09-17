@@ -111,7 +111,7 @@ namespace Amphora.Api.Stores.Cosmos
             return response.Resource;
         }
 
-        protected async Task<List<T>> ListAsync<T>()
+        protected async Task<List<T>> TopAsync<T>()
         {
             var results = new List<T>(); // todo
             var prefix = typeof(T).GetEntityPrefix();

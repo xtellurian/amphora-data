@@ -23,7 +23,7 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Orgs = await entityStore.ListAsync();
+            Orgs = await entityStore.TopAsync();
             return Page();
         }
     }

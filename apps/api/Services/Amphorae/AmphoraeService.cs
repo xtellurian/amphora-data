@@ -33,7 +33,7 @@ namespace Amphora.Api.Services.Amphorae
             this.userManager = userManager;
             this.logger = logger;
         }
-        public async Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model)
+        public async Task<EntityOperationResult<T>> CreateAsync<T>(ClaimsPrincipal principal, T model) where T: AmphoraModel
         {
             logger.LogInformation($"Creating new Amphora");
             var user = await userManager.GetUserAsync(principal);
@@ -43,11 +43,7 @@ namespace Amphora.Api.Services.Amphorae
             model.CreatedDate = DateTime.UtcNow;
 
             if (!model.IsValid()) throw new NullReferenceException("Invalid Amphora Model");
-            if (model.OrganisationId == null)
-            {
-                model.OrganisationId = user.OrganisationId;
-                logger.LogInformation($"Setting Amphora OrganisationId to {user.OrganisationId}");
-            }
+            
             // check permission to create amphora
             var organisation = await organisationStore.ReadAsync(
                 model.OrganisationId.AsQualifiedId(typeof(OrganisationModel)),
@@ -57,11 +53,12 @@ namespace Amphora.Api.Services.Amphorae
             if (isAuthorized)
             {
                 model = await AmphoraStore.CreateAsync(model);
-                return new EntityOperationResult<AmphoraModel>(model);
+                // await searchService.Reindex();
+                return new EntityOperationResult<T>(model);
             }
             else
             {
-                return new EntityOperationResult<AmphoraModel>("Unauthorized", $"Create permission required on {organisation.Id}")
+                return new EntityOperationResult<T>("Unauthorized", $"Create permission required on {organisation.Id}")
                 { WasForbidden = true };
             }
         }

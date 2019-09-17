@@ -34,18 +34,6 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("api/amphorae")]
-        public async Task<IActionResult> ListAmphoraAsync(string geoHash)
-        {
-            if (!string.IsNullOrEmpty(geoHash))
-            {
-                var result = await amphoraeService.AmphoraStore.QueryAsync<AmphoraExtendedModel>(a => a.GeoHash?.StartsWith(geoHash) ?? false);
-                return Ok(result);
-                //return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
-            }
-            return Ok(await this.amphoraeService.AmphoraStore.ListAsync());
-        }
-
         [HttpPost("api/amphorae")]
         public async Task<IActionResult> Create_Api([FromBody] AmphoraExtendedModel model)
         {
@@ -54,7 +42,7 @@ namespace Amphora.Api.Controllers
                 return BadRequest("Invalid Model");
             }
 
-            var result = await amphoraeService.CreateAsync(User, model);
+            var result = await amphoraeService.CreateAsync<AmphoraExtendedModel>(User, model);
             if (result.Succeeded)
             {
                 return Ok(result.Entity);
@@ -72,7 +60,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
-            var result = await this.amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await this.amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
             if (result.Succeeded)
             {
                 return Ok(result.Entity);

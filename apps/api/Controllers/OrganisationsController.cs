@@ -28,13 +28,6 @@ namespace Amphora.Api.Controllers
             this.organisationService = organisationService;
         }
 
-        [HttpGet("api/organisations")]
-        public async Task<IActionResult> ListOrganisations()
-        {
-            var orgs = await entityStore.ListAsync();
-            return Ok(orgs);
-        }
-
         [HttpPost("api/organisations")]
         public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationExtendedModel org)
         {

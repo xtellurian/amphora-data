@@ -28,6 +28,7 @@ namespace Amphora.Tests.Integration
             var accept = await client.GetAsync($"api/organisations/{org.OrganisationId}/invitations");
             accept.EnsureSuccessStatusCode();
             inviteResponse.EnsureSuccessStatusCode();
+            user.OrganisationId = org.OrganisationId;
             return (client, user, org);
         }
         protected async Task<(HttpClient client, IApplicationUser user, OrganisationModel org)> NewOrgAuthenticatedClientAsync()
@@ -38,7 +39,12 @@ namespace Amphora.Tests.Integration
             return (client, user, org);
         }
 
-        protected async Task DestroyUserAsync(HttpClient client, IApplicationUser user )
+        protected async Task DestroyAmphoraAsync(HttpClient client, string id)
+        {
+            var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
+            deleteResponse.EnsureSuccessStatusCode();
+        }
+        protected async Task DestroyUserAsync(HttpClient client, IApplicationUser user)
         {
             var response = await client.DeleteAsync($"api/users/{user.UserName}");
             response.EnsureSuccessStatusCode();

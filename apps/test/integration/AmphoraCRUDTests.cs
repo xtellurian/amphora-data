@@ -23,7 +23,8 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_CreatesAmphora_AsAdmin));
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var s = JsonConvert.SerializeObject(a);
+            var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
 
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -49,39 +50,6 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Get_ListsAmphorae_AsAdmin(string url)
-        {
-            // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ListsAmphorae_AsAdmin));
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await adminClient.PostAsync(url, requestBody);
-            var amphora = JsonConvert.DeserializeObject<AmphoraModel>(await createResponse.Content.ReadAsStringAsync());
-            createResponse.EnsureSuccessStatusCode();
-            // Act
-            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await adminClient.GetAsync(url);
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal("application/json; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
-
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<List<AmphoraModel>>(responseBody);
-            Assert.True(b.Count > 0);
-
-            await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
-        }
-
-        [Theory]
-        [InlineData("/api/amphorae")]
         public async Task Get_ReadsAmphora_AsAdmin(string url)
         {
             // Arrange
@@ -96,7 +64,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await adminClient.GetAsync($"{url}/{b.Id}");
+            var response = await adminClient.GetAsync($"{url}/{b.AmphoraId}");
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -134,7 +102,7 @@ namespace Amphora.Tests.Integration
             createResponse.EnsureSuccessStatusCode();
             // Act
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
-            var response = await client.GetAsync($"{url}/{a.Id}");
+            var response = await client.GetAsync($"{url}/{a.AmphoraId}");
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
             response.EnsureSuccessStatusCode();

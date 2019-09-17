@@ -1,7 +1,6 @@
 using System;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using NGeoHash;
 
 namespace Amphora.Tests.Helpers
 {
@@ -10,7 +9,9 @@ namespace Amphora.Tests.Helpers
         private static Random rnd = new Random();
         public static AmphoraExtendedModel GetAmphora(string orgId, string testName)
         {
-            var geoHash = GeoHash.Encode(rnd.Next(0, 180), rnd.Next(0, 180));
+            var lat = -32.868 + rnd.Next(2); // near sydney
+            var lon = 150.2093 + rnd.Next(2);
+
             return new AmphoraExtendedModel()
             {
                 Id = null,
@@ -18,7 +19,7 @@ namespace Amphora.Tests.Helpers
                 Description = DateTime.Now.ToString(),
                 Price = rnd.Next(0, 99),
                 Name = "test: " + testName,
-                GeoHash = geoHash
+                GeoLocation = new GeoLocation(lon, lat)
             };
         }
 

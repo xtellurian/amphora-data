@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,10 +24,41 @@ namespace Amphora.Api.Controllers
             this.userService = userService;
         }
 
-        [HttpGet("api/search/amphorae")]
-        public async Task<IActionResult> LookupLocationAsync(SearchParameters parameters)
+        [HttpPost("api/search/amphorae")]
+        public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
         {
             var response = await searchService.SearchAmphora("", parameters);
+            return Ok(response.Results.Select(a => a.Entity));
+        }
+
+        [HttpGet("api/search/amphorae/byLocation")]
+        public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
+        {
+            var response = await searchService.SearchAmphora("", SearchParameters.GeoSearch(lat, lon, dist));
+            return Ok(response.Results.Select(a => a.Entity));
+        }
+        [HttpGet("api/search/amphorae/byOrganisation")]
+        public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
+        {
+            if(string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
+            var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId));
+            return Ok(response.Results.Select(a => a.Entity));
+        }
+
+        [HttpGet("api/search/amphorae/byCreator")]
+        public async Task<IActionResult> SearchAmphoraeByCreator(string userName)
+        {
+            IApplicationUser user;
+            if (string.IsNullOrEmpty(userName))
+            {
+                user = await userService.UserManager.GetUserAsync(User);
+            }
+            else
+            {
+                user = await userService.UserManager.FindByNameAsync(userName);
+            }
+
+            var response = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));
             return Ok(response.Results.Select(a => a.Entity));
         }
     }

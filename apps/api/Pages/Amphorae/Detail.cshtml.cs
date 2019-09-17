@@ -54,7 +54,7 @@ namespace Amphora.Api.Pages.Amphorae
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (id == null) return RedirectToPage("./Index");
+            if (string.IsNullOrEmpty(id)) return RedirectToPage("./Index");
             var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
             var user = await userService.UserManager.GetUserAsync(User);
             if (result.WasForbidden)

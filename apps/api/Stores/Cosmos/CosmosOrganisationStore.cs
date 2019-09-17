@@ -34,13 +34,13 @@ namespace Amphora.Api.Stores.Cosmos
             var deleteResponse = await DeleteAsync<OrganisationModel>(entity);
         }
 
-        public async Task<IList<OrganisationModel>> ListAsync()
+        public async Task<IList<OrganisationModel>> TopAsync()
         {
             await Init();
-            return await base.ListAsync<OrganisationModel>();
+            return await base.TopAsync<OrganisationModel>();
         }
 
-        public async Task<IList<OrganisationModel>> ListAsync(string orgId)
+        public async Task<IList<OrganisationModel>> TopAsync(string orgId)
         {
             await Init();
             return Container.GetItemLinqQueryable<OrganisationModel>()

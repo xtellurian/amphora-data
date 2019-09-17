@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Tests.Helpers;
+using Newtonsoft.Json;
 
 namespace Amphora.Tests.Unit
 {
@@ -23,6 +25,16 @@ namespace Amphora.Tests.Unit
             };
 
             await StoreAndRetrieveAmphoraAsync(sut, a);
+        }
+
+        [Fact]
+        public void CanSerialiseAndDeserialiseAmphora()
+        {
+            var a = EntityLibrary.GetAmphora("123", nameof(CanSerialiseAndDeserialiseAmphora));
+            var a_serialised = JsonConvert.SerializeObject(a);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(a_serialised);
+            Assert.NotNull(b);
+            Assert.Equal(a.OrganisationId, b.OrganisationId);
         }
 
         [Fact]
@@ -54,10 +66,10 @@ namespace Amphora.Tests.Unit
 
         private async Task ListAmphoraAsync(IEntityStore<AmphoraModel> sut, AmphoraModel a)
         {
-            var emptyList = await sut.ListAsync();
+            var emptyList = await sut.TopAsync();
             Assert.Empty(emptyList);
             var setResult = await sut.CreateAsync(a);
-            var list = await sut.ListAsync();
+            var list = await sut.TopAsync();
             Assert.Single(list);
             Assert.NotNull(list.FirstOrDefault());
             Assert.Equal(setResult.Id, list.FirstOrDefault().Id);

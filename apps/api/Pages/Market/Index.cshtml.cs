@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Search;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
@@ -62,12 +64,16 @@ namespace Amphora.Api.Pages.Market
 
         private async Task RunSearch()
         {
-            string geoHashStartsWith = null;
             if (Input != null && Input.Lat.HasValue && Input.Lon.HasValue)
             {
-                geoHashStartsWith = NGeoHash.GeoHash.Encode(Input.Lat.Value, Input.Lon.Value, 2); // accuracy of 2 for now - should scale it
+                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Input.Lat.Value, Input.Lon.Value, 10));
+                this.Entities = res.Results.Select(e => e.Entity);
             }
-            this.Entities = await marketService.FindAsync(Term);
+            else
+            {
+                this.Entities = await marketService.FindAsync(Term);
+            }
+
         }
     }
 }

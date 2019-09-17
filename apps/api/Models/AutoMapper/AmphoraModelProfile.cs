@@ -13,7 +13,7 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<AmphoraModel, AmphoraExtendedModel>()
             .IncludeAllDerived()
             .ForMember(o => o.Description, p => p.Ignore())
-            .ForMember(o => o.GeoHash, p => p.Ignore());
+            .ForMember(o => o.GeoLocation, p => p.Ignore());
         }
     }
 }

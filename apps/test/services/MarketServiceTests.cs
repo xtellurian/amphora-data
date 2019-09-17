@@ -48,7 +48,11 @@ namespace Amphora.Tests.Unit
         public async Task NullsReturnEmptyList()
         {
             await AddToStore();
-            var amphoraService = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object, amphoraLogger);
+            var amphoraService = new AmphoraeService(amphoraStore,
+                                                     orgStore,
+                                                     permissionService,
+                                                     mockUserManager.Object,
+                                                     amphoraLogger);
             var service = new BasicSearchService(amphoraService);
             var sut = new MarketService(service) as IMarketService;
 
@@ -60,7 +64,11 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task LookupByGeo()
         {
-            var amphoraService = new AmphoraeService(amphoraStore, orgStore, permissionService, mockUserManager.Object, amphoraLogger);
+            var amphoraService = new AmphoraeService(amphoraStore,
+                                                     orgStore,
+                                                     permissionService,
+                                                     mockUserManager.Object,
+                                                     amphoraLogger);
             var service = new BasicSearchService(amphoraService);
             var entity = await AddToStore();
             var sut = new MarketService(service) as IMarketService;

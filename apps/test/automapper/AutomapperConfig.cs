@@ -1,9 +1,6 @@
 using System;
 using Amphora.Api;
-using Amphora.Api.Models;
-using Amphora.Common.Models;
 using AutoMapper;
-using NGeoHash;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Automapper

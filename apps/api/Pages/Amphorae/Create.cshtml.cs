@@ -1,14 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using NGeoHash;
 
 namespace Amphora.Api.Pages.Amphorae
 {
@@ -71,16 +69,16 @@ namespace Amphora.Api.Pages.Amphorae
         {
             if (ModelState.IsValid)
             {
-                string geoHash = null;
+                GeoLocation location = null;
                 if (Input.Lat.HasValue && Input.Lon.HasValue)
                 {
-                    geoHash = GeoHash.Encode(Input.Lat.Value, Input.Lon.Value);
+                    location =  new GeoLocation(Input.Lon.Value, Input.Lat.Value);
                 }
                 var entity = new AmphoraExtendedModel
                 {
                     Name = Input.Name,
                     Description = Input.Description,
-                    GeoHash = geoHash,
+                    GeoLocation = location,
                     Price = Input.Price,
                 };
 
