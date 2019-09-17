@@ -4,6 +4,7 @@ using Amphora.Api.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Tests.Unit
 {
@@ -14,7 +15,7 @@ namespace Amphora.Tests.Unit
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
             var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = new Amphora.Common.Models.AmphoraModel()
+            var a = new AmphoraExtendedModel()
             {
                 Name = "Test Name",
                 Description = "Test Description",
@@ -28,7 +29,7 @@ namespace Amphora.Tests.Unit
         public async Task InMemoryEntityStoreListAsync()
         {
             var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = new AmphoraModel()
+            var a = new AmphoraExtendedModel()
             {
                 Name = "Test Name",
                 Description = "Test Description",
@@ -45,13 +46,13 @@ namespace Amphora.Tests.Unit
             await GetMissingAmphoraAsync(sut);
         }
 
-        private async Task GetMissingAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut)
+        private async Task GetMissingAmphoraAsync(IEntityStore<AmphoraModel> sut)
         {
             var missing = await sut.ReadAsync("missing");
             Assert.Null(missing);
         }
 
-        private async Task ListAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut, Amphora.Common.Models.AmphoraModel a)
+        private async Task ListAmphoraAsync(IEntityStore<AmphoraModel> sut, AmphoraModel a)
         {
             var emptyList = await sut.ListAsync();
             Assert.Empty(emptyList);
@@ -62,7 +63,7 @@ namespace Amphora.Tests.Unit
             Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
         }
 
-        private async Task StoreAndRetrieveAmphoraAsync(IEntityStore<Amphora.Common.Models.AmphoraModel> sut, Amphora.Common.Models.AmphoraModel a)
+        private async Task StoreAndRetrieveAmphoraAsync(IEntityStore<AmphoraModel> sut, AmphoraModel a)
         {
             var setResult = await sut.CreateAsync(a);
             Assert.NotNull(setResult);

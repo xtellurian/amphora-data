@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amphora.Api.Models;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Contracts
 {

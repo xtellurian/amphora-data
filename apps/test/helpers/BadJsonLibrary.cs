@@ -1,5 +1,6 @@
 using System;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +20,7 @@ namespace Amphora.Tests.Helpers
 
         private static string BadlyFormedAmphora()
         {
-            var entity = new Amphora.Common.Models.AmphoraModel
+            var entity = new AmphoraExtendedModel
             {
                 Price = -1,
                 Name = null,

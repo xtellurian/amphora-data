@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Amphora.Tests.Unit.Automapper
 {
-    public class AutomapTableStoreTests
+    public class AutomapperConfig
     {
         private IMapper mapper;
         private Random rnd = new Random();
 
-        public AutomapTableStoreTests()
+        public AutomapperConfig()
         {
             var config = new MapperConfiguration(cfg =>
             {

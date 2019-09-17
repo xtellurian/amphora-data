@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -31,7 +32,7 @@ namespace Amphora.Tests.Integration
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -69,7 +70,7 @@ namespace Amphora.Tests.Integration
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);

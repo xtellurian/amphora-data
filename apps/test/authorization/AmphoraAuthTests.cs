@@ -8,6 +8,7 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
@@ -44,9 +45,9 @@ namespace Amphora.Tests.Unit.Authorization
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
+            var amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
             var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(DenyAllByDefault));
-            a = await amphoraStore.CreateAsync(a);
+            a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
             var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
@@ -86,9 +87,9 @@ namespace Amphora.Tests.Unit.Authorization
 
             userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
 
-            var amphoraStore = new InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>(Mapper);
+            var amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
             var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(OrgMember_ReadAccess_Amphora));
-            a = await amphoraStore.CreateAsync(a);
+            a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
 
             var store = new InMemoryEntityStore<PermissionModel>(Mapper);
 

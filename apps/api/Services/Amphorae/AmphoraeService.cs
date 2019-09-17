@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Services.Amphorae
 {
@@ -18,9 +19,9 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IUserManager userManager;
         private readonly ILogger<AmphoraeService> logger;
 
-        public IEntityStore<Common.Models.AmphoraModel> AmphoraStore { get; }
+        public IEntityStore<AmphoraModel> AmphoraStore { get; }
 
-        public AmphoraeService(IEntityStore<Common.Models.AmphoraModel> amphoraStore,
+        public AmphoraeService(IEntityStore<AmphoraModel> amphoraStore,
                                IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserManager userManager,
@@ -32,12 +33,16 @@ namespace Amphora.Api.Services.Amphorae
             this.userManager = userManager;
             this.logger = logger;
         }
-        public async Task<EntityOperationResult<Common.Models.AmphoraModel>> CreateAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel model)
+        public async Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model)
         {
             logger.LogInformation($"Creating new Amphora");
             var user = await userManager.GetUserAsync(principal);
+            // set the required fields
             if (string.IsNullOrEmpty(model.OrganisationId)) model.OrganisationId = user.OrganisationId;
-            if (!model.IsValidDto()) throw new NullReferenceException("Invalid Amphora Model");
+            model.CreatedBy = user.Id;
+            model.CreatedDate = DateTime.UtcNow;
+
+            if (!model.IsValid()) throw new NullReferenceException("Invalid Amphora Model");
             if (model.OrganisationId == null)
             {
                 model.OrganisationId = user.OrganisationId;
@@ -52,49 +57,49 @@ namespace Amphora.Api.Services.Amphorae
             if (isAuthorized)
             {
                 model = await AmphoraStore.CreateAsync(model);
-                return new EntityOperationResult<Common.Models.AmphoraModel>(model);
+                return new EntityOperationResult<AmphoraModel>(model);
             }
             else
             {
-                return new EntityOperationResult<Common.Models.AmphoraModel>("Unauthorized", $"Create permission required on {organisation.Id}")
+                return new EntityOperationResult<AmphoraModel>("Unauthorized", $"Create permission required on {organisation.Id}")
                 { WasForbidden = true };
             }
         }
 
-        public async Task<EntityOperationResult<Common.Models.AmphoraModel>> ReadAsync(ClaimsPrincipal principal, string id, string orgId = null)
+        public async Task<EntityOperationResult<T>> ReadAsync<T>(ClaimsPrincipal principal, string id, string orgId = null) where T: AmphoraModel
         {
             logger.LogDebug($"Reading Amphora {id}");
-            var (user, entity) = await GetUserAndEntityAsync(principal, id, orgId);
+            var (user, entity) = await GetUserAndEntityAsync<T>(principal, id, orgId);
             if (entity == null)
             {
                 logger.LogError($"{id} Not Found");
-                return new EntityOperationResult<Common.Models.AmphoraModel>($"{id} Not Found");
+                return new EntityOperationResult<T>($"{id} Not Found");
             }
             if (entity.IsPublic)
             {
                 logger.LogInformation($"Permission granted to public entity {entity.Id}");
-                return new EntityOperationResult<Common.Models.AmphoraModel>(entity);
+                return new EntityOperationResult<T>(entity);
             }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Read);
             if (authorized)
             {
-                return new EntityOperationResult<Common.Models.AmphoraModel>(entity);
+                return new EntityOperationResult<T>(entity);
             }
             else
             {
-                return new EntityOperationResult<Common.Models.AmphoraModel>("Denied") { WasForbidden = true };
+                return new EntityOperationResult<T>("Denied") { WasForbidden = true };
             }
         }
 
-        public async Task<EntityOperationResult<Common.Models.AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel entity)
+        public async Task<EntityOperationResult<AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
             logger.LogDebug($"Updating Amphora {entity.Id}");
-            var (user, existingEntity) = await GetUserAndEntityAsync(principal, entity.Id, entity.OrganisationId);
+            var (user, existingEntity) = await GetUserAndEntityAsync<AmphoraModel>(principal, entity.Id, entity.OrganisationId);
             if (entity == null)
             {
                 logger.LogError($"{entity.Id} Not Found");
-                return new EntityOperationResult<Common.Models.AmphoraModel>($"{entity.Id} Not Found");
+                return new EntityOperationResult<AmphoraModel>($"{entity.Id} Not Found");
             }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Update);
@@ -103,45 +108,45 @@ namespace Amphora.Api.Services.Amphorae
                 if (string.Equals(entity.OrganisationId, existingEntity.OrganisationId))
                 {
                     var result = await AmphoraStore.UpdateAsync(entity);
-                    return new EntityOperationResult<Common.Models.AmphoraModel>(result);
+                    return new EntityOperationResult<AmphoraModel>(result);
                 }
                 else
                 {
-                    return new EntityOperationResult<Common.Models.AmphoraModel>("Cannot change organisation id");
+                    return new EntityOperationResult<AmphoraModel>("Cannot change organisation id");
                 }
             }
             else
             {
-                return new EntityOperationResult<Common.Models.AmphoraModel>("Unauthorized") { WasForbidden = true };
+                return new EntityOperationResult<AmphoraModel>("Unauthorized") { WasForbidden = true };
             }
         }
 
-        public async Task<EntityOperationResult<Common.Models.AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel entity)
+        public async Task<EntityOperationResult<AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
             logger.LogInformation($"Deleting Amphora {entity.Id}");
-            var (user, existingEntity) = await GetUserAndEntityAsync(principal, entity.Id, entity.OrganisationId);
+            var (user, existingEntity) = await GetUserAndEntityAsync<AmphoraModel>(principal, entity.Id, entity.OrganisationId);
             if (existingEntity == null)
             {
                 logger.LogError($"{entity.Id} Not Found");
-                return new EntityOperationResult<Common.Models.AmphoraModel>($"{entity.Id} Not Found");
+                return new EntityOperationResult<AmphoraModel>($"{entity.Id} Not Found");
             }
             var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Delete);
             if (authorized)
             {
                 await AmphoraStore.DeleteAsync(entity);
-                return new EntityOperationResult<Common.Models.AmphoraModel>();
+                return new EntityOperationResult<AmphoraModel>();
             }
             else
             {
-                return new EntityOperationResult<Common.Models.AmphoraModel>("Unauthorized") { WasForbidden = true };
+                return new EntityOperationResult<AmphoraModel>("Unauthorized") { WasForbidden = true };
             }
         }
 
-        private async Task<(IApplicationUser user, Common.Models.AmphoraModel entity)> GetUserAndEntityAsync(ClaimsPrincipal principal, string id, string orgId)
+        private async Task<(IApplicationUser user, T entity)> GetUserAndEntityAsync<T>(ClaimsPrincipal principal, string id, string orgId) where T: AmphoraModel
         {
-            id = id.AsQualifiedId<Common.Models.AmphoraModel>();
+            id = id.AsQualifiedId<AmphoraModel>();
             var user = await userManager.GetUserAsync(principal);
-            var entity = await AmphoraStore.ReadAsync(id, orgId);
+            var entity = await AmphoraStore.ReadAsync<T>(id, orgId);
             return (user, entity);
         }
     }

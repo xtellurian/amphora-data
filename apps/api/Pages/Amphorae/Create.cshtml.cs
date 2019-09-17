@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,7 +76,7 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     geoHash = GeoHash.Encode(Input.Lat.Value, Input.Lon.Value);
                 }
-                var entity = new Amphora.Common.Models.AmphoraModel
+                var entity = new AmphoraExtendedModel
                 {
                     Name = Input.Name,
                     Description = Input.Description,

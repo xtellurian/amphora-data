@@ -1,7 +1,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Domains;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Extensions.Options;
@@ -25,7 +25,7 @@ namespace Amphora.Api.Services.Amphorae
                 eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
             }
         }
-        public async Task WriteSignalAsync(AmphoraModel entity, Datum d)
+        public async Task WriteSignalAsync(AmphoraExtendedModel entity, Datum d)
         {
             d.Amphora = entity.AmphoraId;
              var content = JsonConvert.SerializeObject(d,

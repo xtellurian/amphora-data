@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -39,7 +40,7 @@ namespace Amphora.Api.Pages.Market
 
         public string Token { get; set; }
 
-        public IEnumerable<Amphora.Common.Models.AmphoraModel> Entities { get; set; }
+        public IEnumerable<AmphoraModel> Entities { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {

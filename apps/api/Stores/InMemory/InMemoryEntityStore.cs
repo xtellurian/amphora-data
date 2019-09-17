@@ -41,9 +41,9 @@ namespace Amphora.Api.Stores
                 return entity;
             });
         }
-        async Task<TExtended> IEntityStore<T>.CreateAsync<TExtended>(TExtended entity)
+        public async Task<TExtended> CreateAsync<TExtended>(TExtended entity) where TExtended : class, T
         {
-            return (TExtended) await this.CreateAsync(entity);
+            return (TExtended)await this.CreateAsync(entity as T);
         }
 
         public Task<T> ReadAsync(string id)
@@ -86,21 +86,13 @@ namespace Amphora.Api.Stores
             });
         }
 
-        public Task<IList<T>> StartsWithQueryAsync(string propertyName, string givenValue)
+        public Task<IList<TExtended>> StartsWithQueryAsync<TExtended>(string propertyName, string givenValue) where TExtended : class, T
         {
-            return Task<IList<T>>.Factory.StartNew(() =>
+            return Task<IList<TExtended>>.Factory.StartNew(() =>
             {
-                var prop = typeof(T).GetProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName));
-                return store.Where(s => prop.GetValue(s).ToString().StartsWith(givenValue)).ToList(); ;
-            });
-        }
-
-        public Task<IEnumerable<T>> QueryAsync(Func<T, bool> where)
-        {
-            return Task<IEnumerable<T>>.Factory.StartNew(() =>
-            {
-                if (where == null) return null;
-                return this.store.Where(where);
+                var prop = typeof(TExtended).GetProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName));
+                var q = store.Where(s => s is TExtended && prop.GetValue(s as TExtended).ToString().StartsWith(givenValue)).ToList();
+                return mapper.Map<List<TExtended>>(q);
             });
         }
 
@@ -115,12 +107,24 @@ namespace Amphora.Api.Stores
                 return Task<T>.Factory.StartNew(() =>
                 {
                     if (id == null) return default(T);
-                    id= id.AsQualifiedId(typeof(T));
+                    id = id.AsQualifiedId(typeof(T));
                     return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
                 });
             }
         }
+        public async Task<TExtended> ReadAsync<TExtended>(string id) where TExtended : class, T
+        {
+            var entity = await this.ReadAsync(id);
+            if (entity is TExtended) return entity as TExtended;
+            else return mapper.Map<TExtended>(entity);
+        }
 
+        public async Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended : class, T
+        {
+            var entity = await ReadAsync(id, orgId);
+            if (entity is TExtended) return entity as TExtended;
+            else return mapper.Map<TExtended>(entity);
+        }
         public Task<IList<T>> ListAsync(string orgId)
         {
             return Task<IList<T>>.Factory.StartNew(() =>
@@ -129,11 +133,28 @@ namespace Amphora.Api.Stores
            });
         }
 
-        public async Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended : class, T
+
+        public Task<IEnumerable<TQuery>> QueryAsync<TQuery>(Func<TQuery, bool> where) where TQuery : class, T
         {
-            var entity = await this.ReadAsync(id, orgId);
-            if(entity is TExtended) return entity as TExtended;
-            else return mapper.Map<TExtended>(entity);
+            return Task<IEnumerable<TQuery>>.Factory.StartNew(() =>
+            {
+                if (where == null) return null;
+                var results = new List<TQuery>();
+                foreach(var s in store)
+                {
+                    if(s is TQuery && where(s as TQuery))
+                    {
+                        results.Add(s as TQuery);
+                    }
+                    else
+                    {
+                        var e = mapper.Map<TQuery>(s);
+                        if(where(e)) results.Add(e);
+                    }
+                }
+                
+                return results;
+            });
         }
     }
 }

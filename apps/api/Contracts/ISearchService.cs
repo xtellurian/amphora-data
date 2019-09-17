@@ -1,7 +1,11 @@
+using System.Threading.Tasks;
+using Amphora.Api.Models.Search;
+using Amphora.Common.Models.Amphorae;
+
 namespace Amphora.Api.Contracts
 {
     public interface ISearchService
     {
-        System.Threading.Tasks.Task<Models.Search.EntitySearchResult<Common.Models.AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters);
+        Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, SearchParameters parameters);
     }
 }

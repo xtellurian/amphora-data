@@ -7,6 +7,7 @@ using Amphora.Api.Options;
 using Amphora.Common.Models.Permissions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Amphora.Common.Extensions;
 
 namespace Amphora.Api.Stores.Cosmos
 {
@@ -62,7 +63,8 @@ namespace Amphora.Api.Stores.Cosmos
 
         Task<TExtended> IEntityStore<PermissionModel>.ReadAsync<TExtended>(string id, string orgId)
         {
-            throw new NotImplementedException();
+            id = id.AsQualifiedId<PermissionModel>();
+            return base.ReadAsync<TExtended>(id, orgId);
         }
 
         public async Task<PermissionModel> ReadAsync(string id, string orgId)
@@ -79,7 +81,7 @@ namespace Amphora.Api.Stores.Cosmos
             }
         }
 
-        public Task<IList<PermissionModel>> StartsWithQueryAsync(string propertyName, string givenValue)
+        Task<IList<TExtended>> IEntityStore<PermissionModel>.StartsWithQueryAsync<TExtended>(string propertyName, string givenValue)
         {
             throw new NotImplementedException();
         }
@@ -87,6 +89,19 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<PermissionModel> UpdateAsync(PermissionModel entity)
         {
             return await base.UpdateAsync(entity);
+        }
+
+        async Task<IEnumerable<TQuery>> IEntityStore<PermissionModel>.QueryAsync<TQuery>(Func<TQuery, bool> where)
+        {
+            await Init();
+            return await base.QueryAsync(where);
+        }
+
+        async Task<TExtended> IEntityStore<PermissionModel>.ReadAsync<TExtended>(string id)
+        {
+            await Init();
+            id = id.AsQualifiedId<PermissionModel>();
+            return await base.ReadAsync<TExtended>(id);
         }
     }
 }

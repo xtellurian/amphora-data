@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.UserData;

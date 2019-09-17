@@ -14,18 +14,18 @@ namespace Amphora.Api.Stores.Cosmos
     public class CosmosOrganisationStore : CosmosStoreBase, IEntityStore<OrganisationModel>
     {
 
-        public CosmosOrganisationStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosOrganisationStore> logger) 
+        public CosmosOrganisationStore(IOptionsMonitor<CosmosOptions> options, ILogger<CosmosOrganisationStore> logger)
             : base(options, logger)
         {
         }
 
         public async Task<OrganisationModel> CreateAsync(OrganisationModel entity)
         {
-           return await base.CreateAsync(entity);
+            return await base.CreateAsync(entity);
         }
         async Task<TExtended> IEntityStore<OrganisationModel>.CreateAsync<TExtended>(TExtended entity)
         {
-           return await base.CreateAsync<TExtended>(entity);
+            return await base.CreateAsync<TExtended>(entity);
         }
 
         public async Task DeleteAsync(OrganisationModel entity)
@@ -48,11 +48,6 @@ namespace Amphora.Api.Stores.Cosmos
                 .ToList(); // TODO - performance
         }
 
-        public Task<IEnumerable<OrganisationModel>> QueryAsync(Func<OrganisationModel, bool> where)
-        {
-            return base.QueryAsync(where);
-        }
-
         public async Task<OrganisationModel> ReadAsync(string id)
         {
             await Init();
@@ -60,7 +55,19 @@ namespace Amphora.Api.Stores.Cosmos
             id = id.AsQualifiedId(typeof(OrganisationModel));
             return await base.ReadAsync<OrganisationModel>(id);
         }
-
+        public async Task<OrganisationModel> ReadAsync(string id, string orgId)
+        {
+            await Init();
+            if (id == null) return null;
+            id = id.AsQualifiedId(typeof(OrganisationModel));
+            return await base.ReadAsync<OrganisationModel>(id, orgId);
+        }
+        async Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id)
+        {
+            await Init();
+            id = id.AsQualifiedId<OrganisationModel>();
+            return await base.ReadAsync<TExtended>(id);
+        }
         async Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id, string orgId)
         {
             await Init();
@@ -68,15 +75,8 @@ namespace Amphora.Api.Stores.Cosmos
             return await base.ReadAsync<TExtended>(id, orgId);
         }
 
-        public async Task<OrganisationModel> ReadAsync(string id, string orgId)
-        {
-            await Init();
-            if(id == null) return null;
-            id = id.AsQualifiedId(typeof(OrganisationModel));
-            return await base.ReadAsync<OrganisationModel>(id, orgId);
-        }
 
-        public Task<IList<OrganisationModel>> StartsWithQueryAsync(string propertyName, string givenValue)
+        Task<IList<TExtended>> IEntityStore<OrganisationModel>.StartsWithQueryAsync<TExtended>(string propertyName, string givenValue)
         {
             throw new System.NotImplementedException();
         }
@@ -85,6 +85,11 @@ namespace Amphora.Api.Stores.Cosmos
         {
             await Init();
             return await base.UpdateAsync<OrganisationModel>(entity);
+        }
+
+        async Task<IEnumerable<TQuery>> IEntityStore<OrganisationModel>.QueryAsync<TQuery>(Func<TQuery, bool> where)
+        {
+            return await base.QueryAsync(where);
         }
     }
 }

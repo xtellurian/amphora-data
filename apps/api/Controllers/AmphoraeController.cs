@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ namespace Amphora.Api.Controllers
         {
             if (!string.IsNullOrEmpty(geoHash))
             {
-                var result = await amphoraeService.AmphoraStore.QueryAsync(a => a.GeoHash?.StartsWith(geoHash) ?? false);
+                var result = await amphoraeService.AmphoraStore.QueryAsync<AmphoraExtendedModel>(a => a.GeoHash?.StartsWith(geoHash) ?? false);
                 return Ok(result);
                 //return Ok(await amphoraEntityStore.StartsWithQueryAsync("GeoHash", geoHash));
             }
@@ -46,9 +47,9 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/amphorae")]
-        public async Task<IActionResult> Create_Api([FromBody] Amphora.Common.Models.AmphoraModel model)
+        public async Task<IActionResult> Create_Api([FromBody] AmphoraExtendedModel model)
         {
-            if (model == null || !model.IsValidDto())
+            if (model == null || model.Name == null)
             {
                 return BadRequest("Invalid Model");
             }
@@ -71,7 +72,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
-            var result = await this.amphoraeService.ReadAsync(User, id);
+            var result = await this.amphoraeService.ReadAsync<AmphoraModel>(User, id);
             if (result.Succeeded)
             {
                 return Ok(result.Entity);
@@ -87,9 +88,9 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/amphorae/{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Amphora.Common.Models.AmphoraModel model)
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedModel model)
         {
-            var a = await this.amphoraeService.ReadAsync(User, id);
+            var a = await this.amphoraeService.ReadAsync<AmphoraModel>(User, id);
             if (a == null) return NotFound();
 
             var result = await this.amphoraeService.UpdateAsync(User, model);
@@ -110,7 +111,7 @@ namespace Amphora.Api.Controllers
         [HttpDelete("api/amphorae/{id}")]
         public async Task<IActionResult> Delete_Api(string id)
         {
-            var readResult = await amphoraeService.ReadAsync(User, id);
+            var readResult = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
             if (!readResult.Succeeded) return NotFound();
             var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
             if (result.Succeeded)
@@ -130,7 +131,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}/files/{file}")]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
-            var result = await amphoraeService.ReadAsync(User, id);
+            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
@@ -156,7 +157,7 @@ namespace Amphora.Api.Controllers
         [HttpPut("api/amphorae/{id}/files/{file}")]
         public async Task<IActionResult> UploadToAmphora(string id, string file)
         {
-            var result = await amphoraeService.ReadAsync(User, id);
+            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);

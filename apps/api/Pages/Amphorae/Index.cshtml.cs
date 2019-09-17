@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,17 +22,17 @@ namespace Amphora.Api.Pages.Amphorae
         public IndexModel(
             IUserManager userManager,
             IAmphoraeService amphoraeService,
-            IEntityStore<Amphora.Common.Models.AmphoraModel> entityStore,
+            IEntityStore<AmphoraModel> entityStore,
             IMapper mapper)
         {
             this.userManager = userManager;
             this.amphoraeService = amphoraeService;
             this.mapper = mapper;
-            this.Amphorae = new List<Amphora.Common.Models.AmphoraModel>();
+            this.Amphorae = new List<AmphoraModel>();
         }
 
         [BindProperty]
-        public IEnumerable<Amphora.Common.Models.AmphoraModel> Amphorae { get; set; }
+        public IEnumerable<AmphoraModel> Amphorae { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string orgId, string geoHash)
         {
@@ -39,7 +40,7 @@ namespace Amphora.Api.Pages.Amphorae
 
             if(! string.IsNullOrEmpty(geoHash))
             {
-                this.Amphorae = await this.amphoraeService.AmphoraStore.StartsWithQueryAsync("GeoHash", geoHash);
+                this.Amphorae = await this.amphoraeService.AmphoraStore.StartsWithQueryAsync<AmphoraExtendedModel>("GeoHash", geoHash);
                 return Page();
             }
             if (orgId != null)

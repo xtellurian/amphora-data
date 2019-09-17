@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
-using Amphora.Common.Models;
-using Microsoft.Azure.Search.Models;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Services.Basic
 {
@@ -20,7 +18,7 @@ namespace Amphora.Api.Services.Basic
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
-            var entities = await amphoraeService.AmphoraStore.QueryAsync(
+            var entities = await amphoraeService.AmphoraStore.QueryAsync<AmphoraExtendedModel>(
                 a => a.Name.Contains(searchText)
                 || (a.Description?.Contains(searchText) ?? false));
 

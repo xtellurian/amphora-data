@@ -7,6 +7,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +45,7 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         [BindProperty]
-        public Amphora.Common.Models.AmphoraModel Amphora { get; set; }
+        public AmphoraExtendedModel Amphora { get; set; }
         public IEnumerable<string> Names { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse { get; set; }
@@ -54,7 +55,7 @@ namespace Amphora.Api.Pages.Amphorae
         public async Task<IActionResult> OnGetAsync(string id)
         {
             if (id == null) return RedirectToPage("./Index");
-            var result = await amphoraeService.ReadAsync(User, id);
+            var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
             var user = await userService.UserManager.GetUserAsync(User);
             if (result.WasForbidden)
             {
@@ -93,7 +94,7 @@ namespace Amphora.Api.Pages.Amphorae
 
             if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
 
-            var result = await amphoraeService.ReadAsync(User, id);
+            var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
             if (result.Succeeded)
             {
                 if (result.Entity == null) return RedirectToPage("./Index");

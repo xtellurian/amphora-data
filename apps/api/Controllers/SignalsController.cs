@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Domains;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -45,12 +46,13 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound("Invalid Id");
             }
+            var model = await amphoraeService.AmphoraStore.ReadAsync<AmphoraExtendedModel>(id, entity.OrganisationId); // bit of a hack
             logger.LogInformation($"Signal Upload for {id}");
             jObj["amphora"] = id;
-            var domain = Domain.GetDomain(entity.DomainId);
+            var domain = Domain.GetDomain(model.DomainId);
             if (domain.IsValid(jObj))
             {
-                await signalService.WriteSignalAsync(entity, domain.ToDatum(jObj));
+                await signalService.WriteSignalAsync(model, domain.ToDatum(jObj));
                 return Ok();
             }
             else

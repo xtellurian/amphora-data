@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
@@ -52,25 +52,40 @@ namespace Amphora.Api.Services.Azure
             {
                 IsKey = true // key of AmphoraId because Id has a special charcter not allowed
             });
+            // org id for filtering 
+            fields.Add(new Field(nameof(AmphoraExtendedModel.OrganisationId), DataType.String)
+            {
+                IsFacetable = true,
+                IsRetrievable = true,
+            });
             // add name
-            fields.Add(new Field(nameof(AmphoraModel.Name), DataType.String)
+            fields.Add(new Field(nameof(AmphoraExtendedModel.Name), DataType.String)
             {
                 IsSearchable = true,
                 IsRetrievable = true
             });
             // add about
-            fields.Add(new Field(nameof(AmphoraModel.Description), DataType.String)
+            fields.Add(new Field(nameof(AmphoraExtendedModel.Description), DataType.String)
             {
                 IsSearchable = true
             });
             // add price
-            fields.Add(new Field(nameof(AmphoraModel.Price), DataType.Double)
+            fields.Add(new Field(nameof(AmphoraExtendedModel.Price), DataType.Double)
             {
                 IsRetrievable = true,
                 IsSortable = true,
                 IsFacetable = true,
                 IsFilterable = true
             });
+            // created by
+            fields.Add(new Field(nameof(AmphoraModel.CreatedBy), DataType.String)
+            {
+                IsRetrievable = true,
+                IsSortable = true,
+                IsFacetable = true,
+                IsFilterable = true
+            });
+
 
             // add isPubic
             fields.Add(new Field(nameof(AmphoraModel.IsPublic), DataType.Boolean)

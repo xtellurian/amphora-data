@@ -91,6 +91,9 @@ namespace Amphora.Api.Services.Organisations
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
             if (user == null) return new EntityOperationResult<OrganisationExtendedModel>("Cannot find user. Please login");
+            org.CreatedBy = user.Id;
+            org.CreatedDate = DateTime.UtcNow;
+            if(!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
             org.AddOrUpdateMembership(user, Roles.Administrator);
             // we good - create an org
             org = await Store.CreateAsync<OrganisationExtendedModel>(org);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Amphorae
@@ -26,7 +27,7 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, Amphora.Common.Models.AmphoraModel entity, string file)
+        public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
         {
             var user = await userManager.GetUserAsync(principal);
             var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
@@ -44,7 +45,7 @@ namespace Amphora.Api.Services.Amphorae
         }
         public async Task<EntityOperationResult<byte[]>> WriteFileAsync(
             ClaimsPrincipal principal,
-            Amphora.Common.Models.AmphoraModel entity,
+            AmphoraModel entity,
             byte[] contents,
             string file)
         {

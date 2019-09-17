@@ -1,16 +1,17 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Contracts
 {
     public interface IAmphoraeService
     {
-        IEntityStore<Common.Models.AmphoraModel> AmphoraStore { get; }
+        IEntityStore<AmphoraModel> AmphoraStore { get; }
 
-        Task<EntityOperationResult<Common.Models.AmphoraModel>> CreateAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel model);
-        Task<EntityOperationResult<Common.Models.AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel entity);
-        Task<EntityOperationResult<Common.Models.AmphoraModel>> ReadAsync(ClaimsPrincipal principal, string id, string orgId = null);
-        Task<EntityOperationResult<Common.Models.AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, Common.Models.AmphoraModel entity);
+        Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model);
+        Task<EntityOperationResult<AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, AmphoraModel entity);
+        Task<EntityOperationResult<TExtended>> ReadAsync<TExtended>(ClaimsPrincipal principal, string id, string orgId = null) where TExtended : AmphoraModel;
+        Task<EntityOperationResult<AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, AmphoraModel entity);
     }
 }

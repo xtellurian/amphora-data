@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Amphora.Api.Stores;
 using Amphora.Common.Extensions;
-using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Xunit;
 

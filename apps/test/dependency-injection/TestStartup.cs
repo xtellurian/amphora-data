@@ -3,6 +3,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Stores;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -33,7 +34,7 @@ namespace Amphora.Tests.Unit
             mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
             services.AddSingleton<IHttpClientFactory>(mockFactory.Object);
 
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();
+            services.AddSingleton<IEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
         }
     }
 }

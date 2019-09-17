@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
 {
-    public class AmphoraAuthorizationHandler : AuthorizationHandler<AuthorizationRequirement, Amphora.Common.Models.AmphoraModel>
+    public class AmphoraAuthorizationHandler : AuthorizationHandler<AuthorizationRequirement, AmphoraModel>
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
         private readonly IPermissionService permissionService;
@@ -25,7 +26,7 @@ namespace Amphora.Api.Services.Auth
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                     AuthorizationRequirement requirement,
-                                                       Amphora.Common.Models.AmphoraModel entity)
+                                                       AmphoraModel entity)
         {
             var user = await userManager.GetUserAsync(context.User);
 

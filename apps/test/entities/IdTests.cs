@@ -1,6 +1,7 @@
 using System;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Xunit;

@@ -8,6 +8,7 @@ using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
@@ -21,7 +22,7 @@ namespace Amphora.Tests.Unit
     public class MarketServiceTests : UnitTestBase
     {
         private readonly ILogger<AmphoraeService> amphoraLogger;
-        private InMemoryEntityStore<Common.Models.AmphoraModel> amphoraStore;
+        private InMemoryEntityStore<AmphoraModel> amphoraStore;
         private InMemoryEntityStore<OrganisationModel> orgStore;
         private InMemoryEntityStore<PermissionModel> permissionStore;
         private Mock<IUserManager> mockUserManager;
@@ -70,7 +71,7 @@ namespace Amphora.Tests.Unit
             Assert.Contains(response, e => e.Id == entity.Id);
         }
 
-        private async Task<Amphora.Common.Models.AmphoraModel> AddToStore()
+        private async Task<AmphoraModel> AddToStore()
         {
             var amphora = EntityLibrary.GetAmphora("1234", nameof(MarketServiceTests)); // dumy org id
             return await amphoraStore.CreateAsync(amphora);

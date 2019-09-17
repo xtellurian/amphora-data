@@ -1,4 +1,5 @@
 using System;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using NGeoHash;
 
@@ -7,10 +8,10 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static Amphora.Common.Models.AmphoraModel GetAmphora(string orgId, string testName)
+        public static AmphoraExtendedModel GetAmphora(string orgId, string testName)
         {
             var geoHash = GeoHash.Encode(rnd.Next(0, 180), rnd.Next(0, 180));
-            return new Amphora.Common.Models.AmphoraModel()
+            return new AmphoraExtendedModel()
             {
                 Id = null,
                 OrganisationId = orgId,
@@ -21,9 +22,9 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static Amphora.Common.Models.AmphoraModel GetInvalidAmphora(string id = null)
+        public static AmphoraModel GetInvalidAmphora(string id = null)
         {
-            return new Amphora.Common.Models.AmphoraModel()
+            return new AmphoraExtendedModel()
             {
                 Id = id,
                 Description = null,

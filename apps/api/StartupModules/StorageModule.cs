@@ -5,6 +5,7 @@ using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.Cosmos;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
@@ -45,13 +46,13 @@ namespace Amphora.Api.StartupModules
         private void UsePersistentStores(IServiceCollection services)
         {
             // COSMOS stores
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, CosmosAmphoraStore>();
+            services.AddSingleton<IEntityStore<AmphoraModel>, CosmosAmphoraStore>();
             services.AddSingleton<IEntityStore<OrganisationModel>, CosmosOrganisationStore>();
             // consumed by some singletons
             services.AddSingleton<IEntityStore<PermissionModel>, CosmosPermissionStore>();
 
             // data stores
-            services.AddSingleton<IBlobStore<Amphora.Common.Models.AmphoraModel>, AmphoraBlobStore>();
+            services.AddSingleton<IBlobStore<AmphoraModel>, AmphoraBlobStore>();
             services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
 
         }
@@ -63,7 +64,7 @@ namespace Amphora.Api.StartupModules
             services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
 
             // entity stores
-            services.AddSingleton<IEntityStore<Amphora.Common.Models.AmphoraModel>, InMemoryEntityStore<Amphora.Common.Models.AmphoraModel>>();
+            services.AddSingleton<IEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
             services.AddSingleton<IEntityStore<OrganisationModel>, InMemoryEntityStore<OrganisationModel>>();
             services.AddSingleton<IEntityStore<PermissionModel>, InMemoryEntityStore<PermissionModel>>();
         }

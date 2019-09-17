@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -35,7 +36,7 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(responseBody);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
@@ -57,7 +58,7 @@ namespace Amphora.Tests.Integration
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
-            var amphora = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(await createResponse.Content.ReadAsStringAsync());
+            var amphora = JsonConvert.DeserializeObject<AmphoraModel>(await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -71,7 +72,7 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<List<Amphora.Common.Models.AmphoraModel>>(responseBody);
+            var b = JsonConvert.DeserializeObject<List<AmphoraModel>>(responseBody);
             Assert.True(b.Count > 0);
 
             await DeleteAmphora(adminClient, amphora.Id);
@@ -91,7 +92,7 @@ namespace Amphora.Tests.Integration
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(await createResponse.Content.ReadAsStringAsync());
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
 
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -105,7 +106,7 @@ namespace Amphora.Tests.Integration
 
 
             Assert.NotNull(responseBody);
-            var c = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(responseBody);
+            var c = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseBody);
             Assert.Equal(b.Id, c.Id);
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
@@ -129,7 +130,7 @@ namespace Amphora.Tests.Integration
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
-            a = JsonConvert.DeserializeObject<Amphora.Common.Models.AmphoraModel>(await createResponse.Content.ReadAsStringAsync());
+            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
             // Act
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
@@ -137,7 +138,7 @@ namespace Amphora.Tests.Integration
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
             response.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<Common.Models.AmphoraModel>(responseContent);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseContent);
             Assert.NotNull(b);
             Assert.Equal(a.Id, b.Id);
 
