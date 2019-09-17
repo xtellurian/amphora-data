@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.UserData;
 using AutoMapper;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
@@ -54,14 +56,19 @@ namespace Amphora.Api.Services.Azure
                 IsKey = true // key of AmphoraId because Id has a special charcter not allowed
             });
             // org id for filtering 
-            fields.Add(new Field(nameof(AmphoraExtendedModel.OrganisationId), DataType.String)
+            fields.Add(new Field(nameof(Entity.OrganisationId), DataType.String)
             {
                 IsFacetable = true,
                 IsRetrievable = true,
                 IsFilterable = true
             });
+            // type
+            fields.Add(new Field(nameof(Entity.EntityType), DataType.String)
+            {
+                IsFilterable = true
+            });
             // add name
-            fields.Add(new Field(nameof(AmphoraExtendedModel.Name), DataType.String)
+            fields.Add(new Field(nameof(AmphoraModel.Name), DataType.String)
             {
                 IsSearchable = true,
                 IsRetrievable = true
@@ -72,7 +79,7 @@ namespace Amphora.Api.Services.Azure
                 IsSearchable = true
             });
             // add price
-            fields.Add(new Field(nameof(AmphoraExtendedModel.Price), DataType.Double)
+            fields.Add(new Field(nameof(AmphoraModel.Price), DataType.Double)
             {
                 IsRetrievable = true,
                 IsSortable = true,
@@ -94,6 +101,18 @@ namespace Amphora.Api.Services.Azure
                 IsSortable = true,
                 IsFilterable = true
             });
+            // Has Purchased
+            fields.Add(new Field(nameof(AmphoraSecurityModel.HasPurchased),
+                        DataType.Collection(DataType.Complex),
+                        new List<Field>
+                        {
+                            new Field(nameof(ApplicationUserReference.Id), DataType.String)
+                            {
+                                IsFilterable = true,
+                            },
+                            new Field(nameof(ApplicationUserReference.OrganisationId), DataType.String),
+                            new Field(nameof(ApplicationUserReference.UserName), DataType.String),
+                        }));
 
 
             // add isPubic

@@ -1,5 +1,5 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Services.Amphorae;
@@ -7,12 +7,9 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
-using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -24,23 +21,20 @@ namespace Amphora.Tests.Unit
         private readonly ILogger<AmphoraeService> amphoraLogger;
         private InMemoryEntityStore<AmphoraModel> amphoraStore;
         private InMemoryEntityStore<OrganisationModel> orgStore;
-        private InMemoryEntityStore<PermissionModel> permissionStore;
         private Mock<IUserManager> mockUserManager;
+        private Mock<IUserService> mockUserService;
         private PermissionService permissionService;
 
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddMaps(typeof(Startup));
-            });
-            var mapper = config.CreateMapper();
             this.amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
             this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
-            this.permissionStore = new InMemoryEntityStore<PermissionModel>(Mapper);
             this.mockUserManager = new Mock<IUserManager>();
-            this.orgStore = new InMemoryEntityStore<OrganisationModel>(mapper);
-            this.permissionService = new PermissionService(permissionLogger, orgStore, permissionStore);
+            mockUserManager.Setup(o => o.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new TestApplicationUser());
+            this.mockUserService = new Mock<IUserService>();
+            this.mockUserService.Setup(o => o.UserManager).Returns(mockUserManager.Object);
+            this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
+            this.permissionService = new PermissionService(permissionLogger, orgStore, amphoraStore);
             this.amphoraLogger = amphoraLogger;
         }
 
@@ -54,7 +48,7 @@ namespace Amphora.Tests.Unit
                                                      mockUserManager.Object,
                                                      amphoraLogger);
             var service = new BasicSearchService(amphoraService);
-            var sut = new MarketService(service) as IMarketService;
+            var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
 
             var response = await sut.FindAsync(null);
             Assert.NotNull(response);
@@ -71,7 +65,7 @@ namespace Amphora.Tests.Unit
                                                      amphoraLogger);
             var service = new BasicSearchService(amphoraService);
             var entity = await AddToStore();
-            var sut = new MarketService(service) as IMarketService;
+            var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
 
             var response = await sut.FindAsync("");
             Assert.NotNull(response);

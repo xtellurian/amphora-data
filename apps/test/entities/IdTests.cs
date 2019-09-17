@@ -14,7 +14,6 @@ namespace Amphora.Tests.Unit
         [Theory]
         [InlineData("Amphora", typeof(AmphoraModel))]
         [InlineData("Organisation", typeof(OrganisationModel))]
-        [InlineData("Permission", typeof(PermissionModel))]
         public void IdShouldBeginWithAmphora(string prefix, Type t)
         {
             var id = System.Guid.NewGuid().ToString();

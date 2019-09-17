@@ -51,26 +51,28 @@ namespace Amphora.Api.Stores.Cosmos
         public async Task<OrganisationModel> ReadAsync(string id)
         {
             await Init();
-            if (id == null) return null;
+            if (string.IsNullOrEmpty(id)) return null;
             id = id.AsQualifiedId(typeof(OrganisationModel));
             return await base.ReadAsync<OrganisationModel>(id);
         }
         public async Task<OrganisationModel> ReadAsync(string id, string orgId)
         {
             await Init();
-            if (id == null) return null;
+            if (string.IsNullOrEmpty(id)) return null;
             id = id.AsQualifiedId(typeof(OrganisationModel));
             return await base.ReadAsync<OrganisationModel>(id, orgId);
         }
         async Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id)
         {
             await Init();
+            if (string.IsNullOrEmpty(id)) return null;
             id = id.AsQualifiedId<OrganisationModel>();
             return await base.ReadAsync<TExtended>(id);
         }
         async Task<TExtended> IEntityStore<OrganisationModel>.ReadAsync<TExtended>(string id, string orgId)
         {
             await Init();
+            if (string.IsNullOrEmpty(id)) return null;
             id = id.AsQualifiedId<OrganisationModel>();
             return await base.ReadAsync<TExtended>(id, orgId);
         }

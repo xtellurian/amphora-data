@@ -97,12 +97,12 @@
         <div class="col card p-2">
                 <div> 
             <a class="float-right" asp-route-id="@Model.Amphora.AmphoraId" asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
-                <h3>Permissions</h3>
+                <h3>Has Purchased</h3>
             </div>
             <ul class="list-group">
-            @foreach (var a in Model.Authorizations)
+            @foreach (var a in Model.HasPurchased)
             {
-                <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.AccessLevel.FriendlyName()"></i> @a.UserName </li>
+                <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.UserName"></i> @a.UserName </li>
             }
             </ul>
         </div>

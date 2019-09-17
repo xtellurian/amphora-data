@@ -1,5 +1,7 @@
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.UserData;
 
 namespace Amphora.Api.Models.Search
 {
@@ -19,7 +21,7 @@ namespace Amphora.Api.Models.Search
         {
             return new SearchParameters
             {
-                Filter = $"geo.distance(Location, geography'POINT({lat} {lon})') le {dist}"
+                Filter = $"geo.distance({nameof(AmphoraExtendedModel.GeoLocation)}, geography'POINT({lat} {lon})') le {dist}"
             };
         }
         public static SearchParameters ByOrganisation(string orgId)
@@ -27,6 +29,15 @@ namespace Amphora.Api.Models.Search
             return new SearchParameters
             {
                 Filter = $"{nameof(Entity.OrganisationId)} eq '{orgId}'"
+            };
+        }
+        public static SearchParameters AllPurchased(string userId)
+        {
+            var p = nameof(ApplicationUserReference.Id);
+            return new SearchParameters
+            {
+                // tags/any(t: t eq 'wifi')
+                Filter = $"{nameof(AmphoraSecurityModel.HasPurchased)}/any(h: h/{p} eq '{userId}')"
             };
         }
     }

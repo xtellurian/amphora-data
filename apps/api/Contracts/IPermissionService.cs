@@ -10,8 +10,5 @@ namespace Amphora.Api.Contracts
     public interface IPermissionService
     {
         Task<bool> IsAuthorizedAsync(IApplicationUser user, Common.Contracts.IEntity entity, AccessLevels accessLevel);
-        Task<IEnumerable<ResourceAuthorization>> ListAuthorizationsAsync(IEntity entity);
-        Task<ResourceAuthorization> ReadUserAuthorizationAsync(IEntity entity, IApplicationUser user);
-        Task UpdatePermissionAsync(IApplicationUser user, IEntity entity, AccessLevels level);
     }
 }

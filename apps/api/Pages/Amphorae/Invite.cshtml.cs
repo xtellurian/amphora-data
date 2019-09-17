@@ -5,6 +5,7 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -14,15 +15,18 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IPermissionService permissionService;
+        private readonly IMapper mapper;
         private readonly IUserService userService;
 
         public InviteModel(
             IAmphoraeService amphoraeService,
             IPermissionService permissionService,
+            IMapper mapper,
             IUserService userService)
         {
             this.amphoraeService = amphoraeService;
             this.permissionService = permissionService;
+            this.mapper = mapper;
             this.userService = userService;
         }
         public class InputModel
@@ -81,7 +85,8 @@ namespace Amphora.Api.Pages.Amphorae
                 }
                 else
                 {
-                    await permissionService.UpdatePermissionAsync(toInvite, Amphora, AccessLevels.ReadContents);
+                    var securityModel = mapper.Map<AmphoraSecurityModel>(result.Entity);
+                    await amphoraeService.AmphoraStore.UpdateAsync(securityModel);
                     return RedirectToPage("./Detail", new { id = Amphora.AmphoraId });
                 }
             }

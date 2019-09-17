@@ -9,6 +9,7 @@ using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using AutoMapper;
 
 namespace Amphora.Api.Services.Amphorae
 {

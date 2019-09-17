@@ -49,8 +49,7 @@ namespace Amphora.Tests.Unit.Authorization
             var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(DenyAllByDefault));
             a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
 
-            var store = new InMemoryEntityStore<PermissionModel>(Mapper);
-            var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
+            var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
             var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
 
             var readReq = new List<IAuthorizationRequirement> { Operations.Read };
@@ -91,20 +90,7 @@ namespace Amphora.Tests.Unit.Authorization
             var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(OrgMember_ReadAccess_Amphora));
             a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
 
-            var store = new InMemoryEntityStore<PermissionModel>(Mapper);
-
-            var permissionService = new PermissionService(permissionServiceLogger, orgStore, store);
-
-            var collection = new PermissionModel(a.OrganisationId);
-            var readPermission = new ResourceAuthorization()
-            {
-                AccessLevel = AccessLevels.Read,
-                TargetEntityId = a.Id,
-                UserId = user.Id
-            };
-            collection.ResourceAuthorizations.Add(readPermission);
-
-            await store.CreateAsync(collection);
+            var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
 
             var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
             var requirements = new List<IAuthorizationRequirement> { Operations.Read };

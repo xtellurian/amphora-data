@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Services.FeatureFlags;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
@@ -50,7 +51,7 @@ namespace Amphora.Api.Pages.Amphorae
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse { get; set; }
         public bool CanEditPermissions { get; set; }
-        public IEnumerable<ResourceAuthorization> Authorizations { get; private set; }
+        public IEnumerable<IApplicationUserReference> HasPurchased { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -75,7 +76,9 @@ namespace Amphora.Api.Pages.Amphorae
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
                 if(CanEditPermissions)
                 {
-                    this.Authorizations = await permissionService.ListAuthorizationsAsync(Amphora) ?? new List<ResourceAuthorization>();
+                    var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
+                    securityModel.AddUserHasPurchased(user);
+                    await amphoraeService.AmphoraStore.UpdateAsync(securityModel);
                 }
                 return Page();
             }

@@ -102,7 +102,7 @@ namespace Amphora.Api.Services.Organisations
                 // update user with org id
                 try
                 {
-                    if (user.OrganisationId == null)
+                    if (string.IsNullOrEmpty(user.OrganisationId))
                     {
                         user.OrganisationId = org.OrganisationId; // set home org
                         var result = await userService.UserManager.UpdateAsync(user);

@@ -16,7 +16,6 @@ namespace Amphora.Common.Extensions
         {
             {typeof(AmphoraModel), "Amphora"},
             {typeof(OrganisationModel), "Organisation"},
-            {typeof(PermissionModel), "Permission"},
             {typeof(UserDataModel), "UserData"},
         };
 

@@ -10,6 +10,7 @@ using System;
 using Amphora.Common.Models.Organisations;
 using System.Collections.Generic;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -17,15 +18,15 @@ namespace Amphora.Api.Services.Auth
     {
         private readonly ILogger<PermissionService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
-        private readonly IEntityStore<PermissionModel> permissionStore;
+        private readonly IEntityStore<AmphoraModel> amphoraeStore;
 
         public PermissionService(ILogger<PermissionService> logger,
                                 IEntityStore<OrganisationModel> orgStore,
-                                 IEntityStore<PermissionModel> permissionStore)
+                                IEntityStore<AmphoraModel> amphoraeStore)
         {
             this.logger = logger;
             this.orgStore = orgStore;
-            this.permissionStore = permissionStore;
+            this.amphoraeStore = amphoraeStore;
         }
         public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, AccessLevels accessLevel)
         {
@@ -42,73 +43,23 @@ namespace Amphora.Api.Services.Auth
                     return true;
                 }
             }
-            var authorizationForUser = await this.ReadUserAuthorizationAsync(entity, user);
-            if (authorizationForUser == null) return false;
 
-            // check if CRUD permission exists
-            if (authorizationForUser.AccessLevel > accessLevel)
+            if(entity is AmphoraModel && await HasUserPurchasedAmphoraAsync(user, entity as AmphoraModel) && accessLevel <= AccessLevels.ReadContents)
             {
-                logger.LogInformation($"Authorization succeeded for user {user.Id} for entity {entity.Id}");
+                logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");
                 return true;
             }
-
-            logger.LogInformation($"Authorization denied for user {user.Id} for entity {entity.Id}");
-            return false;
+            else
+            {
+                logger.LogInformation($"Authorization denied for user {user.Id} for {entity.Id}");
+                return false;
+            }
         }
 
-        public async Task<IEnumerable<ResourceAuthorization>> ListAuthorizationsAsync(IEntity entity)
+        private async Task<bool> HasUserPurchasedAmphoraAsync(IApplicationUserReference user, AmphoraModel amphora)
         {
-            PermissionModel permissions = await ReadModelAsync(entity);
-            if (permissions == null) logger.LogWarning($"{entity?.OrganisationId.AsQualifiedId(typeof(PermissionModel))} permissions not found");
-
-
-            return permissions?.ResourceAuthorizations.Where(p =>
-                    string.Equals(p.TargetEntityId, entity?.Id)
-                );
-        }
-
-        private async Task<PermissionModel> ReadModelAsync(IEntity entity)
-        {
-            var permission = await permissionStore.ReadAsync(
-                            entity?.OrganisationId.AsQualifiedId(typeof(PermissionModel)),
-                            entity?.OrganisationId);
-            if(permission == null)
-            {
-                logger.LogWarning($"Creating new permission model for org {entity.OrganisationId}");
-                permission = new PermissionModel(entity.OrganisationId);
-                permission = await permissionStore.CreateAsync(permission);
-            }
-            return permission;
-        }
-
-        public async Task<ResourceAuthorization> ReadUserAuthorizationAsync(IEntity entity, IApplicationUser user)
-        {
-            var all = await this.ListAuthorizationsAsync(entity);
-            if (all == null) return null;
-            if (all.Count(u => string.Equals(u.UserId, user.Id)) > 1)
-            {
-                logger.LogWarning($"Multiple authorizations for {user.Id} on {entity.Id}");
-            }
-            return all.FirstOrDefault(u => string.Equals(u.UserId, user.Id));
-        }
-
-        public async Task UpdatePermissionAsync(IApplicationUser user, IEntity entity, AccessLevels level)
-        {
-            if(user == null)
-            {
-                throw new NullReferenceException("User was null");
-            }
-            var model = await ReadModelAsync(entity);
-            var authorizations = model.GetAuthorizations(entity);
-            var auth = authorizations.FirstOrDefault(a => string.Equals(a.UserId, user.Id));
-            if(auth == null)
-            {
-                auth = new ResourceAuthorization(user.Id, user.UserName, entity, AccessLevels.None );
-                model.ResourceAuthorizations.Add(auth);
-            }
-
-            auth.AccessLevel = level;
-            await permissionStore.UpdateAsync(model);
+            var extended = await amphoraeStore.ReadAsync<AmphoraSecurityModel>(amphora.Id, amphora.OrganisationId);
+            return extended.HasPurchased?.Any(p => string.Equals(p.Id , user.Id)) ?? false;
         }
     }
 }
