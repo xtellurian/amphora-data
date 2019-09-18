@@ -1,0 +1,72 @@
+jobs:
+- job: apps
+  dependsOn: infrastructure
+  strategy:
+    matrix:
+      InMemory:
+        PersistentStores: ''
+        disableKv: 'true'
+      Persistent:
+        PersistentStores: 'true'
+        disableKv: ''
+    maxParallel: 2
+  condition: succeeded()
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  variables:
+    - group: AzureDeploySP
+    - name: buildConfiguration
+      value: 'Release'
+    - name: kvUri
+      value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
+
+  steps:
+    - script: |
+        echo PersistentStores - $(PersistentStores)
+        echo kvUri - "$(kvUri)"
+        if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
+          then
+                echo "PersistentStores is set, with no kvUri. Exiting with error"
+                exit 1
+          fi
+      displayName: Check params set correctly
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk v 2.2.300'
+      inputs:
+        packageType: sdk
+        version: 2.2.300
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    # required to access KV in testing
+    - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+      displayName: Az Login
+      env: 
+        NAME: $(name)
+        PASSWORD: $(password)
+        TENANT: $(tenant)
+
+    - script: dotnet build --configuration $(buildConfiguration)
+      workingDirectory: apps
+      displayName: 'dotnet build $(buildConfiguration)'
+
+    - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
+      workingDirectory: apps
+      displayName: dotnet test
+      env:
+        ASPNETCORE_kvUri: $(kvUri)
+        ASPNETCORE_PersistentStores: $(PersistentStores)
+        ASPNETCORE_disableKv: $(disableKv)
+
+    - task: PublishTestResults@2
+      condition: always() 
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/*.trx'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage Report
+      inputs:
+        summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
+        codecoverageTool: cobertura
