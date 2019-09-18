@@ -1,28 +1,22 @@
 
 parameters:
   jobName: 'deploy'
-  dependsOn: 'apps'
   environment: ''
 
 jobs:
 - deployment: ${{ parameters.jobName }}
-  displayName: Deploy App
+  displayName: Create Infra and Deploy App - ${{ parameters.jobName }}
   environment: ${{ parameters.environment }}
-  dependsOn: 
-    - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
 
   variables:
   - group: AzureDeploySP
-  - name: acrName
-    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
-  - name: webAppResourceId
-    value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
 
   strategy:
     runOnce:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
+        - template: infra.create.steps.yaml
         - template: app.deploy.steps.yaml

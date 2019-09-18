@@ -30,16 +30,7 @@ stages:
   variables: 
     stack: demo
   jobs:
-    - job: test
-      steps:
-        - script: |
-            pwd
-            ls
-    - template: pipeline/infra.create.deployment.yaml
+    - template: pipeline/deployment.yaml
       parameters:
-        jobName: infrastructure
-        environment: demo
-    - template: pipeline/app.deploy.deployment.yaml
-      parameters:
-        dependsOn: infrastructure
+        jobName: demo-infrastructure
         environment: demo
