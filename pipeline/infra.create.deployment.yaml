@@ -29,4 +29,4 @@ jobs:
     runOnce:
       deploy:
         steps:
-          - template: pipeline/infra.create.steps.yaml
+          - template: infra.create.steps.yaml

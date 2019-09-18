@@ -25,4 +25,4 @@ jobs:
   - group: AzureDeploySP
 
   steps:
-    - template: pipeline/infra.create.steps.yaml
+    - template: infra.create.steps.yaml

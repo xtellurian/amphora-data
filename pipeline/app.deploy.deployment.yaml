@@ -24,4 +24,4 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - template: deploy/app.deploy.steps.yaml
+        - template: app.deploy.steps.yaml

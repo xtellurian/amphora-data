@@ -18,4 +18,4 @@ jobs:
   - name: webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
-  - template: pipeline/app.deploy.steps.yaml
+  - template: app.deploy.steps.yaml
