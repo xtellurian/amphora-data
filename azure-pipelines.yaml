@@ -30,7 +30,9 @@ stages:
   jobs:
     - job: test
       steps:
-        - script: ls
+        - script: |
+            pwd
+            ls
     - template: pipeline/infra.create.deployment.yaml
       parameters:
         jobName: infrastructure
