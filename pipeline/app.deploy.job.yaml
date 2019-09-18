@@ -1,14 +1,15 @@
 
 parameters:
+  jobName: 'deploy'
+  dependsOn: 'apps'
   environment: ''
 
 jobs:
-- deployment: deploy
+- deployment: ${{ parameters.jobName }}
   displayName: Deploy App
   environment: ${{ parameters.environment }}
   dependsOn: 
-    - infrastructure
-    - apps
+    - ${{ parameters.dependsOn }}
   pool:
     vmImage: 'ubuntu-latest'
 

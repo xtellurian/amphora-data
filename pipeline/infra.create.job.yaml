@@ -4,7 +4,7 @@
 ##################################################################
 
 parameters:
-  name: 'infrastructure'
+  jobName: 'infrastructure'
   environment: $(Build.SourceBranchName)
 
   strategy:
@@ -16,7 +16,7 @@ parameters:
 
 
 jobs:
-- deployment: ${{ parameters.name }}
+- deployment: ${{ parameters.jobName }}
   displayName: Deploy to ${{ parameters.environment }}
   environment: ${{ parameters.environment }}
   pool:

@@ -14,10 +14,14 @@ stages:
   jobs:
   - template: pipeline/infra.create.job.yaml
     parameters:
+      jobName: infrastructure
       environment: $(Build.SourceBranchName)
   - template: pipeline/app.test.job.yaml
+    parameters:
+      jobName: apps
   - template: pipeline/app.deploy.job.yaml
     parameters:
+      dependsOn: apps
       environment: $(Build.SourceBranchName)
 
 - stage: test
@@ -35,7 +39,9 @@ stages:
   jobs:
     - template: pipeline/infra.create.job.yaml
       parameters:
+        jobName: infrastructure
         environment: demo
     - template: pipeline/app.deploy.job.yaml
       parameters:
+        dependsOn: infrastructure
         environment: demo

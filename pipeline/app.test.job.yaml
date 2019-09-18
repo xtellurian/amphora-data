@@ -1,5 +1,8 @@
+parameters:
+  jobName: 'apps'
+
 jobs:
-- job: apps
+- job: ${{ parameters.jobName }}
   dependsOn: infrastructure
   strategy:
     matrix:
