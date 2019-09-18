@@ -12,7 +12,7 @@ stages:
   jobs:
   - template: pipeline/infra.create.job.yaml
     parameters:
-      name: Testing Infrastructure
+      name: test_infra
   - template: pipeline/app.test.job.yaml
   - template: pipeline/app.deploy.job.yaml
 
@@ -24,6 +24,6 @@ stages:
   jobs:
     - template: pipeline/infra.create.job.yaml
       parameters:
-        name: Demo Infrastructure
+        name: demo_infra
     - template: pipeline/app.test.job.yaml
     - template: pipeline/app.deploy.job.yaml
