@@ -7,9 +7,6 @@ steps:
     TENANT: $(tenant)
 
 - script: |
-    set -x
-    pwd
-    ls
     chmod +x infra/deploy-app.sh
     ./infra/deploy-app.sh
   displayName: Build and Push Docker Image
