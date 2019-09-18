@@ -76,13 +76,6 @@ namespace Amphora.Api.Stores.Cosmos
             id = id.AsQualifiedId<OrganisationModel>();
             return await base.ReadAsync<TExtended>(id, orgId);
         }
-
-
-        Task<IList<TExtended>> IEntityStore<OrganisationModel>.StartsWithQueryAsync<TExtended>(string propertyName, string givenValue)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public async Task<OrganisationModel> UpdateAsync(OrganisationModel entity)
         {
             await Init();

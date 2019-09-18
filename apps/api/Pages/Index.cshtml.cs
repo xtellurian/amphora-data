@@ -8,22 +8,14 @@ namespace Amphora.Api.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ISignInManager signInManager;
 
-        public IndexModel(ISignInManager signInManager)
+        public IndexModel()
         {
-            this.signInManager = signInManager;
         }
+
         public IActionResult OnGet()
         {
-            if (signInManager.IsSignedIn(User))
-            {
-                return RedirectToPage("/Market/Index");
-            }
-            else
-            {
-                return RedirectToPage("/Account/Login", new { area = "Identity"});
-            }
+           return Page();
         }
     }
 }

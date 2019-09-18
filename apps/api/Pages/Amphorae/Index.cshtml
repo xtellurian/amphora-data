@@ -31,7 +31,7 @@
                 <thead>
                     <tr>
                     <th scope="col">Amphora Name</th>
-                    <th scope="col">Domain</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Price ($)</th>
                     <th scope="col"></th>
                     </tr>
@@ -41,7 +41,7 @@
                     {
                      <tr class="entity-item">
                         <th scope="row"> @entity.Name </th>
-                        <td>@entity.DomainId</td>
+                        <td>@entity.EntityType</td>
                         <td>@entity.Price</td>
                         <td>  
                             <a asp-page="/Amphorae/Detail" asp-route-id="@entity.AmphoraId"> 

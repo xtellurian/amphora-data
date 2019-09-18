@@ -10,6 +10,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.UserData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -77,8 +78,7 @@ namespace Amphora.Api.Pages.Amphorae
                 if(CanEditPermissions)
                 {
                     var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
-                    securityModel.AddUserHasPurchased(user);
-                    await amphoraeService.AmphoraStore.UpdateAsync(securityModel);
+                    this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();;
                 }
                 return Page();
             }

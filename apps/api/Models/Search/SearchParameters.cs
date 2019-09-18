@@ -1,7 +1,9 @@
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.UserData;
+using Amphora.Common.Extensions;
 
 namespace Amphora.Api.Models.Search
 {
@@ -28,7 +30,7 @@ namespace Amphora.Api.Models.Search
         {
             return new SearchParameters
             {
-                Filter = $"{nameof(Entity.OrganisationId)} eq '{orgId}'"
+                Filter = $"{nameof(Entity.OrganisationId)} eq '{orgId}' AND {nameof(Entity.EntityType)} eq '{typeof(OrganisationModel).GetEntityPrefix()}'"
             };
         }
         public static SearchParameters AllPurchased(string userId)

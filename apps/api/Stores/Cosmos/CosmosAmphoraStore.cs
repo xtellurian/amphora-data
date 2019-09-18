@@ -28,7 +28,13 @@ namespace Amphora.Api.Stores.Cosmos
         {
             return await base.CreateAsync<TExtended>(entity);
         }
-
+        public async Task<IList<AmphoraModel>> TopAsync(string orgId)
+        {
+            await Init();
+            return Container.GetItemLinqQueryable<AmphoraModel>()
+                .Where(a => a.OrganisationId == orgId)
+                .ToList(); // TODO - performance
+        }
         public async Task<IList<AmphoraModel>> TopAsync()
         {
             await Init();
@@ -66,7 +72,6 @@ namespace Amphora.Api.Stores.Cosmos
                 return await base.ReadAsync<TExtended>(id, orgId);
             }
         }
-
         async Task<TExtended> IEntityStore<AmphoraModel>.ReadAsync<TExtended>(string id)
         {
             await Init();
@@ -86,44 +91,10 @@ namespace Amphora.Api.Stores.Cosmos
             await this.DeleteAsync<AmphoraModel>(entity);
         }
 
-        [Obsolete]
-        async Task<IList<TExtended>> IEntityStore<AmphoraModel>.StartsWithQueryAsync<TExtended>(string propertyName, string givenValue)
-        {
-            await Init();
-            var sqlQueryText = $"SELECT * FROM c WHERE STARTSWITH(c.{propertyName}, '{givenValue}')";
-            logger.LogInformation("Running query: {0}\n", sqlQueryText);
-
-            QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
-            FeedIterator<TExtended> queryResultSetIterator =
-                this.Container.GetItemQueryIterator<TExtended>(queryDefinition);
-
-            var entities = new List<TExtended>();
-
-            while (queryResultSetIterator.HasMoreResults)
-            {
-                var currentResultSet = await queryResultSetIterator.ReadNextAsync();
-                foreach (var entity in currentResultSet)
-                {
-                    entities.Add(entity);
-                    logger.LogInformation("\tRead {0}\n", entity);
-                }
-            }
-            return entities;
-        }
-
-        
-
-        public async Task<IList<AmphoraModel>> TopAsync(string orgId)
-        {
-            await Init();
-            return Container.GetItemLinqQueryable<AmphoraModel>()
-                .Where(a => a.OrganisationId == orgId)
-                .ToList(); // TODO - performance
-        }
-
         async Task<IEnumerable<TQuery>> IEntityStore<AmphoraModel>.QueryAsync<TQuery>(Func<TQuery, bool> where)
         {
-            return await base.QueryAsync<TQuery>(where);
+            Func<TQuery, bool> where2 = (t) => where(t) && t.EntityType == typeof(AmphoraModel).GetEntityPrefix();
+            return await base.QueryAsync<TQuery>(where2);
         }
     }
 }

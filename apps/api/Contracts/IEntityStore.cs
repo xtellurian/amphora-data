@@ -17,7 +17,6 @@ namespace Amphora.Api.Contracts
         Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended: class, T;
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
-        Task<IList<TExtended>> StartsWithQueryAsync<TExtended>(string propertyName, string givenValue) where TExtended: class, T;
         Task<IEnumerable<TQuery>> QueryAsync<TQuery>(System.Func<TQuery, bool> where) where TQuery : class, T;
     }
 }

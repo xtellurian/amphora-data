@@ -4,13 +4,44 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div>
+<div class="container">
 
-    <div class="text-center">
-        <h1 class="display-4">Welcome to Amphora</h1>
-        <p>The market for agiricultural data.</p>
+    <div class="row text-center mb-3">
+        <div class="col">
+            <h2 class="display-4">Welcome to Amphora!</h2>
+            <p>Let's get started.</p>
+        </div>
     </div>
-    <div>
-        <p>This page left blank (redirects) </p>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+               <img class="card-img-top img-fluid mx-auto" src="~/images/stock/farmers_with_horses.jpg" alt="Picture of farmers working">
+                <div class="card-body">
+                    <h5 class="card-title">My Organisation</h5>
+                    <p class="card-text">Amphora Data helps you coordinate with your collegues.</p>
+                    <a asp-page="organisations/detail" class="btn btn-primary">My Organisation</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img class="card-img-top img-fluid mx-auto" src="~/images/stock/market.jpg" alt="Picture of a Marketplace with spices">
+                <div class="card-body">
+                    <h5 class="card-title">The Marketplace</h5>
+                    <p class="card-text">The marketplace is the core of the Amphora ecosystem.</p>
+                    <a asp-page="market/index" class="btn btn-primary">Marketplace</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img class="card-img-top img-fluid mx-auto" src="~/images/stock/group_at_computer.jpg" alt="A picture of people collaborating at a computer">
+                <div class="card-body">
+                    <h5 class="card-title">Your Profile</h5>
+                    <p class="card-text">We're building a community of trust. Build your profile here.</p>
+                    <a asp-page="profile/detail" class="btn btn-primary">My Profile</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
