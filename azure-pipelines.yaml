@@ -30,7 +30,7 @@ stages:
   variables: 
     stack: demo
   jobs:
-    - template: pipeline/deployment.yaml
+    - template: pipeline/deploymentjob.yaml
       parameters:
         jobName: demo-infrastructure
         environment: demo
