@@ -18,9 +18,9 @@ stages:
   # - template: pipeline/app.test.job.yaml
   #   parameters:
   #     jobName: apps
-  - template: pipeline/app.deploy.job.yaml
-    parameters:
-      dependsOn: apps
+  # - template: pipeline/app.deploy.job.yaml
+  #   parameters:
+  #     dependsOn: apps
 
 - stage: deploy
   displayName: Deploy to Demo Envionment 
