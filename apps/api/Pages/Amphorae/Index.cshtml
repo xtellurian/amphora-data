@@ -14,15 +14,33 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4">
+        <div class="col-md-3">
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Information</h5>
+                    <h5 class="card-title">View Options</h5>
                 </div>
                 <div class="card-body">
-                    <p>
-                        <em>Amphorae</em> are a simple method of storing and trading data. A single Amphora contains a single file.
-                    </p>                                       
+                    @{
+                        var thisUrl = Url.Content("~");
+                        var mineUrl = $"{thisUrl}?viewType=mine";
+                        var orgUrl = $"{thisUrl}?viewType=org";
+                        var purchasedUrl = $"{thisUrl}?viewType=purchased";
+                        string mine = string.Empty;
+                        string org = string.Empty;
+                        string pur = string.Empty;
+                        if (string.Equals(Model.ViewType, "mine" )) {mine = "active";}
+                        if( string.Equals(Model.ViewType, "org" )) {org = "active";}
+                        if( string.Equals(Model.ViewType, "purchased" )){ pur = "active";}
+                    }
+                    <a href="@mineUrl">
+                        <button type="button" class="m-1 btn btn-light btn-block @mine">Mine</button>
+                    </a>                              
+                    <a href="@orgUrl">
+                        <button type="button" class="m-1 btn btn-light btn-block @org">My Org</button>
+                    </a>
+                    <a href="@purchasedUrl">
+                        <button type="button" class="m-1 btn btn-light btn-block @pur">Purchased</button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -30,8 +48,8 @@
             <table id="entity-table" class="table table-borderless table-striped">
                 <thead>
                     <tr>
-                    <th scope="col">Amphora Name</th>
-                    <th scope="col">Type</th>
+                    <th scope="col"></th>
+                    <th scope="col">Name</th>
                     <th scope="col">Price ($)</th>
                     <th scope="col"></th>
                     </tr>
@@ -40,8 +58,10 @@
                     @foreach (var entity in Model.Amphorae)
                     {
                      <tr class="entity-item">
-                        <th scope="row"> @entity.Name </th>
-                        <td>@entity.EntityType</td>
+                        <th scope="row">
+                            <img class="h-100 img-fluid" src="~/images/amphora_bullet.png">
+                        </th>
+                        <td> @entity.Name </td>
                         <td>@entity.Price</td>
                         <td>  
                             <a asp-page="/Amphorae/Detail" asp-route-id="@entity.AmphoraId"> 

@@ -35,20 +35,21 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         public IEnumerable<AmphoraModel> Amphorae { get; set; }
-        [BindProperty(SupportsGet = true)]
-        public string ViewType { get; set; }
+        public string ViewType { get; private set; }
 
-
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string viewType)
         {
-            switch (ViewType?.ToLower())
+            switch (viewType?.ToLower())
             {
                 case "purchased":
+                    ViewType = "purchased";
                     return await MyPurchasedAmphorae();
                 case "org":
+                    ViewType = "org";
                     return await OrgAmphorae();
                 case "mine":
                 default:
+                    ViewType = "mine";
                     return await MyAmphorae();
 
             }
