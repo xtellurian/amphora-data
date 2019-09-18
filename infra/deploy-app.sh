@@ -1,4 +1,7 @@
 #1/bin/bash
+# Add the pulumi CLI to the PATH
+export PATH=$PATH:$HOME/.pulumi/bin
+
 set -e -x
 cd $(dirname "$0")
 
