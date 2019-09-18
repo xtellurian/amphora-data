@@ -11,9 +11,9 @@ steps:
     ./infra/deploy-app.sh
   displayName: Build and Push Docker Image
   env:
-    ACR_NAME: $(acrName)
+    ACR_NAME: $(pulumi.acrName)
     CONTEXT: $(Build.SourcesDirectory)/apps
-    IMAGE: $(acrName).azurecr.io/webapp
+    IMAGE: $(pulumi.acrName).azurecr.io/webapp
     GITHASH: $(Build.SourceVersion)
     BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
-    WEBAPPID: $(webAppResourceId)
+    WEBAPPID: $(pulumi.webAppResourceId)

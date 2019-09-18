@@ -14,9 +14,9 @@ jobs:
 
   variables:
   - group: AzureDeploySP
-  - name: acrName
+  - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
-  - name: webAppResourceId
+  - name: pulumi.webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
   - script: echo acrName is $(acrName)
