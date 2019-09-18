@@ -3,7 +3,7 @@ steps:
     chmod +x ./infra/*.sh
     ./infra/setup.sh
     ./infra/pulumi-stack.sh
-  displayName: 'Install pulumi & run pulumi up'
+  displayName: 'Install pulumi & run pulumi-stack'
   name: pulumi
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)

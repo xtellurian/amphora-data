@@ -7,7 +7,8 @@ jobs:
 - job: ${{ parameters.jobName }}
   displayName: Deploy App
   dependsOn: 
-    - ${{ parameters.dependsOn }}
+    - infrastructure
+    - apps
   pool:
     vmImage: 'ubuntu-latest'
 
@@ -18,4 +19,6 @@ jobs:
   - name: webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
+  - script: echo acrName is $(acrName)
+  - script: echo webAppResourceId is $(webAppResourceId)
   - template: app.deploy.steps.yaml

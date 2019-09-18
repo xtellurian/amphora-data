@@ -9,7 +9,7 @@ jobs:
   displayName: Deploy App
   environment: ${{ parameters.environment }}
   dependsOn: 
-    - ${{ parameters.dependsOn }}
+    - infrastructure
   pool:
     vmImage: 'ubuntu-latest'
 
