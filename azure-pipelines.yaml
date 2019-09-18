@@ -24,7 +24,7 @@ stages:
 
 - stage: deploy
   displayName: Deploy to Demo Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop/'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   variables: 
     stack: demo
   jobs:
