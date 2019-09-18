@@ -1,6 +1,9 @@
 
 steps:
 - script: |
+    set -x
+    pwd
+    ls
     chmod +x ./infra/*.sh
     ./infra/setup.sh
     ./infra/pulumi-up.sh
