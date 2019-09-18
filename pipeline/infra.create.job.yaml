@@ -5,40 +5,53 @@
 
 parameters:
   name: 'infrastructure'
+  environment: $(Build.SourceBranchName)
+
+  strategy:
+    # default deployment strategy, more coming...
+    runOnce:
+      deploy:
+        steps:
+        - script: echo my first deployment
+
 
 jobs:
-- job: ${{ parameters.name }}
+- deployment: ${{ parameters.name }}
+  displayName: Deploy to ${{ parameters.environment }}
   pool:
     vmImage: 'ubuntu-latest'
   variables:
   - group: Pulumi xtellurian
   - group: AzureDeploySP
 
-  steps:
-  - script: |
-      chmod +x ./infra/*.sh
-      ./infra/setup.sh
-      ./infra/pulumi-up.sh
-    displayName: 'Install pulumi & run pulumi up'
-    name: pulumi
-    env:
-      PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-      ARM_CLIENT_ID: $(appId)
-      ARM_CLIENT_SECRET: $(password)
-      ARM_SUBSCRIPTION_ID: $(subscription)
-      ARM_TENANT_ID: $(tenant)
-      STACK: $(stack) # will be overwritten in develop and master
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - script: |
+            chmod +x ./infra/*.sh
+            ./infra/setup.sh
+            ./infra/pulumi-up.sh
+          displayName: 'Install pulumi & run pulumi up'
+          name: pulumi
+          env:
+            PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+            ARM_CLIENT_ID: $(appId)
+            ARM_CLIENT_SECRET: $(password)
+            ARM_SUBSCRIPTION_ID: $(subscription)
+            ARM_TENANT_ID: $(tenant)
+            STACK: $(stack) # will be overwritten in develop and master
 
-  - script: |
-      echo "$appUrl"
-      echo "$kvUri"
-      echo "$kvName"
-      echo "$pulumiStack"
-      echo "$webAppResourceId"
-    displayName: Important Variables
-    env: 
-      kvUri: $(pulumi.kvUri)
-      kvName: $(pulumi.kvName)
-      pulumiStack: $(pulumi.pulumiStack)
-      appUrl: $(pulumi.appUrl)
-      webAppResourceId: $(pulumi.webAppResourceId)
+        - script: |
+            echo "$appUrl"
+            echo "$kvUri"
+            echo "$kvName"
+            echo "$pulumiStack"
+            echo "$webAppResourceId"
+          displayName: Important Variables
+          env: 
+            kvUri: $(pulumi.kvUri)
+            kvName: $(pulumi.kvName)
+            pulumiStack: $(pulumi.pulumiStack)
+            appUrl: $(pulumi.appUrl)
+            webAppResourceId: $(pulumi.webAppResourceId)
