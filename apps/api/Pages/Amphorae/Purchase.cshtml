@@ -1,0 +1,16 @@
+@page
+@model Amphora.Api.Pages.Amphorae.PurchaseModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@if(Model.Success)
+{
+<h2>Congratulation!</h2>
+
+<p>You've just purchased an Amphora. </p>
+
+<a asp-page="./Detail" asp-route-id="@Model.Id"><button class="btn btn-success">Take me there</button></a>
+}
+else
+{
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+}

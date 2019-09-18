@@ -9,6 +9,7 @@ using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Transactions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,7 @@ namespace Amphora.Api.StartupModules
             // entity stores
             services.AddSingleton<IEntityStore<AmphoraModel>, InMemoryEntityStore<AmphoraModel>>();
             services.AddSingleton<IEntityStore<OrganisationModel>, InMemoryEntityStore<OrganisationModel>>();
+            services.AddSingleton<IEntityStore<TransactionModel>, InMemoryEntityStore<TransactionModel>>();
         }
 
 

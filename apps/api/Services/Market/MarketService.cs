@@ -40,13 +40,5 @@ namespace Amphora.Api.Services.Market
 
             return result.Results.Select(s => s.Entity);
         }
-
-        public async Task PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
-        {
-            var user = await userService.UserManager.GetUserAsync(principal);
-            var securityModel = mapper.Map<AmphoraSecurityModel>(amphora);
-            securityModel.AddUserHasPurchased(user);
-            await amphoraeService.AmphoraStore.UpdateAsync(securityModel);
-        }
     }
 }

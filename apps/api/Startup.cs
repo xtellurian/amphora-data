@@ -16,6 +16,7 @@ using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.FeatureFlags;
+using Amphora.Api.Services.Transactions;
 
 namespace Amphora.Api
 {
@@ -66,6 +67,7 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IOrganisationService, OrganisationService>();
+            services.AddTransient<ITransactionService, TransactionService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();

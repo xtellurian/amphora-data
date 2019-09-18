@@ -80,6 +80,7 @@ namespace Amphora.Api.Pages.Amphorae
                     Description = Input.Description,
                     GeoLocation = location,
                     Price = Input.Price,
+                    IsPublic = true
                 };
 
                 var setResult = await amphoraeService.CreateAsync(User, entity);

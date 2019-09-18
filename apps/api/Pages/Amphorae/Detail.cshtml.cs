@@ -53,6 +53,7 @@ namespace Amphora.Api.Pages.Amphorae
         public string QueryResponse { get; set; }
         public bool CanEditPermissions { get; set; }
         public IEnumerable<IApplicationUserReference> HasPurchased { get; private set; }
+        public bool CanBuy { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -71,15 +72,23 @@ namespace Amphora.Api.Pages.Amphorae
                     return RedirectToPage("./Index");
                 }
 
-                Names = await blobStore.ListBlobsAsync(Amphora);    
+                Names = await blobStore.ListBlobsAsync(Amphora);
                 Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 QueryResponse = await GetQueryResponse();
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
-                if(CanEditPermissions)
+
+                var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
+                this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();
+                if(this.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
                 {
-                    var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
-                    this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();;
+                    // user has already purchased the amphora
+                    this.CanBuy = false;
                 }
+                else
+                {
+                    this.CanBuy = true;
+                }
+
                 return Page();
             }
             else

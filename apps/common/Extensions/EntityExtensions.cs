@@ -4,7 +4,7 @@ using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Transactions;
 using Amphora.Common.Models.UserData;
 
 namespace Amphora.Common.Extensions
@@ -17,6 +17,7 @@ namespace Amphora.Common.Extensions
             {typeof(AmphoraModel), "Amphora"},
             {typeof(OrganisationModel), "Organisation"},
             {typeof(UserDataModel), "UserData"},
+            {typeof(TransactionModel), "Transaction"},
         };
 
         public static string AsQualifiedId<T>(this string id) where T: IEntity
