@@ -4,9 +4,26 @@ trigger:
     - master
     - develop
 
-jobs:
-- template: pipeline/infra.create.job.yaml
-- template: pipeline/app.test.job.yaml
 
+stages:
+- stage: branch
+  displayName: Branch Stage
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/'))
+  jobs:
+  - template: pipeline/infra.create.job.yaml
+    parameters:
+      name: Testing Infrastructure
+  - template: pipeline/app.test.job.yaml
+  - template: pipeline/app.deploy.job.yaml
 
-- template: pipeline/app.deploy.job.yaml
+- stage: deploy
+  displayName: Deploy to Demo Envionment 
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/demo/'))
+  variables: 
+    stack: demo
+  jobs:
+    - template: pipeline/infra.create.job.yaml
+      parameters:
+        name: Demo Infrastructure
+    - template: pipeline/app.test.job.yaml
+    - template: pipeline/app.deploy.job.yaml

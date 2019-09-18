@@ -1,11 +1,13 @@
 
-jobs:
-
 ##################################################################
 #           Deploy Infrastructure
 ##################################################################
 
-- job: infrastructure
+parameters:
+  name: 'infrastructure'
+
+jobs:
+- job: ${{ parameters.name }}
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -25,6 +27,7 @@ jobs:
       ARM_CLIENT_SECRET: $(password)
       ARM_SUBSCRIPTION_ID: $(subscription)
       ARM_TENANT_ID: $(tenant)
+      STACK: ${{ parameters.stack }}
 
   - script: |
       echo "$appUrl"
