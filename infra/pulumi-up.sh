@@ -20,7 +20,21 @@ npm run lint
 # annoying - weird error where it's finding broken types in node_modules
 # npm run build
 
-. pulumi-stack.sh
+echo build reason is $BUILD_REASON
+
+if [ $BUILD_REASON == "PullRequest" ] ; then
+  echo "Source Branch (Pull Request) is $SYSTEM_PULLREQUEST_SOURCEBRANCH"
+  if [ $SYSTEM_PULLREQUEST_SOURCEBRANCH == "refs/heads/develop" ]; then
+    STACK="develop"
+  elif [ $SYSTEM_PULLREQUEST_SOURCEBRANCH == "refs/heads/master" ]; then
+    STACK="master"
+  fi
+  echo "Selected Stack: $STACK"
+  pulumi stack select $STACK
+fi
+
+echo "Selecting stack $STACK"
+pulumi stack select $STACK
 
 pulumi up --yes
 
