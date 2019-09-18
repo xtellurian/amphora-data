@@ -5,7 +5,7 @@
 
 parameters:
   jobName: 'infrastructure'
-  environment: $(Build.SourceBranchName)
+  environment: ''
 
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
   displayName: Deploy to ${{ parameters.environment }}
   environment: ${{ parameters.environment }}
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - group: AzureDeploySP
