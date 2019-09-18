@@ -11,8 +11,6 @@ stages:
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/'))
   jobs:
   - template: pipeline/infra.create.job.yaml
-    parameters:
-      name: test_infra
   - template: pipeline/app.test.job.yaml
   - template: pipeline/app.deploy.job.yaml
 
@@ -23,7 +21,5 @@ stages:
     stack: demo
   jobs:
     - template: pipeline/infra.create.job.yaml
-      parameters:
-        name: demo_infra
     - template: pipeline/app.test.job.yaml
     - template: pipeline/app.deploy.job.yaml
