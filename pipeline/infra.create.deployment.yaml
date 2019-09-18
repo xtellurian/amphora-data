@@ -16,13 +16,17 @@ parameters:
 
 
 jobs:
-- job: ${{ parameters.jobName }}
+- deployment: ${{ parameters.jobName }}
   displayName: Deploy to ${{ parameters.environment }}
+  environment: ${{ parameters.environment }}
   pool:
     vmImage: 'ubuntu-latest'
   variables:
   - group: Pulumi xtellurian
   - group: AzureDeploySP
 
-  steps:
-    - template: pipeline/infra.create.steps.yaml
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+          - template: pipeline/infra.create.steps.yaml

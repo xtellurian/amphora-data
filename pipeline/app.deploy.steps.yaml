@@ -1,0 +1,19 @@
+steps:
+- script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+  displayName: Az Login
+  env: 
+    NAME: $(name)
+    PASSWORD: $(password)
+    TENANT: $(tenant)
+
+- script: |
+    chmod +x infra/deploy-app.sh
+    ./infra/deploy-app.sh
+  displayName: Build and Push Docker Image
+  env:
+    ACR_NAME: $(acrName)
+    CONTEXT: $(Build.SourcesDirectory)/apps
+    IMAGE: $(acrName).azurecr.io/webapp
+    GITHASH: $(Build.SourceVersion)
+    BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+    WEBAPPID: $(webAppResourceId)

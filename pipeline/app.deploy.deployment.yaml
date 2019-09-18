@@ -2,10 +2,12 @@
 parameters:
   jobName: 'deploy'
   dependsOn: 'apps'
+  environment: ''
 
 jobs:
-- job: ${{ parameters.jobName }}
+- deployment: ${{ parameters.jobName }}
   displayName: Deploy App
+  environment: ${{ parameters.environment }}
   dependsOn: 
     - ${{ parameters.dependsOn }}
   pool:
@@ -17,5 +19,9 @@ jobs:
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   - name: webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
-  steps:
-  - template: pipeline/app.deploy.steps.yaml
+
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - template: deploy/app.deploy.steps.yaml
