@@ -11,7 +11,7 @@ jobs:
   dependsOn: 
     - infrastructure
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'Ubuntu-16.04'
 
   variables:
   - group: AzureDeploySP
