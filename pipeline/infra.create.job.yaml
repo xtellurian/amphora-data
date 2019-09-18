@@ -14,9 +14,9 @@ jobs:
 
   steps:
   - script: |
-    chmod +x ./infra/*.sh
-    ./infra/setup.sh
-    ./infra/pulumi-up.sh
+      chmod +x ./infra/*.sh
+      ./infra/setup.sh
+      ./infra/pulumi-up.sh
     displayName: 'Install pulumi & run pulumi up'
     name: pulumi
     env:
