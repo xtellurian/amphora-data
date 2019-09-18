@@ -22,5 +22,7 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: ls
-        - template: infra.create.steps.yaml
+        - script: |
+            pwd
+            ls
+        # - template: infra.create.steps.yaml
