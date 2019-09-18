@@ -27,7 +27,7 @@ jobs:
       ARM_CLIENT_SECRET: $(password)
       ARM_SUBSCRIPTION_ID: $(subscription)
       ARM_TENANT_ID: $(tenant)
-      STACK: ${{ parameters.stack }}
+      STACK: $(stack) # will be overwritten in develop and master
 
   - script: |
       echo "$appUrl"
