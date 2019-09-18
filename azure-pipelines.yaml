@@ -28,6 +28,9 @@ stages:
   variables: 
     stack: demo
   jobs:
+    - job: test
+      steps:
+        - script: ls
     - template: pipeline/infra.create.deployment.yaml
       parameters:
         jobName: infrastructure
