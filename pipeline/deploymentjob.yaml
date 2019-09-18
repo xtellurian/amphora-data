@@ -12,6 +12,7 @@ jobs:
 
   variables:
   - group: AzureDeploySP
+  - group: Pulumi xtellurian
 
   strategy:
     runOnce:
