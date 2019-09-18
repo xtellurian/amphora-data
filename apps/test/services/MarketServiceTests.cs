@@ -39,23 +39,6 @@ namespace Amphora.Tests.Unit
         }
 
         [Fact]
-        public async Task NullsReturnEmptyList()
-        {
-            await AddToStore();
-            var amphoraService = new AmphoraeService(amphoraStore,
-                                                     orgStore,
-                                                     permissionService,
-                                                     mockUserManager.Object,
-                                                     amphoraLogger);
-            var service = new BasicSearchService(amphoraService);
-            var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
-
-            var response = await sut.FindAsync(null);
-            Assert.NotNull(response);
-            Assert.Empty(response);
-        }
-
-        [Fact]
         public async Task LookupByGeo()
         {
             var amphoraService = new AmphoraeService(amphoraStore,

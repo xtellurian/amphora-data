@@ -49,6 +49,7 @@ namespace Amphora.Api.StartupModules
             // COSMOS stores
             services.AddSingleton<IEntityStore<AmphoraModel>, CosmosAmphoraStore>();
             services.AddSingleton<IEntityStore<OrganisationModel>, CosmosOrganisationStore>();
+            services.AddSingleton<IEntityStore<TransactionModel>, CosmosTransactionStore>();
             // consumed by some singletons
 
             // data stores

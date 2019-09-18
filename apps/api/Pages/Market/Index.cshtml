@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         <div class="col text-center">
-            <form id="searchform" method="post" >
+            <form id="searchform" method="get" >
                 <div class="input-group mb-4 border rounded-pill p-1">
                     <input type="search" placeholder="What're you searching for?" asp-for="Term" aria-describedby="button-addon3" class="form-control bg-none border-0">
                     <div class="input-group-append border-0">
@@ -34,12 +34,12 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <input id="lat" asp-for="Input.Lat" placeholder="Latitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="Input.Lat" class="text-danger"></span>
+                                    <input id="lat" asp-for="Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="Lat" class="text-danger"></span>
                                 </div>
                                 <div class="col">
-                                    <input id="lon" asp-for="Input.Lon" placeholder="Longitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="Input.Lon" class="text-danger"></span>
+                                    <input id="lon" asp-for="Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="Lon" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                 <table id="market-table" class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Title</th>
+                            <th scope="col">Name</th>
                             <th scope="col">Price ($)</th>
                             <th> Action</th>
                         </tr>

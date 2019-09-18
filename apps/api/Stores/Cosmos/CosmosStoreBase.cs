@@ -85,7 +85,7 @@ namespace Amphora.Api.Stores.Cosmos
             }
         }
 
-        public async Task<T> ReadAsync<T>(string id, string partitionKey) where T : IEntity
+        protected async Task<T> ReadAsync<T>(string id, string partitionKey) where T : IEntity
         {
             await Init();
             var item = await this.Container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));

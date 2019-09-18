@@ -23,7 +23,7 @@ namespace Amphora.Api.Models.Search
         {
             return new SearchParameters
             {
-                Filter = $"geo.distance({nameof(AmphoraExtendedModel.GeoLocation)}, geography'POINT({lat} {lon})') le {dist}"
+                Filter = $"geo.distance({nameof(AmphoraExtendedModel.GeoLocation)}, geography'POINT({lon} {lat})') le {dist}"
             };
         }
         public static SearchParameters ByOrganisation(string orgId)
@@ -40,6 +40,14 @@ namespace Amphora.Api.Models.Search
             {
                 // tags/any(t: t eq 'wifi')
                 Filter = $"{nameof(AmphoraSecurityModel.HasPurchased)}/any(h: h/{p} eq '{userId}')"
+            };
+        }
+
+        public static SearchParameters PublicAmphorae()
+        {
+            return new SearchParameters
+            {
+                Filter = $"{nameof(AmphoraModel.IsPublic)} eq true"
             };
         }
     }

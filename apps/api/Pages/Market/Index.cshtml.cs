@@ -24,21 +24,17 @@ namespace Amphora.Api.Pages.Market
             this.authenticateService = authenticateService;
         }
 
-        public class InputModel
-        {
-            [BindProperty]
-            [Display(Name = "Latitude")]
-            public double? Lat { get; set; }
-            [BindProperty]
-            [Display(Name = "Longitude")]
-            public double? Lon { get; set; }
-        }
+        [BindProperty(SupportsGet = true)]
+        [Display(Name = "Latitude")]
+        public double? Lat { get; set; }
+        [BindProperty(SupportsGet = true)]
+        [Display(Name = "Longitude")]
+        public double? Lon { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string Term { get; set; }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
+        [BindProperty(SupportsGet = true)]
 
         public string Token { get; set; }
 
@@ -47,7 +43,7 @@ namespace Amphora.Api.Pages.Market
         public async Task<IActionResult> OnGetAsync()
         {
             var response = await authenticateService.GetToken(User);
-            if(response.success)
+            if (response.success)
             {
                 Token = response.token;
             }
@@ -64,16 +60,15 @@ namespace Amphora.Api.Pages.Market
 
         private async Task RunSearch()
         {
-            if (Input != null && Input.Lat.HasValue && Input.Lon.HasValue)
+            if (Lat.HasValue && Lon.HasValue)
             {
-                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Input.Lat.Value, Input.Lon.Value, 10));
+                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Lat.Value, Lon.Value, 10));
                 this.Entities = res.Results.Select(e => e.Entity);
             }
             else
             {
                 this.Entities = await marketService.FindAsync(Term);
             }
-
         }
     }
 }

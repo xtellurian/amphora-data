@@ -59,8 +59,9 @@ namespace Amphora.Api.Pages.Amphorae
         {
             var user = await this.userService.UserManager.GetUserAsync(User);
             if (user == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
-            var result = await searchService.SearchAmphora(string.Empty, SearchParameters.AllPurchased(user.Id));
-            this.Amphorae = result.Results.Select(r => r.Entity);
+           // var result = await searchService.SearchAmphora(string.Empty, SearchParameters.AllPurchased(user.Id));
+            var x = (await amphoraeService.AmphoraStore.QueryAsync<AmphoraSecurityModel>(a => a.HasPurchased?.Any(u => u.Id == user.Id) ?? false));
+            this.Amphorae = x; // result.Results.Select(r => r.Entity);
             return Page();
         }
 

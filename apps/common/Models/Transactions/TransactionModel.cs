@@ -17,6 +17,7 @@ namespace Amphora.Common.Models.Transactions
             this.OrganisationId = user.OrganisationId;
             this.AmphoraId = amphora.AmphoraId;
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
+            this.ttl = 60 * 60 * 24 * 90; // 90 days
         }
 
         public string TransactionId { get; set; }
