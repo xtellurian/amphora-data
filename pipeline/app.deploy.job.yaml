@@ -8,7 +8,7 @@ jobs:
   displayName: Deploy App
   dependsOn: 
     - infrastructure
-    - apps
+    # - apps
   pool:
     vmImage: 'ubuntu-latest'
 
