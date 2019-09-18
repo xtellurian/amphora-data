@@ -5,7 +5,7 @@
 
 parameters:
   name: 'infrastructure'
-  environment: $(Build.SourceBranchName)
+  environment: develop
 
   strategy:
     # default deployment strategy, more coming...

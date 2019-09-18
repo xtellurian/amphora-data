@@ -13,8 +13,6 @@ stages:
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/'))
   jobs:
   - template: pipeline/infra.create.job.yaml
-    parameters:
-      environment: $(Build.SourceBranchName)
   - template: pipeline/app.test.job.yaml
   - template: pipeline/app.deploy.job.yaml
     parameters:
