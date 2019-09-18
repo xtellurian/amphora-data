@@ -18,6 +18,13 @@ stages:
     parameters:
       environment: $(Build.SourceBranchName)
 
+- stage: test
+  displayName: test
+  jobs:
+    - job: test
+      steps:
+        - script: echo $(Build.SourceBranch)
+
 - stage: deploy
   displayName: Deploy to Demo Envionment 
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/demo/'))

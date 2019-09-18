@@ -5,7 +5,7 @@ parameters:
 jobs:
 - deployment: deploy
   displayName: Deploy App
-  environment: ${{ parameters.name }}
+  environment: ${{ parameters.environment }}
   dependsOn: 
     - infrastructure
     - apps
