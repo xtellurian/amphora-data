@@ -7,7 +7,7 @@ trigger:
 stages:
 - stage: branch
   displayName: Branch Stage
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/'))
+  condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/')
   variables:
     stack: $(Build.SourceBranchName)
   jobs:
