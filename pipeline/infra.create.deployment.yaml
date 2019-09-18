@@ -22,7 +22,5 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: |
-            pwd
-            ls
-        # - template: infra.create.steps.yaml
+        - checkout: self  # deployment job doesn't check it out
+        - template: infra.create.steps.yaml
