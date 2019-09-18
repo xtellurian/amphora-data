@@ -30,7 +30,7 @@ namespace Amphora.Api.Models.Search
         {
             return new SearchParameters
             {
-                Filter = $"{nameof(Entity.OrganisationId)} eq '{orgId}' AND {nameof(Entity.EntityType)} eq '{typeof(OrganisationModel).GetEntityPrefix()}'"
+                Filter = $"{nameof(Entity.OrganisationId)} eq '{orgId}' and {nameof(Entity.EntityType)} eq '{typeof(OrganisationModel).GetEntityPrefix()}'"
             };
         }
         public static SearchParameters AllPurchased(string userId)
