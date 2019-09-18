@@ -1,4 +1,14 @@
 steps:
+- script: |
+    chmod +x ./infra/*.sh
+    ./infra/setup.sh
+    ./infra/pulumi-stack.sh
+  displayName: 'Install pulumi & run pulumi up'
+  name: pulumi
+  env:
+    PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+    STACK: $(stack) # will be overwritten in develop and master
+
 - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
   displayName: Az Login
   env: 

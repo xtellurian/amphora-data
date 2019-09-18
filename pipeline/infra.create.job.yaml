@@ -5,19 +5,10 @@
 
 parameters:
   jobName: 'infrastructure'
-  environment: $(Build.SourceBranchName)
-
-  strategy:
-    # default deployment strategy, more coming...
-    runOnce:
-      deploy:
-        steps:
-        - script: echo my first deployment
-
 
 jobs:
 - job: ${{ parameters.jobName }}
-  displayName: Deploy to ${{ parameters.environment }}
+  displayName: Infrastructure
   pool:
     vmImage: 'ubuntu-latest'
   variables:

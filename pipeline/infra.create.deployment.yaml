@@ -7,13 +7,6 @@ parameters:
   jobName: 'infrastructure'
   environment: $(Build.SourceBranchName)
 
-  strategy:
-    # default deployment strategy, more coming...
-    runOnce:
-      deploy:
-        steps:
-        - script: echo my first deployment
-
 
 jobs:
 - deployment: ${{ parameters.jobName }}
@@ -29,4 +22,4 @@ jobs:
     runOnce:
       deploy:
         steps:
-          - template: infra.create.steps.yaml
+        - template: infra.create.steps.yaml
