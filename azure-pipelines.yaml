@@ -3,9 +3,6 @@ trigger:
     include:
     - master
     - develop
-  tags:
-    include:
-    - demo/*
 
 stages:
 - stage: branch
@@ -17,16 +14,16 @@ stages:
   - template: pipeline/infra.create.job.yaml
     parameters:
       jobName: infrastructure
-  # - template: pipeline/app.test.job.yaml
-  #   parameters:
-  #     jobName: apps
-  # - template: pipeline/app.deploy.job.yaml
-  #   parameters:
-  #     dependsOn: apps
+  - template: pipeline/app.test.job.yaml
+    parameters:
+      jobName: apps
+  - template: pipeline/app.deploy.job.yaml
+    parameters:
+      dependsOn: apps
 
 - stage: deploy
   displayName: Deploy to Demo Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables: 
     stack: demo
   jobs:

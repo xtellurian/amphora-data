@@ -21,14 +21,14 @@ jobs:
     - group: AzureDeploySP
     - name: buildConfiguration
       value: 'Release'
-    - name: kvUri
+    - name: pulumi.kvUri
       value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
 
   steps:
     - script: |
         echo PersistentStores - $(PersistentStores)
-        echo kvUri - "$(kvUri)"
-        if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
+        echo kvUri - "$(pulumi.kvUri)"
+        if [ ! -z $(PersistentStores) ] && [ -z $(pulumi.kvUri) ] ;
           then
                 echo "PersistentStores is set, with no kvUri. Exiting with error"
                 exit 1
@@ -58,7 +58,7 @@ jobs:
       workingDirectory: apps
       displayName: dotnet test
       env:
-        ASPNETCORE_kvUri: $(kvUri)
+        ASPNETCORE_kvUri: $(pulumi.kvUri)
         ASPNETCORE_PersistentStores: $(PersistentStores)
         ASPNETCORE_disableKv: $(disableKv)
 
