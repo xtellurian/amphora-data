@@ -6,6 +6,10 @@ trigger:
 schedules:
 - cron: "0 16 * * *"
   displayName: Daily 2am (AEST)
+  branches:
+    include:
+    - master
+    - develop
 
 variables:
 - group: Pulumi xtellurian
