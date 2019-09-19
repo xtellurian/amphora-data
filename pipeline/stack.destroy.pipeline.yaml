@@ -18,8 +18,8 @@ steps:
 - script: |
     chmod +x ./infra/*.sh
     . infra/setup.sh
-    pulumi destroy --stack master
-    pulumi destroy --stack develop
+    pulumi destroy --stack master -y
+    pulumi destroy --stack develop -y
   displayName: 'Destroy master and develop stack'
   name: pulumi
   env:
