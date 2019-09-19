@@ -3,6 +3,13 @@ trigger:
     include:
     - master
     - develop
+  paths:
+    exclude:
+    - README.md
+    - .gitignore
+    - .vscode/*
+    - pipeline/stack.destroy.pipeline.yaml
+
 
 stages:
 - stage: branch
