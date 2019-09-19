@@ -29,7 +29,7 @@ jobs:
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$(kvUri)"
         echo kvUri env var - $ASPNETCORE_kvUri
-        if [ ! -z $(PersistentStores) ] && [ -z $(pulumi.kvUri) ] ;
+        if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
           then
                 echo "PersistentStores is set, with no kvUri. Exiting with error"
                 exit 1
