@@ -58,9 +58,9 @@ jobs:
       workingDirectory: apps
       displayName: dotnet test
       env:
-        ASPNETCORE_kvUri: $(kvUri)
-        ASPNETCORE_PersistentStores: $(PersistentStores)
-        ASPNETCORE_disableKv: $(disableKv)
+        kvUri: $(kvUri)
+        PersistentStores: $(PersistentStores)
+        disableKv: $(disableKv)
 
     - task: PublishTestResults@2
       condition: always() 
