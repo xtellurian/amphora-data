@@ -6,9 +6,10 @@ parameters:
 jobs:
 - job: ${{ parameters.jobName }}
   displayName: Deploy App
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   dependsOn: 
     - infrastructure
-    # - apps
+    - apps
   pool:
     vmImage: 'Ubuntu-16.04'
 
