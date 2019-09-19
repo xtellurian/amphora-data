@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.UserData;
 using AutoMapper;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
@@ -17,11 +16,12 @@ namespace Amphora.Api.Services.Azure
 {
     public class AzureSearchService : ISearchService
     {
+        private bool IsCreatingIndex;
         private readonly SearchServiceClient serviceClient;
         private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
-        private const string indexName = "amphora-index";
+        
         private const string indexerName = "amphora-indexer";
 
         public AzureSearchService(
@@ -38,6 +38,7 @@ namespace Amphora.Api.Services.Azure
 
         public async Task CreateAmphoraIndexAsync()
         {
+            IsCreatingIndex = true;
             logger.LogWarning("Recreating the Amphora index");
 
             var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
@@ -49,83 +50,7 @@ namespace Amphora.Api.Services.Azure
             dataSource.Validate();
             dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
 
-            var fields = new List<Field>();
-            fields.Add(new Field(nameof(AmphoraModel.Id), DataType.String));
-            fields.Add(new Field(nameof(AmphoraModel.AmphoraId), DataType.String)
-            {
-                IsKey = true // key of AmphoraId because Id has a special charcter not allowed
-            });
-            // org id for filtering 
-            fields.Add(new Field(nameof(Entity.OrganisationId), DataType.String)
-            {
-                IsFacetable = true,
-                IsRetrievable = true,
-                IsFilterable = true
-            });
-            // type
-            fields.Add(new Field(nameof(Entity.EntityType), DataType.String)
-            {
-                IsFilterable = true
-            });
-            // add name
-            fields.Add(new Field(nameof(AmphoraModel.Name), DataType.String)
-            {
-                IsSearchable = true,
-                IsRetrievable = true
-            });
-            // add about
-            fields.Add(new Field(nameof(AmphoraExtendedModel.Description), DataType.String)
-            {
-                IsSearchable = true
-            });
-            // add price
-            fields.Add(new Field(nameof(AmphoraModel.Price), DataType.Double)
-            {
-                IsRetrievable = true,
-                IsSortable = true,
-                IsFacetable = true,
-                IsFilterable = true
-            });
-            // created by
-            fields.Add(new Field(nameof(AmphoraModel.CreatedBy), DataType.String)
-            {
-                IsRetrievable = true,
-                IsSortable = true,
-                IsFacetable = true,
-                IsFilterable = true
-            });
-            // Location
-            fields.Add(new Field(nameof(AmphoraExtendedModel.GeoLocation), DataType.GeographyPoint)
-            {
-                IsRetrievable = true,
-                IsSortable = true,
-                IsFilterable = true
-            });
-            // Has Purchased
-            fields.Add(new Field(nameof(AmphoraSecurityModel.HasPurchased),
-                        DataType.Collection(DataType.Complex),
-                        new List<Field>
-                        {
-                            new Field(nameof(ApplicationUserReference.Id), DataType.String)
-                            {
-                                IsFilterable = true,
-                            },
-                            new Field(nameof(ApplicationUserReference.OrganisationId), DataType.String),
-                            new Field(nameof(ApplicationUserReference.UserName), DataType.String),
-                        }));
-
-
-            // add isPubic
-            fields.Add(new Field(nameof(AmphoraModel.IsPublic), DataType.Boolean)
-            {
-                IsFilterable = true
-            });
-
-            var index = new Index()
-            {
-                Name = indexName,
-                Fields = fields
-            };
+            Index index = new AmphoraSearchIndex();
             index.Validate();
             await serviceClient.Indexes.DeleteAsync(index.Name);
             index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
@@ -144,8 +69,8 @@ namespace Amphora.Api.Services.Azure
             indexer.Validate();
 
             await serviceClient.Indexers.DeleteAsync(indexer.Name);
-
             indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
+            IsCreatingIndex = false;
         }
 
         public async Task Reindex()
@@ -163,21 +88,25 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
-            if (!await serviceClient.Indexes.ExistsAsync(indexName))
+            if (!await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName) && !IsCreatingIndex)
             {
-                logger.LogWarning($"{indexName} does not exist. Creating now");
+                logger.LogWarning($"{AmphoraSearchIndex.IndexName} does not exist. Creating now");
                 try
                 {
                     await this.CreateAmphoraIndexAsync();
                 }
                 catch (Exception ex)
                 {
-                    logger.LogCritical($"Failed to created {indexName}", ex);
+                    logger.LogCritical($"Failed to created {AmphoraSearchIndex.IndexName}", ex);
                     throw;
                 }
             }
+            else if(IsCreatingIndex)
+            {
+                await Task.Delay(2000); // just wait 2 second because the index is probably being created right now
+            }
 
-            var indexClient = serviceClient.Indexes.GetClient(indexName);
+            var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
 
             var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
 
