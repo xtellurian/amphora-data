@@ -34,7 +34,7 @@ namespace Amphora.Api.StartupModules
             {
                 // use azure search
                 services.Configure<AzureSearchOptions>(Configuration.GetSection("AzureSearch"));
-                services.AddTransient<ISearchService, AzureSearchService>();
+                services.AddSingleton<ISearchService, AzureSearchService>();
             }
         }
     }
