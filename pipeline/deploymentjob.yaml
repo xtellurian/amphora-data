@@ -19,5 +19,11 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
+          persistCredentials: true
         - template: infra.create.steps.yaml
         - template: app.deploy.steps.yaml
+        - script: |
+            TAG="$(Environment.Name)/$(Build.BuildId)"
+            echo Tagging Branch with $TAG
+            git tag -a $TAG -m "$(Build.Reason) requested for $(Build.RequestedFor)"
+            git push origin $TAG
