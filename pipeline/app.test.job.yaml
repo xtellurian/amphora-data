@@ -28,12 +28,15 @@ jobs:
     - script: |
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$(pulumi.kvUri)"
+        echo kvUri env var - $ASPNETCORE_kvUri
         if [ ! -z $(PersistentStores) ] && [ -z $(pulumi.kvUri) ] ;
           then
                 echo "PersistentStores is set, with no kvUri. Exiting with error"
                 exit 1
           fi
       displayName: Check params set correctly
+      env:
+        ASPNETCORE_kvUri: $(pulumi.kvUri)
 
     - task: UseDotNet@2
       displayName: 'Use .NET Core sdk v 2.2.300'
