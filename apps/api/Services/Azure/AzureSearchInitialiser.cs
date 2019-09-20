@@ -22,6 +22,7 @@ namespace Amphora.Api.Services.Azure
             this.cosmosOptions = cosmosOptions;
             this.serviceClient = new SearchServiceClient(options.CurrentValue.Name, new SearchCredentials(options.CurrentValue.PrimaryKey));
         }
+        private bool isInitialised;
         private bool isCreatingIndex;
         private readonly ILogger<AzureSearchInitialiser> logger;
         private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
@@ -30,9 +31,13 @@ namespace Amphora.Api.Services.Azure
 
         public async Task CreateAmphoraIndexAsync()
         {
+            var startTime = System.DateTime.Now;
+            if(isInitialised) return;
             if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
             {
-                logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists");
+                logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists. Waiting 5 seconds");
+                // might still be creating, wait 5 seconds
+                await Task.Delay(1000 * 5);
                 return;
             }
 
@@ -88,7 +93,10 @@ namespace Amphora.Api.Services.Azure
             }
             finally
             {
+                var timeTaken = System.DateTime.Now - startTime;
+                logger.LogInformation($"{nameof(CreateAmphoraIndexAsync)} took {timeTaken.TotalSeconds}");
                 isCreatingIndex = false;
+                isInitialised = true;
             }
         }
     }

@@ -18,6 +18,36 @@ namespace Amphora.Tests.Integration
 
         }
 
+        [Theory]
+        [InlineData("api/search/amphorae/byOrganisation")]
+        public async Task SearchAmphorae_ByOrgId_AsUser(string url)
+        {
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(SearchAmphorae_ByLocation));
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
+            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            createResponse.EnsureSuccessStatusCode();
+            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
+
+            // Act
+            var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var amphorae = JsonConvert.DeserializeObject<List<AmphoraModel>>(content);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+           //  Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
+
+            await DestroyAmphoraAsync(adminClient, a.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+
+        }
      
 
         [Theory]
