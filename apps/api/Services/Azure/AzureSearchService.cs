@@ -20,8 +20,8 @@ namespace Amphora.Api.Services.Azure
         private readonly IAzureSearchInitialiser searchInitialiser;
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
-        
-        
+
+
 
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
@@ -38,12 +38,28 @@ namespace Amphora.Api.Services.Azure
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
             await this.searchInitialiser.CreateAmphoraIndexAsync();
-            
+
             var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
-
-            var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
-
-            return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
+            try
+            {
+                var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
+                return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
+            }
+            catch (Microsoft.Rest.Azure.CloudException ex)
+            {
+                logger.LogWarning($"{indexClient.IndexName} threw on Search Async. Retrying in 5 seconds...", ex);
+            }
+            await Task.Delay(10 * 5);
+            try
+            {     
+                var results_secondTry = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
+                return mapper.Map<EntitySearchResult<AmphoraModel>>(results_secondTry);
+            }
+            catch (Microsoft.Rest.Azure.CloudException ex)
+            {
+                logger.LogError($"{indexClient.IndexName} threw on second try Search Async.", ex);
+                throw ex;
+            }
         }
     }
 }
