@@ -64,7 +64,7 @@ namespace Amphora.Api.Services.Azure
                 Index index = new AmphoraSearchIndex();
                 index.Validate();
                 var rnd = new System.Random();
-                await Task.Delay(rnd.Next(500, 3000)); // wait a random amount of time so that we don't get stupid deadlocks hre
+                await Task.Delay(rnd.Next(500, 5000)); // wait a random amount of time so that we don't get stupid deadlocks
                 if (!await serviceClient.Indexes.ExistsAsync(index.Name))
                 {
                     index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
@@ -82,6 +82,7 @@ namespace Amphora.Api.Services.Azure
                     }
                 };
                 indexer.Validate();
+                await Task.Delay(rnd.Next(500, 5000)); // wait a random amount of time so that we don't get stupid deadlocks
                 if (!await serviceClient.Indexers.ExistsAsync(indexer.Name))
                 {
                     indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
