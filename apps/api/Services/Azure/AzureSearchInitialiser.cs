@@ -28,11 +28,11 @@ namespace Amphora.Api.Services.Azure
         private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
         private SearchServiceClient serviceClient;
         public string IndexerName => "amphora-indexer";
-
+        private readonly object initialiseLock = new object();
         public async Task CreateAmphoraIndexAsync()
         {
             var startTime = System.DateTime.Now;
-            if(isInitialised) return;
+            if (isInitialised) return;
             if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
             {
                 logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists. Waiting 5 seconds");
@@ -63,9 +63,10 @@ namespace Amphora.Api.Services.Azure
 
                 Index index = new AmphoraSearchIndex();
                 index.Validate();
+                var rnd = new System.Random();
+                await Task.Delay(rnd.Next(500, 3000)); // wait a random amount of time so that we don't get stupid deadlocks hre
                 if (!await serviceClient.Indexes.ExistsAsync(index.Name))
                 {
-
                     index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
                 }
 
