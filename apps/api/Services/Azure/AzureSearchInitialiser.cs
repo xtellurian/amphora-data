@@ -31,8 +31,8 @@ namespace Amphora.Api.Services.Azure
         private readonly object initialiseLock = new object();
         public async Task CreateAmphoraIndexAsync()
         {
-            var startTime = System.DateTime.Now;
             if (isInitialised) return;
+            var startTime = System.DateTime.Now;
             if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
             {
                 logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists. Waiting 5 seconds");
@@ -50,56 +50,79 @@ namespace Amphora.Api.Services.Azure
 
             isCreatingIndex = true;
             logger.LogWarning("Recreating the Amphora index");
-            try
+            var maxAttempts = 5;
+            var attempts = 0;
+            while (true)
             {
-                var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
-                var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
-                var dataSource = DataSource.CosmosDb("cosmos",
-                                                     cosmosDbConnectionString,
-                                                     "Amphora",
-                                                     query);
-                dataSource.Validate();
-                dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
-
-                Index index = new AmphoraSearchIndex();
-                index.Validate();
-                var rnd = new System.Random();
-                await Task.Delay(rnd.Next(500, 5000)); // wait a random amount of time so that we don't get stupid deadlocks
-                if (!await serviceClient.Indexes.ExistsAsync(index.Name))
+                try
                 {
-                    index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
+                    var index = await TryCreateIndex();
+                    var dataSource =  await TryCreateDatasource();
+                    var indexer = await TryCreateIndexer(dataSource, index);
+                    break;
                 }
-
-                var indexer = new Indexer(IndexerName, dataSource.Name, index.Name)
+                catch (Microsoft.Rest.Azure.CloudException ex) // only catch these dumb exceptions
                 {
-                    Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
-                    Parameters = new IndexingParameters
-                    {
-                        Configuration = new Dictionary<string, object>
+                    logger.LogCritical("Failed to created Amohora Index", ex);
+                    if(attempts > maxAttempts) {
+                        logger.LogCritical("Max Attempts reached", ex);
+                        throw ex;
+                    }
+                    await Task.Delay(500); // wait half a second before retrying
+                }
+            }
+
+            var timeTaken = System.DateTime.Now - startTime;
+            isCreatingIndex = false;
+            isInitialised = true;
+            logger.LogInformation($"{nameof(CreateAmphoraIndexAsync)} took {timeTaken.TotalSeconds} and {attempts} attempts");
+        }
+
+        private async Task<Index> TryCreateIndex()
+        {
+            Index index = new AmphoraSearchIndex();
+            index.Validate();
+
+            if (!await serviceClient.Indexes.ExistsAsync(index.Name))
+            {
+                index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
+            }
+            return index;
+        }
+
+        private async Task<DataSource> TryCreateDatasource()
+        {
+            var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
+            var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
+            var dataSource = DataSource.CosmosDb("cosmos",
+                                                 cosmosDbConnectionString,
+                                                 "Amphora",
+                                                 query);
+            dataSource.Validate();
+            dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
+            return dataSource;
+        }
+
+        private async Task<Indexer> TryCreateIndexer(DataSource dataSource, Index index)
+        {
+            var indexer = new Indexer(IndexerName, dataSource.Name, index.Name)
+            {
+                Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
+                Parameters = new IndexingParameters
+                {
+                    Configuration = new Dictionary<string, object>
                     {
                         {"assumeOrderByHighWaterMarkColumn", true}
                     }
-                    }
-                };
-                indexer.Validate();
-                await Task.Delay(rnd.Next(500, 5000)); // wait a random amount of time so that we don't get stupid deadlocks
-                if (!await serviceClient.Indexers.ExistsAsync(indexer.Name))
-                {
-                    indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
                 }
-            }
-            catch (System.Exception ex)
+            };
+            indexer.Validate();
+
+            if (!await serviceClient.Indexers.ExistsAsync(indexer.Name))
             {
-                logger.LogCritical("Failed to created Amohora Index", ex);
-                throw;
+                indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
             }
-            finally
-            {
-                var timeTaken = System.DateTime.Now - startTime;
-                logger.LogInformation($"{nameof(CreateAmphoraIndexAsync)} took {timeTaken.TotalSeconds}");
-                isCreatingIndex = false;
-                isInitialised = true;
-            }
+            return indexer;
         }
     }
 }
