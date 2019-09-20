@@ -38,38 +38,34 @@
                <p><small>Pinned</small></p>
                <!-- Grid of pinned Amphora -->
                <div class="container">
-                    <div class="row m-4">
-                        <div class="col-sm mr-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"><strong>Albury Wodonga Rainfall</strong></span>
-                        </div>
-
-                        <div class="col-sm ml-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"> <strong> Byron Bay Rainfall</strong></span>
-                        </div>
-                    </div>
-                    <div class="row m-4">
-                        <div class="col-sm mr-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"><strong>Australia Wide Rainfall</strong></span>
-                        </div>
-                        <div class="col-sm ml-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"><strong>Australian Dam Levels from 1975</strong></span>
-                        </div>
-                    </div>
-                    <div class="row m-4">
-                        <div class="col-sm mr-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"><strong>Queensland Soil Moisture</strong></span>
-                        </div>
-                        <div class="col-sm ml-2 border border-dark rounded">
-                            <img src="~/images/amphora_2.png" class="p-4" style="width:50%;"/>
-                            <span class="float-right pb-1"><strong>Victorian Soil Moisture</strong></span>
-                        </div>
-                    </div>
-                </div>
+                   <table id="entity-table" class="table table-borderless table-striped">
+                        <thead>
+                            <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Price ($)</th>
+                            <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entity in Model.PinnedAmphorae)
+                            {
+                            <tr class="entity-item">
+                                <th scope="row">
+                                    <img class="h-100 img-fluid" src="~/images/amphora_bullet.png">
+                                </th>
+                                <td> @entity.Name </td>
+                                <td>@entity.Price</td>
+                                <td>  
+                                    <a asp-page="/Amphorae/Detail" asp-route-id="@entity.AmphoraId"> 
+                                        <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
+                                    </a>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+               </div>
            </div>
         </div>
     </div>

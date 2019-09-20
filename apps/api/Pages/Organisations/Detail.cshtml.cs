@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Search;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +16,18 @@ namespace Amphora.Api.Pages.Organisations
     public class DetailModel : PageModel
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
+        private readonly ISearchService searchService;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
 
         public DetailModel(
             IEntityStore<OrganisationModel> entityStore,
+            ISearchService searchService,
             IPermissionService permissionService,
             IUserService userService)
         {
             this.entityStore = entityStore;
+            this.searchService = searchService;
             this.permissionService = permissionService;
             this.userService = userService;
         }
@@ -30,6 +36,7 @@ namespace Amphora.Api.Pages.Organisations
         public bool CanInvite { get; private set; }
         public bool CanAcceptInvite { get; private set; }
         public bool CanViewMembers { get; private set; }
+        public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -52,6 +59,9 @@ namespace Amphora.Api.Pages.Organisations
             {
                 this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), user.Email.ToLower()));
             }
+            // get pinned
+            var searchResults = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(id));
+            this.PinnedAmphorae = searchResults?.Results?.Select(a => a.Entity) ?? new List<AmphoraModel>();
             return Page();
         }
     }
