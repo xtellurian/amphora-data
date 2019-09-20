@@ -30,14 +30,17 @@ namespace Amphora.Api.Services.Azure
 
         public async Task CreateAmphoraIndexAsync()
         {
+            if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
+            {
+                logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists");
+                return;
+            }
+
             while (isCreatingIndex)
             {
                 // we need to wait for it to be set to false, then return
+                logger.LogInformation($"Waiting for {AmphoraSearchIndex.IndexName} to be created");
                 await Task.Delay(1000);
-            }
-            if(await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
-            {
-                return;
             }
 
             isCreatingIndex = true;
@@ -55,8 +58,11 @@ namespace Amphora.Api.Services.Azure
 
                 Index index = new AmphoraSearchIndex();
                 index.Validate();
-                await serviceClient.Indexes.DeleteAsync(index.Name);
-                index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
+                if (!await serviceClient.Indexes.ExistsAsync(index.Name))
+                {
+
+                    index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
+                }
 
                 var indexer = new Indexer(IndexerName, dataSource.Name, index.Name)
                 {
@@ -70,9 +76,10 @@ namespace Amphora.Api.Services.Azure
                     }
                 };
                 indexer.Validate();
-
-                await serviceClient.Indexers.DeleteAsync(indexer.Name);
-                indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
+                if (!await serviceClient.Indexers.ExistsAsync(indexer.Name))
+                {
+                    indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
+                }
             }
             catch (System.Exception ex)
             {

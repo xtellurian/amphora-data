@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Amphorae
@@ -8,6 +9,8 @@ namespace Amphora.Common.Models.Amphorae
         public GeoLocation(double lon, double lat)
         {
             Type = "Point";
+            if(lat > 90 || lat < -90) throw new ArgumentException("A latitude coordinate must be a value between -90.0 and +90.0 degrees.");
+            if(lon > 180 || lon < -180) throw new ArgumentException("A longitude coordinate must be a value between -180.0 and +180.0 degrees.");
             Coordinates = new double[2] { lon, lat };
         }
         [JsonProperty("type")]

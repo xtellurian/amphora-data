@@ -16,7 +16,6 @@ namespace Amphora.Api.Services.Azure
 {
     public class AzureSearchService : ISearchService
     {
-        private bool IsCreatingIndex;
         private readonly SearchServiceClient serviceClient;
         private readonly IAzureSearchInitialiser searchInitialiser;
         private readonly ILogger<AzureSearchService> logger;
@@ -38,24 +37,8 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
-            if (!await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName) && !IsCreatingIndex)
-            {
-                logger.LogWarning($"{AmphoraSearchIndex.IndexName} does not exist. Creating now");
-                try
-                {
-                    await this.searchInitialiser.CreateAmphoraIndexAsync();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical($"Failed to created {AmphoraSearchIndex.IndexName}", ex);
-                    throw;
-                }
-            }
-            else if(IsCreatingIndex)
-            {
-                await Task.Delay(2000); // just wait 2 second because the index is probably being created right now
-            }
-
+            await this.searchInitialiser.CreateAmphoraIndexAsync();
+            
             var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
 
             var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
