@@ -49,7 +49,7 @@ namespace Amphora.Api.Services.Azure
             {
                 logger.LogWarning($"{indexClient.IndexName} threw on Search Async. Retrying in 5 seconds...", ex);
             }
-            await Task.Delay(10 * 5);
+            await Task.Delay(1000 * 5);
             try
             {     
                 var results_secondTry = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
