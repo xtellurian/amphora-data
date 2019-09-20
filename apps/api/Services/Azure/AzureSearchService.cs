@@ -18,72 +18,22 @@ namespace Amphora.Api.Services.Azure
     {
         private bool IsCreatingIndex;
         private readonly SearchServiceClient serviceClient;
-        private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
+        private readonly IAzureSearchInitialiser searchInitialiser;
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
         
-        private const string indexerName = "amphora-indexer";
+        
 
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
-            IOptionsMonitor<CosmosOptions> cosmosOptions,
+            IAzureSearchInitialiser searchInitialiser,
             ILogger<AzureSearchService> logger,
             IMapper mapper)
         {
             this.serviceClient = new SearchServiceClient(options.CurrentValue.Name, new SearchCredentials(options.CurrentValue.PrimaryKey));
-            this.cosmosOptions = cosmosOptions;
+            this.searchInitialiser = searchInitialiser;
             this.logger = logger;
             this.mapper = mapper;
-        }
-
-        public async Task CreateAmphoraIndexAsync()
-        {
-            IsCreatingIndex = true;
-            logger.LogWarning("Recreating the Amphora index");
-
-            var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
-            var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
-            var dataSource = DataSource.CosmosDb("cosmos",
-                                                 cosmosDbConnectionString,
-                                                 "Amphora",
-                                                 query);
-            dataSource.Validate();
-            dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
-
-            Index index = new AmphoraSearchIndex();
-            index.Validate();
-            await serviceClient.Indexes.DeleteAsync(index.Name);
-            index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
-
-            var indexer = new Indexer(indexerName, dataSource.Name, index.Name)
-            {
-                Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
-                Parameters = new IndexingParameters
-                {
-                    Configuration = new Dictionary<string, object>
-                    {
-                        {"assumeOrderByHighWaterMarkColumn", true}
-                    }
-                }
-            };
-            indexer.Validate();
-
-            await serviceClient.Indexers.DeleteAsync(indexer.Name);
-            indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
-            IsCreatingIndex = false;
-        }
-
-        public async Task Reindex()
-        {
-            if (!await serviceClient.Indexers.ExistsAsync(indexerName))
-            {
-                await CreateAmphoraIndexAsync();
-            }
-            else
-            {
-                var indexer = await serviceClient.Indexers.GetAsync(indexerName);
-                await serviceClient.Indexers.RunAsync(indexer.Name);
-            }
         }
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
@@ -93,7 +43,7 @@ namespace Amphora.Api.Services.Azure
                 logger.LogWarning($"{AmphoraSearchIndex.IndexName} does not exist. Creating now");
                 try
                 {
-                    await this.CreateAmphoraIndexAsync();
+                    await this.searchInitialiser.CreateAmphoraIndexAsync();
                 }
                 catch (Exception ex)
                 {
