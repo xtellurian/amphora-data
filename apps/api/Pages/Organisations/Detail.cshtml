@@ -27,6 +27,30 @@
                     <p>@Model.Organisation.About</p>                 
                 </div>
             </div>
+            @if(Model.CanViewMembers)
+            {
+            <div class="card mb-3">
+                <div class="col card p-2">
+                    <div> 
+                        <a class="float-right" asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
+                        <h3>Members</h3>
+                    </div>
+                    <ul>
+                    @foreach (var m in Model.Organisation.Memberships)
+                    {
+                        @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
+                        {
+                            <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> @m.UserName </li>
+                        }
+                        else
+                        {
+                            <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> @m.UserName </li>
+                        }
+                    }
+                    </ul>
+                </div>
+            </div>
+            }
         </div>
         <div class="col-8">
            <div>
@@ -69,30 +93,7 @@
            </div>
         </div>
     </div>
-    @if(Model.CanViewMembers)
-    {
-    <div class="row mt-3">
-        <div class="col card p-2">
-            <div> 
-                <a class="float-right" asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
-                <h3>Members</h3>
-            </div>
-            <ul>
-            @foreach (var m in Model.Organisation.Memberships)
-            {
-                @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
-                {
-                    <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> @m.UserName </li>
-                }
-                else
-                {
-                    <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> @m.UserName </li>
-                }
-            }
-            </ul>
-        </div>
-    </div>
-    }
+    
 </div>
 
 @section Scripts {
