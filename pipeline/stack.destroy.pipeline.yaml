@@ -8,7 +8,8 @@ schedules:
   displayName: Daily 2am (AEST)
   branches:
     include:
-    - develop
+    - master
+  always: true # run even if there's no source changes
 
 variables:
 - group: Pulumi xtellurian
