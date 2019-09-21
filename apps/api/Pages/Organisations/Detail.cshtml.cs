@@ -16,18 +16,18 @@ namespace Amphora.Api.Pages.Organisations
     public class DetailModel : PageModel
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
-        private readonly ISearchService searchService;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
 
         public DetailModel(
             IEntityStore<OrganisationModel> entityStore,
-            ISearchService searchService,
+            IAmphoraeService amphoraeService,
             IPermissionService permissionService,
             IUserService userService)
         {
             this.entityStore = entityStore;
-            this.searchService = searchService;
+            this.amphoraeService = amphoraeService;
             this.permissionService = permissionService;
             this.userService = userService;
         }
@@ -60,8 +60,8 @@ namespace Amphora.Api.Pages.Organisations
                 this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), user.Email.ToLower()));
             }
             // get pinned
-            var searchResults = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(id));
-            this.PinnedAmphorae = searchResults?.Results?.Select(a => a.Entity) ?? new List<AmphoraModel>();
+            var query = await amphoraeService.AmphoraStore.QueryAsync<AmphoraModel>(a => a.OrganisationId == Organisation.OrganisationId);
+            this.PinnedAmphorae = query.Take(6);
             return Page();
         }
     }

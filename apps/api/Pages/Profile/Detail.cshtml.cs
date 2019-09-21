@@ -16,13 +16,13 @@ namespace Amphora.Api.Pages.Profile
     public class DetailModel : PageModel
     {
         private readonly IUserManager userManager;
-        private readonly ISearchService searchService;
+        private readonly IAmphoraeService amphoraeService;
         private readonly IOrganisationService organisationService;
 
-        public DetailModel(IUserManager userManager, ISearchService searchService, IOrganisationService organisationService)
+        public DetailModel(IUserManager userManager, IAmphoraeService amphoraeService, IOrganisationService organisationService)
         {
             this.userManager = userManager;
-            this.searchService = searchService;
+            this.amphoraeService = amphoraeService;
             this.organisationService = organisationService;
         }
 
@@ -50,9 +50,9 @@ namespace Amphora.Api.Pages.Profile
             {
                 return RedirectToPage("./Missing");
             }
-            var search = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));
-            this.PinnedAmphorae = search?.Results?.Select(a => a.Entity) ?? new List<AmphoraModel>() ;
             this.Organisation = await organisationService.Store.ReadAsync(user.OrganisationId, user.OrganisationId);
+            var query = await amphoraeService.AmphoraStore.QueryAsync<AmphoraModel>(a => a.CreatedBy == user.Id);
+            this.PinnedAmphorae = query.Take(6);
             return Page();
         }
 
