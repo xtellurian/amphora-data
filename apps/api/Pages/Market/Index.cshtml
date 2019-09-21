@@ -28,7 +28,7 @@
                         <div class="container card-body">
                             <div class="row mb-2">
                                 <div class="col-4 body ui-widget">
-                                    <input id="autoComplete" type="text" tabindex="1">
+                                    <input id="autoComplete" type="text" tabindex="1" autocomplete="off">
                                 </div>
                                 <div class="col selection"></div>
                             </div>
@@ -40,6 +40,10 @@
                                 <div class="col">
                                     <input id="lon" asp-for="Lon" placeholder="Longitude" class="form-control bg-none border-1">
                                     <span asp-validation-for="Lon" class="text-danger"></span>
+                                </div>
+                                <div class="col">
+                                    <input id="dist" asp-for="Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
+                                    <span asp-validation-for="Dist" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>

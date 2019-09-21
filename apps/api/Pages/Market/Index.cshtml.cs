@@ -30,6 +30,8 @@ namespace Amphora.Api.Pages.Market
         [BindProperty(SupportsGet = true)]
         [Display(Name = "Longitude")]
         public double? Lon { get; set; }
+        [Display(Name = "Distance")]
+        public double? Dist { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string Term { get; set; }
@@ -62,7 +64,8 @@ namespace Amphora.Api.Pages.Market
         {
             if (Lat.HasValue && Lon.HasValue)
             {
-                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Lat.Value, Lon.Value, 10));
+                var d = Dist.HasValue ? Dist.Value : 100; // default to 100km
+                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Lat.Value, Lon.Value, d));
                 this.Entities = res.Results.Select(e => e.Entity);
             }
             else

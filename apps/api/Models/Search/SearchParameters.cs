@@ -23,6 +23,7 @@ namespace Amphora.Api.Models.Search
         {
             return new SearchParameters
             {
+                // distance in km
                 Filter = $"geo.distance({nameof(AmphoraExtendedModel.GeoLocation)}, geography'POINT({lon} {lat})') le {dist}"
             };
         }
