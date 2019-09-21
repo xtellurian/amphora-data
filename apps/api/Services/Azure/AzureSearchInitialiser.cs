@@ -35,9 +35,10 @@ namespace Amphora.Api.Services.Azure
             var startTime = System.DateTime.Now;
             if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
             {
-                logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists. Waiting 5 seconds");
+                logger.LogInformation($"{AmphoraSearchIndex.IndexName} already exists. Waiting 2 seconds");
                 // might still be creating, wait 5 seconds
-                await Task.Delay(1000 * 5);
+                await Task.Delay(1000 * 2);
+                isInitialised = true;
                 return;
             }
 
