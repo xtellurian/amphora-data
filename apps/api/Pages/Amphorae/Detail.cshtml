@@ -3,7 +3,7 @@
 @model Amphora.Api.Pages.Amphorae.DetailModel
 @inject Amphora.Api.Services.FeatureFlags.FeatureFlagService FeatureFlags
 @{
-    ViewData["Title"] = "Amphora -";
+    ViewData["Title"] = Model.Amphora.Name;
 }
 
 
@@ -54,7 +54,7 @@
                         var buttonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
                     }
-                    <a asp-page="./Purchase" asp-route-id="@Model.Amphora.AmphoraId"><button class="btn btn-success" @buttonMode>Buy</button></a>
+                    <a asp-page="./Agreement" asp-route-id="@Model.Amphora.AmphoraId"><button class="btn btn-success" @buttonMode>Buy</button></a>
                 </div>
                     <div class="card-body">
                         <h5 class="card-title">Description</h5>
