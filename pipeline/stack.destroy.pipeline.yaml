@@ -2,6 +2,8 @@ trigger:
   branches:
     exclude:
     - "*"
+    - refs/tags/*
+    - refs/heads/*
 
 schedules:
 - cron: "0 16 * * *"
