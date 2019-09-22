@@ -58,14 +58,15 @@ namespace Amphora.Api.Services.Azure
                 try
                 {
                     var index = await TryCreateIndex();
-                    var dataSource =  await TryCreateDatasource();
+                    var dataSource = await TryCreateDatasource();
                     var indexer = await TryCreateIndexer(dataSource, index);
                     break;
                 }
                 catch (Microsoft.Rest.Azure.CloudException ex) // only catch these dumb exceptions
                 {
                     logger.LogCritical("Failed to created Amohora Index", ex);
-                    if(attempts > maxAttempts) {
+                    if (attempts > maxAttempts)
+                    {
                         logger.LogCritical("Max Attempts reached", ex);
                         throw ex;
                     }
@@ -93,7 +94,7 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<DataSource> TryCreateDatasource()
         {
-            var query = "SELECT * FROM c WHERE c._ts > @HighWaterMark ORDER BY c._ts";
+            var query = "SELECT * FROM c WHERE c.EntityType = 'Amphora' AND c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
             var dataSource = DataSource.CosmosDb("cosmos",
                                                  cosmosDbConnectionString,
@@ -115,6 +116,11 @@ namespace Amphora.Api.Services.Azure
                     {
                         {"assumeOrderByHighWaterMarkColumn", true}
                     }
+                },
+                FieldMappings = new List<FieldMapping> {
+                    // encodes a field for use as the index key
+                    new FieldMapping("id", "docId", FieldMappingFunction.Base64Encode() ),
+                    // new FieldMapping("docId", "id", FieldMappingFunction.Base64Decode() ),
                 }
             };
             indexer.Validate();

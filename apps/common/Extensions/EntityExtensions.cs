@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Transactions;
@@ -69,6 +70,14 @@ namespace Amphora.Common.Extensions
             else
             {
                 throw new ArgumentException($"Couldn't infer type from prefix {split[0]}");
+            }
+        }
+
+        public static void FixAzureSearchId(this AmphoraModel entity)
+        {
+            if(string.IsNullOrEmpty(entity.Id) && !string.IsNullOrEmpty(entity.AmphoraId))
+            {
+                entity.Id = entity.AmphoraId.AsQualifiedId<AmphoraModel>();
             }
         }
     }

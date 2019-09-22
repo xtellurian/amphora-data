@@ -8,13 +8,14 @@ namespace Amphora.Api.Models.AzureSearch
 {
     public class AmphoraSearchIndex : Index
     {
-        public AmphoraSearchIndex()
+        public AmphoraSearchIndex(): base( )
         {
             var fields = new List<Field>();
-            fields.Add(new Field(nameof(AmphoraModel.Id), DataType.String));
+            fields.Add(new Field("docId", DataType.String){IsKey = true});
+            // fields.Add(new Field(nameof(AmphoraModel.Id).ToLower(), DataType.String){}); // to lower because cosmos Id is 'id'
             fields.Add(new Field(nameof(AmphoraModel.AmphoraId), DataType.String)
             {
-                IsKey = true // key of AmphoraId because Id has a special charcter not allowed
+                // IsKey = true // key of AmphoraId because Id has a special charcter not allowed
             });
             // org id for filtering 
             fields.Add(new Field(nameof(Entity.OrganisationId), DataType.String)
@@ -74,7 +75,6 @@ namespace Amphora.Api.Models.AzureSearch
                             new Field(nameof(ApplicationUserReference.OrganisationId), DataType.String),
                             new Field(nameof(ApplicationUserReference.UserName), DataType.String),
                         }));
-
 
             // add isPubic
             fields.Add(new Field(nameof(AmphoraModel.IsPublic), DataType.Boolean)

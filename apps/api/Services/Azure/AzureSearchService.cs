@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -43,16 +41,25 @@ namespace Amphora.Api.Services.Azure
             try
             {
                 var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
+                foreach(var r in results.Results)
+                {
+                    r.Document.FixAzureSearchId();  // fixes the id field
+                }
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
             }
             catch (Microsoft.Rest.Azure.CloudException ex)
             {
                 logger.LogWarning($"{indexClient.IndexName} threw on Search Async. Retrying in 5 seconds...", ex);
             }
+
             await Task.Delay(1000 * 5);
             try
             {     
                 var results_secondTry = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
+                foreach(var r in results_secondTry.Results)
+                {
+                    r.Document.FixAzureSearchId(); // fixes the id field
+                }
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results_secondTry);
             }
             catch (Microsoft.Rest.Azure.CloudException ex)
