@@ -93,7 +93,7 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<DataSource> TryCreateDatasource()
         {
-            var query = "SELECT * FROM c WHERE STARTSWITH(c.id, 'Amphora|') AND c._ts > @HighWaterMark ORDER BY c._ts";
+            var query = "SELECT * FROM c WHERE c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
             var dataSource = DataSource.CosmosDb("cosmos",
                                                  cosmosDbConnectionString,
@@ -108,7 +108,7 @@ namespace Amphora.Api.Services.Azure
         {
             var indexer = new Indexer(IndexerName, dataSource.Name, index.Name)
             {
-                Schedule = new IndexingSchedule(System.TimeSpan.FromHours(1)),
+                Schedule = new IndexingSchedule(System.TimeSpan.FromMinutes(10)),
                 Parameters = new IndexingParameters
                 {
                     Configuration = new Dictionary<string, object>
