@@ -107,20 +107,29 @@ namespace Amphora.Api.Pages.Amphorae
             if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
 
             var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var user = await userService.UserManager.GetUserAsync(User);
+            
             if (result.Succeeded)
             {
                 if (result.Entity == null) return RedirectToPage("./Index");
 
-                var formFile = files.FirstOrDefault();
-
-                if (formFile != null && formFile.Length > 0)
+                if (await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.WriteContents))
                 {
-                    using (var stream = new MemoryStream())
+                    var formFile = files.FirstOrDefault();
+
+                    if (formFile != null && formFile.Length > 0)
                     {
-                        await formFile.CopyToAsync(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        await this.blobStore.WriteBytesAsync(result.Entity, formFile.FileName, await stream.ReadFullyAsync());
+                        using (var stream = new MemoryStream())
+                        {
+                            await formFile.CopyToAsync(stream);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            await this.blobStore.WriteBytesAsync(result.Entity, formFile.FileName, await stream.ReadFullyAsync());
+                        }
                     }
+                }
+                else
+                {
+                    return RedirectToPage("./Forbidden");
                 }
                 this.Amphora = result.Entity;
                 this.Names = await blobStore.ListBlobsAsync(result.Entity);

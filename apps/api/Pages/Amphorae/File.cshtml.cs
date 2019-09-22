@@ -14,17 +14,23 @@ namespace Amphora.Api.Pages.Amphorae
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
+        private readonly IPermissionService permissionService;
+        private readonly IUserService userService;
         private readonly ITsiService tsiService;
         private readonly IMapper mapper;
 
         public FileModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
+            IPermissionService permissionService,
+            IUserService userService,
             ITsiService tsiService,
             IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
             this.blobStore = blobStore;
+            this.permissionService = permissionService;
+            this.userService = userService;
             this.tsiService = tsiService;
             this.mapper = mapper;
         }
@@ -37,9 +43,17 @@ namespace Amphora.Api.Pages.Amphorae
             {
                 return RedirectToPage("/amphorae/index");
             }
-            var file = await blobStore.ReadBytesAsync(entity, name);
-            if(file == null || file.Length == 0) return RedirectToPage("./Detail", new {Id = id});
-            return File(file, "application/octet-stream", name);
+            var user = await userService.UserManager.GetUserAsync(User);
+            if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
+            {
+                var file = await blobStore.ReadBytesAsync(entity, name);
+                if(file == null || file.Length == 0) return RedirectToPage("./Detail", new {Id = id});
+                return File(file, "application/octet-stream", name);
+            }
+            else
+            {
+                return RedirectToPage("./Forbidden");
+            }
         }
     }
 }
