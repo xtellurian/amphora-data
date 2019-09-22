@@ -11,7 +11,9 @@ namespace Amphora.Api.Services.Amphorae
     public class AmphoraFileService : IAmphoraFileService
     {
         private readonly IPermissionService permissionService;
-        private readonly IBlobStore<AmphoraModel> store;
+
+        public IBlobStore<AmphoraModel> Store { get; }
+
         private readonly IUserManager userManager;
         private readonly ILogger<AmphoraFileService> logger;
 
@@ -22,7 +24,7 @@ namespace Amphora.Api.Services.Amphorae
             IUserManager userManager)
         {
             this.permissionService = permissionService;
-            this.store = store;
+            this.Store = store;
             this.userManager = userManager;
             this.logger = logger;
         }
@@ -34,7 +36,7 @@ namespace Amphora.Api.Services.Amphorae
 
             if (granted)
             {
-                var data = await this.store.ReadBytesAsync(entity, file);
+                var data = await this.Store.ReadBytesAsync(entity, file);
                 return new EntityOperationResult<byte[]>(data);
             }
             else
@@ -54,7 +56,7 @@ namespace Amphora.Api.Services.Amphorae
 
             if (granted)
             {
-                await this.store.WriteBytesAsync(entity, file, contents);
+                await this.Store.WriteBytesAsync(entity, file, contents);
                 return new EntityOperationResult<byte[]>();
             }
             else

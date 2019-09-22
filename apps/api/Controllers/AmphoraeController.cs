@@ -116,6 +116,25 @@ namespace Amphora.Api.Controllers
             }
         }
 
+        [HttpGet("api/amphorae/{id}/files")]
+        public async Task<IActionResult> ListFiles(string id)
+        {
+            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            if (result.Succeeded)
+            {
+                var blobs = await amphoraFileService.Store.ListBlobsAsync(result.Entity);
+                return Ok(blobs);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return NotFound("Amphora not found");
+            }
+        }
+
         [HttpGet("api/amphorae/{id}/files/{file}")]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
@@ -127,14 +146,18 @@ namespace Amphora.Api.Controllers
                 {
                     return File(fileResult.Entity, "application/octet-stream", file);
                 }
+                else if (fileResult.WasForbidden)
+                {
+                    return StatusCode(403, fileResult.Message);
+                }
                 else
                 {
-                    return StatusCode(403, fileResult.Errors);
+                    return BadRequest(fileResult.Message);
                 }
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
-                return StatusCode(403, result.Errors);
+                return StatusCode(403, result.Message);
             }
             else
             {
@@ -149,7 +172,7 @@ namespace Amphora.Api.Controllers
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);
-                if(fileResult.Succeeded)
+                if (fileResult.Succeeded)
                 {
                     return Ok();
                 }
