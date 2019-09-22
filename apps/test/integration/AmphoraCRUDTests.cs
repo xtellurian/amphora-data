@@ -43,7 +43,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.Name, b.Name);
 
-            await DeleteAmphora(adminClient, b.Id);
+            await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }
@@ -81,7 +81,7 @@ namespace Amphora.Tests.Integration
             Assert.Equal(b.Name, c.Name);
 
             // cleanup
-            await DeleteAmphora(adminClient, b.Id);
+            await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }
@@ -110,20 +110,13 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(b);
             Assert.Equal(a.Id, b.Id);
 
-            await DeleteAmphora(adminClient, a.AmphoraId);
+            await DestroyAmphoraAsync(adminClient, a.AmphoraId);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
+            
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
 
-        }
-
-        private async Task DeleteAmphora(HttpClient client, string id)
-        {
-            var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
-            deleteResponse.EnsureSuccessStatusCode();
-            var response = await client.GetAsync($"api/amphorae/{id}");
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
     }
