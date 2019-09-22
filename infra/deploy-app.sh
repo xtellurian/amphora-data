@@ -30,6 +30,9 @@ docker push $IMAGE:latest
 docker push $IMAGE:$GITHASH
 docker push $IMAGE:$BUILD 
 echo "Setting CI for web app"
-WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
-echo "Webhook is $WEBHOOKURI"
-az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
+# WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
+# echo "Webhook is $WEBHOOKURI"
+# az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
+
+# this can set a slot, and then we don't need the webhook
+az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID
