@@ -46,7 +46,7 @@ namespace Amphora.Api.Pages.Profile
                 AppUser.FullName = FullName;
                 
                 var response = await userManager.UpdateAsync(AppUser);
-                if (response.Succeeded) return RedirectToPage("./Index");
+                if (response.Succeeded) return RedirectToPage("./Detail");
                 else
                 {
                     foreach (var e in response.Errors)
