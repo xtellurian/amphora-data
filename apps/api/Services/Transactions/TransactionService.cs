@@ -35,7 +35,7 @@ namespace Amphora.Api.Services.Transactions
             if (securityModel.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
             {
                 logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                var txs = await store.QueryAsync<TransactionModel>(p => p.UserId == user.Id && p.AmphoraId == amphora.AmphoraId);
+                var txs = await store.QueryAsync<TransactionModel>(p => p.User.Id == user.Id && p.AmphoraId == amphora.AmphoraId);
                 return new EntityOperationResult<TransactionModel>(txs.FirstOrDefault());
             }
             else
