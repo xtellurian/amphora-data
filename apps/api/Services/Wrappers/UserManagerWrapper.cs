@@ -27,7 +27,8 @@ namespace Amphora.Api.Services.Wrappers
         public async Task<IdentityResult> DeleteAsync(IApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);
-            return await userManager.DeleteAsync(mapped);
+            var u = await userManager.FindByIdAsync(user.Id);
+            return await userManager.DeleteAsync(u);
         }
 
         public async Task<IApplicationUser> FindByNameAsync(string userName)

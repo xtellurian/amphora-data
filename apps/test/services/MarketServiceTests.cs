@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Basic;

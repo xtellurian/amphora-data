@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Amphora.Api.Models;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Users;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account.Manage
 {

@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -118,7 +119,7 @@ namespace Amphora.Tests.Integration
             var selfResponse = await client2.GetAsync("api/users/self");
             var selfContent = await selfResponse.Content.ReadAsStringAsync();
             selfResponse.EnsureSuccessStatusCode();
-            var self = JsonConvert.DeserializeObject<ApplicationUser>(selfContent);
+            var self = JsonConvert.DeserializeObject<ApplicationUserDto>(selfContent);
             Assert.Equal(org.OrganisationId, self.OrganisationId);
 
             await DestroyOrganisationAsync(client, org);

@@ -1,7 +1,6 @@
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Api.Options;
-using Amphora.Api.Services;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Wrappers;
 using Microsoft.AspNetCore.Hosting;

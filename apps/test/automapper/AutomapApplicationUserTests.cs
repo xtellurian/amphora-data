@@ -1,5 +1,6 @@
 using Amphora.Api;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Common.Contracts;
 using AutoMapper;
 using Xunit;
@@ -25,6 +26,13 @@ namespace Amphora.Tests.Unit
             var result = mapper.Map<TestApplicationUser>(appUser);
             Assert.NotNull(result);
             result = mapper.Map<TestApplicationUser>(appUser as IApplicationUser);
+            Assert.NotNull(result);
+        }
+        [Fact]
+        public void ConvertIApplicationUserToDTO()
+        {
+            var appUser = new ApplicationUser();
+            var result = mapper.Map<ApplicationUserDto>(appUser);
             Assert.NotNull(result);
         }
 

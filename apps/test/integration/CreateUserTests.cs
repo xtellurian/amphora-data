@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
@@ -27,7 +28,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var user = new ApplicationUser
+            var user = new ApplicationUserDto
             {
                 UserName = email,
                 Email = email,

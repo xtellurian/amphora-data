@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Api.Options;
 using Amphora.Common.Contracts;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,14 +17,17 @@ namespace Amphora.Api.Controllers
     {
         private readonly IUserService userService;
         private readonly IOptionsMonitor<CreateOptions> options;
+        private readonly IMapper mapper;
         private readonly ILogger<UsersController> logger;
 
         public UsersController(IUserService userService,
                                IOptionsMonitor<CreateOptions> options,
+                               IMapper mapper,
                                ILogger<UsersController> logger)
         {
             this.userService = userService;
             this.options = options;
+            this.mapper = mapper;
             this.logger = logger;
         }
 
@@ -34,11 +39,11 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound();
             }
-            return Ok(user as IApplicationUser);
+            return Ok(mapper.Map<ApplicationUserDto>(user)); 
         }
 
         [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser([FromBody] ApplicationUser user, string onboardingId)
+        public async Task<IActionResult> CreateUser([FromBody] ApplicationUserDto user, string onboardingId)
         {
             string password = System.Guid.NewGuid().ToString() + "!1A";
             if (Request.Headers.ContainsKey("Create"))

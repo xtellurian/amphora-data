@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores;
 using Amphora.Common.Contracts;
@@ -80,7 +81,7 @@ namespace Amphora.Tests.Unit.Authorization
             var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
             org = await orgStore.CreateAsync(org);
             var extendedOrg = await orgStore.ReadAsync<OrganisationExtendedModel>(org.Id, org.OrganisationId);
-            var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
+            var user = new ApplicationUserDto { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
             extendedOrg.AddOrUpdateMembership(user);
             await orgStore.UpdateAsync(extendedOrg);
 

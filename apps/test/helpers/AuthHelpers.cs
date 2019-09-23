@@ -1,9 +1,8 @@
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
-using Amphora.Common.Models;
+using Amphora.Api.Models.Users;
 using Amphora.Common.Models.Organisations;
 using Newtonsoft.Json;
 

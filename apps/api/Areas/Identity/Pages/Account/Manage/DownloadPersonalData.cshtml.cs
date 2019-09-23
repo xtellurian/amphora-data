@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Amphora.Api.Models;
+using Amphora.Api.Models.Users;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account.Manage
 {

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Contracts;
+using Amphora.Api.Models.Users;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {
