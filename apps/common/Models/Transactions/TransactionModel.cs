@@ -14,6 +14,7 @@ namespace Amphora.Common.Models.Transactions
         {
             this.UserId = user.Id;
             this.CreatedBy = user.Id;
+            this.CreatedDate = System.DateTime.UtcNow;
             this.OrganisationId = user.OrganisationId;
             this.AmphoraId = amphora.AmphoraId;
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
