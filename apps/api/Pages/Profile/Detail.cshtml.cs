@@ -45,6 +45,7 @@ namespace Amphora.Api.Pages.Profile
             {
                 var lookupUser = await userManager.FindByNameAsync(userName);
                 IsSelf = lookupUser.Id == user.Id;
+                this.AppUser = lookupUser;
             }
             if (AppUser == null)
             {

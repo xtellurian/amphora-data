@@ -109,7 +109,12 @@
             <ul class="list-group">
             @foreach (var a in Model.HasPurchased)
             {
-                <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.UserName"></i> @a.UserName </li>
+                var d = new Dictionary<string, string>{ {"userName", a.UserName} };
+                
+                <li> 
+                    <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.UserName"></i> 
+                    <a asp-page="/Profile/Detail" asp-all-route-data=@d > @a.UserName </a>
+                </li>
             }
             </ul>
         </div>
