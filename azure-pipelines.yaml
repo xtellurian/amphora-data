@@ -35,7 +35,7 @@ stages:
     - template: pipeline/deploymentjob.yaml
       parameters:
         jobName: demo_deploymentjob
-        environment: demo
+        environment: develop
 
 - stage: promote10
   displayName: Promote in Demo Envionment (10%)
