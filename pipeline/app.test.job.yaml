@@ -28,7 +28,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        pulumi stack select $STACK
+        . pulumi-stack.sh
         export kvUri=$(pulumi stack output kvUri)
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$kvUri"
@@ -64,7 +64,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        pulumi stack select $STACK
+        . pulumi-stack.sh
         export kvUri=$(pulumi stack output kvUri)
         popd
         pushd apps

@@ -22,19 +22,7 @@ npm run lint
 
 echo build reason is $BUILD_REASON
 
-if [ $BUILD_REASON == "PullRequest" ] ; then
-  echo "Source Branch (Pull Request) is $SYSTEM_PULLREQUEST_SOURCEBRANCH"
-  if [ $SYSTEM_PULLREQUEST_SOURCEBRANCH == "refs/heads/develop" ]; then
-    STACK="develop"
-  elif [ $SYSTEM_PULLREQUEST_SOURCEBRANCH == "refs/heads/master" ]; then
-    STACK="master"
-  fi
-  echo "Selected Stack: $STACK"
-  pulumi stack select $STACK
-fi
-
-echo "Selecting stack $STACK"
-pulumi stack select $STACK
+. pulumi-stack.sh
 
 pulumi up --yes
 
@@ -49,7 +37,7 @@ echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
 echo "##vso[task.setvariable variable=kvName;isOutput=true]$kvName"
 echo "##vso[task.setvariable variable=appUrl;isOutput=true]$appUrl" 
 echo "##vso[task.setvariable variable=acrName;isOutput=true]$acrName" 
-echo "##vso[task.setvariable variable=pulumiStack;isOutput=true]$STACK" 
+echo "##vso[task.setvariable variable=stack;isOutput=true]$STACK" 
 echo "##vso[task.setvariable variable=webAppResourceId;isOutput=true]$webAppResourceId" 
 
 popd

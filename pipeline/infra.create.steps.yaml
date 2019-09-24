@@ -24,6 +24,6 @@ steps:
   env: 
     kvUri: $(pulumi.kvUri)
     kvName: $(pulumi.kvName)
-    pulumiStack: $(pulumi.pulumiStack)
+    pulumiStack: $(pulumi.stack)
     appUrl: $(pulumi.appUrl)
     webAppResourceId: $(pulumi.webAppResourceId)
