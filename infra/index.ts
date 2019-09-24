@@ -38,7 +38,7 @@ export let instrumentatonKey = result.then((r) =>
 );
 
 export let appUrl = result.then((r) =>
-  pulumi.interpolate`https://${r.application.appSvc.defaultSiteHostname}`,
+  pulumi.interpolate`https://${r.application.appSvc.appSvc.defaultSiteHostname}`,
 );
 
 export let kvUri = result.then((r) =>
@@ -49,7 +49,7 @@ export let kvName = result.then((r) =>
 );
 
 export let appSvcSku = result.then((r) =>
-  r.application.plan.sku,
+  r.application.appSvc.plan.sku,
 );
 
 export let tsiFqdn = result.then((r) =>
@@ -65,5 +65,5 @@ export let acrName = result.then((r) =>
 );
 
 export let webAppResourceId = result.then((r) =>
-  r.application.appSvc.id,
+  r.application.appSvc.appSvc.id,
 );
