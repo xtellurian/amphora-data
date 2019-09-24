@@ -4,7 +4,7 @@ parameters:
   environment: ''
 
 jobs:
-- deployment: ${{ parameters.jobName }}-promote
+- deployment: ${{ parameters.jobName }}
   displayName: Promote to 50% - ${{ parameters.jobName }}
   environment: ${{ parameters.environment }}
   pool:
