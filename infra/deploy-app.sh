@@ -34,5 +34,12 @@ echo "Setting CI for web app"
 # echo "Webhook is $WEBHOOKURI"
 # az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
 
-# this can set a slot, and then we don't need the webhook
-az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID
+# deploy to staging 
+SLOTS=$(az webapp deployment slot list --ids $WEBAPPID --query "[].name")
+if echo "$SLOTS" | grep -q "staging"; then
+    echo "Deploying to staging slot"
+    az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID --slot staging
+else
+    echo "Deploying to production Slot"
+    az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID
+fi

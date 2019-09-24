@@ -12,8 +12,26 @@ trigger:
 
 
 stages:
+
+# moved this upward for testing
+- stage: deploy
+  displayName: Deploy to Demo Envionment 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  variables: 
+    stack: demo
+  jobs:
+    - template: pipeline/deploymentjob.yaml
+      parameters:
+        jobName: demo_deploymentjob
+        environment: demo
+    - template: pipeline/app.promote.deploymentjob.yaml
+      parameters:
+        jobName: demo_promotejob
+        environment: demo
+
 - stage: branch
   displayName: Branch Stage
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # remove me before PR
   variables:
     stack: $(Build.SourceBranchName)
   jobs:
@@ -26,14 +44,3 @@ stages:
   - template: pipeline/app.deploy.job.yaml
     parameters:
       dependsOn: apps
-
-- stage: deploy
-  displayName: Deploy to Demo Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  variables: 
-    stack: demo
-  jobs:
-    - template: pipeline/deploymentjob.yaml
-      parameters:
-        jobName: demo_infrastructure
-        environment: demo

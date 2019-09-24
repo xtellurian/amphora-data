@@ -1,0 +1,14 @@
+steps:
+- script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+  displayName: Az Login
+  env: 
+    NAME: $(name)
+    PASSWORD: $(password)
+    TENANT: $(tenant)
+
+- script: |
+    az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $WEBAPPID
+  displayName: Build and Push Docker Image
+  env:
+    WEBAPPID: $(pulumi.webAppResourceId)
+    STAGING_PERCENT: $(percent)

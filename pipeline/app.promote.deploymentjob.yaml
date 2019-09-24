@@ -1,0 +1,26 @@
+
+parameters:
+  jobName: 'promote'
+  environment: ''
+
+jobs:
+- deployment: ${{ parameters.jobName }}-promote
+  displayName: Promote to 50% - ${{ parameters.jobName }}
+  environment: ${{ parameters.environment }}
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  variables:
+  - group: AzureDeploySP
+  - percent: 50
+
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self  # deployment job doesn't check it out
+        - script: echo webappid - $(pulumi.webAppResourceId)
+        - script: echo percent - $(percent)
+        - template: app.promote.steps.yaml
+
+
