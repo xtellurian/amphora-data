@@ -1,24 +1,23 @@
 
 parameters:
-  dependsOn: ''
+  percent: "50"
   jobName: 'promote'
   environment: ''
 
 jobs:
 - deployment: ${{ parameters.jobName }}
   displayName: Promote to 50% - ${{ parameters.jobName }}
-  dependsOn: 
-    - ${{ parameters.dependsOn }}
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'
 
   variables:
   - group: AzureDeploySP
+  - group: Pulumi xtellurian
+  - name: stack
+    value: ${{ parameters.environment }}
   - name: percent
-    value: "50"
-  - name: pulumi.webAppResourceId
-    value: $[ dependencies.${{ parameters.dependsOn }}.outputs['pulumi.webAppResourceId'] ]
+    value: ${{ parameters.percent }}
 
   strategy:
     runOnce:

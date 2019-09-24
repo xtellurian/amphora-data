@@ -7,7 +7,25 @@ steps:
     TENANT: $(tenant)
 
 - script: |
+    chmod +x ./infra/*.sh
+    ./infra/setup.sh
+  displayName: 'Install pulumi & run pulumi up'
+  name: pulumi
+  env:
+    PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+    ARM_CLIENT_ID: $(appId)
+    ARM_CLIENT_SECRET: $(password)
+    ARM_SUBSCRIPTION_ID: $(subscription)
+    ARM_TENANT_ID: $(tenant)
+    STACK: $(stack) 
+- script: |
+    # Add the pulumi CLI to the PATH
+    export PATH=$PATH:$HOME/.pulumi/bin
+    pushd infra
+    pulumi stack select $(stack)
+    webAppId=$(pulumi stack output webAppResourceId)
     az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $WEBAPPID
+    popd
   displayName: Traffic Routing to staging set to $(percent)%
   env:
     WEBAPPID: $(pulumi.webAppResourceId)
