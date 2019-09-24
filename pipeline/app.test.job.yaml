@@ -26,6 +26,9 @@ jobs:
   steps:
     - template: install.pulumi.steps.yaml
     - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
+        pushd infra
+        export kvUri=$(pulumi stack output kvUri)
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$(kvUri)"
         if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
@@ -34,6 +37,8 @@ jobs:
                 exit 1
           fi
       displayName: Check params set correctly
+      env:
+        STACK: $(stack)
 
     - task: UseDotNet@2
       displayName: 'Use .NET Core sdk v 2.2.300'
@@ -56,11 +61,13 @@ jobs:
 
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
+        pushd infra
+        export kvUri=$(pulumi stack output kvUri)
+        popd
+        pushd apps
         dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
-      workingDirectory: apps
       displayName: dotnet test
       env:
-        kvUri: $(kvUri)
         PersistentStores: $(PersistentStores)
         disableKv: $(disableKv)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
