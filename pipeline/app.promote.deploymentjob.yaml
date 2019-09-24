@@ -1,11 +1,14 @@
 
 parameters:
+  dependsOn: ''
   jobName: 'promote'
   environment: ''
 
 jobs:
 - deployment: ${{ parameters.jobName }}
   displayName: Promote to 50% - ${{ parameters.jobName }}
+  dependsOn: 
+    - ${{ parameters.dependsOn }}
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'

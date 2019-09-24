@@ -26,6 +26,7 @@ stages:
         environment: demo
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
+        dependsOn: demo_deploymentjob
         jobName: demo_promotejob
         environment: demo
 
