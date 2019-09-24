@@ -31,8 +31,8 @@ jobs:
         pulumi stack select $STACK
         export kvUri=$(pulumi stack output kvUri)
         echo PersistentStores - $(PersistentStores)
-        echo kvUri - "$(kvUri)"
-        if [ ! -z $(PersistentStores) ] && [ -z $(kvUri) ] ;
+        echo kvUri - "$kvUri"
+        if [ ! -z $(PersistentStores) ] && [ -z $kvUri ] ;
           then
                 echo "PersistentStores is set, with no kvUri. Exiting with error"
                 exit 1
