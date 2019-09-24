@@ -1,0 +1,14 @@
+
+steps:
+- script: |
+    chmod +x ./infra/*.sh
+    ./infra/setup.sh
+  displayName: 'Install pulumi'
+  name: pulumi
+  env:
+    PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+    ARM_CLIENT_ID: $(appId)
+    ARM_CLIENT_SECRET: $(password)
+    ARM_SUBSCRIPTION_ID: $(subscription)
+    ARM_TENANT_ID: $(tenant)
+    STACK: $(stack) 

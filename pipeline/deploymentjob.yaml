@@ -32,3 +32,4 @@ jobs:
             echo Tagging Branch with $TAG
             git tag -a $TAG -m "$(Build.Reason) requested for $(Build.RequestedFor)"
             git push origin $TAG
+          displayName: Tag the source repository

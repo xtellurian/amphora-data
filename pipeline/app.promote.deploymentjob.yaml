@@ -6,7 +6,7 @@ parameters:
 
 jobs:
 - deployment: ${{ parameters.jobName }}
-  displayName: Promote to 50% - ${{ parameters.jobName }}
+  displayName: ${{ parameters.jobName }} - to ${{ parameters.percent }}%
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'
@@ -24,6 +24,32 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
-        - template: app.promote.steps.yaml
+        - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+          displayName: Az Login
+          env: 
+            NAME: $(name)
+            PASSWORD: $(password)
+            TENANT: $(tenant)
+
+        - template: install.pulumi.steps.yaml
+
+        - script: |
+            # Add the pulumi CLI to the PATH
+            set -e
+            export PATH=$PATH:$HOME/.pulumi/bin
+            pushd infra
+            pulumi stack select $STACK
+            webAppId=$(pulumi stack output webAppResourceId)
+            az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $webAppId
+            popd
+          displayName: Traffic Routing to staging set to ${{ parameters.percent }}%
+          env:
+            PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+            ARM_CLIENT_ID: $(appId)
+            ARM_CLIENT_SECRET: $(password)
+            ARM_SUBSCRIPTION_ID: $(subscription)
+            ARM_TENANT_ID: $(tenant)
+            STACK: $(stack) 
+            STAGING_PERCENT: $(percent)
 
 

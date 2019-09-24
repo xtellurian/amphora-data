@@ -18,9 +18,9 @@ variables:
 - group: AzureDeploySP
 
 steps:
+- template: install.pulumi.steps.yaml
 - script: |
-    chmod +x ./infra/*.sh
-    . infra/setup.sh
+    export PATH=$PATH:$HOME/.pulumi/bin
     pushd infra
     pulumi destroy --stack master -y
     pulumi destroy --stack develop -y

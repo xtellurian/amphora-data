@@ -19,12 +19,12 @@ jobs:
 
   variables:
     - group: AzureDeploySP
+    - group: Pulumi xtellurian
     - name: buildConfiguration
       value: 'Release'
-    - name: kvUri
-      value: $[ dependencies.infrastructure.outputs['pulumi.kvUri'] ]
 
   steps:
+    - template: install.pulumi.steps.yaml
     - script: |
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$(kvUri)"
@@ -54,13 +54,16 @@ jobs:
       workingDirectory: apps
       displayName: 'dotnet build $(buildConfiguration)'
 
-    - script: dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
+    - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
+        dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
       workingDirectory: apps
       displayName: dotnet test
       env:
         kvUri: $(kvUri)
         PersistentStores: $(PersistentStores)
         disableKv: $(disableKv)
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
     - task: PublishTestResults@2
       condition: always() 
