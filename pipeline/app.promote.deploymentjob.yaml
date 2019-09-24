@@ -17,6 +17,8 @@ jobs:
   - group: AzureDeploySP
   - name: percent
     value: "50"
+  - name: pulumi.webAppResourceId
+    value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
 
   strategy:
     runOnce:

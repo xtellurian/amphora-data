@@ -8,7 +8,7 @@ steps:
 
 - script: |
     az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $WEBAPPID
-  displayName: Build and Push Docker Image
+  displayName: Traffic Routing to staging set to $(percent)%
   env:
     WEBAPPID: $(pulumi.webAppResourceId)
     STAGING_PERCENT: $(percent)
