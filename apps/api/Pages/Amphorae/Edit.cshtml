@@ -1,0 +1,55 @@
+@page
+@model Amphora.Api.Pages.Amphorae.EditModel
+
+@{
+    ViewData["Title"] = "Edit " + Model.Amphora.Name;
+}
+
+<div class="container">
+    <div class="row mt-2">
+        <div class="col">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="AmphoraDto.Name" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Name" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AmphoraDto.Description" class="control-label"></label>
+                    <textarea asp-for="AmphoraDto.Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="AmphoraDto.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AmphoraDto.Price" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Price" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="body ui-widget">
+                        <input id="autoComplete" type="text" tabindex="1">
+                    </div>
+                    <div class="selection"></div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="AmphoraDto.Lat" class="control-label"></label>
+                            <input id="lat" asp-for="AmphoraDto.Lat" class="form-control" />
+                            <span asp-validation-for="AmphoraDto.Lat" class="text-danger"></span>
+                        </div>
+                        <div class="col">
+                            <label asp-for="AmphoraDto.Lon" class="control-label"></label>
+                            <input id="lon" asp-for="AmphoraDto.Lon" class="form-control" />
+                            <span asp-validation-for="AmphoraDto.Lon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+            <a asp-page="./Delete" asp-route-id="@Model.Amphora.AmphoraId"><button class="btn btn-danger">Delete</button></a>
+        </div>
+    </div>
+
+</div>

@@ -79,7 +79,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         }
 
-        public void OnGet( string returnUrl = null)
+        public void OnGet(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
         }
@@ -103,6 +103,8 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                 {
                     logger.LogInformation("User created a new account with password.");
                     await SendConfirmationEmailAsync(result.Entity);
+                    
+                    await signInManager.SignInAsync(result.Entity, isPersistent: false);
                     if (string.IsNullOrEmpty(result.Entity.OrganisationId))
                     {
                         return RedirectToPage("/Organisations/Create");
@@ -133,8 +135,6 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
             await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            await signInManager.SignInAsync(user, isPersistent: false);
         }
     }
 }

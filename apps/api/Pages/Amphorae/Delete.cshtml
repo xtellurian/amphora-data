@@ -1,0 +1,13 @@
+@page
+@model Amphora.Api.Pages.Amphorae.DeleteModel
+@{
+    ViewData["Title"] = "Delete " + Model.Amphora.Name;
+}
+
+<h2>Are you sure you want to delete @Model.Amphora.Name ? </h2>
+
+<form method="post">
+    <div class="form-group">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+    </div>
+</form>

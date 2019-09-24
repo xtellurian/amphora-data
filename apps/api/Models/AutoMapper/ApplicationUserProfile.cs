@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using Amphora.Api.Models.Users;
 using Amphora.Common.Contracts;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity.DocumentDB;
 
 namespace Amphora.Api.Models.AutoMapper
 {
@@ -14,8 +16,8 @@ namespace Amphora.Api.Models.AutoMapper
 
             CreateMap<IApplicationUser, ApplicationUserDto>();
             CreateMap<IApplicationUser, TestApplicationUser>()
-            .ForMember(p => p.NormalizedUserName, o => o.Ignore())
-            .ForMember(p => p.NormalizedEmail, o => o.Ignore())
+            .ForMember(p => p.NormalizedUserName, o => o.MapFrom(src => src.UserName.ToUpper()))
+            .ForMember(p => p.NormalizedEmail, o => o.MapFrom(src => src.Email.ToUpper()))
             .ForMember(p => p.EmailConfirmed, o => o.Ignore())
             .ForMember(p => p.PasswordHash, o => o.Ignore())
             .ForMember(p => p.SecurityStamp, o => o.Ignore())
@@ -39,11 +41,11 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(p => p.LockoutEndDateUtc, o => o.Ignore())
             .ForMember(p => p.LockoutEnabled, o => o.Ignore())
             .ForMember(p => p.AccessFailedCount, o => o.Ignore())
-            .ForMember(p => p.Roles, o => o.Ignore())
+            .ForMember(p => p.Roles, o => o.MapFrom(src => new List<string>()))
             .ForMember(p => p.PasswordHash, o => o.Ignore())
             .ForMember(p => p.Logins, o => o.Ignore())
             .ForMember(p => p.Tokens, o => o.Ignore())
-            .ForMember(p => p.Claims, o => o.Ignore())
+            .ForMember(p => p.Claims, o => o.MapFrom(src => new List<IdentityClaim>()))
             .ForMember(p => p.ResourceId, o => o.Ignore())
             .ForMember(p => p.SelfLink, o => o.Ignore())
             .ForMember(p => p.AltLink, o => o.Ignore())

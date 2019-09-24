@@ -43,8 +43,15 @@ namespace Amphora.Api.Services.Wrappers
 
         public async Task SignInAsync(IApplicationUser user, bool isPersistent, string authenticationMethod = null)
         {
-            var mapped = mapper.Map<T>(user);
-            await signInManager.SignInAsync(mapped, isPersistent, authenticationMethod);
+            if(user is T)
+            {
+                await signInManager.SignInAsync(user as T, isPersistent, authenticationMethod);
+            }
+            else
+            {
+                var mapped = mapper.Map<T>(user);
+                await signInManager.SignInAsync(mapped, isPersistent, authenticationMethod);
+            }
         }
 
         public async Task SignOutAsync()

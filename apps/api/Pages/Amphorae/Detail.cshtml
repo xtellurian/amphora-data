@@ -54,6 +54,7 @@
                         var buttonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
                     }
+                    <a asp-page="./Edit" asp-route-id="@Model.Amphora.AmphoraId"><i class="fas fa-edit ml-2"></i></a>
                     <a asp-page="./Agreement" asp-route-id="@Model.Amphora.AmphoraId"><button class="btn btn-success" @buttonMode>Buy</button></a>
                 </div>
                     <div class="card-body">

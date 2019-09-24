@@ -21,9 +21,8 @@ using TimeSeriesInsightsClient.Queries;
 namespace Amphora.Api.Pages.Amphorae
 {
     [Authorize]
-    public class DetailModel : PageModel
+    public class DetailModel : AmphoraPageModel
     {
-        private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
@@ -36,9 +35,8 @@ namespace Amphora.Api.Pages.Amphorae
             IUserService userService,
             IPermissionService permissionService,
             FeatureFlagService featureFlags,
-            ITsiService tsiService)
+            ITsiService tsiService) : base(amphoraeService)
         {
-            this.amphoraeService = amphoraeService;
             this.blobStore = blobStore;
             this.userService = userService;
             this.permissionService = permissionService;
@@ -46,40 +44,30 @@ namespace Amphora.Api.Pages.Amphorae
             this.tsiService = tsiService;
         }
 
-        [BindProperty]
-        public AmphoraExtendedModel Amphora { get; set; }
         public IEnumerable<string> Names { get; set; }
         public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse { get; set; }
         public bool CanEditPermissions { get; set; }
+        public bool CanEditDetails { get; private set; }
         public IEnumerable<IApplicationUserReference> HasPurchased { get; private set; }
         public bool CanBuy { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string id)
+        public override async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) return RedirectToPage("./Index");
-            var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var response = await base.OnGetAsync(id);
             var user = await userService.UserManager.GetUserAsync(User);
-            if (result.WasForbidden)
+            if (Amphora != null)
             {
-                return RedirectToPage("./Forbidden");
-            }
-            else if (result.Succeeded)
-            {
-                Amphora = result.Entity;
-                if (Amphora == null)
-                {
-                    return RedirectToPage("./Index");
-                }
-
                 Names = await blobStore.ListBlobsAsync(Amphora);
                 Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 QueryResponse = await GetQueryResponse();
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
+                // can edit permissions implies can edit details - else, check
+                CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Update);
 
                 var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
                 this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();
-                if(this.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
+                if (this.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
                 {
                     // user has already purchased the amphora
                     this.CanBuy = false;
@@ -88,13 +76,9 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     this.CanBuy = true;
                 }
+            }
 
-                return Page();
-            }
-            else
-            {
-                return RedirectToPage("./Index");
-            }
+            return response;
         }
 
         public async Task<IActionResult> OnPostAsync(string id, List<IFormFile> files)
@@ -108,7 +92,7 @@ namespace Amphora.Api.Pages.Amphorae
 
             var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
             var user = await userService.UserManager.GetUserAsync(User);
-            
+
             if (result.Succeeded)
             {
                 if (result.Entity == null) return RedirectToPage("./Index");

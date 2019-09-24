@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -31,24 +32,8 @@ namespace Amphora.Api.Pages.Amphorae
             this.mapper = mapper;
         }
 
-        public class InputModel
-        {
-            [Required]
-            public string Name { get; set; }
-            [Required]
-            [DataType(DataType.MultilineText)]
-            public string Description { get; set; }
-            [Required]
-            [DataType(DataType.Currency)]
-            public double Price { get; set; }
-
-            [Display(Name = "Latitude")]
-            public double? Lat { get; set; }
-            [Display(Name = "Longitude")]
-            public double? Lon { get; set; }
-        }
         [BindProperty]
-        public InputModel Input { get; set; }
+        public AmphoraDto Input { get; set; }
         public string Token { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
