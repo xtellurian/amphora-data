@@ -18,7 +18,7 @@ jobs:
   - name: percent
     value: "50"
   - name: pulumi.webAppResourceId
-    value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+    value: $[ dependencies.${{ parameters.dependsOn }}.outputs['pulumi.webAppResourceId'] ]
 
   strategy:
     runOnce:
