@@ -12,7 +12,8 @@ jobs:
 
   variables:
   - group: AzureDeploySP
-  - percent: 50
+  - name: percent
+    value: "50"
 
   strategy:
     runOnce:
