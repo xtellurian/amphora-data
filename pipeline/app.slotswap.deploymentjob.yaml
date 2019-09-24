@@ -6,7 +6,7 @@ parameters:
 
 jobs:
 - deployment: ${{ parameters.jobName }}
-  displayName: Promote to 50% - ${{ parameters.jobName }}
+  displayName: Swap Slots- ${{ parameters.jobName }}
   environment: ${{ parameters.environment }}
   dependsOn: ${{ parameters.dependsOn }}
   pool:
