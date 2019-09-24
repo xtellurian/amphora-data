@@ -13,20 +13,20 @@ trigger:
 
 stages:
 
-# - stage: branch
-#   displayName: Branch Stage
-#   variables:
-#     stack: $(Build.SourceBranchName)
-#   jobs:
-#   - template: pipeline/infra.create.job.yaml
-#     parameters:
-#       jobName: infrastructure
-#   - template: pipeline/app.test.job.yaml
-#     parameters:
-#       jobName: apps
-#   - template: pipeline/app.deploy.job.yaml
-#     parameters:
-#       dependsOn: apps
+- stage: branch
+  displayName: Branch Stage
+  variables:
+    stack: $(Build.SourceBranchName)
+  jobs:
+  - template: pipeline/infra.create.job.yaml
+    parameters:
+      jobName: infrastructure
+  - template: pipeline/app.test.job.yaml
+    parameters:
+      jobName: apps
+  - template: pipeline/app.deploy.job.yaml
+    parameters:
+      dependsOn: apps
 
 - stage: deploy
   displayName: Deploy to Demo Envionment 
@@ -35,30 +35,37 @@ stages:
     - template: pipeline/deploymentjob.yaml
       parameters:
         jobName: demo_deploymentjob
-        environment: develop
+        environment: demo
 
-- stage: promote10
+- stage: promote
   displayName: Promote in Demo Envionment (10%)
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   jobs:
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         jobName: demo_promotejob_10
-        environment: develop
+        environment: demo
         percent: "10"
+    - job: delay1
+      displayName: Delay
+      steps:
+      - task: Delay@1
+        inputs:
+          delayForMinutes: '5' 
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         jobName: demo_promotejob_50
-        environment: develop
+        environment: demo
         percent: "50"
-    
-
-- stage: swapslots
-  displayName: Swap Slots in Demo Environment
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
-  jobs:
-    - template: pipeline/app.promote.deploymentjob.yaml
+    - job: delay2
+      displayName: Delay
+      steps:
+      - task: Delay@1
+        inputs:
+          delayForMinutes: '5' 
+    - template: pipeline/app.slotswap.deploymentjob.yaml
       parameters:
-        jobName: demo_promotejob
-        environment: develop
-        percent: "50"
+        jobName: demo_swapslots
+        environment: demo
+
+    

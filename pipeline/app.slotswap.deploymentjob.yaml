@@ -29,8 +29,8 @@ jobs:
             pushd infra
             pulumi stack select $STACK
             webAppId=$(pulumi stack output webAppResourceId)
-            # az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $webAppId
             az webapp deployment slot swap  --ids $webAppId --slot staging --target-slot production
+            az webapp traffic-routing set --distribution staging=0 --ids $webAppId
             popd
           displayName: Swap Staging and Production
           env:
