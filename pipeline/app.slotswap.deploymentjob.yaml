@@ -2,11 +2,13 @@
 parameters:
   jobName: 'swapslots'
   environment: ''
+  dependsOn: ''
 
 jobs:
 - deployment: ${{ parameters.jobName }}
   displayName: Promote to 50% - ${{ parameters.jobName }}
   environment: ${{ parameters.environment }}
+  dependsOn: ${{ parameters.dependsOn }}
   pool:
     vmImage: 'Ubuntu-16.04'
 

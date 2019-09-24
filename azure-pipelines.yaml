@@ -41,25 +41,33 @@ stages:
   displayName: Promote in Demo Envionment (10%)
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   jobs:
+    - job: init
+      steps:
+      - script: echo "Promoting in Demo"
+
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
+        dependsOn: init
         jobName: demo_promotejob_10
         environment: demo
         percent: "10"
     - job: delay1
       displayName: Delay
       pool: server
+      dependsOn: demo_promotejob_10
       steps:
       - task: Delay@1
         inputs:
           delayForMinutes: '5' 
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
+        dependsOn: delay1
         jobName: demo_promotejob_50
         environment: demo
         percent: "50"
     - job: delay2
       displayName: Delay
+      dependsOn: demo_promotejob_50
       pool: server
       steps:
       - task: Delay@1
@@ -67,6 +75,7 @@ stages:
           delayForMinutes: '5' 
     - template: pipeline/app.slotswap.deploymentjob.yaml
       parameters:
+        dependsOn: delay2
         jobName: demo_swapslots
         environment: demo
 

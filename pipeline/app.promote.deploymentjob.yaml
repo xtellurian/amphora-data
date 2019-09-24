@@ -1,5 +1,6 @@
 
 parameters:
+  dependsOn: ''
   percent: "50"
   jobName: 'promote'
   environment: ''
@@ -8,6 +9,7 @@ jobs:
 - deployment: ${{ parameters.jobName }}
   displayName: ${{ parameters.jobName }} - to ${{ parameters.percent }}%
   environment: ${{ parameters.environment }}
+  dependsOn: ${{ parameters.dependsOn }}
   pool:
     vmImage: 'Ubuntu-16.04'
 
