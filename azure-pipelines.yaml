@@ -48,6 +48,7 @@ stages:
         percent: "10"
     - job: delay1
       displayName: Delay
+      pool: server
       steps:
       - task: Delay@1
         inputs:
@@ -59,6 +60,7 @@ stages:
         percent: "50"
     - job: delay2
       displayName: Delay
+      pool: server
       steps:
       - task: Delay@1
         inputs:
