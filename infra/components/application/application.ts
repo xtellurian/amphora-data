@@ -146,6 +146,7 @@ export class Application extends pulumi.ComponentResource
             }`,
           DOCKER_REGISTRY_SERVER_USERNAME: this.acr.adminUsername,
           Registration__Token: "AmphoraData",
+          STACK: pulumi.getStack(),
           WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
           WEBSITES_PORT: 80,
           kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
