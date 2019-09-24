@@ -30,9 +30,6 @@ docker push $IMAGE:latest
 docker push $IMAGE:$GITHASH
 docker push $IMAGE:$BUILD 
 echo "Setting CI for web app"
-# WEBHOOKURI=$(az webapp deployment container config --enable-cd true --ids "$WEBAPPID" --output tsv --query CI_CD_URL)
-# echo "Webhook is $WEBHOOKURI"
-# az acr webhook create -n WebAppCD -r $ACR_NAME --scope webapp:latest --actions push delete --uri $WEBHOOKURI
 
 # deploy to staging 
 SLOTS=$(az webapp deployment slot list --ids $WEBAPPID --query "[].name")
