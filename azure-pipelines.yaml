@@ -35,7 +35,7 @@ stages:
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         jobName: demo_promotejob
-        environment: demo
+        environment: develop
 
 - stage: branch
   displayName: Branch Stage
