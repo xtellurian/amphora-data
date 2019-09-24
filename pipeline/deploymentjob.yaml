@@ -13,6 +13,8 @@ jobs:
   variables:
   - group: AzureDeploySP
   - group: Pulumi xtellurian
+  - name: stack
+    value: ${{ parameters.environment }}
 
   strategy:
     runOnce:

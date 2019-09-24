@@ -13,42 +13,52 @@ trigger:
 
 stages:
 
-# moved this upward for testing
-# - stage: deploy
-#   displayName: Deploy to Demo Envionment 
-#   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
-#   variables: 
-#     stack: demo
+# - stage: branch
+#   displayName: Branch Stage
+#   variables:
+#     stack: $(Build.SourceBranchName)
 #   jobs:
-#     - template: pipeline/deploymentjob.yaml
-#       parameters:
-#         jobName: demo_deploymentjob
-#         environment: demo
+#   - template: pipeline/infra.create.job.yaml
+#     parameters:
+#       jobName: infrastructure
+#   - template: pipeline/app.test.job.yaml
+#     parameters:
+#       jobName: apps
+#   - template: pipeline/app.deploy.job.yaml
+#     parameters:
+#       dependsOn: apps
 
-# moved this upward for testing
-- stage: promote
+- stage: deploy
   displayName: Deploy to Demo Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
-  variables: 
-    stack: demo
+  jobs:
+    - template: pipeline/deploymentjob.yaml
+      parameters:
+        jobName: demo_deploymentjob
+        environment: demo
+
+- stage: promote10
+  displayName: Promote in Demo Envionment (10%)
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   jobs:
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         jobName: demo_promotejob
         environment: develop
+        percent: "10"
+    - template: pipeline/app.promote.deploymentjob.yaml
+      parameters:
+        jobName: demo_promotejob
+        environment: develop
+        percent: "50"
+    
 
-- stage: branch
-  displayName: Branch Stage
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # remove me before PR
-  variables:
-    stack: $(Build.SourceBranchName)
+- stage: swapslots
+  displayName: Swap Slots in Demo Environment
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   jobs:
-  - template: pipeline/infra.create.job.yaml
-    parameters:
-      jobName: infrastructure
-  - template: pipeline/app.test.job.yaml
-    parameters:
-      jobName: apps
-  - template: pipeline/app.deploy.job.yaml
-    parameters:
-      dependsOn: apps
+    - template: pipeline/app.promote.deploymentjob.yaml
+      parameters:
+        jobName: demo_promotejob
+        environment: develop
+        percent: "50"
