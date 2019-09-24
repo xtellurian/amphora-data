@@ -26,7 +26,7 @@ steps:
     pulumi destroy --stack develop -y
     popd
   displayName: 'Destroy master and develop stack'
-  name: pulumi
+  name: destroy
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
     ARM_CLIENT_ID: $(appId)
