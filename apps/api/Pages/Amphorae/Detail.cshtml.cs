@@ -56,6 +56,13 @@ namespace Amphora.Api.Pages.Amphorae
         public override async Task<IActionResult> OnGetAsync(string id)
         {
             var response = await base.OnGetAsync(id);
+            await SetPagePropertiesAsync();
+
+            return response;
+        }
+
+        private async Task SetPagePropertiesAsync()
+        {
             var user = await userService.UserManager.GetUserAsync(User);
             if (Amphora != null)
             {
@@ -79,8 +86,6 @@ namespace Amphora.Api.Pages.Amphorae
                     this.CanBuy = true;
                 }
             }
-
-            return response;
         }
 
         public async Task<IActionResult> OnPostAsync(string id, List<IFormFile> files)
@@ -118,8 +123,7 @@ namespace Amphora.Api.Pages.Amphorae
                     return RedirectToPage("./Forbidden");
                 }
                 this.Amphora = result.Entity;
-                this.Names = await blobStore.ListBlobsAsync(result.Entity);
-                this.Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
+                await SetPagePropertiesAsync();
                 return Page();
             }
             else if (result.WasForbidden)
