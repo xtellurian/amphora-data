@@ -80,7 +80,7 @@ export class AppSvc extends pulumi.ComponentResource {
         };
         const siteConfig = {
             alwaysOn: true,
-            linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`,
+            // linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`, // causes latest to be deployed to prod
         };
 
         this.appSvc = new azure.appservice.AppService(
@@ -99,12 +99,26 @@ export class AppSvc extends pulumi.ComponentResource {
                 parent: this.plan,
             },
         );
+        // need second for deep copying reasons
+        const appSettings2 = {
+            APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey,
+            DOCKER_REGISTRY_SERVER_PASSWORD: acr.adminPassword,
+            DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
+                acr.loginServer
+                }`,
+            DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
+            Registration__Token: "AmphoraData",
+            STACK: pulumi.getStack() + "(staging)",
+            WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
+            WEBSITES_PORT: 80,
+            kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
+            kvUri: kv.vaultUri,
+        };
         if (config.require("appSvcPlanTier") === "Standard") {
-            appSettings.STACK += "(staging)";
             this.appSvcStaging = new azure.appservice.Slot("stagingSlot", {
                 appServiceName: this.appSvc.name,
                 appServicePlanId: this.plan.id,
-                appSettings,
+                appSettings: appSettings2,
                 httpsOnly: true,
                 identity: { type: "SystemAssigned" },
                 location: rg.location,
