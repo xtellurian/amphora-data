@@ -214,8 +214,8 @@ export class State extends pulumi.ComponentResource {
       resourceGroupName: rg.name,
       send: true,
     }, {
-        parent: this.eh,
-      });
+      parent: this.eh,
+    });
 
     this.storeInVault("TsiEventHubConnectionString", "TsiEventHub--ConnectionString",
       ehAuthRule.primaryConnectionString);
@@ -246,7 +246,7 @@ export class State extends pulumi.ComponentResource {
     const sql = new azure.cosmosdb.SqlDatabase("cosmosSql", {
       accountName: this.cosmosDb.name,
       resourceGroupName: rg.name,
-  });
+    });
 
     this.storeInVault("cosmosAccountPrimaryKey", "Cosmos--PrimaryKey", this.cosmosDb.primaryMasterKey);
     this.storeInVault("cosmosAccountSecondaryKey", "Cosmos--SecondaryKey", this.cosmosDb.secondaryMasterKey);
@@ -271,24 +271,51 @@ export class State extends pulumi.ComponentResource {
         logAnalyticsWorkspaceId: logAnalyticsWorkspace.id,
         logs: [
           {
-            category: "QueryRuntimeStatistics",
+            category: "DataPlaneRequests",
             enabled: true,
             retentionPolicy: {
+              days: 0,
               enabled: true,
             },
           },
           {
-            category: "DataPlaneRequests",
+            category: "QueryRuntimeStatistics",
             enabled: true,
             retentionPolicy: {
+              days: 0,
               enabled: true,
+            },
+          },
+          {
+            category: "PartitionKeyStatistics",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
+          {
+            category: "ControlPlaneRequests",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
+          {
+            category: "MongoRequests",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
             },
           },
         ],
         metrics: [
           {
-            category: "AllMetrics",
+            category: "Requests",
             retentionPolicy: {
+              days: 0,
               enabled: true,
             },
           },
