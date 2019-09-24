@@ -1,7 +1,7 @@
 config:
   amphora:tokenManagement__secret:
     secure: AAABAIMhhPFRlitMsvSNYpEBkGUjMARPHcu0WFItMieKRh7l8xBh0pQ4pDdbZsDXYiNMeA==
-  application:acrSku: Standard
+  acr:sku: Basic
   application:appSvcPlanSize: B1
   application:appSvcPlanTier: Basic
   azure:environment: public
