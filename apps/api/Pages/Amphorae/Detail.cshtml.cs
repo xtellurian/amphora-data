@@ -49,6 +49,7 @@ namespace Amphora.Api.Pages.Amphorae
         public string QueryResponse { get; set; }
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
+        public bool CanUploadFiles { get; private set; }
         public IEnumerable<IApplicationUserReference> HasPurchased { get; private set; }
         public bool CanBuy { get; set; }
 
@@ -64,6 +65,7 @@ namespace Amphora.Api.Pages.Amphorae
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check
                 CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Update);
+                CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
 
                 var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
                 this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();

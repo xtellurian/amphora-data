@@ -20,29 +20,8 @@
     </div>
     <div class="row">
         <div clas="col">
-            <a class="float-left" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                <i class="fas fa-angle-down"></i>
-            </a>
             
-            <div id="collapseExample" class="card mb-3 collapse">
-                <div class="card-header">
-                    <h5 class="card-title">Admin Pane</h5>
-                </div>
-                <div class="card-body">
-                    <div class="container">
-                        <form method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <p class="card-text">Upload file</p>
-                                <input class="form-control-file" type="file" name="files">
-                                <small class="form-text card-text text-muted">This becomes content in the Amphora.</small>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="submit" value="Upload">
-                            </div>
-                        </form> 
-                    </div>                                                        
-                </div>
-            </div>
+            
         </div>
     </div>
     <div class="row">     
@@ -50,11 +29,14 @@
             <div class="card bg-light mb-3">
                 <div class="card-header">
                     Amphora Details
+                    @if(Model.CanEditDetails)
+                    {
+                    <a asp-page="./Edit" asp-route-id="@Model.Amphora.AmphoraId"><i class="fas fa-edit ml-2"></i></a>
+                    }
                     @{
                         var buttonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
                     }
-                    <a asp-page="./Edit" asp-route-id="@Model.Amphora.AmphoraId"><i class="fas fa-edit ml-2"></i></a>
                     <a asp-page="./Agreement" asp-route-id="@Model.Amphora.AmphoraId"><button class="btn btn-success" @buttonMode>Buy</button></a>
                 </div>
                     <div class="card-body">
@@ -66,28 +48,86 @@
                         <div class="col-sm">
                             $@Model.Amphora.Price 
                         </div>
+                        <div>
+                            @if(Model.CanUploadFiles)
+                            {    
+                            <a class="m-1 float-left" data-toggle="collapse" href="#uploadFileCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                                <i class="fas fa-upload"></i>
+                            </a>
+                            }
+                            @if(Model.CanEditPermissions)
+                            {
+                            <a class="m-1 float-left" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <table id="file-table" class="table">
-                <thead>
-                    <tr>
-                    <th scope="col">Filename</th>
-                    <th> Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var n in Model.Names)
-                    {
-                     <tr class="file-item">
-                        <th scope="row">@n</th>
-                        <td><a asp-route-id="@Model.Amphora.AmphoraId" asp-route-name="@n" asp-page="./File"><button class="btn btn-primary">Download</button></a></td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+            <div id="uploadFileCollapse" class="card mb-3 collapse">
+                <div class="card-header">
+                    <h5 class="card-title">Upload File</h5>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input class="form-control-file" type="file" name="files">
+                                <small class="form-text card-text text-muted">This becomes content in the Amphora.</small>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" type="submit" value="Upload">
+                            </div>
+                        </form> 
+                    </div>                                                        
+                </div>
+            </div>
+            @if(Model.CanEditPermissions)
+            {
+            <div id="hasPurchasedCollapse" class="card bg-light mb-3 collapse">
+                <div class="card-header">
+                     <div>
+                        <a class="float-right" asp-route-id="@Model.Amphora.AmphoraId" asp-page="./Invite">
+                            <i class="fas fa-user-plus"></i>
+                        </a>
+                    </div>
+                    <h5 class="card-title">Has Purchased</h5>
+                </div>
+                <ul class="list-group">
+                @foreach (var a in Model.HasPurchased)
+                {
+                    var d = new Dictionary<string, string>{ {"userName", a.UserName} };
+                    
+                    <li> 
+                        <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.UserName"></i> 
+                        <a asp-page="/Profile/Detail" asp-all-route-data=@d > @a.UserName </a>
+                    </li>
+                }
+                </ul>
+            </div>
+            }
+            
         </div>
+    </div>
+    <div>
+        <table id="file-table" class="table">
+            <thead>
+                <tr>
+                <th scope="col">Filename</th>
+                <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var n in Model.Names)
+                {
+                <tr class="file-item">
+                    <th scope="row">@n</th>
+                    <td><a asp-route-id="@Model.Amphora.AmphoraId" asp-route-name="@n" asp-page="./File"><button class="btn btn-primary">Download</button></a></td>
+                </tr>
+                }
+            </tbody>
+        </table>
     </div>
     @if(FeatureFlags.IsEnabled("signals"))
     {
@@ -99,28 +139,7 @@
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
     </div>
     }
-    <div class="row mt-3"> 
-        @if(Model.CanEditPermissions)
-        {
-        <div class="col card p-2">
-                <div> 
-            <a class="float-right" asp-route-id="@Model.Amphora.AmphoraId" asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
-                <h3>Has Purchased</h3>
-            </div>
-            <ul class="list-group">
-            @foreach (var a in Model.HasPurchased)
-            {
-                var d = new Dictionary<string, string>{ {"userName", a.UserName} };
-                
-                <li> 
-                    <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.UserName"></i> 
-                    <a asp-page="/Profile/Detail" asp-all-route-data=@d > @a.UserName </a>
-                </li>
-            }
-            </ul>
-        </div>
-        }
-    </div>
+
 </div>
 
 
