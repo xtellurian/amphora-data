@@ -24,8 +24,6 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
-        - script: echo webappid - $(pulumi.webAppResourceId)
-        - script: echo percent - $(percent)
         - template: app.promote.steps.yaml
 
 

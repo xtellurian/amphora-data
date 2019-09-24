@@ -25,7 +25,7 @@ steps:
     pushd infra
     pulumi stack select $STACK
     webAppId=$(pulumi stack output webAppResourceId)
-    az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $WEBAPPID
+    az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $webAppId
     popd
   displayName: Traffic Routing to staging set to $(percent)%
   env:
@@ -35,6 +35,5 @@ steps:
     ARM_SUBSCRIPTION_ID: $(subscription)
     ARM_TENANT_ID: $(tenant)
     STACK: $(stack) 
-    WEBAPPID: $(pulumi.webAppResourceId)
     STAGING_PERCENT: $(percent)
 
