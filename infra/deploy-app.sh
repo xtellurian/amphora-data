@@ -39,6 +39,9 @@ SLOTS=$(az webapp deployment slot list --ids $WEBAPPID --query "[].name")
 if echo "$SLOTS" | grep -q "staging"; then
     echo "Deploying to staging slot"
     az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID --slot staging
+    #explicit set zero so I can route to it
+    az webapp traffic-routing set --distribution staging=0 --ids $WEBAPPID
+
 else
     echo "Deploying to production Slot"
     az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID
