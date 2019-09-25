@@ -119,5 +119,30 @@ namespace Amphora.Tests.Integration
 
         }
 
+        [Fact]
+        public async Task PurchaseAmphora_DetailsRemainSame()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ReadsAmphora_AsAdmin));
+            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
+            createResponse.EnsureSuccessStatusCode();
+            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
+
+            var purchaseResponse = await adminClient.PostAsync($"api/market/purchase?id={a.AmphoraId}", null);
+            purchaseResponse.EnsureSuccessStatusCode();
+
+            var readResponse = await adminClient.GetAsync($"api/amphorae/{a.AmphoraId}");
+            var content = await readResponse.Content.ReadAsStringAsync();
+            readResponse.EnsureSuccessStatusCode();
+
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(content);
+            Assert.Equal(a.Description, b.Description);
+            Assert.NotNull( b.GeoLocation);
+            Assert.Equal( a.GeoLocation.Lat(), b.GeoLocation.Lat());
+        }
+
     }
 }
