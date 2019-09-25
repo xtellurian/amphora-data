@@ -39,6 +39,8 @@ jobs:
             webAppId=$(pulumi stack output webAppResourceId)
             az webapp deployment slot swap  --ids $webAppId --slot staging --target-slot production
             az webapp traffic-routing set --distribution staging=0 --ids $webAppId
+            az webapp config appsettings set --ids $webAppId -s staging --slot-settings STACK="$STACK(staging)"
+            az webapp config appsettings set --ids $webAppId --slot-settings STACK="$STACK" #prod slot
             popd
           displayName: Swap Staging and Production
           env:
