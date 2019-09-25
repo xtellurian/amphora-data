@@ -115,10 +115,10 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var fillResponse = await client.PutAsync($"{url}/{Guid.NewGuid()}/files/{Guid.NewGuid()}", requestBody);
+            var uploadFileResponse = await client.PutAsync($"{url}/{Guid.NewGuid()}/files/{Guid.NewGuid()}", requestBody);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, fillResponse.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, uploadFileResponse.StatusCode);
 
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);

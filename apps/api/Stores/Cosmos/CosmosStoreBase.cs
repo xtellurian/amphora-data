@@ -104,10 +104,10 @@ namespace Amphora.Api.Stores.Cosmos
             return this.Container.GetItemLinqQueryable<T>(true).Where(where);
         }
 
-        protected async Task<T> UpdateAsync<T>(T entity)
+        protected async Task<T> UpdateAsync<T>(T entity) where T:IEntity
         {
             await Init();
-            var response = await Container.UpsertItemAsync(entity);
+            var response = await Container.ReplaceItemAsync(entity, entity.Id);
             return response.Resource;
         }
 

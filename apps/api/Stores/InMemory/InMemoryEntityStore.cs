@@ -26,7 +26,7 @@ namespace Amphora.Api.Stores
                 return new ReadOnlyCollection<T>(this.store);
             });
         }
-         public Task<IList<T>> TopAsync(string orgId)
+        public Task<IList<T>> TopAsync(string orgId)
         {
             return Task<IList<T>>.Factory.StartNew(() =>
            {
@@ -61,6 +61,44 @@ namespace Amphora.Api.Stores
                 var qualifiedId = id.AsQualifiedId(typeof(T));
                 return store.FirstOrDefault(e => string.Equals(e.Id, qualifiedId));
             });
+        }
+        public Task<T> ReadAsync(string id, string orgId)
+        {
+            if (orgId == null)
+            {
+                return this.ReadAsync(id);
+            }
+            else
+            {
+                return Task<T>.Factory.StartNew(() =>
+                {
+                    if (id == null) return default(T);
+                    id = id.AsQualifiedId(typeof(T));
+                    return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
+                });
+            }
+        }
+        public async Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended : class, T
+        {
+            var entity = await ReadAsync(id, orgId);
+            if (entity == null) return null;
+            if (entity is TExtended) return entity as TExtended;
+            else
+            {
+                var a = (TExtended)mapper.Map(entity, entity.GetType(), typeof(TExtended));
+                return a;
+            }
+        }
+        public async Task<TExtended> ReadAsync<TExtended>(string id) where TExtended : class, T
+        {
+            var entity = await this.ReadAsync(id);
+            if (entity is TExtended) return entity as TExtended;
+            else
+            {
+                var a = (TExtended)mapper.Map(entity, entity.GetType(), typeof(TExtended));
+                return a;
+            }
+
         }
 
         public Task<T> UpdateAsync(T entity)
@@ -103,35 +141,7 @@ namespace Amphora.Api.Stores
             });
         }
 
-        public Task<T> ReadAsync(string id, string orgId)
-        {
-            if (orgId == null)
-            {
-                return this.ReadAsync(id);
-            }
-            else
-            {
-                return Task<T>.Factory.StartNew(() =>
-                {
-                    if (id == null) return default(T);
-                    id = id.AsQualifiedId(typeof(T));
-                    return this.store.FirstOrDefault(e => string.Equals(e.Id, id) && string.Equals(e.OrganisationId, orgId));
-                });
-            }
-        }
-        public async Task<TExtended> ReadAsync<TExtended>(string id) where TExtended : class, T
-        {
-            var entity = await this.ReadAsync(id);
-            if (entity is TExtended) return entity as TExtended;
-            else return mapper.Map<TExtended>(entity);
-        }
 
-        public async Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended : class, T
-        {
-            var entity = await ReadAsync(id, orgId);
-            if (entity is TExtended) return entity as TExtended;
-            else return mapper.Map<TExtended>(entity);
-        }
 
 
         public Task<IEnumerable<TQuery>> QueryAsync<TQuery>(Func<TQuery, bool> where) where TQuery : class, T
@@ -140,19 +150,19 @@ namespace Amphora.Api.Stores
             {
                 if (where == null) return null;
                 var results = new List<TQuery>();
-                foreach(var s in store)
+                foreach (var s in store)
                 {
-                    if(s is TQuery && where(s as TQuery))
+                    if (s is TQuery && where(s as TQuery))
                     {
                         results.Add(s as TQuery);
                     }
                     else
                     {
                         var e = mapper.Map<TQuery>(s);
-                        if(where(e)) results.Add(e);
+                        if (where(e)) results.Add(e);
                     }
                 }
-                
+
                 return results;
             });
         }

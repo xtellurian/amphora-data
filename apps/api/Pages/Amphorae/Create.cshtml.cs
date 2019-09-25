@@ -33,7 +33,7 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         [BindProperty]
-        public AmphoraDto Input { get; set; }
+        public AmphoraExtendedDto Input { get; set; }
         public string Token { get; set; }
 
         public async Task<IActionResult> OnGetAsync()

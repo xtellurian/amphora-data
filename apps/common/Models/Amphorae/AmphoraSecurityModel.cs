@@ -5,7 +5,7 @@ using Amphora.Common.Models.UserData;
 
 namespace Amphora.Common.Models.Amphorae
 {
-    public class AmphoraSecurityModel : AmphoraModel
+    public class AmphoraSecurityModel : AmphoraExtendedModel
     {
         public List<ApplicationUserReference> HasPurchased { get; set; }
 

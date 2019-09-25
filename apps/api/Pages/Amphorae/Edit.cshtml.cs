@@ -18,14 +18,14 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         [BindProperty]
-        public AmphoraDto AmphoraDto { get; set; }
+        public AmphoraExtendedDto AmphoraDto { get; set; }
 
         public override async Task<IActionResult> OnGetAsync(string id)
         {
             var result = await base.OnGetAsync(id);
             if(Amphora != null)
             {
-                this.AmphoraDto = mapper.Map<AmphoraDto>(Amphora);
+                this.AmphoraDto = mapper.Map<AmphoraExtendedDto>(Amphora);
             }
            return result;
         }
