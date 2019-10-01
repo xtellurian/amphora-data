@@ -46,7 +46,7 @@ jobs:
       displayName: 'Use .NET Core sdk v 2.2.300'
       inputs:
         packageType: sdk
-        version: 2.2.300
+        version: 3.0.000
         installationPath: $(Agent.ToolsDirectory)/dotnet
 
     # required to access KV in testing
