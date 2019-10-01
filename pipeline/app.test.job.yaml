@@ -43,10 +43,10 @@ jobs:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
     - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk v 2.2.300'
+      displayName: 'Use .NET Core sdk v 3.0.100'
       inputs:
         packageType: sdk
-        version: 3.0.000
+        version: 3.0.100
         installationPath: $(Agent.ToolsDirectory)/dotnet
 
     # required to access KV in testing
