@@ -62,7 +62,7 @@ export class AppSvc extends pulumi.ComponentResource {
             },
         );
         const secretString = cfg.requireSecret("tokenManagement__secret");
-        this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}:latest`;
+        this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
 
         const appSettings = {
             APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey,
@@ -79,7 +79,7 @@ export class AppSvc extends pulumi.ComponentResource {
         };
         const siteConfig = {
             alwaysOn: true,
-            // linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}`, // causes latest to be deployed to prod
+            linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}:latest`, // to make the app service = container
         };
 
         this.appSvc = new azure.appservice.AppService(
@@ -95,6 +95,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 tags,
             },
             {
+                ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
                 parent: this.plan,
             },
         );
