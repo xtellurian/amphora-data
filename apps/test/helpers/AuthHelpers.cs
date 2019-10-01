@@ -2,7 +2,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
-using Amphora.Api.Models.Users;
+using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Organisations;
 using Newtonsoft.Json;
 
@@ -18,7 +19,7 @@ namespace Amphora.Tests.Helpers
                 client.DefaultRequestHeaders.Add("Create", "dev");
             }
         }
-        public static async Task<(ApplicationUser User, string Password)> CreateUserAsync(
+        public static async Task<(UserDto User, string Password)> CreateUserAsync(
             this HttpClient client,
             string fullName)
         {
@@ -27,7 +28,7 @@ namespace Amphora.Tests.Helpers
 
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
 
-            var user = new ApplicationUser
+            var user = new UserDto
             {
                 UserName = email,
                 Email = email,
@@ -44,18 +45,18 @@ namespace Amphora.Tests.Helpers
             return (User: user, Password: password);
         }
 
-        public static async Task<OrganisationModel> CreateOrganisationAsync(this HttpClient client, string testName)
+        public static async Task<OrganisationDto> CreateOrganisationAsync(this HttpClient client, string testName)
         {
-            var a = Helpers.EntityLibrary.GetOrganisation(testName);
+            var a = Helpers.EntityLibrary.GetOrganisationDto(testName);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var createResponseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
-            var org = JsonConvert.DeserializeObject<OrganisationModel>(createResponseContent);
+            var org = JsonConvert.DeserializeObject<OrganisationDto>(createResponseContent);
             return org;
         }
 
-        public static async Task GetTokenAsync(this HttpClient client, ApplicationUser user, string password)
+        public static async Task GetTokenAsync(this HttpClient client, UserDto user, string password)
         {
             // can log in
             var loginRequest = new TokenRequest()

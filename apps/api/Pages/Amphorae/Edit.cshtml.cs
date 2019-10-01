@@ -32,7 +32,7 @@ namespace Amphora.Api.Pages.Amphorae
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            var readResult = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var readResult = await amphoraeService.ReadAsync(User, id);
             if(readResult.Succeeded)
             {
                 var a = readResult.Entity;
@@ -46,7 +46,7 @@ namespace Amphora.Api.Pages.Amphorae
                 var result = await amphoraeService.UpdateAsync(User, a);
                 if(result.Succeeded)
                 {
-                    return RedirectToPage("./Detail", new {id = a.AmphoraId});
+                    return RedirectToPage("./Detail", new {id = a.Id});
                 }
                 else if(result.WasForbidden)
                 {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 
@@ -10,13 +11,9 @@ namespace Amphora.Api.Contracts
         Task<IList<T>> TopAsync();
         Task<IList<T>> TopAsync(string orgId);
         Task<T> CreateAsync(T entity);
-        Task<TExtended> CreateAsync<TExtended>(TExtended entity) where TExtended: class, T;
-        Task<T> ReadAsync(string id);
-        Task<TExtended> ReadAsync<TExtended>(string id) where TExtended: class, T;
-        Task<T> ReadAsync(string id, string orgId);
-        Task<TExtended> ReadAsync<TExtended>(string id, string orgId) where TExtended: class, T;
+        Task<T> ReadAsync(string id, bool includeChildren = false);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
-        Task<IEnumerable<TQuery>> QueryAsync<TQuery>(System.Func<TQuery, bool> where) where TQuery : class, T;
+        Task<IEnumerable<T>> QueryAsync(Expression<System.Func<T, bool>> where);
     }
 }

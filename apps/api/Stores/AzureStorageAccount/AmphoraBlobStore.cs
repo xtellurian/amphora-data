@@ -39,8 +39,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             var blob = container.GetBlockBlobReference(path);
             if (await blob.ExistsAsync())
             {
-                logger.LogError($"{path} already exists in {entity.AmphoraId}. ${blob.Uri}");
-                throw new ArgumentException($"{path} already exists in {entity.AmphoraId}. ${blob.Uri}");
+                logger.LogError($"{path} already exists in {entity.Id}. ${blob.Uri}");
+                throw new ArgumentException($"{path} already exists in {entity.Id}. ${blob.Uri}");
             }
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
         }
@@ -73,7 +73,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
         private string GetContainerName(AmphoraModel amphora)
         {
-            return $"amphora-{amphora.AmphoraId}";
+            return $"amphora-{amphora.Id}";
         }
 
         public async Task<IList<string>> ListBlobsAsync(AmphoraModel entity)

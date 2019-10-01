@@ -12,23 +12,23 @@ namespace Amphora.Api.Services.Auth
     {
         private readonly ILogger<AmphoraAuthorizationHandler> logger;
         private readonly IPermissionService permissionService;
-        private readonly IUserManager userManager;
+        private readonly IUserService userService;
 
         // https://docs.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased?view=aspnetcore-2.2
         public AmphoraAuthorizationHandler(ILogger<AmphoraAuthorizationHandler> logger,
                                            IPermissionService permissionService,
-                                           IUserManager userManager)
+                                           IUserService userService)
         {
             this.logger = logger;
             this.permissionService = permissionService;
-            this.userManager = userManager;
+            this.userService = userService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                     AuthorizationRequirement requirement,
                                                        AmphoraModel entity)
         {
-            var user = await userManager.GetUserAsync(context.User);
+            var user = await userService.ReadUserModelAsync(context.User);
 
             var isAuthorized = await permissionService.IsAuthorizedAsync(user, entity, requirement.MinimumLevel);
 

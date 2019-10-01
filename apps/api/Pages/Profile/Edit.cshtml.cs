@@ -1,6 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Contracts;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,23 +11,24 @@ namespace Amphora.Api.Pages.Profile
     [Authorize]
     public class EditModel : PageModel
     {
-        private readonly IUserManager userManager;
+        private readonly IUserService userService;
 
-        public IApplicationUser AppUser { get; set; }
+        public ApplicationUser AppUser { get; set; }
+
         [BindProperty]
         public string FullName { get; set; }
         [BindProperty]
         public string About { get; set; }
         [TempData]
         public string ErrorMessage { get; set; }
-        public EditModel(IUserManager userManager)
+        public EditModel(IUserService userService)
         {
-            this.userManager = userManager;
+            this.userService = userService;
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            AppUser = await userManager.GetUserAsync(User);
+            AppUser = await userService.ReadUserModelAsync(User);
 
             if (AppUser == null)
             {
@@ -41,20 +43,20 @@ namespace Amphora.Api.Pages.Profile
         {
             if (ModelState.IsValid)
             {
-                AppUser = await userManager.GetUserAsync(User);
+                AppUser = await userService.ReadUserModelAsync(User);
                 AppUser.About = About;
                 AppUser.FullName = FullName;
                 
-                var response = await userManager.UpdateAsync(AppUser);
-                if (response.Succeeded) return RedirectToPage("./Detail");
-                else
+                try
                 {
-                    foreach (var e in response.Errors)
-                    {
-                        ErrorMessage += e.Description + '\n';
-                    }
+                    var response = await userService.UserManager.UpdateAsync(AppUser);
+                    return RedirectToPage("./Detail");
                 }
-                return Page();
+                catch(Exception ex)
+                {
+                    ErrorMessage = ex.Message;
+                    return Page();
+                }                
             }
             else
             {

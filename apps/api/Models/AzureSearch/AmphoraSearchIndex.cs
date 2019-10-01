@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.UserData;
+using Amphora.Common.Models.Users;
 using Microsoft.Azure.Search.Models;
 
 namespace Amphora.Api.Models.AzureSearch
@@ -11,21 +10,19 @@ namespace Amphora.Api.Models.AzureSearch
         public AmphoraSearchIndex(): base( )
         {
             var fields = new List<Field>();
-            fields.Add(new Field("docId", DataType.String){IsKey = true});
-            // fields.Add(new Field(nameof(AmphoraModel.Id).ToLower(), DataType.String){}); // to lower because cosmos Id is 'id'
-            fields.Add(new Field(nameof(AmphoraModel.AmphoraId), DataType.String)
+            fields.Add(new Field(nameof(AmphoraModel.Id), DataType.String)
             {
-                // IsKey = true // key of AmphoraId because Id has a special charcter not allowed
+                IsKey = true
             });
             // org id for filtering 
-            fields.Add(new Field(nameof(Entity.OrganisationId), DataType.String)
+            fields.Add(new Field(nameof(AmphoraModel.OrganisationId), DataType.String)
             {
                 IsFacetable = true,
                 IsRetrievable = true,
                 IsFilterable = true
             });
             // type
-            fields.Add(new Field(nameof(Entity.EntityType), DataType.String)
+            fields.Add(new Field("Discriminator", DataType.String)
             {
                 IsFilterable = true
             });
@@ -36,7 +33,7 @@ namespace Amphora.Api.Models.AzureSearch
                 IsRetrievable = true
             });
             // add about
-            fields.Add(new Field(nameof(AmphoraExtendedModel.Description), DataType.String)
+            fields.Add(new Field(nameof(AmphoraModel.Description), DataType.String)
             {
                 IsSearchable = true
             });
@@ -57,23 +54,23 @@ namespace Amphora.Api.Models.AzureSearch
                 IsFilterable = true
             });
             // Location
-            fields.Add(new Field(nameof(AmphoraExtendedModel.GeoLocation), DataType.GeographyPoint)
+            fields.Add(new Field(nameof(AmphoraModel.GeoLocation), DataType.GeographyPoint)
             {
                 IsRetrievable = true,
                 IsSortable = true,
                 IsFilterable = true
             });
             // Has Purchased
-            fields.Add(new Field(nameof(AmphoraSecurityModel.HasPurchased),
+            fields.Add(new Field(nameof(AmphoraModel.Transactions),
                         DataType.Collection(DataType.Complex),
                         new List<Field>
                         {
-                            new Field(nameof(ApplicationUserReference.Id), DataType.String)
+                            new Field(nameof(ApplicationUser.Id), DataType.String)
                             {
                                 IsFilterable = true,
                             },
-                            new Field(nameof(ApplicationUserReference.OrganisationId), DataType.String),
-                            new Field(nameof(ApplicationUserReference.UserName), DataType.String),
+                            new Field(nameof(ApplicationUser.OrganisationId), DataType.String),
+                            new Field(nameof(ApplicationUser.UserName), DataType.String),
                         }));
 
             // add isPubic

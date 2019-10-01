@@ -10,7 +10,7 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @{var profilePicture = $"/api/organisations/{Model.Organisation.OrganisationId}/profile.jpg" ;}
+                        @{var profilePicture = $"/api/organisations/{Model.Organisation.Id}/profile.jpg" ;}
                         <img src="@profilePicture" class="img-fluid"/>
                     </div>
                     <div class="w-100"><strong>@Model.Organisation.Name</strong></div>
@@ -81,7 +81,7 @@
                                 <td> @entity.Name </td>
                                 <td>@entity.Price</td>
                                 <td>  
-                                    <a asp-page="/Amphorae/Detail" asp-route-id="@entity.AmphoraId"> 
+                                    <a asp-page="/Amphorae/Detail" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
                                     </a>
                                 </td>

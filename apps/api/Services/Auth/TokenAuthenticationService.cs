@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Models.Users;
 using Amphora.Api.Options;
 using Amphora.Common.Contracts;
 using Microsoft.Extensions.Logging;
@@ -66,7 +67,7 @@ namespace Amphora.Api.Services.Auth
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-        private string GenerateToken(IApplicationUser user)
+        private string GenerateToken(ApplicationUser user)
         {
             if (user == null)
             {

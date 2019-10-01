@@ -46,7 +46,7 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound("Invalid Id");
             }
-            var model = await amphoraeService.AmphoraStore.ReadAsync<AmphoraExtendedModel>(id, entity.OrganisationId); // bit of a hack
+            var model = await amphoraeService.AmphoraStore.ReadAsync(id); // bit of a hack
             logger.LogInformation($"Signal Upload for {id}");
             jObj["amphora"] = id;
             var domain = Domain.GetDomain(model.DomainId);

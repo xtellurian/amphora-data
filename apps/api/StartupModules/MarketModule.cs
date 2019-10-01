@@ -11,13 +11,13 @@ namespace Amphora.Api.StartupModules
 {
     public class MarketModule
     {
-        public MarketModule(IConfiguration configuration, IHostingEnvironment env)
+        public MarketModule(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.HostingEnvironment = env;
             this.Configuration = configuration;
         }
 
-        public IHostingEnvironment HostingEnvironment { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)

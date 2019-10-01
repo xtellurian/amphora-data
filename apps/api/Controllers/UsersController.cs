@@ -1,9 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
-using Amphora.Api.Models.Users;
+using Amphora.Common.Models.Users;
 using Amphora.Api.Options;
-using Amphora.Common.Contracts;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -34,16 +33,16 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/users/self")]
         public async Task<IActionResult> ReadSelf()
         {
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if(user == null)
             {
                 return NotFound();
             }
-            return Ok(mapper.Map<ApplicationUserDto>(user)); 
+            return Ok(mapper.Map<UserDto>(user)); 
         }
 
         [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser([FromBody] ApplicationUserDto user, string onboardingId)
+        public async Task<IActionResult> CreateUser([FromBody] UserDto dto, string onboardingId)
         {
             string password = System.Guid.NewGuid().ToString() + "!1A";
             if (Request.Headers.ContainsKey("Create"))
@@ -51,7 +50,14 @@ namespace Amphora.Api.Controllers
                 var value = Request.Headers["Create"];
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
-                    var result = await userService.CreateAsync(user, password);
+                    var applicationUser = new ApplicationUser()
+                    {
+                        Email = dto.Email,
+                        UserName = dto.UserName
+                    };
+
+                    var result = await userService.CreateAsync(applicationUser, password);
+
                     if (result.Succeeded)
                     {
                         return Ok(password);
@@ -86,7 +92,7 @@ namespace Amphora.Api.Controllers
                 if (string.Equals(value, options.CurrentValue.Key))
                 {
                     if (username == null) return BadRequest("id/ username is required");
-                    var user = await userService.UserManager.FindByNameAsync(username);
+                    var user = (await userService.UserManager.FindByNameAsync(username));
                     if (user == null) return NotFound();
                     var result = await userService.DeleteAsync(user);
                     if (result.Succeeded)

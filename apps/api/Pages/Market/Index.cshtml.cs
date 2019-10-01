@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

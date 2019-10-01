@@ -25,9 +25,9 @@ namespace Amphora.Api.Services.Amphorae
                 eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
             }
         }
-        public async Task WriteSignalAsync(AmphoraExtendedModel entity, Datum d)
+        public async Task WriteSignalAsync(AmphoraModel entity, Datum d)
         {
-            d.Amphora = entity.AmphoraId;
+            d.Amphora = entity.Id;
              var content = JsonConvert.SerializeObject(d,
                                 Newtonsoft.Json.Formatting.None,
                                 new JsonSerializerSettings

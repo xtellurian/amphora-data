@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -22,7 +23,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_CreatesAmphora_AsAdmin));
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
             var s = JsonConvert.SerializeObject(a);
             var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
 
@@ -37,7 +38,7 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseBody);
+            var b = JsonConvert.DeserializeObject<AmphoraModel>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
@@ -55,16 +56,16 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ReadsAmphora_AsAdmin));
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Get_ReadsAmphora_AsAdmin));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
 
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await adminClient.GetAsync($"{url}/{b.AmphoraId}");
+            var response = await adminClient.GetAsync($"{url}/{b.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -74,7 +75,7 @@ namespace Amphora.Tests.Integration
 
 
             Assert.NotNull(responseBody);
-            var c = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseBody);
+            var c = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
             Assert.Equal(b.Id, c.Id);
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
@@ -93,24 +94,24 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_PublicAmphora_AllowAccessToAny));
-            a.IsPublic = true;
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Get_PublicAmphora_AllowAccessToAny));
+            var requestBody = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
+            var c = await createResponse.Content.ReadAsStringAsync();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(c);
             createResponse.EnsureSuccessStatusCode();
             // Act
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
-            var response = await client.GetAsync($"{url}/{a.AmphoraId}");
+            var response = await client.GetAsync($"{url}/{dto.Id}");
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
             response.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(responseContent);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseContent);
             Assert.NotNull(b);
-            Assert.Equal(a.Id, b.Id);
+            Assert.Equal(dto.Id, b.Id);
 
-            await DestroyAmphoraAsync(adminClient, a.AmphoraId);
+            await DestroyAmphoraAsync(adminClient, dto.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
             
@@ -124,24 +125,26 @@ namespace Amphora.Tests.Integration
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Get_ReadsAmphora_AsAdmin));
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Get_ReadsAmphora_AsAdmin));
+            var requestBody = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             createResponse.EnsureSuccessStatusCode();
-            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
 
-            var purchaseResponse = await adminClient.PostAsync($"api/market/purchase?id={a.AmphoraId}", null);
+            var purchaseResponse = await adminClient.PostAsync($"api/market/purchase?id={dto.Id}", null);
             purchaseResponse.EnsureSuccessStatusCode();
 
-            var readResponse = await adminClient.GetAsync($"api/amphorae/{a.AmphoraId}");
+            var readResponse = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
             var content = await readResponse.Content.ReadAsStringAsync();
             readResponse.EnsureSuccessStatusCode();
 
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(content);
-            Assert.Equal(a.Description, b.Description);
-            Assert.NotNull( b.GeoLocation);
-            Assert.Equal( a.GeoLocation.Lat(), b.GeoLocation.Lat());
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(content);
+            Assert.Equal(dto.Description, b.Description);
+            Assert.True( b.Lat.HasValue);
+            Assert.True( b.Lon.HasValue);
+            Assert.Equal( dto.Lat, b.Lat);
+            Assert.Equal( dto.Lon, b.Lon);
         }
 
     }

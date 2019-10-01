@@ -1,13 +1,12 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Users;
+using Amphora.Common.Models.Users;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
-using Amphora.Api.Stores;
-using Amphora.Common.Models.Amphorae;
+using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.Extensions.Logging;
@@ -18,48 +17,45 @@ namespace Amphora.Tests.Unit
 {
     public class MarketServiceTests : UnitTestBase
     {
+        private readonly ILogger<PermissionService> permissionLogger;
         private readonly ILogger<AmphoraeService> amphoraLogger;
-        private InMemoryEntityStore<AmphoraModel> amphoraStore;
-        private InMemoryEntityStore<OrganisationModel> orgStore;
-        private Mock<IUserManager> mockUserManager;
-        private Mock<IUserService> mockUserService;
-        private PermissionService permissionService;
 
         public MarketServiceTests(ILogger<PermissionService> permissionLogger, ILogger<AmphoraeService> amphoraLogger)
         {
-            this.amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
-            this.mockUserManager = new Mock<IUserManager>();
-            mockUserManager.Setup(o => o.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new TestApplicationUser());
-            this.mockUserService = new Mock<IUserService>();
-            this.mockUserService.Setup(o => o.UserManager).Returns(mockUserManager.Object);
-            this.orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
-            this.permissionService = new PermissionService(permissionLogger, orgStore, amphoraStore);
+            this.permissionLogger = permissionLogger;
             this.amphoraLogger = amphoraLogger;
         }
 
         [Fact]
         public async Task LookupByGeo()
         {
-            var amphoraService = new AmphoraeService(amphoraStore,
-                                                     orgStore,
-                                                     permissionService,
-                                                     mockUserManager.Object,
-                                                     amphoraLogger);
-            var service = new BasicSearchService(amphoraService);
-            var entity = await AddToStore();
-            var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
+            using (var context = GetContext(nameof(MarketServiceTests)))
+            {
+                var amphoraStore = new AmphoraeEFStore(context);
+                var transactionStore = new TransactionEFStore(context);
+                var orgStore = new OrganisationsEFStore(context);
+                var mockUserService = new Mock<IUserService>();
+                mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var response = await sut.FindAsync("");
-            Assert.NotNull(response);
-            Assert.NotEmpty(response);
-            Assert.Contains(response, e => e.Id == entity.Id);
-        }
+                var permissionService = new PermissionService(permissionLogger, orgStore, amphoraStore);
 
-        private async Task<AmphoraModel> AddToStore()
-        {
-            var amphora = EntityLibrary.GetAmphora("1234", nameof(MarketServiceTests)); // dumy org id
-            return await amphoraStore.CreateAsync(amphora);
+                var amphoraService = new AmphoraeService(amphoraStore,
+                                                        transactionStore,
+                                                        orgStore,
+                                                        permissionService,
+                                                        mockUserService.Object,
+                                                        amphoraLogger);
+                var service = new BasicSearchService(amphoraService);
+                var orgModel = new OrganisationModel() { Name = "1234" };
+                var amphora = EntityLibrary.GetAmphoraModel(orgModel, nameof(MarketServiceTests)); // dumy org id
+                var entity = await amphoraStore.CreateAsync(amphora);
+                var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
+
+                var response = await sut.FindAsync("");
+                Assert.NotNull(response);
+                Assert.NotEmpty(response);
+                Assert.Contains(response, e => e.Id == entity.Id);
+            }
         }
     }
 }

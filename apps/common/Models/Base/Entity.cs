@@ -8,24 +8,18 @@ namespace Amphora.Common.Models
     {
         public Entity()
         {
-
+            ttl = -1; // means no expiry
         }
-        [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-        public string OrganisationId { get; set; }
-        public string EntityType {get; set; }
+
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate {get; set; }
-        public string GetEntityId() => Id?.Split('|')[1]; // gets what's after the pipe - i.e. the id
-        // should set both the Ids. Only use on create.
-        public abstract void SetIds();
 
         public virtual bool IsValid() 
         {
-            return !string.IsNullOrEmpty(OrganisationId)
-                && !string.IsNullOrEmpty(CreatedBy)
+            return  !string.IsNullOrEmpty(CreatedBy)
                 && CreatedDate.HasValue;
         }
     }

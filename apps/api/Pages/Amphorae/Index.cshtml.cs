@@ -59,21 +59,21 @@ namespace Amphora.Api.Pages.Amphorae
         {
             var user = await this.userService.UserManager.GetUserAsync(User);
             if (user == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
-           // var result = await searchService.SearchAmphora(string.Empty, SearchParameters.AllPurchased(user.Id));
-            var x = (await amphoraeService.AmphoraStore.QueryAsync<AmphoraSecurityModel>(a => a.HasPurchased?.Any(u => u.Id == user.Id) ?? false));
-            this.Amphorae = x; // result.Results.Select(r => r.Entity);
+
+            var x= await amphoraeService.AmphoraPurchasedBy(user);
+            this.Amphorae = x; 
             return Page();
         }
 
         private async Task<IActionResult> OrgAmphorae()
         {
-            var user = await this.userService.UserManager.GetUserAsync(User);
+            var user = await this.userService.ReadUserModelAsync(User);
             if (user == null)
             {
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // get my amphora
-            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync<AmphoraModel>(a => a.OrganisationId == user.OrganisationId);
+            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.OrganisationId == user.OrganisationId);
             return Page();
         }
 
@@ -85,7 +85,7 @@ namespace Amphora.Api.Pages.Amphorae
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // get my amphora
-            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync<AmphoraModel>(a => a.CreatedBy == user.Id);
+            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedBy == user.Id);
             return Page();
         }
     }

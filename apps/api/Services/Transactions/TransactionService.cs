@@ -6,44 +6,39 @@ using Amphora.Api.Models;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Transactions
 {
     public class TransactionService : ITransactionService
     {
-        private readonly IEntityStore<TransactionModel> store;
-        private readonly IEntityStore<AmphoraModel> amphoraStore;
+        private readonly IEntityStore<TransactionModel> transactionStore;
         private readonly IUserService userService;
         private readonly ILogger<TransactionService> logger;
 
         public TransactionService(
-            IEntityStore<TransactionModel> store,
-            IEntityStore<AmphoraModel> amphoraStore,
+            IEntityStore<TransactionModel> transactionStore,
             IUserService userService,
             ILogger<TransactionService> logger)
         {
-            this.store = store;
-            this.amphoraStore = amphoraStore;
+            this.transactionStore = transactionStore;
             this.userService = userService;
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<TransactionModel>> PurchaseAmphora(IApplicationUserReference user, AmphoraModel amphora)
+        public async Task<EntityOperationResult<TransactionModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
         {
-            var securityModel = await amphoraStore.ReadAsync<AmphoraSecurityModel>(amphora.AmphoraId, amphora.OrganisationId);
-            if (securityModel.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
+            var transactions = await transactionStore.QueryAsync(p => p.UserId == user.Id && p.AmphoraId == amphora.Id);
+            if (transactions.Any())
             {
                 logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                var txs = await store.QueryAsync<TransactionModel>(p => p.User.Id == user.Id && p.AmphoraId == amphora.AmphoraId);
-                return new EntityOperationResult<TransactionModel>(txs.FirstOrDefault());
+                return new EntityOperationResult<TransactionModel>(transactions.FirstOrDefault());
             }
             else
             {
                 var transaction = new TransactionModel(user, amphora);
-                transaction = await store.CreateAsync(transaction);
-                securityModel.AddUserHasPurchased(user);
-                await amphoraStore.UpdateAsync(securityModel);
+                transaction = await transactionStore.CreateAsync(transaction);
                 return new EntityOperationResult<TransactionModel>(transaction);
             }
         }

@@ -11,22 +11,23 @@ namespace Amphora.Api.Models.AutoMapper
         {
             // this is to extend a base class into its extended version. 
             // Generally only used in the InMemory stores.
-            CreateMap<AmphoraModel, AmphoraExtendedModel>()
-            .ForMember(o => o.Description, p => p.Ignore())
-            .ForMember(o => o.GeoLocation, p => p.Ignore());
-
-            CreateMap<AmphoraExtendedModel, AmphoraSecurityModel>()
-            .ForMember(o => o.HasPurchased, p => p.Ignore());
-
-
-            CreateMap<AmphoraModel, AmphoraSecurityModel>()
-            .IncludeBase<AmphoraModel, AmphoraExtendedModel>()
-            .ForMember(o => o.HasPurchased, p => p.Ignore());
 
             // dto mappings
             CreateMap<AmphoraModel, AmphoraModelDto>();
 
-            CreateMap<AmphoraExtendedModel, AmphoraExtendedDto>()
+            CreateMap<AmphoraExtendedDto, AmphoraModel>()
+            .ForMember(o => o.Id, p => p.Ignore())
+            .ForMember(o => o.Organisation, p => p.Ignore())
+            .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
+            .ForMember(o => o.DomainId, p => p.Ignore())
+            .ForMember(o => o.Transactions, p => p.Ignore())
+            .ForMember(o => o.ttl, p => p.Ignore())
+            .ForMember(o => o.CreatedBy, p => p.Ignore())
+            .ForMember(o => o.CreatedDate, p => p.Ignore())
+            .ForMember(o => o.GeoLocation, p => p.MapFrom(src => 
+                src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value): null));
+
+            CreateMap<AmphoraModel, AmphoraExtendedDto>()
             .IncludeBase<AmphoraModel, AmphoraModelDto>()
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));

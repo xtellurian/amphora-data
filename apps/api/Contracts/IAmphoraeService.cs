@@ -9,9 +9,10 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<AmphoraModel> AmphoraStore { get; }
 
-        Task<EntityOperationResult<TExtended>> CreateAsync<TExtended>(ClaimsPrincipal principal, TExtended model) where TExtended: AmphoraModel;
+        Task<System.Collections.Generic.IEnumerable<AmphoraModel>> AmphoraPurchasedBy(Common.Contracts.IUser user);
+        Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model);
         Task<EntityOperationResult<AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, AmphoraModel entity);
-        Task<EntityOperationResult<TExtended>> ReadAsync<TExtended>(ClaimsPrincipal principal, string id, string orgId = null) where TExtended : AmphoraModel;
+        Task<EntityOperationResult<AmphoraModel>> ReadAsync(ClaimsPrincipal principal, string id, bool includeChildren = false, string orgId = null);
         Task<EntityOperationResult<AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, AmphoraModel entity);
     }
 }

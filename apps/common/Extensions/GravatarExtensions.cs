@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Amphora.Api.Extensions
+namespace Amphora.Common.Extensions
 {
     public static class GravatarExtensions
     {

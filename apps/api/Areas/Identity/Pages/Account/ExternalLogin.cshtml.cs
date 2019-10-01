@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Amphora.Api.Models.Users;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {

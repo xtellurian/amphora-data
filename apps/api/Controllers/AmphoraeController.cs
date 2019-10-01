@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,17 +36,18 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/amphorae")]
-        public async Task<IActionResult> Create_Api([FromBody] AmphoraExtendedModel model)
+        public async Task<IActionResult> Create_Api([FromBody] AmphoraExtendedDto dto)
         {
-            if (model == null || model.Name == null)
+            if (dto == null || dto.Name == null)
             {
                 return BadRequest("Invalid Model");
             }
-
-            var result = await amphoraeService.CreateAsync<AmphoraExtendedModel>(User, model);
+            var model = mapper.Map<AmphoraModel>(dto);
+            model.IsPublic = true;
+            var result = await amphoraeService.CreateAsync(User, model);
             if (result.Succeeded)
             {
-                return Ok(result.Entity);
+                return Ok(mapper.Map<AmphoraExtendedDto>(result.Entity));
             }
             else if (result.WasForbidden)
             {
@@ -60,10 +62,10 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
-            var result = await this.amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var result = await this.amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
-                return Ok(result.Entity);
+                return Ok(mapper.Map<AmphoraExtendedDto>(result.Entity));
             }
             else if (result.WasForbidden)
             {
@@ -76,15 +78,15 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/amphorae/{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedModel model)
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedDto dto)
         {
-            var a = await this.amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var a = await this.amphoraeService.ReadAsync(User, id);
             if (a == null) return NotFound();
-
+            var model = mapper.Map<AmphoraModel>(dto);
             var result = await this.amphoraeService.UpdateAsync(User, model);
             if (result.Succeeded)
             {
-                return Ok(result.Entity);
+                return Ok(mapper.Map<AmphoraExtendedDto>(result.Entity));
             }
             else if (result.WasForbidden)
             {
@@ -99,7 +101,7 @@ namespace Amphora.Api.Controllers
         [HttpDelete("api/amphorae/{id}")]
         public async Task<IActionResult> Delete_Api(string id)
         {
-            var readResult = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var readResult = await amphoraeService.ReadAsync(User, id);
             if (!readResult.Succeeded) return NotFound();
             var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
             if (result.Succeeded)
@@ -119,7 +121,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}/files")]
         public async Task<IActionResult> ListFiles(string id)
         {
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
                 var blobs = await amphoraFileService.Store.ListBlobsAsync(result.Entity);
@@ -138,7 +140,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/amphorae/{id}/files/{file}")]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
@@ -168,7 +170,7 @@ namespace Amphora.Api.Controllers
         [HttpPut("api/amphorae/{id}/files/{file}")]
         public async Task<IActionResult> UploadToAmphora(string id, string file)
         {
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);

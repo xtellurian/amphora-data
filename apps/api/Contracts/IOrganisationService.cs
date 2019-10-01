@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Api.Contracts
@@ -8,7 +9,7 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<OrganisationModel> Store { get; }
         Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId);
-        Task<Models.EntityOperationResult<OrganisationExtendedModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationExtendedModel org);
+        Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org);
         Task InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email);
         Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation);
         Task WriteProfilePictureJpg(OrganisationModel organisation, byte[] bytes);
