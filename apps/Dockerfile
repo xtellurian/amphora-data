@@ -14,5 +14,5 @@ RUN echo gitHash arg is ${gitHash}
 ENV ASPNETCORE_SOURCEVERSION ${gitHash}
 RUN echo env var is ${ASPNETCORE_SOURCEVERSION}
 WORKDIR /app
-COPY --from=build-env /app/api/out .
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "api.dll"]
