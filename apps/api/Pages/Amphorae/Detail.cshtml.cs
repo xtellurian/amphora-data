@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Services.FeatureFlags;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Amphora.Common.Models.UserData;
+using Amphora.Common.Models.Transactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using TimeSeriesInsightsClient.Queries;
 
@@ -50,7 +48,7 @@ namespace Amphora.Api.Pages.Amphorae
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
-        public IEnumerable<IApplicationUserReference> HasPurchased { get; private set; }
+        public IEnumerable<TransactionModel> Transactions { get; private set; }
         public bool CanBuy { get; set; }
 
         public override async Task<IActionResult> OnGetAsync(string id)
@@ -74,9 +72,9 @@ namespace Amphora.Api.Pages.Amphorae
                 CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Update);
                 CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
 
-                var securityModel = await amphoraeService.AmphoraStore.ReadAsync<AmphoraSecurityModel>(Amphora.Id, Amphora.OrganisationId);
-                this.HasPurchased = securityModel.HasPurchased ?? new List<ApplicationUserReference>();
-                if (this.HasPurchased?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
+               
+                this.Transactions = Amphora?.Transactions ?? new List<TransactionModel>();
+                if (this.Transactions?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
                 {
                     // user has already purchased the amphora
                     this.CanBuy = false;
@@ -97,7 +95,7 @@ namespace Amphora.Api.Pages.Amphorae
 
             if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
 
-            var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             var user = await userService.UserManager.GetUserAsync(User);
 
             if (result.Succeeded)

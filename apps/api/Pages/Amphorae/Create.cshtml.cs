@@ -59,7 +59,7 @@ namespace Amphora.Api.Pages.Amphorae
                 {
                     location =  new GeoLocation(Input.Lon.Value, Input.Lat.Value);
                 }
-                var entity = new AmphoraExtendedModel
+                var entity = new AmphoraModel
                 {
                     Name = Input.Name,
                     Description = Input.Description,

@@ -3,18 +3,11 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
-using Amphora.Api.Models.Users;
 using Amphora.Api.Services.Auth;
-using Amphora.Api.Stores;
-using Amphora.Common.Contracts;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
+using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -38,71 +31,77 @@ namespace Amphora.Tests.Unit.Authorization
         public async Task DenyAllByDefault()
         {
             var principal = new TestPrincipal();
-            var userManager = new Mock<IUserManager>();
-            var org = EntityLibrary.GetOrganisation(nameof(DenyAllByDefault));
-            var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
-            org = await orgStore.CreateAsync(org);
-            var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
+            var userService = new Mock<IUserService>();
+            var org = EntityLibrary.GetOrganisationModel(nameof(DenyAllByDefault));
+            using (var context = GetContext(nameof(DenyAllByDefault)))
+            {
+                var orgStore = new OrganisationsEFStore(context);
+                org = await orgStore.CreateAsync(org);
+                var user = new ApplicationUser { Id = Guid.NewGuid().ToString() };
 
-            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
+                userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
-            var amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(DenyAllByDefault));
-            a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
+                var amphoraStore = new AmphoraeEFStore(context);
+                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllByDefault));
+                a = await amphoraStore.CreateAsync(a);
 
-            var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
-            var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
+                var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
+                var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
 
-            var readReq = new List<IAuthorizationRequirement> { Operations.Read };
-            var createReq = new List<IAuthorizationRequirement> { Operations.Create };
-            var updateReq = new List<IAuthorizationRequirement> { Operations.Update };
-            var deleteReq = new List<IAuthorizationRequirement> { Operations.Delete };
+                var readReq = new List<IAuthorizationRequirement> { Operations.Read };
+                var createReq = new List<IAuthorizationRequirement> { Operations.Create };
+                var updateReq = new List<IAuthorizationRequirement> { Operations.Update };
+                var deleteReq = new List<IAuthorizationRequirement> { Operations.Delete };
 
-            var context = new AuthorizationHandlerContext(readReq, principal, a);
-            await handler.HandleAsync(context);
-            Assert.False(context.HasSucceeded);
-            context = new AuthorizationHandlerContext(createReq, principal, a);
-            await handler.HandleAsync(context);
-            Assert.False(context.HasSucceeded);
-            context = new AuthorizationHandlerContext(updateReq, principal, a);
-            await handler.HandleAsync(context);
-            Assert.False(context.HasSucceeded);
-            context = new AuthorizationHandlerContext(deleteReq, principal, a);
-            await handler.HandleAsync(context);
-            Assert.False(context.HasSucceeded);
+                var authContext = new AuthorizationHandlerContext(readReq, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.False(authContext.HasSucceeded);
+                authContext = new AuthorizationHandlerContext(createReq, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.False(authContext.HasSucceeded);
+                authContext = new AuthorizationHandlerContext(updateReq, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.False(authContext.HasSucceeded);
+                authContext = new AuthorizationHandlerContext(deleteReq, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.False(authContext.HasSucceeded);
+            }
         }
 
         [Fact]
         public async Task OrgMember_ReadAccess_Amphora()
         {
             var principal = new TestPrincipal();
-            var userManager = new Mock<IUserManager>();
-            var org = EntityLibrary.GetOrganisation(nameof(OrgMember_ReadAccess_Amphora));
-            var orgStore = new InMemoryEntityStore<OrganisationModel>(Mapper);
-            org = await orgStore.CreateAsync(org);
-            var extendedOrg = await orgStore.ReadAsync<OrganisationExtendedModel>(org.Id, org.OrganisationId);
-            var user = new ApplicationUserDto { Id = Guid.NewGuid().ToString(), OrganisationId = org.OrganisationId };
-            extendedOrg.AddOrUpdateMembership(user);
-            await orgStore.UpdateAsync(extendedOrg);
+            var userService = new Mock<IUserService>();
+            var org = EntityLibrary.GetOrganisationModel(nameof(OrgMember_ReadAccess_Amphora));
+            using (var context = GetContext(nameof(OrgMember_ReadAccess_Amphora)))
+            {
+                var orgStore = new OrganisationsEFStore(context);
+                org = await orgStore.CreateAsync(org);
+                var extendedOrg = await orgStore.ReadAsync(org.Id);
+                var user = new ApplicationUser { Id = Guid.NewGuid().ToString(), OrganisationId = org.Id };
+                extendedOrg.AddOrUpdateMembership(user);
+                await orgStore.UpdateAsync(extendedOrg);
 
-            userManager.Setup(_ => _.GetUserAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user as IApplicationUser));
+                userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
-            var amphoraStore = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(OrgMember_ReadAccess_Amphora));
-            a = await amphoraStore.CreateAsync<AmphoraExtendedModel>(a);
+                var amphoraStore = new AmphoraeEFStore(context);
+                var a = EntityLibrary.GetAmphoraModel(org, nameof(OrgMember_ReadAccess_Amphora));
+                a = await amphoraStore.CreateAsync(a);
 
-            var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
+                var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
 
-            var handler = new AmphoraAuthorizationHandler(logger, permissionService, userManager.Object);
-            var requirements = new List<IAuthorizationRequirement> { Operations.Read };
-            var context = new AuthorizationHandlerContext(requirements, principal, a);
-            await handler.HandleAsync(context);
-            Assert.True(context.HasSucceeded);
+                var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
+                var requirements = new List<IAuthorizationRequirement> { Operations.Read };
+                var authContext = new AuthorizationHandlerContext(requirements, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.True(authContext.HasSucceeded);
 
-            requirements.Add(Operations.Update);
-            context = new AuthorizationHandlerContext(requirements, principal, a);
-            await handler.HandleAsync(context);
-            Assert.False(context.HasSucceeded);
+                requirements.Add(Operations.Update);
+                authContext = new AuthorizationHandlerContext(requirements, principal, a);
+                await handler.HandleAsync(authContext);
+                Assert.False(authContext.HasSucceeded);
+            }
         }
     }
 }

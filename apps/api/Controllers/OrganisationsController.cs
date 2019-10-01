@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Options;
 using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Organisations;
@@ -29,7 +30,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPost("api/organisations")]
-        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationExtendedModel org)
+        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationModel org) //TODO make this a DTO
         {
             // check the key
             if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
@@ -55,13 +56,15 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpPut("api/organisations/{id}")]
-        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationModel org)
+        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationDto org)
         {
             var entity = await entityStore.ReadAsync(id);
             if (entity == null) return NotFound();
-            org.Id = entity.Id;
-            org.OrganisationId = entity.OrganisationId;
-            var result = await entityStore.UpdateAsync(org);
+            entity.Name = org.Name;
+            entity.About = org.About;
+            entity.Address = org.Address;
+            entity.WebsiteUrl = org.WebsiteUrl;
+            var result = await entityStore.UpdateAsync(entity);
             return Ok(result);
         }
 

@@ -16,13 +16,13 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         [BindProperty]
-        public AmphoraExtendedModel Amphora { get; set; }
+        public AmphoraModel Amphora { get; set; }
 
         public virtual async Task<IActionResult> OnGetAsync(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToPage("./Index");
 
-            var result = await amphoraeService.ReadAsync<AmphoraExtendedModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.WasForbidden)
             {
                 return RedirectToPage("./Forbidden");

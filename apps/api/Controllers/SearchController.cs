@@ -2,8 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,21 +41,21 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
             if(string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
-            var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId));
+            var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId, typeof(AmphoraModel)));
             return Ok(response.Results.Select(a => a.Entity));
         }
 
         [HttpGet("api/search/amphorae/byCreator")]
         public async Task<IActionResult> SearchAmphoraeByCreator(string userName)
         {
-            IApplicationUser user;
+            ApplicationUser user;
             if (string.IsNullOrEmpty(userName))
             {
-                user = await userService.UserManager.GetUserAsync(User);
+                user = await userService.ReadUserModelAsync(User);
             }
             else
             {
-                user = await userService.UserManager.FindByNameAsync(userName);
+                user = (await userService.UserManager.FindByNameAsync(userName));
             }
 
             var response = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));

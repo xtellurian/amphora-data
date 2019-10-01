@@ -67,14 +67,12 @@
     <script src="~/js/staticAutoComplete.js"></script>
     <script>
         const token = '@Model.Token';
-        const url = '@Url.Action("LookupLocationAsync", "Market")';
+        const url = '/Market/LocationSearch';
         autocompleteGeoSearch(token, url)
     </script>
     <script>
         var content = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Organisations));
         onSelect = (feedback) => {
-            console.log('hello')
-            console.log(feedback)
             document.querySelector(".autoCompleteWorkaround").value = feedback.selection.value.Name
             document.querySelector("#joinButton").setAttribute("href", `/organisations/AcceptInvitation/?organisationId=${feedback.selection.value.OrganisationId}`)
         }

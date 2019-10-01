@@ -11,6 +11,7 @@ using Amphora.Common.Models.Organisations;
 using System.Collections.Generic;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -28,23 +29,34 @@ namespace Amphora.Api.Services.Auth
             this.orgStore = orgStore;
             this.amphoraeStore = amphoraeStore;
         }
-        public async Task<bool> IsAuthorizedAsync(IApplicationUser user, IEntity entity, AccessLevels accessLevel)
+
+        public async Task<bool> IsAuthorizedAsync(IUser user, OrganisationModel org, AccessLevels accessLevel)
         {
-            // check if user is in Admin role
-            var org = await orgStore.ReadAsync<OrganisationExtendedModel>(entity.OrganisationId, entity.OrganisationId);
-            var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
+            org = await orgStore.ReadAsync(org.Id, true);
+            var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserModelId, user.Id));
 
             if (membership != null) // if user is in the org
             {
                 if (membership.Role.ToDefaultAccessLevel() >= accessLevel)
                 {
                     // permission granted via role
-                    logger.LogInformation($"Authorization succeeded for user {user.Id} as role {Enum.GetName(typeof(AccessLevels), membership.Role)} for entity {entity.Id}");
+                    logger.LogInformation($"Authorization succeeded for user {user.Id} as role {Enum.GetName(typeof(AccessLevels), membership.Role)} for org {org.Id}");
                     return true;
                 }
             }
 
-            if(entity is AmphoraModel && await HasUserPurchasedAmphoraAsync(user, entity as AmphoraModel) && accessLevel <= AccessLevels.ReadContents)
+            return false;
+        }
+        public async Task<bool> IsAuthorizedAsync(IUser user, AmphoraModel entity, AccessLevels accessLevel)
+        {
+            // check if user is in Admin role
+            var org = await orgStore.ReadAsync(entity.OrganisationId);
+            if(await this.IsAuthorizedAsync(user, org, accessLevel))
+            {
+                return true;
+            }
+
+            if( await HasUserPurchasedAmphoraAsync(user, entity as AmphoraModel) && accessLevel <= AccessLevels.ReadContents)
             {
                 logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");
                 return true;
@@ -56,10 +68,10 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        private async Task<bool> HasUserPurchasedAmphoraAsync(IApplicationUserReference user, AmphoraModel amphora)
+        private async Task<bool> HasUserPurchasedAmphoraAsync(IUser user, AmphoraModel amphora)
         {
-            var extended = await amphoraeStore.ReadAsync<AmphoraSecurityModel>(amphora.Id, amphora.OrganisationId);
-            return extended.HasPurchased?.Any(p => string.Equals(p.Id , user.Id)) ?? false;
+            var extended = await amphoraeStore.ReadAsync(amphora.Id);
+            return extended.Transactions?.Any(p => string.Equals(p.UserId , user.Id)) ?? false;
         }
     }
 }

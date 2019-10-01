@@ -69,7 +69,7 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnPostAsync(List<IFormFile> files)
         {
-            var org = new OrganisationExtendedModel
+            var org = new OrganisationModel
             {
                 Name = Input.Name,
                 About = Input.About,

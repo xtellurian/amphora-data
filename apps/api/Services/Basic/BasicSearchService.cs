@@ -23,9 +23,9 @@ namespace Amphora.Api.Services.Basic
         {
             var entities = new List<AmphoraModel>();
 
-            var res = await amphoraeService.AmphoraStore.QueryAsync<AmphoraExtendedModel>(
+            var res = await amphoraeService.AmphoraStore.QueryAsync(
                 a => a.Name.Contains(searchText)
-                || (a.Description?.Contains(searchText) ?? false));
+                || (a.Description.Contains(searchText)));
             entities.AddRange(res);
 
             return new EntitySearchResult<AmphoraModel>(entities.ToList());

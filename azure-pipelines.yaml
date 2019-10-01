@@ -1,8 +1,10 @@
 trigger:
   branches:
     include:
-    - master
-    - develop
+      - master
+      - develop
+    exclude:
+      - migrate/efcore
   paths:
     exclude:
     - README.md

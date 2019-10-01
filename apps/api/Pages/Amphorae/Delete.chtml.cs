@@ -21,7 +21,7 @@ namespace Amphora.Api.Pages.Amphorae
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            var readResult = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var readResult = await amphoraeService.ReadAsync(User, id);
             if(readResult.Succeeded)
             {
                 var deleteResult = await amphoraeService.DeleteAsync(User, readResult.Entity);

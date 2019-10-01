@@ -31,7 +31,7 @@ namespace Amphora.Api.Pages.Organisations
             this.permissionService = permissionService;
             this.userService = userService;
         }
-        public OrganisationExtendedModel Organisation { get; set; }
+        public OrganisationModel Organisation { get; set; }
         public bool CanEdit { get; private set; }
         public bool CanInvite { get; private set; }
         public bool CanAcceptInvite { get; private set; }
@@ -40,14 +40,15 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
+            var appUser = await userService.UserManager.FindByIdAsync(user.Id);
             if (string.IsNullOrEmpty(id))
             {
-                this.Organisation = await entityStore.ReadAsync<OrganisationExtendedModel>(user.OrganisationId, user.OrganisationId);
+                this.Organisation = await entityStore.ReadAsync(user.OrganisationId);
             }
             else
             {
-                this.Organisation = await entityStore.ReadAsync<OrganisationExtendedModel>(id, id);
+                this.Organisation = await entityStore.ReadAsync( id);
             }
             if (this.Organisation == null) return RedirectToPage("/Index");
 
@@ -57,10 +58,10 @@ namespace Amphora.Api.Pages.Organisations
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
             if (this.Organisation.Invitations != null)
             {
-                this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), user.Email.ToLower()));
+                this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), appUser.Email.ToLower()));
             }
             // get pinned
-            var query = await amphoraeService.AmphoraStore.QueryAsync<AmphoraModel>(a => a.OrganisationId == Organisation.OrganisationId);
+            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.OrganisationId == Organisation.Id);
             this.PinnedAmphorae = query.Take(6);
             return Page();
         }

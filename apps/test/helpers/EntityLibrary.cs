@@ -1,4 +1,6 @@
 using System;
+using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 
@@ -7,15 +9,31 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static AmphoraExtendedModel GetAmphora(string orgId, string testName)
+        public static AmphoraExtendedDto GetAmphoraDto(string orgId, string testName)
         {
             var lat = -32.868 + rnd.Next(2); // near sydney
             var lon = 150.2093 + rnd.Next(2);
 
-            return new AmphoraExtendedModel()
+            return new AmphoraExtendedDto()
             {
-                Id = null,
                 OrganisationId = orgId,
+                Description = DateTime.Now.ToString(),
+                Price = rnd.Next(0, 99),
+                Name = "test: " + testName,
+                Lat = lat,
+                Lon = lon
+            };
+        }
+
+        public static AmphoraModel GetAmphoraModel(OrganisationModel org, string testName)
+        {
+            var lat = -32.868 + rnd.Next(2); // near sydney
+            var lon = 150.2093 + rnd.Next(2);
+
+            return new AmphoraModel()
+            {
+                Id = System.Guid.NewGuid().ToString(),
+                Organisation = org,
                 Description = DateTime.Now.ToString(),
                 Price = rnd.Next(0, 99),
                 Name = "test: " + testName,
@@ -25,7 +43,7 @@ namespace Amphora.Tests.Helpers
 
         public static AmphoraModel GetInvalidAmphora(string id = null)
         {
-            return new AmphoraExtendedModel()
+            return new AmphoraModel()
             {
                 Id = id,
                 Description = null,
@@ -34,11 +52,18 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static OrganisationModel GetOrganisation(string testName)
+        public static OrganisationDto GetOrganisationDto(string testName)
         {
-            return new OrganisationExtendedModel
+            return new OrganisationDto
             {
-                Name =  testName
+                Name = testName
+            };
+        }
+        public static OrganisationModel GetOrganisationModel(string testName)
+        {
+            return new OrganisationModel
+            {
+                Name = testName
             };
         }
     }

@@ -3,7 +3,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
-using Amphora.Api.Models.Users;
+using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -27,7 +28,7 @@ namespace Amphora.Tests.Integration
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanCreateOrganisation));
 
-            var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanCreateOrganisation));
+            var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanCreateOrganisation));
 
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
 
@@ -42,7 +43,7 @@ namespace Amphora.Tests.Integration
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
+            var b = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Name, b.Name);
 
@@ -59,24 +60,24 @@ namespace Amphora.Tests.Integration
             var client = _factory.CreateClient();
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanUpdateOrganisation));
-            var a = Helpers.EntityLibrary.GetOrganisation(nameof(CanUpdateOrganisation));
+            var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode(); // Status Code 200-299
             var responseBody = await createResponse.Content.ReadAsStringAsync();
-            a = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
+            a = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
 
             // Act
             a.Name = Guid.NewGuid().ToString();
             requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            var updateResponse = await client.PutAsync(url + "/" + a.OrganisationId, requestBody);
+            var updateResponse = await client.PutAsync(url + "/" + a.Id, requestBody);
             updateResponse.EnsureSuccessStatusCode();
             var b = JsonConvert.DeserializeObject<OrganisationModel>(await updateResponse.Content.ReadAsStringAsync());
 
             // Assert
             Assert.Equal(a.Id, b.Id);
-            Assert.Equal(a.OrganisationId, b.OrganisationId);
+            Assert.Equal(a.Id, b.Id);
             Assert.Equal(a.Name, b.Name);
 
             await DeleteOrganisation(a, client);
@@ -92,7 +93,7 @@ namespace Amphora.Tests.Integration
             var client = _factory.CreateClient();
             client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanInviteToOrganisation));
-            var org = Helpers.EntityLibrary.GetOrganisation(nameof(CanInviteToOrganisation));
+            var org = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanInviteToOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.PostAsync(url, requestBody);
@@ -102,36 +103,36 @@ namespace Amphora.Tests.Integration
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            org = JsonConvert.DeserializeObject<OrganisationModel>(responseBody);
+            org = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
 
 
             var client2 = _factory.CreateClient();
             var (otherUser, _) = await client2.CreateUserAsync(nameof(CanInviteToOrganisation));
 
-            var inviteResponse = await client.PostAsJsonAsync($"{url}/{org.OrganisationId}/invitations/",
+            var inviteResponse = await client.PostAsJsonAsync($"{url}/{org.Id}/invitations/",
                 new Invitation(otherUser.Email));
             var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
             inviteResponse.EnsureSuccessStatusCode();
 
-            var acceptResponse = await client2.GetAsync($"api/organisations/{org.OrganisationId}/invitations");
+            var acceptResponse = await client2.GetAsync($"api/organisations/{org.Id}/invitations");
             acceptResponse.EnsureSuccessStatusCode();
 
             var selfResponse = await client2.GetAsync("api/users/self");
             var selfContent = await selfResponse.Content.ReadAsStringAsync();
             selfResponse.EnsureSuccessStatusCode();
-            var self = JsonConvert.DeserializeObject<ApplicationUserDto>(selfContent);
-            Assert.Equal(org.OrganisationId, self.OrganisationId);
+            var self = JsonConvert.DeserializeObject<UserDto>(selfContent);
+            Assert.Equal(org.Id, self.OrganisationId);
 
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
             await DestroyUserAsync(client2, otherUser);
         }
 
-        private async Task DeleteOrganisation(OrganisationModel a, HttpClient client)
+        private async Task DeleteOrganisation(OrganisationDto a, HttpClient client)
         {
-            var deleteResponse = await client.DeleteAsync($"api/organisations/{a.OrganisationId}");
+            var deleteResponse = await client.DeleteAsync($"api/organisations/{a.Id}");
             deleteResponse.EnsureSuccessStatusCode();
-            var getResponse = await client.GetAsync($"api/organisations/{a.OrganisationId}");
+            var getResponse = await client.GetAsync($"api/organisations/{a.Id}");
             Assert.Equal(System.Net.HttpStatusCode.NotFound, getResponse.StatusCode);
         }
     }

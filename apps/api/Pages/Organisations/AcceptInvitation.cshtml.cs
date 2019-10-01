@@ -19,9 +19,9 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnGetAsync(string organisationId)
         {
-            this.Organisation = await organisationService.Store.ReadAsync(organisationId, organisationId);
+            this.Organisation = await organisationService.Store.ReadAsync(organisationId);
             if(this.Organisation == null) return RedirectToPage("./Index");
-            InvitationAccepted = await organisationService.AcceptInvitation(User, Organisation.OrganisationId);
+            InvitationAccepted = await organisationService.AcceptInvitation(User, Organisation.Id);
             return Page();
         }
     }

@@ -69,7 +69,7 @@
                         <tr class="market-item">
                             <th scope="row">@entity.Name</th>
                             <td>@entity.Price</td>
-                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.AmphoraId">
+                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
                                     <button class="btn btn-link text-success">More</button> 
                                 </a>
                             </td>
@@ -87,7 +87,7 @@
     <script src="~/js/geo.js"></script>
     <script>
         const token = '@Model.Token';
-        const url = '@Url.Action("LookupLocationAsync", "Market")';
+        const url = '/Market/LocationSearch';
         autocompleteGeoSearch(token, url, "#lat", "#lon")
     </script>
 }

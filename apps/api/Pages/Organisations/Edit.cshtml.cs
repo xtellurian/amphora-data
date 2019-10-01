@@ -47,10 +47,10 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if (id == null) id = user.OrganisationId;
             this.OrganisationId = id;
-            var organisation = await organisationService.Store.ReadAsync<OrganisationExtendedModel>(id, id);
+            var organisation = await organisationService.Store.ReadAsync(id);
 
             var authorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Update);
             if (authorized)
@@ -72,9 +72,9 @@ namespace Amphora.Api.Pages.Organisations
         {
             if (ModelState.IsValid)
             {
-                var user = await userService.UserManager.GetUserAsync(User);
+                var user = await userService.ReadUserModelAsync(User);
                 if (id == null) id = user.OrganisationId;
-                var organisation = await organisationService.Store.ReadAsync<OrganisationExtendedModel>(id, id);
+                var organisation = await organisationService.Store.ReadAsync(id);
 
                 var authorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Update);
                 if (authorized)
@@ -95,7 +95,7 @@ namespace Amphora.Api.Pages.Organisations
                         }
                     }
                 }
-                return RedirectToPage("./Detail", new { Id = organisation.OrganisationId });
+                return RedirectToPage("./Detail", new { Id = organisation.Id });
             }
             else
             {

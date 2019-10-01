@@ -21,7 +21,7 @@ namespace Amphora.Api.Pages.Amphorae
         public async Task<IActionResult> OnGetAsync(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToPage("./Index");
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             if (result.WasForbidden)
             {
                 return RedirectToPage("./Forbidden");

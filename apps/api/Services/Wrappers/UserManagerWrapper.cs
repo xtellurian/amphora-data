@@ -1,41 +1,44 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Contracts;
+using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services.Wrappers
 {
-    public class UserManagerWrapper<T> : IUserManager where T : class, IApplicationUser
+    public class UserManagerWrapper<T> : IUserManager where T : ApplicationUser
     {
-        private readonly UserManager<T> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
 
-        public UserManagerWrapper(UserManager<T> userManager, IMapper mapper)
+        public UserManagerWrapper(UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             this.userManager = userManager;
             this.mapper = mapper;
         }
 
-        public async Task<IdentityResult> CreateAsync(IApplicationUser user, string password)
+        public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
         {
-            var mapped = mapper.Map<T>(user);
-            return await userManager.CreateAsync(mapped, password);
+            return await userManager.CreateAsync(user, password);
+        }
+        public async Task<ApplicationUser> FindByIdAsync(string userId)
+        {
+            return await userManager.FindByIdAsync(userId);
         }
 
-        public async Task<IdentityResult> DeleteAsync(IApplicationUser user)
+        public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);
             var u = await userManager.FindByIdAsync(user.Id);
             return await userManager.DeleteAsync(u);
         }
 
-        public async Task<IApplicationUser> FindByNameAsync(string userName)
+        public async Task<ApplicationUser> FindByNameAsync(string userName)
         {
             return await userManager.FindByNameAsync(userName);
         }
-        public async Task<string> GenerateEmailConfirmationTokenAsync(IApplicationUser user)
+        public async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);
             return await userManager.GenerateEmailConfirmationTokenAsync(mapped);
@@ -46,14 +49,14 @@ namespace Amphora.Api.Services.Wrappers
             return userManager.GetUserName(principal);
         }
 
-        public async Task<IApplicationUser> GetUserAsync(ClaimsPrincipal principal)
+        public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal principal)
         {
             return await userManager.GetUserAsync(principal);
         }
 
-        public async Task<IdentityResult> UpdateAsync(IApplicationUser user)
+        public async Task<IdentityResult> UpdateAsync(ApplicationUser user)
         {
-            return await userManager.UpdateAsync((T)user);
+            return await userManager.UpdateAsync(user);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -25,19 +26,19 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
-            var a = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(SearchAmphorae_ByLocation));
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(SearchAmphorae_ByLocation));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
-            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
+            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
 
             // Act
             var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var amphorae = JsonConvert.DeserializeObject<List<AmphoraModel>>(content);
+            var amphorae = JsonConvert.DeserializeObject<List<AmphoraExtendedDto>>(content);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -56,23 +57,25 @@ namespace Amphora.Tests.Integration
         {
             var (client, user, org) = await base.NewOrgAuthenticatedClientAsync();
             var rnd = new Random();
-            var location = new GeoLocation(rnd.Next(90), rnd.Next(90));
+            var lat = rnd.Next(90);
+            var lon = rnd.Next(90);
             var term = string.Empty;
             // let's create an amphorae
-            var a = EntityLibrary.GetAmphora(org.OrganisationId, nameof(SearchAmphorae_ByLocation));
-            a.GeoLocation = location;
+            var a = EntityLibrary.GetAmphoraDto(org.Id, nameof(SearchAmphorae_ByLocation));
+            a.Lat = lat;
+            a.Lon = lon;
             var content = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var createResponse = await client.PostAsync("api/amphorae", content);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedModel>(await createResponse.Content.ReadAsStringAsync());
+            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
-            var response = await client.GetAsync($"{url}?lat={location.Lat()}&lon={location.Lon()}&dist=10");
+            var response = await client.GetAsync($"{url}?lat={lat}&lon={lon}&dist=10");
             var responseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
 
-            var responseList = JsonConvert.DeserializeObject<List<AmphoraModel>>(responseContent);
+            var responseList = JsonConvert.DeserializeObject<List<AmphoraExtendedDto>>(responseContent);
             // Assert.Contains(responseList, b => string.Equals(b.Id, a.Id)); // how to wait for the indexer to run?
 
-            await DestroyAmphoraAsync(client, a.AmphoraId);
+            await DestroyAmphoraAsync(client, a.Id);
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
         }

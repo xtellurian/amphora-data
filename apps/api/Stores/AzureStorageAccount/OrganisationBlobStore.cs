@@ -73,7 +73,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
         private string GetContainerName(OrganisationModel org)
         {
-            return $"organisation-{org.OrganisationId}";
+            return $"organisation-{org.Id}";
         }
     }
 }

@@ -38,17 +38,18 @@ namespace Amphora.Api.Services.Organisations
 
         public async Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId)
         {
-            var user = await userService.UserManager.GetUserAsync(principal);
-            var org = await Store.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
-            var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), user.Email.ToUpper()));
+            var user = await userService.ReadUserModelAsync(principal);
+            var appUser = await userService.UserManager.GetUserAsync(principal);
+            var org = await Store.ReadAsync(orgId);
+            var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), appUser.Email.ToUpper()));
 
             if(invitation != null)
             {
-                user.OrganisationId = org.OrganisationId;
+                user.OrganisationId = org.Id;
                 var result = await userService.UserManager.UpdateAsync(user);
-                if(result.Succeeded)
+                if(result != null)
                 {
-                    logger.LogInformation($"{user.Email} redeemed an invitation to {org.Id}");
+                    logger.LogInformation($"{appUser.Email} redeemed an invitation to {org.Id}");
                     org.Invitations.Remove(invitation);
                     org.AddOrUpdateMembership(user);
                     await Store.UpdateAsync(org);
@@ -70,7 +71,7 @@ namespace Amphora.Api.Services.Organisations
         public async Task InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
-            var org = await Store.ReadAsync<OrganisationExtendedModel>(orgId, orgId);
+            var org = await Store.ReadAsync(orgId);
             var authorized = await permissionService.IsAuthorizedAsync(user, org, ResourcePermissions.Create);
             if (authorized)
             {
@@ -84,19 +85,19 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<OrganisationExtendedModel>> CreateOrganisationAsync(
+        public async Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(
             ClaimsPrincipal principal,
-            OrganisationExtendedModel org)
+            OrganisationModel org)
         {
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
-            if (user == null) return new EntityOperationResult<OrganisationExtendedModel>("Cannot find user. Please login");
+            if (user == null) return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login");
             org.CreatedBy = user.Id;
             org.CreatedDate = DateTime.UtcNow;
             if(!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
             org.AddOrUpdateMembership(user, Roles.Administrator);
             // we good - create an org
-            org = await Store.CreateAsync<OrganisationExtendedModel>(org);
+            org = await Store.CreateAsync(org);
             if (org != null)
             {
                 // update user with org id
@@ -104,12 +105,11 @@ namespace Amphora.Api.Services.Organisations
                 {
                     if (string.IsNullOrEmpty(user.OrganisationId))
                     {
-                        user.OrganisationId = org.OrganisationId; // set home org
+                        user.OrganisationId = org.Id; // set home org
                         var result = await userService.UserManager.UpdateAsync(user);
-                        if (!result.Succeeded) throw new Exception("Failed to update user id");
                     }
 
-                    return new EntityOperationResult<OrganisationExtendedModel>(org);
+                    return new EntityOperationResult<OrganisationModel>(org);
                 }
                 catch (Exception ex)
                 {
@@ -121,7 +121,7 @@ namespace Amphora.Api.Services.Organisations
             }
             else
             {
-                return new EntityOperationResult<OrganisationExtendedModel>("Failed to create organisation");
+                return new EntityOperationResult<OrganisationModel>("Failed to create organisation");
             }
         }
 

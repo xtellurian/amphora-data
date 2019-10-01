@@ -7,32 +7,46 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Newtonsoft.Json;
+using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Stores.EFCore;
 
 namespace Amphora.Tests.Unit
 {
-    public class AmphoraEntityTests: UnitTestBase
+    public class AmphoraEntityTests : UnitTestBase
     {
 
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = new AmphoraExtendedModel()
+            using (var context = GetContext(nameof(InMemoryCanStoreAndRetrieveAmphoraAsync)))
             {
-                Name = "Test Name",
-                Description = "Test Description",
-                Price = 42
-            };
+                var sut = new AmphoraeEFStore(context);
 
-            await StoreAndRetrieveAmphoraAsync(sut, a);
+                var a = new AmphoraModel()
+                {
+                    Name = "Test Name",
+                    Description = "Test Description",
+                    Price = 42
+                };
+
+                var setResult = await sut.CreateAsync(a);
+                Assert.NotNull(setResult);
+                Assert.NotNull(setResult.Id);
+
+                var id = a.Id;
+
+                var getResult = await sut.ReadAsync(id);
+                Assert.Equal(id, getResult.Id);
+                Assert.Equal(setResult, getResult);
+            }
         }
 
         [Fact]
         public void CanSerialiseAndDeserialiseAmphora()
         {
-            var a = EntityLibrary.GetAmphora("123", nameof(CanSerialiseAndDeserialiseAmphora));
+            var a = EntityLibrary.GetAmphoraDto("123", nameof(CanSerialiseAndDeserialiseAmphora));
             var a_serialised = JsonConvert.SerializeObject(a);
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedModel>(a_serialised);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(a_serialised);
             Assert.NotNull(b);
             Assert.Equal(a.OrganisationId, b.OrganisationId);
         }
@@ -40,52 +54,40 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task InMemoryEntityStoreListAsync()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            var a = new AmphoraExtendedModel()
+            using (var context = GetContext(nameof(InMemoryEntityStoreListAsync)))
             {
-                Name = "Test Name",
-                Description = "Test Description",
-                Price = 42
-            };
+                var sut = new AmphoraeEFStore(context);
+                var a = new AmphoraModel()
+                {
+                    Name = "Test Name",
+                    Description = "Test Description",
+                    Price = 42
+                };
 
-            await ListAmphoraAsync(sut, a);
+                var emptyList = await sut.TopAsync();
+                Assert.Empty(emptyList);
+                var setResult = await sut.CreateAsync(a);
+                var list = await sut.TopAsync();
+                Assert.Single(list);
+                Assert.NotNull(list.FirstOrDefault());
+                Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
+            }
         }
 
         [Fact]
         public async Task InMemoryEntityStoreReturnsNullAsync()
         {
-            var sut = new InMemoryEntityStore<AmphoraModel>(Mapper);
-            await GetMissingAmphoraAsync(sut);
+            using (var context = GetContext(nameof(InMemoryEntityStoreReturnsNullAsync)))
+            {
+                var sut = new AmphoraeEFStore(context);
+                await GetMissingAmphoraAsync(sut);
+            }
         }
 
         private async Task GetMissingAmphoraAsync(IEntityStore<AmphoraModel> sut)
         {
             var missing = await sut.ReadAsync("missing");
             Assert.Null(missing);
-        }
-
-        private async Task ListAmphoraAsync(IEntityStore<AmphoraModel> sut, AmphoraModel a)
-        {
-            var emptyList = await sut.TopAsync();
-            Assert.Empty(emptyList);
-            var setResult = await sut.CreateAsync(a);
-            var list = await sut.TopAsync();
-            Assert.Single(list);
-            Assert.NotNull(list.FirstOrDefault());
-            Assert.Equal(setResult.Id, list.FirstOrDefault().Id);
-        }
-
-        private async Task StoreAndRetrieveAmphoraAsync(IEntityStore<AmphoraModel> sut, AmphoraModel a)
-        {
-            var setResult = await sut.CreateAsync(a);
-            Assert.NotNull(setResult);
-            Assert.NotNull(setResult.Id);
-
-            var id = a.Id;
-
-            var getResult = await sut.ReadAsync(id);
-            Assert.Equal(id, getResult.Id);
-            Assert.Equal(setResult, getResult);
         }
     }
 }

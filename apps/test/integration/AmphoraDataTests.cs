@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -25,14 +26,14 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_UploadDownloadFiles_AsAdmin));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -63,14 +64,14 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphora(adminOrg.OrganisationId, nameof(Post_DownloadFiles_AsOtherUsers));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_DownloadFiles_AsOtherUsers));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
                 );
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedModel>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
 
             var generator = new Helpers.RandomBufferGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);

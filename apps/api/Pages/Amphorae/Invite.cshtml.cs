@@ -42,7 +42,7 @@ namespace Amphora.Api.Pages.Amphorae
         public async Task<IActionResult> OnGetAsync(string id)
         {
             var user = await userService.UserManager.GetUserAsync(User);
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
 
             if (result.Succeeded)
             {
@@ -72,7 +72,7 @@ namespace Amphora.Api.Pages.Amphorae
                 return Page();
             }
             var user = await userService.UserManager.GetUserAsync(User);
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             var authorized = await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.Administer);
             if (authorized && result.Succeeded)
             {
@@ -85,9 +85,9 @@ namespace Amphora.Api.Pages.Amphorae
                 }
                 else
                 {
-                    var securityModel = mapper.Map<AmphoraSecurityModel>(result.Entity);
+                    var securityModel = mapper.Map<AmphoraModel>(result.Entity);
                     await amphoraeService.AmphoraStore.UpdateAsync(securityModel);
-                    return RedirectToPage("./Detail", new { id = Amphora.AmphoraId });
+                    return RedirectToPage("./Detail", new { id = Amphora.Id });
                 }
             }
             else if (result.WasForbidden)

@@ -35,7 +35,7 @@ namespace Amphora.Api.Pages.Organisations
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if(id == null)
             {
                 this.Organisation = await organisationService.Store.ReadAsync(user.OrganisationId);

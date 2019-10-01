@@ -5,6 +5,6 @@ namespace Amphora.Api.Contracts
 {
     public interface ISignalService
     {
-        Task WriteSignalAsync(AmphoraExtendedModel entity, Common.Models.Domains.Datum d);
+        Task WriteSignalAsync(AmphoraModel entity, Common.Models.Domains.Datum d);
     }
 }

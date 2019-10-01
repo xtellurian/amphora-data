@@ -23,7 +23,7 @@ namespace Amphora.Api.Pages.Amphorae
         public async Task<IActionResult> OnGetAsync(string id)
         {
             this.Id = id;
-            var result = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var result = await amphoraeService.ReadAsync(User, id);
             if(result.Succeeded)
             {
                 this.Success = true;

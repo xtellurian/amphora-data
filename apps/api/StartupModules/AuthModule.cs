@@ -9,15 +9,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 
 namespace Amphora.Api.StartupModules
 {
     public class AuthModule
     {
-        private readonly IHostingEnvironment HostingEnvironment;
+        private readonly IWebHostEnvironment HostingEnvironment;
         private readonly IConfiguration Configuration;
 
-        public AuthModule(IConfiguration configuration, IHostingEnvironment env)
+        public AuthModule(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.HostingEnvironment = env;
             this.Configuration = configuration;

@@ -7,19 +7,17 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class GeoTests: IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    public class GeoTests: IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
 
-        public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
-            _factory = factory;
         }
         [Fact]
        public async Task FuzzySearchTests()
        {
             // Arrange
-            var client = _factory.CreateClient();
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
 
             // Act
             var response = await client.GetAsync("/api/location/fuzzy?query=sydney");

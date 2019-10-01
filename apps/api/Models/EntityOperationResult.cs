@@ -8,6 +8,7 @@ namespace Amphora.Api.Models
         public EntityOperationResult()
         {
             Succeeded = true;
+            this.Errors = new List<string>();
         }
         public EntityOperationResult(params string[] errors)
         {

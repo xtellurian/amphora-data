@@ -43,7 +43,7 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/market/purchase/")]
         public async Task<IActionResult> PurchaseAsync(string id)
         {
-            var a = await amphoraeService.ReadAsync<AmphoraModel>(User, id);
+            var a = await amphoraeService.ReadAsync(User, id);
             if(a.Succeeded)
             {
                 var result = await transactionService.PurchaseAmphora(User, a.Entity);

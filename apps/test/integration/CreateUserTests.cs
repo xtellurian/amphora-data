@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
-using Amphora.Api.Models.Users;
+using Amphora.Common.Models.Users;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var user = new ApplicationUserDto
+            var user = new UserDto
             {
                 UserName = email,
                 Email = email,
@@ -96,7 +96,7 @@ namespace Amphora.Tests.Integration
             var createdOrg = JsonConvert.DeserializeObject<OrganisationModel>(orgCreateContent);
 
             // now delete the org
-            await client.DeleteAsync($"api/organisations/{createdOrg.OrganisationId}");
+            await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
             // now delete user
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
             deleteRequest.EnsureSuccessStatusCode();

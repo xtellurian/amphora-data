@@ -7,13 +7,11 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     public class GracefulErrorsTests
-        : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+        : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
-            _factory = factory;
         }
 
         [Theory]
@@ -54,7 +52,7 @@ namespace Amphora.Tests.Integration
         public async Task Post_WeirdJson(string url, string key = "")
         {
             // Arrange
-            var client = _factory.CreateClient();
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var content = new StringContent(Helpers.BadJsonLibrary.GetJson(key), Encoding.UTF8, "application/json");
 
             // Act

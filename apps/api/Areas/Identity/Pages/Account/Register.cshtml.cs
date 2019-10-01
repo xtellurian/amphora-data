@@ -2,17 +2,14 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Amphora.Api.Models;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Contracts;
-using Amphora.Api.Models.Users;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {
@@ -84,7 +81,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string onboardingId, string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -95,17 +92,19 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     About = Input.About,
-                    FullName = Input.FullName,
+                    FullName = Input.FullName
                 };
 
                 var result = await userService.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User created a new account with password.");
                     await SendConfirmationEmailAsync(result.Entity);
                     
                     await signInManager.SignInAsync(result.Entity, isPersistent: false);
-                    if (string.IsNullOrEmpty(result.Entity.OrganisationId))
+
+                    if (string.IsNullOrEmpty(user.OrganisationId))
                     {
                         return RedirectToPage("/Organisations/Create");
                     }
@@ -124,7 +123,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private async Task SendConfirmationEmailAsync(IApplicationUser user)
+        private async Task SendConfirmationEmailAsync(ApplicationUser user)
         {
             var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user); // bug here
             var callbackUrl = Url.Page(
