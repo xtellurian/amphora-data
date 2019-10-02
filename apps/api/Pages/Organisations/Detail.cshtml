@@ -40,11 +40,15 @@
                     {
                         @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
                         {
-                            <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> @m.UserName </li>
+                            <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
+                                <a asp-page="/Profile/Detail" asp-route-userName="@m.UserName">@m.UserName </a>
+                            </li>
                         }
                         else
                         {
-                            <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> @m.UserName </li>
+                            <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
+                                <a asp-page="/Profile/Detail" asp-route-userName="@m.UserName">@m.UserName </a>
+                            </li>
                         }
                     }
                     </ul>
