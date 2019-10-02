@@ -54,6 +54,10 @@ namespace Amphora.Api.Stores.EFCore
                     .Reference(p => p.Organisation)
                     .Load();
 
+                context.Entry(result)
+                    .Reference(p => p.CreatedBy)
+                    .Load();
+
                 return result;
             }
             else

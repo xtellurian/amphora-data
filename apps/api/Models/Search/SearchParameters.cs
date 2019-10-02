@@ -1,5 +1,4 @@
 using Amphora.Common.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using System;
 using Amphora.Common.Models.Users;
@@ -14,7 +13,7 @@ namespace Amphora.Api.Models.Search
             return new SearchParameters()
             {
                 IsForUserAsCreator = true,
-                Filter = $"{nameof(Entity.CreatedBy)} eq '{user.Id}'"
+                Filter = $"{nameof(AmphoraModel.CreatedById)} eq '{user.Id}'"
             };
         }
 

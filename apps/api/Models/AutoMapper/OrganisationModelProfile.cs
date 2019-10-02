@@ -1,3 +1,4 @@
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 
@@ -7,6 +8,14 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public OrganisationModelProfile()
         {
+            CreateMap<OrganisationDto, OrganisationModel>()
+            .ForMember(p => p.Invitations, o => o.Ignore())
+            .ForMember(p => p.Memberships, o => o.Ignore())
+            .ForMember(p => p.CreatedById, o => o.Ignore())
+            .ForMember(p => p.CreatedBy, o => o.Ignore())
+            .ForMember(p => p.ttl, o => o.MapFrom(src => -1))
+            .ForMember(p => p.CreatedDate, o => o.Ignore())
+            .ReverseMap();
 
         }
     }

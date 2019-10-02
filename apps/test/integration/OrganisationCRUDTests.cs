@@ -25,7 +25,6 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanCreateOrganisation));
 
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanCreateOrganisation));
@@ -58,7 +57,6 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanUpdateOrganisation));
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
@@ -91,7 +89,6 @@ namespace Amphora.Tests.Integration
         {
              // Arrange
             var client = _factory.CreateClient();
-            client.AddCreateToken();
             var (user, _) = await client.CreateUserAsync(nameof(CanInviteToOrganisation));
             var org = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanInviteToOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");

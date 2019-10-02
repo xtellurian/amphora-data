@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Amphora.Api.Controllers
 {
@@ -31,93 +33,67 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet("api/users/self")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ReadSelf()
         {
             var user = await userService.ReadUserModelAsync(User);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
-            return Ok(mapper.Map<UserDto>(user)); 
+            return Ok(mapper.Map<UserDto>(user));
         }
 
         [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto dto, string onboardingId)
+        public async Task<IActionResult> CreateUser([FromBody] UserDto dto)
         {
             string password = System.Guid.NewGuid().ToString() + "!1A";
-            if (Request.Headers.ContainsKey("Create"))
+
+            var applicationUser = new ApplicationUser()
             {
-                var value = Request.Headers["Create"];
-                if (string.Equals(value, options.CurrentValue.Key))
-                {
-                    var applicationUser = new ApplicationUser()
-                    {
-                        Email = dto.Email,
-                        UserName = dto.UserName
-                    };
+                Email = dto.Email,
+                UserName = dto.UserName
+            };
 
-                    var result = await userService.CreateAsync(applicationUser, password);
+            var result = await userService.CreateAsync(applicationUser, password);
 
-                    if (result.Succeeded)
-                    {
-                        return Ok(password);
-                    }
-                    else
-                    {
-                        logger.LogError("Failed to create user!");
-                        foreach (var e in result.Errors)
-                        {
-                            logger.LogError(e);
-                        }
-                    }
-                    return BadRequest(JsonConvert.SerializeObject(result.Errors));
-                }
-                else
-                {
-                    return Unauthorized("Incorrect Create Key");
-                }
+            if (result.Succeeded)
+            {
+                return Ok(password);
             }
             else
             {
-                return Unauthorized("Create Header Required");
+                logger.LogError("Failed to create user!");
+                foreach (var e in result.Errors)
+                {
+                    logger.LogError(e);
+                }
             }
+            return BadRequest(JsonConvert.SerializeObject(result.Errors));
         }
 
         [HttpDelete("api/users/{username}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUser_Key(string username)
         {
-            if (Request.Headers.ContainsKey("Create"))
+            if (username == null) return BadRequest("id/ username is required");
+            var user = (await userService.UserManager.FindByNameAsync(username));
+            if (user == null) return NotFound();
+            var result = await userService.DeleteAsync(user);
+            if (result.Succeeded)
             {
-                var value = Request.Headers["Create"];
-                if (string.Equals(value, options.CurrentValue.Key))
-                {
-                    if (username == null) return BadRequest("id/ username is required");
-                    var user = (await userService.UserManager.FindByNameAsync(username));
-                    if (user == null) return NotFound();
-                    var result = await userService.DeleteAsync(user);
-                    if (result.Succeeded)
-                    {
-                        return Ok();
-                    }
-                    else
-                    {
-                        logger.LogError("Failed to create user!");
-                        foreach (var e in result.Errors)
-                        {
-                            logger.LogError(e);
-                        }
-                    }
-                    return BadRequest(JsonConvert.SerializeObject(result.Errors));
-                }
-                else
-                {
-                    return Unauthorized("Incorrect Create Key");
-                }
+                return Ok();
             }
             else
             {
-                return Unauthorized("Create Header Required");
+                logger.LogError("Failed to create user!");
+                foreach (var e in result.Errors)
+                {
+                    logger.LogError(e);
+                }
             }
+            return BadRequest(JsonConvert.SerializeObject(result.Errors));
+
         }
     }
 }

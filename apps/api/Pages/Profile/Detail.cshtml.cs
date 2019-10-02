@@ -52,7 +52,7 @@ namespace Amphora.Api.Pages.Profile
                 return RedirectToPage("./Missing");
             }
             this.Organisation = await organisationService.Store.ReadAsync(AppUser.OrganisationId);
-            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedBy == user.Id);
+            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == user.Id);
             this.PinnedAmphorae = query.Take(6);
             return Page();
         }
