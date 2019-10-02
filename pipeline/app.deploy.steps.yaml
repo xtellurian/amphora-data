@@ -17,3 +17,4 @@ steps:
     GITHASH: $(Build.SourceVersion)
     BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
+    STAGING: $(staging)

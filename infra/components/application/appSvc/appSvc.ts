@@ -114,6 +114,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 tags,
             },
             {
+                ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
                 parent: rg,
             });
         }
