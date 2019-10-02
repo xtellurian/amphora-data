@@ -11,20 +11,10 @@ namespace Amphora.Tests.Helpers
 {
     public static class AuthHelpers
     {
-
-        public static void AddCreateToken(this HttpClient client)
-        {
-            if (!client.DefaultRequestHeaders.TryGetValues("Create", out var x))
-            {
-                client.DefaultRequestHeaders.Add("Create", "dev");
-            }
-        }
         public static async Task<(UserDto User, string Password)> CreateUserAsync(
             this HttpClient client,
             string fullName)
         {
-            client.AddCreateToken();
-            // first, create an organisation
 
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
 

@@ -85,7 +85,7 @@ namespace Amphora.Api.Pages.Amphorae
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // get my amphora
-            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedBy == user.Id);
+            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == user.Id);
             return Page();
         }
     }

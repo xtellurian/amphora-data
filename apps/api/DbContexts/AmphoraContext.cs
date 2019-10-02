@@ -17,6 +17,7 @@ namespace Amphora.Api.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AmphoraModel>(b =>
             {
@@ -27,6 +28,7 @@ namespace Amphora.Api.DbContexts
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
                 b.HasMany(p => p.Transactions).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
+                b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
 
             });
 
@@ -38,6 +40,7 @@ namespace Amphora.Api.DbContexts
                     a.HasKey(nameof(Invitation.TargetEmail));
                 });
                 b.OwnsMany(b => b.Memberships, a => a.HasKey(nameof(Membership.UserModelId)));
+                b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
             });
 
             modelBuilder.Entity<TransactionModel>(b =>
@@ -47,7 +50,9 @@ namespace Amphora.Api.DbContexts
                 b.HasOne(p => p.Amphora).WithMany(u => u.Transactions).HasForeignKey(p => p.AmphoraId);
             });
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<ApplicationUser>(b => {
+                b.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
+            });
         }
 
         public DbSet<AmphoraModel> Amphorae { get; set; }

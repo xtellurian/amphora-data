@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -16,6 +17,8 @@ namespace Amphora.Common.Models.Amphorae
 
         public string OrganisationId { get; set; }
         public OrganisationModel Organisation { get; set; }
+        public string CreatedById { get; set; }
+        public ApplicationUser CreatedBy {get;set;}
         public string Name { get; set; }
         public bool IsPublic { get; set; }
         public double? Price { get; set; }

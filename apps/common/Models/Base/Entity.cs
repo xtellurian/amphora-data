@@ -14,13 +14,7 @@ namespace Amphora.Common.Models
 
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; }
-        public string CreatedBy { get; set; }
         public DateTime? CreatedDate {get; set; }
 
-        public virtual bool IsValid() 
-        {
-            return  !string.IsNullOrEmpty(CreatedBy)
-                && CreatedDate.HasValue;
-        }
     }
 }

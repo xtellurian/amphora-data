@@ -41,10 +41,9 @@ namespace Amphora.Api.Services.Amphorae
             var user = await userService.ReadUserModelAsync(principal);
             // set the required fields
             if (string.IsNullOrEmpty(model.OrganisationId)) model.OrganisationId = user.OrganisationId;
-            model.CreatedBy = user.Id;
+            model.CreatedById = user.Id;
+            model.CreatedBy = user;
             model.CreatedDate = DateTime.UtcNow;
-
-            if (!model.IsValid()) throw new NullReferenceException("Invalid Amphora Model");
             
             // check permission to create amphora
             var organisation = await organisationStore.ReadAsync(

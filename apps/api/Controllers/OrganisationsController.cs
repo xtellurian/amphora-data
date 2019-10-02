@@ -4,6 +4,7 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Options;
 using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Organisations;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,42 +17,39 @@ namespace Amphora.Api.Controllers
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;
+        private readonly IMapper mapper;
         private readonly IEntityStore<OrganisationModel> entityStore;
         private readonly IOrganisationService organisationService;
 
         public OrganisationsController(
             IOptionsMonitor<CreateOptions> options,
+            IMapper mapper,
             IEntityStore<OrganisationModel> entityStore,
             IOrganisationService organisationService)
         {
             this.options = options;
+            this.mapper = mapper;
             this.entityStore = entityStore;
             this.organisationService = organisationService;
         }
 
         [HttpPost("api/organisations")]
-        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationModel org) //TODO make this a DTO
+        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationDto dto) //TODO make this a DTO
         {
-            // check the key
-            if (Request.Headers.ContainsKey("Create") && string.Equals(Request.Headers["Create"], options.CurrentValue.Key))
+            var org = mapper.Map<OrganisationModel>(dto);
+            var result = await organisationService.CreateOrganisationAsync(User, org);
+            if (result.Succeeded)
             {
-                var result = await organisationService.CreateOrganisationAsync(User, org);
-                if (result.Succeeded)
-                {
-                    return Ok(result.Entity);
-                }
-                else if (result.WasForbidden)
-                {
-                    return StatusCode(403, result.Message);
-                }
-                else
-                {
-                    return BadRequest(result.Message);
-                }
+                dto = mapper.Map<OrganisationDto>(result.Entity);
+                return Ok(dto);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
             }
             else
             {
-                return Unauthorized("Create Key Required");
+                return BadRequest(result.Message);
             }
         }
 

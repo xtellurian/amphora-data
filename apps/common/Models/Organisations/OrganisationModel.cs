@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Organisations
 {
@@ -9,6 +10,8 @@ namespace Amphora.Common.Models.Organisations
         public string Name { get; set; }
         public List<Invitation> Invitations { get; set; }
         public List<Membership> Memberships { get; set; }
+        public string CreatedById { get; set; }
+        public ApplicationUser CreatedBy { get; set; }
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
@@ -31,10 +34,9 @@ namespace Amphora.Common.Models.Organisations
             return this.Memberships?.Any(u => string.Equals(u.UserModelId, user.Id)) ?? false;
         }
 
-        public override bool IsValid()
+        public bool IsValid()
         {
-            return !string.IsNullOrEmpty(this.CreatedBy)
-                && !string.IsNullOrEmpty(Name)
+            return !string.IsNullOrEmpty(Name)
                 && this.CreatedDate.HasValue;
         }
 

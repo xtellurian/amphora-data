@@ -9,6 +9,7 @@ using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
+using Amphora.Api.Models.Dtos.Organisations;
 
 namespace Amphora.Tests.Integration
 {
@@ -24,7 +25,6 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Add("Create", "dev");
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
@@ -50,6 +50,8 @@ namespace Amphora.Tests.Integration
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
             loginResponse.EnsureSuccessStatusCode();
 
+            var token = await loginResponse.Content.ReadAsStringAsync();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             // now delete
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
             deleteRequest.EnsureSuccessStatusCode();
@@ -60,7 +62,6 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Add("Create", "dev");
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
@@ -93,7 +94,7 @@ namespace Amphora.Tests.Integration
             
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();
-            var createdOrg = JsonConvert.DeserializeObject<OrganisationModel>(orgCreateContent);
+            var createdOrg = JsonConvert.DeserializeObject<OrganisationDto>(orgCreateContent);
 
             // now delete the org
             await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
