@@ -23,17 +23,19 @@ fi
 if [ -z "$CONTEXT" ]; then
     CONTEXT="../apps"
 fi
+if [ -z "$STAGING" ]; then
+    STAGING=false
+fi
+
+
 
 az acr login -n $ACR_NAME
 docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
 docker push $IMAGE:latest
 docker push $IMAGE:$GITHASH
 docker push $IMAGE:$BUILD 
-echo "Setting CI for web app"
 
-# deploy to staging 
-SLOTS=$(az webapp deployment slot list --ids $WEBAPPID --query "[].name")
-if echo "$SLOTS" | grep -q "staging"; then
+if $STAGING = true ; then
     echo "Deploying to staging slot"
     az webapp config container set --docker-custom-image-name $IMAGE:$GITHASH --ids $WEBAPPID --slot staging
     #explicit set zero so I can route to it
