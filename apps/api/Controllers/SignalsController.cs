@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Domains;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -40,25 +36,22 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/amphorae/{id}/signals")]
         public async Task<IActionResult> Upload(string id, [FromBody] JObject jObj)
         {
-
-            var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
-            if (entity == null)
-            {
-                return NotFound("Invalid Id");
-            }
-            var model = await amphoraeService.AmphoraStore.ReadAsync(id); // bit of a hack
             logger.LogInformation($"Signal Upload for {id}");
-            jObj["amphora"] = id;
-            var domain = Domain.GetDomain(model.DomainId);
-            if (domain.IsValid(jObj))
+            var result = await amphoraeService.ReadAsync(User, id, true);
+            if (result.Succeeded)
             {
-                await signalService.WriteSignalAsync(model, domain.ToDatum(jObj));
+                await signalService.WriteSignalAsync(result.Entity, jObj);
                 return Ok();
+            }
+            else if(result.WasForbidden)
+            {
+                return StatusCode(403);
             }
             else
             {
-                return BadRequest("Invalid Schema");
+                return NotFound();
             }
+
         }
     }
 }
