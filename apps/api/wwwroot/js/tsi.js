@@ -1,4 +1,4 @@
-function tsi(cols, response) {
+function tsi(signals, response) {
 
     var scheme = new ColorScheme;
     var tsiClient = new TsiClient();
@@ -7,17 +7,14 @@ function tsi(cols, response) {
     endDate = new Date();
     var linechartTsqExpressions = [];
 
-    //var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Domain.GetDatumMembers()));
-    //var response = @Html.Raw(@Model.QueryResponse);
-
-    scheme.from_hue(cols.length)
+    scheme.from_hue(signals.length)
         .scheme('triade')
         .variation('soft');
 
 
     var colors = scheme.colors();
     let count = 0;
-    cols.forEach((col) => {
+    signals.forEach((sig) => {
         linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
             {},
             { Avg: {} },
@@ -26,7 +23,7 @@ function tsi(cols, response) {
                 to: endDate
             },
             '#' + colors[count++], // color
-            col.Name)); // 
+            sig.KeyName)); // 
     });
 
     console.log("linechartTsqExpressions");

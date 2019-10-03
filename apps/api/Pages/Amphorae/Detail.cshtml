@@ -158,7 +158,7 @@
     <script src="~/js/tsi.js"></script>
 
     <script>
-        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Domain.GetDatumMembers()));
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal)));
         var response = @Html.Raw(@Model.QueryResponse);
         tsi(cols, response)
     </script>

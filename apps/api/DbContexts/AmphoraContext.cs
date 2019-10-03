@@ -5,6 +5,7 @@ using Amphora.Common.Models.Transactions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Amphora.Common.Models.Signals;
 
 namespace Amphora.Api.DbContexts
 {
@@ -29,7 +30,20 @@ namespace Amphora.Api.DbContexts
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
                 b.HasMany(p => p.Transactions).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
+                b.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
+            });
 
+            modelBuilder.Entity<AmphoraSignalModel>(b =>
+            {
+                b.HasKey(c => new { c.AmphoraId, c.SignalId });
+                b.HasOne(p => p.Amphora).WithMany(p => p.Signals).HasForeignKey(p => p.AmphoraId);
+                b.HasOne(p => p.Signal).WithMany().HasForeignKey(p => p.SignalId);
+            });
+
+
+            modelBuilder.Entity<SignalModel>(b =>
+            {
+                b.HasData(new SignalModel("id", SignalModel.Numeric));
             });
 
             modelBuilder.Entity<OrganisationModel>(b =>
@@ -50,7 +64,8 @@ namespace Amphora.Api.DbContexts
                 b.HasOne(p => p.Amphora).WithMany(u => u.Transactions).HasForeignKey(p => p.AmphoraId);
             });
 
-            modelBuilder.Entity<ApplicationUser>(b => {
+            modelBuilder.Entity<ApplicationUser>(b =>
+            {
                 b.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
             });
         }
@@ -58,6 +73,6 @@ namespace Amphora.Api.DbContexts
         public DbSet<AmphoraModel> Amphorae { get; set; }
         public DbSet<OrganisationModel> Organisations { get; set; }
         public DbSet<TransactionModel> Transactions { get; set; }
-        // public DbSet<UserModel> Users { get; set; }
+        public DbSet<SignalModel> Signals { get; set; }
     }
 }

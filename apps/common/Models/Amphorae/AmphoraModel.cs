@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using Amphora.Common.Models.Domains;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Transactions;
 using Amphora.Common.Models.Users;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Amphora.Common.Models.Amphorae
 {
@@ -15,19 +13,34 @@ namespace Amphora.Common.Models.Amphorae
             Transactions = new List<TransactionModel>();
         }
 
-        public string OrganisationId { get; set; }
-        public OrganisationModel Organisation { get; set; }
-        public string CreatedById { get; set; }
-        public ApplicationUser CreatedBy {get;set;}
         public string Name { get; set; }
         public bool IsPublic { get; set; }
         public double? Price { get; set; }
         public string Description { get; set; }
         public GeoLocation GeoLocation { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
-        public DomainId DomainId { get; set; }
+        // navigation
+        public string OrganisationId { get; set; }
+        public OrganisationModel Organisation { get; set; }
+        public string CreatedById { get; set; }
+        public ApplicationUser CreatedBy { get; set; }
+        public List<AmphoraSignalModel> Signals {get;set;}
         public List<TransactionModel> Transactions { get; set; }
+
+        // methods
+        public void AddSignal(SignalModel signal)
+        {
+            if(Signals == null) Signals = new List<AmphoraSignalModel>();
+            Signals.Add(new AmphoraSignalModel
+            {
+                Amphora = this,
+                AmphoraId = this.Id,
+                Signal = signal,
+                SignalId = signal.Id
+            });
+        }
+
+        
 
     }
 }

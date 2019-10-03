@@ -3,6 +3,7 @@ using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Signals;
 
 namespace Amphora.Tests.Helpers
 {
@@ -65,6 +66,11 @@ namespace Amphora.Tests.Helpers
             {
                 Name = testName
             };
+        }
+
+        public static SignalModel GetSignalModel(string testName)
+        {
+            return new SignalModel(testName, SignalModel.Numeric );
         }
     }
 }

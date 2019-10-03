@@ -1,7 +1,7 @@
+
 using System;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Domains.Agriculture;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Amphora.Tests.Unit
@@ -9,18 +9,28 @@ namespace Amphora.Tests.Unit
     public class DateDeserialisationTests
     {
         [Theory]
-        [InlineData("{ 't': '5/1/94'}", false)]
-        [InlineData("{ 't': 'bad'}", true)]
-        public void DeserializeToAgDatum(string json, bool throws)
+        [InlineData("{ 't': '5/1/94'}", true)]
+        [InlineData("{ 't': 'bad'}", false)]
+        [InlineData("{ 'x': 'something else'}", false)]
+        public void DeserialiseDateTime(string json, bool good)
         {
-            if (throws)
+            var jObj = JObject.Parse(json);
+            if (jObj.TryGetValue("t", out var token))
             {
-                Assert.Throws<Newtonsoft.Json.JsonReaderException>(() => JsonConvert.DeserializeObject<AgDatum>(json));
+                if (good)
+                {
+                    var time = token.Value<DateTime>();
+                }
+                else
+                {
+                    Assert.Throws<System.FormatException>(() => token.Value<DateTime>());
+                }
             }
             else
             {
-                var datum = JsonConvert.DeserializeObject<AgDatum>(json);
+                Assert.False(good);
             }
+
         }
     }
 }

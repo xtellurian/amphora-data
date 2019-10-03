@@ -43,7 +43,6 @@ namespace Amphora.Api.Pages.Amphorae
         }
 
         public IEnumerable<string> Names { get; set; }
-        public Amphora.Common.Models.Domains.Domain Domain { get; set; }
         public string QueryResponse { get; set; }
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
@@ -65,7 +64,6 @@ namespace Amphora.Api.Pages.Amphorae
             if (Amphora != null)
             {
                 Names = await blobStore.ListBlobsAsync(Amphora);
-                Domain = Common.Models.Domains.Domain.GetDomain(Amphora.DomainId);
                 QueryResponse = await GetQueryResponse();
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check
@@ -141,14 +139,11 @@ namespace Amphora.Api.Pages.Amphorae
             {
                 var response = new List<QueryResponse>();
 
-                foreach (var member in Domain.GetDatumMembers())
+                foreach (var signal in Amphora.Signals)
                 {
-                    // then we can do a thing
-                    if (string.Equals(member.Name, "t")) continue; // skip t // TODO remove hardcoding
-
                     var r = await tsiService.FullSet(
                             Amphora.Id,
-                            member.Name,
+                            signal.Signal.KeyName,
                             DateTime.UtcNow.AddDays(-7),
                             DateTime.UtcNow
                         );
