@@ -25,7 +25,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PostAsync($"{url}/{id}/signals", content);
+            var response = await client.PostAsync($"{url}/{id}/signals/signalId", content);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound , response.StatusCode);

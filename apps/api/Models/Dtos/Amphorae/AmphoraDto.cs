@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class AmphoraModelDto
+    public class AmphoraDto
     {
         [Required]
         public string Name { get; set; }

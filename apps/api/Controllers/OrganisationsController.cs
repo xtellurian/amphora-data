@@ -63,7 +63,8 @@ namespace Amphora.Api.Controllers
             entity.Address = org.Address;
             entity.WebsiteUrl = org.WebsiteUrl;
             var result = await entityStore.UpdateAsync(entity);
-            return Ok(result);
+            var dto = mapper.Map<OrganisationDto>(result);
+            return Ok(dto);
         }
 
         [HttpGet("api/organisations/{id}")]
@@ -71,7 +72,11 @@ namespace Amphora.Api.Controllers
         {
             var org = await entityStore.ReadAsync(id);
             if (org == null) return NotFound();
-            else return Ok(org);
+            else
+            {
+                var dto = mapper.Map<OrganisationDto>(org);
+                return Ok(dto);
+            }
         }
 
 

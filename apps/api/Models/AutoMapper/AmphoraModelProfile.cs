@@ -1,6 +1,7 @@
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Signals;
 using AutoMapper;
 
 namespace Amphora.Api.Models.AutoMapper
@@ -13,7 +14,7 @@ namespace Amphora.Api.Models.AutoMapper
             // Generally only used in the InMemory stores.
 
             // dto mappings
-            CreateMap<AmphoraModel, AmphoraModelDto>();
+            CreateMap<AmphoraModel, AmphoraDto>();
 
             CreateMap<AmphoraExtendedDto, AmphoraModel>()
             .ForMember(o => o.Id, p => p.Ignore())
@@ -29,10 +30,11 @@ namespace Amphora.Api.Models.AutoMapper
                 src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value): null));
 
             CreateMap<AmphoraModel, AmphoraExtendedDto>()
-            .IncludeBase<AmphoraModel, AmphoraModelDto>()
+            .IncludeBase<AmphoraModel, AmphoraDto>()
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
 
+            CreateMap<SignalModel, SignalDto>();
         }
     }
 }
