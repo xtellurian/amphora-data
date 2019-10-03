@@ -1,133 +1,83 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Azure.TimeSeriesInsights;
+using Microsoft.Azure.TimeSeriesInsights.Models;
+using Microsoft.Rest;
+using DateTimeRange = Microsoft.Azure.TimeSeriesInsights.Models.DateTimeRange;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
-using System.Net.Http;
-using Microsoft.Extensions.Logging;
-using TimeSeriesInsightsClient;
-using TimeSeriesInsightsClient.Queries;
-using System.Collections.Generic;
-using System;
 
 namespace Amphora.Api.Services.Azure
 {
-    public class RealTsiService : ITsiService
+    public class TsiService : ITsiService
     {
         private const string resource = "https://api.timeseries.azure.com/";
         private readonly IOptionsMonitor<TsiOptions> options;
-        private readonly ILogger<RealTsiService> logger;
         private readonly IAzureServiceTokenProvider tokenProvider;
-        private readonly TsiClient client;
+        private ITimeSeriesInsightsClient client;
 
-        public RealTsiService(IOptionsMonitor<TsiOptions> options,
-            IHttpClientFactory clientFactory,
-            ILogger<RealTsiService> logger,
-            IAzureServiceTokenProvider tokenProvider)
+        public TsiService(IOptionsMonitor<TsiOptions> options, IAzureServiceTokenProvider tokenProvider)
         {
             this.options = options;
-            this.logger = logger;
             this.tokenProvider = tokenProvider;
-            var client = clientFactory.CreateClient("tsi");
-            var fqdn = options.CurrentValue.DataAccessFqdn;
-            if (string.IsNullOrEmpty(fqdn))
-            {
-                logger.LogWarning("FQDN missing");
-            }
-            else
-            {
-                if (!fqdn.StartsWith("https"))
-                {
-                    fqdn = $"https://{fqdn}";
-                }
-                client.BaseAddress = new System.Uri(fqdn);
-            }
-            
-            this.client = new TsiClient(client);
         }
 
-        public async Task<string> GetAccessTokenAsync()
+        public async Task<QueryResultPage> FullSet(string id, string property, DateTime start, DateTime end)
         {
-            var token = await tokenProvider.GetAccessTokenAsync(resource);
-            this.client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            return token;
+            await InitAsync();
+            var range = new DateTimeRange(start, end);
+            return await RunGetSeriesAsync(new List<object>{id}, range, property);
         }
 
         public string GetDataAccessFqdn()
         {
-            if (options.CurrentValue.DataAccessFqdn == null)
+            return this.options.CurrentValue.DataAccessFqdn;
+        }
+
+        public async Task InitAsync()
+        {
+            this.client = await GetTimeSeriesInsightsClientAsync();
+        }
+
+        private async Task<QueryResultPage> RunGetSeriesAsync(IList<object> ids, DateTimeRange span, string property)
+        {
+            string continuationToken;
+            QueryResultPage queryResponse;
+            do
             {
-                throw new System.ArgumentNullException("TsiOptions.DataAccessFqdn");
+                queryResponse = await client.ExecuteQueryPagedAsync(
+                   new QueryRequest(
+                       getSeries: new Microsoft.Azure.TimeSeriesInsights.Models.GetSeries(
+                           timeSeriesId: ids,
+                           searchSpan: span,
+                           filter: null,
+                           projectedVariables: new[] { "Avg" },
+                           inlineVariables: new Dictionary<string, Variable>()
+                           {
+                               ["Avg"] = new NumericVariable(
+                                   value: new Tsx($"$event.{property}"),
+                                   aggregation: new Tsx("avg($value)"))
+                           })));
+
+                continuationToken = queryResponse.ContinuationToken;
             }
-            return options.CurrentValue.DataAccessFqdn;
+            while (continuationToken != null);
+
+            return queryResponse;
         }
 
-        public async Task<HttpResponseMessage> ProxyQueryAsync(string uri, HttpContent content)
+        private async Task<ITimeSeriesInsightsClient> GetTimeSeriesInsightsClientAsync()
         {
-            await GetAccessTokenAsync(); // make sure the token is loaded.
-            var response = await client.HttpClient.PostAsync(uri, content);
-            return response;
-        }
+            var token = await tokenProvider.GetAccessTokenAsync(resource);
+            var serviceClientCredentials = new TokenCredentials(token);
 
-        public async Task<QueryResponse> FullSet(string id, string property, DateTime start, DateTime end)
-        {
-            await GetAccessTokenAsync(); // make sure the token is loaded.
-            var variableName = "Avg";
-            var query = new Query
+            var timeSeriesInsightsClient = new Microsoft.Azure.TimeSeriesInsights.TimeSeriesInsightsClient(credentials: serviceClientCredentials)
             {
-                GetSeries = new GetSeries 
-                {
-                    TimeSeriesId = new List<string> { id },
-                    SearchSpan = new SearchSpan
-                    {
-                        From = start,
-                        To = end
-                    },
-                    InlineVariables = new Dictionary<string, InlineVariable>
-                    {
-                        {variableName, new InlineVariable
-                        {
-                            Kind= "numeric",
-                            Value = new Aggregation { Tsx = $"$event.{property}"},
-                        }}
-                    },
-                    ProjectedVariables = new List<string> { variableName }
-                }
+                EnvironmentFqdn = options.CurrentValue.DataAccessFqdn
             };
-            var response = await client.QueryAsync(query);
-
-            return response;
-        }
-
-        public async Task<QueryResponse> WeeklyAverageAsync(string id, string property, DateTime start, DateTime end)
-        {
-            await GetAccessTokenAsync(); // make sure the token is loaded.
-            var variableName = "Avg";
-            var query = new Query
-            {
-                AggregateSeries = new AggregateSeries
-                {
-                    TimeSeriesId = new List<string> { id },
-                    Interval = "P7D",
-                    SearchSpan = new SearchSpan
-                    {
-                        From = start,
-                        To = end
-                    },
-                    InlineVariables = new Dictionary<string, InlineVariable>
-                    {
-                        {variableName, new InlineVariable
-                        {
-                            Kind= "numeric",
-                            Value = new Aggregation { Tsx = $"$event.{property}"},
-                            Aggregation = new Aggregation { Tsx = "avg($value)"}
-                        }}
-                    },
-                    ProjectedVariables = new List<string> { variableName }
-                }
-            };
-            var response = await client.QueryAsync(query);
-
-            return response;
+            return timeSeriesInsightsClient;
         }
     }
 }

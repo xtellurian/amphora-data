@@ -16,12 +16,12 @@ namespace Amphora.Tests.Unit
             this.tokenProvider = tokenProvider;
         }
 
-        [Fact]
-        public async Task GetAccessToken_Happy()
-        {
-            var token = await sut.GetAccessTokenAsync();
-            var providedToken = await tokenProvider.GetAccessTokenAsync("anything for now");
-            Assert.Equal(providedToken, token);
-        }
+        // [Fact]
+        // public async Task GetAccessToken_Happy()
+        // {
+        //     var token = await sut.GetAccessTokenAsync();
+        //     var providedToken = await tokenProvider.GetAccessTokenAsync("anything for now");
+        //     Assert.Equal(providedToken, token);
+        // }
     }
 }

@@ -1,0 +1,31 @@
+@page
+@model Amphora.Api.Pages.Amphorae.SignalsModel
+
+<h2>Signals </h2>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <small>This week</small>
+        </div>
+        <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+    <script src="~/js/tsi.js"></script>
+
+    <script>
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal)));
+        var response = @Html.Raw(@Model.QueryResponse);
+        tsi(cols, response)
+    </script>
+
+     <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+}

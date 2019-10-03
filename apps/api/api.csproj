@@ -9,6 +9,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="AmphoraData.TSI.CSharp" Version="1.0.0" />
     <PackageReference Include="automapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.7.1" />
@@ -24,7 +25,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
-    <PackageReference Include="AmphoraData.TimeSeriesInsightsClient" Version="1.0.2-alpha" />
   </ItemGroup>
 
 

@@ -27,7 +27,7 @@ namespace Amphora.Tests.Unit
             {
                 o.CurrentValue.DataAccessFqdn = null;
             });
-            services.AddTransient<ITsiService, RealTsiService>();
+            services.AddTransient<ITsiService, TsiService>();
             var mockFactory = new Mock<IHttpClientFactory>();
             var clientHandlerStub = new DelegatingHandlerStub();
             var client = new HttpClient(clientHandlerStub);

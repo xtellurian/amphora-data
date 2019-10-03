@@ -48,7 +48,14 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAzureServiceTokenProvider, AzureServiceTokenProviderWrapper>();
+            if(HostingEnvironment.IsDevelopment())
+            {
+                services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
+            }
+            else
+            {
+                services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper());
+            }
 
             this.StorageModule.ConfigureServices(services);
             this.IdentityModule.ConfigureServices(services);
@@ -60,7 +67,7 @@ namespace Amphora.Api
             
             services.AddSingleton<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
-            services.AddScoped<ITsiService, RealTsiService>();
+            services.AddScoped<ITsiService, TsiService>();
 
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
