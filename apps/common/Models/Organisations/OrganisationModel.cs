@@ -8,13 +8,16 @@ namespace Amphora.Common.Models.Organisations
     public class OrganisationModel : Entity, IEntity
     {
         public string Name { get; set; }
-        public List<Invitation> Invitations { get; set; }
-        public List<Membership> Memberships { get; set; }
-        public string CreatedById { get; set; }
-        public ApplicationUser CreatedBy { get; set; }
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
+
+        // navigation
+        public virtual ICollection<Invitation> Invitations { get; set; }
+        public virtual ICollection<Membership> Memberships { get; set; }
+        public string CreatedById { get; set; }
+        public virtual ApplicationUser CreatedBy { get; set; }
+
         public void AddInvitation(string email)
         {
             if (this.Invitations == null) this.Invitations = new List<Invitation>();

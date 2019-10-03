@@ -6,8 +6,8 @@ namespace Amphora.Common.Models.Signals
     {
         // pure navigtion clas for many-to-many
         public string AmphoraId { get; set; }
-        public AmphoraModel Amphora { get; set; }
+        public virtual AmphoraModel Amphora { get; set; }
         public string SignalId { get; set; }
-        public SignalModel Signal { get; set; }
+        public virtual SignalModel Signal { get; set; }
     }
 }

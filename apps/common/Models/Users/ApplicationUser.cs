@@ -10,11 +10,14 @@ namespace Amphora.Common.Models.Users
 {
     public class ApplicationUser : IdentityUser, IUser
     {
-        public string OrganisationId { get; set; }
-        public OrganisationModel Organisation { get; set; }
         public string About { get; set; }
         public string FullName { get; set; }
-        public List<TransactionModel> Transactions { get; set; }
+
+        //navigation
+        public string OrganisationId { get; set; }
+        public virtual OrganisationModel Organisation { get; set; }
+
+        public virtual ICollection<TransactionModel> Transactions { get; set; }
         public Uri GetProfilePictureUri()
         {
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");

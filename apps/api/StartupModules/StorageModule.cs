@@ -38,14 +38,22 @@ namespace Amphora.Api.StartupModules
             {
                 var cosmos = new CosmosOptions();
                 Configuration.GetSection("Cosmos").Bind(cosmos);
-                services.AddDbContext<AmphoraContext>(options => options.UseCosmos(cosmos.Endpoint, cosmos.PrimaryKey, cosmos.Database));
+                services.AddDbContext<AmphoraContext>(options =>
+                {
+                    options.UseCosmos(cosmos.Endpoint, cosmos.PrimaryKey, cosmos.Database);
+                    options.UseLazyLoadingProxies();
+                });
 
                 services.AddSingleton<IBlobStore<AmphoraModel>, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
             }
             else if (HostingEnvironment.IsDevelopment())
             {
-                services.AddDbContext<AmphoraContext>(options => options.UseInMemoryDatabase("Amphora"));
+                services.AddDbContext<AmphoraContext>(options =>
+                {
+                    options.UseInMemoryDatabase("Amphora");
+                    options.UseLazyLoadingProxies();
+                });
 
                 services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();

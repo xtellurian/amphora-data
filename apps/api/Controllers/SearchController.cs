@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Search;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Users;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +18,13 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SearchController : Controller
     {
+        private readonly IMapper mapper;
         private readonly ISearchService searchService;
         private readonly IUserService userService;
 
-        public SearchController(ISearchService searchService, IUserService userService)
+        public SearchController(IMapper mapper, ISearchService searchService, IUserService userService)
         {
+            this.mapper = mapper;
             this.searchService = searchService;
             this.userService = userService;
         }
@@ -28,21 +33,27 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
         {
             var response = await searchService.SearchAmphora("", parameters);
-            return Ok(response.Results.Select(a => a.Entity));
+            var entities = response.Results.Select(a => a.Entity);
+            var dto = mapper.Map<List<AmphoraDto>>(entities);
+            return Ok(dto);
         }
 
         [HttpGet("api/search/amphorae/byLocation")]
         public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
             var response = await searchService.SearchAmphora("", SearchParameters.GeoSearch(lat, lon, dist));
-            return Ok(response.Results.Select(a => a.Entity));
+            var entities = response.Results.Select(a => a.Entity);
+            var dto = mapper.Map<List<AmphoraDto>>(entities);
+            return Ok(dto);
         }
         [HttpGet("api/search/amphorae/byOrganisation")]
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
-            if(string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
+            if (string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
             var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId, typeof(AmphoraModel)));
-            return Ok(response.Results.Select(a => a.Entity));
+            var entities = response.Results.Select(a => a.Entity);
+            var dto = mapper.Map<List<AmphoraDto>>(entities);
+            return Ok(dto);
         }
 
         [HttpGet("api/search/amphorae/byCreator")]
@@ -59,7 +70,9 @@ namespace Amphora.Api.Controllers
             }
 
             var response = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));
-            return Ok(response.Results.Select(a => a.Entity));
+            var entities = response.Results.Select(a => a.Entity);
+            var dto = mapper.Map<List<AmphoraDto>>(entities);
+            return Ok(dto);
         }
     }
 }

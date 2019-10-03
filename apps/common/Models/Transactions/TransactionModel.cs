@@ -21,12 +21,13 @@ namespace Amphora.Common.Models.Transactions
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
             this.ttl = 60 * 60 * 24 * 90; // 90 days
         }
-        public string AmphoraId { get; set; }
-        public AmphoraModel Amphora { get; set; }
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
-        public double? Price { get; set; }
         public string OrganisationId { get; set; }
+        public double? Price { get; set; }
+        // navigation
+        public string AmphoraId { get; set; }
+        public virtual AmphoraModel Amphora { get; set; }
+        public string UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
     }
 }

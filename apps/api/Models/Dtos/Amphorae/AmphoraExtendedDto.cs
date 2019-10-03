@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class AmphoraExtendedDto: AmphoraModelDto
+    public class AmphoraExtendedDto: AmphoraDto
     {
         public string Id {get;set;}
         public string OrganisationId {get; set;}

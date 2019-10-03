@@ -21,11 +21,11 @@ namespace Amphora.Common.Models.Amphorae
 
         // navigation
         public string OrganisationId { get; set; }
-        public OrganisationModel Organisation { get; set; }
+        public virtual OrganisationModel Organisation { get; set; }
         public string CreatedById { get; set; }
-        public ApplicationUser CreatedBy { get; set; }
-        public List<AmphoraSignalModel> Signals {get;set;}
-        public List<TransactionModel> Transactions { get; set; }
+        public virtual ApplicationUser CreatedBy { get; set; }
+        public virtual ICollection<AmphoraSignalModel> Signals {get;set;}
+        public virtual ICollection<TransactionModel> Transactions { get; set; }
 
         // methods
         public void AddSignal(SignalModel signal)
@@ -40,7 +40,7 @@ namespace Amphora.Common.Models.Amphorae
             });
         }
 
-        
+
 
     }
 }
