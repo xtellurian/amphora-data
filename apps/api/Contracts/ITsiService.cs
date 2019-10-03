@@ -1,15 +1,13 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using TimeSeriesInsightsClient.Queries;
+using Microsoft.Azure.TimeSeriesInsights.Models;
 
 namespace Amphora.Api.Contracts
 {
     public interface ITsiService
     {
-        Task<QueryResponse> FullSet(string id, string property, System.DateTime start, System.DateTime end);
-        System.Threading.Tasks.Task<string> GetAccessTokenAsync();
-        string GetDataAccessFqdn();
-        Task<HttpResponseMessage> ProxyQueryAsync(string uri, System.Net.Http.HttpContent content);
-        Task<QueryResponse> WeeklyAverageAsync(string id, string property, System.DateTime start, System.DateTime end);
+        Task<QueryResultPage> FullSet(string id, string property, System.DateTime start, System.DateTime end);
+        // string GetDataAccessFqdn();
+        // Task<QueryResponse> WeeklyAverageAsync(string id, string property, System.DateTime start, System.DateTime end);
     }
 }

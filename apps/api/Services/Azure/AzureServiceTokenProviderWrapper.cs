@@ -7,7 +7,7 @@ namespace Amphora.Api.Services.Azure
     {
         private readonly Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider az;
 
-        public AzureServiceTokenProviderWrapper()
+        public AzureServiceTokenProviderWrapper(string connectionString = null)
         {
             this.az = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider();
         }

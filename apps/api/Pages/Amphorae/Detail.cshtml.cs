@@ -13,8 +13,6 @@ using Amphora.Common.Models.Transactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using TimeSeriesInsightsClient.Queries;
 
 namespace Amphora.Api.Pages.Amphorae
 {
@@ -25,25 +23,22 @@ namespace Amphora.Api.Pages.Amphorae
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly FeatureFlagService featureFlags;
-        private readonly ITsiService tsiService;
 
         public DetailModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
             IUserService userService,
             IPermissionService permissionService,
-            FeatureFlagService featureFlags,
-            ITsiService tsiService) : base(amphoraeService)
+            FeatureFlagService featureFlags) : base(amphoraeService)
         {
             this.blobStore = blobStore;
             this.userService = userService;
             this.permissionService = permissionService;
             this.featureFlags = featureFlags;
-            this.tsiService = tsiService;
         }
 
         public IEnumerable<string> Names { get; set; }
-        public string QueryResponse { get; set; }
+        
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
@@ -64,7 +59,6 @@ namespace Amphora.Api.Pages.Amphorae
             if (Amphora != null)
             {
                 Names = await blobStore.ListBlobsAsync(Amphora);
-                QueryResponse = await GetQueryResponse();
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check
                 CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Update);
@@ -133,26 +127,6 @@ namespace Amphora.Api.Pages.Amphorae
 
         }
 
-        private async Task<string> GetQueryResponse()
-        {
-            if (featureFlags.IsEnabled("signals"))
-            {
-                var response = new List<QueryResponse>();
-
-                foreach (var signal in Amphora.Signals)
-                {
-                    var r = await tsiService.FullSet(
-                            Amphora.Id,
-                            signal.Signal.KeyName,
-                            DateTime.UtcNow.AddDays(-7),
-                            DateTime.UtcNow
-                        );
-
-                    response.Add(r);
-                }
-                return JsonConvert.SerializeObject(response);
-            }
-            else return "";
-        }
+        
     }
 }
