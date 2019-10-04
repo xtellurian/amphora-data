@@ -71,10 +71,10 @@
         autocompleteGeoSearch(token, url)
     </script>
     <script>
-        var content = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Organisations));
+        var content = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Organisations.Select(o => new {Name = o.Name, Id = o.Id})));
         onSelect = (feedback) => {
             document.querySelector(".autoCompleteWorkaround").value = feedback.selection.value.Name
-            document.querySelector("#joinButton").setAttribute("href", `/organisations/AcceptInvitation/?organisationId=${feedback.selection.value.OrganisationId}`)
+            document.querySelector("#joinButton").setAttribute("href", `/organisations/AcceptInvitation/?organisationId=${feedback.selection.value.Id}`)
         }
         staticAutocomplete(".autoCompleteWorkaround", content, "Name", onSelect)
     </script>

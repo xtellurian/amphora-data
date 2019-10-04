@@ -31,6 +31,10 @@ namespace Amphora.Common.Models.Amphorae
         public void AddSignal(SignalModel signal)
         {
             if(Signals == null) Signals = new List<AmphoraSignalModel>();
+            if(Signals.Count >=5 )
+            {
+                throw new System.ArgumentException("Only 5 Signals per Amphora at this time");
+            }
             Signals.Add(new AmphoraSignalModel
             {
                 Amphora = this,
