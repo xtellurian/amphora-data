@@ -69,6 +69,9 @@ namespace Amphora.Api
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
             services.AddScoped<ITsiService, TsiService>();
 
+            services.Configure<ChatOptions>(Configuration.GetSection("Chat"));
+            services.Configure<FeedbackOptions>(Configuration.GetSection("Feedback"));
+
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
             // logical services
