@@ -1,6 +1,6 @@
 @page
 @using Amphora.Common.Models.Permissions
-@model Amphora.Api.Pages.Amphorae.DetailModel
+@model Amphora.Api.Areas.Amphorae.Pages.DetailModel
 @inject Amphora.Api.Services.FeatureFlags.FeatureFlagService FeatureFlags
 @{
     ViewData["Title"] = Model.Amphora.Name;
@@ -40,8 +40,11 @@
                     }
                     @{
                         var buttonMode = string.Empty;
+                        var signalsButtonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
+                        if(Model.CanBuy) { signalsButtonMode = "disabled"; } 
                     }
+                    <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light" @signalsButtonMode>Signals</button></a>
                     <a asp-page="./Agreement" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success" @buttonMode>Buy</button></a>
                 </div>
                     <div class="card-body">

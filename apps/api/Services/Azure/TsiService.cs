@@ -8,6 +8,7 @@ using DateTimeRange = Microsoft.Azure.TimeSeriesInsights.Models.DateTimeRange;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
+using System.Linq;
 
 namespace Amphora.Api.Services.Azure
 {
@@ -24,13 +25,6 @@ namespace Amphora.Api.Services.Azure
             this.tokenProvider = tokenProvider;
         }
 
-        public async Task<QueryResultPage> FullSet(string id, string property, DateTime start, DateTime end)
-        {
-            await InitAsync();
-            var range = new DateTimeRange(start, end);
-            return await RunGetSeriesAsync(new List<object>{id}, range, property);
-        }
-
         public string GetDataAccessFqdn()
         {
             return this.options.CurrentValue.DataAccessFqdn;
@@ -38,28 +32,30 @@ namespace Amphora.Api.Services.Azure
 
         public async Task InitAsync()
         {
+            if(client != null) return;
             this.client = await GetTimeSeriesInsightsClientAsync();
         }
 
-        private async Task<QueryResultPage> RunGetSeriesAsync(IList<object> ids, DateTimeRange span, string property)
+        public async Task<QueryResultPage> RunGetSeriesAsync(IList<object> ids,
+                                                             IDictionary<string, Variable> variables,
+                                                             DateTimeRange span,
+                                                             IList<string> projections = null)
         {
+            await InitAsync();
             string continuationToken;
             QueryResultPage queryResponse;
             do
             {
+                // this method will return everything in ONE set (one graphed line). to split, call it twice
                 queryResponse = await client.ExecuteQueryPagedAsync(
                    new QueryRequest(
                        getSeries: new Microsoft.Azure.TimeSeriesInsights.Models.GetSeries(
                            timeSeriesId: ids,
                            searchSpan: span,
                            filter: null,
-                           projectedVariables: new[] { "Avg" },
-                           inlineVariables: new Dictionary<string, Variable>()
-                           {
-                               ["Avg"] = new NumericVariable(
-                                   value: new Tsx($"$event.{property}"),
-                                   aggregation: new Tsx("avg($value)"))
-                           })));
+                           projectedVariables: projections,
+                           inlineVariables: variables)));
+
 
                 continuationToken = queryResponse.ContinuationToken;
             }

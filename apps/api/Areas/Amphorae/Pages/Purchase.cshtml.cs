@@ -4,7 +4,7 @@ using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Amphorae
+namespace Amphora.Api.Areas.Amphorae.Pages
 {
     public class PurchaseModel: PageModel
     {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Amphorae
+namespace Amphora.Api.Areas.Amphorae.Pages
 {
     [Authorize]
     public class FileModel : PageModel
@@ -41,7 +41,7 @@ namespace Amphora.Api.Pages.Amphorae
             var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
-                return RedirectToPage("/amphorae/index");
+                return RedirectToPage("./Index");
             }
             var user = await userService.UserManager.GetUserAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))

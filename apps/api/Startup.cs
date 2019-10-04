@@ -65,7 +65,7 @@ namespace Amphora.Api
 
             services.AddTransient<IEmailSender, EmailSender>(); // todo 
             
-            services.AddSingleton<ISignalService, SignalsService>();
+            services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
             services.AddScoped<ITsiService, TsiService>();
 
@@ -103,6 +103,7 @@ namespace Amphora.Api
                     //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
             }
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddSwaggerGen(c =>
             {

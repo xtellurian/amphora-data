@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Pages.Amphorae
+namespace Amphora.Api.Areas.Amphorae.Pages
 {
     [ValidateAntiForgeryToken]
     [Authorize]
@@ -71,7 +71,7 @@ namespace Amphora.Api.Pages.Amphorae
                 var setResult = await amphoraeService.CreateAsync(User, entity);
                 if (setResult.Succeeded)
                 {
-                    return RedirectToPage("/Amphorae/Index");
+                    return RedirectToPage("./Index");
                 }
                 else
                 {
