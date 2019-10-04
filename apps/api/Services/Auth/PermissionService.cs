@@ -33,7 +33,7 @@ namespace Amphora.Api.Services.Auth
         public async Task<bool> IsAuthorizedAsync(IUser user, OrganisationModel org, AccessLevels accessLevel)
         {
             org = await orgStore.ReadAsync(org.Id, true);
-            var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserModelId, user.Id));
+            var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
 
             if (membership != null) // if user is in the org
             {

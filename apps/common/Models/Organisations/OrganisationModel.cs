@@ -24,17 +24,17 @@ namespace Amphora.Common.Models.Organisations
             this.Invitations.Add(new Invitation(email));
         }
 
-        public void AddOrUpdateMembership(IUser user, Roles role = Roles.User)
+        public void AddOrUpdateMembership(ApplicationUser user, Roles role = Roles.User)
         {
             if (this.Memberships == null) this.Memberships = new List<Membership>();
-            var existing = this.Memberships.FirstOrDefault(m => string.Equals(m.UserModelId, user.Id));
+            var existing = this.Memberships.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
 
-            this.Memberships.Add(new Membership(user.Id, user.UserName, role));
+            this.Memberships.Add(new Membership(user, role));
         }
 
         public bool IsInOrgansation(IUser user)
         {
-            return this.Memberships?.Any(u => string.Equals(u.UserModelId, user.Id)) ?? false;
+            return this.Memberships?.Any(u => string.Equals(u.UserId, user.Id)) ?? false;
         }
 
         public bool IsValid()

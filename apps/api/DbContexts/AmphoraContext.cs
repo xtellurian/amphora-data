@@ -53,7 +53,11 @@ namespace Amphora.Api.DbContexts
                 {
                     a.HasKey(nameof(Invitation.TargetEmail));
                 });
-                b.OwnsMany(b => b.Memberships, a => a.HasKey(nameof(Membership.UserModelId)));
+                b.OwnsMany(b => b.Memberships, a =>
+                {
+                    a.HasKey(nameof(Membership.UserId));
+                    a.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
+                });
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
             });
 

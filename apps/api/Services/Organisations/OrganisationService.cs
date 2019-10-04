@@ -43,11 +43,11 @@ namespace Amphora.Api.Services.Organisations
             var org = await Store.ReadAsync(orgId);
             var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), appUser.Email.ToUpper()));
 
-            if(invitation != null)
+            if (invitation != null)
             {
                 user.OrganisationId = org.Id;
                 var result = await userService.UserManager.UpdateAsync(user);
-                if(result != null)
+                if (result != null)
                 {
                     logger.LogInformation($"{appUser.Email} redeemed an invitation to {org.Id}");
                     org.Invitations.Remove(invitation);
@@ -95,7 +95,7 @@ namespace Amphora.Api.Services.Organisations
             org.CreatedById = user.Id;
             org.CreatedBy = user;
             org.CreatedDate = DateTime.UtcNow;
-            if(!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
+            if (!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
             org.AddOrUpdateMembership(user, Roles.Administrator);
             // we good - create an org
             org = await Store.CreateAsync(org);
@@ -123,6 +123,21 @@ namespace Amphora.Api.Services.Organisations
             else
             {
                 return new EntityOperationResult<OrganisationModel>("Failed to create organisation");
+            }
+        }
+
+        public async Task<EntityOperationResult<OrganisationModel>> UpdateAsync(ClaimsPrincipal principal, OrganisationModel org)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            var authorized = await permissionService.IsAuthorizedAsync(user, org, Common.Models.Permissions.AccessLevels.Update);
+            if (authorized)
+            {
+                org = await this.Store.UpdateAsync(org);
+                return new EntityOperationResult<OrganisationModel>(org);
+            }
+            else
+            {
+                return new EntityOperationResult<OrganisationModel>() { WasForbidden = true };
             }
         }
 
