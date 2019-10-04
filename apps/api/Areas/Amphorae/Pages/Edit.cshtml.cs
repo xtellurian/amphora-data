@@ -6,7 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Amphorae
+namespace Amphora.Api.Areas.Amphorae.Pages
 {
     public class EditModel : AmphoraPageModel
     {
@@ -20,14 +20,14 @@ namespace Amphora.Api.Pages.Amphorae
         [BindProperty]
         public AmphoraExtendedDto AmphoraDto { get; set; }
 
-        public override async Task<IActionResult> OnGetAsync(string id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            var result = await base.OnGetAsync(id);
+            await base.LoadAmphoraAsync(id);
             if(Amphora != null)
             {
                 this.AmphoraDto = mapper.Map<AmphoraExtendedDto>(Amphora);
             }
-           return result;
+           return OnReturnPage();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)

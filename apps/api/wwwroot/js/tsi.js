@@ -1,5 +1,12 @@
 function tsi(signals, response) {
-
+    // signals should be a list of SignalMOdel
+//     CreatedDate: "2019-10-03T23:59:54.469267Z"
+// Id: "key|Numeric"
+// IsNumeric: true
+// IsString: false
+// KeyName: "key"
+// ValueType: "Numeric"
+// ttl: -1
     var scheme = new ColorScheme;
     var tsiClient = new TsiClient();
     var startDate = new Date();
@@ -14,16 +21,20 @@ function tsi(signals, response) {
 
     var colors = scheme.colors();
     let count = 0;
+   
     signals.forEach((sig) => {
-        linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+        const y = {};
+        y[sig.KeyName] = {};
+        const x = new tsiClient.ux.TsqExpression(
             {},
-            { Avg: {} },
+            y,
             {
                 from: startDate,
                 to: endDate
             },
             '#' + colors[count++], // color
-            sig.KeyName)); // 
+            sig.KeyName); 
+        linechartTsqExpressions.push(x);
     });
 
     console.log("linechartTsqExpressions");
@@ -34,5 +45,5 @@ function tsi(signals, response) {
     console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
-    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'shown', yAxisState: 'shared' }, linechartTsqExpressions);
+    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'shared' }, linechartTsqExpressions);
 }

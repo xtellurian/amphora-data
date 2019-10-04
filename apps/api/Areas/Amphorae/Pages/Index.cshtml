@@ -1,5 +1,5 @@
 ﻿@page
-@model Amphora.Api.Pages.Amphorae.IndexModel
+@model Amphora.Api.Areas.Amphorae.Pages.IndexModel
 @{
     ViewData["Title"] = "Amphorae";
 }
@@ -9,7 +9,7 @@
         <div class="col">
             <span>
                 <h1 class="display-4">Amphoræ</h1>
-                <a asp-page="/amphorae/create"><button class="btn btn-primary">Create</button></a>
+                <a asp-page="./Create"><button class="btn btn-primary">Create</button></a>
             </span>
         </div>
     </div>
@@ -64,7 +64,7 @@
                         <td> @entity.Name </td>
                         <td>@entity.Price</td>
                         <td>  
-                            <a asp-page="/Amphorae/Detail" asp-route-id="@entity.Id"> 
+                            <a asp-page="./Detail" asp-route-id="@entity.Id"> 
                                 <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
                             </a>
                         </td>

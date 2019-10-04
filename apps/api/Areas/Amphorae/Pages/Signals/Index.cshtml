@@ -1,0 +1,59 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Signals.IndexModel
+
+<div id="main" class="container">
+    <div class="row main-header">
+        <div class="col">
+            <span>
+                <h1 class="display-4">Signals </h1>
+                <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">Create</button></a>
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <table id="signal-table" class="table">
+            <thead>
+                <tr>
+                <th scope="col">Signal</th>
+                <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var n in Model.Signals)
+                {
+                <tr class="signal-item">
+                    <th scope="row">@n.KeyName</th>
+                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary">View</button></a></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-page="./Write" asp-route-id="@Model.Amphora.Id">
+            <i class="float-right fas fa-plus" data-toggle="tooltip" data-placement="left" title="New Value"></i>
+        </a>
+    </div>
+    <div class="row">
+        <div class="col">
+            <small>This week</small>
+        </div>
+        <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+    <script src="~/js/tsi.js"></script>
+
+    <script>
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal)));
+        var response = @Html.Raw(@Model.QueryResponse);
+        tsi(cols, response)
+    </script>
+
+     <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+}

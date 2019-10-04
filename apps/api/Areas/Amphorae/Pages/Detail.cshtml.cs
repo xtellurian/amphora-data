@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Amphora.Api.Pages.Amphorae
+namespace Amphora.Api.Areas.Amphorae.Pages
 {
     [Authorize]
     public class DetailModel : AmphoraPageModel
@@ -45,12 +45,12 @@ namespace Amphora.Api.Pages.Amphorae
         public IEnumerable<TransactionModel> Transactions { get; private set; }
         public bool CanBuy { get; set; }
 
-        public override async Task<IActionResult> OnGetAsync(string id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            var response = await base.OnGetAsync(id);
+            await base.LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
 
-            return response;
+            return OnReturnPage();
         }
 
         private async Task SetPagePropertiesAsync()
@@ -66,7 +66,7 @@ namespace Amphora.Api.Pages.Amphorae
 
                
                 this.Transactions = Amphora?.Transactions ?? new List<TransactionModel>();
-                if (this.Transactions?.Any(u => string.Equals(u.Id, user.Id)) ?? false)
+                if (this.Transactions?.Any(u => string.Equals(u.UserId, user.Id)) ?? false)
                 {
                     // user has already purchased the amphora
                     this.CanBuy = false;

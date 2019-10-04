@@ -69,7 +69,7 @@
                         <tr class="market-item">
                             <th scope="row">@entity.Name</th>
                             <td>@entity.Price</td>
-                            <td> <a asp-page="/amphorae/Detail" asp-route-id="@entity.Id">
+                            <td> <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@entity.Id">
                                     <button class="btn btn-link text-success">More</button> 
                                 </a>
                             </td>

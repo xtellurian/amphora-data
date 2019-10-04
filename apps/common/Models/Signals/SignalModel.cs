@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Amphora.Common.Models.Signals
 {
@@ -6,6 +7,7 @@ namespace Amphora.Common.Models.Signals
     {
         public static string Numeric => nameof(Numeric);
         public static string String => nameof(String);
+        public static List<string> Options => new List<string>{Numeric, String};
 
         public SignalModel()
         {
@@ -30,6 +32,9 @@ namespace Amphora.Common.Models.Signals
 
         public string KeyName { get; set; }
         public string ValueType {get;set;}
+
+        public bool IsNumeric => this.ValueType == Numeric;
+        public bool IsString => this.ValueType == String;
         
     }
 }
