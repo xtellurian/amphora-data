@@ -4,6 +4,8 @@ import { frontDoorArm } from "./front-door-arm";
 
 const authConfig = new pulumi.Config("authentication");
 
+// const demo = new pulumi.StackReference(`acmecorp/infra/`);
+
 const tags = {
     component: "constant",
     project: pulumi.getProject(),
@@ -82,6 +84,7 @@ const template = new azure.core.TemplateDeployment("frontDoorArm",
     {
         deploymentMode: "Incremental",
         parameters: {
+            demoHostname: "appsvcf6b04e19.azurewebsites.net",
             frontDoorName: "amphora",
         },
         resourceGroupName: rg.name,
@@ -95,6 +98,18 @@ const template = new azure.core.TemplateDeployment("frontDoorArm",
 const wwwCName = new azure.dns.CNameRecord("wwwCName",
     {
         name: "www",
+        record: "amphora.azurefd.net",
+        resourceGroupName: rg.name,
+        tags,
+        ttl: 30,
+        zoneName: dnsZone.name,
+    },
+    opts,
+);
+
+const betaCName = new azure.dns.CNameRecord("betaCName",
+    {
+        name: "beta",
         record: "amphora.azurefd.net",
         resourceGroupName: rg.name,
         tags,
