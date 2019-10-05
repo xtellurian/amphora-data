@@ -1,4 +1,4 @@
-export function frontDoorArm() {
+export function frontDoorArm(tags: {}) {
     return {
         $schema: "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
@@ -151,16 +151,19 @@ export function frontDoorArm() {
                         },
                     ],
                 },
-                tags: {},
+                tags,
                 type: "Microsoft.Network/frontDoors",
             },
             {
                 apiVersion: "2018-05-01",
+                dependsOn: [
+                    "[resourceId('Microsoft.Network/frontDoors', parameters('frontDoorName'))]",
+                ],
                 name: "[concat(parameters('zoneName'), '/@')]",
                 properties: {
                     TTL: 60,
                     targetResource: {
-                        id: "[parameters('frontDoorId')]",
+                        id: "[resourceId('Microsoft.Network/frontDoors', parameters('frontDoorName'))]",
                     },
                 },
                 type: "Microsoft.Network/dnszones/A",

@@ -2,6 +2,10 @@ config:
   azure:environment: public
   azure:location: AustraliaSoutheast
   authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+  # this is the identity
+  # I ran > az ad sp create --id ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037
+  authentication:keyVaultAppId: ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037
+  authentication:keyVaultObjectId: 39ece413-93b4-4bfa-bc5b-72da722cdd23
   authentication:spAppId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
   authentication:spObjectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
   authentication:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
