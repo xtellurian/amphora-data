@@ -1,7 +1,9 @@
 config:
+  acr:sku: Standard
+  amphora:SendGridApiKey:
+    secure: AAABAFEcDbMSEIdmLWezhAXmWkpva0c2GTV0XsGwYF85c73b56WOvrDxGqzShLmCcOzarCJWMB4kmNvb1sr21NuICDeYiU8gclKLrXMM8PPSA1oIQCA6tlddmHc6CfjoxwN9H0g=
   amphora:tokenManagement__secret:
     secure: AAABAIMhhPFRlitMsvSNYpEBkGUjMARPHcu0WFItMieKRh7l8xBh0pQ4pDdbZsDXYiNMeA==
-  acr:sku: Standard
   application:appSvcPlanSize: S1
   application:appSvcPlanTier: Standard
   azure:environment: public
