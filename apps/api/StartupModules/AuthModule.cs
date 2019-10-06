@@ -55,6 +55,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
+            services.AddTransient<IEmailLimitingService, EmailLimitingService>();
         }
     }
 }
