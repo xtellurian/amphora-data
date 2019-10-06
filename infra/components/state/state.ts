@@ -4,6 +4,8 @@ import { CONSTANTS, IComponentParams } from "../../components";
 
 import { Monitoring } from "../monitoring/monitoring";
 
+const config = new pulumi.Config();
+
 const tags = {
   component: "state",
   project: pulumi.getProject(),
@@ -257,6 +259,8 @@ export class State extends pulumi.ComponentResource {
 
     this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
     this.storeInVault("cosmosSqlDbName", "Cosmos--Database", sql.name);
+
+    this.storeInVault("SendGridApiKey", "SendGrid--ApiKey", config.require("SendGridApiKey"));
 
     this.linkCosmosToLogAnalytics(this.cosmosDb, this.monitoring.logAnalyticsWorkspace);
   }
