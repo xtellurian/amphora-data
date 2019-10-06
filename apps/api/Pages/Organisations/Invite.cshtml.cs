@@ -53,7 +53,7 @@ namespace Amphora.Api.Pages.Organisations
             }
             else
             {
-                return RedirectToPage("Shared/Unauthorized", new { resourceId = Organisation.Id });
+                return RedirectToPage("/Shared/Unauthorized", new { resourceId = Organisation.Id });
             }
         }
 
