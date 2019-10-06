@@ -40,6 +40,9 @@ export let instrumentatonKey = result.then((r) =>
 export let appUrl = result.then((r) =>
   pulumi.interpolate`https://${r.application.appSvc.appSvc.defaultSiteHostname}`,
 );
+export let appHostname = result.then((r) =>
+  r.application.appSvc.appSvc.defaultSiteHostname,
+);
 
 export let kvUri = result.then((r) =>
   r.state.kv.vaultUri,

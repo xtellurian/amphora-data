@@ -4,7 +4,8 @@ import { frontDoorArm } from "./front-door-arm";
 
 const authConfig = new pulumi.Config("authentication");
 
-// const demo = new pulumi.StackReference(`acmecorp/infra/`);
+const demoStack = new pulumi.StackReference(`xtellurian/amphora/demo`);
+const demoHostname = demoStack.getOutput("appHostname");
 
 const tags = {
     component: "constant",
@@ -84,7 +85,7 @@ const template = new azure.core.TemplateDeployment("frontDoorArm",
     {
         deploymentMode: "Incremental",
         parameters: {
-            demoHostname: "appsvcf6b04e19.azurewebsites.net",
+            demoHostname,
             frontDoorName: "amphora",
         },
         resourceGroupName: rg.name,

@@ -145,7 +145,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 tenantId: CONSTANTS.authentication.tenantId,
             },
             {
-                parent: appSvc,
+                parent: this,
             },
         );
     }
