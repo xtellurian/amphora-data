@@ -40,15 +40,10 @@ namespace Amphora.Api.StartupModules
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<AmphoraContext>();
 
-            // services.AddDbContext<ApplicationUserContext>(options =>
-            // {
-            //     options.UseCosmos(endpoint, key, database);
-            // });
-
             services.Configure<IdentityOptions>(options =>
             {
                 // Default SignIn settings.
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.RequireUniqueEmail = true;
             });
