@@ -31,8 +31,11 @@
             {
             <div class="card mb-3">
                 <div class="col card p-2">
-                    <div> 
-                        <a class="float-right" asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
+                    <div class="mb-2">
+                        <div class="float-right">
+                            <a asp-page="./Members" asp-route-id="@Model.Organisation.Id"><i class="fas fa-cog"></i> </a>
+                            <a asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
+                        </div>
                         <h3>Members</h3>
                     </div>
                     <ul>
