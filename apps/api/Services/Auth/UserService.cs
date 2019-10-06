@@ -15,15 +15,18 @@ namespace Amphora.Api.Services.Auth
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
+        private readonly IEmailLimitingService emailLimitingService;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<OrganisationModel> orgStore,
                            IPermissionService permissionService,
+                           IEmailLimitingService emailLimitingService,
                            IUserManager userManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
             this.permissionService = permissionService;
+            this.emailLimitingService = emailLimitingService;
             this.UserManager = userManager;
 
         }
@@ -37,6 +40,10 @@ namespace Amphora.Api.Services.Auth
             if (existing != null)
             {
                 throw new System.ArgumentException("Duplicate User Id");
+            }
+            if(!emailLimitingService.CanSignup(user.Email))
+            {
+                return new EntityOperationResult<ApplicationUser>($"{user.Email} is not authorized to signup");
             }
 
             var result = await UserManager.CreateAsync(user, password);
