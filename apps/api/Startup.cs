@@ -63,7 +63,8 @@ namespace Amphora.Api
             this.GeoModule.ConfigureServices(services);
             this.MarketModule.ConfigureServices(services);
 
-            services.AddTransient<IEmailSender, EmailSender>(); // todo 
+            services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
+            services.AddTransient<IEmailSender, SendGridEmailSender>();
             
             services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
