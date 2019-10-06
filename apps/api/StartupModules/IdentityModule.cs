@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Amphora.Api.StartupModules
 {
@@ -43,7 +44,7 @@ namespace Amphora.Api.StartupModules
             services.Configure<IdentityOptions>(options =>
             {
                 // Default SignIn settings.
-                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = HostingEnvironment.IsProduction();
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.RequireUniqueEmail = true;
             });
