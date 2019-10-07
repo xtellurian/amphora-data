@@ -42,13 +42,6 @@ jobs:
         STACK: $(stack)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk v 3.0.100'
-      inputs:
-        packageType: sdk
-        version: 3.0.100
-        installationPath: $(Agent.ToolsDirectory)/dotnet
-
     # required to access KV in testing
     - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
       displayName: Az Login
@@ -57,10 +50,6 @@ jobs:
         PASSWORD: $(password)
         TENANT: $(tenant)
 
-    - script: dotnet build --configuration $(buildConfiguration)
-      workingDirectory: apps
-      displayName: 'dotnet build $(buildConfiguration)'
-
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
@@ -68,8 +57,9 @@ jobs:
         export kvUri=$(pulumi stack output kvUri)
         popd
         pushd apps
-        dotnet test  --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura apps.sln
-      displayName: dotnet test
+        docker-compose build test
+        docker-compose run -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv test
+      displayName: Run Tests
       env:
         PersistentStores: $(PersistentStores)
         disableKv: $(disableKv)
@@ -78,11 +68,12 @@ jobs:
     - task: PublishTestResults@2
       condition: always() 
       inputs:
+        testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
         testRunner: VSTest
-        testResultsFiles: '**/*.trx'
+        testResultsFiles: '$(Build.SourcesDirectory)/apps/TestOutput.xml'
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Report
       inputs:
-        summaryFileLocation: $(Build.SourcesDirectory)/apps/test/coverage.cobertura.xml
+        summaryFileLocation: $(Build.SourcesDirectory)/apps/coverage.cobertura.xml
         codecoverageTool: cobertura
