@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.AzureMaps;
 
 namespace Amphora.Api.Services.Azure
@@ -23,6 +24,11 @@ namespace Amphora.Api.Services.Azure
                     }
                 };
             });
+        }
+
+        public Task<byte[]> GetStaticMapImageAsync(GeoLocation location)
+        {
+            return null;
         }
     }
 }
