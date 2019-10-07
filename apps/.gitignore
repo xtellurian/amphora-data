@@ -2,3 +2,5 @@ obj/
 bin/
 test/lcov.info
 .DS_Store
+coverage.cobertura.xml
+TestOutput.xml

@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0
+
+# Copy csproj and restore as distinct layers
+COPY . ./
+
+RUN dotnet build
