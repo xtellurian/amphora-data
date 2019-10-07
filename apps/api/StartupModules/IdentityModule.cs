@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Amphora.Api.StartupModules
 {
@@ -44,18 +44,15 @@ namespace Amphora.Api.StartupModules
             services.Configure<IdentityOptions>(options =>
             {
                 // Default SignIn settings.
-                options.SignIn.RequireConfirmedEmail = HostingEnvironment.IsProduction();
+                options.SignIn.RequireConfirmedEmail = Boolean.Parse(Configuration
+                    .GetSection("IdentityConfiguration")
+                    .GetSection("SignIn")["RequireConfirmedEmail"] ?? "false");
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.RequireUniqueEmail = true;
             });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            // using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            // using (var context = scope.ServiceProvider.GetService<ApplicationUserContext>())
-            // {
-            //     context.Database.EnsureCreated();
-            // }
         }
     }
 }
