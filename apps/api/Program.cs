@@ -19,7 +19,8 @@ namespace Amphora.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, config)=> {
+                .ConfigureAppConfiguration((context, config) =>
+                {
                     config.AddEnvironmentVariables();
                     var builtConfig = config.Build();
                     KeyVaultConfigProvider(config, builtConfig);
@@ -31,22 +32,32 @@ namespace Amphora.Api
                         // Set properties and call methods on options
                     })
                     .UseStartup<Startup>();
-        });
+                });
 
         public const string kvUri = "kvUri";
         public const string disableKv = "disableKv";
         private static void KeyVaultConfigProvider(IConfigurationBuilder config, IConfigurationRoot builtConfig)
         {
-            if (!string.IsNullOrEmpty(builtConfig[kvUri]) && string.IsNullOrEmpty(builtConfig[disableKv]))
+            var vaultUri = builtConfig[kvUri];
+            if (!string.IsNullOrEmpty(vaultUri) && string.IsNullOrEmpty(builtConfig[disableKv]))
             {
                 System.Console.WriteLine($"Using KeyVault {builtConfig[kvUri]} as Config Provider");
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(
                     new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                config.AddAzureKeyVault($"{builtConfig[kvUri]}",
+                config.AddAzureKeyVault($"{vaultUri}",
                     keyVaultClient,
                     new DefaultKeyVaultSecretManager());
+                try
+                {
+                    var entry = System.Net.Dns.GetHostEntry(vaultUri);
+                }
+                catch(System.Exception ex)
+                {
+                    System.Console.WriteLine($"KeyVault DNS Lookup Failed!");
+                    throw ex;
+                }
                 System.Console.WriteLine("KeyVault Configuration Loaded!");
             }
             else
