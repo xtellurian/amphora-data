@@ -45,12 +45,13 @@ namespace Amphora.Api.Pages.Organisations
             if (string.IsNullOrEmpty(id))
             {
                 this.Organisation = await entityStore.ReadAsync(user.OrganisationId);
+                if (this.Organisation == null) return RedirectToPage("./Create");
             }
             else
             {
-                this.Organisation = await entityStore.ReadAsync( id);
+                this.Organisation = await entityStore.ReadAsync(id);
+                if (this.Organisation == null) return RedirectToPage("./Index");
             }
-            if (this.Organisation == null) return RedirectToPage("/Index");
 
             this.CanViewMembers = this.Organisation.IsInOrgansation(user);
 
