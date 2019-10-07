@@ -18,19 +18,19 @@
             </span>
         </div>
     </div>
-    <div class="row">
-        <div clas="col">
-            
-            
+    <div class="row mb-3">
+        <div class="col-md-4 mb-2">
+            @{
+            string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}"; //The src path.
+            }
+            <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
         </div>
-    </div>
-    <div class="row">     
-        <div class="col">
-            <div class="card bg-light mb-3">
+        <div class="col-md-8">
+            <div class="card bg-light">
                 <div class="card-header">
                     by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
-                        @Model.Amphora.CreatedBy.UserName
-                        </a> from 
+                        @Model.Amphora.CreatedBy.FullName
+                        </a> from
                         <a asp-page="/Organisations/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
                         @Model.Amphora.CreatedBy.Organisation.Name
                         </a>
@@ -42,7 +42,7 @@
                         var buttonMode = string.Empty;
                         var signalsButtonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
-                        if(Model.CanBuy) { signalsButtonMode = "disabled"; } 
+                        if(Model.CanBuy && !Model.CanUploadFiles) { signalsButtonMode = "disabled"; } 
                     }
                     <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light" @signalsButtonMode>Signals</button></a>
                     <a asp-page="./Agreement" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success" @buttonMode>Buy</button></a>
@@ -73,7 +73,7 @@
                     </div>
                 </div>
             </div>
-            <div id="uploadFileCollapse" class="card mb-3 collapse">
+            <div id="uploadFileCollapse" class="card mt-2 collapse">
                 <div class="card-header">
                     <h5 class="card-title">Upload File</h5>
                 </div>
@@ -96,7 +96,7 @@
             </div>
             @if(Model.CanEditPermissions)
             {
-            <div id="hasPurchasedCollapse" class="card bg-light mb-3 collapse">
+            <div id="hasPurchasedCollapse" class="card bg-light mt-2 collapse">
                 <div class="card-header">
                      <div>
                         <a class="float-right" asp-route-id="@Model.Amphora.Id" asp-page="./Invite">
