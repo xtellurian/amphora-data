@@ -49,7 +49,7 @@ namespace Amphora.Api.Stores.EFCore
                 if(result == null) return null;
 
                 context.Entry(result)
-                    .Collection(b => b.Transactions)
+                    .Collection(b => b.Purchases)
                     .Load();
 
                 context.Entry(result)

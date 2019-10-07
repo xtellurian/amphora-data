@@ -7,29 +7,30 @@ using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Services.Amphorae
 {
     public partial class AmphoraeService : IAmphoraeService
     {
-        private readonly IEntityStore<TransactionModel> transactionStore;
+        public IEntityStore<AmphoraModel> AmphoraStore { get; private set; }
+
+        private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly ILogger<AmphoraeService> logger;
-        public IEntityStore<AmphoraModel> AmphoraStore { get; }
 
         public AmphoraeService(IEntityStore<AmphoraModel> amphoraStore,
-                               IEntityStore<TransactionModel> transactionStore,
+                               IEntityStore<PurchaseModel> purchaseStore,
                                IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserService userService,
                                ILogger<AmphoraeService> logger)
         {
             AmphoraStore = amphoraStore;
-            this.transactionStore = transactionStore;
+            this.purchaseStore = purchaseStore;
             this.organisationStore = organisationStore;
             this.permissionService = permissionService;
             this.userService = userService;

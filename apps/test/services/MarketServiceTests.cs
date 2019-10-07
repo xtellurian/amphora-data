@@ -32,7 +32,7 @@ namespace Amphora.Tests.Unit
             using (var context = GetContext(nameof(MarketServiceTests)))
             {
                 var amphoraStore = new AmphoraeEFStore(context);
-                var transactionStore = new TransactionEFStore(context);
+                var purchaseStore = new PurchaseEFStore(context);
                 var orgStore = new OrganisationsEFStore(context);
                 var mockUserService = new Mock<IUserService>();
                 mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
@@ -40,7 +40,7 @@ namespace Amphora.Tests.Unit
                 var permissionService = new PermissionService(permissionLogger, orgStore, amphoraStore);
 
                 var amphoraService = new AmphoraeService(amphoraStore,
-                                                        transactionStore,
+                                                        purchaseStore,
                                                         orgStore,
                                                         permissionService,
                                                         mockUserService.Object,

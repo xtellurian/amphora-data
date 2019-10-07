@@ -1,13 +1,14 @@
 using System;
+using System.Linq;
 
 namespace Amphora.Tests.Helpers
 {
-    public class RandomBufferGenerator
+    public class RandomGenerator
     {
         private readonly Random _random = new Random();
         private readonly byte[] _seedBuffer;
 
-        public RandomBufferGenerator(int maxBufferSize)
+        public RandomGenerator(int maxBufferSize)
         {
             _seedBuffer = new byte[maxBufferSize];
 
@@ -24,6 +25,13 @@ namespace Amphora.Tests.Helpers
             Buffer.BlockCopy(_seedBuffer, 0, buffer, size - randomWindow, randomWindow);
 
             return buffer;
+        }
+
+        public string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[_random.Next(s.Length)]).ToArray());
         }
     }
 }

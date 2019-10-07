@@ -4,7 +4,7 @@ using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -61,7 +61,7 @@ namespace Amphora.Api.StartupModules
             // entity stores
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
-            services.AddScoped<IEntityStore<TransactionModel>, TransactionEFStore>();
+            services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             // services.AddScoped<IEntityStore<UserModel>, UserEFStore>();
         }
 

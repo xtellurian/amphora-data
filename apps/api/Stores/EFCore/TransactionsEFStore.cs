@@ -5,59 +5,59 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Stores.EFCore
 {
-    public class TransactionEFStore : IEntityStore<TransactionModel>
+    public class PurchaseEFStore : IEntityStore<PurchaseModel>
     {
         private readonly AmphoraContext context;
 
-        public TransactionEFStore(AmphoraContext context)
+        public PurchaseEFStore(AmphoraContext context)
         {
             this.context = context;
         }
-        public async Task<TransactionModel> CreateAsync(TransactionModel entity)
+        public async Task<PurchaseModel> CreateAsync(PurchaseModel entity)
         {
-            var x = await this.context.Transactions.AddAsync(entity);
+            var x = await this.context.Purchases.AddAsync(entity);
             await this.context.SaveChangesAsync();
             return x.Entity;
         }
 
-        public async Task DeleteAsync(TransactionModel entity)
+        public async Task DeleteAsync(PurchaseModel entity)
         {
-            var e = await this.context.Transactions.SingleOrDefaultAsync(a => a.Id == entity.Id);
-            this.context.Transactions.Remove(e);
+            var e = await this.context.Purchases.SingleOrDefaultAsync(a => a.Id == entity.Id);
+            this.context.Purchases.Remove(e);
             await context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<TransactionModel>> QueryAsync(Expression<Func<TransactionModel, bool>> where)
+        public async Task<IEnumerable<PurchaseModel>> QueryAsync(Expression<Func<PurchaseModel, bool>> where)
         {
-            return await context.Transactions.Where(where).ToListAsync();
+            return await context.Purchases.Where(where).ToListAsync();
         }
 
-        public async Task<TransactionModel> ReadAsync(string id, bool includeChildren = false)
+        public async Task<PurchaseModel> ReadAsync(string id, bool includeChildren = false)
         {
-            var result = await context.Transactions.SingleOrDefaultAsync(a => a.AmphoraId == id);
+            var result = await context.Purchases.SingleOrDefaultAsync(a => a.AmphoraId == id);
             return result;
         }
 
-        public async Task<IList<TransactionModel>> TopAsync()
+        public async Task<IList<PurchaseModel>> TopAsync()
         {
-            var x = await context.Transactions.Take(5).ToListAsync();
-            return new List<TransactionModel>(x);
+            var x = await context.Purchases.Take(5).ToListAsync();
+            return new List<PurchaseModel>(x);
         }
 
-        public async Task<IList<TransactionModel>> TopAsync(string orgId)
+        public async Task<IList<PurchaseModel>> TopAsync(string orgId)
         {
-            var x = await context.Transactions.Where(t => t.OrganisationId == orgId).Take(5).ToListAsync();
-            return new List<TransactionModel>(x);
+            var x = await context.Purchases.Where(t => t.PurchasedByOrganisationId == orgId).Take(5).ToListAsync();
+            return new List<PurchaseModel>(x);
         }
 
-        public async Task<TransactionModel> UpdateAsync(TransactionModel entity)
+        public async Task<PurchaseModel> UpdateAsync(PurchaseModel entity)
         {
-            var o = context.Transactions.Update(entity);
+            var o = context.Purchases.Update(entity);
             await context.SaveChangesAsync();
             return o.Entity;
         }

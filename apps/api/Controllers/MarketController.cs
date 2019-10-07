@@ -14,15 +14,15 @@ namespace Amphora.Api.Controllers
     {
         private readonly IMarketService marketService;
         private readonly IMapService mapService;
-        private readonly ITransactionService transactionService;
+        private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
 
         public MarketController(IMarketService marketService, IMapService mapService,
-                                ITransactionService transactionService, IAmphoraeService amphoraeService)
+                                IPurchaseService purchaseService, IAmphoraeService amphoraeService)
         {
             this.marketService = marketService;
             this.mapService = mapService;
-            this.transactionService = transactionService;
+            this.purchaseService = purchaseService;
             this.amphoraeService = amphoraeService;
         }
 
@@ -46,7 +46,7 @@ namespace Amphora.Api.Controllers
             var a = await amphoraeService.ReadAsync(User, id);
             if(a.Succeeded)
             {
-                var result = await transactionService.PurchaseAmphora(User, a.Entity);
+                var result = await purchaseService.PurchaseAmphora(User, a.Entity);
                 if(result.Succeeded)
                 {
                     return Ok();

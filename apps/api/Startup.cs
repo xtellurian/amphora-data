@@ -79,7 +79,7 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IOrganisationService, OrganisationService>();
-            services.AddTransient<ITransactionService, TransactionService>();
+            services.AddTransient<IPurchaseService, PurchaseService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();

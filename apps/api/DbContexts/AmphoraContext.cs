@@ -1,7 +1,7 @@
 using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -28,7 +28,7 @@ namespace Amphora.Api.DbContexts
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
-                b.HasMany(p => p.Transactions).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
+                b.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
                 b.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
             });
@@ -61,11 +61,12 @@ namespace Amphora.Api.DbContexts
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
             });
 
-            modelBuilder.Entity<TransactionModel>(b =>
+            modelBuilder.Entity<PurchaseModel>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.HasOne(p => p.User).WithMany(u => u.Transactions).HasForeignKey(p => p.UserId);
-                b.HasOne(p => p.Amphora).WithMany(u => u.Transactions).HasForeignKey(p => p.AmphoraId);
+                b.HasOne(p => p.PurchasedByUser).WithMany(u => u.Purchases).HasForeignKey(p => p.PurchasedByUserId);
+                b.HasOne(p => p.PurchasedByOrganisation).WithMany().HasForeignKey(p => p.PurchasedByOrganisationId);
+                b.HasOne(p => p.Amphora).WithMany(u => u.Purchases).HasForeignKey(p => p.AmphoraId);
             });
 
             modelBuilder.Entity<ApplicationUser>(b =>
@@ -76,7 +77,7 @@ namespace Amphora.Api.DbContexts
 
         public DbSet<AmphoraModel> Amphorae { get; set; }
         public DbSet<OrganisationModel> Organisations { get; set; }
-        public DbSet<TransactionModel> Transactions { get; set; }
+        public DbSet<PurchaseModel> Purchases { get; set; }
         public DbSet<SignalModel> Signals { get; set; }
     }
 }

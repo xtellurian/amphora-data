@@ -21,7 +21,7 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(o => o.Organisation, p => p.Ignore())
             .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
             .ForMember(o => o.Signals, p => p.Ignore())
-            .ForMember(o => o.Transactions, p => p.Ignore())
+            .ForMember(o => o.Purchases, p => p.Ignore())
             .ForMember(o => o.ttl, p => p.Ignore())
             .ForMember(o => o.CreatedBy, p => p.Ignore())
             .ForMember(o => o.CreatedById, p => p.Ignore())
