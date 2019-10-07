@@ -27,7 +27,7 @@ namespace Amphora.Common.Models.Signals
             }
             CreatedDate = DateTime.UtcNow;
 
-            this.Id = $"{KeyName}|{ValueType}";
+            this.Id = $"{KeyName}-{ValueType}";
         }
 
         public string KeyName { get; set; }
