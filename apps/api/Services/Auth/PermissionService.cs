@@ -71,7 +71,7 @@ namespace Amphora.Api.Services.Auth
         private async Task<bool> HasUserPurchasedAmphoraAsync(IUser user, AmphoraModel amphora)
         {
             var extended = await amphoraeStore.ReadAsync(amphora.Id);
-            return extended.Transactions?.Any(p => string.Equals(p.UserId , user.Id)) ?? false;
+            return extended.Purchases?.Any(p => string.Equals(p.PurchasedByUserId , user.Id)) ?? false;
         }
     }
 }

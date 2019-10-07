@@ -10,7 +10,7 @@ namespace Amphora.Api.Services.Amphorae
     {
         public async Task<IEnumerable<AmphoraModel>> AmphoraPurchasedBy(IUser user)
         {
-            var transactions = await transactionStore.QueryAsync(t => t.UserId == user.Id);
+            var transactions = await purchaseStore.QueryAsync(t => t.PurchasedByUserId == user.Id);
             var amphorae = await AmphoraStore.QueryAsync(a => transactions.Select(t => t.AmphoraId).Contains(a.Id));
             return amphorae;
         }

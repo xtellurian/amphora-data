@@ -35,7 +35,7 @@ namespace Amphora.Tests.Integration
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
 
-            var generator = new Helpers.RandomBufferGenerator(1024);
+            var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
             var file = Guid.NewGuid().ToString();
@@ -73,7 +73,7 @@ namespace Amphora.Tests.Integration
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
 
-            var generator = new Helpers.RandomBufferGenerator(1024);
+            var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
             var file = Guid.NewGuid().ToString();
@@ -110,7 +110,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
-            var generator = new Helpers.RandomBufferGenerator(1024);
+            var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
 

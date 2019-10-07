@@ -61,7 +61,7 @@ namespace Amphora.Api.Models.AzureSearch
                 IsFilterable = true
             });
             // Has Purchased
-            fields.Add(new Field(nameof(AmphoraModel.Transactions),
+            fields.Add(new Field(nameof(AmphoraModel.Purchases),
                         DataType.Collection(DataType.Complex),
                         new List<Field>
                         {

@@ -20,7 +20,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
-            var generator = new Helpers.RandomBufferGenerator(1024);
+            var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
 
             // Act

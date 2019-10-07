@@ -8,12 +8,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 {
     public class PurchaseModel: PageModel
     {
-        private readonly ITransactionService transactionService;
+        private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
 
-        public PurchaseModel(ITransactionService transactionService, IAmphoraeService amphoraeService)
+        public PurchaseModel(IPurchaseService purchaseService, IAmphoraeService amphoraeService)
         {
-            this.transactionService = transactionService;
+            this.purchaseService = purchaseService;
             this.amphoraeService = amphoraeService;
         }
 
@@ -27,7 +27,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if(result.Succeeded)
             {
                 this.Success = true;
-                await transactionService.PurchaseAmphora(User, result.Entity);
+                await purchaseService.PurchaseAmphora(User, result.Entity);
                 return Page();
             }
             else if(result.WasForbidden)

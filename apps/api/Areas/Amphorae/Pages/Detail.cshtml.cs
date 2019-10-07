@@ -9,7 +9,7 @@ using Amphora.Api.Services.FeatureFlags;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
-        public IEnumerable<TransactionModel> Transactions { get; private set; }
+        public ICollection<Common.Models.Purchases.PurchaseModel> Purchases { get; private set; }
         public bool CanBuy { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -65,8 +65,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
 
                
-                this.Transactions = Amphora?.Transactions ?? new List<TransactionModel>();
-                if (this.Transactions?.Any(u => string.Equals(u.UserId, user.Id)) ?? false)
+                this.Purchases = Amphora.Purchases;
+                if (this.Purchases?.Any(u => string.Equals(u.PurchasedByUserId, user.Id)) ?? false)
                 {
                     // user has already purchased the amphora
                     this.CanBuy = false;

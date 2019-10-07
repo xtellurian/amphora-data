@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Signals;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Amphorae
@@ -10,7 +10,7 @@ namespace Amphora.Common.Models.Amphorae
     {
         public AmphoraModel()
         {
-            Transactions = new List<TransactionModel>();
+            Purchases = new List<PurchaseModel>();
         }
 
         public string Name { get; set; }
@@ -25,7 +25,7 @@ namespace Amphora.Common.Models.Amphorae
         public string CreatedById { get; set; }
         public virtual ApplicationUser CreatedBy { get; set; }
         public virtual ICollection<AmphoraSignalModel> Signals {get;set;}
-        public virtual ICollection<TransactionModel> Transactions { get; set; }
+        public virtual ICollection<PurchaseModel> Purchases { get; set; }
 
         // methods
         public void AddSignal(SignalModel signal)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Transactions;
+using Amphora.Common.Models.Purchases;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Common.Models.Users
@@ -17,7 +17,7 @@ namespace Amphora.Common.Models.Users
         public string OrganisationId { get; set; }
         public virtual OrganisationModel Organisation { get; set; }
 
-        public virtual ICollection<TransactionModel> Transactions { get; set; }
+        public virtual ICollection<PurchaseModel> Purchases { get; set; }
         public Uri GetProfilePictureUri()
         {
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");

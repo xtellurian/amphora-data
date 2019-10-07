@@ -38,7 +38,7 @@ namespace Amphora.Api.Models.Search
             return new SearchParameters
             {
                 // tags/any(t: t eq 'wifi')
-                Filter = $"{nameof(AmphoraModel.Transactions)}/any(h: h/{p} eq '{userId}')"
+                Filter = $"{nameof(AmphoraModel.Purchases)}/any(h: h/{p} eq '{userId}')"
             };
         }
 
