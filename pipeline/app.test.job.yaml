@@ -23,7 +23,7 @@ jobs:
     - name: buildConfiguration
       value: 'Release'
     - name: testImageName
-      value: 'TestCandidate'
+      value: 'build'
 
   steps:
     - template: install.pulumi.steps.yaml
