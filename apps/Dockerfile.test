@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0
-
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 # Copy csproj and restore as distinct layers
 COPY . ./
-
 RUN dotnet build
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV AZURE_CONFIG_DIR=/.azure/
+CMD dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/output/ -l:trx;LogFileName=/output/TestOutput.xml 

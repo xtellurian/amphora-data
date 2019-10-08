@@ -51,7 +51,12 @@ namespace Amphora.Api
                     new DefaultKeyVaultSecretManager());
                 try
                 {
-                    var entry = System.Net.Dns.GetHostEntry(vaultUri);
+                    var httpsPrefix = "https://";
+                    if(vaultUri.StartsWith(httpsPrefix))
+                    {
+                        var kvHost = vaultUri.Substring(httpsPrefix.Length).Trim('/');
+                        var entry = System.Net.Dns.GetHostEntry(kvHost);
+                    }
                 }
                 catch(System.Exception ex)
                 {
