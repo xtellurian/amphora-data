@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Users;
 using Microsoft.Azure.Search.Models;
 
 namespace Amphora.Api.Models.AzureSearch
@@ -46,10 +45,9 @@ namespace Amphora.Api.Models.AzureSearch
                 IsFilterable = true
             });
             // created by
-            fields.Add(new Field(nameof(AmphoraModel.CreatedBy), DataType.String)
+            fields.Add(new Field(nameof(AmphoraModel.CreatedById), DataType.String)
             {
                 IsRetrievable = true,
-                IsSortable = true,
                 IsFacetable = true,
                 IsFilterable = true
             });
@@ -60,18 +58,6 @@ namespace Amphora.Api.Models.AzureSearch
                 IsSortable = true,
                 IsFilterable = true
             });
-            // Has Purchased
-            fields.Add(new Field(nameof(AmphoraModel.Purchases),
-                        DataType.Collection(DataType.Complex),
-                        new List<Field>
-                        {
-                            new Field(nameof(ApplicationUser.Id), DataType.String)
-                            {
-                                IsFilterable = true,
-                            },
-                            new Field(nameof(ApplicationUser.OrganisationId), DataType.String),
-                            new Field(nameof(ApplicationUser.UserName), DataType.String),
-                        }));
 
             // add isPubic
             fields.Add(new Field(nameof(AmphoraModel.IsPublic), DataType.Boolean)
