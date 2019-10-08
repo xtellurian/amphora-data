@@ -79,6 +79,7 @@ jobs:
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
         . pulumi-stack.sh
+        export acrName=$(pulumi stack output acrName)
         export kvUri=$(pulumi stack output kvUri)
         popd
         pushd apps
@@ -86,6 +87,8 @@ jobs:
         docker run -v `pwd`:/output -v ~/.azure/:/.azure/ -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv $acrName.azurecr.io/$IMAGE:$BUILD
       displayName: Run Tests
       env:
+        IMAGE: $(testImageName)
+        BUILD: $(Build.BuildNumber)
         PersistentStores: $(PersistentStores)
         disableKv: $(disableKv)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
