@@ -62,11 +62,5 @@ namespace Amphora.Tests.Services
 
             Assert.All(result.Results, r => Assert.NotNull(r.Entity));
         }
-
-        [Fact]
-        public void Temporary()
-        {
-            Assert.True(false);
-        }
     }
 }
