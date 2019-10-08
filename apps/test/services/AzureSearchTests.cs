@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Amphora.Tests.Services
 {
-    public class AzureSearchTests: UnitTestBase
+    public class AzureSearchTests : UnitTestBase
     {
         private readonly ILogger<AzureSearchService> azureSearchLogger;
         private readonly ILogger<AzureSearchInitialiser> initLogger;
@@ -39,9 +39,9 @@ namespace Amphora.Tests.Services
         public async Task CreateIndex_Success()
         {
             // Setup
-            var sut = new AzureSearchInitialiser( 
+            var sut = new AzureSearchInitialiser(
                 initLogger,
-                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions) , 
+                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
                 Mock.Of<IOptionsMonitor<CosmosOptions>>(_ => _.CurrentValue == cosmosOptions));
             // act
             await sut.CreateAmphoraIndexAsync();
@@ -51,16 +51,22 @@ namespace Amphora.Tests.Services
         public async Task SearchAmphora_Success()
         {
 
-             var sut = new AzureSearchService( 
-                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions) , 
-                Mock.Of<IAzureSearchInitialiser>(),
-                azureSearchLogger,
-                Mapper);
-            
+            var sut = new AzureSearchService(
+               Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
+               Mock.Of<IAzureSearchInitialiser>(),
+               azureSearchLogger,
+               Mapper);
+
             var parameters = new SearchParameters();
             var result = await sut.SearchAmphora("", parameters);
 
             Assert.All(result.Results, r => Assert.NotNull(r.Entity));
+        }
+
+        [Fact]
+        public void Temporary()
+        {
+            Assert.True(false);
         }
     }
 }
