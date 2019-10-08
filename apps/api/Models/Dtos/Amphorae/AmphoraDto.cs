@@ -6,11 +6,10 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     {
         [Required]
         public string Name { get; set; }
-        
+
         [Required]
         [DataType(DataType.Currency)]
         public double Price { get; set; }
-
 
     }
 }

@@ -11,7 +11,6 @@ namespace Amphora.Api.Contracts
     {
         Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(AmphoraModel entity);
         Task<QueryResultPage> GetTsiSignalAsync(AmphoraModel entity, SignalModel signal, bool includeOtherSignals = false);
-        Task WriteSignalAsync(AmphoraModel entity, JObject jObj);
         Task WriteSignalAsync(AmphoraModel entity, Dictionary<string, object> values);
     }
 }

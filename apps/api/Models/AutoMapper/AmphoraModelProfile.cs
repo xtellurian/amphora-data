@@ -13,8 +13,21 @@ namespace Amphora.Api.Models.AutoMapper
             // this is to extend a base class into its extended version. 
             // Generally only used in the InMemory stores.
 
-            // dto mappings
             CreateMap<AmphoraModel, AmphoraDto>();
+
+            CreateMap<CreateAmphoraDto, AmphoraModel>()
+                .ForMember(o => o.Id, p => p.Ignore())
+                .ForMember(o => o.Organisation, p => p.Ignore())
+                .ForMember(o => o.OrganisationId, p => p.Ignore())
+                .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
+                .ForMember(o => o.Signals, p => p.Ignore())
+                .ForMember(o => o.Purchases, p => p.Ignore())
+                .ForMember(o => o.ttl, p => p.Ignore())
+                .ForMember(o => o.CreatedBy, p => p.Ignore())
+                .ForMember(o => o.CreatedById, p => p.Ignore())
+                .ForMember(o => o.CreatedDate, p => p.Ignore())
+                .ForMember(o => o.GeoLocation, p => p.MapFrom(src => 
+                    src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value): null));
 
             CreateMap<AmphoraExtendedDto, AmphoraModel>()
             .ForMember(o => o.Id, p => p.Ignore())

@@ -33,6 +33,11 @@ namespace Amphora.Api.Controllers
             this.organisationService = organisationService;
         }
 
+        /// <summary>
+        /// Creates a new Organisation. This will assign the logged in user to the organisation.
+        /// </summary>
+        /// <param name="dto">Information of the new Organisation</param>  
+        [Produces(typeof(OrganisationDto))]
         [HttpPost("api/organisations")]
         public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationDto dto) //TODO make this a DTO
         {
@@ -53,6 +58,11 @@ namespace Amphora.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an organisation.
+        /// </summary>
+        /// <param name="id">Organisation Id</param>  
+        /// <param name="org">Organisation Information. All fields are updated.</param>  
         [HttpPut("api/organisations/{id}")]
         public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationDto org)
         {
@@ -66,7 +76,11 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<OrganisationDto>(result);
             return Ok(dto);
         }
-
+        /// <summary>
+        /// Gets an organisation's details.
+        /// </summary>
+        /// <param name="id">Organisation Id</param>
+        [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}")]
         public async Task<IActionResult> GetOrganisation(string id)
         {
@@ -79,7 +93,11 @@ namespace Amphora.Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Invite a user/ email address to your organisation.
+        /// </summary>
+        /// <param name="id">Organisation Id</param>
+        /// <param name="invitation">Invitation details</param>
         [HttpPost("api/organisations/{id}/invitations/")]
         public async Task<IActionResult> InviteToOrganisation(string id, [FromBody] Invitation invitation)
         {
@@ -94,6 +112,11 @@ namespace Amphora.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Accept an invitation to an organisation.
+        /// </summary>
+        /// <param name="id">Organisation Id</param>
+        [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}/invitations/")]
         public async Task<IActionResult> AcceptInvitation(string id)
         {
@@ -107,9 +130,11 @@ namespace Amphora.Api.Controllers
                 return StatusCode(403, permEx.Message);
             }
         }
-
-
-
+        /// <summary>
+        /// Deletes an organisation.
+        /// </summary>
+        /// <param name="id">Organisation Id</param>
+        [Produces(typeof(OrganisationDto))]
         [HttpDelete("api/organisations/{id}")]
         public async Task<IActionResult> DeleteOrganisation(string id)
         {

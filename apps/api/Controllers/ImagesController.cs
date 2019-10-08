@@ -19,6 +19,10 @@ namespace Amphora.Api.Controllers
             this.organisationService = organisationService;
         }
 
+        /// <summary>
+        /// Gets an organisations profile picture
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
         [HttpGet("api/organisations/{id}/profile.jpg")]
         public async Task<IActionResult> GetOrganisationProfileImage(string id)
         {
