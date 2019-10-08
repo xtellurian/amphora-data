@@ -2,6 +2,5 @@
 [Bb]in/
 [Oo]bj/
 Dockerfile
-Dockerfile.test
 azure-pipelines.yaml
 .gitignore
