@@ -73,6 +73,7 @@ jobs:
         IMAGE: $(testImageName)
         BUILD: $(Build.BuildNumber)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        CONTEXT: $(Build.SourcesDirectory)/apps
 
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
