@@ -26,11 +26,13 @@ fi
 if [ -z "$STAGING" ]; then
     STAGING=false
 fi
-
-
+if [ -z "$CACHED_IMAGE" ]; then
+    CACHED_IMAGE=$ACR_NAME.azurecr.io/builder:latest
+fi
 
 az acr login -n $ACR_NAME
-docker build -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
+docker pull $CACHED_IMAGE
+docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
 docker push $IMAGE:latest
 docker push $IMAGE:$GITHASH
 docker push $IMAGE:$BUILD 
