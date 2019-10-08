@@ -16,17 +16,22 @@ namespace Amphora.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class AmphoraeController : Controller
     {
+        /// <summary>
+        /// Get's the signals associated with an Amphora.
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        [Produces(typeof(List<SignalDto>))]
         [HttpGet("api/amphorae/{id}/signals")]
         public async Task<IActionResult> GetSignals(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 var signals = result.Entity.Signals.Select(s => s.Signal);
                 var res = mapper.Map<List<SignalDto>>(signals);
                 return Ok(signals);
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
                 return StatusCode(403, result.Message);
             }
@@ -35,7 +40,12 @@ namespace Amphora.Api.Controllers
                 return BadRequest(result.Message);
             }
         }
-
+        /// <summary>
+        /// Associates a signal with an Amphora. Signal is created if not existing.
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="dto">Signal Details</param>  
+        [Produces(typeof(SignalDto))]
         [HttpPost("api/amphorae/{id}/signals")]
         public async Task<IActionResult> CreateSignal(string id, [FromBody] SignalDto dto)
         {
@@ -43,17 +53,17 @@ namespace Amphora.Api.Controllers
             {
                 var signal = new SignalModel(dto.KeyName, dto.ValueType);
                 var result = await amphoraeService.ReadAsync(User, id, true);
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     result.Entity.AddSignal(signal);
                     var updateRes = await amphoraeService.UpdateAsync(User, result.Entity);
-                    if(updateRes.Succeeded)
+                    if (updateRes.Succeeded)
                     {
                         //happy path
                         dto = mapper.Map<SignalDto>(signal);
                         return Ok(dto);
                     }
-                    else if(result.WasForbidden)
+                    else if (result.WasForbidden)
                     {
                         return StatusCode(403, result.Message);
                     }
@@ -62,7 +72,7 @@ namespace Amphora.Api.Controllers
                         return BadRequest(result.Message);
                     }
                 }
-                else if(result.WasForbidden)
+                else if (result.WasForbidden)
                 {
                     return StatusCode(403, result.Message);
                 }
@@ -71,31 +81,30 @@ namespace Amphora.Api.Controllers
                     return BadRequest(result.Message);
                 }
             }
-            catch(System.ArgumentException ex)
+            catch (System.ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPost("api/amphorae/{id}/signals/{signalId}")]
-        public async Task<IActionResult> UploadSignal_value(string id, string signalId, [FromBody] JObject jObj)
+        /// <summary>
+        /// Get's the signals associated with an Amphora.
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="data">Signal Values</param>  
+        [HttpPost("api/amphorae/{id}/signals/values")]
+        public async Task<IActionResult> UploadSignal_value(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                var signal = result.Entity.Signals.FirstOrDefault(s => s.SignalId == signalId)?.Signal; 
-                if(signal == null)
-                {
-                    return NotFound($"SignalId {signalId} not found on Amphora {id}");
-                }
-                await signalService.WriteSignalAsync(result.Entity, jObj);
+                await signalService.WriteSignalAsync(result.Entity, data);
                 return Ok();
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
                 return StatusCode(403, result.Message);
             }

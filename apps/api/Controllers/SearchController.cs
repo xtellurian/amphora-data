@@ -29,6 +29,11 @@ namespace Amphora.Api.Controllers
             this.userService = userService;
         }
 
+        /// <summary>
+        /// Searches for Amphorae.
+        /// </summary>
+        /// <param name="parameters">Search parameters</param>
+        [Produces(typeof(List<AmphoraDto>))]
         [HttpPost("api/search/amphorae")]
         public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
         {
@@ -37,7 +42,13 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
-
+        /// <summary>
+        /// Searches for Amphorae by loction.
+        /// </summary>
+        /// <param name="lat">Latitude</param>
+        /// <param name="lon">Longitude</param>
+        /// <param name="dist">Distance from Latitude and Longitude in which to search</param>
+        [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byLocation")]
         public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
@@ -46,6 +57,12 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
+
+        /// <summary>
+        /// Searches for Amphorae in an Organisation.
+        /// </summary>
+        /// <param name="orgId">Organisation Id</param>
+        [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byOrganisation")]
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
@@ -55,7 +72,11 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
-
+        /// <summary>
+        /// Searches for Amphorae by creator.
+        /// </summary>
+        /// <param name="userName">User Name of the creator</param>
+        [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byCreator")]
         public async Task<IActionResult> SearchAmphoraeByCreator(string userName)
         {

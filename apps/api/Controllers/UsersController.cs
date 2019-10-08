@@ -31,7 +31,10 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
             this.logger = logger;
         }
-
+        /// <summary>
+        /// Get's logged in users information.
+        /// </summary>
+        [Produces(typeof(UserDto))]
         [HttpGet("api/users/self")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ReadSelf()
@@ -43,7 +46,11 @@ namespace Amphora.Api.Controllers
             }
             return Ok(mapper.Map<UserDto>(user));
         }
-
+        /// <summary>
+        /// Creates a new User. Returns the password.
+        /// </summary>
+        /// <param name="dto">User parameters</param>
+        [Produces(typeof(string))]
         [HttpPost("api/users")]
         public async Task<IActionResult> CreateUser([FromBody] UserDto dto)
         {
@@ -72,12 +79,16 @@ namespace Amphora.Api.Controllers
             return BadRequest(JsonConvert.SerializeObject(result.Errors));
         }
 
+        /// <summary>
+        /// Deletes a user
+        /// </summary>
+        /// <param name="userName">UserName of user to delete.</param>
         [HttpDelete("api/users/{username}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> DeleteUser_Key(string username)
+        public async Task<IActionResult> DeleteUser_Key(string userName)
         {
-            if (username == null) return BadRequest("id/ username is required");
-            var user = (await userService.UserManager.FindByNameAsync(username));
+            if (userName == null) return BadRequest("id/ username is required");
+            var user = (await userService.UserManager.FindByNameAsync(userName));
             if (user == null) return NotFound();
             var result = await userService.DeleteAsync(user);
             if (result.Succeeded)

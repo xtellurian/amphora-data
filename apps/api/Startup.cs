@@ -3,21 +3,20 @@ using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Amphora.Api.Options;
 using Microsoft.OpenApi.Models;
 using Amphora.Api.Services;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Amphora.Api.StartupModules;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
-using Amphora.Api.Services.Market;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.Transactions;
+using System.Reflection;
+using System;
 
 namespace Amphora.Api
 {
@@ -49,7 +48,7 @@ namespace Amphora.Api
         public void ConfigureServices(IServiceCollection services)
         {
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
-            if(HostingEnvironment.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 System.Console.WriteLine("Is Development Environment");
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
@@ -67,7 +66,7 @@ namespace Amphora.Api
 
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
-            
+
             services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
             services.AddScoped<ITsiService, TsiService>();
@@ -89,7 +88,7 @@ namespace Amphora.Api
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
-            services.AddAutoMapper(System.AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(typeof(Startup));
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
@@ -97,8 +96,6 @@ namespace Amphora.Api
             {
                 services.AddMvc(opts =>
                 {
-                    // this let's you work with the pages when in dev mode
-                    opts.Filters.Add(new AllowAnonymousFilter());
                 })
                 //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
@@ -111,21 +108,35 @@ namespace Amphora.Api
             }
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+            // Set the comments path for the Swagger JSON and UI.
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+
             services.AddSwaggerGen(c =>
             {
+                c.AddSecurityDefinition("token", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmphoraApi", Version = "v1" });
+                c.IncludeXmlComments(xmlPath);
             });
 
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
             this.IdentityModule.Configure(app, env, mapper);
             this.StorageModule.Configure(app, env);
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

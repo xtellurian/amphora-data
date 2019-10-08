@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
+    [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class AmphoraeController : Controller
     {
@@ -38,8 +39,13 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
         }
 
+        /// <summary>
+        /// Creates a new empty Amphora in the user's organisation
+        /// </summary>
+        /// <param name="dto">Information for the new Amphora</param>  
         [HttpPost("api/amphorae")]
-        public async Task<IActionResult> Create_Api([FromBody] AmphoraExtendedDto dto)
+        [Produces(typeof(AmphoraExtendedDto))]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateAmphoraDto dto)
         {
             if (dto == null || dto.Name == null)
             {
@@ -61,7 +67,11 @@ namespace Amphora.Api.Controllers
                 return NotFound(result);
             }
         }
-
+        /// <summary>
+        /// Get's details of an Amphora by Id
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        [Produces(typeof(AmphoraExtendedDto))]
         [HttpGet("api/amphorae/{id}")]
         public async Task<IActionResult> ReadAsync(string id)
         {
@@ -79,7 +89,12 @@ namespace Amphora.Api.Controllers
                 return NotFound(result.Errors);
             }
         }
-
+        /// <summary>
+        /// Updates the details of an Amphora by Id
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="dto">Information to update</param>  
+        [Produces(typeof(AmphoraExtendedDto))]
         [HttpPut("api/amphorae/{id}")]
         public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedDto dto)
         {
@@ -101,6 +116,10 @@ namespace Amphora.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes an Amphora
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
         [HttpDelete("api/amphorae/{id}")]
         public async Task<IActionResult> Delete_Api(string id)
         {

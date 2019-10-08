@@ -12,6 +12,9 @@ namespace Amphora.Api.Controllers
         {
             this.logger = logger;
         }
+        /// <summary>
+        /// Health endpoint.
+        /// </summary> 
         [HttpGet("healthz")]
         public Task<IActionResult> HealthCheckAsync()
         {
