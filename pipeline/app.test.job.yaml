@@ -83,7 +83,7 @@ jobs:
         popd
         pushd apps
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
-        docker run -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv $acrName.azurecr.io/$IMAGE:$BUILD
+        docker run -v `pwd`:/output -v ~/.azure/:/.azure/ -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv $acrName.azurecr.io/$IMAGE:$BUILD
       displayName: Run Tests
       env:
         PersistentStores: $(PersistentStores)
