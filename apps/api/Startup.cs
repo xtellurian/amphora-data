@@ -48,8 +48,10 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
             if(HostingEnvironment.IsDevelopment())
             {
+                System.Console.WriteLine("Is Development Environment");
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
             }
             else
