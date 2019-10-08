@@ -31,7 +31,7 @@ if [ -z "$CACHED_IMAGE" ]; then
 fi
 
 az acr login -n $ACR_NAME
-docker pull $CACHED_IMAGE
+docker pull $CACHED_IMAGE || true # don't fail on image doesn't exist.
 docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
 docker push $IMAGE:latest
 docker push $IMAGE:$GITHASH
