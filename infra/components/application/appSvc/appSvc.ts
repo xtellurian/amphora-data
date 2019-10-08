@@ -71,6 +71,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 acr.loginServer
                 }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
+            Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
             WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
             WEBSITES_PORT: 80,
