@@ -18,3 +18,4 @@ steps:
     BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
     STAGING: $(staging)
+    CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:$(Build.BuildNumber)
