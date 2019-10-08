@@ -33,11 +33,7 @@ namespace Amphora.Api.Services
                 new EmailAddress(email),
             };
             msg.AddTos(recipients);
-            if(!string.IsNullOrEmpty(options.BccEmail) && ! string.Equals(options.BccEmail.ToLower(), email.ToLower()))
-            {
-                // clients would throw when bcc == email
-                msg.AddBcc(options.BccEmail);
-            }
+
             msg.SetSubject(subject);
 
             msg.AddContent(MimeType.Html, htmlMessage);
