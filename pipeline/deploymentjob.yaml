@@ -16,7 +16,7 @@ jobs:
   - name: stack
     value: ${{ parameters.environment }}
   - name: staging
-    value: "true"
+    value: "false" # set false for now
 
   strategy:
     runOnce:
