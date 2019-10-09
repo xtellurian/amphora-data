@@ -39,7 +39,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         private async Task<string> GetQueryResponse()
         {
             // should be a list of query result (for javascript formatting tsi.js)
-            var res = await signalService.GetTsiSignalsAsync(Amphora);
+            var res = await signalService.GetTsiSignalsAsync(User, Amphora);
 
             return JsonConvert.SerializeObject(res);
         }

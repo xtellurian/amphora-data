@@ -38,25 +38,34 @@ namespace Amphora.Api.Services.Auth
 
         public async Task<(bool success, string token)> GetToken(ClaimsPrincipal principal)
         {
-            if (signInManager.IsSignedIn(principal))
+            var user = await userManager.GetUserAsync(principal);
+            if (user == null) return (false, null);
+            using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
-                var user = await userManager.GetUserAsync(principal);
-                if (user == null) return (false, null);
-                return (true, GenerateToken(user));
-            }
-            else
-            {
-                return (false, null);
+                if (signInManager.IsSignedIn(principal))
+                {
+                    logger.LogInformation("Generating Token");
+                    return (true, GenerateToken(user));
+                }
+                else
+                {
+                    logger.LogInformation("User Not Signed In");
+                    return (false, null);
+                }
             }
         }
         public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
         {
-            var token = string.Empty;
-            var signInResult = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
-            if (!signInResult.Succeeded) return (false, token);
             var user = await userManager.FindByNameAsync(request.Username);
-            token = GenerateToken(user);
-            return (true, token);
+            using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
+            {
+                var token = string.Empty;
+                var signInResult = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
+                if (!signInResult.Succeeded) return (false, token);
+                token = GenerateToken(user);
+                logger.LogInformation("Generated token. User Is Authenticated");
+                return (true, token);
+            }
         }
 
 

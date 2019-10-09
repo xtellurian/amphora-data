@@ -87,23 +87,23 @@ namespace Amphora.Api.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUser_Key(string userName)
         {
-            if (userName == null) return BadRequest("id/ username is required");
+            if (userName == null) return BadRequest("username is required");
             var user = (await userService.UserManager.FindByNameAsync(userName));
             if (user == null) return NotFound();
-            var result = await userService.DeleteAsync(user);
+            var result = await userService.DeleteAsync(User, user);
             if (result.Succeeded)
             {
                 return Ok();
             }
-            else
+            else if(result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else 
             {
                 logger.LogError("Failed to create user!");
-                foreach (var e in result.Errors)
-                {
-                    logger.LogError(e);
-                }
+                return BadRequest(result.Message);
             }
-            return BadRequest(JsonConvert.SerializeObject(result.Errors));
 
         }
     }

@@ -32,17 +32,20 @@ namespace Amphora.Api.Services.Amphorae
         public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
         {
             var user = await userManager.GetUserAsync(principal);
-            var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
 
-            if (granted)
-            {
-                var data = await this.Store.ReadBytesAsync(entity, file);
-                return new EntityOperationResult<byte[]>(data);
-            }
-            else
-            {
-                logger.LogInformation($"Permission denied to user {user.Id} to read contents of {entity.Id}");
-                return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                if (granted)
+                {
+                    var data = await this.Store.ReadBytesAsync(entity, file);
+                    return new EntityOperationResult<byte[]>(data);
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {user.Id} to read contents of {entity.Id}");
+                    return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                }
             }
         }
         public async Task<EntityOperationResult<byte[]>> WriteFileAsync(
@@ -52,17 +55,20 @@ namespace Amphora.Api.Services.Amphorae
             string file)
         {
             var user = await userManager.GetUserAsync(principal);
-            var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);
 
-            if (granted)
-            {
-                await this.Store.WriteBytesAsync(entity, file, contents);
-                return new EntityOperationResult<byte[]>();
-            }
-            else
-            {
-                logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                if (granted)
+                {
+                    await this.Store.WriteBytesAsync(entity, file, contents);
+                    return new EntityOperationResult<byte[]>();
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
+                    return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                }
             }
         }
 

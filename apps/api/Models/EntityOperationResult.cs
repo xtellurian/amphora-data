@@ -15,7 +15,7 @@ namespace Amphora.Api.Models
             this.Errors = errors.ToList();
             Succeeded = false;
         }
-        public EntityOperationResult( IEnumerable<string> errors)
+        public EntityOperationResult(IEnumerable<string> errors)
         {
             this.Errors = errors.ToList();
             Succeeded = false;
@@ -28,7 +28,7 @@ namespace Amphora.Api.Models
         public T Entity { get; }
         public List<string> Errors { get; }
         public bool Succeeded { get; }
-        public bool WasForbidden {get; set; }
-        public string Message => string.Join(';', this.Errors);
+        public bool WasForbidden { get; set; }
+        public string Message => string.Join(';', this.Errors ?? new List<string> { "An Unknown Error Occurred" });
     }
 }

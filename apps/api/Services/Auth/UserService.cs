@@ -7,6 +7,7 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -36,43 +37,59 @@ namespace Amphora.Api.Services.Auth
         public async Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user,
                                                                               string password)
         {
-            var existing = await UserManager.FindByIdAsync(user.Id);
-            if (existing != null)
+            using (logger.BeginScope(new LoggerScope<UserService>(user)))
             {
-                throw new System.ArgumentException("Duplicate User Id");
-            }
-            if(!emailLimitingService.CanSignup(user.Email))
-            {
-                return new EntityOperationResult<ApplicationUser>($"{user.Email} is not authorized to signup");
-            }
-
-            var result = await UserManager.CreateAsync(user, password);
-            if (result.Succeeded)
-            {
-                user = await UserManager.FindByNameAsync(user.UserName);
-                if (user == null) throw new System.Exception("Unable to retrieve user");
-                // create role here
-                return new EntityOperationResult<ApplicationUser>(user);
-            }
-            else
-            {
-                return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                var existing = await UserManager.FindByIdAsync(user.Id);
+                if (existing != null)
+                {
+                    logger.LogWarning("Duplicate User Id");
+                    throw new System.ArgumentException("Duplicate User Id");
+                }
+                if (!emailLimitingService.CanSignup(user.Email))
+                {
+                    logger.LogWarning($"{user.Email} is not authorized to signup");
+                    return new EntityOperationResult<ApplicationUser>($"{user.Email} is not authorized to signup");
+                }
+                logger.LogInformation("Creating User...");
+                var result = await UserManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    user = await UserManager.FindByNameAsync(user.UserName);
+                    if (user == null) throw new System.Exception("Unable to retrieve user");
+                    // create role here
+                    return new EntityOperationResult<ApplicationUser>(user);
+                }
+                else
+                {
+                    return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                }
             }
         }
 
-        public async Task<EntityOperationResult<ApplicationUser>> DeleteAsync(IUser user)
+        public async Task<EntityOperationResult<ApplicationUser>> DeleteAsync(ClaimsPrincipal principal, IUser user)
         {
-            // todo - permissions
-            var appUser = await UserManager.FindByIdAsync(user.Id);
-            if(appUser == null) return new EntityOperationResult<ApplicationUser>();
-            var result = await UserManager.DeleteAsync(appUser);
-            if (result.Succeeded)
+            var currentUser = await UserManager.GetUserAsync(principal);
+            using (logger.BeginScope(new LoggerScope<UserService>(currentUser)))
             {
-                return new EntityOperationResult<ApplicationUser>();
-            }
-            else
-            {
-                return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                if (currentUser.Id == user.Id)
+                {
+                    logger.LogWarning("User is deleting self");
+                    if (currentUser == null) return new EntityOperationResult<ApplicationUser>();
+                    var result = await UserManager.DeleteAsync(currentUser);
+                    if (result.Succeeded)
+                    {
+                        return new EntityOperationResult<ApplicationUser>();
+                    }
+                    else
+                    {
+                        return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                    }
+                }
+                else
+                {
+                    logger.LogCritical($"User is deleting other user, other username: {user.UserName}");
+                    return new EntityOperationResult<ApplicationUser> { WasForbidden = true };
+                }
             }
         }
 
