@@ -24,7 +24,8 @@
                     {
                         <span><a asp-asp-controller="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
                     }
-                    <p>@Model.Organisation.About</p>                 
+                    <span style="white-space: pre-line">@Model.Organisation.About</span>
+                                     
                 </div>
             </div>
             @if(Model.CanViewMembers)
