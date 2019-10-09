@@ -2,6 +2,7 @@
 parameters:
   jobName: 'deploy'
   environment: ''
+  staging: 'false'
 
 jobs:
 - deployment: ${{ parameters.jobName }}
@@ -16,7 +17,7 @@ jobs:
   - name: stack
     value: ${{ parameters.environment }}
   - name: staging
-    value: "false" # set false for now
+    value: ${{ parameters.staging }}
 
   strategy:
     runOnce:
