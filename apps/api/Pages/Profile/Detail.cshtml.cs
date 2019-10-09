@@ -27,32 +27,38 @@ namespace Amphora.Api.Pages.Profile
 
         public ApplicationUser AppUser { get; set; }
 
-        public bool IsSelf {get; set; }
+        public bool IsSelf { get; set; }
         public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
         public OrganisationModel Organisation { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string userName)
+        public async Task<IActionResult> OnGetAsync(string id, string userName)
         {
-            var user = await userService.UserManager.GetUserAsync(User);
-            
-            if( string.IsNullOrEmpty(userName))
+            var currentUser = await userService.ReadUserModelAsync(User);
+            if (!string.IsNullOrEmpty(id))
             {
-                this.AppUser = user;
-                IsSelf = true;
+                AppUser = await userService.UserManager.FindByIdAsync(id);
+            }
+            else if (!string.IsNullOrEmpty(userName))
+            {
+                AppUser = await userService.UserManager.FindByNameAsync(userName);
             }
             else
             {
-                var lookupUser = await userService.UserManager.FindByNameAsync(userName);
-                IsSelf = lookupUser.Id == user.Id;
-                this.AppUser = lookupUser;
-
+                AppUser = currentUser;
             }
+
             if (AppUser == null)
             {
                 return RedirectToPage("./Missing");
             }
+
+            if (AppUser.Id == currentUser.Id)
+            {
+                IsSelf = true;
+            }
+
             this.Organisation = await organisationService.Store.ReadAsync(AppUser.OrganisationId);
-            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == user.Id);
+            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == AppUser.Id);
             this.PinnedAmphorae = query.Take(6);
             return Page();
         }
