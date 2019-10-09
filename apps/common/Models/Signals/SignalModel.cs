@@ -7,6 +7,7 @@ namespace Amphora.Common.Models.Signals
     {
         public static string Numeric => nameof(Numeric);
         public static string String => nameof(String);
+        public static string DateTime => nameof(DateTime);
         public static List<string> Options => new List<string>{Numeric, String};
 
         public SignalModel()
@@ -17,15 +18,15 @@ namespace Amphora.Common.Models.Signals
         {
             KeyName = keyName ?? throw new System.ArgumentNullException(nameof(keyName));
 
-            if(string.Equals(valueType, Numeric) || string.Equals(valueType, String))
+            if(string.Equals(valueType, Numeric) || string.Equals(valueType, String) || string.Equals(valueType, DateTime))
             {
                 ValueType = valueType;
             }
             else
             {
-                throw new ArgumentException("ValueType must be Numeric or String");
+                throw new ArgumentException("ValueType must be Numeric, String, or DateTime");
             }
-            CreatedDate = DateTime.UtcNow;
+            CreatedDate = System.DateTime.UtcNow;
 
             this.Id = $"{KeyName}-{ValueType}";
         }

@@ -10,7 +10,7 @@
         <div class="col">
             <span>
                 <h1 class="display-4">Signals </h1>
-                <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">Create</button></a>
+                <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">New Values</button></a>
             </span>
         </div>
     </div>
@@ -20,7 +20,11 @@
             <thead>
                 <tr>
                 <th scope="col">Signal</th>
-                <th></th>
+                <th> 
+                    <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
+                        <i class="float-right fas fa-plus" data-toggle="tooltip" data-placement="left" title="New Property"></i>
+                    </a>
+                </th>
                 </tr>
             </thead>
             <tbody>
@@ -33,9 +37,6 @@
                 }
             </tbody>
         </table>
-        <a asp-page="./Write" asp-route-id="@Model.Amphora.Id">
-            <i class="float-right fas fa-plus" data-toggle="tooltip" data-placement="left" title="New Value"></i>
-        </a>
     </div>
     <div class="row">
         <div class="col">
