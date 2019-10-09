@@ -6,8 +6,8 @@ trigger:
     - refs/heads/*
 
 schedules:
-- cron: "0 16 * * *"
-  displayName: Daily 2am (AEST)
+- cron: "0 13 * * *"
+  displayName: Daily 11pm (AEST)
   branches:
     include:
     - master
