@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Api.Services.Amphorae
@@ -19,10 +21,14 @@ namespace Amphora.Api.Services.Amphorae
     public class SignalsService : ISignalService
     {
         private readonly EventHubClient eventHubClient;
+        private readonly IUserService userService;
+        private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
         private readonly ILogger<SignalsService> logger;
 
         public SignalsService(IOptionsMonitor<Options.EventHubOptions> options,
+                              IUserService userService,
+                              IPermissionService permissionService,
                               ITsiService tsiService,
                               ILogger<SignalsService> logger)
         {
@@ -35,51 +41,84 @@ namespace Amphora.Api.Services.Amphorae
                 eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
             }
 
+            this.userService = userService;
+            this.permissionService = permissionService;
             this.tsiService = tsiService;
             this.logger = logger;
         }
-        public async Task WriteSignalAsync(AmphoraModel entity, JObject jObj)
+
+        public async Task<EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, Dictionary<string, object> values)
         {
-            var signal = new Dictionary<string, object>();
-            signal.Add("amphora", entity.Id);
-            foreach (var s in entity.Signals)
+            var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
-                if (s.Signal.ValueType == SignalModel.Numeric)
+                var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
+                if (authorized)
                 {
-                    var v = jObj.GetValue(s.Signal.KeyName)?.Value<double?>();
-                    if (v.HasValue) signal.Add(s.Signal.KeyName, v);
+                    values["amphora"] = entity.Id;
+                    if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
+                    await SendToEventHubAsync(values);
+                    return new EntityOperationResult<Dictionary<string, object>>(values);
                 }
-                else if (s.Signal.ValueType == SignalModel.String)
+                else
                 {
-                    var v = jObj.GetValue(s.Signal.KeyName)?.Value<string>();
-                    if (!string.IsNullOrEmpty(v)) signal.Add(s.Signal.KeyName, v);
+                    return new EntityOperationResult<Dictionary<string, object>>("Write Contents permission is required") { WasForbidden = true };
                 }
             }
-            // at timestamp
-            if (jObj.TryGetValue("t", out var token))
-            {
-                try
-                {
-                    signal["t"] = token.Value<DateTime>();
-                }
-                catch (System.FormatException ex)
-                {
-                    logger.LogError($"Amphora {entity.Id} signal had bad timestamp. Defaulting to now", ex);
-                    signal["t"] = DateTime.UtcNow;
-                }
-            }
-            else
-            {
-                signal["t"] = DateTime.UtcNow;
-            }
-            await SendToEventHubAsync(signal);
         }
 
-        public async Task WriteSignalAsync(AmphoraModel entity, Dictionary<string, object> values)
+        public async Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
-            values["amphora"] = entity.Id;
-            values.Add("t", DateTime.UtcNow);
-            await SendToEventHubAsync(values);
+            var user = await userService.ReadUserModelAsync(principal);
+
+            logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
+            var variables = new Dictionary<string, Variable>();
+            var res = new List<QueryResultPage>();
+            if (entity.Signals.Count == 0) return res;
+
+            foreach (var s in entity.Signals)
+            {
+                variables.Add(s.Signal.KeyName, new NumericVariable(
+                                    value: new Tsx($"$event.{s.Signal.KeyName}"),
+                                    aggregation: new Tsx("avg($value)")));
+
+                var r = await this.GetTsiSignalAsync(principal, entity, s.Signal, false);
+                res.Add(r);
+            }
+            return res;
+
+
+        }
+        public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = true)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            {
+                logger.LogInformation($"Getting Signal KeyName {signal.KeyName} for Amphora Id {entity.Id}");
+                var variables = new Dictionary<string, Variable>();
+                if (entity.Signals.Count == 0) return default(QueryResultPage);
+                // add the inital key
+                variables.Add(signal.KeyName, new NumericVariable(
+                                        value: new Tsx($"$event.{signal.KeyName}"),
+                                        aggregation: new Tsx("avg($value)")));
+
+                foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
+                {
+                    variables.Add(s.Signal.KeyName, new NumericVariable(
+                                        value: new Tsx($"$event.{s.Signal.KeyName}"),
+                                        aggregation: new Tsx("avg($value)")));
+                }
+                IList<string> projections = null;
+                if (!includeOtherSignals)
+                {
+                    projections = new List<string> { signal.KeyName };
+                }
+                var start = DateTime.UtcNow.AddDays(-30);
+                var end = DateTime.UtcNow;
+                var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
+                logger.LogInformation($"Got {res.Properties?.Count} properties from  Amphora Id {entity.Id}");
+                return res;
+            }
         }
 
         private async Task SendToEventHubAsync(Dictionary<string, object> signal)
@@ -92,49 +131,6 @@ namespace Amphora.Api.Services.Amphorae
                                                ContractResolver = new CamelCasePropertyNamesContractResolver()
                                            });
             await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
-        }
-
-        public async Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(AmphoraModel entity)
-        {
-            var variables = new Dictionary<string, Variable>();
-            var res = new List<QueryResultPage>();
-            if (entity.Signals.Count == 0) return res;
-
-            foreach (var s in entity.Signals)
-            {
-                variables.Add(s.Signal.KeyName, new NumericVariable(
-                                    value: new Tsx($"$event.{s.Signal.KeyName}"),
-                                    aggregation: new Tsx("avg($value)")));
-
-                var r = await this.GetTsiSignalAsync(entity, s.Signal, false);
-                res.Add(r);
-            }
-            return res;
-        }
-        public async Task<QueryResultPage> GetTsiSignalAsync(AmphoraModel entity, SignalModel signal, bool includeOtherSignals = true)
-        {
-            var variables = new Dictionary<string, Variable>();
-            if (entity.Signals.Count == 0) return default(QueryResultPage);
-            // add the inital key
-            variables.Add(signal.KeyName, new NumericVariable(
-                                    value: new Tsx($"$event.{signal.KeyName}"),
-                                    aggregation: new Tsx("avg($value)")));
-
-            foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
-            {
-                variables.Add(s.Signal.KeyName, new NumericVariable(
-                                    value: new Tsx($"$event.{s.Signal.KeyName}"),
-                                    aggregation: new Tsx("avg($value)")));
-            }
-            IList<string> projections = null;
-            if (!includeOtherSignals)
-            {
-                projections = new List<string> { signal.KeyName };
-            }
-            var start = DateTime.UtcNow.AddDays(-30);
-            var end = DateTime.UtcNow;
-            var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
-            return res;
         }
 
 

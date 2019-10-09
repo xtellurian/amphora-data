@@ -29,17 +29,21 @@ namespace Amphora.Api.Services.Transactions
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
         {
-            var transactions = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
-            if (transactions.Any())
+            using(logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
-                logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                return new EntityOperationResult<PurchaseModel>(transactions.FirstOrDefault());
-            }
-            else
-            {
-                var transaction = new PurchaseModel(user, amphora);
-                transaction = await purchaseStore.CreateAsync(transaction);
-                return new EntityOperationResult<PurchaseModel>(transaction);
+                var transactions = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
+                if (transactions.Any())
+                {
+                    logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
+                    return new EntityOperationResult<PurchaseModel>(transactions.FirstOrDefault());
+                }
+                else
+                {
+                    logger.LogTrace("Purchasing Amphora");
+                    var transaction = new PurchaseModel(user, amphora);
+                    transaction = await purchaseStore.CreateAsync(transaction);
+                    return new EntityOperationResult<PurchaseModel>(transaction);
+                }
             }
         }
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora)

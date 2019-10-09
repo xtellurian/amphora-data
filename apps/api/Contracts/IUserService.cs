@@ -12,7 +12,7 @@ namespace Amphora.Api.Contracts
 
         Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user,
                                                                 string password);
-        Task<EntityOperationResult<ApplicationUser>> DeleteAsync(IUser user);
+        Task<EntityOperationResult<ApplicationUser>> DeleteAsync(ClaimsPrincipal principal, IUser user);
         Task<ApplicationUser> ReadUserModelAsync(ClaimsPrincipal principal);
     }
 }

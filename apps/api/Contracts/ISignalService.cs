@@ -1,16 +1,16 @@
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Microsoft.Azure.TimeSeriesInsights.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Contracts
 {
     public interface ISignalService
     {
-        Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(AmphoraModel entity);
-        Task<QueryResultPage> GetTsiSignalAsync(AmphoraModel entity, SignalModel signal, bool includeOtherSignals = false);
-        Task WriteSignalAsync(AmphoraModel entity, Dictionary<string, object> values);
+        Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(ClaimsPrincipal principal, AmphoraModel entity);
+        Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = false);
+        Task<Models.EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, Dictionary<string, object> values);
     }
 }

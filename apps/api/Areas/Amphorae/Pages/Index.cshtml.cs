@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Search;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -60,12 +57,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var user = await this.userService.UserManager.GetUserAsync(User);
             if (user == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
 
-            var x= await amphoraeService.AmphoraPurchasedBy(user);
+            var x= await amphoraeService.AmphoraPurchasedBy(User, user);
             this.Amphorae = x; 
             return Page();
         }
 
-        private async Task<IActionResult> OrgAmphorae()
+            private async Task<IActionResult> OrgAmphorae()
         {
             var user = await this.userService.ReadUserModelAsync(User);
             if (user == null)

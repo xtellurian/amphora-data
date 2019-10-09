@@ -50,7 +50,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     if(dto.IsNumeric )values.Add(s.Signal.KeyName, dto.NumericValue);
                     else if(dto.IsString )values.Add(s.Signal.KeyName, dto.StringValue);
                 }
-                await signalService.WriteSignalAsync(this.Amphora, values);
+                await signalService.WriteSignalAsync(User, this.Amphora, values);
             }
             return RedirectToPage("./Index", new {id = id});
         }

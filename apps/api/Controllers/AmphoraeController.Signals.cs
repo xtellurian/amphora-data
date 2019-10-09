@@ -101,7 +101,7 @@ namespace Amphora.Api.Controllers
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                await signalService.WriteSignalAsync(result.Entity, data);
+                await signalService.WriteSignalAsync(User, result.Entity, data);
                 return Ok();
             }
             else if (result.WasForbidden)

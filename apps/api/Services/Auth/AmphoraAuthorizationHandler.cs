@@ -29,17 +29,19 @@ namespace Amphora.Api.Services.Auth
                                                        AmphoraModel entity)
         {
             var user = await userService.ReadUserModelAsync(context.User);
-
-            var isAuthorized = await permissionService.IsAuthorizedAsync(user, entity, requirement.MinimumLevel);
-
-            if (isAuthorized)
+            using (logger.BeginScope(new LoggerScope<AmphoraAuthorizationHandler>(user)))
             {
-                context.Succeed(requirement);
-                logger.LogInformation($"Access granted to {entity.Id}");
-            }
-            else
-            {
-                logger.LogInformation($"Access Denied to {entity.Id}");
+                var isAuthorized = await permissionService.IsAuthorizedAsync(user, entity, requirement.MinimumLevel);
+
+                if (isAuthorized)
+                {
+                    context.Succeed(requirement);
+                    logger.LogInformation($"Access granted to {entity.Id}");
+                }
+                else
+                {
+                    logger.LogWarning($"Access Denied to {entity.Id}");
+                }
             }
         }
     }

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
@@ -48,10 +50,10 @@ namespace Amphora.Tests.Unit.Authorization
                 var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
                 var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
 
-                var readReq = new List<IAuthorizationRequirement> { Operations.Read };
-                var createReq = new List<IAuthorizationRequirement> { Operations.Create };
-                var updateReq = new List<IAuthorizationRequirement> { Operations.Update };
-                var deleteReq = new List<IAuthorizationRequirement> { Operations.Delete };
+                var readReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
+                var updateReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Update} };
+                var deleteReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Administer} };
+                var createReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Administer} };
 
                 var authContext = new AuthorizationHandlerContext(readReq, principal, a);
                 await handler.HandleAsync(authContext);
@@ -92,12 +94,12 @@ namespace Amphora.Tests.Unit.Authorization
                 var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
 
                 var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
-                var requirements = new List<IAuthorizationRequirement> { Operations.Read };
+                var requirements = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
                 var authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.True(authContext.HasSucceeded);
 
-                requirements.Add(Operations.Update);
+                requirements.Add(new AuthorizationRequirement{MinimumLevel = AccessLevels.Update});
                 authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.False(authContext.HasSucceeded);

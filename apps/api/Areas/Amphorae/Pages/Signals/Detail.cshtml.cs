@@ -39,7 +39,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         private async Task<string> GetQueryResponse()
         {
             // should be a list of query result (for javascript formatting tsi.js)
-            var q = await signalService.GetTsiSignalAsync(Amphora, Signal, true);
+            var q = await signalService.GetTsiSignalAsync(User, Amphora, Signal, true);
             var res = new List<QueryResultPage>()
             {
                 q
