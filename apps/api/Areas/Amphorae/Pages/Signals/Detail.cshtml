@@ -1,6 +1,10 @@
 @page
 @model Amphora.Api.Areas.Amphorae.Pages.Signals.DetailModel
 
+@{
+    ViewData["Title"] = Model.Amphora.Name + " " + Model.Signal.KeyName;
+}
+
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
