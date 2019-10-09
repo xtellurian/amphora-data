@@ -38,10 +38,11 @@ stages:
       parameters:
         jobName: demo_deploymentjob
         environment: demo
+        staging: 'false'
 
 - stage: promote
   displayName: Promote in Demo Envionment (10%)
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), False ) # staging is false, we aren't promoting
   jobs:
     - job: init
       steps:
