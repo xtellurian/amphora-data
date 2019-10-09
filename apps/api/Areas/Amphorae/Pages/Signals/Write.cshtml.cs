@@ -19,7 +19,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         }
 
         [BindProperty]
-        public List<SignalValueDto> Values {get; set;}
+        public List<SignalValueDto> Values { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -28,10 +28,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             {
                 var signals = this.Amphora.Signals.Select(s => s.Signal).ToList();
                 this.Values = new List<SignalValueDto>();
-                foreach(var s in signals)
+                foreach (var s in signals)
                 {
-                    this.Values.Add(new SignalValueDto(s.KeyName, s.ValueType));   
+                    this.Values.Add(new SignalValueDto(s.KeyName, s.ValueType));
                 }
+                this.Values.Add(new SignalValueDto("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
             }
 
             return OnReturnPage();
@@ -43,16 +44,20 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             if (Amphora != null)
             {
                 var values = new Dictionary<string, object>();
-                foreach(var s in Amphora.Signals)
+                foreach (var s in Amphora.Signals)
                 {
                     var dto = Values.FirstOrDefault(d => d.KeyName == s.Signal.KeyName); // d.keyname is null (not bound?)
-                    if(dto == null) continue;
-                    if(dto.IsNumeric )values.Add(s.Signal.KeyName, dto.NumericValue);
-                    else if(dto.IsString )values.Add(s.Signal.KeyName, dto.StringValue);
+                    if (dto == null) continue;
+                    if (dto.IsNumeric) values.Add(s.Signal.KeyName, dto.NumericValue);
+                    else if (dto.IsString) values.Add(s.Signal.KeyName, dto.StringValue);
+                }
+                if(Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.HasValue ?? false)
+                {
+                    values["t"] = Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.Value;
                 }
                 await signalService.WriteSignalAsync(User, this.Amphora, values);
             }
-            return RedirectToPage("./Index", new {id = id});
+            return RedirectToPage("./Index", new { id = id });
         }
     }
 }
