@@ -138,6 +138,7 @@ export class AppSvc extends pulumi.ComponentResource {
         return new azure.keyvault.AccessPolicy(
             name,
             {
+                keyPermissions: ["unwrapKey", "wrapKey"],
                 keyVaultId: kv.id,
                 objectId: appSvc.identity.apply(
                     (identity) =>
