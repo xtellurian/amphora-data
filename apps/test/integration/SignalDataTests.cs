@@ -6,9 +6,10 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraSignalDataTests: IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class SignalDataTests: IntegrationTestBase
     {
-        public AmphoraSignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public SignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
         }
 

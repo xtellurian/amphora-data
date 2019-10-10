@@ -3,9 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
-using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -13,7 +11,8 @@ using Amphora.Api.Models.Dtos.Organisations;
 
 namespace Amphora.Tests.Integration
 {
-    public class CreateUserTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class CreateUserTests : IntegrationTestBase
     {
         public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

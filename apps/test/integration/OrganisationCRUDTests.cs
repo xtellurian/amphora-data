@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Organisations;
@@ -13,7 +12,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class OrganisationCRUDTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class OrganisationCRUDTests : IntegrationTestBase
     {
         public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {

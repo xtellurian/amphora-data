@@ -10,7 +10,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class AmphoraSignalsTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class AmphoraSignalsTests : IntegrationTestBase
     {
         public AmphoraSignalsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {

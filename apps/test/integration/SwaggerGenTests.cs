@@ -4,8 +4,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
+    [Collection(nameof(IntegrationFixtureCollection))]
     public class SwaggerGenTests
-        : IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
     {
         private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 

@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
