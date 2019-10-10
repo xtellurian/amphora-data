@@ -130,13 +130,13 @@ export class State extends pulumi.ComponentResource {
           },
           {
             applicationId: CONSTANTS.authentication.spAppId,
-            keyPermissions: ["create", "get"],
+            keyPermissions: ["create", "get", "unwrapKey", "wrapKey"],
             objectId: CONSTANTS.authentication.spObjectId,
             secretPermissions: ["list", "set", "get", "delete"],
             tenantId: CONSTANTS.authentication.tenantId,
           },
           {
-            keyPermissions: ["create", "get"],
+            keyPermissions: ["create", "get", "unwrapKey", "wrapKey"],
             objectId: CONSTANTS.authentication.spObjectId,
             secretPermissions: ["list", "set", "get", "delete"],
             tenantId: CONSTANTS.authentication.tenantId,
