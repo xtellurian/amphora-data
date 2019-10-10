@@ -123,7 +123,7 @@ export class State extends pulumi.ComponentResource {
       {
         accessPolicies: [
           {
-            keyPermissions: ["create", "get"],
+            keyPermissions: ["create", "get", "list", "unwrapKey", "wrapKey"],
             objectId: CONSTANTS.authentication.rian,
             secretPermissions: ["list", "set", "get", "delete"],
             tenantId: CONSTANTS.authentication.tenantId,
@@ -150,6 +150,21 @@ export class State extends pulumi.ComponentResource {
       },
       { parent: rg },
     );
+
+    const generated = new azure.keyvault.Key("dataprotectionkey", {
+      keyOpts: [
+          "decrypt",
+          "encrypt",
+          "sign",
+          "unwrapKey",
+          "verify",
+          "wrapKey",
+      ],
+      keySize: 4096,
+      keyType: "RSA",
+      keyVaultId: kv.id,
+      name: "dataprotection",
+  });
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
