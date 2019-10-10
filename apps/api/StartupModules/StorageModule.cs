@@ -13,6 +13,12 @@ using Amphora.Api.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Amphora.Api.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
+using System;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 
 namespace Amphora.Api.StartupModules
 {
@@ -30,6 +36,28 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var tokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(
+                new KeyVaultClient.AuthenticationCallback(tokenProvider.KeyVaultTokenCallback));
+
+            var connectionString = Configuration[nameof(AzureStorageAccountOptions.StorageConnectionString)];
+            var kvUri = Configuration["kvUri"];
+            if (CloudStorageAccount.TryParse(connectionString, out var storageAccount) && !string.IsNullOrEmpty(kvUri))
+            {
+                var client = storageAccount.CreateCloudBlobClient();
+                var container = client.GetContainerReference("key-container");
+                container.CreateIfNotExists();
+                var keyIdentifier = $"{kvUri}keys/dataprotection/";
+                services.AddDataProtection()
+                    .PersistKeysToAzureBlobStorage(container, "keys.xml")
+                    .ProtectKeysWithAzureKeyVault(keyVaultClient, keyIdentifier);
+
+            }
+            else
+            {
+                Console.WriteLine("Not Configuring DataProtection");
+            }
+
             services.Configure<AzureStorageAccountOptions>(Configuration);
             services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
             services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
