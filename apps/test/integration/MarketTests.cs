@@ -4,7 +4,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class MarketTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class MarketTests : IntegrationTestBase
     {
         public MarketTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

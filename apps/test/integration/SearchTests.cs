@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -12,7 +11,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class SearchTests : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class SearchTests : IntegrationTestBase
     {
         public SearchTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {

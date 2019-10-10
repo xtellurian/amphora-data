@@ -6,8 +6,8 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    public class GracefulErrorsTests
-        : IntegrationTestBase, IClassFixture<WebApplicationFactory<Amphora.Api.Startup>>
+    [Collection(nameof(IntegrationFixtureCollection))]
+    public class GracefulErrorsTests: IntegrationTestBase
     {
 
         public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
