@@ -9,7 +9,7 @@ using Amphora.Common.Models.Signals;
 
 namespace Amphora.Api.DbContexts
 {
-
+    // DbContext is injected with a Scoped lifetime
     public class AmphoraContext : IdentityDbContext<ApplicationUser>
     {
         public AmphoraContext(DbContextOptions<AmphoraContext> options)

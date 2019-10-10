@@ -19,7 +19,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
         public async Task<byte[]> ReadBytesAsync(AmphoraModel entity, string path)
         {
-             var container = GetContainerReference(entity);
+            var container = GetContainerReference(entity);
             if (!await container.ExistsAsync())
             {
                 return null; // empty
@@ -46,7 +46,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         }
         public async Task<byte[]> GetDataAsync(AmphoraModel entity, string name)
         {
-           return await this.ReadBytesAsync(entity, name );
+            return await this.ReadBytesAsync(entity, name);
         }
 
         public async Task<IEnumerable<string>> ListNamesAsync(AmphoraModel entity)
