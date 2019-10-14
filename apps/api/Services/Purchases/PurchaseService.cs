@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,15 +16,18 @@ namespace Amphora.Api.Services.Transactions
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IUserService userService;
+        private readonly IEmailSender emailSender;
         private readonly ILogger<PurchaseService> logger;
 
         public PurchaseService(
             IEntityStore<PurchaseModel> purchaseStore,
             IUserService userService,
+            IEmailSender emailSender,
             ILogger<PurchaseService> logger)
         {
             this.purchaseStore = purchaseStore;
             this.userService = userService;
+            this.emailSender = emailSender;
             this.logger = logger;
         }
 
@@ -31,21 +35,31 @@ namespace Amphora.Api.Services.Transactions
         {
             using(logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
-                var transactions = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
-                if (transactions.Any())
+                var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
+                if (purchases.Any())
                 {
                     logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                    return new EntityOperationResult<PurchaseModel>(transactions.FirstOrDefault());
+                    return new EntityOperationResult<PurchaseModel>(purchases.FirstOrDefault());
                 }
                 else
                 {
                     logger.LogTrace("Purchasing Amphora");
-                    var transaction = new PurchaseModel(user, amphora);
-                    transaction = await purchaseStore.CreateAsync(transaction);
-                    return new EntityOperationResult<PurchaseModel>(transaction);
+                    var purchase = new PurchaseModel(user, amphora);
+                    purchase = await purchaseStore.CreateAsync(purchase);
+                    await SendPurchaseConfimationEmail(purchase);
+                    return new EntityOperationResult<PurchaseModel>(purchase);
                 }
             }
         }
+
+        private async Task SendPurchaseConfimationEmail(PurchaseModel purchase)
+        {
+
+            await emailSender.SendEmailAsync(purchase.PurchasedByUser.Email, 
+                "You've purchased a new Amphora", 
+                $"Your new Amphora ({purchase.Amphora.Name}) is now available at Amphora Data");
+        }
+
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
