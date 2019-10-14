@@ -1,7 +1,10 @@
+using System.Runtime.CompilerServices;
 using Amphora.Api;
 using Amphora.Api.DbContexts;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Amphora.Tests.Unit
 {
@@ -16,7 +19,13 @@ namespace Amphora.Tests.Unit
             this.Mapper = config.CreateMapper();
         }
 
-        protected AmphoraContext GetContext(string databaseName)
+        protected ILogger<T> CreateMockLogger<T>()
+        {
+            var logger = Mock.Of<ILogger<T>>();
+            return logger;
+        }
+
+        protected AmphoraContext GetContext([CallerMemberName] string databaseName = "")
         {
             var options = new DbContextOptionsBuilder<AmphoraContext>()
                 .UseInMemoryDatabase(databaseName: databaseName)
