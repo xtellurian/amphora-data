@@ -72,16 +72,11 @@ namespace Amphora.Api.Services.Amphorae
             var user = await userService.ReadUserModelAsync(principal);
 
             logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
-            var variables = new Dictionary<string, Variable>();
             var res = new List<QueryResultPage>();
             if (entity.Signals.Count == 0) return res;
 
             foreach (var s in entity.Signals)
             {
-                variables.Add(s.Signal.KeyName, new NumericVariable(
-                                    value: new Tsx($"$event.{s.Signal.KeyName}"),
-                                    aggregation: new Tsx("avg($value)")));
-
                 var r = await this.GetTsiSignalAsync(principal, entity, s.Signal, false);
                 res.Add(r);
             }
@@ -106,7 +101,7 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     variables.Add(s.Signal.KeyName, new NumericVariable(
                                         value: new Tsx($"$event.{s.Signal.KeyName}"),
-                                        aggregation: new Tsx("avg($value)")));
+                                        aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
                 }
                 IList<string> projections = null;
                 if (!includeOtherSignals)
@@ -114,7 +109,7 @@ namespace Amphora.Api.Services.Amphorae
                     projections = new List<string> { signal.KeyName };
                 }
                 var start = DateTime.UtcNow.AddDays(-30);
-                var end = DateTime.UtcNow;
+                var end = DateTime.UtcNow.AddDays(7);
                 var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
                 logger.LogInformation($"Got {res.Properties?.Count} properties from  Amphora Id {entity.Id}");
                 return res;

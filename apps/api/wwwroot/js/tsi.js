@@ -10,8 +10,9 @@ function tsi(signals, response) {
     var scheme = new ColorScheme;
     var tsiClient = new TsiClient();
     var startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
+    startDate.setDate(startDate.getDate() - 30);
     endDate = new Date();
+    endDate.setDate(endDate.getDate() + 7);
     var linechartTsqExpressions = [];
 
     scheme.from_hue(signals.length)
