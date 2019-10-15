@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;
@@ -39,6 +38,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dto">Information of the new Organisation</param>  
         [Produces(typeof(OrganisationDto))]
         [HttpPost("api/organisations")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationDto dto) //TODO make this a DTO
         {
             var org = mapper.Map<OrganisationModel>(dto);
@@ -64,6 +64,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Organisation Id</param>  
         /// <param name="org">Organisation Information. All fields are updated.</param>  
         [HttpPut("api/organisations/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationDto org)
         {
             var entity = await entityStore.ReadAsync(id);
@@ -82,6 +83,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Organisation Id</param>
         [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetOrganisation(string id)
         {
             var org = await entityStore.ReadAsync(id);
@@ -99,6 +101,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Organisation Id</param>
         /// <param name="invitation">Invitation details</param>
         [HttpPost("api/organisations/{id}/invitations/")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> InviteToOrganisation(string id, [FromBody] Invitation invitation)
         {
             try
@@ -118,6 +121,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Organisation Id</param>
         [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}/invitations/")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AcceptInvitation(string id)
         {
             try
@@ -136,6 +140,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Organisation Id</param>
         [Produces(typeof(OrganisationDto))]
         [HttpDelete("api/organisations/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteOrganisation(string id)
         {
             var org = await entityStore.ReadAsync(id);

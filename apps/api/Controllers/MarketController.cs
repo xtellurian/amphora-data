@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MarketController : Controller
     {
         private readonly IMarketService marketService;
@@ -38,6 +37,7 @@ namespace Amphora.Api.Controllers
         /// <param name="query">Search Text</param>
         [Produces(typeof(FuzzySearchResponse))]
         [HttpGet("api/location/fuzzy")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> LookupLocationAsync(string query)
         {
             var response = await mapService.FuzzySearchAsync(query);
@@ -50,6 +50,7 @@ namespace Amphora.Api.Controllers
         /// <param name="query">Amphora Id</param>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/market")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> FindAsync(string query)
         {
             var s = await marketService.FindAsync(query);
@@ -62,6 +63,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         [HttpPost("api/market/purchase/")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PurchaseAsync(string id)
         {
             var a = await amphoraeService.ReadAsync(User, id);

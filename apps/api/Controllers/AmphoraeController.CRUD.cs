@@ -13,7 +13,6 @@ namespace Amphora.Api.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class AmphoraeController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
@@ -45,6 +44,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dto">Information for the new Amphora</param>  
         [HttpPost("api/amphorae")]
         [Produces(typeof(AmphoraExtendedDto))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateAmphoraDto dto)
         {
             if (dto == null || dto.Name == null)
@@ -73,6 +73,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpGet("api/amphorae/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ReadAsync(string id)
         {
             var result = await this.amphoraeService.ReadAsync(User, id);
@@ -96,6 +97,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dto">Information to update</param>  
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpPut("api/amphorae/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedDto dto)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
@@ -121,6 +123,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         [HttpDelete("api/amphorae/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete_Api(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
