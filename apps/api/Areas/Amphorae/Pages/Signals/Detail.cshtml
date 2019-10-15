@@ -29,7 +29,7 @@
     <script src="~/js/tsi.js"></script>
 
     <script>
-        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals));
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals.Where(s => s.IsNumeric)));
         var response = @Html.Raw(@Model.QueryResponse);
         tsi(cols, response)
     </script>

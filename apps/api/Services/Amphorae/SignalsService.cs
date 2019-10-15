@@ -75,7 +75,7 @@ namespace Amphora.Api.Services.Amphorae
             var res = new List<QueryResultPage>();
             if (entity.Signals.Count == 0) return res;
 
-            foreach (var s in entity.Signals)
+            foreach (var s in entity.Signals.Where(s => s.Signal.IsNumeric))
             {
                 var r = await this.GetTsiSignalAsync(principal, entity, s.Signal, false);
                 res.Add(r);
@@ -99,9 +99,12 @@ namespace Amphora.Api.Services.Amphorae
 
                 foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
                 {
-                    variables.Add(s.Signal.KeyName, new NumericVariable(
+                    if (s.Signal.IsNumeric) // only numeric signals can be plotted here
+                    {
+                        variables.Add(s.Signal.KeyName, new NumericVariable(
                                         value: new Tsx($"$event.{s.Signal.KeyName}"),
                                         aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
+                    }
                 }
                 IList<string> projections = null;
                 if (!includeOtherSignals)
@@ -127,7 +130,5 @@ namespace Amphora.Api.Services.Amphorae
                                            });
             await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
         }
-
-
     }
 }
