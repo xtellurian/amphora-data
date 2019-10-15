@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class AmphoraeController : Controller
     {
         /// <summary>
@@ -17,6 +16,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         [Produces(typeof(List<string>))]
         [HttpGet("api/amphorae/{id}/files")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ListFiles(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -40,6 +40,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         /// <param name="file">The name of the file</param>  
         [HttpGet("api/amphorae/{id}/files/{file}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -74,6 +75,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         /// <param name="file">The name of the file</param> 
         [HttpPut("api/amphorae/{id}/files/{file}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadToAmphora(string id, string file)
         {
             var result = await amphoraeService.ReadAsync(User, id);

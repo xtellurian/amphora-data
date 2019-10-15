@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SearchController : Controller
     {
         private readonly IMapper mapper;
@@ -35,6 +34,7 @@ namespace Amphora.Api.Controllers
         /// <param name="parameters">Search parameters</param>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpPost("api/search/amphorae")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
         {
             var response = await searchService.SearchAmphora("", parameters);
@@ -50,6 +50,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dist">Distance from Latitude and Longitude in which to search</param>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byLocation")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
             var response = await searchService.SearchAmphora("", SearchParameters.GeoSearch(lat, lon, dist));
@@ -64,6 +65,7 @@ namespace Amphora.Api.Controllers
         /// <param name="orgId">Organisation Id</param>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byOrganisation")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
             if (string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
@@ -78,6 +80,7 @@ namespace Amphora.Api.Controllers
         /// <param name="userName">User Name of the creator</param>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byCreator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphoraeByCreator(string userName)
         {
             ApplicationUser user;

@@ -1,19 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Signals;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class AmphoraeController : Controller
     {
         /// <summary>
@@ -22,6 +17,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         [Produces(typeof(List<SignalDto>))]
         [HttpGet("api/amphorae/{id}/signals")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetSignals(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
@@ -47,6 +43,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dto">Signal Details</param>  
         [Produces(typeof(SignalDto))]
         [HttpPost("api/amphorae/{id}/signals")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateSignal(string id, [FromBody] SignalDto dto)
         {
             try
@@ -96,6 +93,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">Amphora Id</param>  
         /// <param name="data">Signal Values</param>  
         [HttpPost("api/amphorae/{id}/signals/values")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadSignal_value(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
