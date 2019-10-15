@@ -122,7 +122,13 @@ namespace Amphora.Api
                     Type = SecuritySchemeType.ApiKey
                 });
                 c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmphoraApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "Amphora Data Api", 
+                    Description = "API for interacting with the Amphora Data platform.",
+                    Contact = new OpenApiContact(){Email = "rian@amphoradata.com", 
+                        Name= "Rian Finnegan", 
+                        Url = new Uri("https://amphoradata.com")},
+                    Version = "0.0.2" });
                 c.IncludeXmlComments(xmlPath);
             });
 
