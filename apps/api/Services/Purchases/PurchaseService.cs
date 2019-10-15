@@ -54,10 +54,16 @@ namespace Amphora.Api.Services.Transactions
 
         private async Task SendPurchaseConfimationEmail(PurchaseModel purchase)
         {
-
-            await emailSender.SendEmailAsync(purchase.PurchasedByUser.Email, 
-                "You've purchased a new Amphora", 
-                $"Your new Amphora ({purchase.Amphora.Name}) is now available at Amphora Data");
+            if(purchase.PurchasedByUser.EmailConfirmed)
+            {
+                await emailSender.SendEmailAsync(purchase.PurchasedByUser.Email, 
+                    "You've purchased a new Amphora", 
+                    $"Your new Amphora ({purchase.Amphora.Name}) is now available at Amphora Data");
+            }
+            else
+            {
+                logger.LogWarning($"Cannot send email to {purchase.PurchasedByUser.Email}. Email unconfirmed");
+            }
         }
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora)
