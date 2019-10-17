@@ -8,6 +8,8 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Amphora.Common.Models.Permissions;
+using System.Collections.Generic;
 
 namespace Amphora.Api.Services.Organisations
 {
@@ -34,62 +36,6 @@ namespace Amphora.Api.Services.Organisations
             this.Store = orgStore;
             this.orgBlobStore = orgBlobStore;
             this.logger = logger;
-        }
-
-        public async Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId)
-        {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
-            {
-                var org = await Store.ReadAsync(orgId);
-                var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), user.Email.ToUpper()));
-
-                if (invitation != null)
-                {
-                    user.OrganisationId = org.Id;
-                    var result = await userService.UserManager.UpdateAsync(user);
-                    if (result != null)
-                    {
-                        logger.LogInformation($"{user.Email} redeemed an invitation to {org.Id}");
-                        org.Invitations.Remove(invitation);
-                        org.AddOrUpdateMembership(user);
-                        await Store.UpdateAsync(org);
-                        return true;
-                    }
-                    else
-                    {
-                        logger.LogError($"{user.Id} failed to redeem invidation to {org.Id} ");
-                        return false;
-                    }
-                }
-                else
-                {
-                    logger.LogError($"{user.Id} tried to access {org.Id} without invitation");
-                    return false;
-                }
-            }
-        }
-
-        public async Task<EntityOperationResult<OrganisationModel>> InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email)
-        {
-            var user = await userService.UserManager.GetUserAsync(principal);
-            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
-            {
-                var org = await Store.ReadAsync(orgId);
-                var authorized = await permissionService.IsAuthorizedAsync(user, org, ResourcePermissions.Create);
-                if (authorized)
-                {
-                    var invitation = new Invitation(email);
-                    org.AddInvitation(email);
-                    var result = await Store.UpdateAsync(org);
-                    return new EntityOperationResult<OrganisationModel>(result);
-                }
-                else
-                {
-                    logger.LogError($"{user.UserName} required Create on {org.Id}");
-                    return new EntityOperationResult<OrganisationModel>($"{user.UserName} required Create on {org.Id}") { WasForbidden = true };
-                }
-            }
         }
 
         public async Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(
@@ -137,12 +83,33 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
+        public async Task<EntityOperationResult<OrganisationModel>> ReadAsync(ClaimsPrincipal principal, string id)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            {
+                var org = await Store.ReadAsync(id);
+                if (org == null) return new EntityOperationResult<OrganisationModel>($"{id} not found");
+                var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Read);
+                if (authorized)
+                {
+                    logger.LogInformation($"User {user.UserName} reads Organisation {org.Name}");
+                    return new EntityOperationResult<OrganisationModel>(org);
+                }
+                else
+                {
+                    logger.LogInformation($"User {user.UserName} denied to read Organisation {org.Name}");
+                    return new EntityOperationResult<OrganisationModel>($"User {user.UserName} needs read access to Org {org.Id}");
+                }
+            }
+        }
+
         public async Task<EntityOperationResult<OrganisationModel>> UpdateAsync(ClaimsPrincipal principal, OrganisationModel org)
         {
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
-                var authorized = await permissionService.IsAuthorizedAsync(user, org, Common.Models.Permissions.AccessLevels.Update);
+                var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Update);
                 if (authorized)
                 {
                     logger.LogTrace("Updating organisation, Name: {org.Name}, Id: {org.Id}");
@@ -153,6 +120,81 @@ namespace Amphora.Api.Services.Organisations
                 {
                     logger.LogWarning($"Permission denied to update organisation, Name: {org.Name}, Id: {org.Id}");
                     return new EntityOperationResult<OrganisationModel>() { WasForbidden = true };
+                }
+            }
+        }
+        public async Task<bool> AcceptInvitation(ClaimsPrincipal principal, string orgId)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            {
+                var org = await Store.ReadAsync(orgId);
+                var invitation = org.Invitations?.FirstOrDefault(i => string.Equals(i.TargetEmail.ToUpper(), user.Email.ToUpper()));
+
+                if (invitation != null)
+                {
+                    user.OrganisationId = org.Id;
+                    var result = await userService.UserManager.UpdateAsync(user);
+                    if (result != null)
+                    {
+                        logger.LogInformation($"{user.Email} redeemed an invitation to {org.Id}");
+                        org.Invitations.Remove(invitation);
+                        org.AddOrUpdateMembership(user);
+                        await Store.UpdateAsync(org);
+                        return true;
+                    }
+                    else
+                    {
+                        logger.LogError($"{user.Id} failed to redeem invidation to {org.Id} ");
+                        return false;
+                    }
+                }
+                else
+                {
+                    logger.LogError($"{user.Id} tried to access {org.Id} without invitation");
+                    return false;
+                }
+            }
+        }
+
+        public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            if (user.IsAdmin())
+            {
+                if (user.Organisation.TermsAndConditionsAccepted == null)
+                {
+                    user.Organisation.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>();
+                }
+                var model = new TermsAndConditionsAcceptanceModel(user.Organisation, termsAndConditions);
+                user.Organisation.TermsAndConditionsAccepted.Add(model);
+                var o = await Store.UpdateAsync(user.Organisation);
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(model);
+            }
+            else
+            {
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>($"User {user.UserName} must be an administrator");
+            }
+        }
+
+        public async Task<EntityOperationResult<OrganisationModel>> InviteToOrganisationAsync(ClaimsPrincipal principal, string orgId, string email)
+        {
+            var user = await userService.UserManager.GetUserAsync(principal);
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            {
+                var org = await Store.ReadAsync(orgId);
+                var authorized = await permissionService.IsAuthorizedAsync(user, org, ResourcePermissions.Create);
+                if (authorized)
+                {
+                    var invitation = new Invitation(email);
+                    org.AddInvitation(email);
+                    var result = await Store.UpdateAsync(org);
+                    return new EntityOperationResult<OrganisationModel>(result);
+                }
+                else
+                {
+                    logger.LogError($"{user.UserName} required Create on {org.Id}");
+                    return new EntityOperationResult<OrganisationModel>($"{user.UserName} required Create on {org.Id}") { WasForbidden = true };
                 }
             }
         }

@@ -61,8 +61,14 @@ namespace Amphora.Api.DbContexts
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
                 b.OwnsMany(p => p.TermsAndConditions, a =>
                 {
-                    a.WithOwner().HasForeignKey(_ => _.OrganisationId);
+                    a.WithOwner(b => b.Organisation).HasForeignKey(_ => _.OrganisationId);
                     a.HasKey(_ => _.Name);
+                });
+                b.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
+                {
+                    a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);
+                    a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
+                    a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
                 });
             });
 
