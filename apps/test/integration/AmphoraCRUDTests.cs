@@ -146,6 +146,10 @@ namespace Amphora.Tests.Integration
             Assert.True( b.Lon.HasValue);
             Assert.Equal( dto.Lat, b.Lat);
             Assert.Equal( dto.Lon, b.Lon);
+
+            await DestroyAmphoraAsync(adminClient, dto.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
     }

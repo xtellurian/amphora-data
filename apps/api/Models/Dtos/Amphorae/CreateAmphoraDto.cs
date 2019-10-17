@@ -11,5 +11,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public double? Lat { get; set; }
         [Display(Name = "Longitude")]
         public double? Lon { get; set; }
+        public string TermsAndConditionsId { get; set; }
     }
 }
