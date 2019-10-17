@@ -200,6 +200,7 @@ export class State extends pulumi.ComponentResource {
       "amphoradhns",
       {
         capacity: 1,
+        kafkaEnabled: false,
         location: rg.location,
         resourceGroupName: rg.name,
         sku: "Standard",
