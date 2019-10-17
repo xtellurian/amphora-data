@@ -1,0 +1,23 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.DetailModel
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <div class="m-3 card">
+                <div class="card-header">
+                    @Model.TermsAndConditions.Name <small>@Model.Organisation.Name</small>
+                </div>
+                <div class="card-body">
+                    <span style="white-space: pre-line">@Model.TermsAndConditions.Contents</span>
+                </div>
+            </div>
+            <form method="post" asp-route-returnUrl="@Model.ReturnUrl" 
+                                asp-route-id="@Model.Organisation.Id" 
+                                asp-route-name="@Model.TermsAndConditions.Name">
+
+                <button class="btn btn-success btn-block">Accept</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
@@ -21,6 +22,12 @@ namespace Amphora.Common.Models.Users
         public Uri GetProfilePictureUri()
         {
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");
+        }
+
+        public bool IsAdmin()
+        {
+            var membership = this.Organisation?.Memberships?.FirstOrDefault(m => m.UserId == this.Id);
+            return membership?.Role == Roles.Administrator;
         }
     }
 }

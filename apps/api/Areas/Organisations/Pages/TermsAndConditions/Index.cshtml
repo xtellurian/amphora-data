@@ -1,0 +1,24 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.IndexModel
+
+@{
+    ViewData["Title"] = $"{Model.Organisation.Name}: T&C";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div>
+                <h2>Terms and Conditions Library</h2>
+            </div>
+            <ul>
+                @foreach (var tnc in Model.Organisation.TermsAndConditions)
+                {
+                    <li>
+                        <a asp-page="./Detail" asp-route-id="@Model.Organisation.Id" asp-route-name="@tnc.Name">@tnc.Name</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

@@ -45,7 +45,7 @@
                         if(Model.CanBuy && !Model.CanUploadFiles) { signalsButtonMode = "disabled"; } 
                     }
                     <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light" @signalsButtonMode>Signals</button></a>
-                    <a asp-page="./Agreement" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success" @buttonMode>Buy</button></a>
+                    <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success" @buttonMode>Buy</button></a>
                 </div>
                     <div class="card-body">
                         <h5 class="card-title">Description</h5>
