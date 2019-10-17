@@ -46,5 +46,5 @@ function tsi(signals, response) {
     console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
-    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'shared' }, linechartTsqExpressions);
+    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked' }, linechartTsqExpressions);
 }
