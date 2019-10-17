@@ -127,7 +127,7 @@ jobs:
         artifactName: dgml
         downloadPath: '$(System.ArtifactsDirectory)' 
     - script: |
-        cd apps
+        cd apps/test
         dotnet add package DgmlImage --version 1.0.0.1
         DgmlImage -format png -out $(Build.ArtifactStagingDirectory) $(System.ArtifactsDirectory)/dgml/Entities.dgml
       displayName: Convert to Image
