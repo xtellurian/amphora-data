@@ -1,7 +1,10 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Tests.Helpers;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Amphora.Tests.Unit
@@ -27,7 +30,7 @@ namespace Amphora.Tests.Unit
                 a = await amphoraStore.UpdateAsync(a);
 
                 Assert.NotNull(signal.Id);
-                
+
                 a = await amphoraStore.ReadAsync(a.Id, true);
                 Assert.NotNull(a.Signals);
                 Assert.Contains(a.Signals, m => string.Equals(m.SignalId, signal.Id));
@@ -35,6 +38,19 @@ namespace Amphora.Tests.Unit
                 var s2 = context.Signals.FirstOrDefault(s => s.Id == signal.Id);
                 Assert.NotNull(s2);
             }
+        }
+
+        [Fact]
+        public void EFCore_ProducesDGML()
+        {
+            var context = base.GetContext();
+            var path = Environment.GetEnvironmentVariable("DGML_PATH");
+            if(string.IsNullOrEmpty(path))
+            {
+                path = Directory.GetCurrentDirectory() + "/Entities.dgml";
+            }
+            System.IO.File.WriteAllText(path, context.AsDgml(), System.Text.Encoding.UTF8);
+
         }
     }
 }
