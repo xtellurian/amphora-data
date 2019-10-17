@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Amphora.Tests.Integration
+namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(IntegrationFixtureCollection))]
     public class OrganisationCRUDTests : IntegrationTestBase

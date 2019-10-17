@@ -51,7 +51,7 @@ namespace Amphora.Api.DbContexts
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
                 b.OwnsMany(b => b.Invitations, a =>
                 {
-                    a.HasKey(nameof(Invitation.TargetEmail));
+                    a.HasKey(i => i.TargetEmail);
                 });
                 b.OwnsMany(b => b.Memberships, a =>
                 {
@@ -59,6 +59,11 @@ namespace Amphora.Api.DbContexts
                     a.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
                 });
                 b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
+                b.OwnsMany(p => p.TermsAndConditions, a =>
+                {
+                    a.WithOwner().HasForeignKey(_ => _.OrganisationId);
+                    a.HasKey(_ => _.Name);
+                });
             });
 
             modelBuilder.Entity<PurchaseModel>(b =>

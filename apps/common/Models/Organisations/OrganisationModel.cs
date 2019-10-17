@@ -15,6 +15,7 @@ namespace Amphora.Common.Models.Organisations
         // navigation
         public virtual ICollection<Invitation> Invitations { get; set; }
         public virtual ICollection<Membership> Memberships { get; set; }
+        public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; }
         public string CreatedById { get; set; }
         public virtual ApplicationUser CreatedBy { get; set; }
 

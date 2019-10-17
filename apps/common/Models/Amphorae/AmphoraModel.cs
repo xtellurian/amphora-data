@@ -3,6 +3,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
+using System.Linq;
 
 namespace Amphora.Common.Models.Amphorae
 {
@@ -26,6 +27,8 @@ namespace Amphora.Common.Models.Amphorae
         public virtual ApplicationUser CreatedBy { get; set; }
         public virtual ICollection<AmphoraSignalModel> Signals {get;set;}
         public virtual ICollection<PurchaseModel> Purchases { get; set; }
+        public string TermsAndConditionsId {get;set;}
+        public TermsAndConditionsModel TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Name == TermsAndConditionsId);
 
         // methods
         public void AddSignal(SignalModel signal)
