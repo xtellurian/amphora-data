@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Pages.Organisations.DetailModel
+@model Amphora.Api.Areas.Organisations.Pages.DetailModel
 @{
     ViewData["Title"] = Model.Organisation.Name;
 }
@@ -10,7 +10,7 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @{var profilePicture = $"/api/organisations/{Model.Organisation.Id}/profile.jpg" ;}
+                        @{var profilePicture = $"/api/Organisations/{Model.Organisation.Id}/profile.jpg" ;}
                         <img src="@profilePicture" class="img-fluid"/>
                     </div>
                     <div class="w-100"><strong>@Model.Organisation.Name</strong></div>

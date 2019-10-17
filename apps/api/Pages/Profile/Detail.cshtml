@@ -18,7 +18,7 @@
                     <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
                     <span style="white-space: pre-line">@Model.AppUser.About</span>
                     <p><i class="fas fa-user-friends mr-1"></i>
-                        <a asp-page="/Organisations/Detail" asp-route-id="@Model.Organisation.Id">
+                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Organisation.Id">
                             @Model.Organisation.Name 
                         </a>
                     </p>                   

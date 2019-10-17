@@ -31,7 +31,7 @@
                     by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
                         @Model.Amphora.CreatedBy.FullName
                         </a> from
-                        <a asp-page="/Organisations/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
+                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
                         @Model.Amphora.CreatedBy.Organisation.Name
                         </a>
                     @if(Model.CanEditDetails)

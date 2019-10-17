@@ -7,7 +7,7 @@ using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Organisations
+namespace Amphora.Api.Areas.Organisations.Pages
 {
     public class MembersModel: PageModel
     {
