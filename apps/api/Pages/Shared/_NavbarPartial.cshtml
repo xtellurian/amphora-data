@@ -37,7 +37,7 @@
                 <a class="nav-link text-light" asp-area="" asp-page="/Profile/Detail">My Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" asp-area="" asp-page="/Organisations/Detail">My Organisation</a>
+                <a class="nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
             </li>
             <li class="nav-item">
                 <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">

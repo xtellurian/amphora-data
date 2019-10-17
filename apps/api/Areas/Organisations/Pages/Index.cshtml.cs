@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Organisations
+namespace Amphora.Api.Areas.Organisations.Pages
 {
     [Authorize]
     public class IndexModel: PageModel

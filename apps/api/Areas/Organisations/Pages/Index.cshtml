@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Pages.Organisations.IndexModel
+@model Amphora.Api.Areas.Organisations.Pages.IndexModel
 
 
 <div id="main" class="container">
@@ -38,7 +38,7 @@
                      <tr class="entity-item">
                         <th scope="row"> @entity.Name </th>
                         <td>  
-                            <a asp-page="/Organisations/Detail" asp-route-id="@entity.Id"> 
+                            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@entity.Id"> 
                                 <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
                             </a>
                         </td>
