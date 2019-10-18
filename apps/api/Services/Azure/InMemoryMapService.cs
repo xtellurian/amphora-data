@@ -28,7 +28,7 @@ namespace Amphora.Api.Services.Azure
 
         public Task<byte[]> GetStaticMapImageAsync(GeoLocation location)
         {
-            return null;
+            return Task.FromResult<byte[]>(null);
         }
     }
 }
