@@ -122,13 +122,18 @@ namespace Amphora.Api
                     Type = SecuritySchemeType.ApiKey
                 });
                 c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
-                c.SwaggerDoc("v1", new OpenApiInfo { 
-                    Title = "Amphora Data Api", 
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Amphora Data Api",
                     Description = "API for interacting with the Amphora Data platform.",
-                    Contact = new OpenApiContact(){Email = "rian@amphoradata.com", 
-                        Name= "Rian Finnegan", 
-                        Url = new Uri("https://amphoradata.com")},
-                    Version = "0.0.2" });
+                    Contact = new OpenApiContact()
+                    {
+                        Email = "rian@amphoradata.com",
+                        Name = "Rian Finnegan",
+                        Url = new Uri("https://amphoradata.com")
+                    },
+                    Version = "0.0.2"
+                });
                 c.IncludeXmlComments(xmlPath);
             });
 
@@ -173,6 +178,7 @@ namespace Amphora.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<Middleware.OrganisationCheckMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
