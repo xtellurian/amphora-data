@@ -28,24 +28,28 @@
         <div class="col-md-8">
             <div class="card bg-light">
                 <div class="card-header">
-                    by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
-                        @Model.Amphora.CreatedBy.FullName
-                        </a> from
-                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
-                        @Model.Amphora.CreatedBy.Organisation.Name
-                        </a>
-                    @if(Model.CanEditDetails)
-                    {
-                    <a asp-page="./Edit" asp-route-id="@Model.Amphora.Id"><i class="fas fa-edit ml-2"></i></a>
-                    }
+                    <div class="float-left">
+                        by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
+                            @Model.Amphora.CreatedBy.FullName
+                            </a> from
+                            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
+                            @Model.Amphora.CreatedBy.Organisation.Name
+                            </a>
+                        @if(Model.CanEditDetails)
+                        {
+                        <a asp-page="./Edit" asp-route-id="@Model.Amphora.Id"><i class="fas fa-edit ml-2"></i></a>
+                        }
+                    </div>
                     @{
                         var buttonMode = string.Empty;
                         var signalsButtonMode = string.Empty;
                         if(! Model.CanBuy) { buttonMode = "disabled"; } 
                         if(Model.CanBuy && !Model.CanUploadFiles) { signalsButtonMode = "disabled"; } 
                     }
-                    <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light" @signalsButtonMode>Signals</button></a>
-                    <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success" @buttonMode>Buy</button></a>
+                    <div class="float-right">
+                        <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light m-1" @signalsButtonMode>Signals</button></a>
+                        <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success m-1" @buttonMode>Buy</button></a>
+                    </div>
                 </div>
                     <div class="card-body">
                         <h5 class="card-title">Description</h5>
