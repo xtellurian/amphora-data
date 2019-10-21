@@ -69,7 +69,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 var result = await amphoraeService.UpdateAsync(User, Amphora);
                 if (result.Succeeded)
                 {
-                    return RedirectToPage("./Index");
+                    return RedirectToPage("./Index", new {Id = Amphora.Id});
                 }
                 else if (result.WasForbidden)
                 {
@@ -82,7 +82,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     return Page();
                 }
             }
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new {Id = Amphora.Id});
         }
     }
 }
