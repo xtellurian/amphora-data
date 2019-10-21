@@ -57,6 +57,7 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     values["amphora"] = entity.Id;
                     if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
+                    if (!values.ContainsKey("wt")) values.Add("wt", DateTime.UtcNow);
                     await SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(values);
                 }
