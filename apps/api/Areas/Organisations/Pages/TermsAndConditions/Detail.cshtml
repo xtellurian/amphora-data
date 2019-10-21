@@ -6,18 +6,24 @@
         <div class="col-8">
             <div class="m-3 card">
                 <div class="card-header">
-                    @Model.TermsAndConditions.Name <small>@Model.Organisation.Name</small>
+                    @Model.TermsAndConditions.Name <small class="float-right"> by 
+                        <a asp-page="../Detail" asp-route-id="@Model.Organisation.Id">@Model.Organisation.Name</a>
+                        </small>
                 </div>
                 <div class="card-body">
                     <span style="white-space: pre-line">@Model.TermsAndConditions.Contents</span>
                 </div>
             </div>
+            @if(Model.CanAccept)
+            {
             <form method="post" asp-route-returnUrl="@Model.ReturnUrl" 
                                 asp-route-id="@Model.Organisation.Id" 
                                 asp-route-name="@Model.TermsAndConditions.Name">
 
                 <button class="btn btn-success btn-block">Accept</button>
             </form>
+            }
+            <a asp-area="" asp-page="/Index"><button class="mt-1 btn btn-secondary btn-block">Cancel</button></a>
         </div>
     </div>
 </div>

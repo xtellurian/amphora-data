@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Signals;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
+    [Authorize]
     public class IndexModel : AmphoraPageModel
     {
         private readonly ISignalService signalService;

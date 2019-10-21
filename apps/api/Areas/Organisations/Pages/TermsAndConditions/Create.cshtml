@@ -1,0 +1,31 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.CreateModel
+
+@{
+    ViewData["Title"] = Model.Organisation.Name + " Create T&C";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>New Terms and Conditions Agreement</h2>
+            <small>Data users must agree to these terms when they are applied to their Amphora</small>
+            <form method="post" asp-route-id="@Model.Organisation.Id">
+                <div class="form-group">
+                    <label asp-for="TermsAndConditions.Name" class="control-label"></label>
+                    <input asp-for="TermsAndConditions.Name" class="form-control" />
+                    <span asp-validation-for="TermsAndConditions.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TermsAndConditions.Contents" class="control-label"></label>
+                    <textarea asp-for="TermsAndConditions.Contents" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="TermsAndConditions.Contents" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a asp-page="./Index" asp-route-id="@Model.Organisation.Id"><button class="btn btn-secondary">Cancel</button></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
