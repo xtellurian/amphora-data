@@ -2,11 +2,13 @@
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Signals;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
+    [Authorize]
     public class CreateModel : AmphoraPageModel
     {
         public CreateModel(IAmphoraeService amphoraeService) : base(amphoraeService)

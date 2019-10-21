@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers.Organisations
 {
     [ApiController]
-    public class TermsAndConditionsController: Controller
+    public class TermsAndConditionsController : Controller
     {
         private readonly IOrganisationService organisationService;
         private readonly IMapper mapper;
@@ -34,17 +34,16 @@ namespace Amphora.Api.Controllers.Organisations
         public async Task<IActionResult> CreateTermsAndConditions(string id, [FromBody] TermsAndConditionsDto dto)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            if(org.TermsAndConditions.Any(t => t.Name == dto.Name))
+            if (org.TermsAndConditions?.Any(t => t.Name == dto.Name) ?? false)
             {
                 return BadRequest($"{dto.Name} already exists");
             }
-            var model = mapper.Map<TermsAndConditionsModel>(dto);
 
-            if(org.TermsAndConditions == null) org.TermsAndConditions = new List<TermsAndConditionsModel>();
-            org.TermsAndConditions.Add(model);
+            var model = mapper.Map<TermsAndConditionsModel>(dto);
+            org.AddOrUpdateTermsAndConditions(model);
 
             var result = await organisationService.UpdateAsync(User, org);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 dto = mapper.Map<TermsAndConditionsDto>(model);
                 return Ok(dto);
@@ -70,7 +69,7 @@ namespace Amphora.Api.Controllers.Organisations
         {
             var org = await organisationService.Store.ReadAsync(id);
             return Ok(mapper.Map<List<TermsAndConditionsDto>>(org.TermsAndConditions));
-           
+
         }
     }
 }
