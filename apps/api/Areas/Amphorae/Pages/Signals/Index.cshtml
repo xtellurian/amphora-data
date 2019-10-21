@@ -33,8 +33,8 @@
                 {
                 <tr class="signal-item">
                     <th scope="row">@n.KeyName</th>
-                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a></td>
-                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">View</button></a></td>
+                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
+                    <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
                 </tr>
                 }
             </tbody>
@@ -42,7 +42,7 @@
     </div>
     <div class="row">
         <div class="col">
-            <small>This week</small>
+            <small>Chart</small>
         </div>
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
     </div>
