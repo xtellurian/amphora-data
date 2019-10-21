@@ -10,6 +10,7 @@ using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Amphora.Api.Services.Amphorae
 {
@@ -48,9 +49,16 @@ namespace Amphora.Api.Services.Amphorae
                 model.CreatedBy = user;
                 model.CreatedDate = DateTime.UtcNow;
 
+                var organisation = await organisationStore.ReadAsync(model.OrganisationId);
+
+                if (string.IsNullOrEmpty(model.TermsAndConditionsId))
+                {
+                    var tnc = organisation.TermsAndConditions.FirstOrDefault();
+                    logger.LogInformation($"Using default terms and conditions: {tnc?.Name}");
+                    model.TermsAndConditionsId = tnc?.Name;
+                }
+
                 // check permission to create amphora
-                var organisation = await organisationStore.ReadAsync(
-                    model.OrganisationId);
                 logger.LogInformation($"Creating new Amphora for OrganisationId {organisation.Id}");
                 var isAuthorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Create);
                 if (isAuthorized)

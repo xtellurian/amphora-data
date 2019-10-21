@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Pages.Organisations
+namespace Amphora.Api.Areas.Organisations.Pages
 {
     [Authorize]
     public class CreateModel : PageModel
@@ -52,8 +52,9 @@ namespace Amphora.Api.Pages.Organisations
             public string Address { get; set; }
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string message)
         {
+            if (!string.IsNullOrEmpty(message)) this.ModelState.AddModelError(string.Empty, message);
             var response = await authenticateService.GetToken(User);
             Organisations = await organisationService.Store.TopAsync();
             if (response.success)
@@ -91,7 +92,7 @@ namespace Amphora.Api.Pages.Organisations
                         await this.organisationService.WriteProfilePictureJpg(result.Entity, await stream.ReadFullyAsync());
                     }
                 }
-                
+
                 return RedirectToPage("/Organisations/Detail");
             }
             else

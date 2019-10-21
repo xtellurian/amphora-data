@@ -6,7 +6,7 @@ using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Organisations
+namespace Amphora.Api.Areas.Organisations.Pages
 {
     public class InviteModel : PageModel
     {

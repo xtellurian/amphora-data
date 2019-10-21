@@ -9,7 +9,7 @@
     <div class="row main-header">
         <div class="col">
             <span>
-                <h1>@Model.Signals.FirstOrDefault().KeyName</h1>
+                <h2>@Model.Amphora.Name : @Model.Signals.FirstOrDefault().KeyName</h2>
                 <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">All Signals</button></a>
             </span>
         </div>
@@ -29,7 +29,7 @@
     <script src="~/js/tsi.js"></script>
 
     <script>
-        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals));
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals.Where(s => s.IsNumeric)));
         var response = @Html.Raw(@Model.QueryResponse);
         tsi(cols, response)
     </script>

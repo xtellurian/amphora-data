@@ -1,21 +1,25 @@
 @page
-@model Amphora.Api.Pages.Organisations.DetailModel
+@model Amphora.Api.Areas.Organisations.Pages.DetailModel
 @{
     ViewData["Title"] = Model.Organisation.Name;
 }
 
 <div id="main" class="container">
     <div class="row">
-        <div class="col-4">
+        <div class="col-md-4">
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @{var profilePicture = $"/api/organisations/{Model.Organisation.Id}/profile.jpg" ;}
+                        @{var profilePicture = $"/api/Organisations/{Model.Organisation.Id}/profile.jpg" ;}
                         <img src="@profilePicture" class="img-fluid"/>
                     </div>
                     <div class="w-100"><strong>@Model.Organisation.Name</strong></div>
 
-                    <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
+                    <span>
+                        <a asp-page="./TermsAndConditions/Index" asp-route-id="@Model.Organisation.Id">
+                            <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Terms and Conditions Library</button>
+                        </a>
+                    </span>
                     @if (@Model.CanInvite)
                     {
                         <span><a asp-page="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
@@ -60,7 +64,7 @@
             </div>
             }
         </div>
-        <div class="col-8">
+        <div class="col-md-8">
            <div>
                @if(Model.CanEdit)
                {

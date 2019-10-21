@@ -6,11 +6,11 @@
 
 <div id="main" class="container">
     <div class="row">
-        <div class="col-4">
+        <div class="col-md-4">
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img src="@Model.AppUser.GetProfilePictureUri().ToString()?s=180" />
+                        <img class="img-fluid" src="@Model.AppUser.GetProfilePictureUri().ToString()?s=180" />
                     </div>
                     <div class="w-100"><strong>@Model.AppUser.FullName</strong></div>
                     <div class="w-100 mb-2"><small>@Model.AppUser.UserName </small></div>
@@ -18,14 +18,14 @@
                     <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>
                     <span style="white-space: pre-line">@Model.AppUser.About</span>
                     <p><i class="fas fa-user-friends mr-1"></i>
-                        <a asp-page="/Organisations/Detail" asp-route-id="@Model.Organisation.Id">
-                            @Model.Organisation.Name 
+                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.AppUser.OrganisationId">
+                            @Model.AppUser.Organisation?.Name 
                         </a>
                     </p>                   
                 </div>
             </div>
         </div>
-        <div class="col-8">
+        <div class="col-md-8">
            <div>
                @if(Model.IsSelf)
                {

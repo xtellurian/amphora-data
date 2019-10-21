@@ -85,7 +85,8 @@ jobs:
         popd
         pushd apps
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
-        docker run -v `pwd`:/output -v ~/.azure/:/.azure/ -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv $acrName.azurecr.io/$IMAGE:$BUILD
+        docker run -v `pwd`:/output -v ~/.azure/:/.azure/ -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv -e DGML_PATH=/output/Entities.dgml $acrName.azurecr.io/$IMAGE:$BUILD
+        cp Entities.dgml $(Build.ArtifactStagingDirectory)
       displayName: Run Tests
       env:
         IMAGE: $(testImageName)
@@ -106,3 +107,35 @@ jobs:
       inputs:
         summaryFileLocation: $(Build.SourcesDirectory)/apps/coverage.cobertura.xml
         codecoverageTool: cobertura
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: 'dgml' 
+        publishLocation: 'Container' # Options: container, filePath
+
+# - job: dgml
+#   dependsOn: ${{ parameters.jobName }}
+#   displayName: Publish DGML
+#   pool:
+#     vmImage: 'windows-latest'
+#   steps:
+#     - task: DownloadBuildArtifacts@0
+#       displayName: Download DGML Artifact
+#       inputs:
+#         buildType: 'current' # Options: current, specific
+#         artifactName: dgml
+#         downloadPath: '$(System.ArtifactsDirectory)' 
+#     - script: |
+#         cd apps/test
+#         dotnet add package DgmlImage --version 1.0.0.1
+#         DgmlImage -format png -out $(Build.ArtifactStagingDirectory) $(System.ArtifactsDirectory)/dgml/Entities.dgml
+#       displayName: Convert to Image
+#     - task: PublishBuildArtifacts@1
+#       displayName: Publish Image
+#       inputs:
+#         pathtoPublish: $(Build.ArtifactStagingDirectory)
+#         artifactName: 'dgml-image' 
+#         publishLocation: 'Container' # Options: container, filePath
+
+

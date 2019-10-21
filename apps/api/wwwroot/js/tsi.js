@@ -10,8 +10,9 @@ function tsi(signals, response) {
     var scheme = new ColorScheme;
     var tsiClient = new TsiClient();
     var startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
+    startDate.setDate(startDate.getDate() - 30);
     endDate = new Date();
+    endDate.setDate(endDate.getDate() + 7);
     var linechartTsqExpressions = [];
 
     scheme.from_hue(signals.length)
@@ -45,5 +46,5 @@ function tsi(signals, response) {
     console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
-    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'shared' }, linechartTsqExpressions);
+    lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked' }, linechartTsqExpressions);
 }

@@ -1,5 +1,9 @@
 @page
-@model Amphora.Api.Pages.Organisations.AcceptInvitationModel
+@model Amphora.Api.Areas.Organisations.Pages.AcceptInvitationModel
+
+@{
+    ViewData["Title"] = "Accept Invitation";
+}
 
 @if(Model.InvitationAccepted)
 {

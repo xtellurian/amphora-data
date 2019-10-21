@@ -1,6 +1,9 @@
 @page
 @model Amphora.Api.Areas.Amphorae.Pages.PurchaseModel
 
+@{
+    var thisUrl = $"{HttpContext.Request.Path}{HttpContext.Request.QueryString}";
+}
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 @if(Model.Success)
 {
@@ -11,6 +14,12 @@
 <a asp-page="./Detail" asp-route-id="@Model.Id"><button class="btn btn-success">Take me there</button></a>
 }
 else
-{
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+{   
+    <a asp-area="Organisations" asp-page="TermsAndConditions/Detail" 
+                                asp-route-id="@Model.Amphora.OrganisationId" 
+                                asp-route-name="@Model.Amphora.TermsAndConditionsId"
+                                asp-route-returnUrl="@thisUrl">
+    
+        <button class="btn btn-light">Terms and Conditions</button>
+    </a>
 }

@@ -16,20 +16,17 @@ namespace Amphora.Api.Pages.Profile
     {
         private readonly IUserService userService;
         private readonly IAmphoraeService amphoraeService;
-        private readonly IOrganisationService organisationService;
 
-        public DetailModel(IUserService userService, IAmphoraeService amphoraeService, IOrganisationService organisationService)
+        public DetailModel(IUserService userService, IAmphoraeService amphoraeService)
         {
             this.userService = userService;
             this.amphoraeService = amphoraeService;
-            this.organisationService = organisationService;
         }
 
         public ApplicationUser AppUser { get; set; }
 
         public bool IsSelf { get; set; }
         public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
-        public OrganisationModel Organisation { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string userName)
         {
@@ -57,7 +54,6 @@ namespace Amphora.Api.Pages.Profile
                 IsSelf = true;
             }
 
-            this.Organisation = await organisationService.Store.ReadAsync(AppUser.OrganisationId);
             var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == AppUser.Id);
             this.PinnedAmphorae = query.Take(6);
             return Page();
