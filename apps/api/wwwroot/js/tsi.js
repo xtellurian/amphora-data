@@ -46,6 +46,6 @@ function tsi(signals, response) {
     console.log("transformedResult");
     console.log(transformedResult);
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
-    const offset = new Date().getTimezoneOffset();
+    const offset = new Date().getTimezoneOffset() * -1; // unsure why TSI needs this flipped...
     lineChart.render(transformedResult, { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked', offset }, linechartTsqExpressions);
 }
