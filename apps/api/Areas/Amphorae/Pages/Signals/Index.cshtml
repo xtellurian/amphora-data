@@ -21,10 +21,17 @@
             <thead>
                 <tr>
                 <th scope="col">Signal</th>
-                <th> 
-                    <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
-                        <i class="float-right fas fa-plus" data-toggle="tooltip" data-placement="left" title="New Property"></i>
-                    </a>
+                <th>
+                    @if(Model.Amphora.Signals.Count < 5)
+                    {
+                        <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
+                            <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <i class="fas fa-info-circle float-right" data-toggle="tooltip" data-placement="left" title="Only 5 Properties allowed"></i>
+                    }
                 </th>
                 </tr>
             </thead>
@@ -32,7 +39,7 @@
                 @foreach (var n in Model.Signals)
                 {
                 <tr class="signal-item">
-                    <th scope="row">@n.KeyName</th>
+                    <th scope="row">@n.Property</th>
                     <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
                     <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
                 </tr>

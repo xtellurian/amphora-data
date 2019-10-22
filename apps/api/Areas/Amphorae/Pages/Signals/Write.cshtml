@@ -14,8 +14,8 @@
                 @for (var i = 0; i < Model.Values.Count; i++)
                 {
                 <div class="form-group">
-                    <p>@Model.Values[i].KeyName</p>
-                    @Html.HiddenFor(x => x.Values[i].KeyName)
+                    <p>@Model.Values[i].Property</p>
+                    @Html.HiddenFor(x => x.Values[i].Property)
                     @Html.HiddenFor(x => x.Values[i].ValueType)
                     @if(@Model.Values[i].IsNumeric)
                     {
