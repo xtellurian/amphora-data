@@ -31,7 +31,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         public async Task<IActionResult> OnPostAsync(string id)
         {
             await base.LoadAmphoraAsync(id);
-            var signalModel = new SignalModel(Signal.KeyName, Signal.ValueType);
+            var signalModel = new SignalModel(Signal.Property, Signal.ValueType);
             Amphora.AddSignal(signalModel);
             var res = await amphoraeService.UpdateAsync(User, Amphora);
             if(res.Succeeded)

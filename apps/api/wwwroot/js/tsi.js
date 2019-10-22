@@ -4,7 +4,7 @@ function tsi(signals, response) {
 // Id: "key|Numeric"
 // IsNumeric: true
 // IsString: false
-// KeyName: "key"
+// Property: "key"
 // ValueType: "Numeric"
 // ttl: -1
     var scheme = new ColorScheme;
@@ -25,7 +25,7 @@ function tsi(signals, response) {
    
     signals.forEach((sig) => {
         const y = {};
-        y[sig.KeyName] = {};
+        y[sig.Property] = {};
         const x = new tsiClient.ux.TsqExpression(
             {},
             y,
@@ -34,7 +34,7 @@ function tsi(signals, response) {
                 to: endDate
             },
             '#' + colors[count++], // color
-            sig.KeyName); 
+            sig.Property); 
         linechartTsqExpressions.push(x);
     });
 

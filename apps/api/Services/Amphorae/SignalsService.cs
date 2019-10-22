@@ -90,27 +90,27 @@ namespace Amphora.Api.Services.Amphorae
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
-                logger.LogInformation($"Getting Signal KeyName {signal.KeyName} for Amphora Id {entity.Id}");
+                logger.LogInformation($"Getting Signal Property {signal.Property} for Amphora Id {entity.Id}");
                 var variables = new Dictionary<string, Variable>();
                 if (entity.Signals.Count == 0) return default(QueryResultPage);
                 // add the inital key
-                variables.Add(signal.KeyName, new NumericVariable(
-                                        value: new Tsx($"$event.{signal.KeyName}"),
+                variables.Add(signal.Property, new NumericVariable(
+                                        value: new Tsx($"$event.{signal.Property}"),
                                         aggregation: new Tsx("avg($value)")));
 
                 foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
                 {
                     if (s.Signal.IsNumeric) // only numeric signals can be plotted here
                     {
-                        variables.Add(s.Signal.KeyName, new NumericVariable(
-                                        value: new Tsx($"$event.{s.Signal.KeyName}"),
+                        variables.Add(s.Signal.Property, new NumericVariable(
+                                        value: new Tsx($"$event.{s.Signal.Property}"),
                                         aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
                     }
                 }
                 IList<string> projections = null;
                 if (!includeOtherSignals)
                 {
-                    projections = new List<string> { signal.KeyName };
+                    projections = new List<string> { signal.Property };
                 }
                 var start = DateTime.UtcNow.AddDays(-30);
                 var end = DateTime.UtcNow.AddDays(7);

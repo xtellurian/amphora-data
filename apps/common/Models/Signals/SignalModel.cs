@@ -8,17 +8,17 @@ namespace Amphora.Common.Models.Signals
         public static string Numeric => nameof(Numeric);
         public static string String => nameof(String);
         public static string DateTime => nameof(DateTime);
-        public static List<string> Options => new List<string>{Numeric, String};
+        public static List<string> Options => new List<string> { Numeric, String };
 
         public SignalModel()
         {
         }
 
-        public SignalModel(string keyName, string valueType)
+        public SignalModel(string property, string valueType)
         {
-            KeyName = keyName ?? throw new System.ArgumentNullException(nameof(keyName));
+            Property = property ?? throw new System.ArgumentNullException(nameof(property));
 
-            if(string.Equals(valueType, Numeric) || string.Equals(valueType, String) || string.Equals(valueType, DateTime))
+            if (string.Equals(valueType, Numeric) || string.Equals(valueType, String) || string.Equals(valueType, DateTime))
             {
                 ValueType = valueType;
             }
@@ -28,14 +28,22 @@ namespace Amphora.Common.Models.Signals
             }
             CreatedDate = System.DateTime.UtcNow;
 
-            this.Id = $"{KeyName}-{ValueType}";
+            this.Id = $"{Property}-{ValueType}";
         }
 
-        public string KeyName { get; set; }
-        public string ValueType {get;set;}
+        [Obsolete]
+        public string KeyName { get => _keyName; set => _keyName = value; }
+        private string _keyName;
+        public string Property
+        {
+            get => _property ?? _keyName;
+            set => _property = value;
+        }
+        private string _property { get; set; }
+        public string ValueType { get; set; }
 
         public bool IsNumeric => this.ValueType == Numeric;
         public bool IsString => this.ValueType == String;
-        
+
     }
 }

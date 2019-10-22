@@ -72,9 +72,9 @@ namespace Amphora.Tests.Helpers
         {
             return new SignalModel(testName, SignalModel.Numeric);
         }
-        public static SignalDto GetSignalDto(string keyName)
+        public static SignalDto GetSignalDto(string property)
         {
-            return new SignalDto() { KeyName = keyName, ValueType = SignalModel.Numeric };
+            return new SignalDto() { Property = property, ValueType = SignalModel.Numeric };
         }
     }
 }
