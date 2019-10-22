@@ -70,8 +70,6 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-
             logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
             var res = new List<QueryResultPage>();
             if (entity.Signals.Count == 0) return res;
@@ -117,6 +115,29 @@ namespace Amphora.Api.Services.Amphorae
                 var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
                 logger.LogInformation($"Got {res.Properties?.Count} properties from  Amphora Id {entity.Id}");
                 return res;
+            }
+        }
+
+        public async Task<IDictionary<SignalModel, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            {
+                var start = DateTime.UtcNow.AddDays(-30);
+                var end = DateTime.UtcNow.AddDays(7);
+                var stringSignals = entity.Signals.Where(s => s.Signal.IsString);
+                var result = await tsiService.RunGetEventsAsync(new List<object> { entity.Id },
+                    new DateTimeRange(start, end),
+                    stringSignals.Select(s => s.Signal.Property).ToList());
+                var dic = new Dictionary<SignalModel, IEnumerable<string>>();
+
+                foreach (var s in stringSignals)
+                {
+                    var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Signal.Property);
+                    if(p?.Values != null) dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct());
+                }
+                return dic;
             }
         }
 
