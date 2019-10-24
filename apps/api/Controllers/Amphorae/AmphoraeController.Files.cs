@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Amphora.Api.Controllers
+namespace Amphora.Api.Controllers.Amphorae
 {
     public partial class AmphoraeController : Controller
     {

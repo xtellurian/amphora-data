@@ -55,10 +55,15 @@ namespace Amphora.Api.Services.Transactions
                     if (purchase.Price.HasValue)
                     {
                         // debit the account
+                        logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
                         if (org.Account == null) org.Account = new Account();
                         org.Account.DebitAccount($"Purchased Amphora {purchase.AmphoraId}", purchase.Price.Value);
-                        await orgStore.UpdateAsync(org);
+                        org = await orgStore.UpdateAsync(org);
+                    }
+                    else
+                    {
+                        logger.LogWarning($"Amphora {amphora.Id} has no Price.");
                     }
 
                     return new EntityOperationResult<PurchaseModel>(purchase);
@@ -75,6 +80,7 @@ namespace Amphora.Api.Services.Transactions
         public bool HasAgreedToTermsAndConditions(ApplicationUser user, AmphoraModel amphora)
         {
             if (amphora.TermsAndConditionsId == null) return true; // no terms and conditions
+            if (user.OrganisationId == amphora.OrganisationId) return true; // no need to accept your own terms and conditions
             if (user?.Organisation?.TermsAndConditionsAccepted == null) return false;
 
             return user.Organisation.TermsAndConditionsAccepted.Any(t =>
