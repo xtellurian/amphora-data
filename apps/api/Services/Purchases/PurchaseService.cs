@@ -55,10 +55,15 @@ namespace Amphora.Api.Services.Transactions
                     if (purchase.Price.HasValue)
                     {
                         // debit the account
+                        logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
                         if (org.Account == null) org.Account = new Account();
                         org.Account.DebitAccount($"Purchased Amphora {purchase.AmphoraId}", purchase.Price.Value);
-                        await orgStore.UpdateAsync(org);
+                        org = await orgStore.UpdateAsync(org);
+                    }
+                    else
+                    {
+                        logger.LogWarning($"Amphora {amphora.Id} has no Price.");
                     }
 
                     return new EntityOperationResult<PurchaseModel>(purchase);
