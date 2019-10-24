@@ -11,10 +11,11 @@ namespace Amphora.Common.Models.Organisations
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
-
-        // navigation
+        // owned 
+        public virtual Account Account { get; set; }
         public virtual ICollection<Invitation> Invitations { get; set; }
         public virtual ICollection<Membership> Memberships { get; set; }
+        // navigation
         public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; }
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; }
         public string CreatedById { get; set; }
