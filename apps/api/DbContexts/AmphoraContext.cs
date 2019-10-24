@@ -72,8 +72,18 @@ namespace Amphora.Api.DbContexts
                 });
                 b.OwnsOne(_ => _.Account, a =>
                 {
-                    a.OwnsMany(b => b.Credits);
-                    a.OwnsMany(b => b.Debits);
+                    a.OwnsMany(b => b.Credits, c =>
+                    {
+                        c.Property(p => p.Id).ValueGeneratedOnAdd();
+                        c.HasKey(d => d.Id);
+                        c.WithOwner(d => d.Account);
+                    });
+                    a.OwnsMany(b => b.Debits, c =>
+                    {
+                        c.Property(p => p.Id).ValueGeneratedOnAdd();
+                        c.HasKey(d => d.Id);
+                        c.WithOwner(d => d.Account);
+                    });
                 });
             });
 
