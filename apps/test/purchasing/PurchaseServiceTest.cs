@@ -211,7 +211,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var purchase = await sut.PurchaseAmphora(user, amphora);
 
             org = await orgStore.ReadAsync(org.Id); // reload, just in case
-            Assert.Equal(91, org.Account.Balance());
+            Assert.Equal(91, org.Account.Balance);
         }
     }
 }

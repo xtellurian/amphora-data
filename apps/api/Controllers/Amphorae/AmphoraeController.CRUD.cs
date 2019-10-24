@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Amphora.Api.Controllers
+namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiController]
     [Produces("application/json")]
