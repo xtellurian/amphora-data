@@ -53,7 +53,7 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (string.IsNullOrEmpty(model.TermsAndConditionsId))
                 {
-                    var tnc = organisation.TermsAndConditions.FirstOrDefault();
+                    var tnc = organisation.TermsAndConditions?.FirstOrDefault();
                     logger.LogInformation($"Using default terms and conditions: {tnc?.Name}");
                     model.TermsAndConditionsId = tnc?.Name;
                 }
