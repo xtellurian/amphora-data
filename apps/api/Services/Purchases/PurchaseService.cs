@@ -80,6 +80,7 @@ namespace Amphora.Api.Services.Transactions
         public bool HasAgreedToTermsAndConditions(ApplicationUser user, AmphoraModel amphora)
         {
             if (amphora.TermsAndConditionsId == null) return true; // no terms and conditions
+            if (user.OrganisationId == amphora.OrganisationId) return true; // no need to accept your own terms and conditions
             if (user?.Organisation?.TermsAndConditionsAccepted == null) return false;
 
             return user.Organisation.TermsAndConditionsAccepted.Any(t =>
