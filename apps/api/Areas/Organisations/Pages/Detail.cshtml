@@ -39,7 +39,7 @@
                     Balance
                 </div>
                 <div class="card-body">
-                    @(Model.Organisation.Account?.Balance() ?? 0)
+                    @(Model.Organisation.Account?.Balance ?? 0)
                 </div>
             </div>
             }

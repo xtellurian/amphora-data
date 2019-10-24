@@ -7,7 +7,9 @@ namespace Amphora.Common.Models.Organisations
     {
         public virtual ICollection<Credit> Credits { get; set; }
         public virtual ICollection<Debit> Debits { get; set; }
-        public double? Balance()
+        public double? Balance => GetBalance();
+
+        public double? GetBalance()
         {
             var credit = this.Credits?.Sum(c => c.Amount) ?? 0;
             var debit = this.Debits?.Sum(d => d.Amount) ?? 0;

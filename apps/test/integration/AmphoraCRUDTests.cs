@@ -133,7 +133,7 @@ namespace Amphora.Tests.Integration
             createResponse.EnsureSuccessStatusCode();
             dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
 
-            var purchaseResponse = await adminClient.PostAsync($"api/market/purchase?id={dto.Id}", null);
+            var purchaseResponse = await adminClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
             purchaseResponse.EnsureSuccessStatusCode();
 
             var readResponse = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
