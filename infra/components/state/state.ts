@@ -200,7 +200,7 @@ export class State extends pulumi.ComponentResource {
       "amphoradhns",
       {
         capacity: 1,
-        kafkaEnabled: false,
+        kafkaEnabled: true, // seems to be always enabled now
         location: rg.location,
         resourceGroupName: rg.name,
         sku: "Standard",
@@ -314,14 +314,14 @@ export class State extends pulumi.ComponentResource {
               enabled: false,
             },
           },
-          {
-            category: "ControlPlaneRequests",
-            enabled: false,
-            retentionPolicy: {
-              days: 0,
-              enabled: false,
-            },
-          },
+          // {
+          //   category: "ControlPlaneRequests",
+          //   enabled: false,
+          //   retentionPolicy: {
+          //     days: 0,
+          //     enabled: false,
+          //   },
+          // },
           {
             category: "MongoRequests",
             enabled: false,
