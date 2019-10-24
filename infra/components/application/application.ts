@@ -120,26 +120,26 @@ export class Application extends pulumi.ComponentResource
 
     const subId = CONSTANTS.authentication.subscriptionId;
     // tslint:disable-next-line: max-line-length
-    const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
-    const appRole = new azure.role.Assignment("appRole",
-      {
-        principalId: CONSTANTS.authentication.spObjectId,
-        roleDefinitionId: roleId,
-        scope: this.AzureMaps.maps.id,
-      },
-      {
-        parent: this,
-      });
+    // const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
+    // const appRole = new azure.role.Assignment("appRole",
+    //   {
+    //     principalId: CONSTANTS.authentication.spObjectId,
+    //     roleDefinitionId: roleId,
+    //     scope: this.AzureMaps.maps.id,
+    //   },
+    //   {
+    //     parent: this,
+    //   });
 
-    const rianRole = new azure.role.Assignment("rianRole",
-      {
-        principalId: CONSTANTS.authentication.rian,
-        roleDefinitionId: roleId,
-        scope: this.AzureMaps.maps.id,
-      },
-      {
-        parent: this,
-      });
+    // const rianRole = new azure.role.Assignment("rianRole",
+    //   {
+    //     principalId: CONSTANTS.authentication.rian,
+    //     roleDefinitionId: roleId,
+    //     scope: this.AzureMaps.maps.id,
+    //   },
+    //   {
+    //     parent: this,
+    //   });
 
     this.state.storeInVault("AzureMapsKey", "AzureMaps--Key", this.AzureMaps.maps.primaryAccessKey);
     this.state.storeInVault("AzureMapsClientId", "AzureMaps--ClientId", this.AzureMaps.maps.xMsClientId);
