@@ -36,6 +36,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public bool CanInvite { get; private set; }
         public bool CanAcceptInvite { get; private set; }
         public bool CanViewMembers { get; private set; }
+        public bool CanViewBalance { get; private set; }
         public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -54,7 +55,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
 
             this.CanViewMembers = this.Organisation.IsInOrgansation(user);
-
+            this.CanViewBalance = CanViewMembers;
             this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
             if (this.Organisation.Invitations != null)

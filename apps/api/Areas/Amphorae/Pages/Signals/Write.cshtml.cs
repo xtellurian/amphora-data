@@ -32,7 +32,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 this.Values = new List<SignalValueDto>();
                 foreach (var s in signals)
                 {
-                    this.Values.Add(new SignalValueDto(s.KeyName, s.ValueType));
+                    this.Values.Add(new SignalValueDto(s.Property, s.ValueType));
                 }
                 this.Values.Add(new SignalValueDto("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
             }
@@ -48,10 +48,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 var values = new Dictionary<string, object>();
                 foreach (var s in Amphora.Signals)
                 {
-                    var dto = Values.FirstOrDefault(d => d.KeyName == s.Signal.KeyName); // d.keyname is null (not bound?)
+                    var dto = Values.FirstOrDefault(d => d.Property == s.Signal.Property); // d.Property is null (not bound?)
                     if (dto == null) continue;
-                    if (dto.IsNumeric) values.Add(s.Signal.KeyName, dto.NumericValue);
-                    else if (dto.IsString) values.Add(s.Signal.KeyName, dto.StringValue);
+                    if (dto.IsNumeric) values.Add(s.Signal.Property, dto.NumericValue);
+                    else if (dto.IsString) values.Add(s.Signal.Property, dto.StringValue);
                 }
                 if(Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.HasValue ?? false)
                 {

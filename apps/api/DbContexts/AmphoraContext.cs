@@ -70,6 +70,11 @@ namespace Amphora.Api.DbContexts
                     a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
                     a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
                 });
+                b.OwnsOne(_ => _.Account, a =>
+                {
+                    a.OwnsMany(b => b.Credits);
+                    a.OwnsMany(b => b.Debits);
+                });
             });
 
             modelBuilder.Entity<PurchaseModel>(b =>

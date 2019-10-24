@@ -48,7 +48,7 @@ namespace Amphora.Api.Controllers
         {
             try
             {
-                var signal = new SignalModel(dto.KeyName, dto.ValueType);
+                var signal = new SignalModel(dto.Property, dto.ValueType);
                 var result = await amphoraeService.ReadAsync(User, id, true);
                 if (result.Succeeded)
                 {

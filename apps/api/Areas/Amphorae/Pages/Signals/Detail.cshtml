@@ -2,37 +2,61 @@
 @model Amphora.Api.Areas.Amphorae.Pages.Signals.DetailModel
 
 @{
-    ViewData["Title"] = Model.Amphora.Name + " " + Model.Signal.KeyName;
+    ViewData["Title"] = Model.Amphora.Name + " " + Model.Signal.Property;
 }
 
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
-            <span>
-                <h2>@Model.Amphora.Name : @Model.Signals.FirstOrDefault().KeyName</h2>
+            <div class="m-2">
                 <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">All Signals</button></a>
-            </span>
+                <h2>@Model.Amphora.Name : @Model.Signals.FirstOrDefault()?.Property</h2>
+            </div>
+            @if(Model.Values != null)
+            {
+                <div class="card m-2">
+                    <div class="card-header">
+                        The signal has the following possibilities:
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                        @foreach(var v in Model.Values)
+                        {
+                            <li> @v </li>
+                        }
+                        </ul>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p>This signal has no values...</p>
+            }
         </div>
     </div>
-
+    @if(Model.Signal.IsNumeric)
+    {
     <div class="row">
         <div class="col">
-            <small>This week</small>
+            <small>Chart</small>
         </div>
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
     </div>
+    }
 </div>
 
 
 @section Scripts {
     <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+    @if(Model.Signal.IsNumeric)
+    {
     <script src="~/js/tsi.js"></script>
-
     <script>
         var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals.Where(s => s.IsNumeric)));
         var response = @Html.Raw(@Model.QueryResponse);
         tsi(cols, response)
     </script>
+    }
 
      <script>
         $(function () {

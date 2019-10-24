@@ -57,6 +57,7 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     values["amphora"] = entity.Id;
                     if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
+                    if (!values.ContainsKey("wt")) values.Add("wt", DateTime.UtcNow);
                     await SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(values);
                 }
@@ -69,8 +70,6 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-
             logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
             var res = new List<QueryResultPage>();
             if (entity.Signals.Count == 0) return res;
@@ -89,33 +88,56 @@ namespace Amphora.Api.Services.Amphorae
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
-                logger.LogInformation($"Getting Signal KeyName {signal.KeyName} for Amphora Id {entity.Id}");
+                logger.LogInformation($"Getting Signal Property {signal.Property} for Amphora Id {entity.Id}");
                 var variables = new Dictionary<string, Variable>();
                 if (entity.Signals.Count == 0) return default(QueryResultPage);
                 // add the inital key
-                variables.Add(signal.KeyName, new NumericVariable(
-                                        value: new Tsx($"$event.{signal.KeyName}"),
+                variables.Add(signal.Property, new NumericVariable(
+                                        value: new Tsx($"$event.{signal.Property}"),
                                         aggregation: new Tsx("avg($value)")));
 
                 foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
                 {
                     if (s.Signal.IsNumeric) // only numeric signals can be plotted here
                     {
-                        variables.Add(s.Signal.KeyName, new NumericVariable(
-                                        value: new Tsx($"$event.{s.Signal.KeyName}"),
+                        variables.Add(s.Signal.Property, new NumericVariable(
+                                        value: new Tsx($"$event.{s.Signal.Property}"),
                                         aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
                     }
                 }
                 IList<string> projections = null;
                 if (!includeOtherSignals)
                 {
-                    projections = new List<string> { signal.KeyName };
+                    projections = new List<string> { signal.Property };
                 }
                 var start = DateTime.UtcNow.AddDays(-30);
                 var end = DateTime.UtcNow.AddDays(7);
                 var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
                 logger.LogInformation($"Got {res.Properties?.Count} properties from  Amphora Id {entity.Id}");
                 return res;
+            }
+        }
+
+        public async Task<IDictionary<SignalModel, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            {
+                var start = DateTime.UtcNow.AddDays(-30);
+                var end = DateTime.UtcNow.AddDays(7);
+                var stringSignals = entity.Signals.Where(s => s.Signal.IsString);
+                var result = await tsiService.RunGetEventsAsync(new List<object> { entity.Id },
+                    new DateTimeRange(start, end),
+                    stringSignals.Select(s => s.Signal.Property).ToList());
+                var dic = new Dictionary<SignalModel, IEnumerable<string>>();
+
+                foreach (var s in stringSignals)
+                {
+                    var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Signal.Property);
+                    if(p?.Values != null) dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct());
+                }
+                return dic;
             }
         }
 

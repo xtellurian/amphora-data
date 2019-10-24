@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Amphora.Common.Models.Signals;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
@@ -10,12 +9,12 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         {
         }
 
-        public SignalValueDto(string keyName, string valueType): this()
+        public SignalValueDto(string property, string valueType): this()
         {
-            KeyName = keyName;
+            Property = property;
             ValueType = valueType;
         }
-        public string KeyName { get; set; }
+        public string Property { get; set; }
         public string ValueType { get; set; }
         public double NumericValue { get; set; }
         public string StringValue { get; set; }

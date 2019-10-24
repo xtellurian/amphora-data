@@ -1,0 +1,24 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Signals.DeleteModel
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+
+                <div class="card-header m-2">
+                    <h2>Do you want to delete the property <em>@Model.Signal.Signal.Property </em> from @Model.Amphora.Name ?</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@Model.Signal.SignalId">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <input type="submit" value="Delete" class="btn btn-danger btn-block" />
+                        </div>
+                    </form>
+                    <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-secondary btn-block">Cancel</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

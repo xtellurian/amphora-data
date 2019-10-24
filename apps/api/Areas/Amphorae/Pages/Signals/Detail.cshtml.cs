@@ -23,6 +23,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         public List<SignalModel> Signals => new List<SignalModel>{Signal};
         public SignalModel Signal { get; private set; }
         public string QueryResponse { get; private set; }
+        public IEnumerable<string> Values { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
         {
@@ -31,6 +32,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             if (Amphora != null)
             {
                 Signal = this.Amphora.Signals?.FirstOrDefault(s => s.SignalId == signalId)?.Signal;
+                if(Signal.IsString)
+                {
+                    var uniqueValues = await signalService.GetUniqueValuesForStringProperties(User, Amphora);
+                    if(uniqueValues.TryGetValue(Signal, out var values))
+                    {
+                        this.Values = values;
+                    }
+                }
                 QueryResponse = await GetQueryResponse();
             }
 

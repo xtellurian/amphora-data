@@ -16,17 +16,20 @@ namespace Amphora.Api.Services.Transactions
     public class PurchaseService : IPurchaseService
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
         private readonly ILogger<PurchaseService> logger;
 
         public PurchaseService(
             IEntityStore<PurchaseModel> purchaseStore,
+            IEntityStore<OrganisationModel> orgStore,
             IUserService userService,
             IEmailSender emailSender,
             ILogger<PurchaseService> logger)
         {
             this.purchaseStore = purchaseStore;
+            this.orgStore = orgStore;
             this.userService = userService;
             this.emailSender = emailSender;
             this.logger = logger;
@@ -34,6 +37,7 @@ namespace Amphora.Api.Services.Transactions
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
         {
+            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>("User has no organisation");
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
                 var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
@@ -48,6 +52,15 @@ namespace Amphora.Api.Services.Transactions
                     var purchase = new PurchaseModel(user, amphora);
                     purchase = await purchaseStore.CreateAsync(purchase);
                     await SendPurchaseConfimationEmail(purchase);
+                    if (purchase.Price.HasValue)
+                    {
+                        // debit the account
+                        var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
+                        if (org.Account == null) org.Account = new Account();
+                        org.Account.DebitAccount($"Purchased Amphora {purchase.AmphoraId}", purchase.Price.Value);
+                        await orgStore.UpdateAsync(org);
+                    }
+
                     return new EntityOperationResult<PurchaseModel>(purchase);
                 }
             }
@@ -61,8 +74,8 @@ namespace Amphora.Api.Services.Transactions
         }
         public bool HasAgreedToTermsAndConditions(ApplicationUser user, AmphoraModel amphora)
         {
-            if(user?.Organisation?.TermsAndConditionsAccepted == null) return false;
-            if(amphora.TermsAndConditionsId == null) return true; // no terms and conditions
+            if (user?.Organisation?.TermsAndConditionsAccepted == null) return false;
+            if (amphora.TermsAndConditionsId == null) return true; // no terms and conditions
 
             return user.Organisation.TermsAndConditionsAccepted.Any(t =>
                 t.TermsAndConditionsOrganisationId == amphora.OrganisationId

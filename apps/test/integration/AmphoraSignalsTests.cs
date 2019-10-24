@@ -32,8 +32,8 @@ namespace Amphora.Tests.Integration
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var keyName = generator.RandomString(10);
-            var signalDto = EntityLibrary.GetSignalDto(keyName);
+            var property = generator.RandomString(10);
+            var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();

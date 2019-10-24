@@ -75,7 +75,7 @@ export class AppSvc extends pulumi.ComponentResource {
             Registration__Token: "AmphoraData",
             STACK: pulumi.getStack(),
             WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
-            WEBSITES_PORT: 80,
+            WEBSITES_PORT: "80",
             kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
             kvUri: kv.vaultUri,
         };
