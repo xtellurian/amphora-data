@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Amphora.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,11 +85,13 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 Models.EntityOperationResult<byte[]> fileResult;
-                if(content != null && content.Length > 0)
+                if (content != null && content.Length > 0)
                 {
-                    using (var s = content.OpenReadStream())
+                    using (var stream = new MemoryStream())
                     {
-                        fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await s.ReadFullyAsync(), file);
+                        await content.CopyToAsync(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await stream.ReadFullyAsync(), file);
                     }
                 }
                 else
