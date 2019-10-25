@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Stores.EFCore
 {
-    public class PurchaseEFStore : IEntityStore<PurchaseModel>
+    public class PurchaseEFStore : EFStoreBase, IEntityStore<PurchaseModel>
     {
         private readonly AmphoraContext context;
 
@@ -57,6 +57,7 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task<PurchaseModel> UpdateAsync(PurchaseModel entity)
         {
+            base.OnUpdateEntity(entity);
             var o = context.Purchases.Update(entity);
             await context.SaveChangesAsync();
             return o.Entity;
