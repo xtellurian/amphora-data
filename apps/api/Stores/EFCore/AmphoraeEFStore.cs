@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Stores.EFCore
 {
-    public class AmphoraeEFStore : IEntityStore<AmphoraModel>
+    public class AmphoraeEFStore : EFStoreBase, IEntityStore<AmphoraModel>
     {
         private readonly AmphoraContext context;
 
@@ -93,6 +93,7 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task<AmphoraModel> UpdateAsync(AmphoraModel entity)
         {
+            base.OnUpdateEntity(entity);
             await context.SaveChangesAsync();
             var existing = await context.Amphorae.SingleOrDefaultAsync(a => a.Id == entity.Id);
             return existing;

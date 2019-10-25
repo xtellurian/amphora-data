@@ -13,7 +13,7 @@ namespace Amphora.Common.Models
         public string Id { get; set; }
 
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
-        public int? ttl { get; set; }
+        public int? ttl { get; set; } = -1; // don't expire
         public DateTime? CreatedDate {get; set; }
 
     }

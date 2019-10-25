@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Amphora.Api.Options;
-using Microsoft.OpenApi.Models;
 using Amphora.Api.Services;
 using Amphora.Api.StartupModules;
 using Amphora.Api.Services.Amphorae;
@@ -15,8 +14,9 @@ using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.Transactions;
-using System.Reflection;
-using System;
+using NSwag;
+using NSwag.Generation.Processors.Security;
+using System.Linq;
 
 namespace Amphora.Api
 {
@@ -108,35 +108,25 @@ namespace Amphora.Api
             }
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
-
-            services.AddSwaggerGen(c =>
+            services.AddOpenApiDocument(document => // add OpenAPI v3 document
             {
-                c.AddSecurityDefinition("token", new OpenApiSecurityScheme
+                document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
-                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
-                    In = ParameterLocation.Header,
+                    Type = OpenApiSecuritySchemeType.ApiKey,
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Bearer {your JWT token}."
                 });
-                c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Amphora Data Api",
-                    Description = "API for interacting with the Amphora Data platform.",
-                    Contact = new OpenApiContact()
-                    {
-                        Email = "rian@amphoradata.com",
-                        Name = "Rian Finnegan",
-                        Url = new Uri("https://amphoradata.com")
-                    },
-                    Version = "0.0.2"
-                });
-                c.IncludeXmlComments(xmlPath);
-            });
 
+                
+                document.OperationProcessors.Add(
+                    new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
+
+                document.Description = "API for interacting with the Amphora Data platform.";
+                document.Title = "Amphora Data Api";
+                document.Version = "0.1.0";
+
+            });
         }
 
 
@@ -165,15 +155,12 @@ namespace Amphora.Api
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
+            app.UseOpenApi(); // serve OpenAPI/Swagger documents
+            app.UseSwaggerUi3( settings => 
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmphoraApi");
-            });
+
+            }); // serve Swagger UI
+            app.UseReDoc(); // serve ReDoc UI
 
 
             app.UseAuthentication();
