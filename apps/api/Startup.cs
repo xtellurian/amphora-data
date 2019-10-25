@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Amphora.Api.Options;
-using Microsoft.OpenApi.Models;
 using Amphora.Api.Services;
 using Amphora.Api.StartupModules;
 using Amphora.Api.Services.Amphorae;
@@ -112,30 +111,32 @@ namespace Amphora.Api
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.AddSecurityDefinition("token", new OpenApiSecurityScheme
-                {
-                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
-                });
-                c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Amphora Data Api",
-                    Description = "API for interacting with the Amphora Data platform.",
-                    Contact = new OpenApiContact()
-                    {
-                        Email = "rian@amphoradata.com",
-                        Name = "Rian Finnegan",
-                        Url = new Uri("https://amphoradata.com")
-                    },
-                    Version = "0.0.2"
-                });
-                c.IncludeXmlComments(xmlPath);
-            });
+            services.AddOpenApiDocument(); // add OpenAPI v3 document
+
+            // services.AddSwaggerGen(c =>
+            // {
+            //     c.AddSecurityDefinition("token", new OpenApiSecurityScheme
+            //     {
+            //         Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+            //         In = ParameterLocation.Header,
+            //         Name = "Authorization",
+            //         Type = SecuritySchemeType.ApiKey
+            //     });
+            //     c.OperationFilter<Swagger.SecurityRequirementsOperationFilter>();
+            //     c.SwaggerDoc("v1", new OpenApiInfo
+            //     {
+            //         Title = "Amphora Data Api",
+            //         Description = "API for interacting with the Amphora Data platform.",
+            //         Contact = new OpenApiContact()
+            //         {
+            //             Email = "rian@amphoradata.com",
+            //             Name = "Rian Finnegan",
+            //             Url = new Uri("https://amphoradata.com")
+            //         },
+            //         Version = "0.0.2"
+            //     });
+            //     c.IncludeXmlComments(xmlPath);
+            // });
 
         }
 
@@ -165,15 +166,19 @@ namespace Amphora.Api
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseOpenApi(); // serve OpenAPI/Swagger documents
+            app.UseSwaggerUi3(); // serve Swagger UI
+            app.UseReDoc(); // serve ReDoc UI
+            
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
+            // app.UseSwagger();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmphoraApi");
-            });
+            // // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // // specifying the Swagger JSON endpoint.
+            // app.UseSwaggerUI(c =>
+            // {
+            //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmphoraApi");
+            // });
 
 
             app.UseAuthentication();

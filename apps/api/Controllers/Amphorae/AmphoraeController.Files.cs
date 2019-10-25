@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -74,14 +75,26 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         /// <param name="file">The name of the file</param> 
+        /// <param name="content">The content of the filex</param> 
         [HttpPut("api/amphorae/{id}/files/{file}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadToAmphora(string id, string file)
+        public async Task<IActionResult> UploadToAmphora(string id, string file, IFormFile content)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
-                var fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);
+                Models.EntityOperationResult<byte[]> fileResult;
+                if(content != null && content.Length > 0)
+                {
+                    using (var s = content.OpenReadStream())
+                    {
+                        fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await s.ReadFullyAsync(), file);
+                    }
+                }
+                else
+                {
+                    fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);
+                }
                 if (fileResult.Succeeded)
                 {
                     return Ok();
