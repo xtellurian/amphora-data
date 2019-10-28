@@ -25,16 +25,16 @@ namespace Amphora.Common.Models.Amphorae
         public virtual OrganisationModel Organisation { get; set; }
         public string CreatedById { get; set; }
         public virtual ApplicationUser CreatedBy { get; set; }
-        public virtual ICollection<AmphoraSignalModel> Signals {get;set;}
+        public virtual ICollection<AmphoraSignalModel> Signals { get; set; }
         public virtual ICollection<PurchaseModel> Purchases { get; set; }
-        public string TermsAndConditionsId {get;set;}
+        public string TermsAndConditionsId { get; set; }
         public TermsAndConditionsModel TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Name == TermsAndConditionsId);
 
         // methods
         public void AddSignal(SignalModel signal)
         {
-            if(Signals == null) Signals = new List<AmphoraSignalModel>();
-            if(Signals.Count >=5 )
+            if (Signals == null) Signals = new List<AmphoraSignalModel>();
+            if (Signals.Count >= 5)
             {
                 throw new System.ArgumentException("Only 5 Signals per Amphora at this time");
             }
