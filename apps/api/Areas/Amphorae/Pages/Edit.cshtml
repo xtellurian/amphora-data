@@ -57,8 +57,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
     <script src="~/js/geo.js"></script>
     <script>
-        const token = ''; // not needed, uses cookie w/ page
         const url = '/Market/LocationSearch'
-        autocompleteGeoSearch(token, url, "#lat", "#lon")
+        autocompleteGeoSearch(null, url, "#lat", "#lon")
     </script>
 }
