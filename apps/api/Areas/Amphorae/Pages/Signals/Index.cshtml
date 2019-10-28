@@ -62,7 +62,9 @@
     <script>
         var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal).Where(s => s.IsNumeric)));
         var response = @Html.Raw(@Model.QueryResponse);
-        tsi(cols, response)
+        //tsi(cols, response)
+        var id = '@Model.Amphora.Id';
+        tsi(id, cols).then(() => console.log('gday   '))
     </script>
 
      <script>

@@ -36,6 +36,21 @@ namespace Amphora.Api.Services.Azure
             this.client = await GetTimeSeriesInsightsClientAsync();
         }
 
+        public async Task<QueryResultPage> RunQueryAsync(QueryRequest query)
+        {
+            await InitAsync();
+            string continuationToken;
+            QueryResultPage queryResponse;
+            do
+            {
+                // this method will return everything in ONE set (one graphed line). to split, call it twice
+                queryResponse = await client.ExecuteQueryPagedAsync(query);
+                continuationToken = queryResponse.ContinuationToken;
+            }
+            while (continuationToken != null);
+            return queryResponse;
+        }
+
         public async Task<QueryResultPage> RunGetEventsAsync(IList<object> ids,
                                                             DateTimeRange span,
                                                             IList<string> properties = null)

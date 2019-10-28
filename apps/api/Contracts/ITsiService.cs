@@ -11,5 +11,6 @@ namespace Amphora.Api.Contracts
                                                 IDictionary<string, Variable> variables,
                                                 DateTimeRange span,
                                                 IList<string> projections = null);
+        Task<QueryResultPage> RunQueryAsync(QueryRequest query);
     }
 }
