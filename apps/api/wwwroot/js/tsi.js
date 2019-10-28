@@ -3,25 +3,17 @@ async function tsi(id, signals) {
 
 
     var tsiClient = new TsiClient();
-    var startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-    endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7);
-
-    var linechartTsqExpressions = await getLineChartExpressions(tsiClient, signals, startDate, endDate);
-
-
-    const url = window.location.host + "/api"
-    console.log(url)
-    var result = await tsiClient.server.getTsqResults("token", url, linechartTsqExpressions.map(function (ae) {
-        return ae.toTsq()
-    }))
-    var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
+    var rangeStart = new Date();
+    rangeStart.setDate(rangeStart.getDate() - 30);
+    var rangeEnd = new Date();
+    rangeEnd.setDate(rangeEnd.getDate() + 7);
 
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
     var availability = new tsiClient.ux.AvailabilityChart(document.getElementById('availability'));
 
-    var brushMoveEndAction = async (from, to, timezone) => {
+    // ON RENDER
+    var renderLineGraph = async (from, to, timezone) => {
+
         var linechartTsqExpressions = await getLineChartExpressions(tsiClient, signals, from, to);
 
         const url = window.location.host + "/api"
@@ -29,48 +21,50 @@ async function tsi(id, signals) {
             return ae.toTsq()
         }))
         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-
         var today = (new Date()).toISOString();
-        var statesOrEvents = [
-            {"Component States" : // This key is shown in the legend
-                [
+
+        // copied
+        var events = [
+            {
+                "Today": [
                     {
-                        [today] : {
-                            'color': '#D869CB',
-                            'description' : 'Now'
+                        [today]: {
+                            'color': '#08172e',
+                            'description': 'Now'
                         }
                     }
                 ]
             }
         ];
 
-        //transformedResult.push(statesOrEvents)
-        // linechartTsqExpressions.push({dataType: 'events', height: 50, eventElementType: 'teardrop'},)
         lineChart.render(transformedResult,
             {
                 theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked',
                 noAnimate: true, includeDots: true, offset: timezone,
-                includeEnvelope: true, dateLocale: 'en-AU', //events: statesOrEvents
+                includeEnvelope: true, dateLocale: 'en-AU', events: events,
             },
             linechartTsqExpressions);
 
     }
 
     availability.render([{ availabilityCount: { "": {} } }],
-        { legend: 'hidden', theme: 'light', color: 'red', brushMoveEndAction: brushMoveEndAction, offset: 'Local', isCompact: true },
+        { legend: 'hidden', theme: 'light', color: 'red', brushMoveEndAction: renderLineGraph, offset: 'Local', isCompact: true },
         {
             range:
             {
-                from: startDate.toISOString(),
-                to: endDate.toISOString()
+                from: rangeStart.toISOString(),
+                to: rangeEnd.toISOString()
             },
             intervalSize: '1h'
         }
     );
 
-    // render empty
-    lineChart.render(transformedResult,
-        { theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked', offset: 'Local' });
+    var initialStart = new Date();
+    initialStart.setDate(initialStart.getDate() - 5);
+    var initialEnd = new Date();
+    initialEnd.setDate(initialEnd.getDate() + 2);
+    renderLineGraph(initialStart, initialEnd, 'Local')
+    availability.setBrush(initialStart.valueOf(), initialEnd.valueOf(), true)
 }
 
 async function getLineChartExpressions(tsiClient, signals, from, to) {

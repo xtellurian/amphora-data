@@ -57,7 +57,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://unpkg.com/tsiclient@1.2.24/tsiclient.js"></script>
+    <script src="https://unpkg.com/tsiclient@1.2.61/tsiclient.js"></script>
     <script src="~/js/tsi.js"></script>
 
     <script>
@@ -65,7 +65,7 @@
         var response = @Html.Raw(@Model.QueryResponse);
         //tsi(cols, response)
         var id = '@Model.Amphora.Id';
-        tsi(id, cols).then(() => console.log('gday   '))
+        tsi(id, cols).then(() => console.log('TSI Loaded'))
     </script>
 
      <script>
