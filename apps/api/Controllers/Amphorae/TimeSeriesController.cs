@@ -50,9 +50,18 @@ namespace Amphora.Api.Controllers.Amphorae
         {
             var user = await userService.ReadUserModelAsync(User);
             var ids = new List<string>();
-            ids.AddRange(query.AggregateSeries.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
-            ids.AddRange(query.GetEvents.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
-            ids.AddRange(query.GetSeries.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
+            if (query.AggregateSeries?.TimeSeriesId != null)
+            {
+                ids.AddRange(query.AggregateSeries?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
+            }
+            if (query.GetEvents?.TimeSeriesId != null)
+            {
+                ids.AddRange(query.GetEvents?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
+            }
+            if (query.GetSeries?.TimeSeriesId != null)
+            {
+                ids.AddRange(query.GetSeries?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
+            }
 
             foreach (var id in ids)
             {
@@ -61,7 +70,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     // all good
                 }
-                else if(res.WasForbidden)
+                else if (res.WasForbidden)
                 {
                     return StatusCode(403);
                 }
