@@ -20,7 +20,8 @@
         <table id="signal-table" class="table">
             <thead>
                 <tr>
-                <th scope="col">Signal</th>
+                <th scope="col">Property</th>
+                <th>Filters</th>
                 <th>
                     @if(Model.Amphora.Signals.Count < 5)
                     {
@@ -40,6 +41,17 @@
                 {
                 <tr class="signal-item">
                     <th scope="row">@n.Property</th>
+                    <td>
+                        @if(n.IsString) 
+                        {
+                            <div class="input-group">
+                                <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="left" title="Match this value">
+                                <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input');" >
+                                    Filter
+                                </button>
+                            </div>
+                        }
+                    </td>
                     <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
                     <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
                 </tr>
@@ -48,8 +60,8 @@
         </table>
     </div>
     <div class="row">
-        <div class="col">
-            <small>Chart</small>
+        <div id="loader" class="spinner-grow" role="status" style="margin: 0 auto;";>
+            <span class="sr-only">Loading...</span>
         </div>
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
         <div id="availability" style="width: 100%; height: 160px; z-index:1;"></div>
@@ -61,11 +73,37 @@
     <script src="~/js/tsi.js"></script>
 
     <script>
+        function loading(show) {
+            var x = document.getElementById("loader");
+            if (show) {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        } 
+
+        var filters = {};
         var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal).Where(s => s.IsNumeric)));
-        var response = @Html.Raw(@Model.QueryResponse);
-        //tsi(cols, response)
         var id = '@Model.Amphora.Id';
-        tsi(id, cols).then(() => console.log('TSI Loaded'))
+        var render = null
+        loading(true)
+        tsi(id, cols, filters).then((r) => {
+            console.log('TSI Loaded');
+            render = r;
+            loading(false)
+            })
+        // todo set filters
+
+        function setFilterValue(elementId){
+            loading(true)
+            // Selecting the input element and get its value 
+            var filterVal = document.getElementById(elementId).value;
+            var property = elementId.replace("-input", "");
+            filters[property] = filterVal
+            // Displaying the value
+            if(render) render().then(() => loading(false))
+        }
+
     </script>
 
      <script>

@@ -1,7 +1,7 @@
+// returns a function to render
+async function tsi(id, signals, filters) {
 
-async function tsi(id, signals) {
-
-
+    // filters should be a dictionary with propertyName: tsx value
     var tsiClient = new TsiClient();
     var rangeStart = new Date();
     rangeStart.setDate(rangeStart.getDate() - 30);
@@ -11,10 +11,22 @@ async function tsi(id, signals) {
     var lineChart = new tsiClient.ux.LineChart(document.getElementById('chart'));
     var availability = new tsiClient.ux.AvailabilityChart(document.getElementById('availability'));
 
+    // defaults
+    var start = new Date();
+    start.setDate(start.getDate() - 5);
+    var end = new Date();
+    end.setDate(end.getDate() + 2);
+
     // ON RENDER
     var renderLineGraph = async (from, to, timezone) => {
 
-        var linechartTsqExpressions = await getLineChartExpressions(tsiClient, signals, from, to);
+        if (!from) from = start;
+        else start = from; // cache
+        if (!to) to = end;
+        else end = to; // cache
+        if (!timezone) timezone = 'Local'
+
+        var linechartTsqExpressions = await getLineChartExpressions(tsiClient, id, signals, filters, from, to);
 
         const url = window.location.host + "/api"
         var result = await tsiClient.server.getTsqResults("token", url, linechartTsqExpressions.map(function (ae) {
@@ -59,21 +71,36 @@ async function tsi(id, signals) {
         }
     );
 
-    var initialStart = new Date();
-    initialStart.setDate(initialStart.getDate() - 5);
-    var initialEnd = new Date();
-    initialEnd.setDate(initialEnd.getDate() + 2);
-    renderLineGraph(initialStart, initialEnd, 'Local')
-    availability.setBrush(initialStart.valueOf(), initialEnd.valueOf(), true)
+    renderLineGraph(start, end, 'Local')
+    availability.setBrush(start.valueOf(), end.valueOf(), true)
+
+    return renderLineGraph;
 }
 
-async function getLineChartExpressions(tsiClient, signals, from, to) {
+async function getLineChartExpressions(tsiClient, id, signals, filters, from, to) {
     var scheme = new ColorScheme;
     scheme.from_hue(signals.length)
         .scheme('triade')
         .variation('soft');
     var colors = scheme.colors();
-    let count = 0;
+    let colourCount = 0;
+
+    var tsx = "";
+    var k = 0;
+    if(filters) {
+        Object.keys(filters).forEach(key => {
+            tsx += `($event.${key}.String = '${filters[key]}')`;
+            k++;
+            if (k < Object.keys(filters).length) {
+                tsx += " OR "
+            }
+        });
+    }
+
+    var filter = null;
+    if(tsx.length > 0) {
+        filter = { tsx }
+    }
 
     var linechartTsqExpressions = [];
     signals.forEach((sig) => {
@@ -81,14 +108,14 @@ async function getLineChartExpressions(tsiClient, signals, from, to) {
         y[sig.Property] = {
             kind: 'numeric',
             value: { tsx: `$event.${sig.Property}` },
-            filter: null,
+            filter,
             aggregation: { tsx: 'avg($value)' }
         };
         const x = new tsiClient.ux.TsqExpression(
             { timeSeriesId: [id] },
             y,
             { from, to, bucketSize: '6h' },
-            '#' + colors[count++], // color
+            '#' + colors[colourCount++], // color
             sig.Property);
 
         linechartTsqExpressions.push(x);
