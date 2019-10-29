@@ -17,6 +17,7 @@ using Amphora.Api.Services.Transactions;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
+using Amphora.Api.Converters;
 
 namespace Amphora.Api
 {
@@ -98,7 +99,12 @@ namespace Amphora.Api
                 {
                 })
                 //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters.Add(new TimespanConverter());
+                    options.SerializerSettings.Converters.Add(new TsiVariableConverter());
+                });
             }
             else
             {
@@ -118,7 +124,7 @@ namespace Amphora.Api
                     Description = "Bearer {your JWT token}."
                 });
 
-                
+
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
@@ -156,10 +162,10 @@ namespace Amphora.Api
             app.UseCookiePolicy();
 
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
-            app.UseSwaggerUi3( settings => 
-            {
+            app.UseSwaggerUi3(settings =>
+           {
 
-            }); // serve Swagger UI
+           }); // serve Swagger UI
             app.UseReDoc(); // serve ReDoc UI
 
 
