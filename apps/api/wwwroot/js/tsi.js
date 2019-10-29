@@ -1,7 +1,7 @@
 // returns a function to render
 async function tsi(id, signals, filters) {
 
-    // filters should be a dictionary with propertyName: tsx value
+    // filters should be a dictionary with propertyName: tsx value, and object {value, operator, type}
     var tsiClient = new TsiClient();
     var rangeStart = new Date();
     rangeStart.setDate(rangeStart.getDate() - 30);
@@ -86,17 +86,18 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
     let colourCount = 0;
 
     var tsx = "";
-    var k = 0;
     if(filters) {
         Object.keys(filters).forEach(key => {
-            tsx += `($event.${key}.String = '${filters[key]}')`;
-            k++;
-            if (k < Object.keys(filters).length) {
-                tsx += " OR "
-            }
+            if(filters[key]){
+                if (tsx) {
+                    tsx += " OR "
+                }
+                tsx += `($event.${key}.${filters[key].type} ${filters[key].operator} ${filters[key].value})`;
+            } 
+            else console.log("Ignoring null value")
         });
     }
-
+    if(tsx) console.log(tsx)
     var filter = null;
     if(tsx.length > 0) {
         filter = { tsx }
