@@ -93,25 +93,16 @@ namespace Amphora.Api
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
-            if (HostingEnvironment.IsDevelopment())
+            services.AddMvc(opts =>
             {
-                services.AddMvc(opts =>
-                {
-                })
-                //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.Converters.Add(new TimespanConverter());
-                    options.SerializerSettings.Converters.Add(new TsiVariableConverter());
-                });
-            }
-            else
+            })
+            .AddNewtonsoftJson(options =>
             {
-                services.AddMvc()
-                    //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                    .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
-            }
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.Converters.Add(new TimespanConverter());
+                options.SerializerSettings.Converters.Add(new TsiVariableConverter());
+            });
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddOpenApiDocument(document => // add OpenAPI v3 document
