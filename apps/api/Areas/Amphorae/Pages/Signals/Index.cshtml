@@ -42,15 +42,34 @@
                 <tr class="signal-item">
                     <th scope="row">@n.Property</th>
                     <td>
-                        @if(n.IsString) 
-                        {
+                       
                             <div class="input-group">
-                                <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="left" title="Match this value">
-                                <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input');" >
-                                    Filter
-                                </button>
+
+                                @if(n.IsNumeric)
+                                {
+                                    <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Operator
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '>'">Greater than</a>
+                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '<'">Less than</a>
+                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '='">Equal</a>
+                                    </div>
+                                    <input type="hidden" id="@n.Property-operator">
+                                    <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="top" title="Match this value">
+                                    <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input', 'Double');" >
+                                        Filter
+                                    </button>
+                                } 
+                                else if(n.IsString) 
+                                {
+                                    <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="top" title="Match this value">
+                                    <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input', 'String');" >
+                                        Filter
+                                    </button>
+                                }
                             </div>
-                        }
+                        
                     </td>
                     <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
                     <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
@@ -60,8 +79,23 @@
         </table>
     </div>
     <div class="row">
-        <div id="loader" class="spinner-grow" role="status" style="margin: 0 auto;";>
-            <span class="sr-only">Loading...</span>
+        <div id="loader" role="status" style="margin: 0 auto;";>
+            <div class="spinner-border text-success" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-border text-danger" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-border text-warning" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col"> 
+            <ul class="list-group" id="filters">
+            </ul>
         </div>
         <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
         <div id="availability" style="width: 100%; height: 160px; z-index:1;"></div>
@@ -94,12 +128,30 @@
             })
         // todo set filters
 
-        function setFilterValue(elementId){
+        function setFilterValue(elementId, type){
             loading(true)
             // Selecting the input element and get its value 
             var filterVal = document.getElementById(elementId).value;
+            if(filterVal && type == "String" && !filterVal.startsWith("'")) {
+                filterVal = `'${filterVal}'`
+            }
+
             var property = elementId.replace("-input", "");
-            filters[property] = filterVal
+            var operatorElement = document.getElementById(`${property}-operator`);
+            var operatorVal = '='; // default to equals
+            if(operatorElement) {
+                operatorVal = operatorElement.value;
+            }
+            if(filterVal) filters[property] = {value: filterVal, operator: operatorVal, type}
+            else delete filters[property]
+
+            if (Object.keys(filters).length) document.getElementById('filters').innerHTML = "<h5>Filters</h5>";
+            else document.getElementById('filters').innerHTML = "";
+            Object.keys(filters).forEach(key => { 
+                if(filters[key]) document.getElementById('filters').innerHTML += '<li class=\"list-group-item\" >' + `${key} ${filters[key].operator} ${filters[key].value}` + '</li>';
+                else console.log('oops')
+            });
+
             // Displaying the value
             if(render) render().then(() => loading(false))
         }
