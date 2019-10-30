@@ -90,7 +90,7 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
         Object.keys(filters).forEach(key => {
             if(filters[key]){
                 if (tsx) {
-                    tsx += " OR "
+                    tsx += " AND "
                 }
                 tsx += `($event.${key}.${filters[key].type} ${filters[key].operator} ${filters[key].value})`;
             } 

@@ -62,5 +62,10 @@ namespace Amphora.Api.Stores.EFCore
             await context.SaveChangesAsync();
             return o.Entity;
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await this.context.Purchases.CountAsync();
+        }
     }
 }

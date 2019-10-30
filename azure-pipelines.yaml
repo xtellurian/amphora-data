@@ -30,7 +30,17 @@ stages:
     parameters:
       dependsOn: apps
 
-- stage: deploy
+- stage: deploy_master
+  displayName: Deploy to Master Envionment 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+    - template: pipeline/deploymentjob.yaml
+      parameters:
+        jobName: master_deploymentjob
+        environment: master
+        staging: 'false'
+
+- stage: deploy_demo
   displayName: Deploy to Demo Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:

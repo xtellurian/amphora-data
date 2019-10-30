@@ -6,7 +6,7 @@ parameters:
 
 jobs:
 - deployment: ${{ parameters.jobName }}
-  displayName: Create Infra and Deploy App - ${{ parameters.jobName }}
+  displayName: Deployment - ${{ parameters.jobName }}
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'
