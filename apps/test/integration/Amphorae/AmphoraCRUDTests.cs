@@ -1,16 +1,13 @@
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Amphora.Tests.Integration
+namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(IntegrationFixtureCollection))]
     public class AmphoraCRUDTests : IntegrationTestBase

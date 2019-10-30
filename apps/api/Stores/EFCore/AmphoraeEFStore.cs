@@ -40,13 +40,13 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task<AmphoraModel> ReadAsync(string id, bool includeChildren = false)
         {
-            if(includeChildren)
+            if (includeChildren)
             {
                 var result = await context.Amphorae
                     //.Include(p => p.Transactions) // include calls are not supported by cosmos yet https://docs.microsoft.com/en-us/ef/core/providers/cosmos/limitations
                     .SingleOrDefaultAsync(a => a.Id == id);
 
-                if(result == null) return null;
+                if (result == null) return null;
 
                 context.Entry(result)
                     .Collection(b => b.Purchases)
@@ -97,6 +97,11 @@ namespace Amphora.Api.Stores.EFCore
             await context.SaveChangesAsync();
             var existing = await context.Amphorae.SingleOrDefaultAsync(a => a.Id == entity.Id);
             return existing;
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await this.context.Amphorae.CountAsync();
         }
 
     }
