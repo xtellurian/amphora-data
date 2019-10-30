@@ -4,7 +4,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae
 {
     public class AmphoraExtendedDto : AmphoraDto
     {
-        public string Id { get; set; }
         public string OrganisationId { get; set; }
         public string TermsAndConditionsId { get; set; }
 
