@@ -2,15 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Options;
 using Amphora.Common.Models.Signals;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
     public partial class AmphoraeController : Controller
     {
+        private readonly IOptionsMonitor<SignalOptions> options;
+        
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
@@ -52,7 +56,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var result = await amphoraeService.ReadAsync(User, id, true);
                 if (result.Succeeded)
                 {
-                    result.Entity.AddSignal(signal);
+                    result.Entity.AddSignal(signal, options.CurrentValue?.MaxSignals ?? 7);
                     var updateRes = await amphoraeService.UpdateAsync(User, result.Entity);
                     if (updateRes.Succeeded)
                     {

@@ -2,12 +2,13 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Options;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
@@ -28,7 +29,8 @@ namespace Amphora.Api.Controllers.Amphorae
             IAuthorizationService authorizationService,
             IUserManager userManager,
             ISignalService signalService,
-            IMapper mapper)
+            IMapper mapper,
+            IOptionsMonitor<SignalOptions> options)
         {
             this.amphoraeService = amphoraeService;
             this.amphoraFileService = amphoraFileService;
@@ -36,6 +38,7 @@ namespace Amphora.Api.Controllers.Amphorae
             this.userManager = userManager;
             this.signalService = signalService;
             this.mapper = mapper;
+            this.options = options;
         }
 
         /// <summary>
