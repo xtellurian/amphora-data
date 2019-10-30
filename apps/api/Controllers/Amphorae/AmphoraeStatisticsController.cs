@@ -20,12 +20,12 @@ namespace Amphora.Api.Controllers.Amphorae
 
         private const string countKey = "amphoraeCount";
 
-         /// <summary>
+        /// <summary>
         /// Gets ta count of all the Amphora
         /// </summary>
         [Produces(typeof(int))]
         [HttpGet("api/amphoraeStats/count")]
-        public async Task<IActionResult> Count()
+        public async Task<IActionResult> Count(bool? iFrame)
         {
             // using a cache to prevent this public endpoint being smashed;
             int cacheEntry;
@@ -40,7 +40,17 @@ namespace Amphora.Api.Controllers.Amphorae
                 // Save data in cache.
                 memoryCache.Set(countKey, cacheEntry, cacheEntryOptions);
             }
-            return Ok(cacheEntry);
+            if (iFrame.HasValue && iFrame.Value)
+            {
+                string myHostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+                var img = $"{myHostUrl}/images/amphora_bullet.png";
+                var html = $"<div> <h1> <img src={img} /> {cacheEntry}</h1> </div>";
+                return Content(html, "text/html" );
+            }
+            else
+            {
+                return Ok(cacheEntry);
+            }
         }
     }
 }
