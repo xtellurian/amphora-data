@@ -15,5 +15,6 @@ namespace Amphora.Api.Contracts
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task<IEnumerable<T>> QueryAsync(Expression<System.Func<T, bool>> where);
+        Task<int> CountAsync();
     }
 }
