@@ -42,38 +42,57 @@
                 <tr class="signal-item">
                     <th scope="row">@n.Property</th>
                     <td>
-                       
-                            <div class="input-group">
-
-                                @if(n.IsNumeric)
-                                {
-                                    <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Operator
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '>'">Greater than</a>
-                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '<'">Less than</a>
-                                        <a class="dropdown-item" onclick="document.getElementById('@n.Property-operator').value = '='">Equal</a>
-                                    </div>
-                                    <input type="hidden" id="@n.Property-operator">
-                                    <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="top" title="Match this value">
-                                    <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input', 'Double');" >
-                                        Filter
-                                    </button>
-                                } 
-                                else if(n.IsString) 
-                                {
-                                    <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" data-toggle="tooltip" data-placement="top" title="Match this value">
-                                    <button type="button" class="btn btn-info m-1" onclick="setFilterValue('@n.Property-input', 'String');" >
-                                        Filter
-                                    </button>
-                                }
-                            </div>
+                        <div class="input-group">
+                            @if(n.IsNumeric)
+                            {
+                                <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Operator
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '>');">Greater than</a>
+                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '<');">Less than</a>
+                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '=');">Equals</a>
+                                </div>
+                                <input type="text" id="@n.Property-operator" class="m-1" size="1" disabled value='='>
+                                <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                    data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                    onchange="setFilterValue('@n.Property-input', 'Double');">
+                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                            } 
+                            else if(n.IsString) 
+                            {
+                                <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                    data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                    onchange="setFilterValue('@n.Property-input', 'String');">
+                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                            }
+                        </div>
                         
                     </td>
-                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
+                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-sigranalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
                     <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
                 </tr>
+                }
+                @if(Model.Signals?.Count() > 0 ) 
+                {
+                    <tr class="signal-item">
+                        <th scope="row">Write Time</th>
+                        <td>
+                            <div class="input-group">
+                            @{
+                                var maxWt = DateTime.UtcNow.AddHours(1).Ticks;
+                                var minWt = DateTime.UtcNow.AddMonths(-2).Ticks;
+                            }
+                                <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
+                                <input type="hidden" id="wt-operator" value=">">
+                                <input type="range" class="form-control form-control-range m-1" id="wt-input" 
+                                    min="@minWt" max="@maxWt" step="@((maxWt - minWt) / 100)"
+                                    onchange="setFilterValue('wt-input', 'Double')">
+                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -145,15 +164,57 @@
             if(filterVal) filters[property] = {value: filterVal, operator: operatorVal, type}
             else delete filters[property]
 
+            renderFilterTable(filters);
+
+            if(filterVal && elementId === "wt-input") {
+                setTooltipWritetime(filterVal);
+            }
+
+            renderGraph()
+        }
+
+        function renderGraph() {
+            if(render) render().then(() => loading(false));
+            else console.log("Renderer unavailable.");
+        }
+
+        function renderFilterTable(filters, ) {
             if (Object.keys(filters).length) document.getElementById('filters').innerHTML = "<h5>Filters</h5>";
             else document.getElementById('filters').innerHTML = "";
             Object.keys(filters).forEach(key => { 
                 if(filters[key]) document.getElementById('filters').innerHTML += '<li class=\"list-group-item\" >' + `${key} ${filters[key].operator} ${filters[key].value}` + '</li>';
                 else console.log('oops')
             });
+        }
 
-            // Displaying the value
-            if(render) render().then(() => loading(false))
+        function clearFilter(key) {
+            loading(true);
+            delete filters[key]; 
+            document.getElementById(`${key}-input`).value = null;
+            renderFilterTable(filters);
+            renderGraph();
+        }
+
+        function onSelectOperator(targetElement, sign) {
+            document.getElementById(targetElement).value = `${sign}`
+        }
+
+        function setTooltipWritetime(ticks) {
+            var d = ticksToUTCDate(ticks);
+            var offset = (new Date()).getTimezoneOffset();
+            d.setMinutes(d.getMinutes() - offset); 
+            $("#wt-display").attr('data-original-title', d);
+        }
+
+        function ticksToUTCDate(ticks) {
+            // ticks are UTC ticks
+            //ticks are in nanotime; convert to microtime
+            var ticksToMicrotime = ticks / 10000;
+            //ticks are recorded from 1/1/1; get microtime difference from 1/1/1/ to 1/1/1970
+            var epochMicrotimeDiff = Math.abs(new Date(0, 0, 1).setFullYear(1));
+            //new date is ticks, converted to microtime, minus difference from epoch microtime
+            var tickDate = new Date(ticksToMicrotime - epochMicrotimeDiff);
+            return tickDate;
         }
 
     </script>
