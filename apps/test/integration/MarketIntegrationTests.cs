@@ -55,6 +55,13 @@ namespace Amphora.Tests.Integration
                 var list = JsonConvert.DeserializeObject<List<AmphoraDto>>(content);
                 Assert.Equal(top, list.Count);
             };
+
+            foreach(var x in amphorae)
+            {
+                await DestroyAmphoraAsync(adminClient, x.Id);
+            }
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
     }
 }

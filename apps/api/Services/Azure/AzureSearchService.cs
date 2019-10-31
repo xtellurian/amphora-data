@@ -38,6 +38,23 @@ namespace Amphora.Api.Services.Azure
             return await this.searchInitialiser.TryIndex();
         }
 
+        public async Task<long?> SearchAmphoraCount(string searchText, Models.Search.SearchParameters parameters)
+        {
+            await this.searchInitialiser.CreateAmphoraIndexAsync();
+            parameters.WithTotalResultCount();
+            var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
+            try
+            {
+                var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
+                return results.Count;
+            }
+            catch (Microsoft.Rest.Azure.CloudException ex)
+            {
+                logger.LogWarning($"{indexClient.IndexName} threw on Search Count Async.", ex);
+                return null;
+            }
+        }
+
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
             await this.searchInitialiser.CreateAmphoraIndexAsync();
@@ -46,7 +63,7 @@ namespace Amphora.Api.Services.Azure
             try
             {
                 var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
-                foreach(var r in results.Results)
+                foreach (var r in results.Results)
                 {
                     r.Document.FixAzureSearchId();  // fixes the id field
                 }
@@ -59,9 +76,9 @@ namespace Amphora.Api.Services.Azure
 
             await Task.Delay(1000 * 5);
             try
-            {     
+            {
                 var results_secondTry = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
-                foreach(var r in results_secondTry.Results)
+                foreach (var r in results_secondTry.Results)
                 {
                     r.Document.FixAzureSearchId(); // fixes the id field
                 }
