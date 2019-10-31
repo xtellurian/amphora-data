@@ -22,6 +22,10 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
             this.authenticateService = authenticateService;
         }
+        [BindProperty(SupportsGet = true)]
+        public int? Skip { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int? Top { get; set; }
 
         [BindProperty(SupportsGet = true)]
         [Display(Name = "Latitude")]
@@ -53,24 +57,24 @@ namespace Amphora.Api.Pages.Market
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? skip, int? top)
         {
+            this.Skip = skip;
+            this.Top = top;
             await RunSearch();
             return Page();
         }
 
         private async Task RunSearch()
         {
+            GeoLocation geo = null;
             if (Lat.HasValue && Lon.HasValue)
             {
-                var d = Dist.HasValue ? Dist.Value : 100; // default to 100km
-                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Lat.Value, Lon.Value, d));
-                this.Entities = res.Results.Select(e => e.Entity);
+                geo = new GeoLocation(Lon.Value, Lat.Value);
             }
-            else
-            {
-                this.Entities = await marketService.FindAsync(Term);
-            }
+            if(Skip == null) Skip = 0;
+            if(Top == null) Top = 10; 
+            this.Entities = await marketService.FindAsync(Term, geo, Dist, Skip, Top);
         }
     }
 }

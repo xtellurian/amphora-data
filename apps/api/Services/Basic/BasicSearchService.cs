@@ -28,7 +28,18 @@ namespace Amphora.Api.Services.Basic
                 || (a.Description.Contains(searchText)));
             entities.AddRange(res);
 
-            return new EntitySearchResult<AmphoraModel>(entities.ToList());
+            if (parameters.Skip.HasValue && parameters.Top.HasValue)
+            {
+                var toRemove = parameters.Skip * parameters.Top;
+                entities.RemoveRange(0, toRemove.Value);
+            }
+            var take = parameters.Top ?? entities.Count;
+            return new EntitySearchResult<AmphoraModel>(entities.Take(take).ToList());
+        }
+
+        public Task<bool> TryIndex()
+        {
+            return Task.FromResult(true);
         }
     }
 }

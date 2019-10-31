@@ -48,12 +48,14 @@ namespace Amphora.Api.Controllers
         /// Finds Amphora using a fuzzy search
         /// </summary>
         /// <param name="query">Amphora Id</param>
+        /// <param name="top">How many results to return</param>
+        /// <param name="skip">How many pages (in multiples of top) to skip</param>
         [Produces(typeof(List<AmphoraDto>))]
-        [HttpGet("api/market")]
+        [HttpGet("api/market/search")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> FindAsync(string query)
+        public async Task<IActionResult> FindAsync(string query, int? top, int? skip)
         {
-            var s = await marketService.FindAsync(query);
+            var s = await marketService.FindAsync(query, skip: skip, top: top);
             var dto = mapper.Map<List<AmphoraDto>>(s);
             return Ok(dto);
         }

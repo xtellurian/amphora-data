@@ -8,5 +8,6 @@ namespace Amphora.Api.Contracts
     {
         // Task Reindex(); - can only run once every 180 seconds (i give up)
          Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, SearchParameters parameters);
+        Task<bool> TryIndex();
     }
 }
