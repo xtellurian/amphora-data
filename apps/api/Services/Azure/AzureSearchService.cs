@@ -33,6 +33,11 @@ namespace Amphora.Api.Services.Azure
             this.mapper = mapper;
         }
 
+        public async Task<bool> TryIndex()
+        {
+            return await this.searchInitialiser.TryIndex();
+        }
+
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
             await this.searchInitialiser.CreateAmphoraIndexAsync();
