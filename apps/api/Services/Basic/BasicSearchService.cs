@@ -37,6 +37,12 @@ namespace Amphora.Api.Services.Basic
             return new EntitySearchResult<AmphoraModel>(entities.Take(take).ToList());
         }
 
+        public async Task<long?> SearchAmphoraCount(string searchText, SearchParameters parameters)
+        {
+            var res = await SearchAmphora(searchText, parameters);
+            return res.Results.Count;
+        }
+
         public Task<bool> TryIndex()
         {
             return Task.FromResult(true);

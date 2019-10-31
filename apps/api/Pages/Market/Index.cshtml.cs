@@ -22,10 +22,11 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
             this.authenticateService = authenticateService;
         }
-        [BindProperty(SupportsGet = true)]
+        [BindProperty]
         public int? Skip { get; set; }
-        [BindProperty(SupportsGet = true)]
+        [BindProperty]
         public int? Top { get; set; }
+        public long Count { get; set; }
 
         [BindProperty(SupportsGet = true)]
         [Display(Name = "Latitude")]
@@ -45,14 +46,12 @@ namespace Amphora.Api.Pages.Market
 
         public IEnumerable<AmphoraModel> Entities { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? skip, int? top)
         {
-            var response = await authenticateService.GetToken(User);
-            if (response.success)
-            {
-                Token = response.token;
-            }
-
+            this.Skip = skip;
+            this.Top = top;
+            var geo = GetGeo();
+            this.Count = await marketService.CountAsync(Term, geo, Dist, Skip, Top) ?? 0;
             await RunSearch();
             return Page();
         }
@@ -67,14 +66,20 @@ namespace Amphora.Api.Pages.Market
 
         private async Task RunSearch()
         {
+            var geo = GetGeo();
+            this.Entities = await marketService.FindAsync(Term, geo, Dist, Skip, Top);
+        }
+
+        private GeoLocation GetGeo()
+        {
             GeoLocation geo = null;
             if (Lat.HasValue && Lon.HasValue)
             {
                 geo = new GeoLocation(Lon.Value, Lat.Value);
             }
-            if(Skip == null) Skip = 0;
-            if(Top == null) Top = 10; 
-            this.Entities = await marketService.FindAsync(Term, geo, Dist, Skip, Top);
+            if (Skip == null) Skip = 0;
+            if (Top == null) Top = 10;
+            return geo;
         }
     }
 }

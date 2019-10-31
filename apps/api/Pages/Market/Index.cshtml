@@ -80,14 +80,48 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                    @{
+                        // skip is zero based
+                        var numPages = (Model.Count % Model.Top) + 1;
+                        var currentPage = Model.Skip + 1;
+                        var previousPage = Model.Skip;
+                        var previousSkip = Model.Skip - 1;
+                        var nextPage = Model.Skip + 2;
+                        var nextSkip = Model.Skip + 1;
+                        string nextEnabled = "";
+                        string previousEnabled = "";
+                        if(nextPage >= numPages) nextEnabled = "disabled";
+                        if(previousPage < 1) previousEnabled = "disabled";
+                    }
+                    <li class="page-item @previousEnabled">
+                        <a class="page-link" asp-page="/Market/Index" asp-route-skip="@previousSkip" tabindex="-1">Previous</a>
+                    </li>
+                    @for(var p = 1; p <= numPages; p++)
+                    {
+                        var active = "";
+                        if(p == currentPage) active = "active";
+                        <li class="page-item @active">
+                            <a class="page-link" asp-page="/Market/Index" asp-route-skip="@(p - 1)">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @nextEnabled">
+                        <a class="page-link" asp-page="/Market/Index" asp-route-skip="@nextSkip">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
     <script src="~/js/geo.js"></script>
     <script>
-        const token = '@Model.Token';
         const url = '/Market/LocationSearch';
-        autocompleteGeoSearch(token, url, "#lat", "#lon")
+        autocompleteGeoSearch(null, url, "#lat", "#lon")
     </script>
 }

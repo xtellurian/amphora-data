@@ -16,6 +16,12 @@ namespace Amphora.Api.Models.Search
             return this;
         }
 
+        public SearchParameters WithTotalResultCount()
+        {
+            this.IncludeTotalResultCount = true;
+            return this;
+        }
+
         public SearchParameters WithPublicAmphorae()
         {
             if (this.Filter == null) Filter = "";

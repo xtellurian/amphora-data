@@ -3,6 +3,8 @@ using Amphora.Api;
 using Amphora.Api.DbContexts;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -23,6 +25,16 @@ namespace Amphora.Tests.Unit
         {
             var logger = Mock.Of<ILogger<T>>();
             return logger;
+        }
+
+        protected IMemoryCache CreateMemoryCache()
+        {
+            var services = new ServiceCollection();
+            services.AddMemoryCache();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var memoryCache = serviceProvider.GetService<IMemoryCache>();
+            return memoryCache;
         }
 
         protected AmphoraContext GetContext([CallerMemberName] string databaseName = "")

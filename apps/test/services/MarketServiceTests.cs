@@ -49,7 +49,7 @@ namespace Amphora.Tests.Unit
                 var orgModel = new OrganisationModel() { Name = "1234" };
                 var amphora = EntityLibrary.GetAmphoraModel(orgModel, nameof(MarketServiceTests)); // dumy org id
                 var entity = await amphoraStore.CreateAsync(amphora);
-                var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object) as IMarketService;
+                var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object, CreateMemoryCache()) as IMarketService;
 
                 var response = await sut.FindAsync("");
                 Assert.NotNull(response);
