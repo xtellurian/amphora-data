@@ -153,6 +153,7 @@ namespace Amphora.Api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseStatusCodePagesWithRedirects("/Home/StatusCode?code={0}");
 
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
             app.UseSwaggerUi3(settings =>
