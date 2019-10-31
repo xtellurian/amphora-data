@@ -10,8 +10,6 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public AmphoraModelProfile()
         {
-            // this is to extend a base class into its extended version. 
-            // Generally only used in the InMemory stores.
 
             CreateMap<AmphoraModel, AmphoraDto>();
 

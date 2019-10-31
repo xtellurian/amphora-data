@@ -1,4 +1,4 @@
-namespace Amphora.Api.Pages.Shared
+namespace Amphora.Api.Pages.Home
 {
     public class ErrorModel
     {

@@ -31,12 +31,12 @@ namespace Amphora.Common.Models.Amphorae
         public TermsAndConditionsModel TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Name == TermsAndConditionsId);
 
         // methods
-        public void AddSignal(SignalModel signal)
+        public void AddSignal(SignalModel signal, int maxSignals = 7)
         {
             if (Signals == null) Signals = new List<AmphoraSignalModel>();
-            if (Signals.Count >= 5)
+            if (Signals.Count >= maxSignals)
             {
-                throw new System.ArgumentException("Only 5 Signals per Amphora at this time");
+                throw new System.ArgumentException($"Only {maxSignals} Signals per Amphora at this time");
             }
             Signals.Add(new AmphoraSignalModel
             {

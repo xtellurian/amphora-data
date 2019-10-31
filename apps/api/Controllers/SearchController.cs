@@ -10,7 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -97,6 +97,16 @@ namespace Amphora.Api.Controllers
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
+        }
+
+        [HttpPost("api/search/indexers")]
+        [OpenApiIgnore]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> TryReindex()
+        {
+            var res = await searchService.TryIndex();
+            if(res) return Ok();
+            else return BadRequest();
         }
     }
 }

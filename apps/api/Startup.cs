@@ -65,6 +65,8 @@ namespace Amphora.Api
             this.GeoModule.ConfigureServices(services);
             this.MarketModule.ConfigureServices(services);
 
+            services.Configure<SignalOptions>(Configuration.GetSection("Signals"));
+
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
 
@@ -151,6 +153,7 @@ namespace Amphora.Api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseStatusCodePagesWithRedirects("/Home/StatusCode?code={0}");
 
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
             app.UseSwaggerUi3(settings =>

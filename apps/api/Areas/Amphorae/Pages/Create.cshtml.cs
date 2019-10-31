@@ -1,12 +1,16 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
@@ -16,37 +20,32 @@ namespace Amphora.Api.Areas.Amphorae.Pages
     public class CreateModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IAuthenticateService authenticateService;
+        private readonly IUserService userService;
         private readonly ILogger<CreateModel> logger;
         private readonly IMapper mapper;
 
         public CreateModel(
             IAmphoraeService amphoraeService,
-            IAuthenticateService authenticateService,
+            IUserService userService,
             ILogger<CreateModel> logger,
             IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
-            this.authenticateService = authenticateService;
+            this.userService = userService;
             this.logger = logger;
             this.mapper = mapper;
         }
 
         [BindProperty]
-        public AmphoraExtendedDto Input { get; set; }
+        public CreateAmphoraDto Input { get; set; }
+        public List<SelectListItem> TermsAndConditions { get; set; } = new List<SelectListItem>();
         public string Token { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var response = await authenticateService.GetToken(User);
-            if (response.success)
-            {
-                Token = response.token;
-            }
-            else
-            {
-                logger.LogError("Couldn't get token");
-            }
+            var user = await userService.ReadUserModelAsync(User);
+            var items = user.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Name));
+            this.TermsAndConditions = new List<SelectListItem>(items);
             return Page();
         }
 
@@ -57,7 +56,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 GeoLocation location = null;
                 if (Input.Lat.HasValue && Input.Lon.HasValue)
                 {
-                    location =  new GeoLocation(Input.Lon.Value, Input.Lat.Value);
+                    location = new GeoLocation(Input.Lon.Value, Input.Lat.Value);
                 }
                 var entity = new AmphoraModel
                 {
@@ -75,7 +74,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 else
                 {
-                    foreach(var e in setResult.Errors)
+                    foreach (var e in setResult.Errors)
                     {
                         ModelState.AddModelError(string.Empty, e);
                     }

@@ -22,6 +22,11 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
             this.authenticateService = authenticateService;
         }
+        [BindProperty]
+        public int? Skip { get; set; }
+        [BindProperty]
+        public int? Top { get; set; }
+        public long Count { get; set; }
 
         [BindProperty(SupportsGet = true)]
         [Display(Name = "Latitude")]
@@ -41,36 +46,40 @@ namespace Amphora.Api.Pages.Market
 
         public IEnumerable<AmphoraModel> Entities { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? skip, int? top)
         {
-            var response = await authenticateService.GetToken(User);
-            if (response.success)
-            {
-                Token = response.token;
-            }
-
+            this.Skip = skip;
+            this.Top = top;
+            var geo = GetGeo();
+            this.Count = await marketService.CountAsync(Term, geo, Dist, Skip, Top) ?? 0;
             await RunSearch();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? skip, int? top)
         {
+            this.Skip = skip;
+            this.Top = top;
             await RunSearch();
             return Page();
         }
 
         private async Task RunSearch()
         {
+            var geo = GetGeo();
+            this.Entities = await marketService.FindAsync(Term, geo, Dist, Skip, Top);
+        }
+
+        private GeoLocation GetGeo()
+        {
+            GeoLocation geo = null;
             if (Lat.HasValue && Lon.HasValue)
             {
-                var d = Dist.HasValue ? Dist.Value : 100; // default to 100km
-                var res = await marketService.searchService.SearchAmphora(Term, SearchParameters.GeoSearch(Lat.Value, Lon.Value, d));
-                this.Entities = res.Results.Select(e => e.Entity);
+                geo = new GeoLocation(Lon.Value, Lat.Value);
             }
-            else
-            {
-                this.Entities = await marketService.FindAsync(Term);
-            }
+            if (Skip == null) Skip = 0;
+            if (Top == null) Top = 10;
+            return geo;
         }
     }
 }

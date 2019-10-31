@@ -27,6 +27,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
         {
+            if(signalId == null) return RedirectToPage("./Index", new {id = id});
             await base.LoadAmphoraAsync(id);
 
             if (Amphora != null)

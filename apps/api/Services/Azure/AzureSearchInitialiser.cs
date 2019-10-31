@@ -30,6 +30,25 @@ namespace Amphora.Api.Services.Azure
         private SearchServiceClient serviceClient;
         public string IndexerName => "amphora-indexer";
         private readonly object initialiseLock = new object();
+        public async Task<bool> TryIndex()
+        {
+            // ensure created:
+            if(! await serviceClient.Indexers.ExistsAsync(IndexerName))
+            {
+                logger.LogInformation($"Index request resulted in creation of full index.");
+                await CreateAmphoraIndexAsync();
+            }
+            try
+            {
+                await serviceClient.Indexers.RunAsync(IndexerName);
+                return true;
+            }
+            catch(System.Exception ex)
+            {
+                logger.LogError($"TryIndex failed for indexer {IndexerName}", ex);
+                return false;
+            }
+        }
         public async Task CreateAmphoraIndexAsync()
         {
             if (isInitialised) return;
