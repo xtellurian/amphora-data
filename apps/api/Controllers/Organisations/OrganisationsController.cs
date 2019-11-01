@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Options;
-using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Options;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
+     [SkipStatusCodePages]
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;
@@ -95,45 +95,6 @@ namespace Amphora.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Invite a user/ email address to your organisation.
-        /// </summary>
-        /// <param name="id">Organisation Id</param>
-        /// <param name="invitation">Invitation details</param>
-        [HttpPost("api/organisations/{id}/invitations/")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> InviteToOrganisation(string id, [FromBody] Invitation invitation)
-        {
-            try
-            {
-                await organisationService.InviteToOrganisationAsync(User, id, invitation.TargetEmail);
-                return Ok();
-            }
-            catch (PermissionDeniedException permEx)
-            {
-                return StatusCode(403, permEx.Message);
-            }
-        }
-
-        /// <summary>
-        /// Accept an invitation to an organisation.
-        /// </summary>
-        /// <param name="id">Organisation Id</param>
-        [Produces(typeof(OrganisationDto))]
-        [HttpGet("api/organisations/{id}/invitations/")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> AcceptInvitation(string id)
-        {
-            try
-            {
-                await organisationService.AcceptInvitation(User, id);
-                return Ok();
-            }
-            catch (PermissionDeniedException permEx)
-            {
-                return StatusCode(403, permEx.Message);
-            }
-        }
         /// <summary>
         /// Deletes an organisation.
         /// </summary>

@@ -15,7 +15,7 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task UploadSignalTo_MissingAmphora(string url)
+        public async Task UploadSignalValuesTo_MissingAmphora(string url)
         {
              // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
@@ -26,7 +26,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PostAsync($"{url}/{id}/signals/signalId", content);
+            var response = await client.PostAsync($"{url}/{id}/signals/values", content);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound , response.StatusCode);

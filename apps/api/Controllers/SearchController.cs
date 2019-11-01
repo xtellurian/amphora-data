@@ -15,6 +15,7 @@ using NSwag.Annotations;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
+    [SkipStatusCodePages]
     public class SearchController : Controller
     {
         private readonly IMapper mapper;
@@ -105,7 +106,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> TryReindex()
         {
             var res = await searchService.TryIndex();
-            if(res) return Ok();
+            if (res) return Ok();
             else return BadRequest();
         }
     }

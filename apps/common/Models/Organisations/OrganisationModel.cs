@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Organisations
@@ -13,19 +14,13 @@ namespace Amphora.Common.Models.Organisations
         public string Address { get; set; }
         // owned 
         public virtual Account Account { get; set; }
-        public virtual ICollection<Invitation> Invitations { get; set; }
+        public virtual ICollection<InvitationModel> GlobalInvitations { get; set; }
         public virtual ICollection<Membership> Memberships { get; set; }
         // navigation
         public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; }
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; }
         public string CreatedById { get; set; }
         public virtual ApplicationUser CreatedBy { get; set; }
-
-        public void AddInvitation(string email)
-        {
-            if (this.Invitations == null) this.Invitations = new List<Invitation>();
-            this.Invitations.Add(new Invitation(email));
-        }
 
         public void AddOrUpdateMembership(ApplicationUser user, Roles role = Roles.User)
         {

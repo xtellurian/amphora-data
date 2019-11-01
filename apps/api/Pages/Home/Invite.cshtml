@@ -1,0 +1,32 @@
+@page
+@model Amphora.Api.Pages.Home.InviteModel
+@{
+    ViewData["Title"] = "Invitation";
+}
+<h1>Invite to Amphora Data</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <section>
+                <form method="post">
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.TargetEmail"></label>
+                        <input asp-for="Input.TargetEmail" class="form-control" />
+                        <span asp-validation-for="Input.TargetEmail" class="text-danger"></span>
+                    </div>
+                    <div class="form-check">
+                        <input asp-for="InviteToOrganisation" class="form-check-input">
+                        <label asp-for="InviteToOrganisation" class="form-check-label"></label>
+                        <small>User will join @Model.Organisation.Name </small>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Invite</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>

@@ -34,7 +34,6 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public OrganisationModel Organisation { get; set; }
         public bool CanEdit { get; private set; }
         public bool CanInvite { get; private set; }
-        public bool CanAcceptInvite { get; private set; }
         public bool CanViewMembers { get; private set; }
         public bool CanViewBalance { get; private set; }
         public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
@@ -58,10 +57,6 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.CanViewBalance = CanViewMembers;
             this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
-            if (this.Organisation.Invitations != null)
-            {
-                this.CanAcceptInvite = this.Organisation.Invitations.Any(i => string.Equals(i.TargetEmail.ToLower(), appUser.Email.ToLower()));
-            }
             // get pinned
             var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.OrganisationId == Organisation.Id);
             this.PinnedAmphorae = query.Take(6);

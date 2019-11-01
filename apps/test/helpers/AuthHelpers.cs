@@ -13,11 +13,10 @@ namespace Amphora.Tests.Helpers
     {
         public static async Task<(UserDto User, string Password)> CreateUserAsync(
             this HttpClient client,
+            string email,
             string fullName)
         {
-
-            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-
+            // assumed the user has been invited
             var user = new UserDto
             {
                 UserName = email,

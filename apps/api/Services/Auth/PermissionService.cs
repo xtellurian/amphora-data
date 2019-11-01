@@ -30,7 +30,7 @@ namespace Amphora.Api.Services.Auth
             using (logger.BeginScope(new LoggerScope<PermissionService>(user)))
             {
                 if (org == null) return false;
-                org = await orgStore.ReadAsync(org.Id, true);
+                org = await orgStore.ReadAsync(org.Id);
                 var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
 
                 if (membership != null) // if user is in the org

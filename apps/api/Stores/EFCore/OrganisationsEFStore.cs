@@ -36,19 +36,9 @@ namespace Amphora.Api.Stores.EFCore
             return await context.Organisations.Where(where).ToListAsync();
         }
 
-        public async Task<OrganisationModel> ReadAsync(string id, bool includeChildren = false)
+        public async Task<OrganisationModel> ReadAsync(string id)
         {
-            if (includeChildren)
-            {
-                return await context.Organisations
-                    .Include(p => p.Invitations)
-                    .Include(p => p.Memberships)
-                    .SingleOrDefaultAsync(o => o.Id == id);
-            }
-            else
-            {
-                return await context.Organisations.SingleOrDefaultAsync(o => o.Id == id);
-            }
+            return await context.Organisations.SingleOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<IList<OrganisationModel>> TopAsync()

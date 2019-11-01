@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
+    [SkipStatusCodePages]
     public class MarketController : Controller
     {
         private readonly IMarketService marketService;

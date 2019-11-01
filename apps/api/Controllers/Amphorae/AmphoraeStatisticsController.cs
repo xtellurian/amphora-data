@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiController]
+    [SkipStatusCodePages]
     public class AmphoraeStatisticsController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
@@ -45,7 +46,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 string myHostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
                 var img = $"{myHostUrl}/images/amphora_bullet.png";
                 var html = $"<div> <h1> <img src={img} /> {cacheEntry}</h1> </div>";
-                return Content(html, "text/html" );
+                return Content(html, "text/html");
             }
             else
             {

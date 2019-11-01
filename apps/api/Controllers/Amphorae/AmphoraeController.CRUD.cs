@@ -14,6 +14,7 @@ namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiController]
     [Produces("application/json")]
+    [SkipStatusCodePages]
     public partial class AmphoraeController : Controller
     {
         private readonly IAmphoraeService amphoraeService;

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Users;
@@ -14,19 +13,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace Amphora.Api.Controllers
 {
     [ApiController]
+    [SkipStatusCodePages]
     public class UsersController : Controller
     {
         private readonly IUserService userService;
+        private readonly IInvitationService invitationService;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly IMapper mapper;
         private readonly ILogger<UsersController> logger;
 
         public UsersController(IUserService userService,
+                               IInvitationService invitationService,
                                IOptionsMonitor<CreateOptions> options,
                                IMapper mapper,
                                ILogger<UsersController> logger)
         {
             this.userService = userService;
+            this.invitationService = invitationService;
             this.options = options;
             this.mapper = mapper;
             this.logger = logger;
@@ -54,6 +57,10 @@ namespace Amphora.Api.Controllers
         [HttpPost("api/users")]
         public async Task<IActionResult> CreateUser([FromBody] UserDto dto)
         {
+            if(! ModelState.IsValid)
+            {
+                return BadRequest();
+            }
             string password = System.Guid.NewGuid().ToString() + "!1A";
 
             var applicationUser = new ApplicationUser()
@@ -62,7 +69,13 @@ namespace Amphora.Api.Controllers
                 UserName = dto.UserName
             };
 
-            var result = await userService.CreateAsync(applicationUser, password);
+            var invitation = await invitationService.GetInvitationByEmailAsync(dto.Email.ToUpper());
+            if(invitation == null)
+            {
+                return BadRequest($"{dto.Email} has not been invited to Amphora Data");
+            }
+
+            var result = await userService.CreateAsync(applicationUser, invitation, password);
 
             if (result.Succeeded)
             {
@@ -95,11 +108,11 @@ namespace Amphora.Api.Controllers
             {
                 return Ok();
             }
-            else if(result.WasForbidden)
+            else if (result.WasForbidden)
             {
                 return StatusCode(403, result.Message);
             }
-            else 
+            else
             {
                 logger.LogError("Failed to create user!");
                 return BadRequest(result.Message);

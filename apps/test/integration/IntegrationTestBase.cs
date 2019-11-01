@@ -5,6 +5,7 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Amphora.Api.Models.Dtos.Platform;
 
 namespace Amphora.Tests.Integration
 {
@@ -20,11 +21,13 @@ namespace Amphora.Tests.Integration
         protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> GetNewClientInOrg(HttpClient currentClient, OrganisationDto org)
         {
             var client = _factory.CreateClient();
-            var (user, password) = await client.CreateUserAsync("type: " + this.GetType().ToString());
-            var inviteResponse = await currentClient.PostAsJsonAsync($"api/organisations/{org.Id}/invitations/",
-                new Invitation(user.Email));
+            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
+                new InvitationDto{TargetEmail = email, TargetOrganisationId = org.Id});
             inviteResponse.EnsureSuccessStatusCode();
-            var accept = await client.GetAsync($"api/organisations/{org.Id}/invitations");
+            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
+            var acceptDto = new AcceptInvitationDto{TargetOrganisationId = org.Id};
+            var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
             inviteResponse.EnsureSuccessStatusCode();
             user.OrganisationId = org.Id;
@@ -33,7 +36,8 @@ namespace Amphora.Tests.Integration
         protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> NewOrgAuthenticatedClientAsync()
         {
             var client = _factory.CreateClient();
-            var (user, password) = await client.CreateUserAsync("type: " + this.GetType().ToString());
+            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             return (client, user, org);
         }

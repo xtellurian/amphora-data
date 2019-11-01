@@ -11,7 +11,7 @@ namespace Amphora.Api.Models.AutoMapper
         {
             CreateMap<OrganisationDto, OrganisationModel>()
             .ForMember(p => p.Account, o => o.Ignore())
-            .ForMember(p => p.Invitations, o => o.Ignore())
+            .ForMember(p => p.GlobalInvitations, o => o.Ignore())
             .ForMember(p => p.Memberships, o => o.Ignore())
             .ForMember(p => p.TermsAndConditions, o => o.Ignore())
             .ForMember(p => p.TermsAndConditionsAccepted, o => o.Ignore())

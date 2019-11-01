@@ -9,13 +9,14 @@ using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
+using Amphora.Api.Models.Dtos.Platform;
 
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(IntegrationFixtureCollection))]
     public class OrganisationCRUDTests : IntegrationTestBase
     {
-        public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -25,7 +26,8 @@ namespace Amphora.Tests.Integration.Organisations
         {
             // Arrange
             var client = _factory.CreateClient();
-            var (user, _) = await client.CreateUserAsync(nameof(CanCreateOrganisation));
+            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var (user, _) = await client.CreateUserAsync(email, nameof(CanCreateOrganisation));
 
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanCreateOrganisation));
 
@@ -57,7 +59,8 @@ namespace Amphora.Tests.Integration.Organisations
         {
             // Arrange
             var client = _factory.CreateClient();
-            var (user, _) = await client.CreateUserAsync(nameof(CanUpdateOrganisation));
+            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var (user, _) = await client.CreateUserAsync(email, nameof(CanUpdateOrganisation));
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -83,17 +86,17 @@ namespace Amphora.Tests.Integration.Organisations
 
         }
 
-        [Theory]
-        [InlineData("/api/organisations")]
-        public async Task CanInviteToOrganisation(string url)
+        [Fact]
+        public async Task CanInviteToOrganisation()
         {
-             // Arrange
+            // Arrange
             var client = _factory.CreateClient();
-            var (user, _) = await client.CreateUserAsync(nameof(CanInviteToOrganisation));
+            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var (user, _) = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation));
             var org = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanInviteToOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var response = await client.PostAsync(url, requestBody);
+            var response = await client.PostAsync("api/organisations", requestBody);
             var responseBody = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Equal("application/json; charset=utf-8",
@@ -104,14 +107,16 @@ namespace Amphora.Tests.Integration.Organisations
 
 
             var client2 = _factory.CreateClient();
-            var (otherUser, _) = await client2.CreateUserAsync(nameof(CanInviteToOrganisation));
+            var email2 = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation));
 
-            var inviteResponse = await client.PostAsJsonAsync($"{url}/{org.Id}/invitations/",
-                new Invitation(otherUser.Email));
+            var inviteResponse = await client.PostAsJsonAsync($"api/invitations/",
+                new InvitationDto { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });
             var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
             inviteResponse.EnsureSuccessStatusCode();
 
-            var acceptResponse = await client2.GetAsync($"api/organisations/{org.Id}/invitations");
+            var acceptDto = new AcceptInvitationDto { TargetOrganisationId = org.Id };
+            var acceptResponse = await client2.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             acceptResponse.EnsureSuccessStatusCode();
 
             var selfResponse = await client2.GetAsync("api/users/self");

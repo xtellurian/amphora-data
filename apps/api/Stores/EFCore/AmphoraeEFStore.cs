@@ -38,39 +38,10 @@ namespace Amphora.Api.Stores.EFCore
             return await context.Amphorae.Where(where).ToListAsync();
         }
 
-        public async Task<AmphoraModel> ReadAsync(string id, bool includeChildren = false)
+        public async Task<AmphoraModel> ReadAsync(string id)
         {
-            if (includeChildren)
-            {
-                var result = await context.Amphorae
-                    //.Include(p => p.Transactions) // include calls are not supported by cosmos yet https://docs.microsoft.com/en-us/ef/core/providers/cosmos/limitations
-                    .SingleOrDefaultAsync(a => a.Id == id);
-
-                if (result == null) return null;
-
-                context.Entry(result)
-                    .Collection(b => b.Purchases)
-                    .Load();
-
-                context.Entry(result)
-                    .Reference(p => p.Organisation)
-                    .Load();
-
-                context.Entry(result)
-                    .Reference(p => p.CreatedBy)
-                    .Load();
-
-                context.Entry(result)
-                    .Collection(p => p.Signals)
-                    .Load();
-
-                return result;
-            }
-            else
-            {
-                var result = await context.Amphorae.SingleOrDefaultAsync(a => a.Id == id);
-                return result;
-            }
+            var result = await context.Amphorae.SingleOrDefaultAsync(a => a.Id == id);
+            return result;
         }
 
         public async Task<AmphoraModel> ReadAsync(string id, string orgId)

@@ -1,5 +1,4 @@
 @page
-@using Newtonsoft.Json
 @model Amphora.Api.Areas.Organisations.Pages.CreateModel
 
 @{
@@ -51,12 +50,7 @@
 
         <div class="col-md-4 justify-content-center">
             <h3>Join an existing Organisation</h3>
-            <div class="form-group">
-                <div class="ui-widget">
-                    <input id="autoComplete" class="form-control autoCompleteWorkaround" type="text" tabindex="2">
-                </div>
-                <a id="joinButton"> <button type="button" class="btn btn-primary">Join</button></a>
-            </div>
+            <a asp-area="Organisations" asp-page="/Join"><button class="btn btn-primary">Find Organisation</button></a>
         </div>
     </div>
 </div>
@@ -66,16 +60,7 @@
     <script src="~/js/geo.js"></script>
     <script src="~/js/staticAutoComplete.js"></script>
     <script>
-        const token = '@Model.Token';
         const url = '/Market/LocationSearch';
-        autocompleteGeoSearch(token, url)
-    </script>
-    <script>
-        var content = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Organisations.Select(o => new {Name = o.Name, Id = o.Id})));
-        onSelect = (feedback) => {
-            document.querySelector(".autoCompleteWorkaround").value = feedback.selection.value.Name
-            document.querySelector("#joinButton").setAttribute("href", `/Organisations/AcceptInvitation/?organisationId=${feedback.selection.value.Id}`)
-        }
-        staticAutocomplete(".autoCompleteWorkaround", content, "Name", onSelect)
+        autocompleteGeoSearch(null, url)
     </script>
 }

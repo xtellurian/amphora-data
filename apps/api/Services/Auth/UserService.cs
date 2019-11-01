@@ -8,6 +8,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using Amphora.Common.Models.Platform;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -16,18 +17,15 @@ namespace Amphora.Api.Services.Auth
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
-        private readonly IEmailLimitingService emailLimitingService;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<OrganisationModel> orgStore,
                            IPermissionService permissionService,
-                           IEmailLimitingService emailLimitingService,
                            IUserManager userManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
             this.permissionService = permissionService;
-            this.emailLimitingService = emailLimitingService;
             this.UserManager = userManager;
 
         }
@@ -35,6 +33,7 @@ namespace Amphora.Api.Services.Auth
         public IUserManager UserManager { get; protected set; }
 
         public async Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user,
+                                                                              InvitationModel invitation,
                                                                               string password)
         {
             using (logger.BeginScope(new LoggerScope<UserService>(user)))
@@ -45,11 +44,7 @@ namespace Amphora.Api.Services.Auth
                     logger.LogWarning("Duplicate User Id");
                     throw new System.ArgumentException("Duplicate User Id");
                 }
-                if (!emailLimitingService.CanSignup(user.Email))
-                {
-                    logger.LogWarning($"{user.Email} is not authorized to signup");
-                    return new EntityOperationResult<ApplicationUser>($"{user.Email} is not authorized to signup");
-                }
+                
                 logger.LogInformation("Creating User...");
                 var result = await UserManager.CreateAsync(user, password);
                 if (result.Succeeded)
