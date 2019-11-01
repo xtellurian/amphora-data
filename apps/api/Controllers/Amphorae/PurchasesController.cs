@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
-    public class PurchasesController: Controller
+    [SkipStatusCodePages]
+    public class PurchasesController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IPurchaseService purchaseService;
@@ -26,14 +27,14 @@ namespace Amphora.Api.Controllers.Amphorae
         public async Task<IActionResult> PurchaseAsync(string id)
         {
             var a = await amphoraeService.ReadAsync(User, id);
-            if(a.Succeeded)
+            if (a.Succeeded)
             {
                 var result = await purchaseService.PurchaseAmphora(User, a.Entity);
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     return Ok();
                 }
-                else if(result.WasForbidden)
+                else if (result.WasForbidden)
                 {
                     return StatusCode(403);
                 }
@@ -42,7 +43,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     return BadRequest();
                 }
             }
-            else if(a.WasForbidden)
+            else if (a.WasForbidden)
             {
                 return StatusCode(403);
             }

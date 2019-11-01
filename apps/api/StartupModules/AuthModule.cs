@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
+using Amphora.Api.Services.Platform;
 
 namespace Amphora.Api.StartupModules
 {
@@ -55,7 +56,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
-            services.AddTransient<IEmailLimitingService, EmailLimitingService>();
+            services.AddTransient<IInvitationService, InvitationService>();
         }
     }
 }

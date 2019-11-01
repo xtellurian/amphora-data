@@ -81,7 +81,7 @@ namespace Amphora.Api.Services.Amphorae
 
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(user)))
             {
-                var entity = await AmphoraStore.ReadAsync(id, includeChildren);
+                var entity = await AmphoraStore.ReadAsync(id);
                 logger.LogInformation($"Reading Amphora {id}");
 
                 if (entity == null)
@@ -113,7 +113,7 @@ namespace Amphora.Api.Services.Amphorae
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(user)))
             {
-                var existingEntity = await AmphoraStore.ReadAsync(entity.Id, false);
+                var existingEntity = await AmphoraStore.ReadAsync(entity.Id);
                 logger.LogInformation($"Updating Amphora {entity.Id}");
 
                 if (entity == null)
@@ -149,7 +149,7 @@ namespace Amphora.Api.Services.Amphorae
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(user)))
             {
                 logger.LogInformation($"Deleting Amphora {entity.Id}");
-                var existingEntity = await AmphoraStore.ReadAsync(entity.Id, false);
+                var existingEntity = await AmphoraStore.ReadAsync(entity.Id);
                 if (existingEntity == null)
                 {
                     logger.LogError($"{entity.Id} Not Found");

@@ -11,7 +11,7 @@ namespace Amphora.Api.Contracts
         Task<IList<T>> TopAsync();
         Task<IList<T>> TopAsync(string orgId);
         Task<T> CreateAsync(T entity);
-        Task<T> ReadAsync(string id, bool includeChildren = false);
+        Task<T> ReadAsync(string id);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task<IEnumerable<T>> QueryAsync(Expression<System.Func<T, bool>> where);

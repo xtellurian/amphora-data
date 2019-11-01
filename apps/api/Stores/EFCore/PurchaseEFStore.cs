@@ -37,7 +37,7 @@ namespace Amphora.Api.Stores.EFCore
             return await context.Purchases.Where(where).ToListAsync();
         }
 
-        public async Task<PurchaseModel> ReadAsync(string id, bool includeChildren = false)
+        public async Task<PurchaseModel> ReadAsync(string id)
         {
             var result = await context.Purchases.SingleOrDefaultAsync(a => a.AmphoraId == id);
             return result;

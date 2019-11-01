@@ -22,11 +22,7 @@
                     </span>
                     @if (@Model.CanInvite)
                     {
-                        <span><a asp-page="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
-                    }
-                    @if (@Model.CanAcceptInvite)
-                    {
-                        <span><a asp-asp-controller="./Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
+                        <span><a aspp-area="" asp-page="Home/Invite"> <button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Invite</button></a></span>
                     }
                     <span style="white-space: pre-line">@Model.Organisation.About</span>
                                      
@@ -50,7 +46,7 @@
                 <div class="card-header mb-2">
                     <div class="float-right">
                         <a asp-page="./Members" asp-route-id="@Model.Organisation.Id"><i class="fas fa-cog"></i> </a>
-                        <a asp-page="./Invite"><i class="fas fa-user-plus"></i> </a>
+                        <a asp-area="" asp-page="Home/Invite"><i class="fas fa-user-plus"></i> </a>
                     </div>
                     Members
                 </div>

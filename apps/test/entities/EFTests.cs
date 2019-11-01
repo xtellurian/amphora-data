@@ -31,7 +31,7 @@ namespace Amphora.Tests.Unit
 
                 Assert.NotNull(signal.Id);
 
-                a = await amphoraStore.ReadAsync(a.Id, true);
+                a = await amphoraStore.ReadAsync(a.Id);
                 Assert.NotNull(a.Signals);
                 Assert.Contains(a.Signals, m => string.Equals(m.SignalId, signal.Id));
 

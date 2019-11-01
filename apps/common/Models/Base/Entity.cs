@@ -9,12 +9,13 @@ namespace Amphora.Common.Models
         public Entity()
         {
             ttl = -1; // means no expiry
+            CreatedDate = DateTime.UtcNow;
         }
         public string Id { get; set; }
 
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; } = -1; // don't expire
-        public DateTime? CreatedDate {get; set; }
+        public DateTimeOffset? CreatedDate {get; set; }
 
     }
 }

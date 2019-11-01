@@ -9,6 +9,7 @@ namespace Amphora.Api.Controllers
 
     [Route("api/authentication")]
     [ApiController]
+    [SkipStatusCodePages]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticateService authService;

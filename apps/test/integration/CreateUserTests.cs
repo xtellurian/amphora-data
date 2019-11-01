@@ -20,7 +20,7 @@ namespace Amphora.Tests.Integration
 
 
         [Fact]
-        public async Task CanCreateUserWithCreateHeader()
+        public async Task CanCreateUser_FromAmphoraDataDomain()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -90,7 +90,7 @@ namespace Amphora.Tests.Integration
             {
                 Name = nameof(CreateUserTests),
             };
-            
+
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();
             var createdOrg = JsonConvert.DeserializeObject<OrganisationDto>(orgCreateContent);
@@ -100,6 +100,24 @@ namespace Amphora.Tests.Integration
             // now delete user
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
             deleteRequest.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task EmailCantSignupWithoutInvitation()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var email = System.Guid.NewGuid().ToString() + "@example.com";
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+            };
+
+            var response = await client.PostAsJsonAsync("api/users", user);
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }

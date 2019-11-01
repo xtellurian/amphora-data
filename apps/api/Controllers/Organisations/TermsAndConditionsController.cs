@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers.Organisations
 {
     [ApiController]
+     [SkipStatusCodePages]
     public class TermsAndConditionsController : Controller
     {
         private readonly IOrganisationService organisationService;

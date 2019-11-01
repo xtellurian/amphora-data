@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Converters;
 using Amphora.Api.Filters;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,11 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiController]
+    [SkipStatusCodePages]
     public class TimeSeriesController : Controller
     {
         private ITsiService tsiService;

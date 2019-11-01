@@ -18,7 +18,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     {
         private readonly IUserService userService;
         private readonly ISignInManager signInManager;
-        private readonly IOrganisationService organisationService;
+        private readonly IInvitationService invitationService;
         private readonly ILogger<RegisterModel> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEmailSender emailSender;
@@ -27,7 +27,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             IUserManager userManager,
             IUserService userService,
             ISignInManager signInManager,
-            IOrganisationService organisationService,
+            IInvitationService invitationService,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEntityStore<OrganisationModel> orgStore,
@@ -35,7 +35,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         {
             this.userService = userService;
             this.signInManager = signInManager;
-            this.organisationService = organisationService;
+            this.invitationService = invitationService;
             this.logger = logger;
             this.orgStore = orgStore;
             this.emailSender = emailSender;
@@ -76,9 +76,21 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         }
 
-        public void OnGet(string returnUrl = null)
+        public async Task<IActionResult> OnGet(string returnUrl = null, string email = null)
         {
             ReturnUrl = returnUrl;
+
+            if (email != null)
+            {
+                var invitation = await invitationService.GetInvitationByEmailAsync(email);
+                this.Organisation = invitation?.TargetOrganisation;
+                if (invitation == null)
+                {
+                    ModelState.AddModelError(string.Empty, $"{email} has not been invited to Amphora Data");
+                }
+            }
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -95,20 +107,29 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     FullName = Input.FullName
                 };
 
-                var result = await userService.CreateAsync(user, Input.Password);
+                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email);
+                if (invitation == null)
+                {
+                    ModelState.AddModelError(string.Empty, $"{user.Email} has not been invited to Amphora Data");
+                    return Page();
+                }
+                var result = await userService.CreateAsync(user, invitation, Input.Password);
 
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User created a new account with password.");
                     await SendConfirmationEmailAsync(result.Entity);
-                    
+
                     await signInManager.SignInAsync(result.Entity, isPersistent: false);
 
-                    if (string.IsNullOrEmpty(user.OrganisationId))
+                    if (string.IsNullOrEmpty(invitation.TargetOrganisationId))
                     {
-                        return RedirectToPage("/Organisations/Create");
+                        return RedirectToPage("./Create");
                     }
-                    return RedirectToPage(returnUrl);
+                    else
+                    {
+                        return RedirectToPage("/Join", new { area="organisations", orgId = invitation.TargetOrganisationId });
+                    }
                 }
                 else
                 {

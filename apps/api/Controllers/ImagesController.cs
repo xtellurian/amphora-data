@@ -10,6 +10,7 @@ namespace Amphora.Api.Controllers
 {
     [ApiController]
     [Authorize]
+    [SkipStatusCodePages]
     public class ImagesController : Controller
     {
         private readonly IOrganisationService organisationService;

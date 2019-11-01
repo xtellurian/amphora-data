@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Controllers
 {
+    [SkipStatusCodePages]
     public class HealthzController : ControllerBase
     {
         private readonly ILogger<HealthzController> logger;
+
 
         public HealthzController(ILogger<HealthzController> logger)
         {

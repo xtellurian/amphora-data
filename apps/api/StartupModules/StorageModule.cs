@@ -19,6 +19,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
+using Amphora.Common.Models.Platform;
 
 namespace Amphora.Api.StartupModules
 {
@@ -90,6 +91,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
+            services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             // services.AddScoped<IEntityStore<UserModel>, UserEFStore>();
         }
 

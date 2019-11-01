@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Controllers.Organisations
 {
     [ApiController]
+     [SkipStatusCodePages]
     public class AccountController : Controller
     {
         private readonly IOrganisationService organisationService;

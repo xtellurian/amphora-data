@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Platform;
 
 namespace Amphora.Api.DbContexts
 {
@@ -49,10 +50,8 @@ namespace Amphora.Api.DbContexts
             modelBuilder.Entity<OrganisationModel>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.OwnsMany(b => b.Invitations, a =>
-                {
-                    a.HasKey(i => i.TargetEmail);
-                });
+                // new global invitations
+                b.HasMany(_ => _.GlobalInvitations).WithOne(_ => _.TargetOrganisation).HasForeignKey(_ => _.TargetOrganisationId);
                 b.OwnsMany(b => b.Memberships, a =>
                 {
                     a.HasKey(nameof(Membership.UserId));
@@ -99,11 +98,19 @@ namespace Amphora.Api.DbContexts
             {
                 b.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
             });
+
+            modelBuilder.Entity<InvitationModel>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.HasOne(_ => _.TargetOrganisation).WithMany(_ => _.GlobalInvitations).HasForeignKey(_ => _.TargetOrganisationId);
+                b.HasData(new InvitationModel { TargetDomain = "AMPHORADATA.COM", Id = "01" });
+            });
         }
 
         public DbSet<AmphoraModel> Amphorae { get; set; }
         public DbSet<OrganisationModel> Organisations { get; set; }
         public DbSet<PurchaseModel> Purchases { get; set; }
         public DbSet<SignalModel> Signals { get; set; }
+        public DbSet<InvitationModel> Invitations { get; set; }
     }
 }
