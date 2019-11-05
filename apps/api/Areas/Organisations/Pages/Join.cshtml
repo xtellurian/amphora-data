@@ -5,24 +5,36 @@
     ViewData["Title"] = "Join Organisation";
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h3>You've been invited to join @Model.Invitation.TargetOrganisation.Name on Amphora Data</h3>
+@if(Model.Invitation != null)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>You've been invited to join @Model.Invitation.TargetOrganisation.Name on Amphora Data</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form method="post" asp-route-invitationId="@Model.Invitation.Id">
+                    <div class="form-group">
+                        <label asp-for="AcceptInvitation" class="control-label"></label>
+                        <input asp-for="AcceptInvitation" class="form-control" />
+                        <span asp-validation-for="AcceptInvitation" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <form method="post" asp-route-invitationId="@Model.Invitation.Id">
-                <div class="form-group">
-                    <label asp-for="AcceptInvitation" class="control-label"></label>
-                    <input asp-for="AcceptInvitation" class="form-control" />
-                    <span asp-validation-for="AcceptInvitation" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
-                </div>
-            </form>
+} else 
+{
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>You have not been invited to join this organisation. </h3>
+            </div>
         </div>
     </div>
-</div>
+}

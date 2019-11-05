@@ -71,5 +71,10 @@ namespace Amphora.Api.Stores
                 }
             });
         }
+
+        public string GetWritableUrl(T entity, string fileName)
+        {
+            return "";
+        }
     }
 }

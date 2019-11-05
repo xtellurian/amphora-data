@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -49,8 +50,9 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
-                if (fileResult.Succeeded)
+                if (fileResult.Succeeded && fileResult.Entity != null )
                 {
+                    // error when null
                     return File(fileResult.Entity, "application/octet-stream", file);
                 }
                 else if (fileResult.WasForbidden)
@@ -78,13 +80,14 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="file">The name of the file</param> 
         /// <param name="content">The content of the filex</param> 
         [HttpPut("api/amphorae/{id}/files/{file}")]
+        [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadToAmphora(string id, string file, IFormFile content)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
-                Models.EntityOperationResult<byte[]> fileResult;
+                Models.EntityOperationResult<UploadResponse> fileResult;
                 if (content != null && content.Length > 0)
                 {
                     using (var stream = new MemoryStream())
@@ -100,7 +103,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 }
                 if (fileResult.Succeeded)
                 {
-                    return Ok();
+                    return Ok(fileResult.Entity);
                 }
                 else if (result.WasForbidden)
                 {

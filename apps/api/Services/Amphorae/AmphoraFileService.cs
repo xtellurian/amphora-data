@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,7 @@ namespace Amphora.Api.Services.Amphorae
                 }
             }
         }
-        public async Task<EntityOperationResult<byte[]>> WriteFileAsync(
+        public async Task<EntityOperationResult<UploadResponse>> WriteFileAsync(
             ClaimsPrincipal principal,
             AmphoraModel entity,
             byte[] contents,
@@ -61,13 +62,22 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (granted)
                 {
-                    await this.Store.WriteBytesAsync(entity, file, contents);
-                    return new EntityOperationResult<byte[]>();
+                    if (contents.Length > 0)
+                    {
+                        logger.LogInformation("Writing contents");
+                        await this.Store.WriteBytesAsync(entity, file, contents);
+                    }
+                    else
+                    {
+                        logger.LogInformation("Contents are empty");
+                    }
+                    var url = this.Store.GetWritableUrl(entity, file);
+                    return new EntityOperationResult<UploadResponse>(new UploadResponse(url));
                 }
                 else
                 {
                     logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                    return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                    return new EntityOperationResult<UploadResponse>("Permission Denied") { WasForbidden = true };
                 }
             }
         }

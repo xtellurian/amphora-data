@@ -44,6 +44,19 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
         }
+
+        public string GetWritableUrl(AmphoraModel entity, string fileName)
+        {
+            var container = GetContainerReference(entity);
+
+            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
+            sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30);
+            sasConstraints.Permissions = SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create;
+
+            var blob = container.GetBlockBlobReference(fileName);
+            var uri = $"{blob.Uri}{blob.GetSharedAccessSignature(sasConstraints)}";
+            return uri;
+        }
         public async Task<byte[]> GetDataAsync(AmphoraModel entity, string name)
         {
             return await this.ReadBytesAsync(entity, name);

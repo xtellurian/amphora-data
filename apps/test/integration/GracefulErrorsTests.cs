@@ -17,7 +17,7 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_RandomByteArray_MethodNotAllowed(string url)
+        public async Task Post_RandomByteArray_Unauthorized(string url)
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration
             var response = await client.PostAsync(url, new ByteArrayContent(content));
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Theory]

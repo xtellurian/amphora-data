@@ -36,7 +36,11 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     this.Invitation = res.Entity.FirstOrDefault(_ => !_.IsClaimed);
                 }
                 else if (res.WasForbidden) return StatusCode(403);
-                else return BadRequest();
+                else 
+                {
+                    ModelState.AddModelError(string.Empty, res.Message);
+                    return Page();
+                }
 
             }
             else
