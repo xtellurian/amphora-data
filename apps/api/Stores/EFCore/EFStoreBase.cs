@@ -1,7 +1,4 @@
-using System;
-using Amphora.Api.DbContexts;
 using Amphora.Common.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Stores.EFCore
@@ -10,21 +7,18 @@ namespace Amphora.Api.Stores.EFCore
     {
         private readonly ILogger<EFStoreBase> logger;
 
-        public EFStoreBase() {}
+        public EFStoreBase() { }
         public EFStoreBase(ILogger<EFStoreBase> logger)
         {
             this.logger = logger;
         }
         public virtual void OnUpdateEntity(Entity entity)
         {
-            if(entity.ttl == null) 
+            if (entity.ttl == null)
             {
                 entity.ttl = -1;
                 logger?.LogInformation($"Setting {entity.Id} ttl to -1");
             }
         }
-
-        
-
     }
 }

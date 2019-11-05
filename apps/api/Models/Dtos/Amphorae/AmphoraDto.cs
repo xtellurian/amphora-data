@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class AmphoraDto
+    public class AmphoraDto: EntityDto
     {
-        public string Id { get; set; }
 
         [Required]
         public string Name { get; set; }

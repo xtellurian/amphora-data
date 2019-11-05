@@ -8,9 +8,9 @@ using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Models.Users;
-using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using Amphora.Api.Options;
 
 namespace Amphora.Api.Services.Amphorae
 {
@@ -18,19 +18,22 @@ namespace Amphora.Api.Services.Amphorae
     {
         public IEntityStore<AmphoraModel> AmphoraStore { get; private set; }
 
+        private readonly IOptionsMonitor<AmphoraManagementOptions> options;
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly ILogger<AmphoraeService> logger;
 
-        public AmphoraeService(IEntityStore<AmphoraModel> amphoraStore,
+        public AmphoraeService(IOptionsMonitor<AmphoraManagementOptions> options,
+                               IEntityStore<AmphoraModel> amphoraStore,
                                IEntityStore<PurchaseModel> purchaseStore,
                                IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserService userService,
                                ILogger<AmphoraeService> logger)
         {
+            this.options = options;
             AmphoraStore = amphoraStore;
             this.purchaseStore = purchaseStore;
             this.organisationStore = organisationStore;
@@ -158,7 +161,17 @@ namespace Amphora.Api.Services.Amphorae
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Delete);
                 if (authorized)
                 {
-                    await AmphoraStore.DeleteAsync(entity);
+                    if (options.CurrentValue?.SoftDelete.Value ?? false)
+                    {
+                        entity.IsDeleted = true;
+                        entity.ttl = options.CurrentValue?.DeletedTimeToLive ?? 48 * 60 * 60;
+                        await AmphoraStore.UpdateAsync(entity);
+                    }
+                    else
+                    {
+                        await AmphoraStore.DeleteAsync(entity);
+                    }
+
                     return new EntityOperationResult<AmphoraModel>();
                 }
                 else

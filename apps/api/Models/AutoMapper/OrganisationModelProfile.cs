@@ -1,5 +1,6 @@
 using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 
@@ -10,6 +11,7 @@ namespace Amphora.Api.Models.AutoMapper
         public OrganisationModelProfile()
         {
             CreateMap<OrganisationDto, OrganisationModel>()
+            .IncludeBase<EntityDto, Entity>()
             .ForMember(p => p.Account, o => o.Ignore())
             .ForMember(p => p.GlobalInvitations, o => o.Ignore())
             .ForMember(p => p.Memberships, o => o.Ignore())

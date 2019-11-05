@@ -26,6 +26,12 @@
             <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
         </div>
         <div class="col-md-8">
+            @if(Model.Amphora.IsDeleted.HasValue && Model.Amphora.IsDeleted.Value)
+            {
+                <div class="alert alert-danger" role="alert">
+                    Deletion Pending
+                </div>
+            }
             <div class="card bg-light">
                 <div class="card-header">
                     <div class="float-left">

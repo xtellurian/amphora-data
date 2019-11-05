@@ -12,6 +12,7 @@ using Amphora.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Tests.Unit
 {
@@ -38,13 +39,14 @@ namespace Amphora.Tests.Unit
                 mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
                 var permissionService = new PermissionService(permissionLogger, orgStore, amphoraStore);
-
-                var amphoraService = new AmphoraeService(amphoraStore,
-                                                        purchaseStore,
-                                                        orgStore,
-                                                        permissionService,
-                                                        mockUserService.Object,
-                                                        amphoraLogger);
+                var options = Mock.Of<IOptionsMonitor<Api.Options.AmphoraManagementOptions>>(_ => _.CurrentValue == new Api.Options.AmphoraManagementOptions());
+                var amphoraService = new AmphoraeService(options,
+                                                         amphoraStore,
+                                                         purchaseStore,
+                                                         orgStore,
+                                                         permissionService,
+                                                         mockUserService.Object,
+                                                         amphoraLogger);
                 var service = new BasicSearchService(amphoraService);
                 var orgModel = new OrganisationModel() { Name = "1234" };
                 var amphora = EntityLibrary.GetAmphoraModel(orgModel, nameof(MarketServiceTests)); // dumy org id

@@ -14,6 +14,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(p => p.IsClaimed, o => o.Ignore())
                 .ForMember(p => p.Id, o => o.Ignore())
                 .ForMember(p => p.ttl, o => o.Ignore())
+                .ForMember(p => p.IsDeleted, o => o.Ignore())
                 .ForMember(p => p.CreatedDate, o => o.Ignore());
         }
     }

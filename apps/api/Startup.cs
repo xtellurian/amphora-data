@@ -79,6 +79,8 @@ namespace Amphora.Api
 
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
+            services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
+
             // logical services
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();

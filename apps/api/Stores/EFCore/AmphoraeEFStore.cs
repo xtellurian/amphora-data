@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Common.Models.Amphorae;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Stores.EFCore
