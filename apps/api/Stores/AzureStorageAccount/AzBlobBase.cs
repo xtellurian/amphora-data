@@ -17,7 +17,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
         protected AzBlobBase(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase> logger)
         {
-
+            this.logger = logger;
             // Check whether the connection string can be parsed.
             CloudStorageAccount storageAccount;
             if (CloudStorageAccount.TryParse(options.CurrentValue.StorageConnectionString, out storageAccount))
