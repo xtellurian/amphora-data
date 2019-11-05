@@ -57,6 +57,7 @@ namespace Amphora.Api.Services.Auth
         public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
         {
             var user = await userManager.FindByNameAsync(request.Username);
+            if (user == null) return (false, null);
             using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
                 var token = string.Empty;

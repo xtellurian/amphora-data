@@ -12,20 +12,21 @@ namespace Amphora.Tests.Integration.Pages
         }
 
         [Theory]
-        [InlineData("/Organisations/AcceptInvitation")]
         [InlineData("/Organisations/Create")]
         [InlineData("/Organisations/Detail")]
         [InlineData("/Organisations/Edit")]
         [InlineData("/Organisations/Index")]
-        [InlineData("/Organisations/Invite")]
+        [InlineData("/Organisations/Join")]
         [InlineData("/Organisations/Members")]
+        [InlineData("/Organisations/TermsAndConditions")]
+        [InlineData("/Organisations/TermsAndConditions/Create")]
         // [InlineData("/Organisations/SetRole")] // doesn't work, needs extra params
         [InlineData("/Organisations/TermsAndConditions/Index")]
         public async Task CanLoadPage(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-
-            var response = await adminClient.GetAsync(path);
+            var qString = $"?id={adminOrg.Id}";
+            var response = await adminClient.GetAsync(path + qString);
             response.EnsureSuccessStatusCode();
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 

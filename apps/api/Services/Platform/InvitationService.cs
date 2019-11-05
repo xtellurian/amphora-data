@@ -28,11 +28,11 @@ namespace Amphora.Api.Services.Platform
         {
             invitation.TargetEmail = invitation.TargetEmail.ToUpper(); // set uppercase
             var user = await userService.ReadUserModelAsync(principal);
-            if (!user.EmailConfirmed && ! isDevelopment)
+            if (!user.EmailConfirmed && !isDevelopment)
             {
                 return new EntityOperationResult<InvitationModel>($"{user.Email} must confirm email address to invite");
-            } 
-            if( invitation.TargetOrganisationId != null &&  !user.IsAdmin())
+            }
+            if (invitation.TargetOrganisationId != null && !user.IsAdmin())
             {
                 return new EntityOperationResult<InvitationModel>($"{user.Email} must be an administrator to invite to an organisation");
             }
@@ -53,8 +53,16 @@ namespace Amphora.Api.Services.Platform
         public async Task<EntityOperationResult<IList<InvitationModel>>> GetMyInvitations(ClaimsPrincipal principal)
         {
             var user = await userService.ReadUserModelAsync(principal);
+            if (user == null) return new EntityOperationResult<IList<InvitationModel>>("null user") { WasForbidden = true };
             var existing = await invitationStore.QueryAsync(i => i.TargetEmail == user.NormalizedEmail);
-            return new EntityOperationResult<IList<InvitationModel>>(new List<InvitationModel>(existing));
+            if (existing.Count() > 0)
+            {
+                return new EntityOperationResult<IList<InvitationModel>>(new List<InvitationModel>(existing));
+            }
+            else
+            {
+                return new EntityOperationResult<IList<InvitationModel>>($"No Invitations found for {user.Email}");
+            }
         }
 
         public async Task<EntityOperationResult<InvitationModel>> GetInvitation(ClaimsPrincipal principal, string orgId)

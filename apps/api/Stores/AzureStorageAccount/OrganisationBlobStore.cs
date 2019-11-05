@@ -75,5 +75,10 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         {
             return $"organisation-{org.Id}";
         }
+
+        public Task<string> GetWritableUrl(OrganisationModel entity, string fileName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
