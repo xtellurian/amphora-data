@@ -50,7 +50,7 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
-                if (fileResult.Succeeded && fileResult.Entity != null )
+                if (fileResult.Succeeded && fileResult.Entity != null)
                 {
                     // error when null
                     return File(fileResult.Entity, "application/octet-stream", file);
@@ -105,25 +105,41 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else if (result.WasForbidden)
-                {
-                    return StatusCode(403, result.Errors);
-                }
-                else
-                {
-                    return NotFound();
-                }
+                else if (result.WasForbidden) return StatusCode(403, result.Errors);
+
+                else return NotFound();
+
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Errors);
-            }
-            else
-            {
-                return NotFound();
-            }
+            else if (result.WasForbidden) return StatusCode(403, result.Errors);
+            else return NotFound();
+
         }
 
+        /// <summary>
+        /// Creates a file. Returns a blob URL to upload to.
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="file">The name of the file</param> 
+        [HttpPost("api/amphorae/{id}/files/{file}")]
+        [Produces(typeof(UploadResponse))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> CreateFile(string id, string file)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var fileResult = await amphoraFileService.CreateFileAsync(User, result.Entity, file);
 
+                if (fileResult.Succeeded)
+                {
+                    return Ok(fileResult.Entity);
+                }
+                else if (result.WasForbidden) return StatusCode(403, result.Message);
+                else return NotFound();
+
+            }
+            else if (result.WasForbidden) return StatusCode(403, result.Message);
+            else return NotFound();
+        }
     }
 }
