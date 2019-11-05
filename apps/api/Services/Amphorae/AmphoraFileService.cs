@@ -61,7 +61,7 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (granted)
                 {
-                    var url = this.Store.GetWritableUrl(entity, file);
+                    var url = await this.Store.GetWritableUrl(entity, file);
                     return new EntityOperationResult<UploadResponse>(new UploadResponse(url));
                 }
                 else
@@ -95,7 +95,7 @@ namespace Amphora.Api.Services.Amphorae
                     {
                         logger.LogInformation("Contents are empty");
                     }
-                    var url = this.Store.GetWritableUrl(entity, file);
+                    var url = await this.Store.GetWritableUrl(entity, file);
                     return new EntityOperationResult<UploadResponse>(new UploadResponse(url));
                 }
                 else
