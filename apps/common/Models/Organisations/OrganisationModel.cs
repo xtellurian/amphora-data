@@ -13,7 +13,7 @@ namespace Amphora.Common.Models.Organisations
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
         // owned 
-        public virtual Account Account { get; set; }
+        public virtual Accounts.Account Account { get; set; }
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; }
         public virtual ICollection<Membership> Memberships { get; set; }
         // navigation

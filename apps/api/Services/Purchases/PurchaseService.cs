@@ -7,6 +7,7 @@ using Amphora.Api.Models;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;

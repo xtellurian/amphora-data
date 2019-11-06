@@ -5,6 +5,7 @@ using Amphora.Api.Services.Transactions;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Users;
 using Moq;
 using Xunit;

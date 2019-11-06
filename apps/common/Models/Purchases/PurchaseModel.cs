@@ -20,7 +20,6 @@ namespace Amphora.Common.Models.Purchases
             this.PurchasedByOrganisationId = user.OrganisationId;
             this.CreatedDate = System.DateTime.UtcNow;
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
-            this.ttl = 60 * 60 * 24 * 90; // 90 days
         }
         public double? Price { get; set; }
         

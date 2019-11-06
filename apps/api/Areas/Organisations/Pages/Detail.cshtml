@@ -32,10 +32,12 @@
             {
             <div class="card mb-3">
                 <div class="card-header">
-                    Balance
+                    <a asp-page="./Accounts/Index" >Account</a>
                 </div>
                 <div class="card-body">
-                    @(Model.Organisation.Account?.Balance ?? 0)
+                    <ul class="list-group">
+                        <li class="list-group-item">Balance: @(Model.Organisation.Account?.Balance ?? 0)</li>
+                    </ul>
                 </div>
             </div>
             }

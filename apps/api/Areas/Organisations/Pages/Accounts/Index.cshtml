@@ -1,0 +1,23 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Accounts.IndexModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Account
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">Balance: @(Model.Organisation.Account?.Balance ?? 0)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <a asp-page="./Debits" class="btn btn-danger btn-block">Debits</a>
+            <a asp-page="./Credits" class="btn btn-success btn-block">Credits</a>
+        </div>
+    </div>
+</div>
