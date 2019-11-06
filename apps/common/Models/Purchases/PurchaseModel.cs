@@ -1,3 +1,4 @@
+using System;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
@@ -22,7 +23,8 @@ namespace Amphora.Common.Models.Purchases
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
         }
         public double? Price { get; set; }
-        
+        public DateTimeOffset? LastDebitTime { get; set; }
+
         // navigation
         public string AmphoraId { get; set; }
         public virtual AmphoraModel Amphora { get; set; }

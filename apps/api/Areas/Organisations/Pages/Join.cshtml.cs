@@ -33,7 +33,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 var res = await invitationService.GetMyInvitations(User);
                 if (res.Succeeded)
                 {
-                    this.Invitation = res.Entity.FirstOrDefault(_ => !_.IsClaimed);
+                    this.Invitation = res.Entity.FirstOrDefault(_ => !_.IsClaimed.HasValue || !_.IsClaimed.Value); // either null or false
                 }
                 else if (res.WasForbidden) return StatusCode(403);
                 else 

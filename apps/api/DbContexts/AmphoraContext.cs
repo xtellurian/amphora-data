@@ -84,6 +84,7 @@ namespace Amphora.Api.DbContexts
                         c.WithOwner(d => d.Account);
                     });
                 });
+                b.HasMany(_ => _.Purchases).WithOne(p => p.PurchasedByOrganisation).HasForeignKey(_ => _.PurchasedByOrganisationId);
             });
 
             modelBuilder.Entity<PurchaseModel>(b =>
@@ -103,7 +104,7 @@ namespace Amphora.Api.DbContexts
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
                 b.HasOne(_ => _.TargetOrganisation).WithMany(_ => _.GlobalInvitations).HasForeignKey(_ => _.TargetOrganisationId);
-                b.HasData(new InvitationModel { TargetDomain = "AMPHORADATA.COM", Id = "01" });
+                b.HasData(new InvitationModel { TargetDomain = "AMPHORADATA.COM", Id = "01", IsGlobalAdmin = true });
             });
         }
 

@@ -3,7 +3,6 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth

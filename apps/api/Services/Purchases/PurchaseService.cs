@@ -12,7 +12,7 @@ using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Services.Transactions
+namespace Amphora.Api.Services.Purchases
 {
     public class PurchaseService : IPurchaseService
     {
@@ -55,17 +55,22 @@ namespace Amphora.Api.Services.Transactions
                     await SendPurchaseConfimationEmail(purchase);
                     if (purchase.Price.HasValue)
                     {
-                        // debit the account
+                        // debit the account initially
                         logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
                         if (org.Account == null) org.Account = new Account();
                         org.Account.DebitAccount($"Purchased Amphora {purchase.AmphoraId}", purchase.Price.Value);
                         org = await orgStore.UpdateAsync(org);
+
                     }
                     else
                     {
                         logger.LogWarning($"Amphora {amphora.Id} has no Price.");
                     }
+
+                    // update the purchase
+                    purchase.LastDebitTime = DateTime.UtcNow;
+                    purchase = await purchaseStore.UpdateAsync(purchase);
 
                     return new EntityOperationResult<PurchaseModel>(purchase);
                 }

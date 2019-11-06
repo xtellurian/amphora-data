@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Organisations
@@ -19,6 +20,7 @@ namespace Amphora.Common.Models.Organisations
         // navigation
         public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; }
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; }
+        public virtual ICollection<PurchaseModel> Purchases { get; set; }
         public string CreatedById { get; set; }
         public virtual ApplicationUser CreatedBy { get; set; }
 

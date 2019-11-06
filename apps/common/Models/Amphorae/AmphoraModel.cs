@@ -11,7 +11,6 @@ namespace Amphora.Common.Models.Amphorae
     {
         public AmphoraModel()
         {
-            Purchases = new List<PurchaseModel>();
         }
 
         public string Name { get; set; }
