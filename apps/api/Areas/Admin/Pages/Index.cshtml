@@ -3,9 +3,14 @@
 
 <div class="container">
     <div class="row">
-        <div class="col">
-            <a asp-page="./Purchases" class="btn btn-primary">Purchases</a>
-            <a asp-page="./Dashboard" class="btn btn-primary">Dashboard</a>
+        <div class="col-md-4">
+            <a asp-area="Admin" asp-page="/Purchases" class="btn btn-primary btn-block">Purchases</a>
+        </div>
+        <div class="col-md-4">
+            <a asp-area="Admin" asp-page="/Accounts/Index" class="btn btn-primary btn-block">Accounts</a>
+        </div>
+        <div class="col-md-4">
+            <a asp-area="Admin" asp-page="/Dashboard" class="btn btn-primary btn-block disabled" >Dashboard</a>
         </div>
     </div>
 </div>

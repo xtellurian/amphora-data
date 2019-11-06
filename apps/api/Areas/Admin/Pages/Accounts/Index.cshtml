@@ -1,0 +1,34 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.Accounts.IndexPageModel
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table id="entity-table" class="table table-borderless table-striped">
+                <thead>
+                    <tr>
+                    <th scope="col">Org</th>
+                    <th scope="col">Balance ($)</th>
+                    <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entity in Model.Orgs)
+                    {
+                     <tr class="entity-item">
+                        <th scope="row"> @entity.Name </th>
+                        <td>
+                            @entity.Account?.Balance
+                        </td>
+                        <td>  
+                            <a asp-area="Admin" asp-page="./AddCredit" asp-route-id="@entity.Id"> 
+                                <button class="btn btn-link text-success">Add Credit</button> 
+                            </a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

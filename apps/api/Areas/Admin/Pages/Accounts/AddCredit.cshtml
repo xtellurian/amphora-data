@@ -1,0 +1,35 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.Accounts.AddCreditPageModel
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            @if(! string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="alert alert-success" role="alert">
+                    @Model.Message
+                </div>
+            }
+            <div class="card">
+                <h2>Organisation: @Model.Organisation.Name </h2>
+                <h3>Balance: @Model.Organisation.Account?.Balance </h3>
+            </div>
+            <form method="post" asp-route-id="@Model.Id">
+                <div class="form-group">
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Label" class="control-label"></label>
+                    <input asp-for="Label" class="form-control" />
+                    <span asp-validation-for="Label" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+            <a asp-page="./Index"><button class="btn btn-secondary">Back</button></a>
+        </div>
+    </div>
+</div>
