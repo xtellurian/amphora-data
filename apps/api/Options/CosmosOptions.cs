@@ -9,10 +9,11 @@ namespace Amphora.Api.Options
 
         public string Endpoint { get; set; }
         public string Database { get; set; }
+        public int? DefaultTimeToLive { get; set; }
 
         public string GenerateConnectionString(string key)
         {
-            return  $"AccountEndpoint={Endpoint};AccountKey={key};Database={Database}";
+            return $"AccountEndpoint={Endpoint};AccountKey={key};Database={Database}";
         }
     }
 }

@@ -106,9 +106,9 @@ namespace Amphora.Api.StartupModules
                 context.Database.EnsureCreated();
             }
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>())
             {
-                initialiser.EnableCosmosTimeToLive(); // TODO
+                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>();
+                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
             }
         }
     }

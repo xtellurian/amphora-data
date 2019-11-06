@@ -6,9 +6,9 @@ namespace Amphora.Tests.Unit.Purchasing
     public class AccountServiceTests
     {
         [Fact]
-        public async Task PurchaseThisMonth_DeductsFromBalance()
+        public void PurchaseThisMonth_DeductsFromBalance()
         {
-            
+            // TODO
         } 
     }
 }
