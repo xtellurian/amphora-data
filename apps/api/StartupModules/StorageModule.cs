@@ -67,6 +67,7 @@ namespace Amphora.Api.StartupModules
             {
                 var cosmos = new CosmosOptions();
                 Configuration.GetSection("Cosmos").Bind(cosmos);
+                services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
                 services.AddDbContext<AmphoraContext>(options =>
                 {
                     options.UseCosmos(cosmos.Endpoint, cosmos.PrimaryKey, cosmos.Database);
@@ -87,6 +88,8 @@ namespace Amphora.Api.StartupModules
                 services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
             }
+
+            services.AddTransient<CosmosInitialiser>();
             // entity stores
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
@@ -101,6 +104,11 @@ namespace Amphora.Api.StartupModules
             using (var context = scope.ServiceProvider.GetService<AmphoraContext>())
             {
                 context.Database.EnsureCreated();
+            }
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>();
+                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
             }
         }
     }

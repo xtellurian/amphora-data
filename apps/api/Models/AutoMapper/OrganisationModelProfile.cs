@@ -1,5 +1,6 @@
 using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 
@@ -10,11 +11,13 @@ namespace Amphora.Api.Models.AutoMapper
         public OrganisationModelProfile()
         {
             CreateMap<OrganisationDto, OrganisationModel>()
+            .IncludeBase<EntityDto, Entity>()
             .ForMember(p => p.Account, o => o.Ignore())
             .ForMember(p => p.GlobalInvitations, o => o.Ignore())
             .ForMember(p => p.Memberships, o => o.Ignore())
             .ForMember(p => p.TermsAndConditions, o => o.Ignore())
             .ForMember(p => p.TermsAndConditionsAccepted, o => o.Ignore())
+            .ForMember(p => p.Purchases, o => o.Ignore())
             .ForMember(p => p.CreatedById, o => o.Ignore())
             .ForMember(p => p.CreatedBy, o => o.Ignore())
             .ForMember(p => p.ttl, o => o.MapFrom(src => -1))
@@ -26,7 +29,7 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(m => m.Organisation, o => o.Ignore())
             .ReverseMap();
 
-            CreateMap<Common.Models.Organisations.Account, Dtos.Organisations.Account>();
+            CreateMap<Common.Models.Organisations.Accounts.Account, Dtos.Organisations.Account>();
 
         }
     }

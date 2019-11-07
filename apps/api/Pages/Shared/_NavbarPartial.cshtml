@@ -2,13 +2,18 @@
 @using Amphora.Api.Contracts
 @inject ISignInManager SignInManager
 @inject IUserManager UserManager
-
+@{
+    var appUser = await UserManager.GetUserAsync(User);
+}
 <ul class="navbar-nav flex-grow-1 justify-content-end">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-
-    </li>
+    @if(appUser?.GlobalAdmin() ?? false)
+    {
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Admin" asp-page="/Index">Admin</a>
+        </li>
+    }
     <li class="nav-item">
         <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a>
     </li>
@@ -19,17 +24,17 @@
         <a class="nav-link text-light" asp-area="" asp-page="/Market/Index">Market</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="" asp-page="/Redirection/Chat"><i class="far fa-comments fa-lg"></i></a>
+        <a class="nav-link text-light" asp-area="" target="_blank" asp-page="/Redirection/Chat"><i class="far fa-comments fa-lg"></i></a>
     </li>
     var from = Context.Request.Host + Context.Request.Path;
     
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="" asp-page="/Redirection/Feedback" asp-route-from="@from"><i class="far fa-frown fa-lg"></i></a>
+        <a class="nav-link text-light" asp-area="" target="_blank" asp-page="/Redirection/Feedback" asp-route-from="@from"><i class="far fa-frown fa-lg"></i></a>
     </li>
 
     <li class="dropdown nav-item avatar">
         <a href="#" class="nav-link text-light dropdown-toggle p-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            @{var profileUri = (await UserManager.GetUserAsync(User))?.GetProfilePictureUri()?.ToString(); }
+            @{var profileUri = appUser?.GetProfilePictureUri()?.ToString(); }
             <img src="@profileUri" class="rounded-circle z-depth-0" alt="avatar image"/>
         </a>
         <ul class="dropdown-menu">

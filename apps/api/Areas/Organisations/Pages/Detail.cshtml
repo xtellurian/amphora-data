@@ -32,10 +32,12 @@
             {
             <div class="card mb-3">
                 <div class="card-header">
-                    Balance
+                    <a asp-page="./Accounts/Index" >Account</a>
                 </div>
                 <div class="card-body">
-                    @(Model.Organisation.Account?.Balance ?? 0)
+                    <ul class="list-group">
+                        <li class="list-group-item">Balance: @(Model.Organisation.Account?.Balance ?? 0)</li>
+                    </ul>
                 </div>
             </div>
             }
@@ -98,10 +100,10 @@
                             {
                             <tr class="entity-item">
                                 <th scope="row">
-                                    <img class="h-100 img-fluid" src="~/images/amphora_bullet.png">
+                                    <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
                                 </th>
                                 <td> @entity.Name </td>
-                                <td>@entity.Price</td>
+                                <td> @entity.Price </td>
                                 <td>  
                                     <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 

@@ -74,7 +74,7 @@ namespace Amphora.Api.Stores
 
         public Task<string> GetWritableUrl(T entity, string fileName)
         {
-            return null;
+            return Task.FromResult(string.Empty);
         }
     }
 }

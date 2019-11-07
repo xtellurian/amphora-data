@@ -35,7 +35,8 @@ namespace Amphora.Api.Services.Market
 
         public async Task<long?> CountAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12)
         {
-            var parameters = PrepareParameters(ref searchTerm, location, distance, skip, top);
+            searchTerm ??= "";
+            var parameters = PrepareParameters( location, distance, skip, top);
             var key = searchTerm + JsonConvert.SerializeObject(parameters) + "count";
             long? count;
             if (!cache.TryGetValue(key, out count))
@@ -51,7 +52,8 @@ namespace Amphora.Api.Services.Market
 
         public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12)
         {
-            var parameters = PrepareParameters(ref searchTerm, location, distance, skip, top);
+            searchTerm ??= "";
+            var parameters = PrepareParameters(location, distance, skip, top);
             EntitySearchResult<AmphoraModel> result;
             var key = searchTerm + parameters.GetHashCode() + "search";
             if (!cache.TryGetValue(key, out result))
@@ -65,11 +67,10 @@ namespace Amphora.Api.Services.Market
             return result.Results.Select(s => s.Entity);
         }
 
-        private static SearchParameters PrepareParameters(ref string searchTerm, GeoLocation location, double? distance, int? skip, int? top)
+        private static SearchParameters PrepareParameters(GeoLocation location, double? distance, int? skip, int? top)
         {
-            if (searchTerm == null) searchTerm = "";
             var d = distance.HasValue ? distance.Value : 100; // default to 100km
-            var parameters = new SearchParameters().WithPublicAmphorae();
+            var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted();
             if (location != null && location.Lat().HasValue && location.Lon().HasValue)
             {
                 parameters.WithGeoSearch(location.Lat().Value, location.Lon().Value, d);

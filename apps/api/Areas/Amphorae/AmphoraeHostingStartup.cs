@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
 
-[assembly: HostingStartup(typeof(Amphora.Areas.Amphorae.AmphoraeHostingStartup))]
-namespace Amphora.Areas.Amphorae
+[assembly: HostingStartup(typeof(Amphora.Api.Areas.Amphorae.AmphoraeHostingStartup))]
+namespace Amphora.Api.Areas.Amphorae
 {
     public class AmphoraeHostingStartup : IHostingStartup
     {

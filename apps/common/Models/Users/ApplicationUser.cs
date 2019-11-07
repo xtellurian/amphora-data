@@ -13,6 +13,7 @@ namespace Amphora.Common.Models.Users
     {
         public string About { get; set; }
         public string FullName { get; set; }
+        public bool? IsGlobalAdmin { get; set; }
 
         //navigation
         public string OrganisationId { get; set; }
@@ -28,6 +29,11 @@ namespace Amphora.Common.Models.Users
         {
             var membership = this.Organisation?.Memberships?.FirstOrDefault(m => m.UserId == this.Id);
             return membership?.Role == Roles.Administrator;
+        }
+
+        public bool GlobalAdmin()
+        {
+            return this.IsGlobalAdmin ?? false;
         }
     }
 }

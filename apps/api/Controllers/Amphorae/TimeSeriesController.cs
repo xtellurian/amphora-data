@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Filters;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

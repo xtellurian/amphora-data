@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amphora.Common.Models.Organisations
+namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Account
     {

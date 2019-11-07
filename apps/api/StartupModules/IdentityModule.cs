@@ -37,11 +37,7 @@ namespace Amphora.Api.StartupModules
             services.AddTransient<IUserManager, UserManagerWrapper<ApplicationUser>>();
 
 
-            services.AddDefaultIdentity<ApplicationUser>()
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<AmphoraContext>();
-
-            services.Configure<IdentityOptions>(options =>
+            services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 // Default SignIn settings.
                 options.SignIn.RequireConfirmedEmail = Boolean.Parse(Configuration
@@ -49,7 +45,10 @@ namespace Amphora.Api.StartupModules
                     .GetSection("SignIn")["RequireConfirmedEmail"] ?? "false");
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.RequireUniqueEmail = true;
-            });
+            })
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<AmphoraContext>();
+
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {

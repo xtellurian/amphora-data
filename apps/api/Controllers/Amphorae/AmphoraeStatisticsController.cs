@@ -44,8 +44,8 @@ namespace Amphora.Api.Controllers.Amphorae
             if (iFrame.HasValue && iFrame.Value)
             {
                 string myHostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
-                var img = $"{myHostUrl}/images/amphora_bullet.png";
-                var html = $"<div> <h1> <img src={img} /> {cacheEntry}</h1> </div>";
+                var img = $"{myHostUrl}/images/Amphora_Black.svg";
+                var html = $"<div> <h1> <img style=\"height:32px;\" src={img} /> {cacheEntry}</h1> </div>";
                 return Content(html, "text/html");
             }
             else

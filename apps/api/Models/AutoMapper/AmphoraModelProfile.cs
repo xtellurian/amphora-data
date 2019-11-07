@@ -1,6 +1,7 @@
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Signals;
 using AutoMapper;
 
@@ -11,7 +12,8 @@ namespace Amphora.Api.Models.AutoMapper
         public AmphoraModelProfile()
         {
 
-            CreateMap<AmphoraModel, AmphoraDto>();
+            CreateMap<AmphoraModel, AmphoraDto>()
+                .IncludeBase<Entity, EntityDto>();
 
             CreateMap<CreateAmphoraDto, AmphoraModel>()
                 .ForMember(o => o.Id, p => p.Ignore())
@@ -22,6 +24,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.Signals, p => p.Ignore())
                 .ForMember(o => o.Purchases, p => p.Ignore())
                 .ForMember(o => o.ttl, p => p.Ignore())
+                .ForMember(o => o.IsDeleted, p => p.Ignore())
                 .ForMember(o => o.CreatedBy, p => p.Ignore())
                 .ForMember(o => o.CreatedById, p => p.Ignore())
                 .ForMember(o => o.CreatedDate, p => p.Ignore())
@@ -29,6 +32,7 @@ namespace Amphora.Api.Models.AutoMapper
                     src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value): null));
 
             CreateMap<AmphoraExtendedDto, AmphoraModel>()
+            .IncludeBase<EntityDto, Entity>()
             .ForMember(o => o.Id, p => p.Ignore())
             .ForMember(o => o.Organisation, p => p.Ignore())
             .ForMember(o => o.TermsAndConditions, p => p.Ignore())

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Organisations.Accounts;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

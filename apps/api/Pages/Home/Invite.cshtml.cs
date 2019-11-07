@@ -59,13 +59,20 @@ namespace Amphora.Api.Pages.Home
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var user = await userService.ReadUserModelAsync(User);
+            this.Organisation = user.Organisation;
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            var user = await userService.ReadUserModelAsync(User);
-            this.Organisation = user.Organisation;
+            // check email confirmed
+            if (!user.EmailConfirmed)
+            {
+                ModelState.AddModelError(string.Empty, "You must have a confirmed email address");
+                return Page();
+            }
 
             if (Input?.TargetEmail != null)
             {

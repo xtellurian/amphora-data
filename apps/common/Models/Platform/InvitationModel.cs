@@ -6,11 +6,12 @@ namespace Amphora.Common.Models.Platform
     {
         public InvitationModel()
         {
-            
+
         }
         public string TargetEmail { get; set; }
         public string TargetDomain { get; set; }
-        public bool IsClaimed { get; set; }
+        public bool? IsClaimed { get; set; }
+        public bool? IsGlobalAdmin { get; set; }
 
         //navigation
         public string TargetOrganisationId { get; set; } // nullable

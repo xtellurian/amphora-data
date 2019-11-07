@@ -6,7 +6,7 @@ namespace Amphora.Api.Models.AzureSearch
 {
     public class AmphoraSearchIndex : Index
     {
-        public AmphoraSearchIndex(): base( )
+        public AmphoraSearchIndex() : base()
         {
             var fields = new List<Field>();
             fields.Add(new Field(nameof(AmphoraModel.Id), DataType.String)
@@ -31,10 +31,15 @@ namespace Amphora.Api.Models.AzureSearch
                 IsSearchable = true,
                 IsRetrievable = true
             });
-            // add about
+            // add description
             fields.Add(new Field(nameof(AmphoraModel.Description), DataType.String)
             {
                 IsSearchable = true
+            });
+            // add IsDeleted for soft delete
+            fields.Add(new Field(nameof(AmphoraModel.IsDeleted), DataType.Boolean)
+            {
+                IsFilterable = true
             });
             // add price
             fields.Add(new Field(nameof(AmphoraModel.Price), DataType.Double)

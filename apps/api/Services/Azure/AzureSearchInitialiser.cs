@@ -4,6 +4,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Options;
+using Amphora.Common.Models;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
@@ -116,10 +117,14 @@ namespace Amphora.Api.Services.Azure
         {
             var query = "SELECT * FROM c WHERE c.Discriminator = 'AmphoraModel' AND c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
+            var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(Entity.IsDeleted), "true");
             var dataSource = DataSource.CosmosDb("cosmos",
                                                  cosmosDbConnectionString,
                                                  nameof(AmphoraContext),
-                                                 query);
+                                                 query, 
+                                                 true,
+                                                 deletionPolicy, 
+                                                 $"Created by C# code {nameof(AzureSearchInitialiser)}");
             dataSource.Validate();
             dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
             return dataSource;

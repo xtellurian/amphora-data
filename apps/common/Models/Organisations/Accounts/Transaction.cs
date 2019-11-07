@@ -1,11 +1,11 @@
 using System;
 
-namespace Amphora.Common.Models.Organisations
+namespace Amphora.Common.Models.Organisations.Accounts
 {
-    public class Debit
+    public abstract class Transaction
     {
-        public Debit() { }
-        public Debit(string label, double amount)
+        public Transaction() { }
+        public Transaction(string label, double amount)
         {
             Label = label;
             Amount = amount;
@@ -15,5 +15,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual Account Account { get; set; }
         public double? Amount { get; set; }
         public string Label { get; set; }
+        public abstract bool IsCredit { get; }
+        public abstract bool IsDebit { get; }
     }
 }

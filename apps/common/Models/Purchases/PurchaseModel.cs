@@ -1,3 +1,4 @@
+using System;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
@@ -20,10 +21,10 @@ namespace Amphora.Common.Models.Purchases
             this.PurchasedByOrganisationId = user.OrganisationId;
             this.CreatedDate = System.DateTime.UtcNow;
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
-            this.ttl = 60 * 60 * 24 * 90; // 90 days
         }
         public double? Price { get; set; }
-        
+        public DateTimeOffset? LastDebitTime { get; set; }
+
         // navigation
         public string AmphoraId { get; set; }
         public virtual AmphoraModel Amphora { get; set; }

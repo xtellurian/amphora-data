@@ -44,8 +44,13 @@ namespace Amphora.Api.Services.Auth
                     logger.LogWarning("Duplicate User Id");
                     throw new System.ArgumentException("Duplicate User Id");
                 }
-                
+
                 logger.LogInformation("Creating User...");
+                if (invitation.IsGlobalAdmin.HasValue && invitation.IsGlobalAdmin.Value)
+                {
+                    logger.LogWarning($"Creating global admin {user.Email}");
+                    user.IsGlobalAdmin = invitation.IsGlobalAdmin;
+                }
                 var result = await UserManager.CreateAsync(user, password);
                 if (result.Succeeded)
                 {

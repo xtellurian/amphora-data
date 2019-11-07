@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Amphora.Api.Filters
+namespace Amphora.Api.AspNet
 {
     public class AddJsonContentType : Attribute, IResourceFilter
     {

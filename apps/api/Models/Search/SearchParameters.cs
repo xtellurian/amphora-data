@@ -22,6 +22,14 @@ namespace Amphora.Api.Models.Search
             return this;
         }
 
+        public SearchParameters NotDeleted()
+        {
+            if (this.Filter == null) Filter = "";
+            else if (this.Filter.Length > 1) this.Filter += " and ";
+            Filter += $"{nameof(AmphoraModel.IsDeleted)} ne true";
+            return this;
+        }
+
         public SearchParameters WithPublicAmphorae()
         {
             if (this.Filter == null) Filter = "";
@@ -31,23 +39,24 @@ namespace Amphora.Api.Models.Search
         }
         public static SearchParameters ForUserAsCreator(IUser user)
         {
-            return new SearchParameters()
+            var p = new SearchParameters()
             {
                 IsForUserAsCreator = true,
                 Filter = $"{nameof(AmphoraModel.CreatedById)} eq '{user.Id}'"
             };
+            return p.NotDeleted();
         }
 
         public static SearchParameters GeoSearch(double lat, double lon, double dist)
         {
-            return new SearchParameters().WithGeoSearch(lat, lon, dist);
+            return new SearchParameters().WithGeoSearch(lat, lon, dist).NotDeleted();
         }
         public static SearchParameters ByOrganisation(string orgId, Type discriminator)
         {
             return new SearchParameters
             {
                 Filter = $"{nameof(AmphoraModel.OrganisationId)} eq '{orgId}' and Discriminator eq '{nameof(discriminator)}'"
-            };
+            }.NotDeleted();
         }
         public static SearchParameters AllPurchased(string userId)
         {
@@ -56,7 +65,7 @@ namespace Amphora.Api.Models.Search
             {
                 // tags/any(t: t eq 'wifi')
                 Filter = $"{nameof(AmphoraModel.Purchases)}/any(h: h/{p} eq '{userId}')"
-            };
+            }.NotDeleted();
         }
 
         public static SearchParameters PublicAmphorae()
@@ -64,7 +73,7 @@ namespace Amphora.Api.Models.Search
             return new SearchParameters
             {
                 Filter = $"{nameof(AmphoraModel.IsPublic)} eq true"
-            };
+            }.NotDeleted();
         }
     }
 }

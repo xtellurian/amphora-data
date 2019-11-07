@@ -37,24 +37,30 @@ namespace Amphora.Api.StartupModules
                 options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
-            services.AddAuthentication()
-            .AddJwtBearer(x =>
-           {
-               x.RequireHttpsMetadata = HostingEnvironment.IsProduction();
-               x.SaveToken = true;
-               x.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuerSigningKey = true,
-                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
-                   ValidIssuer = token.Issuer,
-                   ValidAudience = token.Audience,
-                   ValidateIssuer = false,
-                   ValidateAudience = false
-               };
-           }).AddCookie();
+            services.AddAuthentication().AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = HostingEnvironment.IsProduction();
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
+                        ValidIssuer = token.Issuer,
+                        ValidAudience = token.Audience,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                }).AddCookie();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GlobalAdminRequirement.GlobalAdminPolicyName, policy =>
+                    policy.Requirements.Add(new GlobalAdminRequirement()));
+            });
            
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
             services.AddTransient<IInvitationService, InvitationService>();
         }

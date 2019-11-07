@@ -13,11 +13,11 @@ using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.FeatureFlags;
-using Amphora.Api.Services.Transactions;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
 using Amphora.Api.Converters;
+using Amphora.Api.Services.Purchases;
 
 namespace Amphora.Api
 {
@@ -79,11 +79,14 @@ namespace Amphora.Api
 
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
+            services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
+
             // logical services
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
+            services.AddTransient<IAccountsService, AccountsService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();
