@@ -37,23 +37,27 @@
                <div class="container">
                    <table id="entity-table" class="table table-borderless table-striped">
                         <thead>
-                            <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price ($)</th>
-                            <th scope="col"></th>
+                            <tr class="row">
+                                <th class="col-2"></th>
+                                <th class="col-6">Name</th>
+                                <th class="d-none d-sm-block col-sm-2 text-right">Price ($)</th>
+                                <th class="col-sm-2"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var entity in Model.PinnedAmphorae)
                             {
-                            <tr class="entity-item">
-                                <th scope="row">
+                            <tr class="row align-items-center entity-item">
+                                <th class="col-2">
                                     <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
                                 </th>
-                                <td> @entity.Name </td>
-                                <td>@entity.Price</td>
-                                <td>  
+                                <td class="col-6">
+                                    @entity.Name 
+                                </td>
+                                <td class="d-none d-sm-block col-sm-2 text-right">
+                                    @entity.Price 
+                                </td>
+                                <td class="col-sm-2">
                                     <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
                                     </a>

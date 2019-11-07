@@ -115,7 +115,7 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
         const x = new tsiClient.ux.TsqExpression(
             { timeSeriesId: [id] },
             y,
-            { from, to, bucketSize: '6h' },
+            { from, to, bucketSize: '2h' },
             '#' + colors[colourCount++], // color
             sig.Property);
 
