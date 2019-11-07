@@ -106,5 +106,13 @@ body {
   float: right;
 }
 #main .main-header {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.img-bullet {
+  height: 35px;
+}
+
+.entity-table td {
+  overflow: hidden;
 }
