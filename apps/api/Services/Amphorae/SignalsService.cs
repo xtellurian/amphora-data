@@ -135,7 +135,7 @@ namespace Amphora.Api.Services.Amphorae
                 foreach (var s in stringSignals)
                 {
                     var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Signal.Property);
-                    if(p?.Values != null) dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct());
+                    if (p?.Values != null) dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct());
                 }
                 return dic;
             }
@@ -150,7 +150,14 @@ namespace Amphora.Api.Services.Amphorae
                                                NullValueHandling = NullValueHandling.Ignore,
                                                ContractResolver = new CamelCasePropertyNamesContractResolver()
                                            });
-            await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
+            if (eventHubClient == null)
+            {
+                logger.LogWarning("EventHubClient is null. Not Sending anything...");
+            }
+            else
+            {
+                await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
+            }
         }
     }
 }

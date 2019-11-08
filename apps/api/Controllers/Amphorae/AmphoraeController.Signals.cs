@@ -99,12 +99,12 @@ namespace Amphora.Api.Controllers.Amphorae
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Obsolete]
-        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, object> data)
+        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, string> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                await signalService.WriteSignalAsync(User, result.Entity, data);
+                await signalService.WriteSignalAsync(User, result.Entity, new Dictionary<string, object>());
                 return Ok();
             }
             else if (result.WasForbidden)

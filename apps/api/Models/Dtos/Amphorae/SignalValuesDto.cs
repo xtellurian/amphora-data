@@ -6,6 +6,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     public class SignalValuesDto
     {
         [Required]
-        public List<SignalValueDto> SignalValues { get; set; }
+        public List<PropertyValuePair> SignalValues { get; set; }
     }
 }
