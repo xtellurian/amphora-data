@@ -10,9 +10,9 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class SignalDataTests: IntegrationTestBase
+    public class SignalDataTests : IntegrationTestBase
     {
-        public SignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public SignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -20,7 +20,7 @@ namespace Amphora.Tests.Integration
         [InlineData("/api/amphorae")]
         public async Task UploadSignalValuesTo_MissingAmphora(string url)
         {
-             // Arrange
+            // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
 
             var id = System.Guid.NewGuid();
@@ -32,13 +32,13 @@ namespace Amphora.Tests.Integration
             var response = await client.PostAsync($"{url}/{id}/signals/values", content);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound , response.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
         public async Task CanUploadSignal()
         {
-        // Arrange
+            // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanUploadSignal));
             var s = JsonConvert.SerializeObject(a);
@@ -55,8 +55,8 @@ namespace Amphora.Tests.Integration
             a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
-            var dSignal = new SignalDto(){Property="d", ValueType= "Numeric"};
-            var sSignal = new SignalDto(){Property="s", ValueType= "String"};
+            var dSignal = new SignalDto() { Property = "d", ValueType = "Numeric" };
+            var sSignal = new SignalDto() { Property = "s", ValueType = "String" };
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
@@ -65,16 +65,16 @@ namespace Amphora.Tests.Integration
             sRes.EnsureSuccessStatusCode();
 
             // act
-            var values = new SignalValuesDto()
-            {
-                SignalValues = new List<PropertyValuePair>
+
+            var vals = new Dictionary<string, object>
                 {
-                    new PropertyValuePair("d", 5),
-                    new PropertyValuePair("s", "hello")
-                }
-            };
-            adminClient.DefaultRequestHeaders.Add("X-Api-Version", "Nov-19");
-            var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", values);
+                    {"d", 5},
+                    {"s", "hello"}
+                };
+
+
+
+            var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
             valRes.EnsureSuccessStatusCode();
 
 

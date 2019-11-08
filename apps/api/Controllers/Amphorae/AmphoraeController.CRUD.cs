@@ -128,6 +128,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id</param>  
         [HttpDelete("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Produces(typeof(string))]
         public async Task<IActionResult> Delete_Api(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
@@ -135,7 +136,7 @@ namespace Amphora.Api.Controllers.Amphorae
             var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok("Deleted Amohora");
             }
             else if (result.WasForbidden)
             {

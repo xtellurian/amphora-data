@@ -99,7 +99,7 @@ namespace Amphora.Api.Controllers
         /// Deletes an organisation.
         /// </summary>
         /// <param name="id">Organisation Id</param>
-        [Produces(typeof(OrganisationDto))]
+        [Produces(typeof(string))]
         [HttpDelete("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteOrganisation(string id)
@@ -107,7 +107,7 @@ namespace Amphora.Api.Controllers
             var org = await entityStore.ReadAsync(id);
             if (org == null) return NotFound();
             await entityStore.DeleteAsync(org);
-            return Ok();
+            return Ok("Deleted Organisation");
         }
     }
 }

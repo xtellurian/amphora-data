@@ -95,47 +95,23 @@ namespace Amphora.Api.Controllers.Amphorae
             }
         }
 
-        [HttpPost("api/amphorae/{id}/signals/values")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        [Obsolete]
-        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, string> data)
-        {
-            var result = await amphoraeService.ReadAsync(User, id, true);
-            if (result.Succeeded)
-            {
-                await signalService.WriteSignalAsync(User, result.Entity, new Dictionary<string, object>());
-                return Ok();
-            }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
-            else
-            {
-                return NotFound(result.Message);
-            }
-        }
-
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         /// <param name="data">Signal Values</param>  
-        /// <param name="apiVersion">Only 'Nov-19'</param>  
-        [HttpPost("api/amphorae/{id}/signals/values"), HttpHeader("X-Api-Version", "Nov-19")]
-        [Produces(typeof(Dictionary<string,object>))]
+        [HttpPost("api/amphorae/{id}/signals/values")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadSignal_value([FromHeader(Name = "X-Api-Version")] string apiVersion, string id, SignalValuesDto data)
+        [Produces(typeof(Dictionary<string, object>))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, object> data)
         {
-            if (data?.SignalValues == null || data.SignalValues.Count == 0) return BadRequest();
-            if (string.IsNullOrEmpty(apiVersion)) return BadRequest("X-Api-Version is a required header.");
-            if (!ModelState.IsValid) return BadRequest();
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                var res = await signalService.WriteSignalAsync(User, result.Entity, data.SignalValues.ToObjectDictionary());
-                if(res.Succeeded)
+                var res = await signalService.WriteSignalAsync(User, result.Entity, data);
+                if (res.Succeeded)
                 {
                     return Ok(res.Entity);
                 }

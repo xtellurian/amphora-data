@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -97,6 +98,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="userName">UserName of user to delete.</param>
         [HttpDelete("api/users/{username}")]
+        [OpenApiIgnore]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUser_Key(string userName)
         {

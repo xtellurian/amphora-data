@@ -44,6 +44,7 @@ namespace Amphora.Api.Controllers
         /// <param name="orgId">Organisation to accept invitation for</param>
         /// <param name="dto">Invitation to accept</param>
         [HttpPost("api/invitations/{orgId}")]
+        [Produces(typeof(AcceptInvitationDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AcceptInvitation(string orgId, AcceptInvitationDto dto)
         {
@@ -53,7 +54,7 @@ namespace Amphora.Api.Controllers
                 var acceptResult = await invitationService.AcceptInvitationAsync(User, res.Entity);
                 if(acceptResult.Succeeded)
                 {
-                    return Ok();
+                    return Ok(dto);
                 }
                 else if (acceptResult.WasForbidden) return StatusCode(403);
                 else return BadRequest(acceptResult.Message);
@@ -68,6 +69,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="invitation">Invitation details</param>
         [HttpPost("api/invitations/")]
+        [Produces(typeof(InvitationDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> InviteNewUser(InvitationDto invitation)
         {
@@ -75,7 +77,7 @@ namespace Amphora.Api.Controllers
             var res = await invitationService.CreateInvitation(User, model);
             if (res.Succeeded)
             {
-                return Ok();
+                return Ok(invitation);
             }
             else if (res.WasForbidden) return StatusCode(403);
             else

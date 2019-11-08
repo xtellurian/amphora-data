@@ -23,6 +23,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         [HttpPost("api/Amphorae/{id}/Purchases")]
+        [Produces(typeof(string))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PurchaseAsync(string id)
         {
@@ -32,7 +33,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var result = await purchaseService.PurchaseAmphora(User, a.Entity);
                 if (result.Succeeded)
                 {
-                    return Ok();
+                    return Ok("Purchased Amphora");
                 }
                 else if (result.WasForbidden)
                 {
