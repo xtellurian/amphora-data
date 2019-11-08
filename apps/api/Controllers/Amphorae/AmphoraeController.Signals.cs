@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Signals;
@@ -14,7 +17,7 @@ namespace Amphora.Api.Controllers.Amphorae
     public partial class AmphoraeController : Controller
     {
         private readonly IOptionsMonitor<SignalOptions> options;
-        
+
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
@@ -91,19 +94,44 @@ namespace Amphora.Api.Controllers.Amphorae
                 return BadRequest(ex.Message);
             }
         }
-        /// <summary>
-        /// Get's the signals associated with an Amphora.
-        /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="data">Signal Values</param>  
+
         [HttpPost("api/amphorae/{id}/signals/values")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadSignal_value(string id, [FromBody] Dictionary<string, object> data)
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [Obsolete]
+        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
                 await signalService.WriteSignalAsync(User, result.Entity, data);
+                return Ok();
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get's the signals associated with an Amphora.
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="data">Signal Values</param>  
+        [HttpPost("api/amphorae/{id}/signals/values"), HttpHeader("API-VERSION", "Nov-19")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> UploadSignal_value(string id, SignalValuesDto data)
+        {
+            if (data?.SignalValues == null || data.SignalValues.Count == 0) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
+            var result = await amphoraeService.ReadAsync(User, id, true);
+            if (result.Succeeded)
+            {
+                await signalService.WriteSignalAsync(User, result.Entity, data.SignalValues.ToObjectDictionary());
                 return Ok();
             }
             else if (result.WasForbidden)

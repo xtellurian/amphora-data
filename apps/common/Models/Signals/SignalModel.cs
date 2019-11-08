@@ -5,9 +5,9 @@ namespace Amphora.Common.Models.Signals
 {
     public class SignalModel : Entity
     {
-        public static string Numeric => nameof(Numeric);
-        public static string String => nameof(String);
-        public static string DateTime => nameof(DateTime);
+        public const string Numeric = nameof(Numeric);
+        public const string String = nameof(String);
+        public const string DateTime = nameof(DateTime);
         public static List<string> Options => new List<string> { Numeric, String };
 
         public SignalModel()
