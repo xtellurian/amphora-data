@@ -124,6 +124,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="data">Signal Values</param>  
         /// <param name="apiVersion">Only 'Nov-19'</param>  
         [HttpPost("api/amphorae/{id}/signals/values"), HttpHeader("X-Api-Version", "Nov-19")]
+        [Produces(typeof(Dictionary<string,object>))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadSignal_value([FromHeader(Name = "X-Api-Version")] string apiVersion, string id, SignalValuesDto data)
         {
@@ -133,8 +134,12 @@ namespace Amphora.Api.Controllers.Amphorae
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                await signalService.WriteSignalAsync(User, result.Entity, data.SignalValues.ToObjectDictionary());
-                return Ok();
+                var res = await signalService.WriteSignalAsync(User, result.Entity, data.SignalValues.ToObjectDictionary());
+                if(res.Succeeded)
+                {
+                    return Ok(res.Entity);
+                }
+                else return BadRequest(res.Message);
             }
             else if (result.WasForbidden)
             {
