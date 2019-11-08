@@ -122,11 +122,13 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         /// <param name="data">Signal Values</param>  
-        [HttpPost("api/amphorae/{id}/signals/values"), HttpHeader("API-VERSION", "Nov-19")]
+        /// <param name="apiVersion">Only 'Nov-19'</param>  
+        [HttpPost("api/amphorae/{id}/signals/values"), HttpHeader("X-Api-Version", "Nov-19")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadSignal_value(string id, SignalValuesDto data)
+        public async Task<IActionResult> UploadSignal_value([FromHeader(Name = "X-Api-Version")] string apiVersion, string id, SignalValuesDto data)
         {
             if (data?.SignalValues == null || data.SignalValues.Count == 0) return BadRequest();
+            if (string.IsNullOrEmpty(apiVersion)) return BadRequest("X-Api-Version is a required header.");
             if (!ModelState.IsValid) return BadRequest();
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
