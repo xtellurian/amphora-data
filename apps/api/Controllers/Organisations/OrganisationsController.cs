@@ -39,7 +39,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(OrganisationDto))]
         [HttpPost("api/organisations")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> CreateOrganisation([FromBody]OrganisationDto dto) //TODO make this a DTO
+        public async Task<IActionResult> Create([FromBody]OrganisationDto dto) //TODO make this a DTO
         {
             var org = mapper.Map<OrganisationModel>(dto);
             var result = await organisationService.CreateOrganisationAsync(User, org);
@@ -65,7 +65,7 @@ namespace Amphora.Api.Controllers
         /// <param name="org">Organisation Information. All fields are updated.</param>  
         [HttpPut("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UpdateOrganisation(string id, [FromBody]OrganisationDto org)
+        public async Task<IActionResult> Update(string id, [FromBody]OrganisationDto org)
         {
             var entity = await entityStore.ReadAsync(id);
             if (entity == null) return NotFound();
@@ -84,7 +84,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> GetOrganisation(string id)
+        public async Task<IActionResult> Read(string id)
         {
             var org = await entityStore.ReadAsync(id);
             if (org == null) return NotFound();
@@ -102,7 +102,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(string))]
         [HttpDelete("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> DeleteOrganisation(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var org = await entityStore.ReadAsync(id);
             if (org == null) return NotFound();

@@ -6,11 +6,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiIgnore]
     public class InvitationsController : Controller
     {
         private readonly IInvitationService invitationService;
@@ -27,7 +29,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         [HttpGet("api/invitations/")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> GetMyInvitations()
+        public async Task<IActionResult> ReadMyInvitations()
         {
             var res = await invitationService.GetMyInvitations(User);
             if (res.Succeeded)

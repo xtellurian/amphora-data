@@ -32,7 +32,7 @@ namespace Amphora.Api.Controllers.Organisations
         [Produces(typeof(TermsAndConditionsDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("api/Organisations/{id}/TermsAndConditions")]
-        public async Task<IActionResult> CreateTermsAndConditions(string id, [FromBody] TermsAndConditionsDto dto)
+        public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditionsDto dto)
         {
             var org = await organisationService.Store.ReadAsync(id);
             if (org.TermsAndConditions?.Any(t => t.Name == dto.Name) ?? false)
@@ -66,7 +66,7 @@ namespace Amphora.Api.Controllers.Organisations
         [Produces(typeof(IEnumerable<TermsAndConditionsDto>))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("api/Organisations/{id}/TermsAndConditions")]
-        public async Task<IActionResult> GetTermsAndConditions(string id)
+        public async Task<IActionResult> Read(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);
             return Ok(mapper.Map<List<TermsAndConditionsDto>>(org.TermsAndConditions));

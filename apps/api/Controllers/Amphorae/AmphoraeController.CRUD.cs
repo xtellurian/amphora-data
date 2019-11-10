@@ -49,7 +49,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPost("api/amphorae")]
         [Produces(typeof(AmphoraExtendedDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateAmphoraDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateAmphoraDto dto)
         {
             if (dto == null || dto.Name == null)
             {
@@ -78,7 +78,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpGet("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> ReadAsync(string id)
+        public async Task<IActionResult> Read(string id)
         {
             var result = await this.amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
@@ -102,7 +102,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpPut("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] AmphoraExtendedDto dto)
+        public async Task<IActionResult> Update(string id, [FromBody] AmphoraExtendedDto dto)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
             if (a == null) return NotFound();
@@ -129,7 +129,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpDelete("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(string))]
-        public async Task<IActionResult> Delete_Api(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
             if (!readResult.Succeeded) return NotFound();

@@ -4,7 +4,7 @@ using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -25,6 +25,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         [HttpGet("api/organisations/{id}/profile.jpg")]
+        [OpenApiIgnore]
         public async Task<IActionResult> GetOrganisationProfileImage(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.AzureMaps;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -54,7 +53,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/market/search")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> FindAsync(string query, int? top, int? skip)
+        public async Task<IActionResult> Find(string query, int? top, int? skip)
         {
             var s = await marketService.FindAsync(query, skip: skip, top: top);
             var dto = mapper.Map<List<AmphoraDto>>(s);

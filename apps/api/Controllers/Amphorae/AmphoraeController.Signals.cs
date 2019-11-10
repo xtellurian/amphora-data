@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.AspNet;
-using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Signals;
@@ -105,7 +103,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UploadSignal_value_old(string id, [FromBody] Dictionary<string, object> data)
+        public async Task<IActionResult> UploadSignal(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)

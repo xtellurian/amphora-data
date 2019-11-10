@@ -82,7 +82,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPut("api/amphorae/{id}/files/{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadToAmphora(string id, string file, IFormFile content)
+        public async Task<IActionResult> UploadFile(string id, string file, IFormFile content)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
@@ -123,7 +123,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPost("api/amphorae/{id}/files/{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> CreateFile(string id, string file)
+        public async Task<IActionResult> CreateFileRequest(string id, string file)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
