@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -55,7 +56,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dto">User parameters</param>
         [Produces(typeof(string))]
         [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto dto)
+        public async Task<IActionResult> Create([FromBody] UserDto dto)
         {
             if(! ModelState.IsValid)
             {
@@ -97,8 +98,9 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="userName">UserName of user to delete.</param>
         [HttpDelete("api/users/{username}")]
+        [OpenApiIgnore]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> DeleteUser_Key(string userName)
+        public async Task<IActionResult> Delete(string userName)
         {
             if (userName == null) return BadRequest("username is required");
             var user = (await userService.UserManager.FindByNameAsync(userName));

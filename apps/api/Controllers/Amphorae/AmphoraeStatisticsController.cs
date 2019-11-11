@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
@@ -26,6 +27,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         [Produces(typeof(int))]
         [HttpGet("api/amphoraeStats/count")]
+        [OpenApiIgnore]
         public async Task<IActionResult> Count(bool? iFrame)
         {
             // using a cache to prevent this public endpoint being smashed;

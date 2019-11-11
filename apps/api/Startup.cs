@@ -126,7 +126,7 @@ namespace Amphora.Api
 
                 document.Description = "API for interacting with the Amphora Data platform.";
                 document.Title = "Amphora Data Api";
-                document.Version = "0.1.2";
+                document.Version = "0.1.4";
 
             });
         }

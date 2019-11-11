@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Amphora.Api.Controllers.Amphorae
     public partial class AmphoraeController : Controller
     {
         private readonly IOptionsMonitor<SignalOptions> options;
-        
+
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
@@ -91,6 +92,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 return BadRequest(ex.Message);
             }
         }
+
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
@@ -98,13 +100,20 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="data">Signal Values</param>  
         [HttpPost("api/amphorae/{id}/signals/values")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadSignal_value(string id, [FromBody] Dictionary<string, object> data)
+        [Produces(typeof(Dictionary<string, object>))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UploadSignal(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                await signalService.WriteSignalAsync(User, result.Entity, data);
-                return Ok();
+                var res = await signalService.WriteSignalAsync(User, result.Entity, data);
+                if (res.Succeeded)
+                {
+                    return Ok(res.Entity);
+                }
+                else return BadRequest(res.Message);
             }
             else if (result.WasForbidden)
             {

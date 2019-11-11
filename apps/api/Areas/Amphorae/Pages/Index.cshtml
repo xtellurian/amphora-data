@@ -48,8 +48,8 @@
             <table id="entity-table" class="table table-borderless table-striped">
                 <thead>
                     <tr class="row">
-                        <th class="col-sm-1"></th>
-                        <th class="col-sm-7">Name</th>
+                        <th class="col-2"></th>
+                        <th class="col-6">Name</th>
                         <th class="d-none d-sm-block col-sm-2 text-right">Price ($)</th>
                         <th class="col-sm-2"></th>
                     </tr>
@@ -58,10 +58,10 @@
                     @foreach (var entity in Model.Amphorae)
                     {
                      <tr class="row align-items-center entity-item">
-                        <th class="col-sm-1">
+                        <th class="col-2">
                             <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
                         </th>
-                        <td class="col-sm-7">
+                        <td class="col-6">
                             @entity.Name 
                         </td>
                         <td class="d-none d-sm-block col-sm-2 text-right">

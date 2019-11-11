@@ -28,7 +28,7 @@ namespace Amphora.Api.Controllers.Organisations
         [Produces(typeof(Models.Dtos.Organisations.Account))]
         [HttpGet("api/Organisations/{id}/Account")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> GetAccount(string id)
+        public async Task<IActionResult> Read(string id)
         {
             var res = await organisationService.ReadAsync(User, id);
             if (res.Succeeded)

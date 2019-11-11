@@ -23,7 +23,9 @@
                 <button class="btn btn-success btn-block">Accept</button>
             </form>
             }
-            <a asp-area="" asp-page="/Index"><button class="mt-1 btn btn-secondary btn-block">Cancel</button></a>
+            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Organisation.Id">
+                <button class="mt-1 btn btn-secondary btn-block">Back to Organisation</button>
+            </a>
         </div>
     </div>
 </div>

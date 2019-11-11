@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -18,6 +19,7 @@ namespace Amphora.Api.Controllers
         /// Health endpoint.
         /// </summary> 
         [HttpGet("healthz")]
+        [OpenApiIgnore]
         public Task<IActionResult> HealthCheckAsync()
         {
             return Task<IActionResult>.Factory.StartNew(() =>
