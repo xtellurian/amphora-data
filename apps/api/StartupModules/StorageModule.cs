@@ -20,6 +20,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Configuration.Options;
 
 namespace Amphora.Api.StartupModules
 {

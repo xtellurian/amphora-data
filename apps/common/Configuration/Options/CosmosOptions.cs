@@ -1,4 +1,4 @@
-namespace Amphora.Api.Options
+namespace Amphora.Common.Configuration.Options
 {
     public class CosmosOptions
     {
@@ -9,6 +9,7 @@ namespace Amphora.Api.Options
 
         public string Endpoint { get; set; }
         public string Database { get; set; }
+        public string Container { get; set; }
         public int? DefaultTimeToLive { get; set; }
 
         public string GenerateConnectionString(string key)
