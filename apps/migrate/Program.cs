@@ -23,8 +23,8 @@ namespace Amphora.Migrate
                     var builtConfig = config.Build();
                     var sourceVault = builtConfig["sourceKvUri"];
                     var sinkVault = builtConfig["sinkKvUri"];
-                    KeyVaultConfigProvider.Configure(config, builtConfig, sourceVault, new SectionReplacementSecretManager(sourceVault, "Source", "Cosmos"));
-                    KeyVaultConfigProvider.Configure(config, builtConfig, sinkVault, new SectionReplacementSecretManager(sinkVault, "Sink", "Cosmos"));
+                    KeyVaultConfigProvider.Configure(config, builtConfig, sourceVault, new SectionReplacementSecretManager(sourceVault, "Source"));
+                    KeyVaultConfigProvider.Configure(config, builtConfig, sinkVault, new SectionReplacementSecretManager(sinkVault, "Sink"));
 
                     Configuration = config.Build();
                 })
