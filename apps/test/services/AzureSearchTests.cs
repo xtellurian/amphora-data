@@ -3,6 +3,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
+using Amphora.Common.Configuration.Options;
 using Amphora.Tests.Unit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

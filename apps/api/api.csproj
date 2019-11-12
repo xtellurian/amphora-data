@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>79a3edd0-2022-40a2-a04d-dcb46a5ca9fd</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <LangVersion>8.0</LangVersion>
     <Nullable>disable</Nullable>
@@ -41,10 +42,5 @@
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UserSecretsId>79a3edd0-2022-40a2-a04d-dcb46a5ca9fd</UserSecretsId>
-  </PropertyGroup>
 
 </Project>

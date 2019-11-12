@@ -4,6 +4,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Options;
+using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
