@@ -61,7 +61,7 @@ export class State extends pulumi.ComponentResource {
     this.storageAccount = this.createStorage(stateRg);
     const secret = this.storeInVault(
       CONSTANTS.AzStorage_KV_CS_SecretName,
-      CONSTANTS.AzStorage_KV_CS_SecretName,
+      `Storage--${CONSTANTS.AzStorage_KV_CS_SecretName}`,
       this.storageAccount.primaryConnectionString,
     );
     this.createEventHubs(stateRg);
@@ -260,7 +260,9 @@ export class State extends pulumi.ComponentResource {
       location: rg.location,
       offerType: "Standard",
       resourceGroupName: rg.name,
-    });
+    },
+      {
+      });
 
     const dbNamePrefix = new random.RandomString(
       "db_name_prefix",
@@ -281,7 +283,7 @@ export class State extends pulumi.ComponentResource {
       {
         aliases: [
           `urn:pulumi:${pulumi.getStack()}::${pulumi.getProject()}::azure:cosmosdb/sqlDatabase:SqlDatabase::cosmosSql`,
-          { name: "cosmosSql", parent: this.cosmosDb } ],
+          { name: "cosmosSql", parent: this.cosmosDb }],
         parent: this.cosmosDb,
       });
 
@@ -291,7 +293,6 @@ export class State extends pulumi.ComponentResource {
       resourceGroupName: rg.name,
     },
       {
-        aliases: [{ name: "cosmosSql_VNext", parent: this.cosmosDb }],
         parent: this.cosmosDb,
       });
 
