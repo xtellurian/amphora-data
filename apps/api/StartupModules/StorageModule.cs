@@ -42,7 +42,7 @@ namespace Amphora.Api.StartupModules
             var keyVaultClient = new KeyVaultClient(
                 new KeyVaultClient.AuthenticationCallback(tokenProvider.KeyVaultTokenCallback));
 
-            var connectionString = Configuration[nameof(AzureStorageAccountOptions.StorageConnectionString)];
+            var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
             var kvUri = Configuration["kvUri"];
             if (CloudStorageAccount.TryParse(connectionString, out var storageAccount) && !string.IsNullOrEmpty(kvUri))
             {
@@ -60,7 +60,7 @@ namespace Amphora.Api.StartupModules
                 Console.WriteLine("Not Configuring DataProtection");
             }
 
-            services.Configure<AzureStorageAccountOptions>(Configuration);
+            services.Configure<AzureStorageAccountOptions>(Configuration.GetSection("Storage"));
             services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
             services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
 
