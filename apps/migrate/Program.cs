@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Amphora.Common.Configuration;
-using Amphora.Common.Configuration.Options;
-using Amphora.Migrate.Cosmos;
+using Amphora.Migrate.Migrators;
 using Amphora.Migrate.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,13 +23,17 @@ namespace Amphora.Migrate
                     var builtConfig = config.Build();
                     var sourceVault = builtConfig["sourceKvUri"];
                     var sinkVault = builtConfig["sinkKvUri"];
-                    KeyVaultConfigProvider.Configure(config, builtConfig, sourceVault, new SectionReplacementSecretManager(sourceVault, "Cosmos", "Source"));
-                    KeyVaultConfigProvider.Configure(config, builtConfig, sinkVault, new SectionReplacementSecretManager(sinkVault, "Cosmos", "Sink"));
+                    KeyVaultConfigProvider.Configure(config, builtConfig, sourceVault, new SectionReplacementSecretManager(sourceVault, "Source", "Cosmos"));
+                    KeyVaultConfigProvider.Configure(config, builtConfig, sinkVault, new SectionReplacementSecretManager(sinkVault, "Sink", "Cosmos"));
+
                     Configuration = config.Build();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
+                    services.AddSingleton<BlobMigrator>();
+                    services.Configure<StorageMigrationOptions>(Configuration);
+
                     services.AddSingleton<CosmosCollectionMigrator>();
                     services.Configure<CosmosMigrationOptions>(Configuration);
                 });

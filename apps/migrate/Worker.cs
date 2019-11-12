@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amphora.Common.Configuration.Options;
-using Amphora.Migrate.Cosmos;
+using Amphora.Migrate.Migrators;
 using Amphora.Migrate.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -31,7 +28,7 @@ namespace Amphora.Migrate
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             try
             {
-                await migrator.MoveContainerAsync();
+                await migrator.MigrateAsync();
             }
             catch (Exception ex)
             {

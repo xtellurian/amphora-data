@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Amphora.Migrate.Cosmos
+namespace Amphora.Migrate.Migrators
 {
     public class CosmosCollectionMigrator
     {
@@ -19,17 +19,19 @@ namespace Amphora.Migrate.Cosmos
             this.logger = logger;
         }
 
-        public async Task MoveContainerAsync()
+        public async Task MigrateAsync()
         {
             var clientOptions = new CosmosClientOptions() { AllowBulkExecution = false };
             var sourceClient = new CosmosClient(options.Source?.GenerateConnectionString(options.Source.PrimaryReadonlyKey), clientOptions);
             var sourceContainer = sourceClient.GetContainer(options.Source?.Database, options.Source?.Container);
-
+            var sourceContainerProperties = await sourceContainer.ReadContainerAsync();
+            
             var sinkClient = new CosmosClient(options.Sink?.GenerateConnectionString(options.Sink.PrimaryKey), clientOptions);
             var sinkDatabase = sinkClient.GetDatabase(options.Sink?.Database);
             var sinkContainer = sinkDatabase.GetContainer(options.Sink?.Container);
             
-            await sinkDatabase.CreateContainerIfNotExistsAsync(options.Sink?.Container, "/__partitionKey");
+            // create with same partition key path
+            await sinkDatabase.CreateContainerIfNotExistsAsync(options.Sink?.Container, sourceContainerProperties.Resource.PartitionKeyPath);
 
 
             var queryDefinition = new QueryDefinition("SELECT * from c");
@@ -49,17 +51,5 @@ namespace Amphora.Migrate.Cosmos
             }
             logger.LogInformation("Done Migrating");
         }
-    }
-
-    public class DeviceInformationItem
-    {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "deviceId")]
-        public string DeviceId { get; set; }
-
-        [JsonProperty(PropertyName = "_partitionKey", NullValueHandling = NullValueHandling.Ignore)]
-        public string PartitionKey { get; set; }
     }
 }

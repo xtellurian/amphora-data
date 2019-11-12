@@ -7,13 +7,13 @@ namespace Amphora.Migrate
     public class SectionReplacementSecretManager : IKeyVaultSecretManager
     {
         private readonly string vault;
-        private readonly string oldGroup;
+        private readonly string? oldGroup;
         private readonly string newGroup;
 
         /// <summary>
         /// Replaces the name of a configuration section
         /// </summary>
-        public SectionReplacementSecretManager(string vault, string oldGroup, string newGroup)
+        public SectionReplacementSecretManager(string vault, string newGroup, string? oldGroup = null)
         {
             this.vault = vault;
             this.oldGroup = oldGroup;
@@ -34,7 +34,14 @@ namespace Amphora.Migrate
             // delimiter used in configuration (usually a colon). Azure 
             // Key Vault doesn't allow a colon in secret names.
             var del = ConfigurationPath.KeyDelimiter;
-            return $"{secret.SecretIdentifier.Name.Replace("--", del).Replace(oldGroup, newGroup)}";
+            if(oldGroup == null)
+            {
+                return $"{newGroup}{del}{secret.SecretIdentifier.Name.Replace("--", del)}";
+            }
+            else
+            {
+                return $"{secret.SecretIdentifier.Name.Replace("--", del).Replace(oldGroup, newGroup)}";
+            }
         }
     }
 }
