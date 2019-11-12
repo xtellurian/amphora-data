@@ -11,6 +11,7 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<EntityDto, Entity>()
                 .ForMember(p => p.ttl, o => o.Ignore())
                 .ForMember(p => p.IsDeleted, o => o.Ignore())
+                .ForMember(p => p.LastModified, o => o.Ignore())
                 .ReverseMap();
 
         }

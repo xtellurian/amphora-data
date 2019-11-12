@@ -28,6 +28,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.CreatedBy, p => p.Ignore())
                 .ForMember(o => o.CreatedById, p => p.Ignore())
                 .ForMember(o => o.CreatedDate, p => p.Ignore())
+                .ForMember(o => o.LastModified, p => p.Ignore())
                 .ForMember(o => o.GeoLocation, p => p.MapFrom(src => 
                     src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value): null));
 

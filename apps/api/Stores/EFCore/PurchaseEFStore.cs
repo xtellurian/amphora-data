@@ -7,16 +7,14 @@ using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Common.Models.Purchases;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Stores.EFCore
 {
     public class PurchaseEFStore : EFStoreBase, IEntityStore<PurchaseModel>
     {
-        private readonly AmphoraContext context;
-
-        public PurchaseEFStore(AmphoraContext context)
+        public PurchaseEFStore(AmphoraContext context, ILogger<PurchaseEFStore> logger) : base(context, logger)
         {
-            this.context = context;
         }
         public async Task<PurchaseModel> CreateAsync(PurchaseModel entity)
         {
@@ -35,6 +33,11 @@ namespace Amphora.Api.Stores.EFCore
         public async Task<IEnumerable<PurchaseModel>> QueryAsync(Expression<Func<PurchaseModel, bool>> where)
         {
             return await context.Purchases.Where(where).ToListAsync();
+        }
+
+        public IQueryable<PurchaseModel> Query(Expression<Func<PurchaseModel, bool>> where)
+        {
+            return context.Purchases.Where(where);
         }
 
         public async Task<PurchaseModel> ReadAsync(string id)
@@ -63,9 +66,11 @@ namespace Amphora.Api.Stores.EFCore
             return o.Entity;
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(Expression<Func<PurchaseModel, bool>> where = null)
         {
-            return await this.context.Purchases.CountAsync();
+            if (where == null) return await this.context.Purchases.CountAsync();
+            else return await this.context.Purchases.Where(where).CountAsync();
         }
+
     }
 }

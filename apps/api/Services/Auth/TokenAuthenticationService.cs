@@ -18,19 +18,16 @@ namespace Amphora.Api.Services.Auth
 
     public class TokenAuthenticationService : IAuthenticateService
     {
-        private readonly ISignInManager signInManager;
-        private readonly IUserManager userManager;
+        private readonly IUserService userService;
         private readonly IOptionsMonitor<TokenManagementOptions> tokenManagement;
         private readonly ILogger<TokenAuthenticationService> logger;
         private static string secret;
 
-        public TokenAuthenticationService(ISignInManager signInManager,
-                                          IUserManager userManager,
+        public TokenAuthenticationService(IUserService userService,
                                           IOptionsMonitor<TokenManagementOptions> tokenManagement,
                                           ILogger<TokenAuthenticationService> logger)
         {
-            this.signInManager = signInManager;
-            this.userManager = userManager;
+            this.userService = userService;
             this.tokenManagement = tokenManagement;
             this.logger = logger;
             secret = tokenManagement.CurrentValue.Secret ?? (secret ?? RandomString(20));
@@ -38,11 +35,11 @@ namespace Amphora.Api.Services.Auth
 
         public async Task<(bool success, string token)> GetToken(ClaimsPrincipal principal)
         {
-            var user = await userManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             if (user == null) return (false, null);
             using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
-                if (signInManager.IsSignedIn(principal))
+                if (userService.IsSignedIn(principal))
                 {
                     logger.LogInformation("Generating Token");
                     return (true, GenerateToken(user));
@@ -56,12 +53,13 @@ namespace Amphora.Api.Services.Auth
         }
         public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
         {
-            var user = await userManager.FindByNameAsync(request.Username);
+            var user = await userService.UserManager.FindByNameAsync(request.Username);
             if (user == null) return (false, null);
             using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
                 var token = string.Empty;
-                var signInResult = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
+
+                var signInResult = await userService.PasswordSignInAsync(request.Username, request.Password, false, false);
                 if (!signInResult.Succeeded) return (false, token);
                 token = GenerateToken(user);
                 logger.LogInformation("Generated token. User Is Authenticated");

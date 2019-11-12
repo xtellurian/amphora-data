@@ -4,6 +4,7 @@ using Amphora.Api.Models;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
+using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Contracts
 {
@@ -12,6 +13,8 @@ namespace Amphora.Api.Contracts
         IUserManager UserManager { get; }
         Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user, InvitationModel invitation, string password);
         Task<EntityOperationResult<ApplicationUser>> DeleteAsync(ClaimsPrincipal principal, IUser user);
+        bool IsSignedIn(ClaimsPrincipal principal);
+        Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure);
         Task<ApplicationUser> ReadUserModelAsync(ClaimsPrincipal principal);
     }
 }

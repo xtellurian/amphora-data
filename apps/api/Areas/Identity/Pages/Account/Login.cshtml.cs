@@ -89,6 +89,8 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                 var result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
+                    // get user
+                    
                     logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

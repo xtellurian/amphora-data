@@ -7,16 +7,14 @@ using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Stores.EFCore
 {
     public class AmphoraeEFStore : EFStoreBase, IEntityStore<AmphoraModel>
     {
-        private readonly AmphoraContext context;
-
-        public AmphoraeEFStore(AmphoraContext context)
+        public AmphoraeEFStore(AmphoraContext context, ILogger<AmphoraeEFStore> logger): base(context, logger)
         {
-            this.context = context;
         }
         public async Task<AmphoraModel> CreateAsync(AmphoraModel entity)
         {
@@ -35,6 +33,11 @@ namespace Amphora.Api.Stores.EFCore
         public async Task<IEnumerable<AmphoraModel>> QueryAsync(Expression<Func<AmphoraModel, bool>> where)
         {
             return await context.Amphorae.Where(where).ToListAsync();
+        }
+
+        public IQueryable<AmphoraModel> Query(Expression<Func<AmphoraModel, bool>> where)
+        {
+            return context.Amphorae.Where(where);
         }
 
         public async Task<AmphoraModel> ReadAsync(string id)
@@ -69,9 +72,10 @@ namespace Amphora.Api.Stores.EFCore
             return existing;
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(Expression<Func<AmphoraModel, bool>> where = null)
         {
-            return await this.context.Amphorae.CountAsync();
+            if (where == null) return await this.context.Amphorae.CountAsync();
+            else return await this.context.Amphorae.Where(where).CountAsync();
         }
 
     }

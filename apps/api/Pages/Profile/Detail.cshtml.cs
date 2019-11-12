@@ -8,6 +8,7 @@ using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Pages.Profile
 {
@@ -54,8 +55,8 @@ namespace Amphora.Api.Pages.Profile
                 IsSelf = true;
             }
 
-            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == AppUser.Id);
-            this.PinnedAmphorae = query.Take(6);
+            var q = amphoraeService.AmphoraStore.Query(a => a.CreatedById == AppUser.Id);
+            this.PinnedAmphorae = await q.Take(6).ToListAsync();
             return Page();
         }
 

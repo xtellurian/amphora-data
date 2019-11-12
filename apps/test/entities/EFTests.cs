@@ -17,8 +17,8 @@ namespace Amphora.Tests.Unit
             using (var context = base.GetContext(nameof(AddSignalToAmphora)))
             {
                 var testName = nameof(AddSignalToAmphora);
-                var amphoraStore = new AmphoraeEFStore(context);
-                var orgStore = new OrganisationsEFStore(context);
+                var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+                var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var org = EntityLibrary.GetOrganisationModel(testName);
                 org = await orgStore.CreateAsync(org);
                 var a = EntityLibrary.GetAmphoraModel(org, testName);

@@ -1,0 +1,47 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.DashboardPageModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Total Amphora</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.AmphoraCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Active Amphora</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count modified this month</h6>
+                    <p class="card-text">@Model.Stats.AmphoraModifiedThisMonthCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Price of Active Amphora</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
+                    <p class="card-text">@Model.Stats.MeanPriceOfActiveAmphora</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Users logged in this month</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.UsersLoggedInThisMonth</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,8 +7,8 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using Amphora.Common.Models.Platform;
+using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -17,20 +17,40 @@ namespace Amphora.Api.Services.Auth
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
+        private readonly ISignInManager signInManager;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<OrganisationModel> orgStore,
                            IPermissionService permissionService,
-                           IUserManager userManager)
+                           IUserManager userManager,
+                           ISignInManager signInManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
             this.permissionService = permissionService;
             this.UserManager = userManager;
-
+            this.signInManager = signInManager;
         }
 
         public IUserManager UserManager { get; protected set; }
+
+        public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
+        {
+            var res = await signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
+            if(res.Succeeded)
+            {
+                // get user and set last signin time
+                var user = await UserManager.FindByNameAsync(userName);
+                user.LastLoggedIn = System.DateTime.UtcNow;
+                await UserManager.UpdateAsync(user);
+            }
+            return res;
+        }
+
+        public bool IsSignedIn(ClaimsPrincipal principal)
+        {
+            return this.signInManager.IsSignedIn(principal);
+        }
 
         public async Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user,
                                                                               InvitationModel invitation,
