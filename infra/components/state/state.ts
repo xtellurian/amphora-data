@@ -289,7 +289,7 @@ export class State extends pulumi.ComponentResource {
 
     const dbB = new azure.cosmosdb.SqlDatabase("cosmosSql_B", {
       accountName: this.cosmosDb.name,
-      name: pulumi.interpolate`${dbNamePrefix}-B`,
+      name: pulumi.interpolate`${dbNamePrefix.result}-B`,
       resourceGroupName: rg.name,
     },
       {
