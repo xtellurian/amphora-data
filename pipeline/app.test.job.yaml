@@ -96,11 +96,12 @@ jobs:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
     - task: PublishTestResults@2
-      condition: always() 
+      condition: always()
       inputs:
         testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
         testRunner: VSTest
         testResultsFiles: '$(Build.SourcesDirectory)/apps/TestOutput.xml'
+        failTaskOnFailedTests: true
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Report

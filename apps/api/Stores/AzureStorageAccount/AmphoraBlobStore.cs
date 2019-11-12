@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Options;
+using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;

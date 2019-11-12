@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Amphora.Api.DbContexts;
-using Amphora.Api.Options;
+using Amphora.Common.Configuration.Options;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

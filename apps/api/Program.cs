@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+using Amphora.Common.Configuration;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Hosting;
 
 namespace Amphora.Api
@@ -23,7 +20,7 @@ namespace Amphora.Api
                 {
                     config.AddEnvironmentVariables();
                     var builtConfig = config.Build();
-                    KeyVaultConfigProvider(config, builtConfig);
+                    KeyVaultConfigProvider.Configure(config, builtConfig);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -33,42 +30,5 @@ namespace Amphora.Api
                     })
                     .UseStartup<Startup>();
                 });
-
-        public const string kvUri = "kvUri";
-        public const string disableKv = "disableKv";
-        private static void KeyVaultConfigProvider(IConfigurationBuilder config, IConfigurationRoot builtConfig)
-        {
-            var vaultUri = builtConfig[kvUri];
-            if (!string.IsNullOrEmpty(vaultUri) && string.IsNullOrEmpty(builtConfig[disableKv]))
-            {
-                System.Console.WriteLine($"Using KeyVault {builtConfig[kvUri]} as Config Provider");
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                var keyVaultClient = new KeyVaultClient(
-                    new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
-                config.AddAzureKeyVault($"{vaultUri}",
-                    keyVaultClient,
-                    new DefaultKeyVaultSecretManager());
-                try
-                {
-                    var httpsPrefix = "https://";
-                    if(vaultUri.StartsWith(httpsPrefix))
-                    {
-                        var kvHost = vaultUri.Substring(httpsPrefix.Length).Trim('/');
-                        var entry = System.Net.Dns.GetHostEntry(kvHost);
-                    }
-                }
-                catch(System.Exception ex)
-                {
-                    System.Console.WriteLine($"KeyVault DNS Lookup Failed!");
-                    throw ex;
-                }
-                System.Console.WriteLine("KeyVault Configuration Loaded!");
-            }
-            else
-            {
-                System.Console.WriteLine("No KeyVault as config provider");
-            }
-        }
     }
 }
