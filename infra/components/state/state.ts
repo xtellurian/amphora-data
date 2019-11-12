@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import * as random from "@pulumi/random";
 import { CONSTANTS, IComponentParams } from "../../components";
 
 import { Monitoring } from "../monitoring/monitoring";
@@ -261,10 +262,38 @@ export class State extends pulumi.ComponentResource {
       resourceGroupName: rg.name,
     });
 
-    const sql = new azure.cosmosdb.SqlDatabase("cosmosSql", {
+    const dbNamePrefix = new random.RandomString(
+      "db_name_prefix",
+      {
+        length: 4,
+        lower: true,
+        number: false,
+        special: false,
+      },
+      { parent: this.cosmosDb },
+    );
+
+    const dbA = new azure.cosmosdb.SqlDatabase("cosmosSql_A", {
       accountName: this.cosmosDb.name,
+      // TODO: set this name as -A
       resourceGroupName: rg.name,
-    });
+    },
+      {
+        aliases: [
+          `urn:pulumi:${pulumi.getStack()}::${pulumi.getProject()}::azure:cosmosdb/sqlDatabase:SqlDatabase::cosmosSql`,
+          { name: "cosmosSql", parent: this.cosmosDb } ],
+        parent: this.cosmosDb,
+      });
+
+    const dbB = new azure.cosmosdb.SqlDatabase("cosmosSql_B", {
+      accountName: this.cosmosDb.name,
+      name: pulumi.interpolate`${dbNamePrefix}-B`,
+      resourceGroupName: rg.name,
+    },
+      {
+        aliases: [{ name: "cosmosSql_VNext", parent: this.cosmosDb }],
+        parent: this.cosmosDb,
+      });
 
     this.storeInVault("cosmosAccountPrimaryKey", "Cosmos--PrimaryKey", this.cosmosDb.primaryMasterKey);
     this.storeInVault("cosmosAccountSecondaryKey", "Cosmos--SecondaryKey", this.cosmosDb.secondaryMasterKey);
@@ -274,7 +303,11 @@ export class State extends pulumi.ComponentResource {
       this.cosmosDb.secondaryReadonlyMasterKey);
 
     this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
-    this.storeInVault("cosmosSqlDbName", "Cosmos--Database", sql.name);
+    this.storeInVault("cosmosSqlDbName", "Cosmos--Database", dbA.name);
+
+    // TODO: set active database
+    this.storeInVault("cosmosSqlDbAName", "Cosmos--DatabaseA", dbA.name);
+    this.storeInVault("cosmosSqlDbBName", "Cosmos--DatabaseB", dbB.name);
 
     this.storeInVault("SendGridApiKey", "SendGrid--ApiKey", config.require("SendGridApiKey"));
 
