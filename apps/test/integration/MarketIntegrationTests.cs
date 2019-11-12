@@ -38,7 +38,7 @@ namespace Amphora.Tests.Integration
             }
             // try reindex
             var indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
-            if(indexRes.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            if (indexRes.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 // wait 180 seconds and try again
                 System.Console.WriteLine("Indexer failed. Waiting 180 seconds...");
@@ -48,15 +48,13 @@ namespace Amphora.Tests.Integration
             indexRes.EnsureSuccessStatusCode();
             // how do we get this to index first?
             var top = 2;
-            for(int k = 0; k < 3; k++)
-            {
-                var res = await adminClient.GetAsync($"api/market/search?query=&top={top}&skip={k}");
-                var content = await res.Content.ReadAsStringAsync();
-                var list = JsonConvert.DeserializeObject<List<AmphoraDto>>(content);
-                Assert.Equal(top, list.Count);
-            };
+            var k = 0;
+            var res = await adminClient.GetAsync($"api/market/search?query=&top={top}&skip={k}");
+            var content = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<AmphoraDto>>(content);
+            Assert.Equal(top, list.Count);
 
-            foreach(var x in amphorae)
+            foreach (var x in amphorae)
             {
                 await DestroyAmphoraAsync(adminClient, x.Id);
             }
