@@ -10,7 +10,7 @@ namespace Amphora.Common.Models.Organisations
             this.AcceptedByOrganisationId = acceptedByOrg.Id;
             this.AcceptedByOrganisation = acceptedByOrg;
 
-            this.TermsAndConditionsId = termsToAccept.Name;
+            this.TermsAndConditionsId = termsToAccept.Id;
             this.HasAccepted = true;
 
             this.TermsAndConditionsOrganisation = termsToAccept.Organisation;

@@ -36,14 +36,15 @@ namespace Amphora.Common.Models.Organisations
         {
             return this.Memberships?.Any(u => string.Equals(u.UserId, user.Id)) ?? false;
         }
-        public void AddOrUpdateTermsAndConditions(TermsAndConditionsModel model)
+        public bool AddTermsAndConditions(TermsAndConditionsModel model)
         {
             if (this.TermsAndConditions == null) this.TermsAndConditions = new List<TermsAndConditionsModel>();
-            if (this.TermsAndConditions.Any(t => t.Name == model.Name))
+            if (this.TermsAndConditions.Any(t => t.Id == model.Id))
             {
-                throw new System.ArgumentException($"{model.Name} already exists");
+                return false;
             }
             this.TermsAndConditions.Add(model);
+            return true;
         }
 
         public bool IsValid()

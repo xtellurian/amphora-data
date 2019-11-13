@@ -22,17 +22,17 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         public TermsAndConditionsModel TermsAndConditions { get; private set; }
         public bool CanAccept { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string id, string name, string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string id, string tncId, string returnUrl = null)
         {
 
             this.ReturnUrl = returnUrl ?? Url.Content("~/");
 
             var result = await this.organisationService.ReadAsync(User, id);
-            if (result.Succeeded && result.Entity.TermsAndConditions.Any(t => t.Name == name))
+            if (result.Succeeded && result.Entity.TermsAndConditions.Any(t => t.Id == tncId))
             {
                 this.Organisation = result.Entity;
                 await SetCanAccept();
-                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Name == name);
+                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Id == tncId);
                 return Page();
             }
             else if (result.WasForbidden)
@@ -45,7 +45,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             }
         }
 
-        public async Task<IActionResult> OnPostAsync(string id, string name, string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string id, string tncId, string returnUrl = null)
         {
             ReturnUrl = returnUrl ?? Url.Content("~/");
             var result = await this.organisationService.ReadAsync(User, id);
@@ -54,7 +54,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             {
                 this.Organisation = result.Entity;
                 await SetCanAccept();
-                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Name == name);
+                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Id == tncId);
                 var res = await organisationService.AgreeToTermsAndConditions(User, TermsAndConditions);
                 if (res.Succeeded)
                 {
@@ -89,7 +89,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             }
             if(user.Organisation.TermsAndConditionsAccepted.Any(t => 
                 t.TermsAndConditionsOrganisationId == Organisation.Id 
-                && t.TermsAndConditionsId == this.TermsAndConditions.Name))
+                && t.TermsAndConditionsId == this.TermsAndConditions.Id))
             {
                 // org has already accepted
                 CanAccept = false;

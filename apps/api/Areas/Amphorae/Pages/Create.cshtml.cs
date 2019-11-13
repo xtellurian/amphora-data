@@ -44,7 +44,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await userService.ReadUserModelAsync(User);
-            var items = user.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Name));
+            var items = user.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
             this.TermsAndConditions = new List<SelectListItem>(items);
             return Page();
         }
@@ -64,7 +64,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     Description = Input.Description,
                     GeoLocation = location,
                     Price = Input.Price,
-                    IsPublic = true
+                    IsPublic = true,
+                    TermsAndConditionsId = Input.TermsAndConditionsId
                 };
 
                 var setResult = await amphoraeService.CreateAsync(User, entity);
@@ -74,10 +75,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 else
                 {
-                    foreach (var e in setResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, e);
-                    }
+                    ModelState.AddModelError(string.Empty, setResult.Message);
                     return Page();
                 }
             }

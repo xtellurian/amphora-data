@@ -51,7 +51,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                     return Page();
                 }
                 var model = mapper.Map<TermsAndConditionsModel>(this.TermsAndConditions);
-                this.Organisation.AddOrUpdateTermsAndConditions(model);
+                if(! this.Organisation.AddTermsAndConditions(model))
+                {
+                    // duplicate id
+                    ModelState.AddModelError(string.Empty, $"The Id '{model.Id}' already exists.");
+                    return Page();
+                }
+                
                 var updateResult = await organisationService.UpdateAsync(User, Organisation);
                 if (updateResult.Succeeded) return RedirectToPage("./Index", new { Id = Organisation.Id });
                 else this.ModelState.AddModelError(string.Empty, updateResult.Message);

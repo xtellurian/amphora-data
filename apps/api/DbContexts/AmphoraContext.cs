@@ -61,7 +61,7 @@ namespace Amphora.Api.DbContexts
                 b.OwnsMany(p => p.TermsAndConditions, a =>
                 {
                     a.WithOwner(b => b.Organisation).HasForeignKey(_ => _.OrganisationId);
-                    a.HasKey(_ => _.Name);
+                    a.HasKey(_ => _.Id);
                 });
                 b.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
                 {
