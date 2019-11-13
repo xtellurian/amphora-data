@@ -287,14 +287,14 @@ export class State extends pulumi.ComponentResource {
         parent: this.cosmosDb,
       });
 
-    const dbB = new azure.cosmosdb.SqlDatabase("cosmosSql_B", {
-      accountName: this.cosmosDb.name,
-      name: pulumi.interpolate`${dbNamePrefix.result}-B`,
-      resourceGroupName: rg.name,
-    },
-      {
-        parent: this.cosmosDb,
-      });
+    // const dbB = new azure.cosmosdb.SqlDatabase("cosmosSql_B", {
+    //   accountName: this.cosmosDb.name,
+    //   name: pulumi.interpolate`${dbNamePrefix.result}-B`,
+    //   resourceGroupName: rg.name,
+    // },
+    //   {
+    //     parent: this.cosmosDb,
+    //   });
 
     this.storeInVault("cosmosAccountPrimaryKey", "Cosmos--PrimaryKey", this.cosmosDb.primaryMasterKey);
     this.storeInVault("cosmosAccountSecondaryKey", "Cosmos--SecondaryKey", this.cosmosDb.secondaryMasterKey);
@@ -306,9 +306,9 @@ export class State extends pulumi.ComponentResource {
     this.storeInVault("cosmosAccountEndpoint", "Cosmos--Endpoint", this.cosmosDb.endpoint);
     this.storeInVault("cosmosSqlDbName", "Cosmos--Database", dbA.name);
 
-    // TODO: set active database
+    // TODO: use A/B databases
     this.storeInVault("cosmosSqlDbAName", "Cosmos--DatabaseA", dbA.name);
-    this.storeInVault("cosmosSqlDbBName", "Cosmos--DatabaseB", dbB.name);
+    // this.storeInVault("cosmosSqlDbBName", "Cosmos--DatabaseB", dbB.name);
 
     this.storeInVault("SendGridApiKey", "SendGrid--ApiKey", config.require("SendGridApiKey"));
 
