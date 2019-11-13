@@ -18,7 +18,6 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   variables:
-    - group: AzureDeploySP
     - group: Pulumi xtellurian
     - name: buildConfiguration
       value: 'Release'

@@ -18,8 +18,9 @@ stages:
 - stage: branch
   displayName: Branch Stage
   variables:
-    stack: $(Build.SourceBranchName)
-    subscription: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
+    - name: stack
+      value: $(Build.SourceBranchName)
+    - group: AzureDeploySP
   jobs:
   - template: pipeline/infra.create.job.yaml
     parameters:
@@ -57,7 +58,7 @@ stages:
   displayName: Deploy to Prod Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # FIXME
   variables:
-    subscription: cfd587d5-8215-4c5c-83bd-f61df6ba51c3
+    - group: PulumiAzureDevOpsProd
   jobs:
     - template: pipeline/deploymentjob.yaml
       parameters:

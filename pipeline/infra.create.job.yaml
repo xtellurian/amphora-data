@@ -13,7 +13,6 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
-  - group: AzureDeploySP
 
   steps:
     - template: infra.create.steps.yaml

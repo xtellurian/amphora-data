@@ -13,7 +13,6 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   variables:
-  - group: AzureDeploySP
   - group: Pulumi xtellurian
   - name: stack
     value: ${{ parameters.environment }}
