@@ -9,3 +9,9 @@ config:
   azure:environment: public
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   azuresearch:sku: basic
+  auth:ids:
+  - objectId: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+    name: rian
+  - appId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
+    objectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
+    name: sp
