@@ -50,9 +50,10 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadUserStats();
                 await LoadOrganisationStats();
                 await LoadDebitStats();
+                this.Stats.GeneratedTime = DateTime.Now;
 
-               var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                     .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
                 memoryCache.Set(nameof(Stats), this.Stats, cacheEntryOptions);
             }
             return Page();
@@ -81,7 +82,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Where(_ => _.Account != null)
                 .SelectMany(_ => _.Account.Debits)
                 .Count();
-                
+
             this.Stats.Debits.ActiveCount = (await organisationService.Store
                 .Query(_ => true) // for all orgs
                 .ToListAsync())
@@ -110,6 +111,7 @@ namespace Amphora.Api.Areas.Admin.Pages
 
     public class StatisticsCollection
     {
+        public DateTimeOffset? GeneratedTime { get; set; }
         public StatisticsGroup Amphorae { get; set; } = new StatisticsGroup();
         public StatisticsGroup Users { get; set; } = new StatisticsGroup();
         public StatisticsGroup Organisations { get; set; } = new StatisticsGroup();
