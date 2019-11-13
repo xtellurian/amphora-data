@@ -7,20 +7,19 @@ using Amphora.Api.Contracts;
 using Amphora.Api.DbContexts;
 using Amphora.Common.Models.Platform;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Stores.EFCore
 {
     public class InvitationsEFStore : EFStoreBase, IEntityStore<InvitationModel>
     {
-        private readonly AmphoraContext context;
-
-        public InvitationsEFStore(AmphoraContext context)
+        public InvitationsEFStore(AmphoraContext context, ILogger<InvitationsEFStore> logger): base(context, logger)
         {
-            this.context = context;
         }
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(Expression<Func<InvitationModel, bool>> where = null)
         {
-            return await context.Invitations.CountAsync();
+            if(where == null) return await context.Invitations.CountAsync();
+            else return await context.Invitations.Where(where).CountAsync();
         }
 
         public async Task<InvitationModel> CreateAsync(InvitationModel entity)
@@ -42,6 +41,10 @@ namespace Amphora.Api.Stores.EFCore
             return await context.Invitations.Where(where).ToListAsync();
         }
 
+        public IQueryable<InvitationModel> Query(Expression<Func<InvitationModel, bool>> where)
+        {
+            return context.Invitations.Where(where);
+        }
         public async Task<InvitationModel> ReadAsync(string id)
         {
             var result = await context.Invitations.SingleOrDefaultAsync(a => a.Id == id);

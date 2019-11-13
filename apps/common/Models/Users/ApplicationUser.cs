@@ -20,6 +20,9 @@ namespace Amphora.Common.Models.Users
         public virtual OrganisationModel Organisation { get; set; }
 
         public virtual ICollection<PurchaseModel> Purchases { get; set; }
+        public DateTimeOffset? LastModified { get; set; }
+        public DateTimeOffset? LastLoggedIn { get; set; }
+
         public Uri GetProfilePictureUri()
         {
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");

@@ -29,6 +29,6 @@ namespace Amphora.Common.Models
         /// DateTime created in UTC
         /// </summary>
         public DateTimeOffset? CreatedDate { get; set; }
-
+        public DateTimeOffset? LastModified { get; set; }
     }
 }

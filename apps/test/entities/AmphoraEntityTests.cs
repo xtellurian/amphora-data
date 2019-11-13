@@ -20,7 +20,7 @@ namespace Amphora.Tests.Unit
         {
             using (var context = GetContext(nameof(InMemoryCanStoreAndRetrieveAmphoraAsync)))
             {
-                var sut = new AmphoraeEFStore(context);
+                var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
                 var a = new AmphoraModel()
                 {
@@ -56,7 +56,7 @@ namespace Amphora.Tests.Unit
         {
             using (var context = GetContext(nameof(InMemoryEntityStoreListAsync)))
             {
-                var sut = new AmphoraeEFStore(context);
+                var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 var a = new AmphoraModel()
                 {
                     Name = "Test Name",
@@ -79,7 +79,7 @@ namespace Amphora.Tests.Unit
         {
             using (var context = GetContext(nameof(InMemoryEntityStoreReturnsNullAsync)))
             {
-                var sut = new AmphoraeEFStore(context);
+                var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 await GetMissingAmphoraAsync(sut);
             }
         }

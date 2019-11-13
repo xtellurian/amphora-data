@@ -50,6 +50,8 @@ namespace Amphora.Api.Services.Organisations
                 org.CreatedById = user.Id;
                 org.CreatedBy = user;
                 org.CreatedDate = DateTime.UtcNow;
+                org.LastModified = DateTime.UtcNow;
+                
                 if (!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
                 org.AddOrUpdateMembership(user, Roles.Administrator);
                 // we good - create an org

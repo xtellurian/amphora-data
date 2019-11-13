@@ -21,6 +21,7 @@ using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Configuration.Options;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.StartupModules
 {
@@ -96,6 +97,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
+            services.AddScoped<IEntityStore<ApplicationUser>, ApplicationUserStore>();
             // services.AddScoped<IEntityStore<UserModel>, UserEFStore>();
         }
 

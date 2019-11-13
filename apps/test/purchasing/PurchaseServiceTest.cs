@@ -18,8 +18,8 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task PurchasingAmphora_SendsEmail()
         {
             var context = base.GetContext();
-            var store = new PurchaseEFStore(context);
-            var orgStore = new OrganisationsEFStore(context);
+            var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var org = new OrganisationModel()
             {
                 Name = nameof(PurchasingAmphora_SendsEmail)
@@ -76,9 +76,9 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task AcceptedTermsAndConditions_EvaluatesTrue()
         {
             var context = base.GetContext();
-            var orgStore = new OrganisationsEFStore(context);
-            var amphoraStore = new AmphoraeEFStore(context);
-            var store = new PurchaseEFStore(context);
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
 
             var terms = new TermsAndConditionsModel
             {
@@ -125,9 +125,9 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task NotAcceptedTermsAndConditions_EvaluatesFalse()
         {
             var context = base.GetContext();
-            var orgStore = new OrganisationsEFStore(context);
-            var amphoraStore = new AmphoraeEFStore(context);
-            var store = new PurchaseEFStore(context);
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
 
             var terms = new TermsAndConditionsModel
             {
@@ -170,9 +170,9 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task PurchaseAmphora_DeductsBalance()
         {
             var context = base.GetContext();
-            var store = new PurchaseEFStore(context);
-            var orgStore = new OrganisationsEFStore(context);
-            var amphoraStore = new AmphoraeEFStore(context);
+            var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
             var org = new OrganisationModel()
             {

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Contracts
 {
@@ -14,7 +16,8 @@ namespace Amphora.Api.Contracts
         Task<T> ReadAsync(string id);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
-        Task<IEnumerable<T>> QueryAsync(Expression<System.Func<T, bool>> where);
-        Task<int> CountAsync();
+        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where);
+        IQueryable<T> Query(Expression<Func<T, bool>> where);
+        Task<int> CountAsync(Expression<Func<T, bool>> where = null);
     }
 }

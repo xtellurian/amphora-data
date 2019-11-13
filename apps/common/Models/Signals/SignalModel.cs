@@ -27,6 +27,7 @@ namespace Amphora.Common.Models.Signals
                 throw new ArgumentException("ValueType must be Numeric, String, or DateTime");
             }
             CreatedDate = System.DateTime.UtcNow;
+            LastModified = System.DateTime.UtcNow;
 
             this.Id = $"{Property}-{ValueType}";
         }

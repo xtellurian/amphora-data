@@ -22,16 +22,16 @@ namespace Amphora.Migrate.Migrators
         public async Task MigrateAsync()
         {
             var clientOptions = new CosmosClientOptions() { AllowBulkExecution = false };
-            var sourceClient = new CosmosClient(options.Source?.GenerateConnectionString(options.Source.PrimaryReadonlyKey), clientOptions);
-            var sourceContainer = sourceClient.GetContainer(options.Source?.Database, options.Source?.Container);
+            var sourceClient = new CosmosClient(options.Source?.Cosmos?.GenerateConnectionString(options.GetSource()?.PrimaryReadonlyKey), clientOptions);
+            var sourceContainer = sourceClient.GetContainer(options.GetSource()?.Database, options.Source?.Cosmos?.Container);
             var sourceContainerProperties = await sourceContainer.ReadContainerAsync();
             
-            var sinkClient = new CosmosClient(options.Sink?.GenerateConnectionString(options.Sink.PrimaryKey), clientOptions);
-            var sinkDatabase = sinkClient.GetDatabase(options.Sink?.Database);
-            var sinkContainer = sinkDatabase.GetContainer(options.Sink?.Container);
+            var sinkClient = new CosmosClient(options.Sink?.Cosmos?.GenerateConnectionString(options.GetSink()?.PrimaryKey), clientOptions);
+            var sinkDatabase = sinkClient.GetDatabase(options.GetSink()?.Database);
+            var sinkContainer = sinkDatabase.GetContainer(options.GetSink()?.Container);
             
             // create with same partition key path
-            await sinkDatabase.CreateContainerIfNotExistsAsync(options.Sink?.Container, sourceContainerProperties.Resource.PartitionKeyPath);
+            await sinkDatabase.CreateContainerIfNotExistsAsync(options.GetSink()?.Container, sourceContainerProperties.Resource.PartitionKeyPath);
 
 
             var queryDefinition = new QueryDefinition("SELECT * from c");
@@ -45,9 +45,15 @@ namespace Amphora.Migrate.Migrators
                 foreach(var i in item.Resource)
                 {
                     logger.LogInformation($"Migrating Item {i.id}");
-                    var res = await sinkContainer.UpsertItemAsync(i, PartitionKey.None); // FIXME: partition key null
+                    if(options.Upsert)
+                    {
+                        var res = await sinkContainer.UpsertItemAsync(i); // FIXME: partition key null
+                    }
+                    else
+                    {
+                        var res = await sinkContainer.CreateItemAsync(i);
+                    }
                 }
-
             }
             logger.LogInformation("Done Migrating");
         }

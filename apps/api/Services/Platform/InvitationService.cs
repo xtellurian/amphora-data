@@ -45,6 +45,8 @@ namespace Amphora.Api.Services.Platform
             else
             {
                 if (inviteToOrg) invitation.TargetOrganisationId = user.OrganisationId;
+                invitation.CreatedDate = System.DateTime.UtcNow;
+                invitation.LastModified = System.DateTime.UtcNow;
                 var created = await invitationStore.CreateAsync(invitation);
                 return new EntityOperationResult<InvitationModel>(created);
             }

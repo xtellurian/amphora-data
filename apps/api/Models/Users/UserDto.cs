@@ -12,6 +12,8 @@ namespace Amphora.Common.Models.Users
         public string FullName  {get;set;}
         public string OrganisationId  {get;set;}
         public string UserName  {get;set;}
+        public DateTimeOffset? LastModified { get; set; }
+
         public Uri GetProfilePictureUri()
         {
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");

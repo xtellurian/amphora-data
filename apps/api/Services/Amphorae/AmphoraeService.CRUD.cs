@@ -51,6 +51,7 @@ namespace Amphora.Api.Services.Amphorae
                 model.CreatedById = user.Id;
                 model.CreatedBy = user;
                 model.CreatedDate = DateTime.UtcNow;
+                model.LastModified = DateTime.UtcNow;
 
                 var organisation = await organisationStore.ReadAsync(model.OrganisationId);
 

@@ -17,22 +17,22 @@ namespace Amphora.Migrate.Migrators
         {
             this.logger = logger;
             this.options = options.CurrentValue;
-            if(options.CurrentValue?.Sink?.StorageConnectionString == null)
-            {
-                throw new NullReferenceException("Sink Connection String cannot be null");
-            }
-            if(options.CurrentValue?.Source?.StorageConnectionString == null)
+            if (options.CurrentValue?.Source?.Storage?.StorageConnectionString == null)
             {
                 throw new NullReferenceException("Source Connection String cannot be null");
+            }
+            if (options.CurrentValue?.Sink?.Storage?.StorageConnectionString == null)
+            {
+                throw new NullReferenceException("Sink Connection String cannot be null");
             }
         }
 
         public async Task MigrateAsync()
         {
             // create the blob client for the destination storage account
-            var sourceAccount = CloudStorageAccount.Parse(options.Source?.StorageConnectionString);
+            var sourceAccount = CloudStorageAccount.Parse(options.Source?.Storage?.StorageConnectionString);
             var sourceClient = sourceAccount.CreateCloudBlobClient();
-            var sinkAccount = CloudStorageAccount.Parse(options.Sink?.StorageConnectionString);
+            var sinkAccount = CloudStorageAccount.Parse(options.Sink?.Storage?.StorageConnectionString);
             var sinkClient = sinkAccount.CreateCloudBlobClient();
 
             foreach (var sourceContainer in sourceClient.ListContainers())
@@ -48,10 +48,11 @@ namespace Amphora.Migrate.Migrators
                 var sinkContainer = sinkClient.GetContainerReference(sourceContainer.Name);
                 await sinkContainer.CreateIfNotExistsAsync();
 
-                foreach(var sourceBlob in sourceContainer.ListBlobs())
+                foreach (var sourceBlob in sourceContainer.ListBlobs(useFlatBlobListing: true))
                 {
                     var sourceUri = new Uri(sourceBlob.Uri + sas);
                     var sinkBlob = sinkContainer.GetBlockBlobReference(sourceBlob.Uri.LocalPath);
+                    logger.LogInformation($"{sourceBlob.Uri} -> {sinkBlob.Uri}");
                     await sinkBlob.StartCopyAsync(sourceUri);
                 }
             }
