@@ -22,6 +22,7 @@ namespace Amphora.Tests.Integration.Organisations
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
             var tnc = new TermsAndConditionsDto();
+            tnc.Id = System.Guid.NewGuid().ToString();
             tnc.Name = System.Guid.NewGuid().ToString();
             tnc.Contents = System.Guid.NewGuid().ToString();
 
@@ -30,7 +31,7 @@ namespace Amphora.Tests.Integration.Organisations
             result.EnsureSuccessStatusCode();
 
             var dto = JsonConvert.DeserializeObject<TermsAndConditionsDto>(contents);
-            Assert.Equal(tnc.Name, dto.Name);
+            Assert.Equal(tnc.Id, dto.Id);
             Assert.Equal(tnc.Contents, dto.Contents);
 
             var response = await adminClient.GetAsync($"api/Organisations/{adminOrg.Id}/TermsAndConditions");
@@ -38,7 +39,7 @@ namespace Amphora.Tests.Integration.Organisations
             response.EnsureSuccessStatusCode();
             var allTnc = JsonConvert.DeserializeObject<List<TermsAndConditionsDto>>(contents2);
             Assert.Single(allTnc);
-            Assert.Equal(dto.Name, allTnc[0].Name);
+            Assert.Equal(dto.Id, allTnc[0].Id);
             Assert.Equal(dto.Contents, allTnc[0].Contents);
         }
     }

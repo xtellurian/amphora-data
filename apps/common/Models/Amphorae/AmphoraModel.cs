@@ -27,7 +27,7 @@ namespace Amphora.Common.Models.Amphorae
         public virtual ICollection<AmphoraSignalModel> Signals { get; set; }
         public virtual ICollection<PurchaseModel> Purchases { get; set; }
         public string TermsAndConditionsId { get; set; }
-        public TermsAndConditionsModel TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Name == TermsAndConditionsId);
+        public TermsAndConditionsModel TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
 
         // methods
         public void AddSignal(SignalModel signal, int maxSignals = 7)

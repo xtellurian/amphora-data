@@ -30,18 +30,23 @@ namespace Amphora.Api.Controllers.Organisations
         /// <param name="dto">The new Terms and Conditions</param>  
         /// <param name="id">The Id of the Organisation</param>  
         [Produces(typeof(TermsAndConditionsDto))]
+        [ProducesResponseType(400)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("api/Organisations/{id}/TermsAndConditions")]
         public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditionsDto dto)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            if (org.TermsAndConditions?.Any(t => t.Name == dto.Name) ?? false)
+            if (org.TermsAndConditions?.Any(t => t.Id == dto.Id) ?? false)
             {
-                return BadRequest($"{dto.Name} already exists");
+                return BadRequest($"{dto.Id} already exists");
             }
 
             var model = mapper.Map<TermsAndConditionsModel>(dto);
-            org.AddOrUpdateTermsAndConditions(model);
+
+            if(! org.AddTermsAndConditions(model))
+            {
+                return BadRequest($"{model.Id} already exists");
+            }
 
             var result = await organisationService.UpdateAsync(User, org);
             if (result.Succeeded)

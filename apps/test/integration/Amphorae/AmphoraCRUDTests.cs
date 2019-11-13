@@ -15,10 +15,10 @@ namespace Amphora.Tests.Integration.Amphorae
         public AmphoraCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory) { }
 
 
-        [Theory]
-        [InlineData("/api/amphorae")]
-        public async Task Post_CreatesAmphora_AsAdmin(string url)
+        [Fact]
+        public async Task Post_CreatesAmphora_AsAdmin()
         {
+            var url = "/api/amphorae";
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
@@ -47,10 +47,10 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyUserAsync(adminClient, adminUser);
         }
 
-        [Theory]
-        [InlineData("/api/amphorae")]
-        public async Task Get_ReadsAmphora_AsAdmin(string url)
+        [Fact]
+        public async Task Get_ReadsAmphora_AsAdmin()
         {
+            var url = "/api/amphorae";
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
@@ -85,10 +85,10 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyUserAsync(adminClient, adminUser);
         }
 
-        [Theory]
-        [InlineData("/api/amphorae")]
-        public async Task Get_PublicAmphora_AllowAccessToAny(string url)
+        [Fact]
+        public async Task Get_PublicAmphora_AllowAccessToAny()
         {
+            var url = "/api/amphorae";
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
@@ -145,6 +145,28 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal( dto.Lon, b.Lon);
 
             await DestroyAmphoraAsync(adminClient, dto.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task CreateAmphora_MissingTermsAndConditions_ShouldError()
+        {
+            var url = "/api/amphorae";
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
+            a.TermsAndConditionsId = System.Guid.NewGuid().ToString();
+            var s = JsonConvert.SerializeObject(a);
+            var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
+
+            // Act
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.PostAsync(url, requestBody);
+
+            // Assert
+            Assert.False(response.IsSuccessStatusCode);
+
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }

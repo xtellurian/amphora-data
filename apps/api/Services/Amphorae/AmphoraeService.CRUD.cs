@@ -58,8 +58,19 @@ namespace Amphora.Api.Services.Amphorae
                 if (string.IsNullOrEmpty(model.TermsAndConditionsId))
                 {
                     var tnc = organisation.TermsAndConditions?.FirstOrDefault();
-                    logger.LogInformation($"Using default terms and conditions: {tnc?.Name}");
-                    model.TermsAndConditionsId = tnc?.Name;
+                    logger.LogInformation($"Using default terms and conditions: {tnc?.Id}");
+                    model.TermsAndConditionsId = tnc?.Id;
+                }
+                else
+                {
+                    // check tnc's exist
+                    var tnc = organisation.TermsAndConditions.FirstOrDefault(_ => _.Id == model.TermsAndConditionsId);
+                    if(tnc == null)
+                    {
+                        logger.LogInformation($"CreateAsync failed with invalid TermsAndConditionsId: {model.TermsAndConditionsId}");
+                        var allTermsAndConditions = string.Join( ',' , organisation.TermsAndConditions.Select(_ => _.Id));
+                        return new EntityOperationResult<AmphoraModel>($"Invalid TermsAndConditionsId. Use one of {allTermsAndConditions}");
+                    }
                 }
 
                 // check permission to create amphora

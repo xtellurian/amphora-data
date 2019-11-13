@@ -11,10 +11,22 @@
             <h2>New Terms and Conditions Agreement</h2>
             <small>Data users must agree to these terms when they are applied to their Amphora</small>
             <form method="post" asp-route-id="@Model.Organisation.Id">
-                <div class="form-group">
-                    <label asp-for="TermsAndConditions.Name" class="control-label"></label>
-                    <input asp-for="TermsAndConditions.Name" class="form-control" />
-                    <span asp-validation-for="TermsAndConditions.Name" class="text-danger"></span>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label asp-for="TermsAndConditions.Id" class="control-label"></label>
+                            <input asp-for="TermsAndConditions.Id" class="form-control" />
+                            <span asp-validation-for="TermsAndConditions.Id" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label asp-for="TermsAndConditions.Name" class="control-label"></label>
+                            <input asp-for="TermsAndConditions.Name" class="form-control" />
+                            <span asp-validation-for="TermsAndConditions.Name" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="TermsAndConditions.Contents" class="control-label"></label>
@@ -23,9 +35,9 @@
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
-                    <a asp-page="./Index" asp-route-id="@Model.Organisation.Id"><button class="btn btn-secondary">Cancel</button></a>
                 </div>
             </form>
+            <a asp-page="./Index" asp-route-id="@Model.Organisation.Id"><button class="btn btn-secondary">Cancel</button></a>
         </div>
     </div>
 </div>

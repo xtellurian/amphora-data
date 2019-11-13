@@ -82,7 +82,8 @@ namespace Amphora.Tests.Unit.Purchasing
 
             var terms = new TermsAndConditionsModel
             {
-                Name = "1",
+                Id = "1",
+                Name = System.Guid.NewGuid().ToString(),
                 Contents = "This should be accepted"
             };
             var othersOrg = new OrganisationModel()
@@ -111,7 +112,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphora = new AmphoraModel
             {
                 OrganisationId = othersOrg.Id,
-                TermsAndConditionsId = terms.Name
+                TermsAndConditionsId = terms.Id
             };
             amphora = await amphoraStore.CreateAsync(amphora);
 
@@ -131,7 +132,8 @@ namespace Amphora.Tests.Unit.Purchasing
 
             var terms = new TermsAndConditionsModel
             {
-                Name = "1",
+                Id = "1",
+                Name = "FooBar",
                 Contents = "This shouldn't be accepted"
             };
             var othersOrg = new OrganisationModel()
@@ -156,7 +158,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphora = new AmphoraModel
             {
                 OrganisationId = othersOrg.Id,
-                TermsAndConditionsId = terms.Name
+                TermsAndConditionsId = terms.Id
             };
             amphora = await amphoraStore.CreateAsync(amphora);
 
