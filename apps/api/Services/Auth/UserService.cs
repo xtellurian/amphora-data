@@ -21,17 +21,20 @@ namespace Amphora.Api.Services.Auth
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<OrganisationModel> orgStore,
+                           IEntityStore<ApplicationUser> userStore,
                            IPermissionService permissionService,
                            IUserManager userManager,
                            ISignInManager signInManager)
         {
             this.logger = logger;
             this.orgStore = orgStore;
+            UserStore = userStore;
             this.permissionService = permissionService;
             this.UserManager = userManager;
             this.signInManager = signInManager;
         }
 
+        public IEntityStore<ApplicationUser> UserStore { get; }
         public IUserManager UserManager { get; protected set; }
 
         public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
@@ -71,6 +74,7 @@ namespace Amphora.Api.Services.Auth
                     logger.LogWarning($"Creating global admin {user.Email}");
                     user.IsGlobalAdmin = invitation.IsGlobalAdmin;
                 }
+                user.LastModified = System.DateTime.UtcNow;
                 var result = await UserManager.CreateAsync(user, password);
                 if (result.Succeeded)
                 {

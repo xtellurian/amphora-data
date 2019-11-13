@@ -4,7 +4,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         private readonly IUserService userService;
         private readonly IMemoryCache memoryCache;
 
-        public StatisticsModel Stats { get; set; } = new StatisticsModel();
+        public StatisticsCollection Stats { get; set; } = new StatisticsCollection();
 
         public DashboardPageModel(IAmphoraeService amphoraeService,
                                   IOrganisationService organisationService,
@@ -32,11 +34,13 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.userService = userService;
             this.memoryCache = memoryCache;
         }
-        private DateTime startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, 0);
+
+        private Expression<Func<T, bool>> Active<T>() where T : IEntity => (a => a.LastModified > monthAgo);
+        private DateTime monthAgo = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, 0);
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if( memoryCache.TryGetValue(nameof(Stats), out StatisticsModel stats ))
+            if (memoryCache.TryGetValue(nameof(Stats), out StatisticsCollection stats))
             {
                 this.Stats = stats;
             }
@@ -44,39 +48,80 @@ namespace Amphora.Api.Areas.Admin.Pages
             {
                 await LoadAmphoraStats();
                 await LoadUserStats();
-                var entry = memoryCache.CreateEntry(nameof(Stats));
-                entry.Value = Stats;
-                entry.SetAbsoluteExpiration(DateTime.Now.AddHours(1));
-                memoryCache.Set(nameof(Stats), entry);
+                await LoadOrganisationStats();
+                await LoadDebitStats();
+
+               var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
+                memoryCache.Set(nameof(Stats), this.Stats, cacheEntryOptions);
             }
             return Page();
         }
 
         private async Task LoadUserStats()
         {
-            this.Stats.UsersLoggedInThisMonth =
-                await organisationService.Store.CountAsync(o => o.Memberships.Any(m => m.User.LastLoggedIn > startOfMonth));
-
-
+            this.Stats.Users.TotalCount = await userService.UserStore.CountAsync();
+            this.Stats.Users.ActiveCount = await userService.UserStore.CountAsync(Active<ApplicationUser>());
         }
+        private async Task LoadOrganisationStats()
+        {
+            this.Stats.Organisations.TotalCount = await organisationService.Store.CountAsync();
+            this.Stats.Organisations.ActiveCount = (await userService.UserStore
+                .Query(Active<ApplicationUser>())
+                .Select(_ => _.OrganisationId)
+                .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
+                .Distinct()
+                .Count();
+        }
+        private async Task LoadDebitStats()
+        {
+            this.Stats.Debits.TotalCount = (await organisationService.Store
+                .Query(_ => true) // for all orgs
+                .ToListAsync())
+                .Where(_ => _.Account != null)
+                .SelectMany(_ => _.Account.Debits)
+                .Count();
+                
+            this.Stats.Debits.ActiveCount = (await organisationService.Store
+                .Query(_ => true) // for all orgs
+                .ToListAsync())
+                .Where(_ => _.Account != null)
+                .SelectMany(_ => _.Account.Debits)
+                .Where(_ => _.CreatedDate > monthAgo)
+                .Count();
 
+            this.Stats.Debits.MeanActivePrice = (await organisationService.Store
+                .Query(_ => true) // for all orgs
+                .ToListAsync())
+                .Where(_ => _.Account != null)
+                .SelectMany(_ => _.Account.Debits)
+                .Where(_ => _.CreatedDate > monthAgo)
+                .Average(_ => _.Amount);
+        }
         private async Task LoadAmphoraStats()
         {
-            Expression<Func<AmphoraModel, bool>> activeExpression = a => a.LastModified > startOfMonth;
+            this.Stats.Amphorae.MeanActivePrice =
+                await this.amphoraeService.AmphoraStore.Query(Active<AmphoraModel>()).AverageAsync(a => a.Price);
 
-            this.Stats.MeanPriceOfActiveAmphora = 
-                await this.amphoraeService.AmphoraStore.Query(activeExpression).AverageAsync(a => a.Price);
-
-            this.Stats.AmphoraCount = await this.amphoraeService.AmphoraStore.CountAsync();
-            this.Stats.AmphoraModifiedThisMonthCount = await this.amphoraeService.AmphoraStore.CountAsync(activeExpression);
+            this.Stats.Amphorae.TotalCount = await this.amphoraeService.AmphoraStore.CountAsync();
+            this.Stats.Amphorae.ActiveCount = await this.amphoraeService.AmphoraStore.CountAsync(Active<AmphoraModel>());
         }
     }
 
-    public class StatisticsModel
+    public class StatisticsCollection
     {
-        public int AmphoraCount { get; set; }
-        public int AmphoraModifiedThisMonthCount { get; set; }
-        public double? MeanPriceOfActiveAmphora { get; set; }
-        public int UsersLoggedInThisMonth { get; set; }
+        public StatisticsGroup Amphorae { get; set; } = new StatisticsGroup();
+        public StatisticsGroup Users { get; set; } = new StatisticsGroup();
+        public StatisticsGroup Organisations { get; set; } = new StatisticsGroup();
+        public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
     }
+
+    public class StatisticsGroup
+    {
+        public int? TotalCount { get; set; }
+        public int? ActiveCount { get; set; }
+        public double? MeanActivePrice { get; set; }
+    }
+
+
 }
