@@ -7,4 +7,5 @@ config:
   application:appSvcPlanSize: S1
   application:appSvcPlanTier: Standard
   azure:environment: public
+  azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   azuresearch:sku: basic
