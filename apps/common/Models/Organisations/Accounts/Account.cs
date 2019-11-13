@@ -5,8 +5,6 @@ namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Account
     {
-        // public string OrganisationId { get; set; }
-        // public OrganisationModel Organisation { get; set; }
         public virtual ICollection<Credit> Credits { get; set; }
         public virtual ICollection<Debit> Debits { get; set; }
         public double? Balance => GetBalance();
