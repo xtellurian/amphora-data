@@ -26,12 +26,7 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
-        - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
-          displayName: Az Login
-          env: 
-            NAME: $(name)
-            PASSWORD: $(password)
-            TENANT: $(tenant)
+        - template: az-login.steps.yaml
 
         - template: install.pulumi.steps.yaml
 
