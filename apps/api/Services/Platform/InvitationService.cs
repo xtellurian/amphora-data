@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Emails;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -14,12 +15,17 @@ namespace Amphora.Api.Services.Platform
     {
         private readonly IEntityStore<InvitationModel> invitationStore;
         private readonly IUserService userService;
+        private readonly IEmailSender emailSender;
         private readonly bool isDevelopment;
 
-        public InvitationService(IEntityStore<InvitationModel> invitationStore, IUserService userService, IWebHostEnvironment env)
+        public InvitationService(IEntityStore<InvitationModel> invitationStore,
+                                 IUserService userService,
+                                 IEmailSender emailSender,
+                                 IWebHostEnvironment env)
         {
             this.invitationStore = invitationStore;
             this.userService = userService;
+            this.emailSender = emailSender;
             this.isDevelopment = env.IsDevelopment();
         }
 
@@ -48,6 +54,7 @@ namespace Amphora.Api.Services.Platform
                 invitation.CreatedDate = System.DateTime.UtcNow;
                 invitation.LastModified = System.DateTime.UtcNow;
                 var created = await invitationStore.CreateAsync(invitation);
+                await emailSender.SendEmailAsync(new InvitationEmail(created));
                 return new EntityOperationResult<InvitationModel>(created);
             }
         }
