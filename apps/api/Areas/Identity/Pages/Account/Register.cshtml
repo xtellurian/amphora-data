@@ -7,18 +7,22 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col">
+        <h4>Create a new account.</h4>
+        <hr />
+        @if(Model.Organisation != null)
+        {
+            <small> You are joining @Model.Organisation.Name </small>
+        } 
+        else
+        {
+            <small> You will be promted to create a new organsation. </small>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
         <form asp-route-returnUrl="@Model.ReturnUrl"\ method="post">
-            <h4>Create a new account.</h4>
-            <hr />
-            @if(Model.Organisation != null)
-            {
-                <small> You are joining @Model.Organisation.Name </small>
-            } 
-            else
-            {
-                <small> You will be promted to create a new organsation. If you wish to join an existing organsation, you should request an invition and *not* continue. </small>
-            }
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Input.Email"></label>
@@ -50,8 +54,11 @@
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
         </form>
+    </div>
+    <div class="col-md-6 col align-self-center">
+        <img class="img-fluid mx-auto d-block" src="~/images/Amphora_Black.svg" >
     </div>
 </div>
 

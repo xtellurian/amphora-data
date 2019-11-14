@@ -43,7 +43,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = new InputModel();
         public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
 
@@ -87,6 +87,10 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                 if (invitation == null)
                 {
                     ModelState.AddModelError(string.Empty, $"{email} has not been invited to Amphora Data");
+                }
+                else
+                {
+                    Input.Email = email;
                 }
             }
 
