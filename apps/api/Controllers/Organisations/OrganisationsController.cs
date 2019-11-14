@@ -39,7 +39,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(OrganisationDto))]
         [HttpPost("api/organisations")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Create([FromBody]OrganisationDto dto) //TODO make this a DTO
+        public async Task<IActionResult> Create([FromBody]OrganisationDto dto) 
         {
             var org = mapper.Map<OrganisationModel>(dto);
             var result = await organisationService.CreateOrganisationAsync(User, org);
