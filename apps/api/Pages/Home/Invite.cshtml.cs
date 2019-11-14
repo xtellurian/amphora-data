@@ -84,7 +84,8 @@ namespace Amphora.Api.Pages.Home
                 }
                 else
                 {
-                    return BadRequest();
+                    ModelState.AddModelError(string.Empty, op.Message);
+                    return Page();
                 }
             }
             else
