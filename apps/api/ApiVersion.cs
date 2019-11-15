@@ -29,7 +29,7 @@ namespace Amphora.Api
             var version = $"{Major}.{Minor}.{Patch}";
             if(Suffixes != null && Suffixes.Count > 0)
             {
-                version += string.Join('.', Suffixes);
+                version += "." + string.Join('.', Suffixes);
             }
             return version;
         }
