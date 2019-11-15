@@ -16,7 +16,7 @@ namespace Amphora.Api.AspNet
                 Schema = new JsonSchema { Type = JsonObjectType.String },
                 IsRequired = true,
                 Description = "API Version Number",
-                Default = "0"
+                Default = ApiVersion.CurrentVersion.Major.ToString()
             });
 
             return true;
