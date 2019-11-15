@@ -1,0 +1,15 @@
+steps:
+- script: |
+    if [ -z "$SUBSCRIPTION" ]
+    then
+      echo "subscription variable not set"
+      exit 1
+    fi
+    az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    az account set --subscription $SUBSCRIPTION
+  displayName: Az Login to Subscription
+  env: 
+    NAME: $(name)
+    PASSWORD: $(password)
+    TENANT: $(tenant)
+    SUBSCRIPTION: $(subscription)

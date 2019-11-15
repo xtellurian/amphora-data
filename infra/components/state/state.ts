@@ -1,11 +1,14 @@
 import * as azure from "@pulumi/azure";
+import { input } from "@pulumi/azure/types";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
 import { CONSTANTS, IComponentParams } from "../../components";
 
+import { AzureId } from "../../models/azure-id";
 import { Monitoring } from "../monitoring/monitoring";
 
 const config = new pulumi.Config();
+const auth = new pulumi.Config("auth");
 
 const tags = {
   component: "state",
@@ -119,31 +122,31 @@ export class State extends pulumi.ComponentResource {
   }
 
   private keyvault(rg: azure.core.ResourceGroup) {
+    const ids = auth.requireObject<AzureId[]>("ids");
+    const accessPolicies: pulumi.Input<Array<pulumi.Input<input.keyvault.KeyVaultAccessPolicy>>> = [];
+    ids.forEach((element) => {
+      if (element.appId) {
+        accessPolicies.push({
+          applicationId: element.appId,
+          keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
+          objectId: element.objectId,
+          secretPermissions: ["list", "set", "get", "delete"],
+          tenantId: CONSTANTS.authentication.tenantId,
+        });
+      }
+      accessPolicies.push({
+        keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
+        objectId: element.objectId,
+        secretPermissions: ["list", "set", "get", "delete"],
+        tenantId: CONSTANTS.authentication.tenantId,
+      });
+
+    });
+
     const kv = new azure.keyvault.KeyVault(
       "amphoraState",
       {
-        accessPolicies: [
-          {
-            keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
-            objectId: CONSTANTS.authentication.rian,
-            secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: CONSTANTS.authentication.tenantId,
-          },
-          {
-            applicationId: CONSTANTS.authentication.spAppId,
-            keyPermissions: ["create", "get", "delete", "unwrapKey", "wrapKey"],
-            objectId: CONSTANTS.authentication.spObjectId,
-            secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: CONSTANTS.authentication.tenantId,
-          },
-          {
-            keyPermissions: ["create", "get", "delete", "unwrapKey", "wrapKey"],
-            objectId: CONSTANTS.authentication.spObjectId,
-            secretPermissions: ["list", "set", "get", "delete"],
-            tenantId: CONSTANTS.authentication.tenantId,
-          },
-
-        ],
+        accessPolicies,
         resourceGroupName: rg.name,
         skuName: "standard",
         tags,
@@ -348,14 +351,14 @@ export class State extends pulumi.ComponentResource {
               enabled: false,
             },
           },
-          // {
-          //   category: "ControlPlaneRequests",
-          //   enabled: false,
-          //   retentionPolicy: {
-          //     days: 0,
-          //     enabled: false,
-          //   },
-          // },
+          {
+            category: "PartitionKeyRUConsumption",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
           {
             category: "MongoRequests",
             enabled: false,

@@ -1,10 +1,5 @@
 steps:
-- script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
-  displayName: Az Login
-  env: 
-    NAME: $(name)
-    PASSWORD: $(password)
-    TENANT: $(tenant)
+- template: az-login.steps.yaml
 
 - script: |
     chmod +x infra/deploy-app.sh

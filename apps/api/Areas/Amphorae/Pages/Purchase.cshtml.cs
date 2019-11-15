@@ -23,9 +23,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            // TODO check if Terms and Condirtions are accepted.
-            // if NOT, redirect to TnC, with returnUrl back here.
-            // if YES, just purchase and continue
             this.Id = id;
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)

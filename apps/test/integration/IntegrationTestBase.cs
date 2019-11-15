@@ -6,6 +6,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Api;
 
 namespace Amphora.Tests.Integration
 {
@@ -18,24 +19,30 @@ namespace Amphora.Tests.Integration
             _factory = factory;
         }
 
-        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> GetNewClientInOrg(HttpClient currentClient, OrganisationDto org)
+        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> GetNewClientInOrg(
+            HttpClient currentClient,
+            OrganisationDto org,
+            int majorVersion = 0)
         {
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
-                new InvitationDto{TargetEmail = email, TargetOrganisationId = org.Id});
+                new InvitationDto { TargetEmail = email, TargetOrganisationId = org.Id });
             inviteResponse.EnsureSuccessStatusCode();
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
-            var acceptDto = new AcceptInvitationDto{TargetOrganisationId = org.Id};
+            var acceptDto = new AcceptInvitationDto { TargetOrganisationId = org.Id };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
             inviteResponse.EnsureSuccessStatusCode();
             user.OrganisationId = org.Id;
             return (client, user, org);
         }
-        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> NewOrgAuthenticatedClientAsync()
+        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> NewOrgAuthenticatedClientAsync(
+            int majorVersion = 0)
         {
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());

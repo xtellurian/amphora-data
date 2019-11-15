@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Platform;
@@ -10,6 +11,7 @@ using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     [OpenApiIgnore]

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Amphorae;
@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [Produces("application/json")]
     [SkipStatusCodePages]

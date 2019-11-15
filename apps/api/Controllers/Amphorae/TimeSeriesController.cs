@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     public class TimeSeriesController : Controller

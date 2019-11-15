@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
+    [ApiMajorVersion(0)]
     [SkipStatusCodePages]
     public class PurchasesController : Controller
     {

@@ -118,7 +118,6 @@ export class Application extends pulumi.ComponentResource
   private createAzureMaps(rg: azure.core.ResourceGroup) {
     this.AzureMaps = new AzureMaps("azMaps", { rg }, { parent: this });
 
-    const subId = CONSTANTS.authentication.subscriptionId;
     // tslint:disable-next-line: max-line-length
     // const roleId = `/subscriptions/${subId}/providers/Microsoft.Authorization/roleDefinitions/423170ca-a8f6-4b0f-8487-9e4eb8f49bfa`;
     // const appRole = new azure.role.Assignment("appRole",

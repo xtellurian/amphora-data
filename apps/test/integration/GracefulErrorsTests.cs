@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace Amphora.Tests.Integration
     [Collection(nameof(IntegrationFixtureCollection))]
     public class GracefulErrorsTests: IntegrationTestBase
     {
-
+        private int _apiVersion = 0;
         public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
         {
         }
@@ -21,6 +22,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
 

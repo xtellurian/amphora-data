@@ -18,7 +18,6 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   variables:
-    - group: AzureDeploySP
     - group: Pulumi xtellurian
     - name: buildConfiguration
       value: 'Release'
@@ -45,12 +44,7 @@ jobs:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
     # required to access KV in testing
-    - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
-      displayName: Az Login
-      env: 
-        NAME: $(name)
-        PASSWORD: $(password)
-        TENANT: $(tenant)
+    - template: az-login.steps.yaml
 
     # required to access KV in testing
     - script: |

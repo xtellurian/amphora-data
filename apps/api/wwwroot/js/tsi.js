@@ -18,15 +18,18 @@ async function tsi(id, signals, filters) {
     end.setDate(end.getDate() + 2);
 
     // ON RENDER
-    var renderLineGraph = async (from, to, timezone) => {
+    var renderLineGraph = async (from, to, timezone, bucketSize) => {
 
         if (!from) from = start;
         else start = from; // cache
         if (!to) to = end;
         else end = to; // cache
         if (!timezone) timezone = 'Local'
+        if(!bucketSize) bucketSize = '2h';
 
-        var linechartTsqExpressions = await getLineChartExpressions(tsiClient, id, signals, filters, from, to);
+        console.log(bucketSize)
+
+        var linechartTsqExpressions = await getLineChartExpressions(tsiClient, id, signals, filters, from, to, bucketSize);
 
         const url = window.location.host + "/api"
         var result = await tsiClient.server.getTsqResults("token", url, linechartTsqExpressions.map(function (ae) {
@@ -77,7 +80,7 @@ async function tsi(id, signals, filters) {
     return renderLineGraph;
 }
 
-async function getLineChartExpressions(tsiClient, id, signals, filters, from, to) {
+async function getLineChartExpressions(tsiClient, id, signals, filters, from, to, bucketSize) {
     var scheme = new ColorScheme;
     scheme.from_hue(signals.length)
         .scheme('triade')
@@ -115,7 +118,7 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
         const x = new tsiClient.ux.TsqExpression(
             { timeSeriesId: [id] },
             y,
-            { from, to, bucketSize: '2h' },
+            { from, to, bucketSize },
             '#' + colors[colourCount++], // color
             sig.Property);
 

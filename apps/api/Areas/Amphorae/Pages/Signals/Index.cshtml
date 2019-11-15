@@ -15,88 +15,116 @@
             </span>
         </div>
     </div>
-
     <div class="row">
-        <table id="signal-table" class="table">
-            <thead>
-                <tr>
-                <th scope="col">Property</th>
-                <th>Filters</th>
-                <th>
-                    @if(Model.Amphora.Signals.Count < 5)
+        <div class="col card text-center">
+            <a class="m-1" data-toggle="collapse" href="#signalTable" 
+                role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
+                </a>
+        </div>
+    </div>
+    <div id="signalTable" class="collapse">
+        <div class="row">
+            <table id="signal-table" class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Property</th>
+                    <th>Filters</th>
+                    <th>
+                        @if(Model.Amphora.Signals.Count < 5)
+                        {
+                            <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
+                                <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <i class="fas fa-info-circle float-right" data-toggle="tooltip" data-placement="left" title="Only 7 Properties allowed"></i>
+                        }
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var n in Model.Signals)
                     {
-                        <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
-                            <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
-                        </a>
-                    }
-                    else
-                    {
-                        <i class="fas fa-info-circle float-right" data-toggle="tooltip" data-placement="left" title="Only 7 Properties allowed"></i>
-                    }
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var n in Model.Signals)
-                {
-                <tr class="signal-item">
-                    <th scope="row">@n.Property</th>
-                    <td>
-                        <div class="input-group">
-                            @if(n.IsNumeric)
-                            {
-                                <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Operator
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '>');">Greater than</a>
-                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '<');">Less than</a>
-                                    <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '=');">Equals</a>
-                                </div>
-                                <input type="text" id="@n.Property-operator" class="m-1" size="1" disabled value='='>
-                                <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" 
-                                    data-toggle="tooltip" data-placement="top" title="Match this value" 
-                                    onchange="setFilterValue('@n.Property-input', 'Double');">
-                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
-                            } 
-                            else if(n.IsString) 
-                            {
-                                <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" 
-                                    data-toggle="tooltip" data-placement="top" title="Match this value" 
-                                    onchange="setFilterValue('@n.Property-input', 'String');">
-                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
-                            }
-                        </div>
-                        
-                    </td>
-                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
-                    <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
-                </tr>
-                }
-                @if(Model.Signals?.Count() > 0 ) 
-                {
                     <tr class="signal-item">
-                        <th scope="row">Write Time</th>
+                        <th scope="row">@n.Property</th>
                         <td>
                             <div class="input-group">
-                            @{
-                                var maxWt = DateTime.UtcNow.AddHours(1).Ticks;
-                                var minWt = DateTime.UtcNow.AddMonths(-2).Ticks;
-                            }
-                                <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
-                                <input type="hidden" id="wt-operator" value=">">
-                                <input type="range" class="form-control form-control-range m-1" id="wt-input" 
-                                    min="@minWt" max="@maxWt" step="@((maxWt - minWt) / 100)"
-                                    onchange="setFilterValue('wt-input', 'Double')">
-                                <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
+                                @if(n.IsNumeric)
+                                {
+                                    <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Operator
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '>');">Greater than</a>
+                                        <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '<');">Less than</a>
+                                        <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '=');">Equals</a>
+                                    </div>
+                                    <input type="text" id="@n.Property-operator" class="m-1" size="1" disabled value='='>
+                                    <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                        data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                        onchange="setFilterValue('@n.Property-input', 'Double');">
+                                    <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                                } 
+                                else if(n.IsString) 
+                                {
+                                    <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                        data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                        onchange="setFilterValue('@n.Property-input', 'String');">
+                                    <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                                }
                             </div>
+                            
                         </td>
-                        <td></td>
+                        <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
+                        <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
                     </tr>
-                }
-            </tbody>
-        </table>
+                    }
+                    @if(Model.Signals?.Count() > 0 ) 
+                    {
+                        <tr class="signal-item">
+                            <th scope="row">Write Time</th>
+                            <td>
+                                <div class="input-group">
+                                @{
+                                    var maxWt = DateTime.UtcNow.AddHours(1).Ticks;
+                                    var minWt = DateTime.UtcNow.AddMonths(-2).Ticks;
+                                }
+                                    <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
+                                    <input type="hidden" id="wt-operator" value=">">
+                                    <input type="range" class="form-control form-control-range m-1" id="wt-input" 
+                                        min="@minWt" max="@maxWt" step="@((maxWt - minWt) / 100)"
+                                        onchange="setFilterValue('wt-input', 'Double')">
+                                    <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col">
+                <div class="dropdown">
+                    <button id='resolutionButton' class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Resolution
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" onClick="setResolution('24h')">One Day</a>
+                        <a class="dropdown-item" onClick="setResolution('12h')">12 Hours</a>
+                        <a class="dropdown-item" onClick="setResolution('2h')">2 Hours</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
     </div>
+
+    
+    
     <div class="row">
         <div id="loader" role="status" style="margin: 0 auto;";>
             <div class="spinner-border text-success" role="status">
@@ -172,10 +200,15 @@
 
             renderGraph()
         }
-
+        var resolution = '2h';
         function renderGraph() {
-            if(render) render().then(() => loading(false));
+            if(render) render(null, null, null, resolution).then(() => loading(false));
             else console.log("Renderer unavailable.");
+        }
+        function setResolution(value) {
+            resolution = value;
+            document.getElementById('resolutionButton').innerHTML = value;            
+            renderGraph()
         }
 
         function renderFilterTable(filters, ) {

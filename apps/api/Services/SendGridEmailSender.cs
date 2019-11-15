@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Emails;
 using Amphora.Api.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,24 @@ namespace Amphora.Api.Services
             this.options = options.CurrentValue;
             this.logger = logger;
         }
+
+        public async Task SendEmailAsync(IEmail email)
+        {
+            try
+            {
+                var msg = new SendGridMessage();
+                msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
+                msg.AddTo(new EmailAddress(email.ToEmail, email.ToName));
+                msg.SetTemplateId(email.SendGridTemplateId);
+
+                msg.SetTemplateData(email);
+                await TrySendMessage(msg);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to send email, {ex.Message}", ex);
+            }
+        }
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             var msg = new SendGridMessage();
@@ -37,19 +56,26 @@ namespace Amphora.Api.Services
             msg.SetSubject(subject);
 
             msg.AddContent(MimeType.Html, htmlMessage);
+            await TrySendMessage(msg);
+        }
 
-            if(string.IsNullOrEmpty(options.ApiKey))
+        private async Task TrySendMessage(SendGridMessage msg)
+        {
+            if (string.IsNullOrEmpty(options.ApiKey))
             {
-                logger.LogWarning($"Send Grid API Key not provided. Email not sent to {email}");
-                logger.LogInformation($"Tried to send: {htmlMessage} to {email}");
+                logger.LogWarning($"Send Grid API Key not provided. Email not sent.");
+            }
+            else if(options.Suppress.HasValue && options.Suppress.Value)
+            {
+                logger.LogWarning($"Email suppressed via configuration.");
             }
             else
             {
-                logger.LogInformation($"Sending email to {email}");
+                logger.LogInformation($"Sending email to {msg.From}");
                 var client = new SendGridClient(options.ApiKey);
                 var response = await client.SendEmailAsync(msg);
                 var body = await response.Body.ReadAsStringAsync();
-                if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
                     logger.LogCritical(body);
                     throw new ApplicationException("Failed to send confirmation email");

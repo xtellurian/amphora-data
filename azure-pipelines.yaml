@@ -18,7 +18,9 @@ stages:
 - stage: branch
   displayName: Branch Stage
   variables:
-    stack: $(Build.SourceBranchName)
+    - name: stack
+      value: $(Build.SourceBranchName)
+    - group: AzureDeploySP
   jobs:
   - template: pipeline/infra.create.job.yaml
     parameters:
@@ -33,6 +35,8 @@ stages:
 - stage: deploy_master
   displayName: Deploy to Master Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  variables:
+    - group: AzureDeploySP
   jobs:
     - template: pipeline/deploymentjob.yaml
       parameters:
@@ -43,11 +47,25 @@ stages:
 - stage: deploy_demo
   displayName: Deploy to Demo Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  variables:
+    - group: AzureDeploySP
   jobs:
     - template: pipeline/deploymentjob.yaml
       parameters:
         jobName: demo_deploymentjob
         environment: demo
+        staging: 'false'
+
+- stage: deploy_prod
+  displayName: Deploy to Prod Envionment 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # TODO
+  variables:
+    - group: PulumiAzureDevOpsProd
+  jobs:
+    - template: pipeline/deploymentjob.yaml
+      parameters:
+        jobName: prod_deploymentjob
+        environment: prod
         staging: 'false'
 
 - stage: promote

@@ -32,7 +32,7 @@ export class AzureMaps extends pulumi.ComponentResource {
 
         const maps = new azure.maps.Account("maps", {
             resourceGroupName: rg.name,
-            skuName: "s0",
+            skuName: "S0",
             tags,
         },
         {

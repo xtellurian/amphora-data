@@ -13,7 +13,6 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   variables:
-  - group: AzureDeploySP
   - group: Pulumi xtellurian
   - name: stack
     value: ${{ parameters.environment }}
@@ -24,12 +23,7 @@ jobs:
         steps:
         - checkout: self  # deployment job doesn't check it out
         - template: install.pulumi.steps.yaml
-        - script: az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
-          displayName: Az Login
-          env: 
-            NAME: $(name)
-            PASSWORD: $(password)
-            TENANT: $(tenant)
+        - template: az-login.steps.yaml
         - script: |
             # Add the pulumi CLI to the PATH
             set -e

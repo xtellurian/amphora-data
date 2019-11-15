@@ -51,7 +51,8 @@ namespace Amphora.Migrate.Migrators
                 foreach (var sourceBlob in sourceContainer.ListBlobs(useFlatBlobListing: true))
                 {
                     var sourceUri = new Uri(sourceBlob.Uri + sas);
-                    var sinkBlob = sinkContainer.GetBlockBlobReference(sourceBlob.Uri.LocalPath);
+                    var sourcePath = sourceBlob.Uri.LocalPath.TrimStart('/').Substring(sourceContainer.Name.Length).TrimStart('/'); // fixes path
+                    var sinkBlob = sinkContainer.GetBlockBlobReference(sourcePath);
                     logger.LogInformation($"{sourceBlob.Uri} -> {sinkBlob.Uri}");
                     await sinkBlob.StartCopyAsync(sourceUri);
                 }

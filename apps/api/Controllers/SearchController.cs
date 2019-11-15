@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Search;
@@ -14,6 +15,7 @@ using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     public class SearchController : Controller

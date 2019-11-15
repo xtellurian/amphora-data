@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.AzureMaps;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     public class MarketController : Controller

@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api;
 
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
     public class CreateUserTests : IntegrationTestBase
     {
+        private int _apiVersion = 0;
         public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
@@ -24,6 +26,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
@@ -61,6 +64,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
@@ -107,6 +111,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@example.com";
