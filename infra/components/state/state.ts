@@ -351,14 +351,14 @@ export class State extends pulumi.ComponentResource {
               enabled: false,
             },
           },
-          // {
-          //   category: "ControlPlaneRequests",
-          //   enabled: false,
-          //   retentionPolicy: {
-          //     days: 0,
-          //     enabled: false,
-          //   },
-          // },
+          {
+            category: "PartitionKeyRUConsumption",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
           {
             category: "MongoRequests",
             enabled: false,
