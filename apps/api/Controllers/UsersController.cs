@@ -10,9 +10,11 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NSwag.Annotations;
+using Amphora.Api.AspNet;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     public class UsersController : Controller

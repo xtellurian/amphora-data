@@ -14,7 +14,7 @@ namespace Amphora.Api.AspNet
             Value = value;
         }
 
-        public bool Accept(ActionConstraintContext context)
+        public virtual bool Accept(ActionConstraintContext context)
         {
             if (context.RouteContext.HttpContext.Request.Headers.TryGetValue(Header, out var value))
             {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers
 {
-
+    [ApiMajorVersion(0)]
     [Route("api/authentication")]
     [ApiController]
     [SkipStatusCodePages]

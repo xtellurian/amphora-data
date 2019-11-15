@@ -18,6 +18,7 @@ using NSwag.Generation.Processors.Security;
 using System.Linq;
 using Amphora.Api.Converters;
 using Amphora.Api.Services.Purchases;
+using Amphora.Api.AspNet;
 
 namespace Amphora.Api
 {
@@ -120,13 +121,16 @@ namespace Amphora.Api
                     Description = "Bearer {your JWT token}."
                 });
 
+                document.OperationProcessors.Add(
+                    new AmphoraDataApiVersionOperationProcessor()
+                );
 
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
                 document.Description = "API for interacting with the Amphora Data platform.";
                 document.Title = "Amphora Data Api";
-                document.Version = "0.1.4";
+                document.Version = ApiVersion.CurrentVersion.ToSemver();
 
             });
         }

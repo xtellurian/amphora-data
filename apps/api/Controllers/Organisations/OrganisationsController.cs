@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Options;
@@ -11,8 +12,9 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Controllers
 {
+    [ApiMajorVersion(0)]
     [ApiController]
-     [SkipStatusCodePages]
+    [SkipStatusCodePages]
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;

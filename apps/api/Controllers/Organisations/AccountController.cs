@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Organisations.Accounts;
 using AutoMapper;
@@ -8,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers.Organisations
 {
+    [ApiMajorVersion(0)]
     [ApiController]
-     [SkipStatusCodePages]
+    [SkipStatusCodePages]
     public class AccountController : Controller
     {
         private readonly IOrganisationService organisationService;

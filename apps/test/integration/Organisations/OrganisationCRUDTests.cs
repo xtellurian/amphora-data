@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +9,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Api;
 
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(IntegrationFixtureCollection))]
     public class OrganisationCRUDTests : IntegrationTestBase
     {
+        private int _apiVersion = 0;
         public OrganisationCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
@@ -26,6 +27,7 @@ namespace Amphora.Tests.Integration.Organisations
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var (user, _) = await client.CreateUserAsync(email, nameof(CanCreateOrganisation));
 
@@ -59,6 +61,7 @@ namespace Amphora.Tests.Integration.Organisations
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var (user, _) = await client.CreateUserAsync(email, nameof(CanUpdateOrganisation));
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanUpdateOrganisation));
@@ -70,7 +73,7 @@ namespace Amphora.Tests.Integration.Organisations
             a = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
 
             // Act
-            a.Name = Guid.NewGuid().ToString();
+            a.Name = System.Guid.NewGuid().ToString();
             requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var updateResponse = await client.PutAsync(url + "/" + a.Id, requestBody);
             updateResponse.EnsureSuccessStatusCode();
@@ -91,6 +94,7 @@ namespace Amphora.Tests.Integration.Organisations
         {
             // Arrange
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var (user, _) = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation));
             var org = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanInviteToOrganisation));
@@ -107,6 +111,7 @@ namespace Amphora.Tests.Integration.Organisations
 
 
             var client2 = _factory.CreateClient();
+            client2.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email2 = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation));
 

@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Organisations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -33,7 +31,5 @@ namespace Amphora.Api.Controllers
             var image = await organisationService.ReadrofilePictureJpg(org);
             return new FileContentResult(image, "image/jpeg");
         }
-
-
     }
 }
