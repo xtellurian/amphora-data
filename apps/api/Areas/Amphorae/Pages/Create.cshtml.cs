@@ -58,14 +58,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     location = new GeoLocation(Input.Lon.Value, Input.Lat.Value);
                 }
-                var entity = new AmphoraModel
+                var entity = new AmphoraModel(Input.Name, Input.Description, Input.Price, null, null, Input.TermsAndConditionsId)
                 {
-                    Name = Input.Name,
-                    Description = Input.Description,
                     GeoLocation = location,
-                    Price = Input.Price,
                     IsPublic = true,
-                    TermsAndConditionsId = Input.TermsAndConditionsId
                 };
 
                 var setResult = await amphoraeService.CreateAsync(User, entity);

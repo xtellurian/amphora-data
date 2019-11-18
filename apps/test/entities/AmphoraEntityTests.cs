@@ -22,12 +22,7 @@ namespace Amphora.Tests.Unit
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
-                var a = new AmphoraModel()
-                {
-                    Name = "Test Name",
-                    Description = "Test Description",
-                    Price = 42
-                };
+                var a = new AmphoraModel("Test Name", "Test Description", 42, null, null, null);
 
                 var setResult = await sut.CreateAsync(a);
                 Assert.NotNull(setResult);
@@ -57,12 +52,7 @@ namespace Amphora.Tests.Unit
             using (var context = GetContext(nameof(InMemoryEntityStoreListAsync)))
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                var a = new AmphoraModel()
-                {
-                    Name = "Test Name",
-                    Description = "Test Description",
-                    Price = 42
-                };
+                var a = new AmphoraModel("Test name", "Test Description", 44, null, null, null);
 
                 var emptyList = await sut.TopAsync();
                 Assert.Empty(emptyList);

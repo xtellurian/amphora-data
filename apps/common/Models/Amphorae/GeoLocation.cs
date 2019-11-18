@@ -5,7 +5,6 @@ namespace Amphora.Common.Models.Amphorae
 {
     public class GeoLocation
     {
-        public GeoLocation() { }
         public GeoLocation(double lon, double lat)
         {
             Type = "Point";

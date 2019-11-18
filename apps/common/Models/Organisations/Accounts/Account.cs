@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Account
     {
-        public virtual ICollection<Credit> Credits { get; set; }
-        public virtual ICollection<Debit> Debits { get; set; }
+        public virtual ICollection<Credit> Credits { get; set; } = new Collection<Credit>();
+        public virtual ICollection<Debit> Debits { get; set; } = new Collection<Debit>();
         public double? Balance => GetBalance();
 
         public double? GetBalance()

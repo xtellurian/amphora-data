@@ -36,7 +36,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<AmphoraModel>(responseBody);
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);

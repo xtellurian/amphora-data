@@ -20,12 +20,7 @@ namespace Amphora.Tests.Helpers
 
         private static string BadlyFormedAmphora()
         {
-            var entity = new AmphoraModel
-            {
-                Price = -1,
-                Name = null,
-                Description = null,
-            };
+            var entity = new AmphoraModel(null, null, -1, null, null, null);
             return JsonConvert.SerializeObject(entity);
         }
 

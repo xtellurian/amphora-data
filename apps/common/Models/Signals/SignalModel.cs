@@ -10,10 +10,6 @@ namespace Amphora.Common.Models.Signals
         public const string DateTime = nameof(DateTime);
         public static List<string> Options => new List<string> { Numeric, String };
 
-        public SignalModel()
-        {
-        }
-
         public SignalModel(string property, string valueType)
         {
             Property = property ?? throw new System.ArgumentNullException(nameof(property));
@@ -32,15 +28,7 @@ namespace Amphora.Common.Models.Signals
             this.Id = $"{Property}-{ValueType}";
         }
 
-        [Obsolete]
-        public string KeyName { get => _keyName; set => _keyName = value; }
-        private string _keyName;
-        public string Property
-        {
-            get => _property ?? _keyName;
-            set => _property = value;
-        }
-        private string _property { get; set; }
+        public string Property { get; set; }
         public string ValueType { get; set; }
 
         public bool IsNumeric => this.ValueType == Numeric;

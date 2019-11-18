@@ -7,6 +7,7 @@ using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Users;
+using Amphora.Tests.Helpers;
 using Moq;
 using Xunit;
 
@@ -20,10 +21,8 @@ namespace Amphora.Tests.Unit.Purchasing
             var context = base.GetContext();
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-            var org = new OrganisationModel()
-            {
-                Name = nameof(PurchasingAmphora_SendsEmail)
-            };
+            var org = EntityLibrary.GetOrganisationModel();
+            
             org = await orgStore.CreateAsync(org);
             var user_emailconfirmed = new ApplicationUser()
             {
@@ -43,7 +42,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 EmailConfirmed = false
             };
 
-            var amphora = new AmphoraModel();
+            var amphora = EntityLibrary.GetAmphoraModel(org, nameof(PurchasingAmphora_SendsEmail));
             amphora.Id = System.Guid.NewGuid().ToString();
             var mockEmailSender = new Mock<IEmailSender>();
             var logger = CreateMockLogger<PurchaseService>();
@@ -80,21 +79,17 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
 
-            var terms = new TermsAndConditionsModel
-            {
-                Id = "1",
-                Name = System.Guid.NewGuid().ToString(),
-                Contents = "This should be accepted"
-            };
-            var othersOrg = new OrganisationModel()
-            {
-                TermsAndConditions = new List<TermsAndConditionsModel>
+            var terms = new TermsAndConditionsModel("1", System.Guid.NewGuid().ToString(), "This should be accepted" );
+         
+            var othersOrg = EntityLibrary.GetOrganisationModel();
+            
+            othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
                 {
                     terms
-                }
-            };
+                };
+            
             othersOrg = await orgStore.CreateAsync(othersOrg);
-            var usersOrg = new OrganisationModel();
+            var usersOrg = EntityLibrary.GetOrganisationModel();
             usersOrg.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>
             {
                 new TermsAndConditionsAcceptanceModel(usersOrg, terms)
@@ -109,11 +104,9 @@ namespace Amphora.Tests.Unit.Purchasing
                 Organisation = usersOrg
             };
 
-            var amphora = new AmphoraModel
-            {
-                OrganisationId = othersOrg.Id,
-                TermsAndConditionsId = terms.Id
-            };
+            var amphora = EntityLibrary.GetAmphoraModel(othersOrg, nameof(AcceptedTermsAndConditions_EvaluatesTrue));
+            amphora.TermsAndConditionsId = terms.Id;
+
             amphora = await amphoraStore.CreateAsync(amphora);
 
             var sut = new PurchaseService(store, orgStore, null, null, CreateMockLogger<PurchaseService>());
@@ -130,21 +123,17 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
 
-            var terms = new TermsAndConditionsModel
-            {
-                Id = "1",
-                Name = "FooBar",
-                Contents = "This shouldn't be accepted"
-            };
-            var othersOrg = new OrganisationModel()
-            {
-                TermsAndConditions = new List<TermsAndConditionsModel>
+            var terms = new TermsAndConditionsModel("2", "FooBar", "TThis shouldn't be accepted" );
+          
+            var othersOrg = EntityLibrary.GetOrganisationModel();
+
+            othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
                 {
                     terms
-                }
-            };
+                };
+
             othersOrg = await orgStore.CreateAsync(othersOrg);
-            var usersOrg = new OrganisationModel();
+            var usersOrg = EntityLibrary.GetOrganisationModel();
             usersOrg = await orgStore.CreateAsync(usersOrg);
 
 
@@ -155,11 +144,9 @@ namespace Amphora.Tests.Unit.Purchasing
                 Organisation = usersOrg
             };
 
-            var amphora = new AmphoraModel
-            {
-                OrganisationId = othersOrg.Id,
-                TermsAndConditionsId = terms.Id
-            };
+            var amphora = EntityLibrary.GetAmphoraModel(othersOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse));
+            amphora.TermsAndConditionsId = terms.Id;
+
             amphora = await amphoraStore.CreateAsync(amphora);
 
             var sut = new PurchaseService(store, orgStore, null, null, CreateMockLogger<PurchaseService>());
@@ -176,28 +163,22 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
-            var org = new OrganisationModel()
+            var org = EntityLibrary.GetOrganisationModel();
+            org.Account = new Account()
             {
-                Name = nameof(PurchasingAmphora_SendsEmail),
-                Account = new Account()
-                {
-                    Credits = new List<Credit>()
+                Credits = new List<Credit>()
                     {
                         new Credit("initial", 100)
                     }
-                }
             };
-            var otherOrg = new OrganisationModel()
-            {
-                Name = "other",
-            };
+
+            var otherOrg = EntityLibrary.GetOrganisationModel();
+
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
-            var amphora = new AmphoraModel
-            {
-                OrganisationId = otherOrg.Id,
-                Price = 9
-            };
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse));
+            amphora.Price = 9;
+
             amphora = await amphoraStore.CreateAsync(amphora);
 
             var user = new ApplicationUser()

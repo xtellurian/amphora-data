@@ -2,8 +2,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Credit : Transaction
     {
-        public Credit() { }
-        public Credit(string label, double amount) : base(label, amount)
+        public Credit(string label, double? amount) : base(label, amount)
         {
         }
 

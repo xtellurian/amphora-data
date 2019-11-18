@@ -6,6 +6,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <LangVersion>8.0</LangVersion>
     <Nullable>disable</Nullable>
+    <NullableContextOptions>disable</NullableContextOptions>
   </PropertyGroup>
 
 

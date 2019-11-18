@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
@@ -9,20 +10,27 @@ namespace Amphora.Common.Models.Organisations
 {
     public class OrganisationModel : Entity, IEntity
     {
+        public OrganisationModel(string name, string about, string websiteUrl, string address)
+        {
+            Name = name;
+            About = about;
+            WebsiteUrl = websiteUrl;
+            Address = address;
+        }
         public string Name { get; set; }
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
         // owned 
-        public virtual Accounts.Account Account { get; set; }
-        public virtual ICollection<InvitationModel> GlobalInvitations { get; set; }
-        public virtual ICollection<Membership> Memberships { get; set; }
+        public virtual Accounts.Account? Account { get; set; }
+        public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
+        public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
         // navigation
-        public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; }
-        public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; }
-        public virtual ICollection<PurchaseModel> Purchases { get; set; }
-        public string CreatedById { get; set; }
-        public virtual ApplicationUser CreatedBy { get; set; }
+        public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; } = new Collection<TermsAndConditionsModel>();
+        public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; } = new Collection<TermsAndConditionsAcceptanceModel>();
+        public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
+        public string? CreatedById { get; set; }
+        public virtual ApplicationUser? CreatedBy { get; set; }
 
         public void AddOrUpdateMembership(ApplicationUser user, Roles role = Roles.User)
         {

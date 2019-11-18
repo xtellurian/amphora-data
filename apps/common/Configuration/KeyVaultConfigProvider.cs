@@ -9,7 +9,10 @@ namespace Amphora.Common.Configuration
     {
         private const string kvUri = "kvUri";
         private const string disableKv = "disableKv";
-        public static void Configure(IConfigurationBuilder config, IConfigurationRoot builtConfig, string vaultUri = null, IKeyVaultSecretManager manager = null)
+        public static void Configure(IConfigurationBuilder config,
+                                     IConfigurationRoot builtConfig,
+                                     string? vaultUri = null,
+                                     IKeyVaultSecretManager? manager = null)
         {
             vaultUri ??= builtConfig[kvUri];
             manager ??= new DefaultKeyVaultSecretManager();
