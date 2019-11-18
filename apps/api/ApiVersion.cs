@@ -6,7 +6,7 @@ namespace Amphora.Api
     public static class ApiVersion
     {
         public const string HeaderName = "x-amphoradata-version";
-        public static ApiVersionIdentifier CurrentVersion = new ApiVersionIdentifier(0, 2, 0, "dev1");
+        public static ApiVersionIdentifier CurrentVersion = new ApiVersionIdentifier(0, 2, 0, "dev2");
 
     }
 
@@ -29,7 +29,7 @@ namespace Amphora.Api
             var version = $"{Major}.{Minor}.{Patch}";
             if(Suffixes != null && Suffixes.Count > 0)
             {
-                version += string.Join('.', Suffixes);
+                version += "." + string.Join('.', Suffixes);
             }
             return version;
         }

@@ -44,18 +44,6 @@ stages:
         environment: master
         staging: 'false'
 
-- stage: deploy_demo
-  displayName: Deploy to Demo Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  variables:
-    - group: AzureDeploySP
-  jobs:
-    - template: pipeline/deploymentjob.yaml
-      parameters:
-        jobName: demo_deploymentjob
-        environment: demo
-        staging: 'false'
-
 - stage: deploy_prod
   displayName: Deploy to Prod Envionment 
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # TODO
@@ -69,23 +57,23 @@ stages:
         staging: 'false'
 
 - stage: promote
-  displayName: Promote in Demo Envionment (10%)
+  displayName: Promote in Prod Envionment (10%)
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), False ) # staging is false, we aren't promoting
   jobs:
     - job: init
       steps:
-      - script: echo "Promoting in Demo"
+      - script: echo "Promoting in Prod"
 
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         dependsOn: init
-        jobName: demo_promotejob_10
-        environment: demo
+        jobName: prod_promotejob_10
+        environment: prod
         percent: "10"
     - job: delay1
       displayName: Delay
       pool: server
-      dependsOn: demo_promotejob_10
+      dependsOn: prod_promotejob_10
       steps:
       - task: Delay@1
         inputs:
@@ -93,12 +81,12 @@ stages:
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
         dependsOn: delay1
-        jobName: demo_promotejob_50
-        environment: demo
+        jobName: prod_promotejob_50
+        environment: prod
         percent: "50"
     - job: delay2
       displayName: Delay
-      dependsOn: demo_promotejob_50
+      dependsOn: prod_promotejob_50
       pool: server
       steps:
       - task: Delay@1
@@ -107,7 +95,7 @@ stages:
     - template: pipeline/app.slotswap.deploymentjob.yaml
       parameters:
         dependsOn: delay2
-        jobName: demo_swapslots
-        environment: demo
+        jobName: prod_swapslots
+        environment: prod
 
     

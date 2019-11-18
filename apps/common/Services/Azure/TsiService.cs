@@ -1,33 +1,31 @@
-using System;
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.TimeSeriesInsights;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Rest;
 using DateTimeRange = Microsoft.Azure.TimeSeriesInsights.Models.DateTimeRange;
-using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
-using Amphora.Api.Options;
-using System.Linq;
+using Amphora.Common.Options;
+using Amphora.Common.Contracts;
+using Amphora.Api.Contracts;
+using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Services.Azure
+namespace Amphora.Common.Services.Azure
 {
     public class TsiService : ITsiService
     {
         private const string resource = "https://api.timeseries.azure.com/";
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly IAzureServiceTokenProvider tokenProvider;
-        private ITimeSeriesInsightsClient client;
+        private readonly ILogger<TsiService> logger;
+        private ITimeSeriesInsightsClient? client;
 
-        public TsiService(IOptionsMonitor<TsiOptions> options, IAzureServiceTokenProvider tokenProvider)
+        public TsiService(IOptionsMonitor<TsiOptions> options, IAzureServiceTokenProvider tokenProvider, ILogger<TsiService> logger)
         {
             this.options = options;
             this.tokenProvider = tokenProvider;
-        }
-
-        public string GetDataAccessFqdn()
-        {
-            return this.options.CurrentValue.DataAccessFqdn;
+            this.logger = logger;
         }
 
         public async Task InitAsync()
@@ -36,24 +34,33 @@ namespace Amphora.Api.Services.Azure
             this.client = await GetTimeSeriesInsightsClientAsync();
         }
 
-        public async Task<QueryResultPage> RunQueryAsync(QueryRequest query)
+        public async Task<IList<TimeSeriesInstance>> GetInstancesAsync()
         {
             await InitAsync();
-            string continuationToken;
-            QueryResultPage queryResponse;
+            var instances = new List<TimeSeriesInstance>();
+            string? continuationToken = null;
+            GetInstancesPage page;
             do
             {
                 // this method will return everything in ONE set (one graphed line). to split, call it twice
-                queryResponse = await client.ExecuteQueryPagedAsync(query);
-                continuationToken = queryResponse.ContinuationToken;
+                page = await client.GetInstancesPagedAsync(continuationToken);
+                continuationToken = page.ContinuationToken;
+                instances.AddRange(page.Instances);
             }
             while (continuationToken != null);
+            return instances;
+        }
+
+        public async Task<QueryResultPage> RunQueryAsync(QueryRequest query, string? continuationToken = null)
+        {
+            await InitAsync();
+            var queryResponse = await client.ExecuteQueryPagedAsync(query, continuationToken);
             return queryResponse;
         }
 
         public async Task<QueryResultPage> RunGetEventsAsync(IList<object> ids,
                                                             DateTimeRange span,
-                                                            IList<string> properties = null)
+                                                            IList<string>? properties = null)
         {
             await InitAsync();
             string continuationToken;
@@ -80,7 +87,7 @@ namespace Amphora.Api.Services.Azure
         public async Task<QueryResultPage> RunGetSeriesAsync(IList<object> ids,
                                                              IDictionary<string, Variable> variables,
                                                              DateTimeRange span,
-                                                             IList<string> projections = null)
+                                                             IList<string>? projections = null)
         {
             await InitAsync();
             string continuationToken;
@@ -107,6 +114,7 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<ITimeSeriesInsightsClient> GetTimeSeriesInsightsClientAsync()
         {
+            logger.LogInformation($"Start {nameof(GetTimeSeriesInsightsClientAsync)}");
             var token = await tokenProvider.GetAccessTokenAsync(resource);
             var serviceClientCredentials = new TokenCredentials(token);
 
@@ -114,6 +122,7 @@ namespace Amphora.Api.Services.Azure
             {
                 EnvironmentFqdn = options.CurrentValue.DataAccessFqdn
             };
+            logger.LogInformation($"Finish {nameof(GetTimeSeriesInsightsClientAsync)}");
             return timeSeriesInsightsClient;
         }
     }

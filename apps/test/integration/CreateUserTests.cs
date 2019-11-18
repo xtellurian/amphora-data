@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api;
+using Amphora.Tests.Helpers;
 
 namespace Amphora.Tests.Integration
 {
@@ -90,10 +91,7 @@ namespace Amphora.Tests.Integration
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var org = new OrganisationModel()
-            {
-                Name = nameof(CreateUserTests),
-            };
+            var org = EntityLibrary.GetOrganisationDto();
 
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();

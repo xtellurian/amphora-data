@@ -17,11 +17,13 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly ISignInManager signInManager;
+        private readonly IUserService userService;
         private readonly ILogger<LoginModel> logger;
 
-        public LoginModel(ISignInManager signInManager, ILogger<LoginModel> logger)
+        public LoginModel(ISignInManager signInManager, IUserService userService, ILogger<LoginModel> logger)
         {
             this.signInManager = signInManager;
+            this.userService = userService;
             this.logger = logger;
         }
 
@@ -86,7 +88,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var result = await userService.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     // get user

@@ -14,7 +14,7 @@ namespace Amphora.Api.AspNet
                 Name = ApiVersion.HeaderName,
                 Kind = NSwag.OpenApiParameterKind.Header,
                 Schema = new JsonSchema { Type = JsonObjectType.String },
-                IsRequired = true,
+                IsRequired = false,
                 Description = "API Version Number",
                 Default = ApiVersion.CurrentVersion.Major.ToString()
             });

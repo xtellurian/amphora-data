@@ -19,6 +19,9 @@ using System.Linq;
 using Amphora.Api.Converters;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.AspNet;
+using Amphora.Common.Contracts;
+using Amphora.Common.Services.Azure;
+using Amphora.Common.Options;
 
 namespace Amphora.Api
 {

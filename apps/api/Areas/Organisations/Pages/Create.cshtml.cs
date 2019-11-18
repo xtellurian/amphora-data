@@ -70,13 +70,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnPostAsync(List<IFormFile> files)
         {
-            var org = new OrganisationModel
-            {
-                Name = Input.Name,
-                About = Input.About,
-                WebsiteUrl = Input.Website,
-                Address = Input.Address,
-            };
+            var org = new OrganisationModel(Input.Name, Input.About, Input.Website, Input.Address);
 
             var result = await organisationService.CreateOrganisationAsync(User, org);
             if (result.Succeeded)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
@@ -11,15 +12,15 @@ namespace Amphora.Common.Models.Users
 {
     public class ApplicationUser : IdentityUser, IUser
     {
-        public string About { get; set; }
-        public string FullName { get; set; }
+        public string? About { get; set; }
+        public string? FullName { get; set; }
         public bool? IsGlobalAdmin { get; set; }
 
         //navigation
-        public string OrganisationId { get; set; }
-        public virtual OrganisationModel Organisation { get; set; }
+        public string? OrganisationId { get; set; }
+        public virtual OrganisationModel? Organisation { get; set; }
 
-        public virtual ICollection<PurchaseModel> Purchases { get; set; }
+        public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public DateTimeOffset? LastModified { get; set; }
         public DateTimeOffset? LastLoggedIn { get; set; }
 

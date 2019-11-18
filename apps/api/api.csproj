@@ -6,6 +6,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <LangVersion>8.0</LangVersion>
     <Nullable>disable</Nullable>
+    <NullableContextOptions>disable</NullableContextOptions>
   </PropertyGroup>
 
 
@@ -22,7 +23,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.0.0" />
     <PackageReference Include="Microsoft.Azure.Search" Version="10.0.0" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="3.0.0" />

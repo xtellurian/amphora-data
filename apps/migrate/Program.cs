@@ -1,4 +1,9 @@
+using Amphora.Api.Contracts;
+using Amphora.Api.Services.Azure;
 using Amphora.Common.Configuration;
+using Amphora.Common.Contracts;
+using Amphora.Common.Options;
+using Amphora.Common.Services.Azure;
 using Amphora.Migrate.Migrators;
 using Amphora.Migrate.Options;
 using Microsoft.Extensions.Configuration;
@@ -30,12 +35,25 @@ namespace Amphora.Migrate
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    if (Configuration == null)
+                    {
+                        throw new System.NullReferenceException("Configuration cannot be null");
+                    }
                     services.AddHostedService<Worker>();
+
+                    services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
+
                     services.AddSingleton<BlobMigrator>();
                     services.Configure<StorageMigrationOptions>(Configuration);
 
                     services.AddSingleton<CosmosCollectionMigrator>();
                     services.Configure<CosmosMigrationOptions>(Configuration);
+
+                    services.AddTransient<ITsiService, TsiService>();
+                    services.AddSingleton<TsiMigrator>();
+                    services.AddTransient<EventHubSender>();
+                    services.Configure<TsiOptions>(Configuration.GetSection("Source").GetSection("Tsi"));
+                    services.Configure<EventHubOptions>(Configuration.GetSection("Sink").GetSection("TsiEventHub"));
                 });
     }
 }

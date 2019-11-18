@@ -1,6 +1,7 @@
 config:
   azure:environment: public
   azure:location: AustraliaSoutheast
+  azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a # AmphoraData1
   authentication:rian: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
   # this is the identity
   # I ran > az ad sp create --id ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037

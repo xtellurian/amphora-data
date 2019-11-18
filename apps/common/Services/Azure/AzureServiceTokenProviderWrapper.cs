@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Services.Azure
 {
@@ -7,11 +7,11 @@ namespace Amphora.Api.Services.Azure
     {
         private readonly Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider az;
 
-        public AzureServiceTokenProviderWrapper(string connectionString = null)
+        public AzureServiceTokenProviderWrapper(string? connectionString = null)
         {
-            this.az = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider();
+            this.az = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider(connectionString);
         }
-        public async Task<string> GetAccessTokenAsync(string resource, string tenantId = null)
+        public async Task<string> GetAccessTokenAsync(string resource, string? tenantId = null)
         {
             return await az.GetAccessTokenAsync(resource, tenantId);
         }

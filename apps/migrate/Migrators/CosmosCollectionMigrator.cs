@@ -1,14 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using Amphora.Migrate.Contracts;
 using Amphora.Migrate.Options;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+
 
 namespace Amphora.Migrate.Migrators
 {
-    public class CosmosCollectionMigrator
+    public class CosmosCollectionMigrator: IMigrator
     {
         private readonly CosmosMigrationOptions options;
         private readonly ILogger<CosmosCollectionMigrator> logger;

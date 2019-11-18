@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Tests.Mocks
 {

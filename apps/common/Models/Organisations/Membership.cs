@@ -4,7 +4,10 @@ namespace Amphora.Common.Models.Organisations
 {
     public class Membership
     {
-        public Membership() { }
+        public Membership(string userId) 
+        {
+            UserId = userId;
+        }
         public Membership(ApplicationUser user, Roles role)
         {
             User = user;
@@ -12,8 +15,8 @@ namespace Amphora.Common.Models.Organisations
             Role = role;
         }
         public Roles Role { get; set; }
-        // Navidation
+        // Navigation
         public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

@@ -36,17 +36,26 @@
                 <div class="card-header">
                     <div class="float-left">
                         @{var date = "";}
-                        by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
-                            @Model.Amphora.CreatedBy.FullName
-                            </a> from
-                            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
-                            @Model.Amphora.CreatedBy.Organisation.Name
-                            </a>
-                            @if(Model.Amphora.CreatedDate.HasValue)
-                            {
-                                date = $"on {Model.Amphora.CreatedDate.Value.ToString("dd MMM yy")}";
-                            }
-                            @date
+                        @if(Model.Amphora.CreatedBy != null)
+                        {
+                            <div>
+                                by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
+                                    @Model.Amphora.CreatedBy?.FullName
+                                    </a> from
+                                    <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
+                                    @Model.Amphora.CreatedBy.Organisation?.Name
+                                    </a>
+                                    @if(Model.Amphora.CreatedDate.HasValue)
+                                    {
+                                        date = $"on {Model.Amphora.CreatedDate.Value.ToString("dd MMM yy")}";
+                                    }
+                                    @date
+                            </div>
+                        }
+                        else
+                        {
+                            <div>by Unknown user</div>
+                        }
                     </div>
                     @{
                         var buttonMode = string.Empty;

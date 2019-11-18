@@ -16,6 +16,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .IncludeBase<Entity, EntityDto>();
 
             CreateMap<CreateAmphoraDto, AmphoraModel>()
+                .ConstructUsing(_ => new AmphoraModel(_.Name, _.Description, _.Price, null))
                 .ForMember(o => o.Id, p => p.Ignore())
                 .ForMember(o => o.Organisation, p => p.Ignore())
                 .ForMember(o => o.OrganisationId, p => p.Ignore())

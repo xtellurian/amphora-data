@@ -4,8 +4,8 @@ config:
     secure: AAABAO35hWY/u/Q9LJ9ZrDLLwYdAKUUYt4reXSXl2jE3c/yVSHEk1CUO3Ni0lgcvh4M3lcUMOuNfXfMHhUx6LORJf5ViWgl0NciHnWc7MiwXSK62KcUZeEE3dfkxU0EcMsVdHtQ=
   amphora:tokenManagement__secret:
     secure: AAABAFYYlpDDdhXr6hDg+Qo9UBjBexy40A0xN63RIK2BnEU4k4KCbnstxJFrnGrAGNXxNQ==
-  application:appSvcPlanSize: B1
-  application:appSvcPlanTier: Basic
+  application:appSvcPlanSize: S1
+  application:appSvcPlanTier: Standard
   azure:environment: public
   azure:subscriptionId: cfd587d5-8215-4c5c-83bd-f61df6ba51c3
   azuresearch:sku: basic

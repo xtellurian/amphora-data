@@ -8,12 +8,18 @@ namespace Amphora.Common.Models.Purchases
 {
     public class PurchaseModel : Entity
     {
-        public PurchaseModel()
+        protected PurchaseModel(string amphoraId, string purchasedByUserId, string purchasedByOrganisationId)
         {
-            // empty ctor for EF Core
+            AmphoraId = amphoraId;
+            PurchasedByUserId = purchasedByUserId;
+            PurchasedByOrganisationId = purchasedByOrganisationId;
         }
         public PurchaseModel(ApplicationUser user, AmphoraModel amphora)
         {
+            if(user.OrganisationId == null)
+            {
+                throw new NullReferenceException($"User OrganisationId was null, userId: {user.OrganisationId}");
+            }
             this.PurchasedByUser = user;
             this.PurchasedByUserId = user.Id;
             this.Amphora = amphora;
@@ -28,11 +34,11 @@ namespace Amphora.Common.Models.Purchases
 
         // navigation
         public string AmphoraId { get; set; }
-        public virtual AmphoraModel Amphora { get; set; }
+        public virtual AmphoraModel Amphora { get; set; } = null!;
         public string PurchasedByUserId { get; set; }
-        public virtual ApplicationUser PurchasedByUser { get; set; }
+        public virtual ApplicationUser PurchasedByUser { get; set; } = null!;
         public string PurchasedByOrganisationId { get; set; }
-        public virtual OrganisationModel PurchasedByOrganisation { get; set; }
+        public virtual OrganisationModel PurchasedByOrganisation { get; set; } = null!;
 
     }
 }

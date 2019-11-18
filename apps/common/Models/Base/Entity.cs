@@ -14,7 +14,7 @@ namespace Amphora.Common.Models
         /// <summary>
         /// The entity Id.
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Time to Live, in Seconds
