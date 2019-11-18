@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Amphora.Migrate.Contracts;
 using Amphora.Migrate.Options;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
-    public class BlobMigrator
+    public class BlobMigrator: IMigrator
     {
         private readonly ILogger<BlobMigrator> logger;
         private readonly StorageMigrationOptions options;

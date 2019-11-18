@@ -1,7 +1,5 @@
-using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Tests.Mocks;
-using Xunit;
+using Amphora.Common.Contracts;
 
 namespace Amphora.Tests.Unit
 {

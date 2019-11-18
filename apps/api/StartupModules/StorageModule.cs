@@ -22,6 +22,8 @@ using Microsoft.Azure.Storage.Blob;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models.Users;
+using Amphora.Common.Options;
+using Amphora.Common.Services.Azure;
 
 namespace Amphora.Api.StartupModules
 {
@@ -60,6 +62,7 @@ namespace Amphora.Api.StartupModules
             {
                 Console.WriteLine("Not Configuring DataProtection");
             }
+            services.AddScoped<EventHubSender>();
 
             services.Configure<AzureStorageAccountOptions>(Configuration.GetSection("Storage"));
             services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));

@@ -16,18 +16,21 @@ namespace Amphora.Migrate
         private readonly IOptionsMonitor<CosmosMigrationOptions> options;
         private readonly CosmosCollectionMigrator cosmosMigrator;
         private readonly BlobMigrator blobMigrator;
+        private readonly TsiMigrator tsiMigrator;
 
         public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<CosmosMigrationOptions> options,
                       CosmosCollectionMigrator cosmosMigrator,
-                      BlobMigrator blobMigrator
+                      BlobMigrator blobMigrator,
+                      TsiMigrator tsiMigrator
                       )
         {
             this.logger = logger;
             this.options = options;
 
             this.cosmosMigrator = cosmosMigrator ?? throw new ArgumentNullException(nameof(cosmosMigrator));
-            this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));;
+            this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));
+            this.tsiMigrator = tsiMigrator ?? throw new ArgumentNullException(nameof(tsiMigrator));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -36,6 +39,7 @@ namespace Amphora.Migrate
             var migrations = new List<Task>();
             migrations.Add(cosmosMigrator.MigrateAsync());
             migrations.Add(blobMigrator.MigrateAsync());
+            migrations.Add(tsiMigrator.MigrateAsync());
             try
             {
                 await Task.WhenAll(migrations);

@@ -2,45 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
-using Microsoft.Azure.EventHubs;
+using Amphora.Common.Services.Azure;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Api.Services.Amphorae
 {
     public class SignalsService : ISignalService
     {
-        private readonly EventHubClient eventHubClient;
+        private readonly EventHubSender eventHubSender;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
         private readonly ILogger<SignalsService> logger;
 
-        public SignalsService(IOptionsMonitor<Options.EventHubOptions> options,
+        public SignalsService(EventHubSender eventHubSender,
                               IUserService userService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
                               ILogger<SignalsService> logger)
         {
-            if (options.CurrentValue.ConnectionString != null)
-            {
-                var connectionStringBuilder = new EventHubsConnectionStringBuilder(options.CurrentValue.ConnectionString)
-                {
-                    EntityPath = options.CurrentValue.Name
-                };
-                eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
-            }
-
+            this.eventHubSender = eventHubSender;
             this.userService = userService;
             this.permissionService = permissionService;
             this.tsiService = tsiService;
@@ -58,7 +46,7 @@ namespace Amphora.Api.Services.Amphorae
                     values["amphora"] = entity.Id;
                     if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
                     values["wt"] = DateTime.UtcNow.Ticks;
-                    await SendToEventHubAsync(values);
+                    await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(values);
                 }
                 else
@@ -141,23 +129,6 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-        private async Task SendToEventHubAsync(Dictionary<string, object> signal)
-        {
-            var content = JsonConvert.SerializeObject(signal,
-                                           Newtonsoft.Json.Formatting.None,
-                                           new JsonSerializerSettings
-                                           {
-                                               NullValueHandling = NullValueHandling.Ignore,
-                                               ContractResolver = new CamelCasePropertyNamesContractResolver()
-                                           });
-            if (eventHubClient == null)
-            {
-                logger.LogWarning("EventHubClient is null. Not Sending anything...");
-            }
-            else
-            {
-                await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(content)));
-            }
-        }
+
     }
 }
