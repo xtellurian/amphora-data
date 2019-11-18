@@ -70,6 +70,8 @@ jobs:
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
         CONTEXT: $(Build.SourcesDirectory)/apps
 
+    - template: az-login.steps.yaml # login again to ensure the tests work
+    
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
