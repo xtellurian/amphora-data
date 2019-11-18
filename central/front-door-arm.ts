@@ -3,7 +3,7 @@ export function frontDoorArm(tags: {}) {
         $schema: "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
         parameters: {
-            demoHostname: {
+            prodHostname: {
                 type: "String",
             },
             frontDoorId: {
@@ -22,7 +22,7 @@ export function frontDoorArm(tags: {}) {
             },
         },
         variables: {
-            demoDomain: "beta.amphoradata.com",
+            betaDomain: "beta.amphoradata.com",
             frontdoorLocation: "global",
             rootDomain: "amphoradata.com",
             squarespaceBackend: "azalea-orca-x567.squarespace.com",
@@ -61,12 +61,12 @@ export function frontDoorArm(tags: {}) {
                             },
                         },
                         {
-                            name: "demoBackend",
+                            name: "prodBackend",
                             properties: {
                                 backends: [
                                     {
-                                        address: "[parameters('demoHostname')]",
-                                        backendHostHeader: "[parameters('demoHostname')]",
+                                        address: "[parameters('prodHostname')]",
+                                        backendHostHeader: "[parameters('prodHostname')]",
                                         enabledState: "Enabled",
                                         httpPort: 80,
                                         httpsPort: 443,
@@ -109,9 +109,9 @@ export function frontDoorArm(tags: {}) {
                             },
                         },
                         {
-                            name: "demoDomain",
+                            name: "betaDomain",
                             properties: {
-                                hostName: "[variables('demoDomain')]",
+                                hostName: "[variables('betaDomain')]",
                                 sessionAffinityEnabledState: "Enabled",
                             },
                         },
@@ -183,7 +183,7 @@ export function frontDoorArm(tags: {}) {
                             },
                         },
                         {
-                            name: "routeToDemoEnvironment",
+                            name: "routeToProdEnvironment",
                             properties: {
                                 acceptedProtocols: [
                                     "Https",
@@ -191,7 +191,7 @@ export function frontDoorArm(tags: {}) {
                                 enabledState: "Enabled",
                                 frontendEndpoints: [
                                     {
-                                        id: "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', parameters('frontDoorName'), 'demoDomain')]",
+                                        id: "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', parameters('frontDoorName'), 'betaDomain')]",
                                     },
                                 ],
                                 patternsToMatch: [
@@ -201,7 +201,7 @@ export function frontDoorArm(tags: {}) {
                                     "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
                                     "backendPool": {
                                         // tslint:disable-next-line: max-line-length
-                                        id: "[resourceId('Microsoft.Network/frontDoors/backendPools', parameters('frontDoorName'), 'demoBackend')]",
+                                        id: "[resourceId('Microsoft.Network/frontDoors/backendPools', parameters('frontDoorName'), 'prodBackend')]",
                                     },
                                     "forwardingProtocol": "HttpsOnly", // could be MatchRequest
                                 },
