@@ -4,9 +4,7 @@ import { frontDoorArm } from "./front-door-arm";
 
 const authConfig = new pulumi.Config("authentication");
 
-// const demoStack = new pulumi.StackReference(`xtellurian/amphora/demo`);
 const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
-// const demoHostname = demoStack.getOutput("appHostname");
 const prodHostname = prodStack.getOutput("appHostname");
 
 const tags = {
