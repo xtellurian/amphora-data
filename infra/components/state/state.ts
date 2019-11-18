@@ -203,6 +203,7 @@ export class State extends pulumi.ComponentResource {
     this.ehns = new azure.eventhub.EventHubNamespace(
       "amphoradhns",
       {
+        autoInflateEnabled: true,
         capacity: 1,
         kafkaEnabled: true, // seems to be always enabled now
         location: rg.location,
