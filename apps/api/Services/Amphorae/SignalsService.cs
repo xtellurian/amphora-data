@@ -47,11 +47,11 @@ namespace Amphora.Api.Services.Amphorae
                     if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
                     values["wt"] = DateTime.UtcNow.Ticks;
                     await eventHubSender.SendToEventHubAsync(values);
-                    return new EntityOperationResult<Dictionary<string, object>>(values);
+                    return new EntityOperationResult<Dictionary<string, object>>(user, values);
                 }
                 else
                 {
-                    return new EntityOperationResult<Dictionary<string, object>>("Write Contents permission is required") { WasForbidden = true };
+                    return new EntityOperationResult<Dictionary<string, object>>(user, "Write Contents permission is required") { WasForbidden = true };
                 }
             }
         }

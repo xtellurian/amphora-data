@@ -40,12 +40,12 @@ namespace Amphora.Api.Services.Amphorae
                 if (granted)
                 {
                     var data = await this.Store.ReadBytesAsync(entity, file);
-                    return new EntityOperationResult<byte[]>(data);
+                    return new EntityOperationResult<byte[]>(user, data);
                 }
                 else
                 {
                     logger.LogInformation($"Permission denied to user {user.Id} to read contents of {entity.Id}");
-                    return new EntityOperationResult<byte[]>("Permission Denied") { WasForbidden = true };
+                    return new EntityOperationResult<byte[]>(user, "Permission Denied") { WasForbidden = true };
                 }
             }
         }
@@ -62,12 +62,12 @@ namespace Amphora.Api.Services.Amphorae
                 if (granted)
                 {
                     var url = await this.Store.GetWritableUrl(entity, file);
-                    return new EntityOperationResult<UploadResponse>(new UploadResponse(url));
+                    return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
                 }
                 else
                 {
                     logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                    return new EntityOperationResult<UploadResponse>("Permission Denied") { WasForbidden = true };
+                    return new EntityOperationResult<UploadResponse>(user, "Permission Denied") { WasForbidden = true };
                 }
             }
         }
@@ -96,12 +96,12 @@ namespace Amphora.Api.Services.Amphorae
                         logger.LogInformation("Contents are empty");
                     }
                     var url = await this.Store.GetWritableUrl(entity, file);
-                    return new EntityOperationResult<UploadResponse>(new UploadResponse(url));
+                    return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
                 }
                 else
                 {
                     logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                    return new EntityOperationResult<UploadResponse>("Permission Denied") { WasForbidden = true };
+                    return new EntityOperationResult<UploadResponse>(user, "Permission Denied") { WasForbidden = true };
                 }
             }
         }

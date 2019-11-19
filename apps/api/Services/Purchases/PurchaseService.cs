@@ -38,14 +38,14 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
         {
-            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>("User has no organisation");
+            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
                 var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
                 if (purchases.Any())
                 {
                     logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                    return new EntityOperationResult<PurchaseModel>(purchases.FirstOrDefault());
+                    return new EntityOperationResult<PurchaseModel>(user, purchases.FirstOrDefault());
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace Amphora.Api.Services.Purchases
                     purchase.LastDebitTime = DateTime.UtcNow;
                     purchase = await purchaseStore.UpdateAsync(purchase);
 
-                    return new EntityOperationResult<PurchaseModel>(purchase);
+                    return new EntityOperationResult<PurchaseModel>(user, purchase);
                 }
             }
         }

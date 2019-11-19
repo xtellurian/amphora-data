@@ -85,7 +85,7 @@ namespace Amphora.Api.Services.Auth
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                    return new EntityOperationResult<ApplicationUser>(user, result.Errors.Select(e => e.Description));
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace Amphora.Api.Services.Auth
                     }
                     else
                     {
-                        return new EntityOperationResult<ApplicationUser>(result.Errors.Select(e => e.Description));
+                        return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(e => e.Description));
                     }
                 }
                 else
