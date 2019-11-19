@@ -10,6 +10,13 @@ namespace Amphora.Common.Models.Organisations
 {
     public class OrganisationModel : Entity, IEntity
     {
+        public OrganisationModel()
+        {
+            Name = null!;
+            About = null!;
+            WebsiteUrl = null!;
+            Address = null!;
+        }
         public OrganisationModel(string name, string about, string websiteUrl, string address)
         {
             Name = name;

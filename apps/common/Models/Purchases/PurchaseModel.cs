@@ -8,6 +8,12 @@ namespace Amphora.Common.Models.Purchases
 {
     public class PurchaseModel : Entity
     {
+        public PurchaseModel()
+        {
+            AmphoraId = null!;
+            PurchasedByUserId = null!;
+            PurchasedByOrganisationId = null!;
+        }
         protected PurchaseModel(string amphoraId, string purchasedByUserId, string purchasedByOrganisationId)
         {
             AmphoraId = amphoraId;
