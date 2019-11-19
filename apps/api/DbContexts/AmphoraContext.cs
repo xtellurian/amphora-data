@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Models.Permissions;
 
 namespace Amphora.Api.DbContexts
 {
@@ -68,6 +69,10 @@ namespace Amphora.Api.DbContexts
                     a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);
                     a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
                     a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
+                });
+                b.OwnsMany(p => p.Restrictions, a =>
+                {
+                    a.HasKey(_ => _.TargetOrganisationId);
                 });
                 b.OwnsOne(_ => _.Account, a =>
                 {
