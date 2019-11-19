@@ -11,6 +11,12 @@ namespace Amphora.Common.Models.Amphorae
 {
     public class AmphoraModel : Entity
     {
+        public AmphoraModel()
+        {
+            Name = null!;
+            Description = null!;
+            OrganisationId = null!;
+        }
         [JsonConstructor]
         public AmphoraModel(string name, string description, double? price, string organisationId)
         {
