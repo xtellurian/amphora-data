@@ -43,6 +43,11 @@ namespace Amphora.Tests.Integration
             var account2 = JsonConvert.DeserializeObject<Account>(accountContent);
             // get balance is deducted
             Assert.Equal(account1.Balance - dto.Price, account2.Balance);
+
+            
+            await DestroyAmphoraAsync(adminClient, dto.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
     }
