@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Models.Signals;
 using Amphora.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -25,8 +26,9 @@ namespace Amphora.Tests.Unit
                 a = await amphoraStore.CreateAsync(a);
 
                 var signal = EntityLibrary.GetSignalModel(testName);
-                a.AddSignal(signal);
-
+                Assert.NotNull(signal.Id);
+                var amphoraSignalModel = new AmphoraSignalModel(a, signal);
+                a.Signals.Add(amphoraSignalModel);
                 a = await amphoraStore.UpdateAsync(a);
 
                 Assert.NotNull(signal.Id);

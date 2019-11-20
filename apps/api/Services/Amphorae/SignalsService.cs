@@ -20,18 +20,21 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
+        private readonly IEntityStore<SignalModel> signalStore;
         private readonly ILogger<SignalsService> logger;
 
         public SignalsService(EventHubSender eventHubSender,
                               IUserService userService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
+                              IEntityStore<SignalModel> signalStore,
                               ILogger<SignalsService> logger)
         {
             this.eventHubSender = eventHubSender;
             this.userService = userService;
             this.permissionService = permissionService;
             this.tsiService = tsiService;
+            this.signalStore = signalStore;
             this.logger = logger;
         }
 
@@ -68,8 +71,6 @@ namespace Amphora.Api.Services.Amphorae
                 res.Add(r);
             }
             return res;
-
-
         }
         public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = true)
         {
@@ -129,6 +130,24 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
+        public async Task<EntityOperationResult<SignalModel>> AddSignal(ClaimsPrincipal principal, AmphoraModel amphora, SignalModel signal)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(user, amphora, AccessLevels.Update);
+                if (!authorized) return new EntityOperationResult<SignalModel>(user, false) { WasForbidden = true };
 
+                if ((await signalStore.CountAsync(_ => _.Id == signal.Id)) > 0)
+                {
+                    signal = await signalStore.ReadAsync(signal.Id);
+                }
+                var amphoraSignalModel = new AmphoraSignalModel(amphora, signal);
+                amphora.Signals.Add(amphoraSignalModel);
+                signal = await signalStore.UpdateAsync(signal);
+
+                return new EntityOperationResult<SignalModel>(user, signal);
+            }
+        }
     }
 }

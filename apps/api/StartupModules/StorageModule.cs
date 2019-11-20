@@ -24,6 +24,7 @@ using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Common.Models.Signals;
 
 namespace Amphora.Api.StartupModules
 {
@@ -100,8 +101,8 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
+            services.AddScoped<IEntityStore<SignalModel>, SignalsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUser>, ApplicationUserStore>();
-            // services.AddScoped<IEntityStore<UserModel>, UserEFStore>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

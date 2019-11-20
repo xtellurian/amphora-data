@@ -45,7 +45,7 @@ namespace Amphora.Api.DbContexts
 
             modelBuilder.Entity<SignalModel>(b =>
             {
-                b.HasData(new SignalModel("id", SignalModel.Numeric));
+                b.HasKey(_ =>_.Id);
             });
 
             modelBuilder.Entity<OrganisationModel>(b =>

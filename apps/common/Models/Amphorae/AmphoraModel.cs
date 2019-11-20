@@ -52,25 +52,5 @@ namespace Amphora.Common.Models.Amphorae
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? TermsAndConditionsId { get; set; }
         public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
-
-        // methods
-        public void AddSignal(SignalModel signal, int maxSignals = 7)
-        {
-            if (Signals == null) Signals = new List<AmphoraSignalModel>();
-            if (Signals.Count >= maxSignals)
-            {
-                throw new System.ArgumentException($"Only {maxSignals} Signals per Amphora at this time");
-            }
-            Signals.Add(new AmphoraSignalModel
-            {
-                Amphora = this,
-                AmphoraId = this.Id,
-                Signal = signal,
-                SignalId = signal.Id
-            });
-        }
-
-
-
     }
 }
