@@ -40,7 +40,7 @@ namespace Amphora.Api.Services.Auth
         public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
         {
             var res = await signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
-            if(res.Succeeded)
+            if (res.Succeeded)
             {
                 // get user and set last signin time
                 var user = await UserManager.FindByNameAsync(userName);
@@ -81,7 +81,7 @@ namespace Amphora.Api.Services.Auth
                     user = await UserManager.FindByNameAsync(user.UserName);
                     if (user == null) throw new System.Exception("Unable to retrieve user");
                     // create role here
-                    return new EntityOperationResult<ApplicationUser>(user);
+                    return new EntityOperationResult<ApplicationUser>(user, user);
                 }
                 else
                 {
@@ -98,11 +98,11 @@ namespace Amphora.Api.Services.Auth
                 if (currentUser.Id == user.Id)
                 {
                     logger.LogWarning("User is deleting self");
-                    if (currentUser == null) return new EntityOperationResult<ApplicationUser>();
+                    if (currentUser == null) return new EntityOperationResult<ApplicationUser>(currentUser, "User does not exist");
                     var result = await UserManager.DeleteAsync(currentUser);
                     if (result.Succeeded)
                     {
-                        return new EntityOperationResult<ApplicationUser>();
+                        return new EntityOperationResult<ApplicationUser>(true);
                     }
                     else
                     {

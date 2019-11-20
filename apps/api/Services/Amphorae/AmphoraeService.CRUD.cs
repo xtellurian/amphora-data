@@ -184,7 +184,7 @@ namespace Amphora.Api.Services.Amphorae
                         await AmphoraStore.DeleteAsync(entity);
                     }
 
-                    return new EntityOperationResult<AmphoraModel>();
+                    return new EntityOperationResult<AmphoraModel>(true);
                 }
                 else
                 {

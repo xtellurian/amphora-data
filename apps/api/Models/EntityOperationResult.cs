@@ -10,7 +10,7 @@ namespace Amphora.Api.Models
         {
             Succeeded = succeeded;
         }
-        public EntityOperationResult(ApplicationUser user)
+        public EntityOperationResult(ApplicationUser user, bool succeeded = false): this(succeeded)
         {
             this.User = user;
         }
