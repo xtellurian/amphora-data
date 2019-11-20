@@ -11,7 +11,6 @@ namespace Amphora.Api.Contracts
     public interface IEntityStore<T> where T : IEntity
     {
         Task<IList<T>> TopAsync();
-        Task<IList<T>> TopAsync(string orgId);
         Task<T> CreateAsync(T entity);
         Task<T> ReadAsync(string id);
         Task<T> UpdateAsync(T entity);
