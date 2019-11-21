@@ -17,9 +17,9 @@ namespace Amphora.Api.Services.Auth
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEntityStore<AmphoraModel> amphoraeStore;
 
-        public PermissionService(ILogger<PermissionService> logger,
-                                IEntityStore<OrganisationModel> orgStore,
-                                IEntityStore<AmphoraModel> amphoraeStore)
+        public PermissionService(IEntityStore<OrganisationModel> orgStore,
+                                IEntityStore<AmphoraModel> amphoraeStore,
+                                ILogger<PermissionService> logger)
         {
             this.logger = logger;
             this.orgStore = orgStore;

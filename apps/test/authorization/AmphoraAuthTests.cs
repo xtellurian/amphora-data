@@ -19,14 +19,9 @@ namespace Amphora.Tests.Unit.Authorization
 {
     public class AmphoraAuthTests: UnitTestBase
     {
-        private readonly ILogger<AmphoraAuthorizationHandler> logger;
-        private readonly ILogger<PermissionService> permissionServiceLogger;
 
-        public AmphoraAuthTests(ILogger<AmphoraAuthorizationHandler> logger,
-                                ILogger<PermissionService> permissionServiceLogger)
+        public AmphoraAuthTests()
         {
-            this.logger = logger;
-            this.permissionServiceLogger = permissionServiceLogger;
         }
 
         [Fact]
@@ -47,8 +42,8 @@ namespace Amphora.Tests.Unit.Authorization
                 var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllByDefault));
                 a = await amphoraStore.CreateAsync(a);
 
-                var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
-                var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
+                var permissionService = new PermissionService( orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+                var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userService.Object);
 
                 var readReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
                 var updateReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Update} };
@@ -91,9 +86,9 @@ namespace Amphora.Tests.Unit.Authorization
                 var a = EntityLibrary.GetAmphoraModel(org, nameof(OrgMember_ReadAccess_Amphora));
                 a = await amphoraStore.CreateAsync(a);
 
-                var permissionService = new PermissionService(permissionServiceLogger, orgStore, amphoraStore);
+                var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
-                var handler = new AmphoraAuthorizationHandler(logger, permissionService, userService.Object);
+                var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userService.Object);
                 var requirements = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
                 var authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);

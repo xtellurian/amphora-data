@@ -17,6 +17,7 @@ namespace Amphora.Api.Services.Purchases
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
+        private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
         private readonly ILogger<PurchaseService> logger;
@@ -24,17 +25,28 @@ namespace Amphora.Api.Services.Purchases
         public PurchaseService(
             IEntityStore<PurchaseModel> purchaseStore,
             IEntityStore<OrganisationModel> orgStore,
+            IPermissionService permissionService,
             IUserService userService,
             IEmailSender emailSender,
             ILogger<PurchaseService> logger)
         {
             this.purchaseStore = purchaseStore;
             this.orgStore = orgStore;
+            this.permissionService = permissionService;
             this.userService = userService;
             this.emailSender = emailSender;
             this.logger = logger;
         }
 
+        public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
+        {
+            return await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
+        }
+        public async Task<bool> CanPurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            return await this.CanPurchaseAmphoraAsync(user, amphora);
+        }
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
             if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");

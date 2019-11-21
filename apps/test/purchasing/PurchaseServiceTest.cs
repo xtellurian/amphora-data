@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
@@ -21,8 +22,10 @@ namespace Amphora.Tests.Unit.Purchasing
             var context = base.GetContext();
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var org = EntityLibrary.GetOrganisationModel();
-            
+            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+
             org = await orgStore.CreateAsync(org);
             var user_emailconfirmed = new ApplicationUser()
             {
@@ -49,7 +52,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, null, mockEmailSender.Object, logger);
+            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, logger);
 
             var result = await sut.PurchaseAmphoraAsync(user_emailconfirmed, amphora);
             Assert.True(result.Succeeded);
@@ -78,16 +81,17 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
-            var terms = new TermsAndConditionsModel("1", System.Guid.NewGuid().ToString(), "This should be accepted" );
-         
+            var terms = new TermsAndConditionsModel("1", System.Guid.NewGuid().ToString(), "This should be accepted");
+
             var othersOrg = EntityLibrary.GetOrganisationModel();
-            
+
             othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
                 {
                     terms
                 };
-            
+
             othersOrg = await orgStore.CreateAsync(othersOrg);
             var usersOrg = EntityLibrary.GetOrganisationModel();
             usersOrg.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>
@@ -109,7 +113,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, null, null, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.True(result);
@@ -122,9 +126,10 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
-            var terms = new TermsAndConditionsModel("2", "FooBar", "TThis shouldn't be accepted" );
-          
+            var terms = new TermsAndConditionsModel("2", "FooBar", "TThis shouldn't be accepted");
+
             var othersOrg = EntityLibrary.GetOrganisationModel();
 
             othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
@@ -149,7 +154,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, null, null, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.False(result);
@@ -162,6 +167,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
             var org = EntityLibrary.GetOrganisationModel();
             org.Account = new Account()
@@ -191,7 +197,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var mockEmailSender = new Mock<IEmailSender>();
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, null, mockEmailSender.Object, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, CreateMockLogger<PurchaseService>());
             var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
 
             org = await orgStore.ReadAsync(org.Id); // reload, just in case
