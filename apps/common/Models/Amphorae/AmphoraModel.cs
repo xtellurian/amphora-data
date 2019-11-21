@@ -38,7 +38,7 @@ namespace Amphora.Common.Models.Amphorae
         }
 
         public string Name { get; set; }
-        public bool IsPublic { get; set; }
+        public bool? IsPublic { get; set; }
         public double? Price { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
@@ -52,5 +52,15 @@ namespace Amphora.Common.Models.Amphorae
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? TermsAndConditionsId { get; set; }
         public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
+
+        // methods
+
+        /// <summary>
+        /// Method checks IsPublic is not null and is true
+        /// </summary>
+        public bool Public()
+        {
+            return this.IsPublic.HasValue && this.IsPublic.Value;
+        }
     }
 }

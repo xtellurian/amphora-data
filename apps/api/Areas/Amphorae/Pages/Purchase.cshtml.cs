@@ -42,6 +42,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (result.Succeeded)
             {
                 var hasAgreed = await purchaseService.HasAgreedToTermsAndConditionsAsync(User, result.Entity);
+                var canPurchase = await purchaseService.CanPurchaseAmphoraAsync(User, result.Entity);
+                if (!canPurchase)
+                {
+                    return StatusCode(403);
+                }
                 if (hasAgreed)
                 {
                     this.Success = true;

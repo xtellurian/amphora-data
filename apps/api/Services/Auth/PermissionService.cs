@@ -62,9 +62,14 @@ namespace Amphora.Api.Services.Auth
                     logger.LogInformation($"{user.UserName} is restricted on Amphora {entity.Id}");
                     return false;
                 }
-                if (await HasUserPurchasedAmphoraAsync(user, entity as AmphoraModel) && accessLevel <= AccessLevels.ReadContents)
+                if (HasUserPurchasedAmphora(user, entity) && accessLevel <= AccessLevels.ReadContents)
                 {
                     logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");
+                    return true;
+                }
+                if(accessLevel <= AccessLevels.Purchase && entity.Public())
+                {
+                    logger.LogInformation($"Default authorize level {accessLevel.ToString()} for user {user.Id} for {entity.Id}");
                     return true;
                 }
                 else
@@ -87,12 +92,11 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        private async Task<bool> HasUserPurchasedAmphoraAsync(IUser user, AmphoraModel amphora)
+        private bool HasUserPurchasedAmphora(IUser user, AmphoraModel amphora)
         {
             using (logger.BeginScope(new LoggerScope<PermissionService>(user)))
             {
-                var extended = await amphoraeStore.ReadAsync(amphora.Id);
-                var hasPurchased = extended.Purchases?.Any(p => string.Equals(p.PurchasedByUserId, user.Id)) ?? false;
+                var hasPurchased = amphora.Purchases?.Any(p => string.Equals(p.PurchasedByUserId, user.Id)) ?? false;
                 logger.LogInformation($"Has Purchased: {hasPurchased}");
                 return hasPurchased;
             }

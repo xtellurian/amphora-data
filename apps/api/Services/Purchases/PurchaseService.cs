@@ -52,6 +52,7 @@ namespace Amphora.Api.Services.Purchases
             if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
+                if (!await CanPurchaseAmphoraAsync(user, amphora)) return new EntityOperationResult<PurchaseModel>(user, "Purchase permission denied");
                 var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
                 if (purchases.Any())
                 {

@@ -39,7 +39,7 @@ namespace Amphora.Tests.Unit.Authorization
                 userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllByDefault));
+                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllByDefault), false); // ensure amphora is not public (auto deny access)
                 a = await amphoraStore.CreateAsync(a);
 
                 var permissionService = new PermissionService( orgStore, amphoraStore, CreateMockLogger<PermissionService>());

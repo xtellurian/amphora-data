@@ -104,7 +104,7 @@ namespace Amphora.Api.Services.Amphorae
                     logger.LogError($"{id} Not Found");
                     return new EntityOperationResult<AmphoraModel>(user, $"{id} Not Found");
                 }
-                if (entity.IsPublic)
+                if (entity.Public())
                 {
                     logger.LogInformation($"Permission granted to public entity {entity.Id}");
                     return new EntityOperationResult<AmphoraModel>(user, entity);

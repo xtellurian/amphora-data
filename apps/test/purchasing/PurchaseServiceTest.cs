@@ -182,9 +182,8 @@ namespace Amphora.Tests.Unit.Purchasing
 
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
-            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse));
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse), true);
             amphora.Price = 9;
-
             amphora = await amphoraStore.CreateAsync(amphora);
 
             var user = new ApplicationUser()
@@ -199,7 +198,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, CreateMockLogger<PurchaseService>());
             var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
-
+            Assert.True(purchase.Succeeded);
             org = await orgStore.ReadAsync(org.Id); // reload, just in case
             Assert.Equal(91, org.Account.Balance);
         }
