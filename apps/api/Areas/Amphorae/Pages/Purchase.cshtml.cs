@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
@@ -10,6 +12,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
     {
         private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
+
+        private Random rand => new Random();
+        public string CelebrationImagePath => Images[rand.Next(0, Images.Count)];
+        private static List<string> Images = new List<string>
+        {
+            "/images/stock/celebrate/undraw_Beer_celebration_cefj.svg",
+            "/images/stock/celebrate/undraw_celebration_0jvk.svg",
+            "/images/stock/celebrate/undraw_happy_feeling_slmw.svg",
+            "/images/stock/celebrate/undraw_having_fun_iais.svg",
+            "/images/stock/celebrate/undraw_joyride_hnno.svg",
+            "/images/stock/celebrate/undraw_online_wishes_dlmr.svg"
+        };
 
         public PurchaseModel(IPurchaseService purchaseService, IAmphoraeService amphoraeService)
         {
@@ -28,10 +42,15 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (result.Succeeded)
             {
                 var hasAgreed = await purchaseService.HasAgreedToTermsAndConditionsAsync(User, result.Entity);
+                var canPurchase = await purchaseService.CanPurchaseAmphoraAsync(User, result.Entity);
+                if (!canPurchase)
+                {
+                    return StatusCode(403);
+                }
                 if (hasAgreed)
                 {
                     this.Success = true;
-                    await purchaseService.PurchaseAmphora(User, result.Entity);
+                    await purchaseService.PurchaseAmphoraAsync(User, result.Entity);
                     return Page();
                 }
                 else

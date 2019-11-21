@@ -146,7 +146,7 @@
                 <ul class="list-group">
                 @foreach (var a in Model.Purchases)
                 {
-                    var d = new Dictionary<string, string>{ {"userName", a.PurchasedByUserId} };
+                    var d = new Dictionary<string, string>{ {"id", a.PurchasedByUserId} };
                     
                     <li> 
                         <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.PurchasedByUser.UserName"></i> 

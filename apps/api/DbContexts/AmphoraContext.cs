@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Models.Permissions;
 
 namespace Amphora.Api.DbContexts
 {
@@ -44,7 +45,7 @@ namespace Amphora.Api.DbContexts
 
             modelBuilder.Entity<SignalModel>(b =>
             {
-                b.HasData(new SignalModel("id", SignalModel.Numeric));
+                b.HasKey(_ =>_.Id);
             });
 
             modelBuilder.Entity<OrganisationModel>(b =>
@@ -69,6 +70,11 @@ namespace Amphora.Api.DbContexts
                     a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
                     a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
                 });
+                // b.OwnsMany(p => p.Restrictions, a =>
+                // {
+                //     a.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId);
+                //     // a.HasKey(_ => _.TargetOrganisationId);
+                // });
                 b.OwnsOne(_ => _.Account, a =>
                 {
                     a.OwnsMany(b => b.Credits, c =>
@@ -85,6 +91,12 @@ namespace Amphora.Api.DbContexts
                     });
                 });
                 b.HasMany(_ => _.Purchases).WithOne(p => p.PurchasedByOrganisation).HasForeignKey(_ => _.PurchasedByOrganisationId);
+            });
+            modelBuilder.Entity<RestrictionModel>(b =>
+            {
+                b.HasKey(_ => new { Source = _.SourceOrganisationId, Target = _.TargetOrganisationId });
+                b.HasOne(_ => _.SourceOrganisation).WithMany(_ => _.Restrictions).HasForeignKey(_ => _.SourceOrganisationId); 
+                b.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId); 
             });
 
             modelBuilder.Entity<PurchaseModel>(b =>

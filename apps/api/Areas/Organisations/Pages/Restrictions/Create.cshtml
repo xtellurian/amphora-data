@@ -1,0 +1,37 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Restrictions.CreateModel
+
+@{
+    ViewData["Title"] = "Create Restriction";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Create a Restriction</h2>
+            <hr/>
+            <p>Explicitly deny or allow other organisation to buy & access your Amphora.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form method="post" asp-route-id="@Model.Organisation.Id">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="NewRestriction.TargetOrganisationId" class="control-label"></label>
+                    <input asp-for="NewRestriction.TargetOrganisationId" class="form-control" />
+                    <span asp-validation-for="NewRestriction.TargetOrganisationId" class="text-danger"></span>
+                </div>
+                        
+                <div class="form-group">
+                    <label asp-for="NewRestriction.Kind"></label>
+                    <select class="custom-select" asp-for="NewRestriction.Kind" asp-items="Model.Kinds"></select> 
+                    <span asp-validation-for="NewRestriction.Kind" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

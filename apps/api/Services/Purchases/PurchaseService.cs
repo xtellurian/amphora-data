@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
@@ -18,6 +17,7 @@ namespace Amphora.Api.Services.Purchases
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
+        private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
         private readonly ILogger<PurchaseService> logger;
@@ -25,27 +25,40 @@ namespace Amphora.Api.Services.Purchases
         public PurchaseService(
             IEntityStore<PurchaseModel> purchaseStore,
             IEntityStore<OrganisationModel> orgStore,
+            IPermissionService permissionService,
             IUserService userService,
             IEmailSender emailSender,
             ILogger<PurchaseService> logger)
         {
             this.purchaseStore = purchaseStore;
             this.orgStore = orgStore;
+            this.permissionService = permissionService;
             this.userService = userService;
             this.emailSender = emailSender;
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
+        public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
-            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>("User has no organisation");
+            var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByUserId, user.Id)) ?? false;
+            return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
+        }
+        public async Task<bool> CanPurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
+        {
+            var user = await userService.ReadUserModelAsync(principal);
+            return await this.CanPurchaseAmphoraAsync(user, amphora);
+        }
+        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
+        {
+            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
+                if (!await CanPurchaseAmphoraAsync(user, amphora)) return new EntityOperationResult<PurchaseModel>(user, "Purchase permission denied");
                 var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
                 if (purchases.Any())
                 {
                     logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");
-                    return new EntityOperationResult<PurchaseModel>(purchases.FirstOrDefault());
+                    return new EntityOperationResult<PurchaseModel>(user, purchases.FirstOrDefault());
                 }
                 else
                 {
@@ -72,7 +85,7 @@ namespace Amphora.Api.Services.Purchases
                     purchase.LastDebitTime = DateTime.UtcNow;
                     purchase = await purchaseStore.UpdateAsync(purchase);
 
-                    return new EntityOperationResult<PurchaseModel>(purchase);
+                    return new EntityOperationResult<PurchaseModel>(user, purchase);
                 }
             }
         }
@@ -108,10 +121,10 @@ namespace Amphora.Api.Services.Purchases
             }
         }
 
-        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora)
+        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
-            return await this.PurchaseAmphora(user, amphora);
+            return await this.PurchaseAmphoraAsync(user, amphora);
         }
     }
 }

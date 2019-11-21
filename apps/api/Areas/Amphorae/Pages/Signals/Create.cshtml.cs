@@ -13,14 +13,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
     [Authorize]
     public class CreateModel : AmphoraPageModel
     {
+        private readonly ISignalService signalService;
         private readonly IOptionsMonitor<SignalOptions> options;
 
-        public CreateModel(IAmphoraeService amphoraeService, IOptionsMonitor<SignalOptions> options) : base(amphoraeService)
+        public CreateModel(IAmphoraeService amphoraeService, ISignalService signalService, IOptionsMonitor<SignalOptions> options) : base(amphoraeService)
         {
+            this.signalService = signalService;
             this.options = options;
         }
-
-        
 
         [BindProperty]
         public SignalDto Signal {get;set;}
@@ -37,8 +37,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         {
             await base.LoadAmphoraAsync(id);
             var signalModel = new SignalModel(Signal.Property, Signal.ValueType);
-            Amphora.AddSignal(signalModel, options.CurrentValue?.MaxSignals ?? 7);
-            var res = await amphoraeService.UpdateAsync(User, Amphora);
+            var res = await signalService.AddSignal(User, Amphora, signalModel);
+
             if(res.Succeeded)
             {
                 return RedirectToPage("./Index", new {Id = Amphora.Id});

@@ -7,6 +7,7 @@ using System;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -16,9 +17,9 @@ namespace Amphora.Api.Services.Auth
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEntityStore<AmphoraModel> amphoraeStore;
 
-        public PermissionService(ILogger<PermissionService> logger,
-                                IEntityStore<OrganisationModel> orgStore,
-                                IEntityStore<AmphoraModel> amphoraeStore)
+        public PermissionService(IEntityStore<OrganisationModel> orgStore,
+                                IEntityStore<AmphoraModel> amphoraeStore,
+                                ILogger<PermissionService> logger)
         {
             this.logger = logger;
             this.orgStore = orgStore;
@@ -56,10 +57,19 @@ namespace Amphora.Api.Services.Auth
                 {
                     return true;
                 }
-
-                if (await HasUserPurchasedAmphoraAsync(user, entity as AmphoraModel) && accessLevel <= AccessLevels.ReadContents)
+                if (IsRestricted(user, org, accessLevel))
+                {
+                    logger.LogInformation($"{user.UserName} is restricted on Amphora {entity.Id}");
+                    return false;
+                }
+                if (HasUserPurchasedAmphora(user, entity) && accessLevel <= AccessLevels.ReadContents)
                 {
                     logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");
+                    return true;
+                }
+                if(accessLevel <= AccessLevels.Purchase && entity.Public())
+                {
+                    logger.LogInformation($"Default authorize level {accessLevel.ToString()} for user {user.Id} for {entity.Id}");
                     return true;
                 }
                 else
@@ -70,12 +80,23 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        private async Task<bool> HasUserPurchasedAmphoraAsync(IUser user, AmphoraModel amphora)
+        private bool IsRestricted(IUser user, OrganisationModel organisation, AccessLevels accessLevel)
+        {
+            if (accessLevel >= AccessLevels.Purchase)
+            {
+                return organisation.Restrictions.Any(_ => _.TargetOrganisationId == user.OrganisationId && _.Kind == RestrictionKind.Deny);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool HasUserPurchasedAmphora(IUser user, AmphoraModel amphora)
         {
             using (logger.BeginScope(new LoggerScope<PermissionService>(user)))
             {
-                var extended = await amphoraeStore.ReadAsync(amphora.Id);
-                var hasPurchased = extended.Purchases?.Any(p => string.Equals(p.PurchasedByUserId, user.Id)) ?? false;
+                var hasPurchased = amphora.Purchases?.Any(p => string.Equals(p.PurchasedByUserId, user.Id)) ?? false;
                 logger.LogInformation($"Has Purchased: {hasPurchased}");
                 return hasPurchased;
             }

@@ -44,7 +44,7 @@ namespace Amphora.Api.Services.Organisations
         {
             // we do this when a new user signs up without an invite from an existing org 
             var user = await userService.UserManager.GetUserAsync(principal);
-            if (user == null) return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login");
+            if (user == null) return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login");
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
                 org.CreatedById = user.Id;
@@ -68,7 +68,7 @@ namespace Amphora.Api.Services.Organisations
                             var result = await userService.UserManager.UpdateAsync(user);
                         }
                         logger.LogInformation($"Assigned user to organisation, Name: {org.Name}, Id: {org.Id}");
-                        return new EntityOperationResult<OrganisationModel>(org);
+                        return new EntityOperationResult<OrganisationModel>(user, org);
                     }
                     catch (Exception ex)
                     {
@@ -80,7 +80,7 @@ namespace Amphora.Api.Services.Organisations
                 }
                 else
                 {
-                    return new EntityOperationResult<OrganisationModel>("Failed to create organisation");
+                    return new EntityOperationResult<OrganisationModel>(user, "Failed to create organisation");
                 }
             }
         }
@@ -91,17 +91,17 @@ namespace Amphora.Api.Services.Organisations
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
                 var org = await Store.ReadAsync(id);
-                if (org == null) return new EntityOperationResult<OrganisationModel>($"{id} not found");
+                if (org == null) return new EntityOperationResult<OrganisationModel>(user, $"{id} not found");
                 var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Read);
                 if (authorized)
                 {
                     logger.LogInformation($"User {user.UserName} reads Organisation {org.Name}");
-                    return new EntityOperationResult<OrganisationModel>(org);
+                    return new EntityOperationResult<OrganisationModel>(user, org);
                 }
                 else
                 {
                     logger.LogInformation($"User {user.UserName} denied to read Organisation {org.Name}");
-                    return new EntityOperationResult<OrganisationModel>($"User {user.UserName} needs read access to Org {org.Id}");
+                    return new EntityOperationResult<OrganisationModel>(user, $"User {user.UserName} needs read access to Org {org.Id}");
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace Amphora.Api.Services.Organisations
                 {
                     logger.LogTrace("Updating organisation, Name: {org.Name}, Id: {org.Id}");
                     org = await this.Store.UpdateAsync(org);
-                    return new EntityOperationResult<OrganisationModel>(org);
+                    return new EntityOperationResult<OrganisationModel>(user, org);
                 }
                 else
                 {
@@ -138,11 +138,11 @@ namespace Amphora.Api.Services.Organisations
                 var model = new TermsAndConditionsAcceptanceModel(user.Organisation, termsAndConditions);
                 user.Organisation.TermsAndConditionsAccepted.Add(model);
                 var o = await Store.UpdateAsync(user.Organisation);
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(model);
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(user, model);
             }
             else
             {
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>($"User {user.UserName} must be an administrator");
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(user, $"User {user.UserName} must be an administrator");
             }
         }
 

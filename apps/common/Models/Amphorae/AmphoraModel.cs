@@ -38,7 +38,7 @@ namespace Amphora.Common.Models.Amphorae
         }
 
         public string Name { get; set; }
-        public bool IsPublic { get; set; }
+        public bool? IsPublic { get; set; }
         public double? Price { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
@@ -54,23 +54,13 @@ namespace Amphora.Common.Models.Amphorae
         public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
 
         // methods
-        public void AddSignal(SignalModel signal, int maxSignals = 7)
+
+        /// <summary>
+        /// Method checks IsPublic is not null and is true
+        /// </summary>
+        public bool Public()
         {
-            if (Signals == null) Signals = new List<AmphoraSignalModel>();
-            if (Signals.Count >= maxSignals)
-            {
-                throw new System.ArgumentException($"Only {maxSignals} Signals per Amphora at this time");
-            }
-            Signals.Add(new AmphoraSignalModel
-            {
-                Amphora = this,
-                AmphoraId = this.Id,
-                Signal = signal,
-                SignalId = signal.Id
-            });
+            return this.IsPublic.HasValue && this.IsPublic.Value;
         }
-
-
-
     }
 }

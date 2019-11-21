@@ -69,7 +69,7 @@ namespace Amphora.Api.Services.Amphorae
                     {
                         logger.LogInformation($"CreateAsync failed with invalid TermsAndConditionsId: {model.TermsAndConditionsId}");
                         var allTermsAndConditions = string.Join( ',' , organisation.TermsAndConditions.Select(_ => _.Id));
-                        return new EntityOperationResult<AmphoraModel>($"Invalid TermsAndConditionsId. Use one of {allTermsAndConditions}");
+                        return new EntityOperationResult<AmphoraModel>(user, $"Invalid TermsAndConditionsId. Use one of {allTermsAndConditions}");
                     }
                 }
 
@@ -79,12 +79,12 @@ namespace Amphora.Api.Services.Amphorae
                 if (isAuthorized)
                 {
                     model = await AmphoraStore.CreateAsync(model);
-                    return new EntityOperationResult<AmphoraModel>(model);
+                    return new EntityOperationResult<AmphoraModel>(user, model);
                 }
                 else
                 {
                     logger.LogWarning("User Unauthorized");
-                    return new EntityOperationResult<AmphoraModel>("Unauthorized", $"Create permission required on {organisation.Id}")
+                    return new EntityOperationResult<AmphoraModel>(user, "Unauthorized", $"Create permission required on {organisation.Id}")
                     { WasForbidden = true };
                 }
             }
@@ -102,22 +102,22 @@ namespace Amphora.Api.Services.Amphorae
                 if (entity == null)
                 {
                     logger.LogError($"{id} Not Found");
-                    return new EntityOperationResult<AmphoraModel>($"{id} Not Found");
+                    return new EntityOperationResult<AmphoraModel>(user, $"{id} Not Found");
                 }
-                if (entity.IsPublic)
+                if (entity.Public())
                 {
                     logger.LogInformation($"Permission granted to public entity {entity.Id}");
-                    return new EntityOperationResult<AmphoraModel>(entity);
+                    return new EntityOperationResult<AmphoraModel>(user, entity);
                 }
 
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Read);
                 if (authorized)
                 {
-                    return new EntityOperationResult<AmphoraModel>(entity);
+                    return new EntityOperationResult<AmphoraModel>(user, entity);
                 }
                 else
                 {
-                    return new EntityOperationResult<AmphoraModel>("Denied") { WasForbidden = true };
+                    return new EntityOperationResult<AmphoraModel>(user, "Denied") { WasForbidden = true };
                 }
             }
 
@@ -134,7 +134,7 @@ namespace Amphora.Api.Services.Amphorae
                 if (entity == null)
                 {
                     logger.LogError($"{entity.Id} Not Found");
-                    return new EntityOperationResult<AmphoraModel>($"{entity.Id} Not Found");
+                    return new EntityOperationResult<AmphoraModel>(user, $"{entity.Id} Not Found");
                 }
 
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Update);
@@ -143,16 +143,16 @@ namespace Amphora.Api.Services.Amphorae
                     if (string.Equals(entity.OrganisationId, existingEntity.OrganisationId))
                     {
                         var result = await AmphoraStore.UpdateAsync(entity);
-                        return new EntityOperationResult<AmphoraModel>(result);
+                        return new EntityOperationResult<AmphoraModel>(user, result);
                     }
                     else
                     {
-                        return new EntityOperationResult<AmphoraModel>("Cannot change organisation id");
+                        return new EntityOperationResult<AmphoraModel>(user, "Cannot change organisation id");
                     }
                 }
                 else
                 {
-                    return new EntityOperationResult<AmphoraModel>("Unauthorized") { WasForbidden = true };
+                    return new EntityOperationResult<AmphoraModel>(user, "Unauthorized") { WasForbidden = true };
                 }
             }
         }
@@ -168,7 +168,7 @@ namespace Amphora.Api.Services.Amphorae
                 if (existingEntity == null)
                 {
                     logger.LogError($"{entity.Id} Not Found");
-                    return new EntityOperationResult<AmphoraModel>($"{entity.Id} Not Found");
+                    return new EntityOperationResult<AmphoraModel>(user, $"{entity.Id} Not Found");
                 }
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Delete);
                 if (authorized)
@@ -184,11 +184,11 @@ namespace Amphora.Api.Services.Amphorae
                         await AmphoraStore.DeleteAsync(entity);
                     }
 
-                    return new EntityOperationResult<AmphoraModel>();
+                    return new EntityOperationResult<AmphoraModel>(true);
                 }
                 else
                 {
-                    return new EntityOperationResult<AmphoraModel>("Unauthorized") { WasForbidden = true };
+                    return new EntityOperationResult<AmphoraModel>(user, "Unauthorized") { WasForbidden = true };
                 }
             }
         }

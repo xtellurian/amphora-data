@@ -54,15 +54,16 @@ namespace Amphora.Api.Controllers.Amphorae
             try
             {
                 var signal = new SignalModel(dto.Property, dto.ValueType);
+
                 var result = await amphoraeService.ReadAsync(User, id, true);
                 if (result.Succeeded)
                 {
-                    result.Entity.AddSignal(signal, options.CurrentValue?.MaxSignals ?? 7);
-                    var updateRes = await amphoraeService.UpdateAsync(User, result.Entity);
+                    var updateRes = await signalService.AddSignal(User, result.Entity, signal);
+
                     if (updateRes.Succeeded)
                     {
                         //happy path
-                        dto = mapper.Map<SignalDto>(signal);
+                        dto = mapper.Map<SignalDto>(updateRes.Entity);
                         return Ok(dto);
                     }
                     else if (result.WasForbidden)

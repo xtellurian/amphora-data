@@ -25,11 +25,11 @@ namespace Amphora.Tests.Helpers
                 Price = rnd.Next(0, 99),
                 Name = "test: " + testName,
                 Lat = lat,
-                Lon = lon
+                Lon = lon,
             };
         }
 
-        public static AmphoraModel GetAmphoraModel(OrganisationModel org, string testName)
+        public static AmphoraModel GetAmphoraModel(OrganisationModel org, string testName, bool isPublic = true)
         {
             var lat = -32.868 + rnd.Next(2); // near sydney
             var lon = 150.2093 + rnd.Next(2);
@@ -38,7 +38,8 @@ namespace Amphora.Tests.Helpers
             {
                 Id = System.Guid.NewGuid().ToString(),
                 Organisation = org,
-                GeoLocation = new GeoLocation(lon, lat)
+                GeoLocation = new GeoLocation(lon, lat),
+                IsPublic = isPublic
             };
         }
 

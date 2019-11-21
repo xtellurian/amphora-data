@@ -36,18 +36,18 @@ namespace Amphora.Api.Services.Platform
             var user = await userService.ReadUserModelAsync(principal);
             if (!user.EmailConfirmed && !isDevelopment)
             {
-                return new EntityOperationResult<InvitationModel>($"{user.Email} must confirm email address to invite");
+                return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must confirm email address to invite");
             }
             if (invitation.TargetOrganisationId != null && !user.IsAdmin())
             {
-                return new EntityOperationResult<InvitationModel>($"{user.Email} must be an administrator to invite to an organisation");
+                return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must be an administrator to invite to an organisation");
             }
 
             var existing = await invitationStore.QueryAsync(i => i.TargetEmail == invitation.TargetEmail);
             if (existing.Any())
             {
                 var current = existing.FirstOrDefault();
-                return new EntityOperationResult<InvitationModel>("User is already invited");
+                return new EntityOperationResult<InvitationModel>(user, "User is already invited");
             }
             else
             {
@@ -57,22 +57,22 @@ namespace Amphora.Api.Services.Platform
                 var created = await invitationStore.CreateAsync(invitation);
                 // send an invite email
                 await emailSender.SendEmailAsync(new InvitationEmail(created));
-                return new EntityOperationResult<InvitationModel>(created);
+                return new EntityOperationResult<InvitationModel>(user, created);
             }
         }
 
         public async Task<EntityOperationResult<IList<InvitationModel>>> GetMyInvitations(ClaimsPrincipal principal)
         {
             var user = await userService.ReadUserModelAsync(principal);
-            if (user == null) return new EntityOperationResult<IList<InvitationModel>>("null user") { WasForbidden = true };
+            if (user == null) return new EntityOperationResult<IList<InvitationModel>>(user, "null user") { WasForbidden = true };
             var existing = await invitationStore.QueryAsync(i => i.TargetEmail == user.NormalizedEmail);
             if (existing.Count() > 0)
             {
-                return new EntityOperationResult<IList<InvitationModel>>(new List<InvitationModel>(existing));
+                return new EntityOperationResult<IList<InvitationModel>>(user, new List<InvitationModel>(existing));
             }
             else
             {
-                return new EntityOperationResult<IList<InvitationModel>>($"No Invitations found for {user.Email}");
+                return new EntityOperationResult<IList<InvitationModel>>(user, $"No Invitations found for {user.Email}");
             }
         }
 
@@ -83,8 +83,8 @@ namespace Amphora.Api.Services.Platform
                 i.TargetEmail == user.NormalizedEmail
                 && i.TargetOrganisationId == orgId);
             var invite = existing.FirstOrDefault();
-            if (invite != null) return new EntityOperationResult<InvitationModel>(invite);
-            else return new EntityOperationResult<InvitationModel>("Invitation does not exist");
+            if (invite != null) return new EntityOperationResult<InvitationModel>(user, invite);
+            else return new EntityOperationResult<InvitationModel>(user, "Invitation does not exist");
         }
 
         public async Task<InvitationModel> GetInvitationByEmailAsync(string email)
@@ -118,11 +118,11 @@ namespace Amphora.Api.Services.Platform
             {
                 invitation.IsClaimed = true;
                 invitation = await invitationStore.UpdateAsync(invitation);
-                return new EntityOperationResult<InvitationModel>(invitation);
+                return new EntityOperationResult<InvitationModel>(user, invitation);
             }
             else
             {
-                return new EntityOperationResult<InvitationModel>(res.Errors?.Select(_ => _.Description));
+                return new EntityOperationResult<InvitationModel>(user, res.Errors?.Select(_ => _.Description));
             }
 
         }

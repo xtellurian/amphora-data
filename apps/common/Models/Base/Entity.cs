@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Common.Models
 {
-    public abstract class Entity : IEntity
+    public abstract class Entity : IEntity, ITtl
     {
         public Entity()
         {

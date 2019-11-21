@@ -15,6 +15,7 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(p => p.Account, o => o.Ignore())
             .ForMember(p => p.GlobalInvitations, o => o.Ignore())
             .ForMember(p => p.Memberships, o => o.Ignore())
+            .ForMember(p => p.Restrictions, o => o.Ignore())
             .ForMember(p => p.TermsAndConditions, o => o.Ignore())
             .ForMember(p => p.TermsAndConditionsAccepted, o => o.Ignore())
             .ForMember(p => p.Purchases, o => o.Ignore())

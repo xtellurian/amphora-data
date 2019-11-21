@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Amphora.Api.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Microsoft.Azure.TimeSeriesInsights.Models;
@@ -13,5 +14,6 @@ namespace Amphora.Api.Contracts
         Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = false);
         Task<Models.EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, Dictionary<string, object> values);
         Task<IDictionary<SignalModel, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity);
+        Task<EntityOperationResult<SignalModel>> AddSignal(ClaimsPrincipal principal, AmphoraModel amphora, SignalModel signal);
     }
 }
