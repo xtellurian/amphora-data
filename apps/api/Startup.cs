@@ -178,7 +178,6 @@ namespace Amphora.Api
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<Middleware.OrganisationCheckMiddleware>();
-            app.UseMiddleware<Middleware.StagingRoutingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
