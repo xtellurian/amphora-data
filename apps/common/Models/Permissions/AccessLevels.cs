@@ -4,6 +4,7 @@ namespace Amphora.Common.Models.Permissions
     {
         None = 0,
         Read = 16,
+        Purchase = 24,
         ReadContents = 32,
         WriteContents = 64,
         Update = 128,

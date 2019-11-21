@@ -32,7 +32,7 @@ namespace Amphora.Api.Controllers.Amphorae
             var a = await amphoraeService.ReadAsync(User, id);
             if (a.Succeeded)
             {
-                var result = await purchaseService.PurchaseAmphora(User, a.Entity);
+                var result = await purchaseService.PurchaseAmphoraAsync(User, a.Entity);
                 if (result.Succeeded)
                 {
                     return Ok("Purchased Amphora");

@@ -9,6 +9,6 @@ namespace Amphora.Api.Contracts
     public interface IPurchaseService
     {
         Task<bool> HasAgreedToTermsAndConditionsAsync(ClaimsPrincipal principal, AmphoraModel amphora);
-        Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora);
+        Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora);
     }
 }

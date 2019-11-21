@@ -45,7 +45,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 if (hasAgreed)
                 {
                     this.Success = true;
-                    await purchaseService.PurchaseAmphora(User, result.Entity);
+                    await purchaseService.PurchaseAmphoraAsync(User, result.Entity);
                     return Page();
                 }
                 else

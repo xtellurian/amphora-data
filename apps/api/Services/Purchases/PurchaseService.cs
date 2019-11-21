@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
@@ -36,7 +35,7 @@ namespace Amphora.Api.Services.Purchases
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ApplicationUser user, AmphoraModel amphora)
+        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
             if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
@@ -108,10 +107,10 @@ namespace Amphora.Api.Services.Purchases
             }
         }
 
-        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphora(ClaimsPrincipal principal, AmphoraModel amphora)
+        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
             var user = await userService.UserManager.GetUserAsync(principal);
-            return await this.PurchaseAmphora(user, amphora);
+            return await this.PurchaseAmphoraAsync(user, amphora);
         }
     }
 }
