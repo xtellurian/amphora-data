@@ -22,6 +22,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
+        private readonly IPurchaseService purchaseService;
         private readonly FeatureFlagService featureFlags;
 
         public DetailModel(
@@ -29,11 +30,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             IBlobStore<AmphoraModel> blobStore,
             IUserService userService,
             IPermissionService permissionService,
+            IPurchaseService purchaseService,
             FeatureFlagService featureFlags) : base(amphoraeService)
         {
             this.blobStore = blobStore;
             this.userService = userService;
             this.permissionService = permissionService;
+            this.purchaseService = purchaseService;
             this.featureFlags = featureFlags;
         }
 
@@ -66,15 +69,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
                
                 this.Purchases = Amphora.Purchases;
-                if (this.Purchases?.Any(u => string.Equals(u.PurchasedByUserId, user.Id)) ?? false)
-                {
-                    // user has already purchased the amphora
-                    this.CanBuy = false;
-                }
-                else
-                {
-                    this.CanBuy = true;
-                }
+                this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
             }
         }
 
