@@ -22,13 +22,13 @@ namespace Amphora.Tests.Integration
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
-            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(TopAndSkip));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 
             var amphorae = new List<AmphoraExtendedDto>();
             int i = 0;
             while (i < 10)
             {
+                var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(TopAndSkip));
                 var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", a);
                 var createResponseContent = await createResponse.Content.ReadAsStringAsync();
                 createResponse.EnsureSuccessStatusCode();
