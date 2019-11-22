@@ -55,7 +55,7 @@ async function tsi(id, signals, filters) {
         lineChart.render(transformedResult,
             {
                 theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked',
-                noAnimate: true, includeDots: true, offset: timezone,
+                noAnimate: true, includeDots: false, offset: timezone,
                 includeEnvelope: true, dateLocale: 'en-AU', events: events,
             },
             linechartTsqExpressions);
