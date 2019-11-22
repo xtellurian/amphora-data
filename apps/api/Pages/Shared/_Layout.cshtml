@@ -55,6 +55,9 @@
             <span class="float-right text-muted">
                 @{
                     var stack = @Configuration["STACK"];
+                    var version = Amphora.Api.ApiVersion.CurrentVersion.ToSemver();
+                    var gitHash = @Configuration["SOURCEVERSION"];
+                    var identifier = $"{version} {gitHash?.Substring(0, 7)}";
                     var routeTo = "?x-ms-routing-name=self";
                     if(! string.IsNullOrEmpty(stack) && !stack.Contains("(staging)"))
                     {
@@ -62,7 +65,7 @@
                         routeTo = "?x-ms-routing-name=staging";
                     }
                 }
-                <a href=@routeTo> @stack</a> @Configuration["SOURCEVERSION"]
+                <a href=@routeTo> @stack </a> @identifier
             </span>
         </div>
     </footer>
