@@ -14,7 +14,7 @@
         <div class="col text-center">
             <form id="searchform" method="get" >
                 <div class="input-group mb-4 border rounded-pill p-1">
-                    <input type="search" placeholder="What're you searching for?" asp-for="Term" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                    <input type="search" placeholder="What're you searching for?" asp-for="SearchDefinition.Term" aria-describedby="button-addon3" class="form-control bg-none border-0">
                     <div class="input-group-append border-0">
                         <button id="button-addon3" type="submit" class="btn btn-link text-success"><i class="icon fa fa-search"></i></button>
                     </div>
@@ -34,16 +34,16 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <input id="lat" asp-for="Lat" placeholder="Latitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="Lat" class="text-danger"></span>
+                                    <input id="lat" asp-for="SearchDefinition.Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="SearchDefinition.Lat" class="text-danger"></span>
                                 </div>
                                 <div class="col">
-                                    <input id="lon" asp-for="Lon" placeholder="Longitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="Lon" class="text-danger"></span>
+                                    <input id="lon" asp-for="SearchDefinition.Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                                    <span asp-validation-for="SearchDefinition.Lon" class="text-danger"></span>
                                 </div>
                                 <div class="col">
-                                    <input id="dist" asp-for="Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
-                                    <span asp-validation-for="Dist" class="text-danger"></span>
+                                    <input id="dist" asp-for="SearchDefinition.Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
+                                    <span asp-validation-for="SearchDefinition.Dist" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -85,31 +85,57 @@
             <nav aria-label="...">
                 <ul class="pagination justify-content-center">
                     @{
+                        var d = Model.SearchDefinition;
                         // skip is zero based
-                        var numPages = (Model.Count % Model.Top) + 1;
-                        var currentPage = Model.Skip + 1;
-                        var previousPage = Model.Skip;
-                        var previousSkip = Model.Skip - 1;
-                        var nextPage = Model.Skip + 2;
-                        var nextSkip = Model.Skip + 1;
+                        var numPages = (Model.Count / d.Top) + 1;
+                        var currentPage = d.Skip + 1;
+                        var previousPage = d.Skip;
+                        var previousSkip = d.Skip - 1;
+                        var nextPage = d.Skip + 2;
+                        var nextSkip = d.Skip + 1;
                         string nextEnabled = "";
                         string previousEnabled = "";
                         if(nextPage >= numPages) nextEnabled = "disabled";
                         if(previousPage < 1) previousEnabled = "disabled";
                     }
                     <li class="page-item @previousEnabled">
-                        <a class="page-link" asp-page="/Market/Index" asp-route-skip="@previousSkip" tabindex="-1">Previous</a>
+                        <a class="page-link" asp-page="/Market/Index" 
+                             asp-route-term="@Model.SearchDefinition.Term" 
+                            asp-route-skip="@previousSkip"
+                            asp-route-top="@Model.SearchDefinition.Top" 
+                            asp-route-lat="@Model.SearchDefinition.Lat" 
+                            asp-route-lon="@Model.SearchDefinition.Lon" 
+                            asp-route-dist="@Model.SearchDefinition.Dist"
+                            tabindex="-1">
+                            Previous
+                        </a>
                     </li>
                     @for(var p = 1; p <= numPages; p++)
                     {
                         var active = "";
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
-                            <a class="page-link" asp-page="/Market/Index" asp-route-skip="@(p - 1)">@p</a>
+                            <a class="page-link" asp-page="/Market/Index" 
+                                asp-route-term="@Model.SearchDefinition.Term" 
+                                asp-route-skip="@(p - 1)" 
+                                asp-route-top="@Model.SearchDefinition.Top" 
+                                asp-route-lat="@Model.SearchDefinition.Lat" 
+                                asp-route-lon="@Model.SearchDefinition.Lon" 
+                                asp-route-dist="@Model.SearchDefinition.Dist" >
+                                @p
+                            </a>
                         </li>
                     }
                     <li class="page-item @nextEnabled">
-                        <a class="page-link" asp-page="/Market/Index" asp-route-skip="@nextSkip">Next</a>
+                        <a class="page-link" asp-page="/Market/Index" 
+                            asp-route-term="@Model.SearchDefinition.Term" 
+                            asp-route-skip="@nextSkip"
+                            asp-route-top="@Model.SearchDefinition.Top" 
+                            asp-route-lat="@Model.SearchDefinition.Lat" 
+                            asp-route-lon="@Model.SearchDefinition.Lon" 
+                            asp-route-dist="@Model.SearchDefinition.Dist" >
+                            Next
+                        </a>
                     </li>
                 </ul>
             </nav>

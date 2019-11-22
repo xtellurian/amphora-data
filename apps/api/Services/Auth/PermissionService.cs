@@ -53,6 +53,11 @@ namespace Amphora.Api.Services.Auth
             {
                 // check if user is in Admin role
                 var org = await orgStore.ReadAsync(entity.OrganisationId);
+                if(org == null)
+                {
+                    logger.LogError($"null Organisation for amohora {entity.Id}");
+                    return false;
+                }
                 if (await this.IsAuthorizedAsync(user, org, accessLevel))
                 {
                     return true;
