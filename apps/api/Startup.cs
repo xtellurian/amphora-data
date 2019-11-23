@@ -22,6 +22,8 @@ using Amphora.Api.AspNet;
 using Amphora.Common.Contracts;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Options;
+using Microsoft.Rest.Serialization;
+using Microsoft.Azure.TimeSeriesInsights.Models;
 
 namespace Amphora.Api
 {
@@ -108,8 +110,11 @@ namespace Amphora.Api
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                options.SerializerSettings.Converters.Add(new TimespanConverter());
-                options.SerializerSettings.Converters.Add(new TsiVariableConverter());
+                //options.SerializerSettings.Converters.Add(new TimespanConverter());
+                options.SerializerSettings.Converters.Add(new Iso8601TimeSpanConverter());
+                // options.SerializerSettings.Converters.Add(new TsiVariableConverter());
+                options.SerializerSettings.Converters.Add(new PolymorphicSerializeJsonConverter<Variable>("kind"));
+                options.SerializerSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind"));
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
