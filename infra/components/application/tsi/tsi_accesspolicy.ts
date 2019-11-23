@@ -11,6 +11,9 @@ export function accessPolicyTemplate() {
             environmentName: {
                 type: "String",
             },
+            name: {
+                type: "String",
+            },
         },
         variables: {},
         // tslint:disable-next-line: object-literal-sort-keys
@@ -19,7 +22,7 @@ export function accessPolicyTemplate() {
                 apiVersion: "2018-08-15-preview",
                 condition: "[not(empty(parameters('accessPolicyReaderObjectId')))]",
                 name:
-                    "[concat(parameters('environmentName'), '/', 'ownerAccessPolicy')]",
+                    "[concat(parameters('environmentName'), '/', parameters('name'))]",
                 properties: {
                     principalObjectId: "[parameters('accessPolicyReaderObjectId')]",
                     roles: ["Reader", "Contributor"],
