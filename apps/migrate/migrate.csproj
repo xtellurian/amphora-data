@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AmphoraData.TSI.CSharp" Version="1.1.0" />
+    <PackageReference Include="AmphoraData.TSI.CSharp" Version="1.1.3" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.4.1" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.0.0" />

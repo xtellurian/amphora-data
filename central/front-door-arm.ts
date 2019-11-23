@@ -3,9 +3,6 @@ export function frontDoorArm(tags: {}) {
         $schema: "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
         parameters: {
-            prodHostname: {
-                type: "String",
-            },
             frontDoorId: {
                 defaultValue: "/subscriptions/651f2ed5-6e2f-41d0-b533-0cd28801ef2a/resourceGroups/amphora-central/providers/Microsoft.Network/frontdoors/amphora",
                 type: "String",
@@ -15,6 +12,9 @@ export function frontDoorArm(tags: {}) {
                     description: "The name of the frontdoor resource.",
                 },
                 type: "string",
+            },
+            prodHostname: {
+                type: "String",
             },
             zoneName: {
                 defaultValue: "amphoradata.com",
