@@ -90,6 +90,7 @@ export class Application extends pulumi.ComponentResource
   private createTsi() {
     this.tsi = new Tsi("tsi", {
       appSvc: this.appSvc.appSvc,
+      appSvcStaging: this.appSvc.appSvcStaging,
       eh: this.state.eh,
       eh_namespace: this.state.ehns,
       state: this.state,
