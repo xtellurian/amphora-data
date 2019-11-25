@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
+using Amphora.Api.AspNet;
 
 namespace Amphora.Api.Areas.Identity.Pages.Account
 {
@@ -44,6 +45,9 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
 
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
+        [BindProperty]
+        [IsTrue(ErrorMessage="You must accept the service agreement.")]
+        public bool AcceptServiceAgreement { get; set; }
         public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
 
@@ -132,7 +136,7 @@ namespace Amphora.Api.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        return RedirectToPage("/Join", new { area="organisations", orgId = invitation.TargetOrganisationId });
+                        return RedirectToPage("/Join", new { area = "organisations", orgId = invitation.TargetOrganisationId });
                     }
                 }
                 else
