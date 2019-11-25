@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -31,8 +32,8 @@ namespace Amphora.Tests.Integration
         [Fact]
         public async Task WhenEnvironmentVariable_IsIncrementingVersion()
         {
-            var check = System.Environment.GetEnvironmentVariable("AMPHORA_CHECK_VERSION");
-            if(check != null && check.Length > 1 )
+            var reason = System.Environment.GetEnvironmentVariable("BUILD_REASON");
+            if (reason != null && reason.Length > 1 && string.Equals(reason.ToLower(), "pullrequest"))
             {
                 var client = _factory.CreateClient();
 
@@ -40,18 +41,23 @@ namespace Amphora.Tests.Integration
                 var response = await client.GetAsync("/api/version");
                 var content = await response.Content.ReadAsStringAsync();
 
-                var prodResponse = await client.GetAsync("https://beta.amphoradata.com/api/version");
-                var prodContent = await prodResponse.Content.ReadAsStringAsync();
+                using (var prodClient = new HttpClient() { BaseAddress = new System.Uri("https://beta.amphoradata.com/") })
+                {
+                    var prodResponse = await prodClient.GetAsync("api/version");
+                    var prodContent = await prodResponse.Content.ReadAsStringAsync();
 
-                // Assert
-                response.EnsureSuccessStatusCode();
-                var thisVersion = ApiVersionIdentifier.FromSemver(content);
-                prodResponse.EnsureSuccessStatusCode();
-                var prodVersion = ApiVersionIdentifier.FromSemver(prodContent);
+                    // Assert
+                    response.EnsureSuccessStatusCode();
+                    var thisVersion = ApiVersionIdentifier.FromSemver(content);
+                    prodResponse.EnsureSuccessStatusCode();
+                    var prodVersion = ApiVersionIdentifier.FromSemver(prodContent);
 
-                Assert.True(thisVersion.Major >= prodVersion.Major);
-                Assert.True(thisVersion.Minor >= prodVersion.Minor);
-                Assert.True(thisVersion.Patch >= prodVersion.Patch);
+                    Assert.True(thisVersion.Major >= prodVersion.Major);
+                    Assert.True(thisVersion.Minor >= prodVersion.Minor);
+                    Assert.True(thisVersion.Patch >= prodVersion.Patch);
+                    // Assert at least one must be strictly greater than
+                    Assert.True(thisVersion.Major > prodVersion.Major || thisVersion.Minor > prodVersion.Minor || thisVersion.Patch > prodVersion.Patch);
+                }
             }
         }
     }

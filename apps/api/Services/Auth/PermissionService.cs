@@ -32,6 +32,11 @@ namespace Amphora.Api.Services.Auth
             {
                 if (org == null) return false;
                 org = await orgStore.ReadAsync(org.Id);
+                if(accessLevel <= AccessLevels.Read) 
+                {
+                    logger.LogInformation($"Default read for org {org.Id}");
+                    return true;
+                }
                 var membership = org.Memberships?.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
 
                 if (membership != null) // if user is in the org

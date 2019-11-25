@@ -90,6 +90,7 @@ jobs:
         PersistentStores: $(PersistentStores)
         disableKv: $(disableKv)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        BUILD_REASON: $(Build.Reason) # will run some tests on a PR
 
     - task: PublishTestResults@2
       condition: always()

@@ -25,12 +25,12 @@ namespace Amphora.Tests.Unit.Authorization
         }
 
         [Fact]
-        public async Task DenyAllByDefault()
+        public async Task DenyAllButReadByDefault()
         {
             var principal = new TestPrincipal();
             var userService = new Mock<IUserService>();
-            var org = EntityLibrary.GetOrganisationModel(nameof(DenyAllByDefault));
-            using (var context = GetContext(nameof(DenyAllByDefault)))
+            var org = EntityLibrary.GetOrganisationModel(nameof(DenyAllButReadByDefault));
+            using (var context = GetContext(nameof(DenyAllButReadByDefault)))
             {
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 org = await orgStore.CreateAsync(org);
@@ -39,7 +39,7 @@ namespace Amphora.Tests.Unit.Authorization
                 userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllByDefault), false); // ensure amphora is not public (auto deny access)
+                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllButReadByDefault), false); // ensure amphora is not public (auto deny access)
                 a = await amphoraStore.CreateAsync(a);
 
                 var permissionService = new PermissionService( orgStore, amphoraStore, CreateMockLogger<PermissionService>());
@@ -52,7 +52,8 @@ namespace Amphora.Tests.Unit.Authorization
 
                 var authContext = new AuthorizationHandlerContext(readReq, principal, a);
                 await handler.HandleAsync(authContext);
-                Assert.False(authContext.HasSucceeded);
+                Assert.True(authContext.HasSucceeded);
+
                 authContext = new AuthorizationHandlerContext(createReq, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.False(authContext.HasSucceeded);
