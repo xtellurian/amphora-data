@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
@@ -6,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
@@ -31,11 +33,19 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.Amphorae = new List<AmphoraModel>();
         }
 
+        private const int defaultTop = 8;
         public IEnumerable<AmphoraModel> Amphorae { get; set; }
         public string ViewType { get; private set; }
+        public int? Count { get; set; } = null;
+        public int? Skip { get; set; } = 0;
+        public int? Top { get; set; } = defaultTop;
 
-        public async Task<IActionResult> OnGetAsync(string viewType)
+        public int TotalSkip => (Skip ?? 0) * (Top ?? defaultTop);
+
+        public async Task<IActionResult> OnGetAsync(string viewType, int? skip = 0, int? top = defaultTop)
         {
+            Skip = skip;
+            Top = top;
             switch (viewType?.ToLower())
             {
                 case "purchased":
@@ -57,12 +67,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var user = await this.userService.UserManager.GetUserAsync(User);
             if (user == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
 
-            var x= await amphoraeService.AmphoraPurchasedBy(User, user);
-            this.Amphorae = x; 
+            var amphorae = await amphoraeService.AmphoraPurchasedBy(User, user);
+            Count = await amphorae.CountAsync();
+            this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();
         }
 
-            private async Task<IActionResult> OrgAmphorae()
+        private async Task<IActionResult> OrgAmphorae()
         {
             var user = await this.userService.ReadUserModelAsync(User);
             if (user == null)
@@ -70,7 +81,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // get my amphora
-            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.OrganisationId == user.OrganisationId);
+            var amphorae = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == user.OrganisationId);
+            Count = await amphorae.CountAsync();
+            this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();
         }
 
@@ -82,7 +95,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // get my amphora
-            this.Amphorae = await amphoraeService.AmphoraStore.QueryAsync(a => a.CreatedById == user.Id);
+            var amphorae = amphoraeService.AmphoraStore.Query(a => a.CreatedById == user.Id);
+            Count = await amphorae.CountAsync();
+            this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();
         }
     }
