@@ -50,7 +50,6 @@ namespace Amphora.Api.Pages.Market
                                                          SearchDefinition.Skip,
                                                          SearchDefinition.Top) ?? 0;
             await RunSearch();
-            await RunSearch();
             return Page();
         }
 

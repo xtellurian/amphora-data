@@ -15,6 +15,10 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<AmphoraModel, AmphoraDto>()
                 .IncludeBase<Entity, EntityDto>();
 
+            CreateMap<AmphoraModel, EditAmphora>()
+                .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
+                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
+
             CreateMap<CreateAmphoraDto, AmphoraModel>()
                 .ConstructUsing(_ => new AmphoraModel(_.Name, _.Description, _.Price, null))
                 .ForMember(o => o.Id, p => p.Ignore())

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
@@ -10,7 +11,7 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<AmphoraModel> AmphoraStore { get; }
 
-        Task<System.Collections.Generic.IEnumerable<AmphoraModel>> AmphoraPurchasedBy(ClaimsPrincipal principal, IUser user);
+        Task<IQueryable<AmphoraModel>> AmphoraPurchasedBy(ClaimsPrincipal principal, IUser user);
         Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model);
         Task<EntityOperationResult<AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, AmphoraModel entity);
         Task<EntityOperationResult<AmphoraModel>> ReadAsync(ClaimsPrincipal principal, string id, bool includeChildren = false, string orgId = null);
