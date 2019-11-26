@@ -84,12 +84,14 @@
                 <ul class="pagination justify-content-center">
                     @{
                         // skip is zero based
-                        var numPages = ( Model.Count + 1) /  Model.Top + 1;
-                        var currentPage = Model.Skip + 1;
+                        int numPages = (( Model.Count ?? 0) /  (Model.Top ?? 0) + 1);
+                        int currentPage = (int) Model.Skip + 1;
                         var previousPage = Model.Skip;
                         var previousSkip = Model.Skip - 1;
                         var nextPage = Model.Skip + 2;
                         var nextSkip = Model.Skip + 1;
+                        var startPage = Math.Max(1, currentPage - 3);
+                        var endPage = Math.Min(numPages, currentPage + 3);
                         string nextEnabled = "";
                         string previousEnabled = "";
                         if(nextPage > numPages) nextEnabled = "disabled";
@@ -104,7 +106,7 @@
                             Previous
                         </a>
                     </li>
-                    @for(var p = 1; p <= numPages; p++)
+                    @for(var p = startPage; p <= endPage; p++)
                     {
                         var active = "";
                         if(p == currentPage) active = "active";
@@ -122,7 +124,15 @@
                             asp-route-viewType="@Model.ViewType"
                             asp-route-skip="@nextSkip"
                             asp-route-top="@Model.Top"  >
-                            Next
+                            >
+                        </a>
+                    </li>
+                    <li class="page-item @nextEnabled">
+                        <a class="page-link" asp-page="./Index" 
+                            asp-route-viewType="@Model.ViewType"
+                            asp-route-skip="@(numPages - 1)"
+                            asp-route-top="@Model.Top"  >
+                            >>
                         </a>
                     </li>
                 </ul>
