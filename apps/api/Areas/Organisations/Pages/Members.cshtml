@@ -22,13 +22,13 @@
                             @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
                             {
                                 <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
-                                    <a asp-page="/Profile/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
+                                    <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
                                 </li>
                             }
                             else
                             {
                                 <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
-                                    <a asp-page="/Profile/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
+                                    <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
                                 </li>
                             } 
                         </th>
@@ -38,7 +38,7 @@
                                 <a asp-page="./SetRole" asp-route-userId="@m.UserId" asp-route-id="@Model.Organisation.Id" asp-route-role="admin"> 
                                     <i class="fas fa-crown" data-toggle="tooltip" data-placement="top" title="Make Admin"></i>
                                 </a>
-                                <a asp-page="/Profile/Detail" asp-route-id="@m.UserId"> 
+                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@m.UserId"> 
                                     <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="top" title="Info"></i>
                                 </a>
                             </div>

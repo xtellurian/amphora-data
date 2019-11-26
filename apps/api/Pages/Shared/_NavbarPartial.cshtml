@@ -42,7 +42,7 @@
         </a>
         <ul class="dropdown-menu">
             <li class="nav-item">
-                <a class="nav-link text-light" asp-area="" asp-page="/Profile/Detail">My Profile</a>
+                <a class="nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
@@ -58,10 +58,10 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link text-light" asp-area="Profiles" asp-page="/Account/Register">Register</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link text-light" asp-area="Profiles" asp-page="/Account/Login">Login</a>
     </li>
 }
 </ul>
