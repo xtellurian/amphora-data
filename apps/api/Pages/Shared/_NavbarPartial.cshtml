@@ -35,24 +35,18 @@
         <a class="nav-link text-light" asp-area="" target="_blank" asp-page="/Redirection/Feedback" asp-route-from="@from"><i class="far fa-frown fa-lg"></i></a>
     </li>
 
-    <li class="dropdown nav-item avatar">
+    <li class="nav-item dropdown avatar">
         <a href="#" class="nav-link text-light dropdown-toggle p-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             @{var profileUri = appUser?.GetProfilePictureUri()?.ToString(); }
-            <img src="@profileUri" class="rounded-circle z-depth-0" alt="avatar image"/>
+            <img src="@profileUri" class="rounded-circle z-depth-0 mb-1" alt="avatar image"/>
         </a>
-        <ul class="dropdown-menu">
-            <li class="nav-item">
-                <a class="nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
-            </li>
-            <li class="nav-item">
-                <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button  type="submit" class="nav-link btn btn-link text-Light">Logout</button>
-                </form>
-            </li>                       
-        </ul>
+        <div class="dropdown-menu">
+            <a class="dropdown-item nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>   
+            <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
+            <form class="form-inline" asp-area="Profiles" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-Light">Logout</button>
+            </form>             
+        </div>
     </li>
 }
 else
