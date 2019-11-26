@@ -10,7 +10,9 @@
 <div id="main" class="container">
     <div class="row mb-3 border-bottom">
         <div class="col-9">
-            <h2>@Model.Amphora.Name</h2>
+            <h2>
+                @Model.Amphora.Name
+            </h2>
         </div>
         <div class="col-3">
             <span>
@@ -39,7 +41,7 @@
                         @if(Model.Amphora.CreatedBy != null)
                         {
                             <div>
-                                by <a asp-page="/Profile/Detail" asp-route-id="@Model.Amphora.CreatedById">
+                                by <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@Model.Amphora.CreatedById">
                                     @Model.Amphora.CreatedBy?.FullName
                                     </a> from
                                     <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
@@ -56,6 +58,12 @@
                         {
                             <div>by Unknown user</div>
                         }
+                        <span>
+                            <button id="amphoraIdBtn" class="float-left btn btn-light btn-sm" onclick="$('#amphoraId').removeClass('d-none');$('#amphoraIdBtn').addClass('d-none');">
+                                <small>id</small>
+                            </button>
+                            <span class="d-none" id=amphoraId> <small>@Model.Amphora.Id </small> </span>
+                        </span>
                     </div>
                     @{
                         var buttonMode = string.Empty;
@@ -150,7 +158,7 @@
                     
                     <li> 
                         <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.PurchasedByUser.UserName"></i> 
-                        <a asp-page="/Profile/Detail" asp-all-route-data=@d > @a.PurchasedByUser.UserName </a>
+                        <a asp-area="Profiles" asp-page="/Account/Detail" asp-all-route-data=@d > @a.PurchasedByUser.UserName </a>
                     </li>
                 }
                 </ul>

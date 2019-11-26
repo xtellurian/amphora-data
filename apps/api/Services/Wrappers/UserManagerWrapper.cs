@@ -26,7 +26,14 @@ namespace Amphora.Api.Services.Wrappers
         {
             return await userManager.FindByIdAsync(userId);
         }
-
+        public async Task<bool> HasPasswordAsync(ApplicationUser user)
+        {
+            return await userManager.HasPasswordAsync(user);
+        }
+        public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
+        {
+            return await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);

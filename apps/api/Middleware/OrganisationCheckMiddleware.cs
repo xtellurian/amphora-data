@@ -18,7 +18,7 @@ namespace Amphora.Api.Middleware
 
         private const string CreateOrgPath = "/Organisations/Create";
         private const string JoinOrgPath = "/Organisations/Join";
-        private const string ConfirmEmailPath = "/Identity/Account/ConfirmEmail";
+        private const string ConfirmEmailPath = "/Profiles/Account/ConfirmEmail";
         private const string QueryString = "?message=You must belong to an Organisation to continue";
         public async Task Invoke(HttpContext httpContext, IUserService userService, IOrganisationService organisationService)
         {

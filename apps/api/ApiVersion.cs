@@ -6,17 +6,22 @@ namespace Amphora.Api
     public static class ApiVersion
     {
         public const string HeaderName = "x-amphoradata-version";
-        public static ApiVersionIdentifier CurrentVersion = new ApiVersionIdentifier(0, 2, 2);
-
+        public static ApiVersionIdentifier CurrentVersion
+            = new ApiVersionIdentifier()
+            {
+                Major = 0,
+                Minor = 2,
+                Patch = 3
+            };
     }
 
     public class ApiVersionIdentifier
     {
-        public int Major { get; private set; }
-        public int Minor { get; private set; }
-        public int Patch { get; private set; }
+        public int Major { get; set; }
+        public int Minor { get; set; }
+        public int Patch { get; set; }
         public List<string> Suffixes { get; set; }
-
+        public ApiVersionIdentifier() { }
         public ApiVersionIdentifier(int major, int minor, int patch, params string[] suffixes)
         {
             Major = major;

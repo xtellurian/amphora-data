@@ -35,6 +35,7 @@ namespace Amphora.Tests.Integration
             var reason = System.Environment.GetEnvironmentVariable("BUILD_REASON");
             if (reason != null && reason.Length > 1 && string.Equals(reason.ToLower(), "pullrequest"))
             {
+                System.Console.WriteLine("Checking Prod Version");
                 var client = _factory.CreateClient();
 
                 // Act
@@ -58,6 +59,10 @@ namespace Amphora.Tests.Integration
                     // Assert at least one must be strictly greater than
                     Assert.True(thisVersion.Major > prodVersion.Major || thisVersion.Minor > prodVersion.Minor || thisVersion.Patch > prodVersion.Patch);
                 }
+            }
+            else
+            {
+                System.Console.WriteLine("Not checking version");
             }
         }
     }

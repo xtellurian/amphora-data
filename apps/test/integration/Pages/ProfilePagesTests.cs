@@ -13,9 +13,9 @@ namespace Amphora.Tests.Integration.Pages
         }
 
         [Theory]
-        [InlineData("/Profile/Detail")]
-        [InlineData("/Profile/Edit")]
-        [InlineData("/Profile/Missing")]
+        [InlineData("/Profiles/Account/Detail")]
+        [InlineData("/Profiles/Account/Edit")]
+        [InlineData("/Profiles/Account/Missing")]
         public async Task CanLoadPage(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();

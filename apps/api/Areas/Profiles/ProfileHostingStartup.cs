@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
 
-[assembly: HostingStartup(typeof(Amphora.Api.Areas.Identity.IdentityHostingStartup))]
-namespace Amphora.Api.Areas.Organisations
+[assembly: HostingStartup(typeof(Amphora.Api.Areas.Profiles.ProfileHostingStartup))]
+namespace Amphora.Api.Areas.Profiles
 {
-    public class IdentityHostingStartup : IHostingStartup
+    public class ProfileHostingStartup : IHostingStartup
     {
         public void Configure(IWebHostBuilder builder)
         {

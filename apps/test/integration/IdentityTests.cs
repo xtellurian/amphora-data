@@ -15,9 +15,9 @@ namespace Amphora.Tests.Integration
         }
 
         [Theory]
-        [InlineData("/Identity/Account/Login")]
-        [InlineData("/Identity/Account/Logout")]
-        [InlineData("/Identity/Account/Register")]
+        [InlineData("/Profiles/Account/Login")]
+        [InlineData("/Profiles/Account/Logout")]
+        [InlineData("/Profiles/Account/Register")]
         public async Task Get_IdentityPage(string url)
         {
             // Arrange

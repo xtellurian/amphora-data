@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Profile
+namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
     [Authorize]
     public class EditModel : PageModel

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace Amphora.Api.Pages.Profile
+namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
     [Authorize]
     public class DetailModel : PageModel

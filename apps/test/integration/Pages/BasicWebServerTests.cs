@@ -17,14 +17,14 @@ namespace Amphora.Tests.Integration.Pages
         [Theory]
         [InlineData("/")]
         [InlineData("/Home/Privacy")]
-        [InlineData("/Profile/Detail")]
-        [InlineData("/Profile/Edit")]
+        [InlineData("/Profiles/Account/Detail")]
+        [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Market")]
         [InlineData("/Amphorae")]
         [InlineData("/Amphorae/Create")]
         [InlineData("/Amphorae/Detail")]
-        [InlineData("/Identity/Account/Login")]
-        [InlineData("/Identity/Account/Register")]
+        [InlineData("/Profiles/Account/Login")]
+        [InlineData("/Profiles/Account/Register")]
         public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange
@@ -37,6 +37,21 @@ namespace Amphora.Tests.Integration.Pages
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
+
+        }
+
+        [Fact]
+        public async Task Get_NotAPage_Error()
+        {
+            // Arrange
+            var url = "dsksdljkvn/sdjbskvj/";
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync(url);
+
+            // Assert
+            Assert.False(response.IsSuccessStatusCode); // Status Code 200-299
 
         }
 

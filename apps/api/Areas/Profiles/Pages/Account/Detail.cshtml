@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Pages.Profile.DetailModel
+@model DetailModel
 @{
     ViewData["Title"] = Model.AppUser.FullName;
 }
@@ -12,6 +12,7 @@
                     <div class="text-center mb-3">
                         <img class="img-fluid" src="@Model.AppUser.GetProfilePictureUri().ToString()?s=180" />
                     </div>
+                    <a asp-area="Profiles" asp-page="./Manage/Index" class="float-right"><i class="fas fa-cog"></i></a>
                     <div class="w-100"><strong>@Model.AppUser.FullName</strong></div>
                     <div class="w-100 mb-2"><small>@Model.AppUser.UserName </small></div>
 

@@ -36,7 +36,7 @@ namespace Amphora.Api.Stores.EFCore
         private DbSet<T> Set => this.selectDbSet(context);
         public virtual async Task<int> CountAsync(Expression<Func<T, bool>> where = null)
         {
-            if (where == null) return await context.Invitations.CountAsync();
+            if (where == null) return await this.Set.CountAsync();
             else return await Set.Where(where).CountAsync();
         }
 

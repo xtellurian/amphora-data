@@ -87,17 +87,31 @@
                     @{
                         var d = Model.SearchDefinition;
                         // skip is zero based
-                        var numPages = (Model.Count / d.Top) + 1;
-                        var currentPage = d.Skip + 1;
+                        int numPages = (int)(Model.Count / d.Top) + 1;
+                        int currentPage = (int)d.Skip + 1;
                         var previousPage = d.Skip;
                         var previousSkip = d.Skip - 1;
                         var nextPage = d.Skip + 2;
                         var nextSkip = d.Skip + 1;
+                        var startPage = Math.Max(1, currentPage - 3);
+                        var endPage = Math.Min(numPages, currentPage + 3);
                         string nextEnabled = "";
                         string previousEnabled = "";
-                        if(nextPage >= numPages) nextEnabled = "disabled";
+                        if(nextPage > numPages) nextEnabled = "disabled";
                         if(previousPage < 1) previousEnabled = "disabled";
                     }
+                    <li class="page-item @previousEnabled">
+                        <a class="page-link" asp-page="/Market/Index" 
+                            asp-route-term="@Model.SearchDefinition.Term" 
+                            asp-route-skip="0"
+                            asp-route-top="@Model.SearchDefinition.Top" 
+                            asp-route-lat="@Model.SearchDefinition.Lat" 
+                            asp-route-lon="@Model.SearchDefinition.Lon" 
+                            asp-route-dist="@Model.SearchDefinition.Dist"
+                            tabindex="-1">
+                            <<
+                        </a>
+                    </li>
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-page="/Market/Index" 
                              asp-route-term="@Model.SearchDefinition.Term" 
@@ -107,10 +121,10 @@
                             asp-route-lon="@Model.SearchDefinition.Lon" 
                             asp-route-dist="@Model.SearchDefinition.Dist"
                             tabindex="-1">
-                            Previous
+                            <
                         </a>
                     </li>
-                    @for(var p = 1; p <= numPages; p++)
+                    @for(var p = startPage; p <= endPage; p++)
                     {
                         var active = "";
                         if(p == currentPage) active = "active";
@@ -134,7 +148,18 @@
                             asp-route-lat="@Model.SearchDefinition.Lat" 
                             asp-route-lon="@Model.SearchDefinition.Lon" 
                             asp-route-dist="@Model.SearchDefinition.Dist" >
-                            Next
+                        >
+                        </a>
+                    </li>
+                    <li class="page-item @nextEnabled">
+                        <a class="page-link" asp-page="/Market/Index" 
+                            asp-route-term="@Model.SearchDefinition.Term" 
+                            asp-route-skip="@(numPages-1)"
+                            asp-route-top="@Model.SearchDefinition.Top" 
+                            asp-route-lat="@Model.SearchDefinition.Lat" 
+                            asp-route-lon="@Model.SearchDefinition.Lon" 
+                            asp-route-dist="@Model.SearchDefinition.Dist" >
+                        >>
                         </a>
                     </li>
                 </ul>
