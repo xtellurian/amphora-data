@@ -23,12 +23,11 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Amphorae/Forbidden")]
         [InlineData("/Amphorae/Index")]
         [InlineData("/Amphorae/Invite")]
-        [InlineData("/Amphorae/Purchase")]
-        public async Task CanLoadPage(string path)
+        public async Task CanLoadPage_AsOwner(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOwner));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
@@ -45,12 +44,38 @@ namespace Amphora.Tests.Integration.Pages
         }
 
         [Theory]
+        [InlineData("/Amphorae/Purchase")]
+        public async Task CanLoadPage_AsOther(string path)
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOther));
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            createResponse.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            var id = dto.Id;
+            
+            var response = await otherClient.GetAsync($"{path}?id={id}");
+            response.EnsureSuccessStatusCode();
+            Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
+
+            await DestroyAmphoraAsync(adminClient, id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+
+            await DestroyOrganisationAsync(otherClient, otherOrg);
+            await DestroyUserAsync(otherClient, otherUser);
+        }
+
+        [Theory]
         [InlineData("/Amphorae/StaticMap")]
         public async Task CanLoadImage(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadImage));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();

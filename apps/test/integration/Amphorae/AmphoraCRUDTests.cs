@@ -122,6 +122,7 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task PurchaseAmphora_DetailsRemainSame()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Get_ReadsAmphora_AsAdmin));
             var requestBody = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
@@ -130,7 +131,7 @@ namespace Amphora.Tests.Integration.Amphorae
             createResponse.EnsureSuccessStatusCode();
             dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
 
-            var purchaseResponse = await adminClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
+            var purchaseResponse = await otherClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
             purchaseResponse.EnsureSuccessStatusCode();
 
             var readResponse = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
