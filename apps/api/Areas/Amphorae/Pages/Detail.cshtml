@@ -10,7 +10,9 @@
 <div id="main" class="container">
     <div class="row mb-3 border-bottom">
         <div class="col-9">
-            <h2>@Model.Amphora.Name</h2>
+            <h2>
+                @Model.Amphora.Name
+            </h2>
         </div>
         <div class="col-3">
             <span>
@@ -56,6 +58,12 @@
                         {
                             <div>by Unknown user</div>
                         }
+                        <span>
+                            <button id="amphoraIdBtn" class="float-left btn btn-light btn-sm" onclick="$('#amphoraId').removeClass('d-none');$('#amphoraIdBtn').addClass('d-none');">
+                                <small>id</small>
+                            </button>
+                            <span class="d-none" id=amphoraId> <small>@Model.Amphora.Id </small> </span>
+                        </span>
                     </div>
                     @{
                         var buttonMode = string.Empty;
