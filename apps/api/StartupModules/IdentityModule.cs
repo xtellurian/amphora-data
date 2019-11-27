@@ -46,8 +46,7 @@ namespace Amphora.Api.StartupModules
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.RequireUniqueEmail = true;
             })
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<AmphoraContext>();
+            .AddEntityFrameworkStores<AmphoraContext>();
 
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

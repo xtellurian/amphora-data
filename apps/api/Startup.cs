@@ -65,6 +65,8 @@ namespace Amphora.Api
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper());
             }
 
+            services.Configure<Amphora.Api.Models.Host.HostOptions>(Configuration.GetSection("Host"));
+
             this.StorageModule.ConfigureServices(services);
             this.IdentityModule.ConfigureServices(services);
             this.AuthenticationModule.ConfigureServices(services);
@@ -107,12 +109,25 @@ namespace Amphora.Api
             services.AddMvc(opts =>
             {
             })
+            .AddRazorPagesOptions(options =>
+            {
+                options.Conventions.AuthorizeAreaFolder("Profiles", "/Account/Manage");
+                options.Conventions.AuthorizeAreaPage("Profiles", "/Account/Logout");
+            })
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.Converters.Add(new Iso8601TimeSpanConverter());
                 options.SerializerSettings.Converters.Add(new PolymorphicSerializeJsonConverter<Variable>("kind"));
                 options.SerializerSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind"));
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Profiles/Account/Login";
+                options.LogoutPath = $"/Profiles/Account/Logout";
+                options.AccessDeniedPath = $"/Profiles/Account/AccessDenied"; // TODO: create access denided oasge
+                
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
