@@ -69,7 +69,7 @@ namespace Amphora.Tests.Helpers
                 .CustomInstantiator(f => new OrganisationModel(testName, f.Random.String2(10), f.Random.String2(10), f.Address.FullAddress()))
                 //OrderId is deterministic
                 //Pick some fruit from a basket
-                //A random quantity from 1 to 10
+                .RuleFor(o => o.Id, f => f.Random.Guid().ToString())
                 .RuleFor(o => o.Address, f => f.Random.String2(1, 10));
             //A nullable int? with 80% probability of being null.
             //The .OrNull extension is in the Bogus.Extensions namespace.;

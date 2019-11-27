@@ -63,6 +63,20 @@ namespace Amphora.Api.Services.Auth
                     logger.LogError($"null Organisation for amohora {entity.Id}");
                     return false;
                 }
+                if(user.OrganisationId == entity.OrganisationId 
+                    && accessLevel <= AccessLevels.CreateAmphora )
+                {
+                    // everyone in an org should be able to create an Amphora
+                    return true;                     
+                }
+                if(user.OrganisationId == entity.OrganisationId 
+                    && user.Id == entity.CreatedById 
+                    && accessLevel <= AccessLevels.Update)
+                {
+                    
+                    // can always update the Amphora you created.
+                    return true;
+                }
                 if (await this.IsAuthorizedAsync(user, org, accessLevel))
                 {
                     return true;

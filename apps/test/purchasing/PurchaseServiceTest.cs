@@ -24,9 +24,11 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var org = EntityLibrary.GetOrganisationModel();
+            var otherOrg = EntityLibrary.GetOrganisationModel();
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
             org = await orgStore.CreateAsync(org);
+            otherOrg = await orgStore.CreateAsync(otherOrg);
             var user_emailconfirmed = new ApplicationUser()
             {
                 Email = "test@amphoradata.com",
@@ -45,7 +47,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 EmailConfirmed = false
             };
 
-            var amphora = EntityLibrary.GetAmphoraModel(org, nameof(PurchasingAmphora_SendsEmail));
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(PurchasingAmphora_SendsEmail));
             amphora.Id = System.Guid.NewGuid().ToString();
             var mockEmailSender = new Mock<IEmailSender>();
             var logger = CreateMockLogger<PurchaseService>();

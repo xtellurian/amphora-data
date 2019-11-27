@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
@@ -7,12 +8,11 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-
+    [Trait("Category", "Versioning")]
     public class VersionTests : IntegrationTestBase
     {
         public VersionTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
-
         }
 
         [Fact]
@@ -64,6 +64,20 @@ namespace Amphora.Tests.Integration
             {
                 System.Console.WriteLine("Not checking version");
             }
+        }
+
+        [Fact]
+        public async Task VersionFileGeneration()
+        {
+            // used in the build pipe for smooth rollout of patch versions
+            var versionFilePath = $"{System.IO.Directory.GetCurrentDirectory()}/version.txt";
+            System.Console.WriteLine(versionFilePath);
+            var version = ApiVersion.CurrentVersion;
+            string[] lines = { version.ToSemver() };
+            await System.IO.File.WriteAllLinesAsync(versionFilePath, lines);
+
+            var fileVersion = await System.IO.File.ReadAllLinesAsync(versionFilePath);
+            Assert.Equal(version.ToSemver(), fileVersion.FirstOrDefault());
         }
     }
 }
