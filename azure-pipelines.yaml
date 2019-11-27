@@ -58,11 +58,12 @@ stages:
 
 - stage: promote
   displayName: Promote in Prod Envionment (10%)
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), False ) # staging is false, we aren't promoting
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master') )
   jobs:
     - job: init
       steps:
       - script: echo "Promoting in Prod"
+      - template: checkversion.steps.yaml
 
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:
@@ -77,24 +78,10 @@ stages:
       steps:
       - task: Delay@1
         inputs:
-          delayForMinutes: '5' 
-    - template: pipeline/app.promote.deploymentjob.yaml
-      parameters:
-        dependsOn: delay1
-        jobName: prod_promotejob_50
-        environment: prod
-        percent: "50"
-    - job: delay2
-      displayName: Delay
-      dependsOn: prod_promotejob_50
-      pool: server
-      steps:
-      - task: Delay@1
-        inputs:
-          delayForMinutes: '5' 
+          delayForMinutes: '20' 
     - template: pipeline/app.slotswap.deploymentjob.yaml
       parameters:
-        dependsOn: delay2
+        dependsOn: delay1
         jobName: prod_swapslots
         environment: prod
 

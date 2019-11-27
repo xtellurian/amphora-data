@@ -22,6 +22,7 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
+        - template: checkversion.steps.yaml
         - template: install.pulumi.steps.yaml
         - template: az-login.steps.yaml
         - script: |
@@ -37,6 +38,7 @@ jobs:
             az webapp config appsettings set --ids $webAppId --slot-settings STACK="$STACK" #prod slot
             popd
           displayName: Swap Staging and Production
+          condition: and(succeeded(), eq(variables['IS_PATCH'], 'True')) 
           env:
             PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
             ARM_CLIENT_ID: $(appId)
