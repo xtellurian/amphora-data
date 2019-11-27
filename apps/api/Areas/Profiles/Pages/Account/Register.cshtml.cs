@@ -11,6 +11,8 @@ using Amphora.Api.Options;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
 using Amphora.Api.AspNet;
+using Amphora.Api.Models.Emails;
+using Amphora.Api.Models.Host;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
@@ -18,6 +20,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly IUserService userService;
+        private readonly IOptionsMonitor<HostOptions> hostOptions;
         private readonly ISignInManager signInManager;
         private readonly IInvitationService invitationService;
         private readonly ILogger<RegisterModel> logger;
@@ -27,6 +30,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         public RegisterModel(
             IUserManager userManager,
             IUserService userService,
+            IOptionsMonitor<HostOptions> hostOptions,
             ISignInManager signInManager,
             IInvitationService invitationService,
             IOptionsMonitor<RegistrationOptions> registrationOptions,
@@ -35,6 +39,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             IEmailSender emailSender)
         {
             this.userService = userService;
+            this.hostOptions = hostOptions;
             this.signInManager = signInManager;
             this.invitationService = invitationService;
             this.logger = logger;
@@ -46,7 +51,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
         [BindProperty]
-        [IsTrue(ErrorMessage="You must accept the service agreement.")]
+        [IsTrue(ErrorMessage = "You must accept the service agreement.")]
         public bool AcceptServiceAgreement { get; set; }
         public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
@@ -155,14 +160,23 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         private async Task SendConfirmationEmailAsync(ApplicationUser user)
         {
             var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user); // bug here
+
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
                 values: new { userId = user.Id, code = code },
                 protocol: Request.Scheme);
 
-            await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+            if (hostOptions.CurrentValue?.MainHost != null)
+            {
+                await emailSender.SendEmailAsync(new ConfirmEmailEmail(user, hostOptions.CurrentValue, code));
+            }
+            else
+            {
+                await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+            }
         }
     }
 }
