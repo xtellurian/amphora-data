@@ -167,7 +167,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 values: new { userId = user.Id, code = code },
                 protocol: Request.Scheme);
 
-            if (hostOptions.CurrentValue?.MainHost != null)
+            if (!string.IsNullOrEmpty(hostOptions.CurrentValue?.MainHost))
             {
                 await emailSender.SendEmailAsync(new ConfirmEmailEmail(user, hostOptions.CurrentValue, code));
             }
