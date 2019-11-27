@@ -63,7 +63,7 @@ export class AppSvc extends pulumi.ComponentResource {
         );
         const secretString = cfg.requireSecret("tokenManagement__secret");
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
-
+        const host = config.get("mainHost") ? config.require("mainHost") : this.appSvc.defaultSiteHostname;
         const appSettings = {
             APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey,
             DOCKER_REGISTRY_SERVER_PASSWORD: acr.adminPassword,
@@ -71,6 +71,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 acr.loginServer
                 }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
+            Host__MainHost: host,
             Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
             STACK: pulumi.getStack(),
