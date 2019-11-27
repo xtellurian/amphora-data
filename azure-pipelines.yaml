@@ -63,7 +63,7 @@ stages:
     - job: init
       steps:
       - script: echo "Promoting in Prod"
-      - template: checkversion.steps.yaml
+      - template: pipeline/checkversion.steps.yaml
 
     - template: pipeline/app.promote.deploymentjob.yaml
       parameters:

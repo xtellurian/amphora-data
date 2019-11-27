@@ -25,7 +25,7 @@ jobs:
       deploy:
         steps:
         - checkout: self  # deployment job doesn't check it out
-        - template: checkversion.steps.yaml
+        - template: pipeline/checkversion.steps.yaml
         - template: az-login.steps.yaml
         - template: install.pulumi.steps.yaml
         - script: |
