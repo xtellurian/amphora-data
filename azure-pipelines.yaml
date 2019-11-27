@@ -59,6 +59,8 @@ stages:
 - stage: promote
   displayName: Promote in Prod Envionment (10%)
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master') )
+  variables:
+    group: PulumiAzureDevOpsProd
   jobs:
     - job: init
       steps:
