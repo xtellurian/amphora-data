@@ -204,7 +204,6 @@ export class State extends pulumi.ComponentResource {
       "amphoradhns",
       {
         autoInflateEnabled: true,
-        kafkaEnabled: true, // seems to be always enabled now
         location: rg.location,
         maximumThroughputUnits: 3,
         resourceGroupName: rg.name,
