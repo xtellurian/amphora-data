@@ -13,7 +13,7 @@ steps:
     env:
       TAG: ${{ parameters.tag }}
     displayName: Check tag isn't empty
-  - template: pipeline/checkversion.steps.yaml
+  - template: checkversion.steps.yaml
   - script: |
       git config user.email "AzureDevOps@amphoradata.com"
       git config user.name "Build Agent"
