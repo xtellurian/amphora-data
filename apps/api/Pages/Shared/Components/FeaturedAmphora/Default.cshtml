@@ -1,0 +1,22 @@
+@model Amphora.Api.Pages.Shared.Components.FeaturedAmphora.FeaturedAmphoraViewComponent
+
+@if(Model.Amphora != null)
+{
+    string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}"; //The src path.
+    
+    <div class="jumbotron jumbotron-fluid" style="background-image: url('@Url.Content(iSrc)'); opacity: 0.8;">
+        <div class="container" style="opacity: 1; color: white;">
+            <small> <i class="fas fa-star"></i> Featured</small>
+            <img class="img-fluid float-right" src="~/images/Amphora_Black.svg" />
+            <h1 class="display-4">@Model.Amphora.Name</h1>
+            <hr/>
+            <p class="lead text-truncate">
+                @Model.Amphora.Description
+                <br/>
+                <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Amphora.Id" class="btn btn-primary btn-lg">View Featured Data</a>
+            </p>
+            
+            <!-- <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto"> -->
+        </div>
+    </div>
+}

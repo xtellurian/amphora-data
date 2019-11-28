@@ -6,15 +6,16 @@
 
 <div class="container">
 
-    <div class="row text-center mb-3">
-        <div class="col">
-            <h2 class="display-4">Welcome to Amphora!</h2>
-            <p>Let's get started.</p>
+    <!-- FEATURED AMPHORA -->
+    <div class="row justify-content-center mb-2 mt-2">
+        <div class="col-md">
+            @await Component.InvokeAsync("FeaturedAmphora")
         </div>
     </div>
+    <!-- TRIPLE IMAGES -->
     <div class="row">
         <div class="col-md-4">
-            <div class="card">
+            <div class="card">  
                <img class="card-img-top img-fluid mx-auto" src="~/images/stock/farmers_with_horses.jpg" alt="Picture of farmers working">
                 <div class="card-body">
                     <h5 class="card-title">My Organisation</h5>
