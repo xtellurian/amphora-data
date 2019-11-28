@@ -32,7 +32,7 @@ stages:
   - template: pipeline/app.deploy.job.yaml
     parameters:
       dependsOn: apps
-  - job:
+  - job: tagversion
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     steps:
       - template: pipeline/checkversion.steps.yaml
