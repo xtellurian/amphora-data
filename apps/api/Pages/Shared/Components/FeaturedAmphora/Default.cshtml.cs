@@ -31,15 +31,7 @@ namespace Amphora.Api.Pages.Shared.Components.FeaturedAmphora
             {
                 this.Amphora = await amphoraeService.AmphoraStore.ReadAsync(options.CurrentValue.FeaturedAmphoraId);
             }
-            
-            if(userService.IsSignedIn(UserClaimsPrincipal) )
-            {
-                return View(this);
-            }
-            else
-            {
-                return View("Anonymous", this);
-            }
+            return View(this);
         }
     }
 }

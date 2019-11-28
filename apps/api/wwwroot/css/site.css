@@ -115,4 +115,12 @@ body {
 
 .entity-table td {
   overflow: hidden;
+  background-color: transparent;
+}
+
+/* Home Page Styles
+-------------------------------------------------- */
+
+#homeCarousel .carousel-caption {
+  background-image: linear-gradient( transparent,  var(--amphora-black), transparent);
 }
