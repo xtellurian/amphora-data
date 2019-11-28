@@ -2,9 +2,9 @@
 
 @if(Model.Amphora != null)
 {
-    string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}"; //The src path.
+    string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}&height=600&width=900"; //The src path.
     
-    <img class="img-fluid d-block w-100" src="@iSrc" alt="A Map for an Amphora" style="height:720px; width: 1080px; object-fit: cover;">
+    <img class="img-fluid d-block w-100" src="@iSrc" alt="A Map for an Amphora" style="height:600; width: 900; object-fit: cover;">
     <div class="carousel-caption d-none d-md-block radial-grad">
         <p class="lead text-truncate">
             <i class="fas fa-star"></i> 
@@ -15,7 +15,7 @@
 }
 else
 {
-    <img class="img-fluid d-block w-100" src="~/images/stock/Amphora_Social.png" alt="A Map for an Amphora" style="height:720px; width: 1080px; object-fit: cover;">
+    <img class="img-fluid d-block w-100" src="~/images/stock/Amphora_Social.png" alt="A Map for an Amphora" style="height:600; width: 900px; object-fit: cover;">
     <div class="carousel-caption d-none d-md-block radial-grad">
         <p class="lead">
             Manage your data
