@@ -35,6 +35,8 @@ stages:
   - job: tagversion
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     steps:
+      - checkout: self
+        persistCredentials: true # for pushing
       - template: pipeline/checkversion.steps.yaml
       - template: pipeline/tagrepo.steps.yaml
         parameters:
