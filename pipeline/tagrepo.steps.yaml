@@ -1,0 +1,26 @@
+parameters:
+  tag: '' 
+
+steps:
+  - script: |
+      if [ -z "$TAG" ]
+      then
+        echo "$TAG is empty"
+        exit 1
+      else
+        echo "$TAG is NOT empty"
+      fi
+    env:
+      TAG: ${{ parameters.tag }}
+    displayName: Check tag isn't empty
+  - template: checkversion.steps.yaml
+  - script: |
+      git config user.email "AzureDevOps@amphoradata.com"
+      git config user.name "Build Agent"
+      git status
+      echo Tagging Branch with $TAG
+      git tag -a $TAG -m "Versioning, $(Build.Reason) for $(Build.RequestedFor)"
+      git push origin $TAG
+    displayName: Tag the repository ${{ parameters.tag }}
+    env:
+      TAG: ${{ parameters.tag }}

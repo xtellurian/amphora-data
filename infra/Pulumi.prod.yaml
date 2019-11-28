@@ -6,6 +6,7 @@ config:
     secure: AAABAFYYlpDDdhXr6hDg+Qo9UBjBexy40A0xN63RIK2BnEU4k4KCbnstxJFrnGrAGNXxNQ==
   application:appSvcPlanSize: S1
   application:appSvcPlanTier: Standard
+  application:mainHost: beta.amphoradata.com
   azure:environment: public
   azure:subscriptionId: cfd587d5-8215-4c5c-83bd-f61df6ba51c3
   azuresearch:sku: basic

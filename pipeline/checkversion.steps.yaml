@@ -21,6 +21,7 @@ steps:
     then
         echo This is a patch update
         echo "##vso[task.setvariable variable=IS_PATCH]True"
+        echo "##vso[task.setvariable variable=APP_VERSION]$nextVersion"
     else
         echo This is NOT a patch update
     fi

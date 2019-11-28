@@ -32,6 +32,14 @@ stages:
   - template: pipeline/app.deploy.job.yaml
     parameters:
       dependsOn: apps
+  - job: tagversion
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    steps:
+      - template: pipeline/checkversion.steps.yaml
+      - template: pipeline/tagrepo.steps.yaml
+        parameters:
+          tag: APPVERSION/$(APP_VERSION)
+
 
 - stage: deploy_master
   displayName: Deploy to Master Envionment 
@@ -61,7 +69,7 @@ stages:
   displayName: Promote in Prod Envionment (10%)
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master') )
   variables:
-    group: PulumiAzureDevOpsProd
+    - group: PulumiAzureDevOpsProd
   jobs:
     - job: init
       steps:

@@ -65,7 +65,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private async Task<IActionResult> MyPurchasedAmphorae()
         {
             var user = await this.userService.UserManager.GetUserAsync(User);
-            if (user == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
+            if (user == null) return RedirectToPage("/Account/Login", new { area = "Profiles" });
 
             var amphorae = await amphoraeService.AmphoraPurchasedBy(User, user);
             Count = await amphorae.CountAsync();
@@ -78,7 +78,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var user = await this.userService.ReadUserModelAsync(User);
             if (user == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
             // get my amphora
             var amphorae = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == user.OrganisationId);
@@ -92,7 +92,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var user = await this.userService.UserManager.GetUserAsync(User);
             if (user == null)
             {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
+                return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
             // get my amphora
             var amphorae = amphoraeService.AmphoraStore.Query(a => a.CreatedById == user.Id);
