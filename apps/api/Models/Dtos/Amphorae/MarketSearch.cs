@@ -5,7 +5,8 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     public class MarketSearch
     {
         public string Term { get; set; }
-        public int? Skip { get; set; }
+        public int? Page { get; set; }
+        public int? Skip => Top * Page ;
         public int? Top { get; set; }
 
         [Display(Name = "Latitude")]
