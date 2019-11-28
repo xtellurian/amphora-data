@@ -26,6 +26,6 @@ jobs:
           persistCredentials: true
         - template: infra.create.steps.yaml
         - template: app.deploy.steps.yaml
-        - template: pipeline/tagrepo.steps.yaml
+        - template: tagrepo.steps.yaml
           parameters:
             tag: $(Environment.Name)/$(Build.BuildId)
