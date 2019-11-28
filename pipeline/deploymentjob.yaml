@@ -26,12 +26,6 @@ jobs:
           persistCredentials: true
         - template: infra.create.steps.yaml
         - template: app.deploy.steps.yaml
-        - script: |
-            git config user.email "AzureDevOps@amphoradata.com"
-            git config user.name "Build Agent"
-            git status
-            TAG="$(Environment.Name)/$(Build.BuildId)"
-            echo Tagging Branch with $TAG
-            git tag -a $TAG -m "$(Build.Reason) requested for $(Build.RequestedFor)"
-            git push origin $TAG
-          displayName: Tag the source repository
+        - template: pipeline/tagrepo.steps.yaml
+          parameters:
+            tag: $(Environment.Name)/$(Build.BuildId)
