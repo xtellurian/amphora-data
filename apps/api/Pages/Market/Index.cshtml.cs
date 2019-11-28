@@ -70,7 +70,7 @@ namespace Amphora.Api.Pages.Market
             {
                 geo = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
             }
-            if (SearchDefinition.Skip == null) SearchDefinition.Skip = 0;
+            if (SearchDefinition.Skip == null) SearchDefinition.Page = 0;
             if (SearchDefinition.Top == null) SearchDefinition.Top = 8;
             return geo;
         }

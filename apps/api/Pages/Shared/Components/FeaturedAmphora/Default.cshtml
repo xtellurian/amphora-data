@@ -1,0 +1,25 @@
+@model Amphora.Api.Pages.Shared.Components.FeaturedAmphora.FeaturedAmphoraViewComponent
+
+@if(Model.Amphora != null)
+{
+    string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}"; //The src path.
+    
+    <img class="img-fluid d-block w-100" src="@iSrc" alt="A Map for an Amphora" style="height:720px; width: 1080px; object-fit: cover;">
+    <div class="carousel-caption d-none d-md-block radial-grad">
+        <p class="lead text-truncate">
+            <i class="fas fa-star"></i> 
+            @Model.Amphora.Name
+        </p>
+        <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Amphora.Id" class="btn btn-primary btn-block">View Featured Data</a>
+    </div>
+}
+else
+{
+    <img class="img-fluid d-block w-100" src="~/images/stock/Amphora_Social.png" alt="A Map for an Amphora" style="height:720px; width: 1080px; object-fit: cover;">
+    <div class="carousel-caption d-none d-md-block radial-grad">
+        <p class="lead">
+            Manage your data
+        </p>
+        <a asp-area="Amphorae" asp-page="/Index" asp-route-viewType="org" class="btn btn-primary btn-block">Amphorae</a>
+    </div>
+}

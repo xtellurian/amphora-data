@@ -88,12 +88,10 @@
                         var d = Model.SearchDefinition;
                         // skip is zero based
                         int numPages = (int)(Model.Count / d.Top) + 1;
-                        int currentPage = (int)d.Skip + 1;
-                        var previousPage = d.Skip;
-                        var previousSkip = d.Skip - 1;
-                        var nextPage = d.Skip + 2;
-                        var nextSkip = d.Skip + 1;
-                        var startPage = Math.Max(1, currentPage - 3);
+                        int currentPage = (int)d.Page;
+                        var previousPage = d.Page - 1;
+                        var nextPage = d.Page + 2;
+                        var startPage = Math.Max(0, currentPage - 3);
                         var endPage = Math.Min(numPages, currentPage + 3);
                         string nextEnabled = "";
                         string previousEnabled = "";
@@ -102,63 +100,63 @@
                     }
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-page="/Market/Index" 
-                            asp-route-term="@Model.SearchDefinition.Term" 
-                            asp-route-skip="0"
-                            asp-route-top="@Model.SearchDefinition.Top" 
-                            asp-route-lat="@Model.SearchDefinition.Lat" 
-                            asp-route-lon="@Model.SearchDefinition.Lon" 
-                            asp-route-dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="0"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
                             tabindex="-1">
                             <<
                         </a>
                     </li>
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-page="/Market/Index" 
-                             asp-route-term="@Model.SearchDefinition.Term" 
-                            asp-route-skip="@previousSkip"
-                            asp-route-top="@Model.SearchDefinition.Top" 
-                            asp-route-lat="@Model.SearchDefinition.Lat" 
-                            asp-route-lon="@Model.SearchDefinition.Lon" 
-                            asp-route-dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@previousPage"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
                             tabindex="-1">
                             <
                         </a>
                     </li>
-                    @for(var p = startPage; p <= endPage; p++)
+                    @for(var p = startPage; p < endPage; p++)
                     {
                         var active = "";
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
                             <a class="page-link" asp-page="/Market/Index" 
-                                asp-route-term="@Model.SearchDefinition.Term" 
-                                asp-route-skip="@(p - 1)" 
-                                asp-route-top="@Model.SearchDefinition.Top" 
-                                asp-route-lat="@Model.SearchDefinition.Lat" 
-                                asp-route-lon="@Model.SearchDefinition.Lon" 
-                                asp-route-dist="@Model.SearchDefinition.Dist" >
+                                asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                                asp-route-SearchDefinition.Page="@p" 
+                                asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                                asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                                asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                                asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
                                 @p
                             </a>
                         </li>
                     }
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-page="/Market/Index" 
-                            asp-route-term="@Model.SearchDefinition.Term" 
-                            asp-route-skip="@nextSkip"
-                            asp-route-top="@Model.SearchDefinition.Top" 
-                            asp-route-lat="@Model.SearchDefinition.Lat" 
-                            asp-route-lon="@Model.SearchDefinition.Lon" 
-                            asp-route-dist="@Model.SearchDefinition.Dist" >
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@nextPage"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
                         >
                         </a>
                     </li>
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-page="/Market/Index" 
-                            asp-route-term="@Model.SearchDefinition.Term" 
-                            asp-route-skip="@(numPages-1)"
-                            asp-route-top="@Model.SearchDefinition.Top" 
-                            asp-route-lat="@Model.SearchDefinition.Lat" 
-                            asp-route-lon="@Model.SearchDefinition.Lon" 
-                            asp-route-dist="@Model.SearchDefinition.Dist" >
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@(numPages -1)"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
                         >>
                         </a>
                     </li>
