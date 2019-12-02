@@ -6,16 +6,23 @@
 
 <div class="container">
 
-    <div class="row">
-        <div class="col">
+    <div class="row justify-content-center">
+        <div class="col text-center">
+            <h1>Welcome to Amphora Data</h1>
+            <p>A platform to discover, package, and trade data to increase sustainability and profitability of farms</p>
+            <hr/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-10">
             <div id="homeCarousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         @await Component.InvokeAsync("FeaturedAmphora")
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="~/images/stock/farmers_with_horses.jpg" alt="Picture of farmers working">
-                        <div class="carousel-caption d-none d-md-block radial-grad">
+                        <img class="d-block w-100" src="~/images/stock/shutterstock_1504965485.jpg" alt="A picture of a farmer and a cow">
+                        <div class="carousel-caption">
                             <p>Amphora Data helps you coordinate with your collegues.</p>
                             <a asp-area="Organisations" asp-page="/Detail" class="btn btn-primary btn-block">My Organisation</a>
                         </div>
@@ -23,16 +30,16 @@
                     <div class="carousel-item">
                         <img class="d-block w-100" src="~/images/stock/market.jpg" alt="Picture of a Marketplace with spices">
                         
-                        <div class="carousel-caption d-none d-md-block radial-grad">
+                        <div class="carousel-caption">
                             <p >The marketplace is the core of the Amphora ecosystem.</p>
                             <a asp-page="market/index" class="btn btn-primary btn-block">Marketplace</a>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="~/images/stock/group_at_computer.jpg" alt="A picture of people collaborating at a computer">
-                        <div class="carousel-caption d-none d-md-block radial-grad">
+                        <img class="d-block w-100" src="~/images/stock/shutterstock_773657248.jpg" alt="Picture of people collaborating">
+                        <div class="carousel-caption">
                             <p class="card-text">We're building a community of trust. Build your profile here.</p>
-                            <a asp-page="profile/detail" class="btn btn-primary btn-block">My Profile</a>
+                            <a asp-area="Profiles" asp-page="Account/Detail" class="btn btn-primary btn-block">My Profile</a>
                         </div>
                     </div>
                 </div>

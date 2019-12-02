@@ -77,7 +77,7 @@ namespace Amphora.Api.Services.Azure
             return new FuzzySearchResponse { Results = new List<Result>() };
         }
 
-        public async Task<byte[]> GetStaticMapImageAsync(GeoLocation location)
+        public async Task<byte[]> GetStaticMapImageAsync(GeoLocation location, int height = 512, int width = 512)
         {
             if (!location.Lat().HasValue || !location.Lon().HasValue)
             {
@@ -89,9 +89,10 @@ namespace Amphora.Api.Services.Azure
             var lat = location.Lat().Value;
             var queryString = QueryString();
             queryString += $"&zoom=6";
+            queryString += $"&height={height}&width={width}";
             queryString += $"&center={lon},{lat}";
             queryString += $"&pins=default|coBC312A|lc000000||'A'{lon} {lat}";
-            
+
             try
             {
                 var response = await client.GetAsync($"map/static/png?{queryString}"); // return type expects PNG
@@ -99,7 +100,7 @@ namespace Amphora.Api.Services.Azure
                 var bytes = await response.Content.ReadAsByteArrayAsync();
                 return bytes;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError("Failed to get Static Map Image", ex);
                 return null;

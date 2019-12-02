@@ -1,0 +1,18 @@
+@model Amphora.Api.Areas.Amphorae.Pages.Components.AmphoraTableRowViewComponent
+
+<tr class="row align-items-center entity-item">
+    <th class="col-2">
+        <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
+    </th>
+    <td class="col-6">
+        @Model.Amphora.Name 
+    </td>
+    <td class="d-none d-sm-block col-sm-2 text-right">
+        @Model.Amphora.Price 
+    </td>
+    <td class="col-sm-2">
+        <a asp-page="./Detail" asp-route-id="@Model.Amphora.Id"> 
+            <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
+        </a>
+    </td>
+</tr>
