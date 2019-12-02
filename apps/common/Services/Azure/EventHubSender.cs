@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Common.Services.Azure
 {
-    public class EventHubSender
+    public class EventHubSender: IDisposable
     {
         private const int MAX_EVENTS = 500;
         private readonly ILogger<EventHubSender> logger;
@@ -35,6 +36,12 @@ namespace Amphora.Common.Services.Azure
                 };
                 eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
             }
+        }
+
+        public void Dispose()
+        {
+            this.logger.LogInformation("Closing Event Hub Client");
+            this.eventHubClient?.Close();
         }
 
         public async Task SendToEventHubAsync(IEnumerable<Dictionary<string, object?>> signals)
