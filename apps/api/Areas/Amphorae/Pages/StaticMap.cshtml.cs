@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    [Authorize]
     public class StaticMapModel : AmphoraPageModel
     {
         private readonly IMapService mapService;
