@@ -95,7 +95,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the signals associated with an Amphora.
+        /// Uploads values to an Amphora signal(s)
         /// </summary>
         /// <param name="id">Amphora Id</param>  
         /// <param name="data">Signal Values</param>  
@@ -110,6 +110,38 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 var res = await signalService.WriteSignalAsync(User, result.Entity, data);
+                if (res.Succeeded)
+                {
+                    return Ok(res.Entity);
+                }
+                else return BadRequest(res.Message);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        /// <summary>
+        /// Uploads values in batch to an Amphora signal(s)
+        /// </summary>
+        /// <param name="id">Amphora Id</param>  
+        /// <param name="data">Signal Values</param>  
+        [HttpPost("api/amphorae/{id}/signals/batchvalues")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Produces(typeof(Dictionary<string, object>))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> UploadSignalBatch(string id, [FromBody] List<Dictionary<string, object>> data)
+        {
+            var result = await amphoraeService.ReadAsync(User, id, true);
+            if (result.Succeeded)
+            {
+                var res = await signalService.WriteSignalBatchAsync(User, result.Entity, data);
                 if (res.Succeeded)
                 {
                     return Ok(res.Entity);
