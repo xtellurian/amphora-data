@@ -77,6 +77,22 @@ namespace Amphora.Tests.Integration
             var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
             valRes.EnsureSuccessStatusCode();
 
+            var batchVals = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    {"d", 6},
+                    {"s", "batch1"}
+                },
+                new Dictionary<string, object>
+                {
+                    {"d", 7},
+                    {"s", "batch2"}
+                }
+            };
+
+            var batchRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/batchvalues", batchVals); 
+            batchRes.EnsureSuccessStatusCode();
 
             await DestroyAmphoraAsync(adminClient, a.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
