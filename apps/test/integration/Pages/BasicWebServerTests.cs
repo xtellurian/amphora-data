@@ -14,7 +14,7 @@ namespace Amphora.Tests.Integration.Pages
 
         [Theory]
         [InlineData("/")]
-        [InlineData("/Home/Privacy")]
+        [InlineData("/Home/Values")]
         [InlineData("/Profiles/Account/Detail")]
         [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Market")]
@@ -39,7 +39,7 @@ namespace Amphora.Tests.Integration.Pages
 
         [Theory]
         [InlineData("/")]
-        [InlineData("/Home/Privacy")]
+        [InlineData("/Home/Values")]
         [InlineData("/Profiles/Account/Detail")]
         [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Market")]
