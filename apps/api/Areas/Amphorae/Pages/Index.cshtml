@@ -44,24 +44,27 @@
                 </div>
             </div>
         </div>
-        <div class="col">
-            <table id="entity-table" class="table table-borderless table-striped">
-                <thead>
-                    <tr class="row">
-                        <th class="col-2"></th>
-                        <th class="col-6">Name</th>
-                        <th class="d-none d-sm-block col-sm-2 text-right">Price ($)</th>
-                        <th class="col-sm-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var entity in Model.Amphorae)
-                    {
-                        @await Component.InvokeAsync("AmphoraTableRow", new {amphora = entity})
-                    }
-                </tbody>
-            </table>
-        </div>
+        @if(Model.Amphorae?.Count() == 0)
+        {
+            <div class="col text-center align-middle">
+                <p>
+                    There's nothing here
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="col">
+                <table id="entity-table" class="table table-borderless table-striped">
+                    <tbody>
+                        @foreach (var entity in Model.Amphorae)
+                        {
+                            @await Component.InvokeAsync("AmphoraTableRow", new {amphora = entity})
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
     <div class="row align-items-end">
         <div class="col">
@@ -125,4 +128,13 @@
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+            })
+    </script>
+}
+
 
