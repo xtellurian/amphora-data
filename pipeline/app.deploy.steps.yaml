@@ -1,9 +1,7 @@
 steps:
 - template: az-login.steps.yaml
 
-- script: |
-    chmod +x infra/deploy-app.sh
-    ./infra/deploy-app.sh
+- script: ./infra/deploy-app.sh
   displayName: Build Container, Push Image, and set App Service
   env:
     ACR_NAME: $(pulumi.acrName)
