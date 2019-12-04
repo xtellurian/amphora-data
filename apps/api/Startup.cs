@@ -24,6 +24,7 @@ using Amphora.Common.Services.Azure;
 using Amphora.Common.Options;
 using Microsoft.Rest.Serialization;
 using Microsoft.Azure.TimeSeriesInsights.Models;
+using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api
 {
@@ -99,6 +100,7 @@ namespace Amphora.Api
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();
 
+            services.AddMarkdown(); // Westwind.AspNetCore.Markdown
 
             services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
@@ -178,9 +180,9 @@ namespace Amphora.Api
                 app.UseHsts();
             }
 
-
             app.UseRouting();
             app.UseHttpsRedirection();
+            app.UseMarkdown(); // Westwind.AspNetCore.Markdown
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

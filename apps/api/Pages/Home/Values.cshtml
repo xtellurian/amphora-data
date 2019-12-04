@@ -1,0 +1,11 @@
+﻿@page
+@using Westwind.AspNetCore.Markdown
+@model Amphora.Api.Pages.Home.ValuesModel
+@{
+    ViewData["Title"] = "Our Values";
+}
+<h1>@ViewData["Title"]</h1>
+<hr/>
+<div>
+    @await Markdown.ParseHtmlStringFromFileAsync("~/docs/Values.md")
+</div>
