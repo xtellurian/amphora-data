@@ -46,15 +46,42 @@ namespace Amphora.Api.Services.Amphorae
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
-                    values["amphora"] = entity.Id;
-                    if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
-                    values["wt"] = DateTime.UtcNow.Ticks;
+                    AddSignalProperties(entity, values);
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(user, values);
                 }
                 else
                 {
                     return new EntityOperationResult<Dictionary<string, object>>(user, "Write Contents permission is required") { WasForbidden = true };
+                }
+            }
+        }
+
+        private static void AddSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
+        {
+            values["amphora"] = entity.Id;
+            if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
+            values["wt"] = DateTime.UtcNow.Ticks;
+        }
+
+        public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values)
+        {
+             var user = await userService.ReadUserModelAsync(principal);
+            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
+                if (authorized)
+                {
+                    foreach(var value in values)
+                    {
+                        AddSignalProperties(entity, value);
+                    }
+                    await eventHubSender.SendToEventHubAsync(values);
+                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, values);
+                }
+                else
+                {
+                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Write Contents permission is required") { WasForbidden = true };
                 }
             }
         }
@@ -149,5 +176,7 @@ namespace Amphora.Api.Services.Amphorae
                 return new EntityOperationResult<SignalModel>(user, signal);
             }
         }
+
+
     }
 }

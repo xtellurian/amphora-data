@@ -75,26 +75,13 @@ stages:
   jobs:
     - job: init
       steps:
-      - script: echo "Promoting in Prod"
-      - template: pipeline/checkversion.steps.yaml
+      - script: echo "Swapping Slots in Prod"
+      - script: curl https://beta.amphoradata.com/healthz\?x-ms-routing-name=staging --fail
+        displayName: Check Staging is healthy before swapping
 
-    - template: pipeline/app.promote.deploymentjob.yaml
-      parameters:
-        dependsOn: init
-        jobName: prod_promotejob_10
-        environment: prod
-        percent: "10"
-    - job: delay1
-      displayName: Delay
-      pool: server
-      dependsOn: prod_promotejob_10
-      steps:
-      - task: Delay@1
-        inputs:
-          delayForMinutes: '20' 
     - template: pipeline/app.slotswap.deploymentjob.yaml
       parameters:
-        dependsOn: delay1
+        dependsOn: init
         jobName: prod_swapslots
         environment: prod
 

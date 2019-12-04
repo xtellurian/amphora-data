@@ -38,7 +38,6 @@ jobs:
             az webapp config appsettings set --ids $webAppId --slot-settings STACK="$STACK" #prod slot
             popd
           displayName: Swap Staging and Production
-          condition: and(succeeded(), eq(variables['IS_PATCH'], 'True')) 
           env:
             PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
             ARM_CLIENT_ID: $(appId)

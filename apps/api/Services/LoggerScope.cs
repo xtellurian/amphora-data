@@ -10,10 +10,11 @@ namespace Amphora.Api.Services
         private string Method => nameof(Method);
         private string Type => nameof(Type);
 
-        public LoggerScope(): base(){}
-        public LoggerScope(IUser user, [CallerMemberName] string method = ""): this()
+        public LoggerScope() : base() { }
+        public LoggerScope(IUser user, [CallerMemberName] string method = "") : this()
         {
-            this.Add(UserName, user.UserName);
+            if (user?.UserName != null) this.Add(UserName, user.UserName);
+            else this.Add(UserName, "NULL");
             this.Add(Method, method);
             this.Add(Type, typeof(T));
         }
