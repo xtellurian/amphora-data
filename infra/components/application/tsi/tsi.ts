@@ -105,7 +105,7 @@ export class Tsi extends pulumi.ComponentResource {
                 identity.principalId || "11111111-1111-1111-1111-111111111111",
             ), // https://github.com/pulumi/pulumi-azure/issues/192)
             environmentName: this.envName.result,
-            name: "ownerAccessPolicy",
+            name: app.name,
           },
           resourceGroupName: rg.name,
           templateBody: JSON.stringify(accessPolicyTemplate()),
@@ -124,7 +124,7 @@ export class Tsi extends pulumi.ComponentResource {
                   identity.principalId || "11111111-1111-1111-1111-111111111111",
               ), // https://github.com/pulumi/pulumi-azure/issues/192)
               environmentName: this.envName.result,
-              name: "stagingAccessPolicy",
+              name: app.name + "staging",
             },
             resourceGroupName: rg.name,
             templateBody: JSON.stringify(accessPolicyTemplate()),
