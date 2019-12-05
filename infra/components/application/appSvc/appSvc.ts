@@ -26,7 +26,7 @@ const tags = {
     subcomponent: "appSvc",
 };
 
-interface IPlanAndSlot {
+export interface IPlanAndSlot {
     appSvc: azure.appservice.AppService;
     appSvcStaging: azure.appservice.Slot | null;
 }

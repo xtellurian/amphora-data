@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 
 import { Application } from "./components/application/application";
+import { IPlanAndSlot } from "./components/application/appSvc/appSvc";
 import { Monitoring } from "./components/monitoring/monitoring";
 import { Network } from "./components/network/network";
 import { State } from "./components/state/state";
@@ -31,6 +32,10 @@ async function main(): Promise<IMainResult> {
 }
 // async workaround
 // https://github.com/pulumi/pulumi/issues/2910
+
+const generateIdList = (apps: IPlanAndSlot[]): pulumi.Output<string> =>
+  pulumi.concat(apps.map((a) => pulumi.interpolate `${a.appSvc.id} `));
+
 const result: Promise<IMainResult> = main();
 
 export let instrumentatonKey = result.then((r) =>
@@ -62,10 +67,8 @@ export let acrName = result.then((r) =>
   r.application.acr.name,
 );
 
-export let webAppResourceId = result.then((r) =>
-  r.application.appSvc.apps[0].appSvc.id, // FIXME
-);
+export let webAppResourceId = result.then((r) => generateIdList(r.application.appSvc.apps));
 
 export let webAppResourceIds = result.then((r) =>
-  r.application.appSvc.apps.map( (a) => a.appSvc.id ),
+  r.application.appSvc.apps.map((a) => a.appSvc.id),
 );
