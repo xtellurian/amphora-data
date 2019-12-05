@@ -134,7 +134,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 appSettings,
                 httpsOnly: true,
                 identity: { type: "SystemAssigned" },
-                location: rg.location,
+                location: appSvcPlan.location,
                 name: "staging",
                 resourceGroupName: rg.name,
                 siteConfig,
