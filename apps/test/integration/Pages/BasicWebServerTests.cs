@@ -1,5 +1,7 @@
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models.Dtos;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -58,6 +60,35 @@ namespace Amphora.Tests.Integration.Pages
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
+        }
+
+        [InlineData("Organisations/TermsAndConditions")]
+        [InlineData("Organisations/TermsAndConditions/Detail")]
+        [Theory]
+        public async Task Get_Authenticated_TnCPages(string url)
+        {
+            // Arrange
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var tnc = new TermsAndConditionsDto();
+            tnc.Id = System.Guid.NewGuid().ToString();
+            tnc.Name = System.Guid.NewGuid().ToString();
+            tnc.Contents = System.Guid.NewGuid().ToString();
+
+            var result = await client.PostAsJsonAsync($"api/Organisations/{org.Id}/TermsAndConditions", tnc);
+
+            // Act
+            var response = await client.GetAsync($"{url}?id={org.Id}&tncId={tnc.Id}");
+            var otherResponse = await otherClient.GetAsync($"{url}?id={org.Id}&tncId={tnc.Id}");
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+            otherResponse.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                otherResponse.Content.Headers.ContentType.ToString());
         }
 
 
