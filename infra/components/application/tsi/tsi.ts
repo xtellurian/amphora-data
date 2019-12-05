@@ -4,6 +4,7 @@ import * as random from "@pulumi/random";
 
 import { CONSTANTS } from "../../../components";
 import { State } from "../../state/state";
+import { AppSvc } from "../appSvc/appSvc";
 import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { environmentTemplate } from "./tsi_environment";
 import { eventSourceTemplate } from "./tsi_eventsource";
@@ -19,8 +20,7 @@ const rgName = pulumi.getStack() + "-tsi";
 export interface ITsiParams {
   eh_namespace: azure.eventhub.EventHubNamespace;
   eh: azure.eventhub.EventHub;
-  appSvc: azure.appservice.AppService;
-  appSvcStaging: azure.appservice.Slot;
+  appSvc: AppSvc;
   state: State;
 }
 
@@ -94,44 +94,45 @@ export class Tsi extends pulumi.ComponentResource {
       { parent: rg, dependsOn: env },
     );
 
-    const accessPolicy = new azure.core.TemplateDeployment(
-      this.name + "_accessPolicy",
-      {
-        deploymentMode: "Incremental",
-        parameters: {
-          accessPolicyReaderObjectId: this.params.appSvc.identity.apply(
-            (identity) =>
-              identity.principalId || "11111111-1111-1111-1111-111111111111",
-          ), // https://github.com/pulumi/pulumi-azure/issues/192)
-          environmentName: this.envName.result,
-          name: "ownerAccessPolicy",
-        },
-        resourceGroupName: rg.name,
-        templateBody: JSON.stringify(accessPolicyTemplate()),
-      },
-      { parent: rg, dependsOn: eventSource },
-    );
-
-    if (this.params.appSvcStaging) {
-      // if the staging env exists, add it to the access policy
-      const accessPolicyStaging = new azure.core.TemplateDeployment(
-        this.name + "_accessSlot",
+    this.params.appSvc.apps.forEach( (app) => {
+      const accessPolicy = new azure.core.TemplateDeployment(
+        this.name + "_accessPolicy",
         {
           deploymentMode: "Incremental",
           parameters: {
-            accessPolicyReaderObjectId: this.params.appSvcStaging.identity.apply(
+            accessPolicyReaderObjectId: app.appSvc.identity.apply(
               (identity) =>
                 identity.principalId || "11111111-1111-1111-1111-111111111111",
             ), // https://github.com/pulumi/pulumi-azure/issues/192)
             environmentName: this.envName.result,
-            name: "stagingAccessPolicy",
+            name: "ownerAccessPolicy",
           },
           resourceGroupName: rg.name,
           templateBody: JSON.stringify(accessPolicyTemplate()),
         },
         { parent: rg, dependsOn: eventSource },
       );
-    }
+      if (app.appSvcStaging) {
+        // if the staging env exists, add it to the access policy
+        const accessPolicyStaging = new azure.core.TemplateDeployment(
+          this.name + "_accessSlot",
+          {
+            deploymentMode: "Incremental",
+            parameters: {
+              accessPolicyReaderObjectId: app.appSvcStaging.identity.apply(
+                (identity) =>
+                  identity.principalId || "11111111-1111-1111-1111-111111111111",
+              ), // https://github.com/pulumi/pulumi-azure/issues/192)
+              environmentName: this.envName.result,
+              name: "stagingAccessPolicy",
+            },
+            resourceGroupName: rg.name,
+            templateBody: JSON.stringify(accessPolicyTemplate()),
+          },
+          { parent: rg, dependsOn: eventSource },
+        );
+      }
+    });
 
     this.dataAccessFqdn = env.outputs.dataAccessFqdn;
 

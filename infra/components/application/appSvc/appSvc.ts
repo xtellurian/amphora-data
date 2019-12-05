@@ -16,6 +16,7 @@ export interface IAppSvcParams {
 
 const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
+const appsConfig = new pulumi.Config("apps");
 
 const tags = {
     component: "application",
@@ -25,11 +26,21 @@ const tags = {
     subcomponent: "appSvc",
 };
 
+interface IPlanAndSlot {
+    appSvc: azure.appservice.AppService;
+    appSvcStaging: azure.appservice.Slot | null;
+}
+interface IAppServicePlanConfig {
+    planSize: string;
+    planTier: string;
+    location: string;
+    name: string;
+}
+
 export class AppSvc extends pulumi.ComponentResource {
     public plan: azure.appservice.Plan;
     public imageName: pulumi.Output<string>;
-    public appSvc: azure.appservice.AppService;
-    public appSvcStaging: azure.appservice.Slot;
+    public apps: IPlanAndSlot[] = [];
 
     constructor(
         name: string,
@@ -44,16 +55,27 @@ export class AppSvc extends pulumi.ComponentResource {
         kv: azure.keyvault.KeyVault,
         acr: azure.containerservice.Registry,
     ) {
+
+        const plans = appsConfig.requireObject<IAppServicePlanConfig[]>("plans");
+        plans.forEach((p) => {
+            this.createPlan(rg, kv, acr, p);
+        });
+    }
+
+    private createPlan(rg: azure.core.ResourceGroup,
+                       kv: azure.keyvault.KeyVault,
+                       acr: azure.containerservice.Registry,
+                       plan: IAppServicePlanConfig) {
         this.plan = new azure.appservice.Plan(
             "appSvcPlan",
             {
                 kind: "Linux",
-                location: rg.location,
+                location: plan.location,
                 reserved: true,
                 resourceGroupName: rg.name,
                 sku: {
-                    size: config.require("appSvcPlanSize"),
-                    tier: config.require("appSvcPlanTier"),
+                    size: plan.planSize,
+                    tier: plan.planTier,
                 },
                 tags,
             },
@@ -85,7 +107,7 @@ export class AppSvc extends pulumi.ComponentResource {
             linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}:latest`, // to make the app service = container
         };
 
-        this.appSvc = new azure.appservice.AppService(
+        const appSvc = new azure.appservice.AppService(
             "appSvc",
             {
                 appServicePlanId: this.plan.id,
@@ -102,10 +124,11 @@ export class AppSvc extends pulumi.ComponentResource {
                 parent: this.plan,
             },
         );
+        let appSvcStaging = null;
         // need second for deep copying reasons
-        if (config.require("appSvcPlanTier") === "Standard") {
-            this.appSvcStaging = new azure.appservice.Slot("stagingSlot", {
-                appServiceName: this.appSvc.name,
+        if (plan.planTier === "Standard") {
+            appSvcStaging = new azure.appservice.Slot("stagingSlot", {
+                appServiceName: appSvc.name,
                 appServicePlanId: this.plan.id,
                 appSettings,
                 httpsOnly: true,
@@ -124,11 +147,12 @@ export class AppSvc extends pulumi.ComponentResource {
 
         // section--key
         this.params.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
-        this.params.network.AddCNameRecord("primary", this.appSvc.defaultSiteHostname);
-        this.accessPolicyKeyVault("appSvc-access", this.params.state.kv, this.appSvc);
-        if (this.appSvcStaging) {
-            this.accessPolicyKeyVault("appSvcStaging-access", this.params.state.kv, this.appSvcStaging);
+        this.params.network.AddCNameRecord("primary", appSvc.defaultSiteHostname);
+        this.accessPolicyKeyVault("appSvc-access", this.params.state.kv, appSvc);
+        if (appSvcStaging) {
+            this.accessPolicyKeyVault("appSvcStaging-access", this.params.state.kv, appSvcStaging);
         }
+        this.apps.push({appSvc, appSvcStaging});
     }
 
     private accessPolicyKeyVault(

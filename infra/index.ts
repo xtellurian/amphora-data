@@ -36,14 +36,9 @@ const result: Promise<IMainResult> = main();
 export let instrumentatonKey = result.then((r) =>
   r.monitoring.applicationInsights.instrumentationKey,
 );
-
-export let appUrl = result.then((r) =>
-  pulumi.interpolate`https://${r.application.appSvc.appSvc.defaultSiteHostname}`,
+export let appHostnames = result.then((r) =>
+  r.application.appSvc.apps.map((app) => app.appSvc.defaultSiteHostname),
 );
-export let appHostname = result.then((r) =>
-  r.application.appSvc.appSvc.defaultSiteHostname,
-);
-
 export let kvUri = result.then((r) =>
   r.state.kv.vaultUri,
 );
@@ -68,5 +63,9 @@ export let acrName = result.then((r) =>
 );
 
 export let webAppResourceId = result.then((r) =>
-  r.application.appSvc.appSvc.id,
+  r.application.appSvc.apps[0].appSvc.id, // FIXME
+);
+
+export let webAppResourceIds = result.then((r) =>
+  r.application.appSvc.apps.map( (a) => a.appSvc.id ),
 );
