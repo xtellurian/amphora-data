@@ -51,10 +51,6 @@ export let kvName = result.then((r) =>
   r.state.kv.name,
 );
 
-export let appSvcSku = result.then((r) =>
-  r.application.appSvc.plan.sku,
-);
-
 export let tsiFqdn = result.then((r) =>
   r.application.tsi.dataAccessFqdn,
 );
