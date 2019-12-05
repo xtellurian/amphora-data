@@ -5,7 +5,6 @@ import { IPlanAndSlot } from "./components/application/appSvc/appSvc";
 import { Monitoring } from "./components/monitoring/monitoring";
 import { Network } from "./components/network/network";
 import { State } from "./components/state/state";
-import { output } from "@pulumi/pulumi";
 
 // do not create or reference container anywhere but here!
 
@@ -35,7 +34,7 @@ async function main(): Promise<IMainResult> {
 // https://github.com/pulumi/pulumi/issues/2910
 
 const generateIdList = (apps: IPlanAndSlot[]): pulumi.Output<string> =>
-  output(apps.map((a) => pulumi.interpolate `${a.appSvc.id} `)).apply((array) => array.join(" "));
+  pulumi.output(apps.map((a) => pulumi.interpolate `${a.appSvc.id} `)).apply((array) => array.join(" "));
 
 const result: Promise<IMainResult> = main();
 
