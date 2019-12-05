@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS builder
+ARG DOTNET_VERSION=3.1
+FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_VERSION} AS builder
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 WORKDIR /app
 
@@ -10,13 +11,13 @@ ENV AZURE_CONFIG_DIR=/.azure/
 
 CMD [ "dotnet", "test", "-l:trx;LogFileName=/output/TestOutput.xml ", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=cobertura", "/p:CoverletOutput=/output/" ]
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS publisher
+FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_VERSION} AS publisher
 WORKDIR /app
 COPY --from=builder /app .
 RUN dotnet publish -c Release -o out api
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-alpine
+FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_VERSION}-alpine
 ARG gitHash
 RUN echo gitHash arg is ${gitHash}
 ENV ASPNETCORE_SOURCEVERSION ${gitHash}

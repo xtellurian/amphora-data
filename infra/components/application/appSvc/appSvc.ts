@@ -16,6 +16,7 @@ export interface IAppSvcParams {
 
 const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
+const appsConfig = new pulumi.Config("apps");
 
 const tags = {
     component: "application",
@@ -25,11 +26,21 @@ const tags = {
     subcomponent: "appSvc",
 };
 
+export interface IPlanAndSlot {
+    name: string;
+    appSvc: azure.appservice.AppService;
+    appSvcStaging: azure.appservice.Slot | null;
+}
+interface IAppServicePlanConfig {
+    planSize: string;
+    planTier: string;
+    location: string;
+    name: string;
+}
+
 export class AppSvc extends pulumi.ComponentResource {
-    public plan: azure.appservice.Plan;
     public imageName: pulumi.Output<string>;
-    public appSvc: azure.appservice.AppService;
-    public appSvcStaging: azure.appservice.Slot;
+    public apps: IPlanAndSlot[] = [];
 
     constructor(
         name: string,
@@ -44,16 +55,28 @@ export class AppSvc extends pulumi.ComponentResource {
         kv: azure.keyvault.KeyVault,
         acr: azure.containerservice.Registry,
     ) {
-        this.plan = new azure.appservice.Plan(
-            "appSvcPlan",
+        const secretString = cfg.requireSecret("tokenManagement__secret");
+        this.params.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
+        const plans = appsConfig.requireObject<IAppServicePlanConfig[]>("plans");
+        plans.forEach((p) => {
+            this.createPlan(rg, kv, acr, p);
+        });
+    }
+
+    private createPlan(rg: azure.core.ResourceGroup,
+                       kv: azure.keyvault.KeyVault,
+                       acr: azure.containerservice.Registry,
+                       plan: IAppServicePlanConfig) {
+        const appSvcPlan = new azure.appservice.Plan(
+            plan.name + "Plan",
             {
                 kind: "Linux",
-                location: rg.location,
+                location: plan.location,
                 reserved: true,
                 resourceGroupName: rg.name,
                 sku: {
-                    size: config.require("appSvcPlanSize"),
-                    tier: config.require("appSvcPlanTier"),
+                    size: plan.planSize,
+                    tier: plan.planTier,
                 },
                 tags,
             },
@@ -61,7 +84,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 parent: rg,
             },
         );
-        const secretString = cfg.requireSecret("tokenManagement__secret");
+
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
         const host = config.get("mainHost") ? config.require("mainHost") : "";
         const appSettings = {
@@ -85,28 +108,29 @@ export class AppSvc extends pulumi.ComponentResource {
             linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}:latest`, // to make the app service = container
         };
 
-        this.appSvc = new azure.appservice.AppService(
-            "appSvc",
+        const appSvc = new azure.appservice.AppService(
+            plan.name,
             {
-                appServicePlanId: this.plan.id,
+                appServicePlanId: appSvcPlan.id,
                 appSettings,
                 httpsOnly: true,
                 identity: { type: "SystemAssigned" },
-                location: rg.location,
+                location: appSvcPlan.location,
                 resourceGroupName: rg.name,
                 siteConfig,
                 tags,
             },
             {
                 ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
-                parent: this.plan,
+                parent: appSvcPlan,
             },
         );
+        let appSvcStaging = null;
         // need second for deep copying reasons
-        if (config.require("appSvcPlanTier") === "Standard") {
-            this.appSvcStaging = new azure.appservice.Slot("stagingSlot", {
-                appServiceName: this.appSvc.name,
-                appServicePlanId: this.plan.id,
+        if (plan.planTier === "Standard") {
+            appSvcStaging = new azure.appservice.Slot(plan.name + "Slot", {
+                appServiceName: appSvc.name,
+                appServicePlanId: appSvcPlan.id,
                 appSettings,
                 httpsOnly: true,
                 identity: { type: "SystemAssigned" },
@@ -123,12 +147,12 @@ export class AppSvc extends pulumi.ComponentResource {
         }
 
         // section--key
-        this.params.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
-        this.params.network.AddCNameRecord("primary", this.appSvc.defaultSiteHostname);
-        this.accessPolicyKeyVault("appSvc-access", this.params.state.kv, this.appSvc);
-        if (this.appSvcStaging) {
-            this.accessPolicyKeyVault("appSvcStaging-access", this.params.state.kv, this.appSvcStaging);
+        this.params.network.AddCNameRecord(plan.name, appSvc.defaultSiteHostname);
+        this.accessPolicyKeyVault(plan.name + "-access", this.params.state.kv, appSvc);
+        if (appSvcStaging) {
+            this.accessPolicyKeyVault(plan.name + "StagingAccess", this.params.state.kv, appSvcStaging);
         }
+        this.apps.push({name: plan.name, appSvc, appSvcStaging});
     }
 
     private accessPolicyKeyVault(

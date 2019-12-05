@@ -1,6 +1,6 @@
 .vscode/
-[Bb]in/
-[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
 Dockerfile
 azure-pipelines.yaml
 .gitignore

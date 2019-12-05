@@ -32,6 +32,7 @@ stages:
   - template: pipeline/app.deploy.job.yaml
     parameters:
       dependsOn: apps
+      staging: 'false'
   - job: tagversion
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     steps:

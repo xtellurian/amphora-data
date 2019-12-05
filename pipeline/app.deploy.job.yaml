@@ -1,7 +1,7 @@
 
 parameters:
   jobName: 'deploy'
-  dependsOn: 'apps'
+  staging: 'false'
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -14,11 +14,15 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   variables:
+  - name: staging
+    value: ${{ parameters.staging }}
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   - name: pulumi.webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
-  - script: echo acrName is $(acrName)
-  - script: echo webAppResourceId is $(webAppResourceId)
+  - script: |
+      echo acrName is $(acrName)
+      echo webAppResourceId is $(webAppResourceId)
+    displayName: Echo requirement variables.
   - template: app.deploy.steps.yaml

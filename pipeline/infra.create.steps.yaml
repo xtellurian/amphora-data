@@ -1,7 +1,6 @@
 
 steps:
 - script: |
-    chmod +x ./infra/*.sh
     ./infra/setup.sh
     ./infra/pulumi-up.sh
   displayName: 'Install pulumi & run pulumi up'
@@ -13,9 +12,9 @@ steps:
     ARM_SUBSCRIPTION_ID: $(subscription)
     ARM_TENANT_ID: $(tenant)
     STACK: $(stack) 
+    DEPLOYMENT_ENVIRONMENT: $(Environment.Name)
 
 - script: |
-    echo "$appUrl"
     echo "$kvUri"
     echo "$kvName"
     echo "$pulumiStack"
@@ -25,5 +24,4 @@ steps:
     kvUri: $(pulumi.kvUri)
     kvName: $(pulumi.kvName)
     pulumiStack: $(pulumi.stack)
-    appUrl: $(pulumi.appUrl)
     webAppResourceId: $(pulumi.webAppResourceId)
