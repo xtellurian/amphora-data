@@ -96,7 +96,7 @@ export class Tsi extends pulumi.ComponentResource {
 
     this.params.appSvc.apps.forEach( (app) => {
       const accessPolicy = new azure.core.TemplateDeployment(
-        this.name + "_accessPolicy",
+        app.name + "_ap",
         {
           deploymentMode: "Incremental",
           parameters: {
@@ -115,7 +115,7 @@ export class Tsi extends pulumi.ComponentResource {
       if (app.appSvcStaging) {
         // if the staging env exists, add it to the access policy
         const accessPolicyStaging = new azure.core.TemplateDeployment(
-          this.name + "_accessSlot",
+          app.name + "_apSlot",
           {
             deploymentMode: "Incremental",
             parameters: {

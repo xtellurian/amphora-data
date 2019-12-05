@@ -6,8 +6,12 @@ config:
     secure: AAABABnxOK+92zImVWcPhzKGyLnA73xKxu8szUC1MxWs5cZEqHiMxQESPJMobj9yZy3c4g==
 
   apps:plans:
-  - name: melbourne
+  - name: appSvc
     location: australiasoutheast
+    planSize: B1
+    planTier: Basic
+  - name: syd
+    location: australiaeast
     planSize: B1
     planTier: Basic
   azure:environment: public
