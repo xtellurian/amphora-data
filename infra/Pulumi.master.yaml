@@ -4,8 +4,15 @@ config:
     secure: AAABAFEcDbMSEIdmLWezhAXmWkpva0c2GTV0XsGwYF85c73b56WOvrDxGqzShLmCcOzarCJWMB4kmNvb1sr21NuICDeYiU8gclKLrXMM8PPSA1oIQCA6tlddmHc6CfjoxwN9H0g=
   amphora:tokenManagement__secret:
     secure: AAABAIMhhPFRlitMsvSNYpEBkGUjMARPHcu0WFItMieKRh7l8xBh0pQ4pDdbZsDXYiNMeA==
-  application:appSvcPlanSize: S1
-  application:appSvcPlanTier: Standard
+  apps:plans:
+  - name: appSvc
+    location: australiasoutheast
+    planSize: S1
+    planTier: Standard
+  - name: syd
+    location: australiaeast
+    planSize: S1
+    planTier: Standard
   azure:environment: public
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   azuresearch:sku: basic
