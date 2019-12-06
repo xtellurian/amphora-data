@@ -56,13 +56,18 @@ export class Application extends pulumi.ComponentResource
     );
     this.acr = this.createAcr(rg);
 
-    this.appSvc = new AppSvc("appSvc", {
-      acr: this.acr,
-      kv: this.state.kv,
-      monitoring: this.monitoring,
-      network: this.network,
-      rg,
-      state: this.state });
+    this.appSvc = new AppSvc("appSvc",
+      {
+        acr: this.acr,
+        kv: this.state.kv,
+        monitoring: this.monitoring,
+        network: this.network,
+        rg,
+        state: this.state,
+      },
+      {
+        dependsOn: this.state.kvAccessPolicies,
+      });
 
     this.createAzureMaps(rg);
     this.createTsi();
