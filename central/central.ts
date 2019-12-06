@@ -5,7 +5,8 @@ import { frontDoorArm } from "./front-door-arm";
 const authConfig = new pulumi.Config("authentication");
 
 const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
-const prodHostname = prodStack.getOutput("appHostname");
+const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
+const prodBackendCount = 2; // should match the array length from prod stack as above
 
 const tags = {
     component: "constant",
@@ -81,15 +82,20 @@ const dnsZone = new azure.dns.Zone("centralDnsZone",
     opts,
 );
 
+const parameters: pulumi.Input<{ [key: string]: any; }> = {
+    frontDoorName: "amphora",
+};
+
+for (let i = 0; i < prodBackendCount; i++) {
+    parameters[`prod${i}`] = prodHostnames.apply((h) => h[i]);
+}
+
 const template = new azure.core.TemplateDeployment("frontDoorArm",
     {
         deploymentMode: "Incremental",
-        parameters: {
-            frontDoorName: "amphora",
-            prodHostname,
-        },
+        parameters,
         resourceGroupName: rg.name,
-        templateBody: JSON.stringify(frontDoorArm(tags)),
+        templateBody: JSON.stringify(frontDoorArm({ tags, prodBackendCount })),
     },
     {
         dependsOn: dnsZone,

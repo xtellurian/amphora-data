@@ -1,26 +1,46 @@
-export function frontDoorArm(tags: {}) {
+interface IFrontDoorArgs {
+    tags: {};
+    prodBackendCount: number;
+}
+
+export function frontDoorArm(args: IFrontDoorArgs) {
+
+    const parameters: any = {
+        frontDoorId: {
+            defaultValue: "/subscriptions/651f2ed5-6e2f-41d0-b533-0cd28801ef2a/resourceGroups/amphora-central/providers/Microsoft.Network/frontdoors/amphora",
+            type: "String",
+        },
+        frontDoorName: {
+            metadata: {
+                description: "The name of the frontdoor resource.",
+            },
+            type: "string",
+        },
+        zoneName: {
+            defaultValue: "amphoradata.com",
+            type: "String",
+        },
+    };
+
+    const prodBackends = [];
+    for (let i = 0; i < args.prodBackendCount; i++) {
+        const parameterName = `prod${i}`;
+        prodBackends.push({
+            address: `[parameters('${parameterName}')]`,
+            backendHostHeader: `[parameters('${parameterName}')]`,
+            enabledState: "Enabled",
+            httpPort: 80,
+            httpsPort: 443,
+            priority: 1,
+            weight: 50,
+        });
+        parameters[parameterName] = { type: "string" }; // adds params to the template
+    }
+
     return {
         $schema: "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
         contentVersion: "1.0.0.0",
-        parameters: {
-            frontDoorId: {
-                defaultValue: "/subscriptions/651f2ed5-6e2f-41d0-b533-0cd28801ef2a/resourceGroups/amphora-central/providers/Microsoft.Network/frontdoors/amphora",
-                type: "String",
-            },
-            frontDoorName: {
-                metadata: {
-                    description: "The name of the frontdoor resource.",
-                },
-                type: "string",
-            },
-            prodHostname: {
-                type: "String",
-            },
-            zoneName: {
-                defaultValue: "amphoradata.com",
-                type: "String",
-            },
-        },
+        parameters,
         variables: {
             betaDomain: "beta.amphoradata.com",
             frontdoorLocation: "global",
@@ -63,17 +83,7 @@ export function frontDoorArm(tags: {}) {
                         {
                             name: "prodBackend",
                             properties: {
-                                backends: [
-                                    {
-                                        address: "[parameters('prodHostname')]",
-                                        backendHostHeader: "[parameters('prodHostname')]",
-                                        enabledState: "Enabled",
-                                        httpPort: 80,
-                                        httpsPort: 443,
-                                        priority: 1,
-                                        weight: 50,
-                                    },
-                                ],
+                                backends: prodBackends,
                                 healthProbeSettings: {
                                     // tslint:disable-next-line: max-line-length
                                     id: "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', parameters('frontDoorName'), 'normal')]",
@@ -209,7 +219,7 @@ export function frontDoorArm(tags: {}) {
                         },
                     ],
                 },
-                tags,
+                tags: args.tags,
                 type: "Microsoft.Network/frontDoors",
             },
             {
