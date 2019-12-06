@@ -24,7 +24,7 @@ export class State extends pulumi.ComponentResource {
   public kv: azure.keyvault.KeyVault;
   public storageAccount: azure.storage.Account;
   public cosmosDb: azure.cosmosdb.Account;
-  private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
+  public kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
 
   constructor(
     params: IComponentParams,
@@ -45,6 +45,7 @@ export class State extends pulumi.ComponentResource {
         value,
       },
       {
+        dependsOn: this.kvAccessPolicies,
         parent: parent || this.kv,
       },
     );
@@ -171,20 +172,24 @@ export class State extends pulumi.ComponentResource {
       ));
     });
 
-    const generated = new azure.keyvault.Key("dataprotectionkey", {
-      keyOpts: [
-        "decrypt",
-        "encrypt",
-        "sign",
-        "unwrapKey",
-        "verify",
-        "wrapKey",
-      ],
-      keySize: 4096,
-      keyType: "RSA",
-      keyVaultId: kv.id,
-      name: "dataprotection",
-    });
+    const generated = new azure.keyvault.Key("dataprotectionkey",
+      {
+        keyOpts: [
+          "decrypt",
+          "encrypt",
+          "sign",
+          "unwrapKey",
+          "verify",
+          "wrapKey",
+        ],
+        keySize: 4096,
+        keyType: "RSA",
+        keyVaultId: kv.id,
+        name: "dataprotection",
+      },
+      {
+        dependsOn: this.kvAccessPolicies,
+      });
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",
