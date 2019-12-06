@@ -24,6 +24,7 @@ export class State extends pulumi.ComponentResource {
   public kv: azure.keyvault.KeyVault;
   public storageAccount: azure.storage.Account;
   public cosmosDb: azure.cosmosdb.Account;
+  private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
 
   constructor(
     params: IComponentParams,
@@ -122,31 +123,12 @@ export class State extends pulumi.ComponentResource {
   }
 
   private keyvault(rg: azure.core.ResourceGroup) {
-    const ids = auth.requireObject<AzureId[]>("ids");
-    const accessPolicies: pulumi.Input<Array<pulumi.Input<input.keyvault.KeyVaultAccessPolicy>>> = [];
-    ids.forEach((element) => {
-      if (element.appId) {
-        accessPolicies.push({
-          applicationId: element.appId,
-          keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
-          objectId: element.objectId,
-          secretPermissions: ["list", "set", "get", "delete"],
-          tenantId: CONSTANTS.authentication.tenantId,
-        });
-      }
-      accessPolicies.push({
-        keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
-        objectId: element.objectId,
-        secretPermissions: ["list", "set", "get", "delete"],
-        tenantId: CONSTANTS.authentication.tenantId,
-      });
+    const identities = auth.requireObject<AzureId[]>("ids");
 
-    });
-
+    // don't add access policy directly here, I think it conflicts with those generated independently.
     const kv = new azure.keyvault.KeyVault(
       "amphoraState",
       {
-        accessPolicies,
         resourceGroupName: rg.name,
         skuName: "standard",
         tags,
@@ -154,6 +136,40 @@ export class State extends pulumi.ComponentResource {
       },
       { parent: rg },
     );
+
+    identities.forEach((element) => {
+      if (element.appId) {
+        this.kvAccessPolicies.push(new azure.keyvault.AccessPolicy(
+          element.name + "app",
+          {
+            applicationId: element.appId,
+            keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
+            keyVaultId: kv.id,
+            objectId: element.objectId,
+            secretPermissions: ["list", "set", "get", "delete"],
+            tenantId: CONSTANTS.authentication.tenantId,
+          },
+          {
+            dependsOn: kv,
+            parent: this,
+          },
+        ));
+      }
+      this.kvAccessPolicies.push(new azure.keyvault.AccessPolicy(
+        element.name + "obj",
+        {
+          keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
+          keyVaultId: kv.id,
+          objectId: element.objectId,
+          secretPermissions: ["list", "set", "get", "delete"],
+          tenantId: CONSTANTS.authentication.tenantId,
+        },
+        {
+          dependsOn: kv,
+          parent: this,
+        },
+      ));
+    });
 
     const generated = new azure.keyvault.Key("dataprotectionkey", {
       keyOpts: [

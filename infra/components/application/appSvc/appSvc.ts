@@ -41,7 +41,7 @@ interface IAppServicePlanConfig {
 export class AppSvc extends pulumi.ComponentResource {
     public imageName: pulumi.Output<string>;
     public apps: IPlanAndSlot[] = [];
-
+    private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
     constructor(
         name: string,
         private params: IAppSvcParams,
@@ -160,7 +160,7 @@ export class AppSvc extends pulumi.ComponentResource {
         kv: azure.keyvault.KeyVault,
         appSvc: azure.appservice.AppService | azure.appservice.Slot,
     ) {
-        return new azure.keyvault.AccessPolicy(
+        const ap = new azure.keyvault.AccessPolicy(
             name,
             {
                 keyPermissions: ["unwrapKey", "wrapKey"],
@@ -176,5 +176,6 @@ export class AppSvc extends pulumi.ComponentResource {
                 parent: this,
             },
         );
+        this.kvAccessPolicies.push(ap);
     }
 }
