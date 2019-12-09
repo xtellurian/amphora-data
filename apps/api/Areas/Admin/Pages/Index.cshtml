@@ -1,8 +1,10 @@
 @page
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @model Amphora.Api.Areas.Admin.Pages.IndexModel
 
 <div class="container">
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-md-4">
             <a asp-area="Admin" asp-page="/Purchases" class="btn btn-primary btn-block">Purchases</a>
         </div>
@@ -11,6 +13,22 @@
         </div>
         <div class="col-md-4">
             <a asp-area="Admin" asp-page="/Dashboard" class="btn btn-primary btn-block" >Dashboard</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+             @{
+                var stack = @Configuration["STACK"];
+                var routeTo = "?x-ms-routing-name=self";
+                if(! string.IsNullOrEmpty(stack) && !stack.Contains("(staging)"))
+                {
+                    // if we aren't in staging, then you can route to staging
+                    routeTo = "?x-ms-routing-name=staging";
+                }
+            }
+            <a class="btn btn-primary btn-block" href=@routeTo> 
+                Stack: @stack
+            </a>
         </div>
     </div>
 </div>

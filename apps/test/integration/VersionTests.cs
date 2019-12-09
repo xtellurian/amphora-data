@@ -27,6 +27,7 @@ namespace Amphora.Tests.Integration
             // Assert
             response.EnsureSuccessStatusCode();
             var version = ApiVersionIdentifier.FromSemver(content);
+            Assert.NotNull(version.ToSemver());
         }
 
         [Fact]
@@ -72,6 +73,28 @@ namespace Amphora.Tests.Integration
             else
             {
                 System.Console.WriteLine("Not checking version");
+            }
+        }
+
+        [Fact]
+        public async Task WhenEnvironmentVariable_ChangeLogExists()
+        {
+            var reason = System.Environment.GetEnvironmentVariable("BUILD_REASON");
+            var client = _factory.CreateClient();
+            if (reason != null && reason.Length > 1 && string.Equals(reason.ToLower(), "pullrequest"))
+            {
+                // Get the current version
+                var response = await client.GetAsync("/api/version");
+                var content = await response.Content.ReadAsStringAsync();
+                var version = ApiVersionIdentifier.FromSemver(content);
+
+                // get the changelog for this version
+                var getVersionResponse = await client.GetAsync($"Changelog/Detail?version={version.ToSemver()}");
+                getVersionResponse.EnsureSuccessStatusCode();
+            }
+            else
+            {
+                System.Console.WriteLine("Not checking changelog");
             }
         }
 

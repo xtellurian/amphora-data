@@ -1,0 +1,11 @@
+@page
+@using Westwind.AspNetCore.Markdown
+@model Amphora.Api.Pages.Changelog.DetailModel
+
+@{
+    ViewData["Title"] = $"{Model.Version} Changes";
+}
+<a class="float-right btn btn-primary" asp-page="./Index">All Changes</a>
+<h1> @Model.Version </h1>
+<hr/>
+@await Markdown.ParseHtmlStringFromFileAsync(Model.RelativePath)
