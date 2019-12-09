@@ -58,14 +58,9 @@
                     var version = Amphora.Api.ApiVersion.CurrentVersion.ToSemver();
                     var gitHash = @Configuration["SOURCEVERSION"];
                     var identifier = $"{version} {gitHash?.Substring(0, 7)}";
-                    var routeTo = "?x-ms-routing-name=self";
-                    if(! string.IsNullOrEmpty(stack) && !stack.Contains("(staging)"))
-                    {
-                        // if we aren't in staging, then you can route to staging
-                        routeTo = "?x-ms-routing-name=staging";
-                    }
                 }
-                <a href=@routeTo> @stack </a> @identifier
+                @stack 
+                <a asp-page="/Changelog/Index"> @identifier </a>
             </span>
         </div>
     </footer>

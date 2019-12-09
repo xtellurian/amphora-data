@@ -1,0 +1,20 @@
+@page
+@using Westwind.AspNetCore.Markdown
+@model Amphora.Api.Pages.Changelog.IndexModel
+
+@{
+    ViewData["Title"] = "Change Log";
+}
+
+<div>
+    @foreach(var kvp in Model.VersionFiles)
+    {
+        <h1>
+            <a asp-page="./detail" asp-route-version="@kvp.Key">
+                @kvp.Key
+            </a> 
+        </h1>
+        @await Markdown.ParseHtmlStringFromFileAsync(kvp.Value)
+        <hr/>
+    }
+</div>

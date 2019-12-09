@@ -42,6 +42,7 @@ namespace Amphora.Tests.Integration.Pages
         [Theory]
         [InlineData("/")]
         [InlineData("/Home/Values")]
+        [InlineData("/Changelog")]
         [InlineData("/Profiles/Account/Detail")]
         [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Market")]
