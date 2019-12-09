@@ -81,7 +81,7 @@ namespace Amphora.Tests.Integration
         {
             var reason = System.Environment.GetEnvironmentVariable("BUILD_REASON");
             var client = _factory.CreateClient();
-            if (true || reason != null && reason.Length > 1 && string.Equals(reason.ToLower(), "pullrequest"))
+            if (reason != null && reason.Length > 1 && string.Equals(reason.ToLower(), "pullrequest"))
             {
                 // Get the current version
                 var response = await client.GetAsync("/api/version");
