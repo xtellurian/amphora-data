@@ -1,10 +1,14 @@
-using System.Collections.Generic;
+using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
+using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Amphora.Api.Services.Purchases
 {
@@ -23,11 +27,12 @@ namespace Amphora.Api.Services.Purchases
             this.orgStore = orgStore;
             this.logger = logger;
         }
-        // does it for this current month
+        /// <summary>
+        /// Takes all the purchases from this month and creates debits in the system.
+        /// </summary>
         public async Task PopulateDebitsAsync()
         {
-            var now = System.DateTime.UtcNow;
-            var startOfMonth = new System.DateTime(now.Year, now.Month, 1, 0, 0, 0, 0);
+            var startOfMonth = System.DateTime.UtcNow.StartOfMonth();
             var thisMonth = await purchaseStore.QueryAsync(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
 
             foreach (var purchase in thisMonth)
@@ -36,14 +41,14 @@ namespace Amphora.Api.Services.Purchases
                 {
                     // lazy loading isn't working??? Load this way instead.
                     var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
-                    if(org == null) 
+                    if (org == null)
                     {
                         await purchaseStore.DeleteAsync(purchase);
                         logger.LogWarning($"Purchase for non-existing org {purchase.PurchasedByOrganisationId}");
                         continue;
                     }
 
-                    if (org.Account == null) 
+                    if (org.Account == null)
                     {
                         org.Account = new Account();
                         logger.LogWarning($"New account for {org.Id}");
@@ -55,14 +60,60 @@ namespace Amphora.Api.Services.Purchases
                 purchase.LastDebitTime = System.DateTime.UtcNow;
                 await purchaseStore.UpdateAsync(purchase);
             }
+        }
+        /// <summary>
+        /// Generates and stores invoices for the provided month
+        /// </summary>
+        public async Task<IEnumerable<Invoice>> GenerateInvoicesAsync(DateTimeOffset month, bool regenerate = false)
+        {
+            var allOrgs = orgStore.Query(_ => true);
+            var invoices = new List<Invoice>();
+            foreach (var org in allOrgs)
+            {
+                Invoice invoice;
+                var existing = org.Account.Invoices.FirstOrDefault(_ => _.DateCreated.HasValue && _.DateCreated.Value.Month == month.Month);
+                if (existing != null && regenerate)
+                {
+                    existing.Credits = new List<InvoiceCredit>();
+                    existing.Debits = new List<InvoiceDebit>();
+                    invoice = existing;
+                }
+                else if (existing == null)
+                {
+                    invoice = new Invoice()
+                    {
+                        DateCreated = DateTime.UtcNow,
+                        Name = $"{DateTime.UtcNow.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
+                    };
+                }
+                else
+                {
+                    // invoice exists, and don't regenerate
+                    continue;
+                }
 
+                var thisMonthsDebits = org.Account.Debits
+                    .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth())
+                    .Select(_ => new InvoiceDebit(_.Label, _.Amount)
+                    {
+                        CreatedDate = _.CreatedDate,
+                    });
+                var thisMonthsCredits = org.Account.Credits
+                    .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth())
+                    .Select(_ => new InvoiceCredit(_.Label, _.Amount)
+                    {
+                        CreatedDate = _.CreatedDate,
+                    });
 
+                invoice.Credits.AddRange(thisMonthsCredits);
+                invoice.Debits.AddRange(thisMonthsDebits);
+                org.Account.Invoices.Add(invoice);
 
-            // foreach(var o in updatedOrgs)
-            // {
-            //     await orgStore.UpdateAsync(o);
-            // }
+                await orgStore.UpdateAsync(org);
+                invoices.Add(invoice);
+            }
 
+            return invoices;
         }
     }
 }

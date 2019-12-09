@@ -12,7 +12,7 @@ using Moq;
 using Xunit;
 using Microsoft.Extensions.Options;
 
-namespace Amphora.Tests.Unit
+namespace Amphora.Tests.Unit.Services
 {
     public class MarketServiceTests : UnitTestBase
     {

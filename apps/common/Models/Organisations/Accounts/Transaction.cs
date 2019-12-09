@@ -11,7 +11,6 @@ namespace Amphora.Common.Models.Organisations.Accounts
         }
         public string? Id { get; set; }
         public DateTimeOffset? CreatedDate { get; set; } = DateTime.UtcNow;
-        public virtual Account Account { get; set; } = null!;
         public double? Amount { get; set; }
         public string Label { get; set; }
         public abstract bool IsCredit { get; }

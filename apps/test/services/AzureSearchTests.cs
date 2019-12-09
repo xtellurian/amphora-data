@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Amphora.Tests.Services
+namespace Amphora.Tests.Unit.Services
 {
     public class AzureSearchTests : UnitTestBase
     {

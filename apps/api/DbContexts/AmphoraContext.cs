@@ -45,58 +45,78 @@ namespace Amphora.Api.DbContexts
 
             modelBuilder.Entity<SignalModel>(b =>
             {
-                b.HasKey(_ =>_.Id);
+                b.HasKey(_ => _.Id);
             });
 
-            modelBuilder.Entity<OrganisationModel>(b =>
+            modelBuilder.Entity<OrganisationModel>(organisation =>
             {
-                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                organisation.Property(p => p.Id).ValueGeneratedOnAdd();
                 // new global invitations
-                b.HasMany(_ => _.GlobalInvitations).WithOne(_ => _.TargetOrganisation).HasForeignKey(_ => _.TargetOrganisationId);
-                b.OwnsMany(b => b.Memberships, a =>
+                organisation.HasMany(_ => _.GlobalInvitations).WithOne(_ => _.TargetOrganisation).HasForeignKey(_ => _.TargetOrganisationId);
+                organisation.OwnsMany(b => b.Memberships, membership =>
                 {
-                    a.HasKey(nameof(Membership.UserId));
-                    a.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
+                    membership.HasKey(nameof(Membership.UserId));
+                    membership.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
                 });
-                b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-                b.OwnsMany(p => p.TermsAndConditions, a =>
+                organisation.HasOne(_ => _.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
+                organisation.OwnsMany(_ => _.TermsAndConditions, termsAndConditions =>
                 {
-                    a.WithOwner(b => b.Organisation).HasForeignKey(_ => _.OrganisationId);
-                    a.HasKey(_ => _.Id);
+                    termsAndConditions.WithOwner(_ => _.Organisation).HasForeignKey(_ => _.OrganisationId);
+                    termsAndConditions.HasKey(_ => _.Id);
                 });
-                b.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
+                organisation.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
                 {
                     a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);
                     a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
                     a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
                 });
-                // b.OwnsMany(p => p.Restrictions, a =>
-                // {
-                //     a.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId);
-                //     // a.HasKey(_ => _.TargetOrganisationId);
-                // });
-                b.OwnsOne(_ => _.Account, a =>
+
+                organisation.OwnsOne(_ => _.Account, account =>
                 {
-                    a.OwnsMany(b => b.Credits, c =>
+                    account.WithOwner(_ => _.Organisation).HasForeignKey(_ => _.OrganisationId);
+                    account.OwnsMany(_ => _.Credits, credit =>
                     {
-                        c.Property(p => p.Id).ValueGeneratedOnAdd();
-                        c.HasKey(d => d.Id);
-                        c.WithOwner(d => d.Account);
+                        credit.Property(_ => _.Id).ValueGeneratedOnAdd();
+                        credit.HasKey(_ => _.Id);
+                        credit.WithOwner(_ => _.Account);
                     });
-                    a.OwnsMany(b => b.Debits, c =>
+                    account.OwnsMany(_ => _.Debits, debit =>
                     {
-                        c.Property(p => p.Id).ValueGeneratedOnAdd();
-                        c.HasKey(d => d.Id);
-                        c.WithOwner(d => d.Account);
+                        debit.Property(_ => _.Id).ValueGeneratedOnAdd();
+                        debit.HasKey(_ => _.Id);
+                        debit.WithOwner(_ => _.Account);
+                    });
+                    account.OwnsMany(b => b.Invoices, invoice =>
+                    {
+                        invoice.Property(_ => _.Id).ValueGeneratedOnAdd();
+                        invoice.OwnsMany(_ => _.Credits, credit =>
+                        {
+                            credit.Property(_ => _.Id).ValueGeneratedOnAdd();
+                            credit.HasKey(_ => _.Id);
+                            credit.WithOwner(_ => _.Invoice);
+                        });
+                        invoice.OwnsMany(_ => _.Debits, debit =>
+                        {
+                            debit.Property(_ => _.Id).ValueGeneratedOnAdd();
+                            debit.HasKey(_ => _.Id);
+                            debit.WithOwner(_ => _.Invoice);
+                        });
+                        invoice.HasKey(_ => _.Id);
+                        invoice.WithOwner(_ => _.Account);
                     });
                 });
-                b.HasMany(_ => _.Purchases).WithOne(p => p.PurchasedByOrganisation).HasForeignKey(_ => _.PurchasedByOrganisationId);
+                organisation.HasMany(_ => _.Purchases).WithOne(p => p.PurchasedByOrganisation).HasForeignKey(_ => _.PurchasedByOrganisationId);
             });
+
             modelBuilder.Entity<RestrictionModel>(b =>
             {
-                b.HasKey(_ => new { Source = _.SourceOrganisationId, Target = _.TargetOrganisationId });
-                b.HasOne(_ => _.SourceOrganisation).WithMany(_ => _.Restrictions).HasForeignKey(_ => _.SourceOrganisationId); 
-                b.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId); 
+                b.HasKey(_ => new
+                {
+                    Source = _.SourceOrganisationId,
+                    Target = _.TargetOrganisationId
+                });
+                b.HasOne(_ => _.SourceOrganisation).WithMany(_ => _.Restrictions).HasForeignKey(_ => _.SourceOrganisationId);
+                b.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId);
             });
 
             modelBuilder.Entity<PurchaseModel>(b =>

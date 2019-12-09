@@ -6,8 +6,11 @@ namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Account
     {
-        public virtual ICollection<Credit> Credits { get; set; } = new Collection<Credit>();
-        public virtual ICollection<Debit> Debits { get; set; } = new Collection<Debit>();
+        public virtual ICollection<AccountCredit> Credits { get; set; } = new Collection<AccountCredit>();
+        public virtual ICollection<AccountDebit> Debits { get; set; } = new Collection<AccountDebit>();
+        public virtual ICollection<Invoice> Invoices { get; set; } = new Collection<Invoice>();
+        public virtual OrganisationModel Organisation { get; set; } = null!;
+        public string OrganisationId { get; set; } = null!;
         public double? Balance => GetBalance();
 
         public double? GetBalance()
@@ -22,8 +25,8 @@ namespace Amphora.Common.Models.Organisations.Accounts
             {
                 throw new System.ArgumentException("Amount < 0");
             }
-            if (Debits == null) Debits = new List<Debit>();
-            Debits.Add(new Debit(label, amount));
+            if (Debits == null) Debits = new List<AccountDebit>();
+            Debits.Add(new AccountDebit(label, amount));
         }
         public void CreditAccount(string label, double amount)
         {
@@ -31,8 +34,8 @@ namespace Amphora.Common.Models.Organisations.Accounts
             {
                 throw new System.ArgumentException("Amount < 0");
             }
-            if (Credits == null) Credits = new List<Credit>();
-            Credits.Add(new Credit(label, amount));
+            if (Credits == null) Credits = new List<AccountCredit>();
+            Credits.Add(new AccountCredit(label, amount));
         }
     }
 }
