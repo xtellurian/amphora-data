@@ -14,18 +14,20 @@ namespace Amphora.Tests.Helpers
         public static async Task<(UserDto User, string Password)> CreateUserAsync(
             this HttpClient client,
             string email,
-            string fullName)
+            string fullName,
+            bool denyGlobalAdmin = false)
         {
             // assumed the user has been invited
             var user = new UserDto
             {
                 UserName = email,
                 Email = email,
-                FullName = fullName
+                FullName = fullName,
             };
-
+            var requestPath = "api/users";
+            if (denyGlobalAdmin) requestPath += "?DenyGlobalAdmin=true";
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"api/users", content);
+            var response = await client.PostAsync(requestPath, content);
             var password = await response.Content.ReadAsStringAsync();
 
             response.EnsureSuccessStatusCode(); // Status Code 200-299

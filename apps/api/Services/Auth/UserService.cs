@@ -69,7 +69,7 @@ namespace Amphora.Api.Services.Auth
                 }
 
                 logger.LogInformation("Creating User...");
-                if (invitation.IsGlobalAdmin.HasValue && invitation.IsGlobalAdmin.Value)
+                if (invitation.IsGlobalAdmin.HasValue && invitation.IsGlobalAdmin.Value && !user.IsGlobalAdmin.HasValue)
                 {
                     logger.LogWarning($"Creating global admin {user.Email}");
                     user.IsGlobalAdmin = invitation.IsGlobalAdmin;
