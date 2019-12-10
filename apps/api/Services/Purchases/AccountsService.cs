@@ -65,9 +65,9 @@ namespace Amphora.Api.Services.Purchases
         /// Generates and stores invoices for the provided month
         /// </summary>
         public async Task<Invoice> GenerateInvoiceAsync(DateTimeOffset month,
-                                                                      string organisationId,
-                                                                      bool isPreview = true,
-                                                                      bool regenerate = false)
+                                                        string organisationId,
+                                                        bool isPreview = true,
+                                                        bool regenerate = false)
         {
             if (organisationId is null)
             {
