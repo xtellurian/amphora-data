@@ -1,0 +1,115 @@
+@page
+@model Accounts.InvoicePageModel
+
+<div class="container">
+    <a class="float-right btn btn-primary" asp-page="./Detail" asp-route-id="@Model.Organisation.Id">Detail</a>
+    <h1>Generate Invoice</h1>
+    <small>@Model.Organisation.Name</small>
+    <hr/>
+    <div class="row">
+        <div class="col">
+            <form method="post" asp-route-id="@Model.Organisation.Id">
+                <div class="row">
+                    <div class="col">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="Action"></label>
+                            <select class="custom-select" asp-for="Action" asp-items="@Model.ActionOptions"></select> 
+                            <span asp-validation-for="Action" class="text-danger"></span>
+                        </div>
+                    </div>
+                
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="Month"></label>
+                            <span asp-validation-for="Month" class="text-danger"></span>
+                            <input class="form-control" asp-for="Month" />
+                            <p>UTC</p>
+                        </div>
+                    </div>
+               
+                    <div class="col-4">
+                          <div class="form-group">
+                            <label asp-for="Regenerate"></label>
+                            <input class="form-control" asp-for="Regenerate" />
+                            <span asp-validation-for="Regenerate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <input type="submit" value="Go" class="btn btn-primary btn-block" />
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    @if(Model.Invoice == null)
+    {
+        <div class="row">
+            <div class="col">
+                No invoice selected
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-4">
+                <h2>@Model.Invoice.Name</h2>
+            </div>
+            <div class="col-4">
+                Balance: @Model.Invoice.Balance
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h4>Debits</h4>
+                @if(Model.Invoice.NumberOfDebits > 0)
+                {
+                    @foreach(var d in Model.Invoice.Debits)
+                    {
+                        @await Component.InvokeAsync("TransactionRow", new {transaction = d })
+                    }
+                }
+                else
+                {
+                    <!-- Theres a bug where iterating though an empty list throws -->
+                    <div>
+                        No Debits
+                    </div>
+                }
+                
+            </div>
+            <div class="col">
+                <h4>Credits</h4>
+                @if(Model.Invoice.NumberOfCredits > 0)
+                {
+                    @foreach(var c in Model.Invoice.Credits)
+                {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = c })
+                }
+                }
+                else
+                {
+                    <!-- Theres a bug where iterating though an empty list throws -->
+                    <div>
+                        No Credits
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

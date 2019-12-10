@@ -64,56 +64,87 @@ namespace Amphora.Api.Services.Purchases
         /// <summary>
         /// Generates and stores invoices for the provided month
         /// </summary>
-        public async Task<IEnumerable<Invoice>> GenerateInvoicesAsync(DateTimeOffset month, bool regenerate = false)
+        public async Task<Invoice> GenerateInvoiceAsync(DateTimeOffset month,
+                                                                      string organisationId,
+                                                                      bool isPreview = true,
+                                                                      bool regenerate = false)
         {
-            var allOrgs = orgStore.Query(_ => true);
-            var invoices = new List<Invoice>();
-            foreach (var org in allOrgs)
+            if (organisationId is null)
             {
-                Invoice invoice;
-                var existing = org.Account.Invoices.FirstOrDefault(_ => _.DateCreated.HasValue && _.DateCreated.Value.Month == month.Month);
-                if (existing != null && regenerate)
-                {
-                    existing.Credits = new List<InvoiceCredit>();
-                    existing.Debits = new List<InvoiceDebit>();
-                    invoice = existing;
-                }
-                else if (existing == null)
-                {
-                    invoice = new Invoice()
-                    {
-                        DateCreated = DateTime.UtcNow,
-                        Name = $"{DateTime.UtcNow.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
-                    };
-                }
-                else
-                {
-                    // invoice exists, and don't regenerate
-                    continue;
-                }
-
-                var thisMonthsDebits = org.Account.Debits
-                    .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth())
-                    .Select(_ => new InvoiceDebit(_.Label, _.Amount)
-                    {
-                        CreatedDate = _.CreatedDate,
-                    });
-                var thisMonthsCredits = org.Account.Credits
-                    .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth())
-                    .Select(_ => new InvoiceCredit(_.Label, _.Amount)
-                    {
-                        CreatedDate = _.CreatedDate,
-                    });
-
-                invoice.Credits.AddRange(thisMonthsCredits);
-                invoice.Debits.AddRange(thisMonthsDebits);
-                org.Account.Invoices.Add(invoice);
-
-                await orgStore.UpdateAsync(org);
-                invoices.Add(invoice);
+                throw new ArgumentNullException(nameof(organisationId));
             }
 
-            return invoices;
+            var org = await orgStore.ReadAsync(organisationId);
+            Invoice invoice;
+            var existing = org.Account.Invoices.FirstOrDefault(_ => _.DateCreated.HasValue && _.DateCreated.Value.Month == month.Month);
+            if (existing != null && !regenerate)
+            {
+                return null;
+            }
+
+            invoice = new Invoice()
+            {
+                DateCreated = DateTime.UtcNow,
+                Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
+            };
+
+            var thisMonthsDebits = org.Account.Debits
+                .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth());
+            var thisMonthsCredits = org.Account.Credits
+                .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth());
+            foreach (var c in thisMonthsCredits)
+            {
+                invoice.Credits.Add(new InvoiceCredit(c.Label, c.Amount));
+            }
+            foreach (var d in thisMonthsDebits)
+            {
+                invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount));
+            }
+
+            invoice.NumberOfCredits = thisMonthsCredits.Count();
+            invoice.NumberOfDebits = thisMonthsDebits.Count();
+            invoice.Balance = CalculateBalance(thisMonthsCredits, thisMonthsDebits);
+            invoice.IsPreview = isPreview;
+
+            org.Account.Invoices.Add(invoice);
+
+            await orgStore.UpdateAsync(org);
+
+            return invoice;
+        }
+
+        public async Task<Invoice> PublishInvoice(Invoice invoice)
+        {
+            invoice.IsPreview = false;
+            await orgStore.UpdateAsync(invoice.Account.Organisation);
+
+            // TODO: send the invoice
+            return invoice;
+        }
+
+        private double CalculateBalance(IEnumerable<AccountCredit> credits, IEnumerable<AccountDebit> debits)
+        {
+            if (credits is null)
+            {
+                throw new ArgumentNullException(nameof(credits));
+            }
+
+            if (debits is null)
+            {
+                throw new ArgumentNullException(nameof(debits));
+            }
+
+            double credit = 0;
+            double debit = 0;
+            if (credits.Count() > 0)
+            {
+                credit += credits.Sum(c => c.Amount) ?? 0;
+            }
+            if (debits.Count() > 0)
+            {
+                debit += debits.Sum(d => d.Amount) ?? 0;
+            }
+            return credit - debit;
         }
     }
 }

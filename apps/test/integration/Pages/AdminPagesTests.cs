@@ -58,7 +58,7 @@ namespace Amphora.Tests.Integration.Pages
             // ensure other can't access it
             var otherResponse = await otherClient.GetAsync($"{path}?id={otherOrg.Id}");
             Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
-            Assert.Equal(System.Net.HttpStatusCode.Forbidden, otherResponse.StatusCode); // other is not authorized
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other is not authorized
             
 
             await DestroyOrganisationAsync(otherClient, otherOrg);
