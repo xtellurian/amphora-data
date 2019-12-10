@@ -14,6 +14,7 @@ namespace Amphora.Api.Contracts
         Task<ApplicationUser> FindByNameAsync(string userName);
         Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user);
         Task<ApplicationUser> GetUserAsync(ClaimsPrincipal principal);
+        string GetUserName(ClaimsPrincipal principal);
         Task<bool> HasPasswordAsync(ApplicationUser user);
         Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }
