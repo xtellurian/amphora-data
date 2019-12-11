@@ -54,7 +54,7 @@ namespace Amphora.Api.Services.Purchases
                         logger.LogWarning($"New account for {org.Id}");
                     }
 
-                    org.Account.DebitAccount($"{purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})", purchase.Price.Value);
+                    org.Account.DebitAccount($"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})", purchase.Price.Value, purchase.AmphoraId);
                     await orgStore.UpdateAsync(org);
                 }
                 purchase.LastDebitTime = System.DateTime.UtcNow;

@@ -9,7 +9,12 @@ namespace Amphora.Common.Models.Organisations.Accounts
             Label = label;
             Amount = amount;
         }
+        public Transaction(string label, double? amount, string amphoraId): this(label, amount)
+        {
+           AmphoraId = amphoraId;
+        }
         public string? Id { get; set; }
+        public string? AmphoraId { get; set; }
         public DateTimeOffset? CreatedDate { get; set; } = DateTime.UtcNow;
         public double? Amount { get; set; }
         public string Label { get; set; }

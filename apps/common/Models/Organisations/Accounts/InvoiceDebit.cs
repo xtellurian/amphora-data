@@ -5,6 +5,9 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public InvoiceDebit(string label, double? amount) : base(label, amount)
         {
         }
+        public InvoiceDebit(string label, double? amount, string amphoraId) : base(label, amount, amphoraId)
+        {
+        }
         public virtual Invoice Invoice { get; set; } = null!;
 
         public override bool IsCredit => false;

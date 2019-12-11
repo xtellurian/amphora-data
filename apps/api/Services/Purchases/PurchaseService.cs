@@ -73,7 +73,7 @@ namespace Amphora.Api.Services.Purchases
                         logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
                         if (org.Account == null) org.Account = new Account();
-                        org.Account.DebitAccount($"Purchased Amphora {purchase.AmphoraId}", purchase.Price.Value);
+                        org.Account.DebitAccount($"Initial Purchase {purchase.AmphoraId}", purchase.Price.Value, purchase.AmphoraId);
                         org = await orgStore.UpdateAsync(org);
 
                     }
