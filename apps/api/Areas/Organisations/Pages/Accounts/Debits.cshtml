@@ -5,30 +5,11 @@
     <div class="row">
         <div class="col">
             <h2>Debits</h2>
-            <table id="entity-table" class="table table-borderless table-striped">
-                <thead>
-                    <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Label</th>
-                    <th scope="col">Amount ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(Model.Account.Debits != null)
-                    {
-                        @foreach (var item in Model.Account.Debits)
-                        {
-                        <tr class="entity-item">
-                            <th scope="row">
-                                <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
-                            </th>
-                            <td> @item.Label </td>
-                            <td> @item.Amount </td>
-                        </tr>
-                        }
-                    }
-                </tbody>
-            </table>
+            <hr/>
+            @foreach(var d in Model.Account.Debits)
+            {
+                @await Component.InvokeAsync("TransactionRow", new {transaction = d, size = "medium" })
+            }
         </div>
     </div>
 </div>
