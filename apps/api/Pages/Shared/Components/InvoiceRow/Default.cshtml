@@ -1,0 +1,19 @@
+@model Amphora.Api.Pages.Shared.Components.InvoiceRowViewComponent
+
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <i class="fas fa-file-invoice-dollar"></i>
+            @Model.Invoice.Name
+        </div>
+        <div class="col-2">
+            @if(Model.Invoice.IsPreview ?? false)
+            {
+                <small>Preview</small>
+            }
+        </div>
+        <div class="col-2">
+            @Model.Invoice.Balance
+        </div>
+    </div>
+</div>

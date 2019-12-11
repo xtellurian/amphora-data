@@ -1,7 +1,7 @@
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 
-namespace Amphora.Tests.Unit
+namespace Amphora.Tests.Unit.Services
 {
     public class TsiServiceTests
     {

@@ -72,6 +72,11 @@ namespace Amphora.Api.Controllers
                 UserName = dto.UserName
             };
 
+            if(Request.Query.TryGetValue("DenyGlobalAdmin", out var val))
+            {
+                applicationUser.IsGlobalAdmin = false;
+            }
+
             var invitation = await invitationService.GetInvitationByEmailAsync(dto.Email.ToUpper());
             if(invitation == null)
             {

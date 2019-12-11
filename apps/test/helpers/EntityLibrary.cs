@@ -51,14 +51,14 @@ namespace Amphora.Tests.Helpers
 
         public static OrganisationDto GetOrganisationDto([CallerMemberName] string testName = null)
         {
-            var o = new Faker<OrganisationDto>()
+            var org = new Faker<OrganisationDto>()
                .StrictMode(false)
                .RuleFor(o => o.Name, f => f.Random.String2(1, 10))
                .RuleFor(o => o.About, f => testName ?? f.Random.String2(1, 10))
                .RuleFor(o => o.WebsiteUrl, f => f.Random.String2(1, 10))
                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
-            return o.Generate();;
+            return org.Generate();;
         }
         public static OrganisationModel GetOrganisationModel([CallerMemberName]  string testName = "")
         {

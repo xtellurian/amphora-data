@@ -174,9 +174,9 @@ namespace Amphora.Tests.Unit.Purchasing
             var org = EntityLibrary.GetOrganisationModel();
             org.Account = new Account()
             {
-                Credits = new List<Credit>()
+                Credits = new List<AccountCredit>()
                     {
-                        new Credit("initial", 100)
+                        new AccountCredit("initial", 100)
                     }
             };
 
