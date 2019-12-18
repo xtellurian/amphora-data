@@ -32,7 +32,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var property = generator.RandomString(10);
+            var property = generator.RandomString(10).ToLower();;
             var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -49,6 +49,30 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.NotNull(signals);
             Assert.NotEmpty(signals);
             Assert.Contains(signals, s => s.Id == signalDto.Id);
+        }
+
+        [Fact]
+         public async Task CreateSignalOnAmphora_Uppercase_Error()
+        {
+            var testName = nameof(CanCreateSignalOnAmphora);
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+        
+            // create an amphora
+            var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            var createContent = await createResponse.Content.ReadAsStringAsync();
+            createResponse.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createContent);
+
+            // create a signal
+            var generator = new RandomGenerator(1);
+            var property = generator.RandomString(10).ToUpper();
+            var signalDto = EntityLibrary.GetSignalDto(property);
+            var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Assert.False(response.IsSuccessStatusCode);
         }
     }
 }

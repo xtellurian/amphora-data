@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Options;
+using Amphora.Common.Models.Signals;
 using Amphora.Common.Services.Azure;
 using Amphora.Migrate.Contracts;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
@@ -47,7 +46,7 @@ namespace Amphora.Migrate.Migrators
 
         private IList<Dictionary<string, object?>> ConstructPayload(QueryResultPage page)
         {
-            var events = page.Timestamps.Select(_ => new Dictionary<string, object?> { { "t", _ } }).ToList();
+            var events = page.Timestamps.Select(_ => new Dictionary<string, object?> { { SpecialProperties.Timestamp, _ } }).ToList();
             for(var i = 0; i < page.Timestamps.Count; i++)
             {
                 var currentEvent = events[i];     

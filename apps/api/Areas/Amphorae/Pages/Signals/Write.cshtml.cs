@@ -55,7 +55,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 }
                 if(Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.HasValue ?? false)
                 {
-                    values["t"] = Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.Value;
+                    values[SpecialProperties.Timestamp] = Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.Value;
                 }
                 await signalService.WriteSignalAsync(User, this.Amphora, values);
             }
