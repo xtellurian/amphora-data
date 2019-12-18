@@ -1,0 +1,35 @@
+@model Amphora.Api.Pages.Shared.Components.TransactionRowViewComponent
+
+<div class="container">
+    <div class="row align-items-center">
+        <div class="col-1">
+            <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
+        </div>
+        <div class="col-7 text-truncate">
+            @Model.Transaction.Label
+        </div>
+        @if(Model.Transaction.IsDebit)
+        {
+            <!-- Red text for debits -->
+            <div class="col-2 text-danger">
+                @Model.Transaction.Amount
+            </div>
+        }
+        else
+        {
+            <!-- Green text for credits -->
+            <div class="col-2 text-success">
+                @Model.Transaction.Amount
+            </div>
+        }
+        <div class="col-2">
+            @if(@Model.Transaction.AmphoraId != null)
+            {
+                <!-- Links to an Amphora -->
+                <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Transaction.AmphoraId">
+                    <i class="fas fa-link"></i>
+                </a>
+            }
+        </div>
+    </div>  
+</div>

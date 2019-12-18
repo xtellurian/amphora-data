@@ -10,6 +10,7 @@ using Amphora.Common.Options;
 using Amphora.Common.Contracts;
 using Amphora.Api.Contracts;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Amphora.Common.Services.Azure
 {
@@ -75,6 +76,37 @@ namespace Amphora.Common.Services.Azure
                            searchSpan: span,
                            // projectedProperties: properties,
                            filter: null)));
+
+
+                continuationToken = queryResponse.ContinuationToken;
+            }
+            while (continuationToken != null);
+
+            return queryResponse;
+        }
+
+        public async Task<QueryResultPage> RunGetAggregateAsync(IList<object> ids,
+                                                                IDictionary<string, Variable> variables,
+                                                                DateTimeRange span,
+                                                                TimeSpan? interval = null,
+                                                                IList<string>? projections = null)
+        {
+            await InitAsync();
+            interval ??= TimeSpan.FromDays(365);
+            string continuationToken;
+            QueryResultPage queryResponse;
+            do
+            {
+                // this method will return everything in ONE set (one graphed line). to split, call it twice
+                queryResponse = await client.ExecuteQueryPagedAsync(
+                   new QueryRequest(
+                       aggregateSeries: new Microsoft.Azure.TimeSeriesInsights.Models.AggregateSeries(
+                           timeSeriesId: ids,
+                           searchSpan: span,
+                           interval: interval.Value,
+                           filter: null,
+                           projectedVariables: projections,
+                           inlineVariables: variables)));
 
 
                 continuationToken = queryResponse.ContinuationToken;

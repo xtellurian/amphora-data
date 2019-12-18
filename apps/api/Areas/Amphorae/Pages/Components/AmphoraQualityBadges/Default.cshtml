@@ -1,0 +1,56 @@
+@model Amphora.Api.Areas.Amphorae.Pages.Components.AmphoraQualityBadgesViewComponent
+
+<div class="container">
+    <div class="row">
+        <div class="col">  
+            <div>
+                <span class="badge badge-primary">@Model.Quality.CountFiles files</span>
+                @if(Model.Quality.DaysSinceFilesLastUpdated.HasValue)
+                {
+                    if(Model.Quality.DaysSinceFilesLastUpdated.Value > 30)
+                    {
+                        <span class="badge badge-danger">
+                            @Model.Quality.DaysSinceFilesLastUpdated days ago
+                        </span>
+                    }
+                    else if(Model.Quality.DaysSinceFilesLastUpdated.Value > 7)
+                    {
+                        <span class="badge badge-warning">
+                            @Model.Quality.DaysSinceFilesLastUpdated days ago
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">
+                            @Model.Quality.DaysSinceFilesLastUpdated days ago
+                        </span>
+                    }
+                }
+            </div>
+            <div>
+                <span class="badge badge-primary">@Model.Quality.CountSignals signals</span>
+                @if(Model.Quality.DaysSinceSignalsLastUpdated.HasValue)
+                {
+                    if(Model.Quality.DaysSinceSignalsLastUpdated.Value > 30)
+                    {
+                        <span class="badge badge-danger">
+                            @Model.Quality.DaysSinceSignalsLastUpdated days ago
+                        </span>
+                    }
+                    else if(Model.Quality.DaysSinceSignalsLastUpdated.Value > 7)
+                    {
+                        <span class="badge badge-warning">
+                            @Model.Quality.DaysSinceSignalsLastUpdated days ago
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">
+                            @Model.Quality.DaysSinceSignalsLastUpdated days ago
+                        </span>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -61,13 +61,15 @@ namespace Amphora.Tests.Unit.Services
 
                 Assert.Single(invoice.Credits);
                 Assert.Single(invoice.Debits);
-                Assert.Equal(credit - debit, invoice.Balance);
+                Assert.Equal(credit - debit, invoice.InvoiceBalance);
             }
         }
 
         [Fact]
         public async Task InvoicesAreGenerated_DebitsAndCreditsMultiMonth()
         {
+            var credit = 50;
+            var debit = 100;
             using (var context = GetContext())
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
@@ -79,11 +81,11 @@ namespace Amphora.Tests.Unit.Services
                 var otherOrg = EntityLibrary.GetOrganisationModel();
                 otherOrg = await orgStore.CreateAsync(otherOrg);
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                org.Account.Credits.Add( new AccountCredit("Test Credit", 100){ CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add( new AccountDebit("Test Debit", 50){ CreatedDate = lastMonth }); // debit 50
+                org.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
+                org.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
 
-                otherOrg.Account.Credits.Add( new AccountCredit("Test Credit", 50){ CreatedDate = lastMonth }); // credit 100
-                otherOrg.Account.Debits.Add( new AccountDebit("Test Debit", 100){ CreatedDate = lastMonth }); // debit 50
+                otherOrg.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
+                otherOrg.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
@@ -93,6 +95,7 @@ namespace Amphora.Tests.Unit.Services
                 Assert.NotNull(thisMonthsInvoice);
                 Assert.Empty(thisMonthsInvoice.Credits);
                 Assert.Empty(thisMonthsInvoice.Debits);
+                Assert.Equal( 0 ,thisMonthsInvoice.InvoiceBalance);
 
                 invoice = await sut.GenerateInvoiceAsync(lastMonth.StartOfMonth(), org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
@@ -103,7 +106,7 @@ namespace Amphora.Tests.Unit.Services
 
                 Assert.Single(invoice.Credits);
                 Assert.Single(invoice.Debits);
-                Assert.Equal(50, invoice.Balance);
+                Assert.Equal(credit - debit, invoice.InvoiceBalance);
             }
         }
 
@@ -133,7 +136,7 @@ namespace Amphora.Tests.Unit.Services
                 var regenereratedInvoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true, regenerate: true);
 
                 Assert.NotEqual(invoice.Id, regenereratedInvoice.Id);
-                Assert.Equal(invoice.Balance, regenereratedInvoice.Balance);
+                Assert.Equal(invoice.InvoiceBalance, regenereratedInvoice.InvoiceBalance);
 
             }
         }

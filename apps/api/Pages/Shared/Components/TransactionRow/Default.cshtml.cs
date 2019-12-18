@@ -12,10 +12,18 @@ namespace Amphora.Api.Pages.Shared.Components
 
         public Transaction Transaction { get; private set; }
 
-        public IViewComponentResult Invoke(Transaction transaction)
+        public IViewComponentResult Invoke(Transaction transaction, string size = "default")
         {
             this.Transaction = transaction;
-            return View(this);
+            switch (size?.ToLower())
+            {
+                case "default":
+                default:
+                return View(this);
+                case "medium":
+                return View("Medium", this);
+            }
+            
         }
     }
 }

@@ -1,6 +1,10 @@
 @page
 @model Amphora.Api.Areas.Admin.Pages.Accounts.AddCreditPageModel
 
+@{
+    ViewData["Title"] = "Add Credit";
+}
+
 <div class="container">
     <div class="row">
         <div class="col">
@@ -10,10 +14,9 @@
                     @Model.Message
                 </div>
             }
-            <div class="card">
-                <h2>Organisation: @Model.Organisation.Name </h2>
-                <h3>Balance: @Model.Organisation.Account?.Balance </h3>
-            </div>
+            <h2>Organisation: @Model.Organisation.Name </h2>
+            <h3>Balance: @Model.Organisation.Account?.Balance </h3>
+            <hr/>
             <form method="post" asp-route-id="@Model.Id">
                 <div class="form-group">
                     <label asp-for="Amount" class="control-label"></label>

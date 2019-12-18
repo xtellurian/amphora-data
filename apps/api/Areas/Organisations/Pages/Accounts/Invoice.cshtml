@@ -1,0 +1,49 @@
+@page
+@model Accounts.InvoicePageModel
+
+@{
+    ViewData["Title"] = Model.Invoice?.Name;
+}
+
+<div class="container">
+    <h1>Invoice</h1>
+    <h3>@Model.Invoice?.Name ?? Error</h3>
+    <hr/>
+    <div class="row">
+        <!-- unpaid row -->
+        <div class="col">
+            <h2>Credits</h2>
+            @if(Model.Invoice.CountCredits > 0)
+            {
+                @foreach(var c in Model.Invoice.Credits)
+                {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = c, size = "default" })
+                }
+            }
+            else
+            {
+                <div>
+                    None
+                </div>
+            }
+            <hr/>
+        </div>
+        <div class="col">
+            <h2>Debits</h2>
+            @if(Model.Invoice.CountDebits > 0)
+            {
+                @foreach(var d in Model.Invoice.Debits)
+                {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = d, size = "default" })
+                }
+            }
+            else
+            {
+                <div>
+                    None
+                </div>
+            }
+            <hr/>
+        </div>
+    </div>
+</div>

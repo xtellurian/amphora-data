@@ -38,6 +38,30 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
+        public async Task<long> MaxWriteTimeAsync(AmphoraModel entity)
+        {
+            // 2 year window
+            var start = DateTime.UtcNow.AddYears(-1);
+            var end = DateTime.UtcNow.AddYears(1);
+            var variables = new Dictionary<string, Variable>
+            {
+                {"maxWt", new AggregateVariable(new Tsx("max($event.wt)"))}
+            };
+
+            var result = await tsiService.RunGetAggregateAsync(new List<object> { entity.Id },
+                variables,
+                new DateTimeRange(start, end),
+                TimeSpan.FromDays(365),
+                new List<string> { "maxWt" });
+
+            var max = result.Properties.FirstOrDefault(_ => _.Name == "maxWt").Values.Max().ToString();
+            if (long.TryParse(max, System.Globalization.NumberStyles.Float, null, out var m))
+            {
+                return m;
+            }
+            return DateTime.MaxValue.Ticks;
+        }
+
         public async Task<EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, Dictionary<string, object> values)
         {
             var user = await userService.ReadUserModelAsync(principal);
@@ -66,13 +90,13 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values)
         {
-             var user = await userService.ReadUserModelAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
-                    foreach(var value in values)
+                    foreach (var value in values)
                     {
                         AddSignalProperties(entity, value);
                     }

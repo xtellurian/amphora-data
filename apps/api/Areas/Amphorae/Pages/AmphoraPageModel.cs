@@ -41,7 +41,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 if (Amphora == null)
                 {
-                    return RedirectToPage("Amphorae/Index");
+                    return RedirectToPage("Amphorae/NotFound");
                 }
                 else
                 {

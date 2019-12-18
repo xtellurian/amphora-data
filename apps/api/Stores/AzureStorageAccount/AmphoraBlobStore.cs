@@ -45,6 +45,21 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
         }
 
+        public async Task<DateTimeOffset?> LastModifiedAsync(AmphoraModel entity)
+        {
+             // 1 container per amphora
+            var container = GetContainerReference(entity);
+            if(await container.ExistsAsync())
+            {
+                await container.FetchAttributesAsync();
+                return container.Properties.LastModified;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<string> GetWritableUrl(AmphoraModel entity, string fileName)
         {
             var container = GetContainerReference(entity);

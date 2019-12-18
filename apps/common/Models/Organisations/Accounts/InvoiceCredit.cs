@@ -6,7 +6,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         {
         }
 
-        public virtual Invoice Invoice { get; set; } = null!;
+        // public virtual Invoice Invoice { get; set; } = null!;
 
         public override bool IsCredit => true;
 

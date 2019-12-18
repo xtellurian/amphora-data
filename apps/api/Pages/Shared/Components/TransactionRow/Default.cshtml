@@ -2,11 +2,20 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-10">
+        <div class="col-8 text-truncate">
             @Model.Transaction.Label
         </div>
         <div class="col-2">
             @Model.Transaction.Amount
+        </div>
+        <div class="col-2">
+            @if(@Model.Transaction.AmphoraId != null)
+            {
+                <!-- Links to an Amphora -->
+                <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Transaction.AmphoraId">
+                    <i class="fas fa-link"></i>
+                </a>
+            }
         </div>
     </div>  
 </div>

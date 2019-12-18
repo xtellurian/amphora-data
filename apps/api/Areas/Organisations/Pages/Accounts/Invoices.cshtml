@@ -1,0 +1,54 @@
+@page
+@model Accounts.InvoicesPageModel
+
+@{
+    ViewData["Title"] = "Org Invoices";
+}
+
+<div class="container">
+    <h1>Invoices</h1>
+    <hr/>
+    <div class="mb-3 row">
+        <!-- unpaid row -->
+        <div class="col">
+            <h2>Unpaid</h2>
+            @if(Model.UnpaidInvoices.Count() > 0)
+            {
+                @foreach(var unpaid in Model.UnpaidInvoices)
+                {
+                    <a asp-page="./Invoice" asp-route-invoiceId="@unpaid.Id">
+                        @await Component.InvokeAsync("InvoiceRow", new {orgId = Model.Organisation.Id, invoiceId = unpaid.Id })
+                    </a>
+                }
+            }
+            else
+            {
+                <div>
+                    None
+                </div>
+            }
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <!-- paid row -->
+        <div class="col">
+            <h2>Paid</h2>
+            @if(Model.PaidInvoices.Count() > 0)
+            {
+                @foreach(var paid in Model.PaidInvoices)
+                {
+                    <a asp-page="./Invoice" asp-route-invoiceId="@paid.Id">
+                        @await Component.InvokeAsync("InvoiceRow", new {orgId = Model.Organisation.Id, invoiceId = paid.Id })
+                    </a>
+                }
+            }
+            else
+            {
+                <div>
+                    None
+                </div>
+            }
+        </div>
+    </div>
+</div>

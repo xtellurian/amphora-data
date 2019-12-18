@@ -76,5 +76,10 @@ namespace Amphora.Api.Stores
         {
             return Task.FromResult(string.Empty);
         }
+
+        public Task<DateTimeOffset?> LastModifiedAsync(T entity)
+        {
+            return Task.FromResult<DateTimeOffset?>(DateTimeOffset.Now);
+        }
     }
 }

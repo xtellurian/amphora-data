@@ -29,6 +29,9 @@ namespace Amphora.Common.Models.Users
             return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(this.Email)}");
         }
 
+        /// <summary>
+        /// Returns whether the user is an admin of their organisation.
+        /// </summary>
         public bool IsAdmin()
         {
             var membership = this.Organisation?.Memberships?.FirstOrDefault(m => m.UserId == this.Id);
