@@ -1,6 +1,11 @@
 @page
 @model DetailPageModel
 
+
+@{
+    ViewData["Title"] = "Account Detail";
+}
+
 <div class="container">
     <div class="row">
         <div class="col">
@@ -17,8 +22,9 @@
             @foreach(var i in Model.Org.Account.Invoices)
             {
                 <div class="m-2"> 
-                    @await Component.InvokeAsync("InvoiceRow", new {invoiceId = i.Id, orgId = Model.Org.Id })
-                    <a class="btn btn-secondary" asp-page="./Invoice" asp-route-id="@Model.Org.Id" asp-route-invoiceId="@i.Id"> Detail</a>
+                    <a asp-page="./Invoice" asp-route-id="@Model.Org.Id" asp-route-invoiceId="@i.Id"> 
+                        @await Component.InvokeAsync("InvoiceRow", new {invoiceId = i.Id, orgId = Model.Org.Id })
+                    </a>
                 </div>
             }
         </div>

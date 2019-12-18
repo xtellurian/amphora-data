@@ -16,6 +16,9 @@
                     <div class="w-100 mb-1">
                         <strong>@Model.Organisation.Name</strong>
                     </div>
+                    <div class="w-100 mb-1">
+                        <small>@Model.Organisation.Id</small>
+                    </div>
                     <hr>
 
                     <a class="btn btn-light btn-block mb-3 mx-auto" asp-page="./TermsAndConditions/Index" asp-route-id="@Model.Organisation.Id">

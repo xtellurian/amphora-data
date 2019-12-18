@@ -5,8 +5,9 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public AccountDebit(string label, double? amount) : base(label, amount)
         {
         }
-        public AccountDebit(string label, double? amount, string amphoraId) : base(label, amount, amphoraId)
+        public AccountDebit(string label, double? amount, string amphoraId) : this(label, amount)
         {
+            this.AmphoraId = amphoraId;
         }
         public virtual Account Account { get; set; } = null!;
 

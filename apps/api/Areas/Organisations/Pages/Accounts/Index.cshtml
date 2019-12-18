@@ -1,5 +1,11 @@
 @page
+@using Amphora.Api.Services.FeatureFlags
+@inject FeatureFlagService Feature
 @model Amphora.Api.Areas.Organisations.Pages.Accounts.IndexModel
+
+@{
+    ViewData["Title"] = "Org Account";
+}
 
 <div class="container">
     <div class="row">
@@ -18,6 +24,10 @@
         <div class="col-md-8">
             <a asp-page="./Debits" class="btn btn-danger btn-block">Debits</a>
             <a asp-page="./Credits" class="btn btn-success btn-block">Credits</a>
+            @if(Feature.IsEnabled("Invoices"))
+            {
+                <a asp-page="./Invoices" class="btn btn-primary btn-block">Invoices</a>
+            }
         </div>
     </div>
 </div>

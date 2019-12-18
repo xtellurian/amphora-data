@@ -87,7 +87,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     }
                 }
 
-                return RedirectToPage("/Organisations/Detail");
+                return RedirectToPage("/Home/Index");
             }
             else
             {

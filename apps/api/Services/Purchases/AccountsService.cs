@@ -87,23 +87,22 @@ namespace Amphora.Api.Services.Purchases
                 DateCreated = DateTime.UtcNow,
                 Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
             };
-
+            var som = month.StartOfMonth();
+            var eom = month.EndOfMonth();
             var thisMonthsDebits = org.Account.Debits
-                .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth());
+                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom );
             var thisMonthsCredits = org.Account.Credits
-                .Where(_ => _.CreatedDate > month.StartOfMonth() && _.CreatedDate < month.EndOfMonth());
+                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
                 invoice.Credits.Add(new InvoiceCredit(c.Label, c.Amount));
             }
             foreach (var d in thisMonthsDebits)
             {
-                invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount));
+                invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount) { AmphoraId = d.AmphoraId });
             }
 
-            invoice.NumberOfCredits = thisMonthsCredits.Count();
-            invoice.NumberOfDebits = thisMonthsDebits.Count();
-            invoice.Balance = CalculateBalance(thisMonthsCredits, thisMonthsDebits);
+            CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);
             invoice.IsPreview = isPreview;
 
             org.Account.Invoices.Add(invoice);
@@ -122,7 +121,7 @@ namespace Amphora.Api.Services.Purchases
             return invoice;
         }
 
-        private double CalculateBalance(IEnumerable<AccountCredit> credits, IEnumerable<AccountDebit> debits)
+        private void CalculateAmounts(Invoice invoice, IEnumerable<AccountCredit> credits, IEnumerable<AccountDebit> debits, double? openingBalance)
         {
             if (credits is null)
             {
@@ -133,18 +132,21 @@ namespace Amphora.Api.Services.Purchases
             {
                 throw new ArgumentNullException(nameof(debits));
             }
+            invoice.CountCredits = credits.Count();
+            invoice.CountDebits = debits.Count();
+            invoice.TotalCredits ??= 0;
+            invoice.TotalDebits ??= 0;
 
-            double credit = 0;
-            double debit = 0;
-            if (credits.Count() > 0)
+            if (invoice.CountCredits > 0)
             {
-                credit += credits.Sum(c => c.Amount) ?? 0;
+                invoice.TotalCredits += credits.Sum(c => c.Amount) ?? 0;
             }
-            if (debits.Count() > 0)
+            if (invoice.CountDebits > 0)
             {
-                debit += debits.Sum(d => d.Amount) ?? 0;
+                invoice.TotalDebits += debits.Sum(d => d.Amount) ?? 0;
             }
-            return credit - debit;
+
+            invoice.OpeningBalance = openingBalance;
         }
     }
 }
