@@ -31,7 +31,7 @@ namespace Amphora.Common.Models.Amphorae
             double? price,
             string organisationId,
             string? createdById = null,
-            string? termsAndConditionsId = null): this(name, description, price, organisationId)
+            string? termsAndConditionsId = null) : this(name, description, price, organisationId)
         {
             CreatedById = createdById;
             TermsAndConditionsId = termsAndConditionsId;
