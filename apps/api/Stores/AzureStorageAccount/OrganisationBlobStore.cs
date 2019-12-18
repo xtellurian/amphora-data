@@ -60,6 +60,21 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
         }
 
+        public async Task<DateTimeOffset?> LastModifiedAsync(OrganisationModel entity)
+        {
+             // 1 container per amphora
+            var container = GetContainerReference(entity);
+            if(await container.ExistsAsync())
+            {
+                await container.FetchAttributesAsync();
+                return container.Properties.LastModified;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<string> GetPublicUrl(OrganisationModel entity, string path)
         {
             var container = GetContainerReference(entity);

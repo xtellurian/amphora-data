@@ -27,6 +27,7 @@
             }
             <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
         </div>
+
         <div class="col-md-8">
             @if(Model.Amphora.IsDeleted.HasValue && Model.Amphora.IsDeleted.Value)
             {
@@ -81,6 +82,9 @@
                     </div>
                 </div>
                     <div class="card-body">
+                        <div class="float-right">
+                            @await Component.InvokeAsync("AmphoraQualityBadges", new {qualitySummary = Model.Quality})
+                        </div>
                         <h5 class="card-title">Description</h5>
                         <span class="card-text" style="white-space: pre-line">@Model.Amphora.Description</span>
                     </div>

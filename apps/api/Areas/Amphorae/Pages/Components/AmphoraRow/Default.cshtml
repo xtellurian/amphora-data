@@ -1,0 +1,26 @@
+@model Amphora.Api.Areas.Amphorae.Pages.Components.AmphoraRowViewComponent
+
+<div class="row align-items-center entity-item">
+    <div class="col-1">
+        <a asp-page="./Detail" asp-route-id="@Model.Amphora.Id">    
+            <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
+        </a>
+    </div>
+    <div class="col-1 text-left">
+        @if(Model.Amphora.IsDeleted ?? false)
+        {
+            <i class="text-danger fas fa-lg fa-trash" data-toggle="tooltip" data-placement="top" title="Pending Deletion"></i>
+        }
+    </div>
+    <div class="col-sm-7">
+        @Model.Amphora.Name 
+    </div>
+    <div class="d-none d-sm-block col-sm-2 text-right">
+        @Model.Amphora.Price 
+    </div>
+    <div class="col-1">
+        <a asp-page="./Detail" asp-route-id="@Model.Amphora.Id"> 
+            <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
+        </a>
+    </div>
+</div>

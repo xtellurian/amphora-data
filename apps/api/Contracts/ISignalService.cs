@@ -16,5 +16,6 @@ namespace Amphora.Api.Contracts
         Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values);
         Task<IDictionary<SignalModel, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity);
         Task<EntityOperationResult<SignalModel>> AddSignal(ClaimsPrincipal principal, AmphoraModel amphora, SignalModel signal);
+        Task<long> MaxWriteTimeAsync(AmphoraModel entity);
     }
 }

@@ -96,6 +96,7 @@ namespace Amphora.Api
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
             services.AddTransient<IAccountsService, AccountsService>();
+            services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();

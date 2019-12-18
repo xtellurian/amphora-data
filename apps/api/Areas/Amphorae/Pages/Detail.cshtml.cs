@@ -23,6 +23,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly IPurchaseService purchaseService;
+        private readonly IQualityEstimatorService qualityEstimator;
         private readonly FeatureFlagService featureFlags;
 
         public DetailModel(
@@ -31,15 +32,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             IUserService userService,
             IPermissionService permissionService,
             IPurchaseService purchaseService,
+            IQualityEstimatorService qualityEstimator,
             FeatureFlagService featureFlags) : base(amphoraeService)
         {
             this.blobStore = blobStore;
             this.userService = userService;
             this.permissionService = permissionService;
             this.purchaseService = purchaseService;
+            this.qualityEstimator = qualityEstimator;
             this.featureFlags = featureFlags;
         }
 
+        public DataQualitySummary Quality { get; private set; }
         public IEnumerable<string> Names { get; set; }
         
         public bool CanEditPermissions { get; set; }
@@ -61,6 +65,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var user = await userService.UserManager.GetUserAsync(User);
             if (Amphora != null)
             {
+                this.Quality = await qualityEstimator.GenerateDataQualitySummaryAsync(Amphora);
                 Names = await blobStore.ListBlobsAsync(Amphora);
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check
