@@ -35,10 +35,14 @@ namespace Amphora.Tests.Integration
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
+
         [Fact]
-        public async Task CanUploadSignal()
+        public async Task CaseMismatch_Error()
         {
             // Arrange
+            var p1 = "der";
+            var p2 = "sed";
+
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanUploadSignal));
             var s = JsonConvert.SerializeObject(a);
@@ -55,8 +59,71 @@ namespace Amphora.Tests.Integration
             a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
-            var dSignal = new SignalDto() { Property = "d", ValueType = "Numeric" };
-            var sSignal = new SignalDto() { Property = "s", ValueType = "String" };
+            var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };
+            var sSignal = new SignalDto() { Property = p2, ValueType = "String" };
+
+            var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
+            var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
+
+            dRes.EnsureSuccessStatusCode();
+            sRes.EnsureSuccessStatusCode();
+
+            // act
+            var vals = new Dictionary<string, object>
+                {
+                    {p1.ToUpper(), 5}, // uppercase should error
+                    {p2.ToUpper(), "hello"}
+                };
+
+            var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
+            Assert.False(valRes.IsSuccessStatusCode);
+
+            var batchVals = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    {p1, 6},
+                    {p2, "batch1"}
+                },
+                new Dictionary<string, object>
+                {
+                    {p1.ToUpper(), 7},
+                    {p2.ToUpper(), "batch2"}
+                }
+            };
+
+            var batchRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/batchvalues", batchVals);
+            Assert.False(batchRes.IsSuccessStatusCode);
+
+            await DestroyAmphoraAsync(adminClient, a.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+        }
+        [Fact]
+        public async Task CanUploadSignal()
+        {
+            // Arrange
+            var p1 = "der";
+            var p2 = "sed";
+
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanUploadSignal));
+            var s = JsonConvert.SerializeObject(a);
+            var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
+
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.PostAsync("api/amphorae", requestBody);
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(responseBody);
+            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            Assert.NotNull(a.Id);
+            // create a signal
+            var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };
+            var sSignal = new SignalDto() { Property = p2, ValueType = "String" };
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
@@ -68,8 +135,8 @@ namespace Amphora.Tests.Integration
 
             var vals = new Dictionary<string, object>
                 {
-                    {"d", 5},
-                    {"s", "hello"}
+                    {p1, 5},
+                    {p2, "hello"}
                 };
 
 
@@ -81,17 +148,17 @@ namespace Amphora.Tests.Integration
             {
                 new Dictionary<string, object>
                 {
-                    {"d", 6},
-                    {"s", "batch1"}
+                    {p1, 6},
+                    {p2, "batch1"}
                 },
                 new Dictionary<string, object>
                 {
-                    {"d", 7},
-                    {"s", "batch2"}
+                    {p1, 7},
+                    {p2, "batch2"}
                 }
             };
 
-            var batchRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/batchvalues", batchVals); 
+            var batchRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/batchvalues", batchVals);
             batchRes.EnsureSuccessStatusCode();
 
             await DestroyAmphoraAsync(adminClient, a.Id);

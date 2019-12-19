@@ -13,6 +13,7 @@ namespace Amphora.Tests.Integration.Amphorae
     [Collection(nameof(IntegrationFixtureCollection))]
     public class AmphoraSignalsTests : IntegrationTestBase
     {
+        private static string BadName => "HH78365^@*";
         public AmphoraSignalsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
@@ -32,7 +33,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var property = generator.RandomString(10);
+            var property = generator.RandomString(10) + "_" + generator.RandomString(2); // w/ underscore
             var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -49,6 +50,29 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.NotNull(signals);
             Assert.NotEmpty(signals);
             Assert.Contains(signals, s => s.Id == signalDto.Id);
+        }
+
+        [Fact]
+         public async Task CreateSignalOnAmphora_Symbol_Error()
+        {
+            var testName = nameof(CanCreateSignalOnAmphora);
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+        
+            // create an amphora
+            var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            var createContent = await createResponse.Content.ReadAsStringAsync();
+            createResponse.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createContent);
+
+            // create a signal
+            var generator = new RandomGenerator(1);
+            var signalDto = EntityLibrary.GetSignalDto(BadName);
+            var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Assert.False(response.IsSuccessStatusCode);
         }
     }
 }

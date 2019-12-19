@@ -10,8 +10,8 @@ namespace Amphora.Api
             = new ApiVersionIdentifier()
             {
                 Major = 0,
-                Minor = 3,
-                Patch = 8
+                Minor = 4,
+                Patch = 0
             };
     }
 

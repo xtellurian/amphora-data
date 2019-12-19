@@ -62,7 +62,9 @@ namespace Amphora.Api.Services.Amphorae
             return DateTime.MaxValue.Ticks;
         }
 
-        public async Task<EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, Dictionary<string, object> values)
+        public async Task<EntityOperationResult<Dictionary<string, object>>> WriteSignalAsync(ClaimsPrincipal principal,
+                                                                                              AmphoraModel entity,
+                                                                                              Dictionary<string, object> values)
         {
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
@@ -70,7 +72,11 @@ namespace Amphora.Api.Services.Amphorae
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
-                    AddSignalProperties(entity, values);
+                    if (InvalidSignalProperties(entity, values))
+                    {
+                        return new EntityOperationResult<Dictionary<string, object>>(user, "Invalid properties");
+                    }
+                    AddDefaultSignalProperties(entity, values);
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(user, values);
                 }
@@ -81,11 +87,24 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-        private static void AddSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
+        private bool InvalidSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
         {
-            values["amphora"] = entity.Id;
-            if (!values.ContainsKey("t")) values.Add("t", DateTime.UtcNow);
-            values["wt"] = DateTime.UtcNow.Ticks;
+            var isInvalid = false;
+            var sigs = entity.Signals.ToList();
+            foreach (var s in values.Keys)
+            {
+                // check if key is not in the signals, and its not a timestamp
+                if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) isInvalid = true;
+            }
+
+            return isInvalid;
+        }
+
+        private static void AddDefaultSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
+        {
+            values[SpecialProperties.TimeSeriesId] = entity.Id;
+            if (!values.ContainsKey(SpecialProperties.Timestamp)) values.Add(SpecialProperties.Timestamp, DateTime.UtcNow);
+            values[SpecialProperties.WriteTime] = DateTime.UtcNow.Ticks;
         }
 
         public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values)
@@ -98,7 +117,11 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     foreach (var value in values)
                     {
-                        AddSignalProperties(entity, value);
+                        if (InvalidSignalProperties(entity, value))
+                        {
+                            return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Invalid properties");
+                        }
+                        AddDefaultSignalProperties(entity, value);
                     }
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, values);
