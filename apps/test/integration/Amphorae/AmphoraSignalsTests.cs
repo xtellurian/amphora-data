@@ -13,6 +13,7 @@ namespace Amphora.Tests.Integration.Amphorae
     [Collection(nameof(IntegrationFixtureCollection))]
     public class AmphoraSignalsTests : IntegrationTestBase
     {
+        private static string BadName => "HH78365^@*";
         public AmphoraSignalsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
@@ -32,7 +33,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var property = generator.RandomString(10).ToLower() + "_" + generator.RandomString(2).ToLower(); // w/ underscore
+            var property = generator.RandomString(10) + "_" + generator.RandomString(2); // w/ underscore
             var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -52,7 +53,7 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-         public async Task CreateSignalOnAmphora_Uppercase_Error()
+         public async Task CreateSignalOnAmphora_Symbol_Error()
         {
             var testName = nameof(CanCreateSignalOnAmphora);
             // Arrange
@@ -67,8 +68,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var property = generator.RandomString(10).ToUpper();
-            var signalDto = EntityLibrary.GetSignalDto(property);
+            var signalDto = EntityLibrary.GetSignalDto(BadName);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
 

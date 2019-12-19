@@ -72,8 +72,11 @@ namespace Amphora.Api.Services.Amphorae
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
-                    if (InvalidSignalProperties(entity, values)) return new EntityOperationResult<Dictionary<string, object>>(user, "Invalid properties");
-                    AddSignalProperties(entity, values);
+                    if (InvalidSignalProperties(entity, values))
+                    {
+                        return new EntityOperationResult<Dictionary<string, object>>(user, "Invalid properties");
+                    }
+                    AddDefaultSignalProperties(entity, values);
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(user, values);
                 }
@@ -97,7 +100,7 @@ namespace Amphora.Api.Services.Amphorae
             return isInvalid;
         }
 
-        private static void AddSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
+        private static void AddDefaultSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
         {
             values[SpecialProperties.TimeSeriesId] = entity.Id;
             if (!values.ContainsKey(SpecialProperties.Timestamp)) values.Add(SpecialProperties.Timestamp, DateTime.UtcNow);
@@ -114,7 +117,11 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     foreach (var value in values)
                     {
-                        AddSignalProperties(entity, value);
+                        if (InvalidSignalProperties(entity, value))
+                        {
+                            return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Invalid properties");
+                        }
+                        AddDefaultSignalProperties(entity, value);
                     }
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, values);
