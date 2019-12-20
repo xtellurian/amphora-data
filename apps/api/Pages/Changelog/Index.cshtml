@@ -7,14 +7,14 @@
 }
 
 <div>
-    @foreach(var kvp in Model.VersionFiles)
+    @foreach(var v in Model.VersionDetails)
     {
         <h1>
-            <a asp-page="./detail" asp-route-version="@kvp.Key">
-                @kvp.Key
+            <a asp-page="./detail" asp-route-version="@v.VersionName">
+                @v.VersionName
             </a> 
         </h1>
-        @await Markdown.ParseHtmlStringFromFileAsync(kvp.Value)
+        @await Markdown.ParseHtmlStringFromFileAsync(v.MdFilePath)
         <hr/>
     }
 </div>

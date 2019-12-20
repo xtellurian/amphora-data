@@ -35,28 +35,36 @@ async function tsi(id, signals, filters) {
         var result = await tsiClient.server.getTsqResults("token", url, linechartTsqExpressions.map(function (ae) {
             return ae.toTsq()
         }))
-        var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-        var today = (new Date()).toISOString();
+        var data = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
+        var todayDate = new Date();
 
-        // copied
-        var events = [
-            {
-                "Today": [
-                    {
-                        [today]: {
-                            'color': '#08172e',
-                            'description': 'Now'
-                        }
-                    }
-                ]
+        if(todayDate > from && todayDate < to ) {
+            // now is between from and to
+            var today = todayDate.toISOString();
+            // adds today
+            events = {};
+            data.push({[`Events`]: events});
+            var values = {};
+            events[`Days`] = values;
+    
+            let measures = {};
+            measures['Today'] = 'Now';
+            values[today] = measures
+
+            var eventValueMapping = {
+                Today: {
+                    color: '#BC312A'
+                }
             }
-        ];
+    
+            linechartTsqExpressions.push({dataType: 'events', valueMapping: eventValueMapping, height: 10, eventElementType: 'diamond', onElementClick: null})
+        }
 
-        lineChart.render(transformedResult,
+        lineChart.render(data,
             {
                 theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked',
                 noAnimate: true, includeDots: false, offset: timezone,
-                includeEnvelope: true, dateLocale: 'en-AU', events: events,
+                includeEnvelope: true, dateLocale: 'en-AU',
             },
             linechartTsqExpressions);
 
@@ -109,8 +117,10 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
     var linechartTsqExpressions = [];
     signals.forEach((sig) => {
         const y = {};
+        var kind = 'numeric';
+
         y[sig.Property] = {
-            kind: 'numeric',
+            kind,
             value: { tsx: `$event.${sig.Property}` },
             filter,
             aggregation: { tsx: 'avg($value)' }

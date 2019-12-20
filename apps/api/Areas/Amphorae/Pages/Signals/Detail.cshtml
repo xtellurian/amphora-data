@@ -10,13 +10,14 @@
         <div class="col">
             <div class="m-2">
                 <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">All Signals</button></a>
-                <h2>@Model.Amphora.Name : @Model.Signals.FirstOrDefault()?.Property</h2>
+                <h2>@Model.Amphora.Name</h2>
+                <strong>Property: @Model.Signals.FirstOrDefault()?.Property</strong>
             </div>
             @if(Model.Values != null)
             {
                 <div class="card m-2">
                     <div class="card-header">
-                        The signal has the following possibilities:
+                        This property has the following categorical values:
                     </div>
                     <div class="card-body">
                         <ul>
@@ -30,17 +31,16 @@
             }
             else if(@Model.Signal.IsString)
             {
-                <p>This signal has no values...</p>
+                <p>This property has no values...</p>
             }
         </div>
     </div>
     @if(Model.Signal.IsNumeric)
     {
     <div class="row">
-        <div class="col">
-            <small>Chart</small>
-        </div>
-        <div id="chart" style="width: 100%; height: 400px; margin-top: 40px; float: left;"></div>
+        <div id="chart" class="mb-5 mt-3" style="width: 100%; height: 400px; float: left;"></div>
+    </div>
+    <div class="row">
         <div id="availability" style="width: 100%; height: 160px; z-index:1;"></div>
     </div>
     }
@@ -48,7 +48,6 @@
 
 
 @section Scripts {
-    <script src="https://unpkg.com/tsiclient@1.2.61/tsiclient.js"></script>
     @if(Model.Signal.IsNumeric)
     {
     <script src="~/js/tsi.js"></script>
