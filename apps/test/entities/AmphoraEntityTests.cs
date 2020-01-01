@@ -1,16 +1,14 @@
 using Xunit;
-using Amphora.Api.Stores;
 using Amphora.Api.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Newtonsoft.Json;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Stores.EFCore;
 
-namespace Amphora.Tests.Unit
+namespace Amphora.Tests.Unit.Entities
 {
     public class AmphoraEntityTests : UnitTestBase
     {
