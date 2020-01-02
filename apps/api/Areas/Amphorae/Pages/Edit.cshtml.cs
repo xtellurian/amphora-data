@@ -51,7 +51,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     var a = readResult.Entity;
                     var labels = AmphoraDto.Labels.Trim().Split(',').ToList();
-                    a.Labels = new List<Label>(labels.Where(name => !string.IsNullOrEmpty(name)).Select(name => new Label(name.Trim())));
+                    a.Labels = new List<Label>(labels
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .Select(name => new Label(name)));
                     a.Name = AmphoraDto.Name;
                     a.Description = AmphoraDto.Description;
                     a.Price = AmphoraDto.Price;

@@ -7,7 +7,7 @@ namespace Amphora.Common.Models.Amphorae
         }
         public Label(string name)
         {
-            Name = name;
+            Name = name.Trim();
         }
 
         public string? Name { get; set; }
