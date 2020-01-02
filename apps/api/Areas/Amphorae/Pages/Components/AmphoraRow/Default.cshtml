@@ -12,10 +12,18 @@
             <i class="text-danger fas fa-lg fa-trash" data-toggle="tooltip" data-placement="top" title="Pending Deletion"></i>
         }
     </div>
-    <div class="col-sm-7">
+    <div class="col-sm-6">
         @Model.Amphora.Name 
     </div>
-    <div class="d-none d-sm-block col-sm-2 text-right">
+    <div class="col-sm-2">
+        @foreach(var l in Model.Amphora.Labels)
+        {
+            <span class="d-inline-block text-truncate badge badge-dark" style="max-width: 50px;">
+                @l.Name
+            </span>
+        }
+    </div>
+    <div class="d-none d-sm-block col-sm-1 text-right">
         @Model.Amphora.Price 
     </div>
     <div class="col-1">

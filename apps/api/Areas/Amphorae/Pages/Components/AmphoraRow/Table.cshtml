@@ -1,4 +1,4 @@
-@model Amphora.Api.Areas.Amphorae.Pages.Components.AmphoraTableRowViewComponent
+@model Amphora.Api.Areas.Amphorae.Pages.Components.AmphoraRowViewComponent
 
 <tr class="row align-items-center entity-item">
     <th class="col-1">
@@ -12,10 +12,18 @@
             <i class="text-danger fas fa-lg fa-trash" data-toggle="tooltip" data-placement="top" title="Pending Deletion"></i>
         }
     </td>
-    <td class="col-sm-7">
+    <td class="col-sm-6">
         @Model.Amphora.Name 
     </td>
-    <td class="d-none d-sm-block col-sm-2 text-right">
+    <td class="col-sm-2">
+        @foreach(var l in Model.Amphora.Labels)
+        {
+            <span class="d-inline-block text-truncate badge badge-dark" style="max-width: 50px;">
+                @l.Name
+            </span>
+        }
+    </td>
+    <td class="d-none d-sm-block col-sm-1 text-right">
         @Model.Amphora.Price 
     </td>
     <td class="col-1">
