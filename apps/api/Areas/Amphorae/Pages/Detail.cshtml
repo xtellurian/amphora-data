@@ -82,6 +82,12 @@
                             </button>
                             <span class="d-none" id=amphoraId> <small>@Model.Amphora.Id </small> </span>
                         </span>
+                        <div>
+                            @foreach(var l in Model.Amphora.Labels)
+                            {
+                                <span class="badge badge-secondary m-1">l.Name</span>
+                            }
+                        </div>
                     </div>
                     @{
                         var buttonMode = string.Empty;

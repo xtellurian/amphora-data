@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Permissions;
+using System.Linq;
 
 namespace Amphora.Api.DbContexts
 {
@@ -22,17 +23,18 @@ namespace Amphora.Api.DbContexts
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<AmphoraModel>(b =>
+            modelBuilder.Entity<AmphoraModel>(amphora =>
             {
-                b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
-                b.Property(e => e.GeoLocation)
+                amphora.Property(p => p.Id).ValueGeneratedOnAdd();
+                amphora.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
+                amphora.Property(e => e.GeoLocation)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
-                b.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
-                b.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-                b.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
+                amphora.OwnsMany(_ => _.Labels).WithOwner();
+                amphora.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
+                amphora.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
+                amphora.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
             });
 
             modelBuilder.Entity<AmphoraSignalModel>(b =>

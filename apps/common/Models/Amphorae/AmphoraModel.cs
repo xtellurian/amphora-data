@@ -42,6 +42,7 @@ namespace Amphora.Common.Models.Amphorae
         public double? Price { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
+        public virtual ICollection<Label> Labels { get; set; } = new Collection<Label>();
 
         // navigation
         public string OrganisationId { get; set; }
