@@ -9,6 +9,7 @@ using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
@@ -60,8 +61,10 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.CanRestrict = CanEdit;
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
             // get pinned
-            var query = await amphoraeService.AmphoraStore.QueryAsync(a => a.OrganisationId == Organisation.Id);
-            this.PinnedAmphorae = query.Take(6);
+            var query = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == Organisation.Id);
+            this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull() 
+                ? await query.Take(6).ToListAsync()
+                : Organisation.PinnedAmphorae as IEnumerable<AmphoraModel>;
             return Page();
         }
     }

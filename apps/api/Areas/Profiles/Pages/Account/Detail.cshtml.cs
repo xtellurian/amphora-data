@@ -56,9 +56,10 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             }
 
             var q = amphoraeService.AmphoraStore.Query(a => a.CreatedById == AppUser.Id);
-            this.PinnedAmphorae = await q.Take(6).ToListAsync();
+            this.PinnedAmphorae = AppUser.PinnedAmphorae.AreAllNull()
+                ? await q.Take(6).ToListAsync()
+                : AppUser.PinnedAmphorae as IEnumerable<AmphoraModel>;
             return Page();
         }
-
     }
 }
