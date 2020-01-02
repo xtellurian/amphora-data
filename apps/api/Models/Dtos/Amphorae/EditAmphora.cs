@@ -14,5 +14,8 @@ namespace Amphora.Api.Models.Dtos.Amphorae
 
         [Display(Name = "Terms and Conditions")]
         public string TermsAndConditionsId { get; set; }
+        [Display(Name = "Labels")]
+        [RegularExpression(@"^(([-\w ]{0,12})[, ]?){1,6}$", ErrorMessage = "Comma Separated Labels, Max 5 Labels")]
+        public string Labels { get; set; }
     }
 }

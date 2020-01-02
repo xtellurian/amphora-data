@@ -16,7 +16,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.amphoraeService = amphoraeService;
         }
 
-        [BindProperty]
+    //[BindProperty] // this shouldn't be bound, as it messes with model validation, and shouldn't be sent by the client
         public AmphoraModel Amphora { get; set; }
         public EntityOperationResult<AmphoraModel> Result { get; private set; }
 

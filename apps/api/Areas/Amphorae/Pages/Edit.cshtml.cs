@@ -43,31 +43,40 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
+            await base.LoadAmphoraAsync(id);
             var readResult = await amphoraeService.ReadAsync(User, id);
             if (readResult.Succeeded)
             {
-
-                var a = readResult.Entity;
-                a.Name = AmphoraDto.Name;
-                a.Description = AmphoraDto.Description;
-                a.Price = AmphoraDto.Price;
-                a.TermsAndConditionsId = AmphoraDto.TermsAndConditionsId;
-                a.GeoLocation = (AmphoraDto.Lon.HasValue && AmphoraDto.Lat.HasValue)
-                    ? new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value)
-                    : null;
-
-                var result = await amphoraeService.UpdateAsync(User, a);
-                if (result.Succeeded)
+                if (this.TryValidateModel(AmphoraDto, nameof(AmphoraDto)))
                 {
-                    return RedirectToPage("./Detail", new { id = a.Id });
-                }
-                else if (result.WasForbidden)
-                {
-                    return RedirectToPage("./Forbidden");
+                    var a = readResult.Entity;
+                    var labels = AmphoraDto.Labels.Trim().Split(',').ToList();
+                    a.Labels = new List<Label>(labels.Where(name => !string.IsNullOrEmpty(name)).Select(name => new Label(name.Trim())));
+                    a.Name = AmphoraDto.Name;
+                    a.Description = AmphoraDto.Description;
+                    a.Price = AmphoraDto.Price;
+                    a.TermsAndConditionsId = AmphoraDto.TermsAndConditionsId;
+                    a.GeoLocation = (AmphoraDto.Lon.HasValue && AmphoraDto.Lat.HasValue)
+                        ? new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value)
+                        : null;
+
+                    var result = await amphoraeService.UpdateAsync(User, a);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToPage("./Detail", new { id = a.Id });
+                    }
+                    else if (result.WasForbidden)
+                    {
+                        return RedirectToPage("./Forbidden");
+                    }
+                    else
+                    {
+                        this.ModelState.AddModelError(string.Empty, result.Message);
+                        return Page();
+                    }
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, result.Message);
                     return Page();
                 }
             }
