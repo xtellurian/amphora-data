@@ -107,17 +107,60 @@
                             
                         </div>
                         <div class="col-sm-2 float-right">
-                            @if(Model.CanUploadFiles)
-                            {    
-                            <a class="m-1 float-left" data-toggle="collapse" href="#uploadFileCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                                <i class="fas fa-upload"></i>
-                            </a>
-                            }
-                            @if(Model.CanEditPermissions)
+                            @if(Model.CanEditDetails)
                             {
-                            <a class="m-1 float-left" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                                <i class="fas fa-users"></i>
-                            </a>
+
+                            <span class="dropdown show">
+                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Options
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="pinActionLink">
+                                    @if(Model.Result.User?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
+                                    {
+                                        <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
+                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                                <i class="fas fa-thumbtack"></i> Unpin from User
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToUser">
+                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                                <i class="fas fa-thumbtack"></i> Pin to User
+                                            </button>
+                                        </form>
+                                    }
+                                    
+                                    @if(Model.Amphora.Organisation?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
+                                    {
+                                        <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromOrg">
+                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                                <i class="fas fa-thumbtack"></i> Unpin from Organisation
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToOrg">
+                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                                <i class="fas fa-thumbtack"></i> Pin to Organisation
+                                            </button>
+                                        </form>
+                                    }
+                                    
+                                    <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                                        <i class="fas fa-users"></i> Show has purchased
+                                    </button>
+                                    @if(Model.CanUploadFiles)
+                                    {    
+                                    <button class="dropdown-item" data-toggle="collapse" href="#uploadFileCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                                        <i class="fas fa-upload"></i> Upload File
+                                    </button>
+                                    }
+                                </div>
+                            </span>
                             }
                         </div>
                     </div>
@@ -129,7 +172,7 @@
                 </div>
                 <div class="card-body">
                     <div class="container">
-                        <form method="post" enctype="multipart/form-data">
+                        <form asp-route-id="@Model.Amphora.Id" asp-page-handler="upload" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <input class="form-control-file" type="file" name="files">
                                 <small class="form-text card-text text-muted">This becomes content in the Amphora.</small>

@@ -9,7 +9,6 @@ using Amphora.Api.Services.FeatureFlags;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Amphora.Common.Models.Purchases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +23,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IPermissionService permissionService;
         private readonly IPurchaseService purchaseService;
         private readonly IQualityEstimatorService qualityEstimator;
+        private readonly IOrganisationService organisationService;
         private readonly FeatureFlagService featureFlags;
 
         public DetailModel(
@@ -33,6 +33,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             IPermissionService permissionService,
             IPurchaseService purchaseService,
             IQualityEstimatorService qualityEstimator,
+            IOrganisationService organisationService,
             FeatureFlagService featureFlags) : base(amphoraeService)
         {
             this.blobStore = blobStore;
@@ -40,12 +41,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.permissionService = permissionService;
             this.purchaseService = purchaseService;
             this.qualityEstimator = qualityEstimator;
+            this.organisationService = organisationService;
             this.featureFlags = featureFlags;
         }
 
         public DataQualitySummary Quality { get; private set; }
         public IEnumerable<string> Names { get; set; }
-        
+
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
@@ -60,6 +62,105 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             return OnReturnPage();
         }
 
+        public async Task<IActionResult> OnPostPinAsync(string id, string target)
+        {
+            await base.LoadAmphoraAsync(id);
+            await SetPagePropertiesAsync();
+
+
+            switch (target?.ToLower())
+            {
+                case "pintouser":
+                    await PinToUser();
+                    break;
+                case "pintoorg":
+                    await PinToOrg();
+                    break;
+                case "unpinfromuser":
+                    await UnpinFromUser();
+                    break;
+                case "unpinfromorg":
+                    await UnpinFromOrg();
+                    break;
+            }
+            return RedirectToPage("./Detail", new { Id = id });
+        }
+
+        private async Task UnpinFromOrg()
+        {
+            var user = Result.User;
+            var org = user.Organisation;
+            if (!user.IsAdmin())
+            {
+                ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
+                return;
+            }
+            if (org.PinnedAmphorae.IsPinned(Amphora))
+            {
+                org.PinnedAmphorae.Unpin(Amphora);
+                var res = await organisationService.UpdateAsync(User, org);
+                if (!res.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, res.Message);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Amphora is not currently pinned");
+            }
+        }
+
+        private async Task UnpinFromUser()
+        {
+            var user = Result.User;
+            if (user.PinnedAmphorae.IsPinned(Amphora))
+            {
+                user.PinnedAmphorae.Unpin(Amphora);
+                await userService.UserManager.UpdateAsync(user);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Amphora is not currently pinned");
+            }
+        }
+
+        private async Task PinToUser()
+        {
+            var user = Result.User;
+            if (user.PinnedAmphorae.AreAnyNull())
+            {
+                user.PinnedAmphorae.PinToLeastNull(Amphora);
+                await userService.UserManager.UpdateAsync(user);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "No free places to pin");
+            }
+        }
+        private async Task PinToOrg()
+        {
+            var user = Result.User;
+            var org = user.Organisation;
+            if (!user.IsAdmin())
+            {
+                ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
+                return;
+            }
+            if (org.PinnedAmphorae.AreAnyNull())
+            {
+                org.PinnedAmphorae.PinToLeastNull(Amphora);
+                var res = await organisationService.UpdateAsync(User, org);
+                if (!res.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, res.Message);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "No free places to pin");
+            }
+        }
+
         private async Task SetPagePropertiesAsync()
         {
             var user = await userService.UserManager.GetUserAsync(User);
@@ -72,23 +173,23 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.Update);
                 CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
 
-               
+
                 this.Purchases = Amphora.Purchases;
                 this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
             }
         }
 
-        public async Task<IActionResult> OnPostAsync(string id, List<IFormFile> files)
+        public async Task<IActionResult> OnPostUploadAsync(string id, List<IFormFile> files)
         {
             if (files == null || files.Count > 1)
             {
                 throw new System.ArgumentException("Only 1 file is supported");
             }
 
-            if (string.IsNullOrEmpty(id)) return RedirectToAction("./Index");
+            if (string.IsNullOrEmpty(id)) return RedirectToPage("./Index");
 
             var result = await amphoraeService.ReadAsync(User, id);
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = result.User;
 
             if (result.Succeeded)
             {
@@ -114,7 +215,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 this.Amphora = result.Entity;
                 await SetPagePropertiesAsync();
-                return Page();
+                return RedirectToPage("./Detail", new { Id = id });
             }
             else if (result.WasForbidden)
             {
@@ -122,11 +223,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else
             {
-                return RedirectToPage(".Index");
+                return RedirectToPage("./Index");
             }
-
         }
-
-        
     }
 }

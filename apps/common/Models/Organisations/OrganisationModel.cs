@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
@@ -34,6 +35,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
         public virtual ICollection<RestrictionModel> Restrictions { get; set; } = new Collection<RestrictionModel>();
+        public virtual PinnedAmphorae? PinnedAmphorae { get; set; } = new PinnedAmphorae();
         // navigation
         public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; } = new Collection<TermsAndConditionsModel>();
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; } = new Collection<TermsAndConditionsAcceptanceModel>();
