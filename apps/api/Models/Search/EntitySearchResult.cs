@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Azure.Search.Models;
 using Newtonsoft.Json;
 
 namespace Amphora.Api.Models.Search
@@ -25,8 +26,8 @@ namespace Amphora.Api.Models.Search
         [JsonProperty(PropertyName = "@search.coverage")]
         public double? Coverage { get; set; }
 
-        //[JsonProperty(PropertyName = "@search.facets")]
-        // public IDictionary<string, IList<FacetResult>> Facets { get; }
+        [JsonProperty(PropertyName = "@search.facets")]
+        public IDictionary<string, IList<FacetResult>> Facets { get; set; } = new Dictionary<string, IList<FacetResult>>();
         public IList<SearchResult<T>> Results { get; set; }
     }
 }

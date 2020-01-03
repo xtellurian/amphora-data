@@ -8,6 +8,23 @@
 
 
 <div id="main" class="container">
+    <div class="row">
+        @if(Model.ModelState.ErrorCount > 0)
+        {
+            <div class="col" aria-live="polite" aria-atomic="true" style="position: relative;"> 
+                <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" style="position: absolute; top: 0; right: 0; z-index: 10;">
+                    <div class="toast-header">
+                        <strong class="mr-auto">Message</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="toast-body text-danger">
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
     <div class="row mb-3 border-bottom">
         <div class="col-9">
             <h2>
@@ -65,6 +82,12 @@
                             </button>
                             <span class="d-none" id=amphoraId> <small>@Model.Amphora.Id </small> </span>
                         </span>
+                        <div>
+                            @foreach(var l in Model.Amphora.Labels)
+                            {
+                                <span class="badge badge-dark m-1">@l.Name</span>
+                            }
+                        </div>
                     </div>
                     @{
                         var buttonMode = string.Empty;
@@ -89,11 +112,11 @@
                         <span class="card-text" style="white-space: pre-line">@Model.Amphora.Description</span>
                     </div>
                 <div class="container card-footer">
-                    <div class="row">
+                    <div class="row justify-content-between">
                         <div class="col-sm-4">
                             <i class="fas fa-dollar-sign"></i> @Model.Amphora.Price per Month
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             @if(Model.Amphora.TermsAndConditionsId != null)
                             {
                                 <i class="far fa-handshake mr-1"></i>
@@ -106,12 +129,12 @@
                             }
                             
                         </div>
-                        <div class="col-sm-2 float-right">
+                        <div class="col-3 text-right">
                             @if(Model.CanEditDetails)
                             {
 
                             <span class="dropdown show">
-                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Options
                                 </a>
 
@@ -233,7 +256,17 @@
             </tbody>
         </table>
     </div>
-    
-
 </div>
 
+@section Scripts {
+    <script>
+        $('.toast').toast({
+            animation: true,
+            delay: 3000
+        })
+
+        $('.toast').toast('show')
+
+
+    </script>
+}

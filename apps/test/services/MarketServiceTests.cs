@@ -11,6 +11,7 @@ using Amphora.Tests.Helpers;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Amphora.Tests.Unit.Services
 {
@@ -49,8 +50,9 @@ namespace Amphora.Tests.Unit.Services
 
                 var response = await sut.FindAsync("");
                 Assert.NotNull(response);
-                Assert.NotEmpty(response);
-                Assert.Contains(response, e => e.Id == entity.Id);
+                var entities = response.Results.Select(_ => _.Entity);
+                Assert.NotEmpty(entities);
+                Assert.Contains(entities, e => e.Id == entity.Id);
             }
         }
     }

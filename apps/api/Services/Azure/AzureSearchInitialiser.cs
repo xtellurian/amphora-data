@@ -30,7 +30,7 @@ namespace Amphora.Api.Services.Azure
         private readonly ILogger<AzureSearchInitialiser> logger;
         private readonly IOptionsMonitor<CosmosOptions> cosmosOptions;
         private SearchServiceClient serviceClient;
-        public string IndexerName => "amphora-indexer";
+        public string IndexerName => $"{ApiVersion.CurrentVersion.ToSemver('-')}-amphora-indexer";
         private readonly object initialiseLock = new object();
         public async Task<bool> TryIndex()
         {

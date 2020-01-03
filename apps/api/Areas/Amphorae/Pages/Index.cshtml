@@ -59,7 +59,7 @@
                     <tbody>
                         @foreach (var entity in Model.Amphorae)
                         {
-                            @await Component.InvokeAsync("AmphoraTableRow", new {amphora = entity})
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
                         }
                     </tbody>
                 </table>

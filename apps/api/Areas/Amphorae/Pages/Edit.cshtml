@@ -25,6 +25,11 @@
                     <input asp-for="AmphoraDto.Price" class="form-control" />
                     <span asp-validation-for="AmphoraDto.Price" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <label asp-for="AmphoraDto.Labels" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Labels" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Labels" class="text-danger"></span>
+                </div>
                 @if(@Model.TermsAndConditions.Any())
                 {
                 <div class="form-group">

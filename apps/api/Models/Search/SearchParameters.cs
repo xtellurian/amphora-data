@@ -2,6 +2,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using System;
 using Amphora.Common.Models.Users;
+using System.Collections.Generic;
 
 namespace Amphora.Api.Models.Search
 {
@@ -45,6 +46,28 @@ namespace Amphora.Api.Models.Search
                 Filter = $"{nameof(AmphoraModel.CreatedById)} eq '{user.Id}'"
             };
             return p.NotDeleted();
+        }
+
+        public SearchParameters IncludeLabelsFacet()
+        {
+            if (Facets == null) Facets = new List<string>();
+            Facets.Add($"{nameof(AmphoraModel.Labels)}/Name");
+            return this;
+        }
+
+        public SearchParameters FilterByLabel(params Label[] labels)
+        {
+            return this.FilterByLabel(labels);
+        }
+        public SearchParameters FilterByLabel(IEnumerable<Label> labels)
+        {
+            if (Filter == null) Filter = "";
+            foreach (var l in labels)
+            {
+                if (Filter.Length > 1) Filter += " and ";
+                this.Filter += $"{nameof(AmphoraModel.Labels)}/any(t: t/Name eq '{l.Name}') ";
+            }
+            return this;
         }
 
         public static SearchParameters GeoSearch(double lat, double lon, double dist)

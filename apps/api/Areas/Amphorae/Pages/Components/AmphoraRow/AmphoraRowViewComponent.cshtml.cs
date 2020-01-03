@@ -9,10 +9,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Components
     {
         public AmphoraModel Amphora { get; private set; }
 
-        public IViewComponentResult Invoke(AmphoraModel amphora)
+        public IViewComponentResult Invoke(AmphoraModel amphora, bool isTable)
         {
             this.Amphora = amphora;
-            return View(this);
+            if (isTable) return View("Table", this);
+            else return View(this);
         }
     }
 }

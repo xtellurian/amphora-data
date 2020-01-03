@@ -71,29 +71,25 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             switch (target?.ToLower())
             {
                 case "pintouser":
-                    await PinToUser();
-                    break;
+                    return await PinToUser();
                 case "pintoorg":
-                    await PinToOrg();
-                    break;
+                    return await PinToOrg();
                 case "unpinfromuser":
-                    await UnpinFromUser();
-                    break;
+                    return await UnpinFromUser();
                 case "unpinfromorg":
-                    await UnpinFromOrg();
-                    break;
+                    return await UnpinFromOrg();
             }
             return RedirectToPage("./Detail", new { Id = id });
         }
 
-        private async Task UnpinFromOrg()
+        private async Task<IActionResult> UnpinFromOrg()
         {
             var user = Result.User;
             var org = user.Organisation;
             if (!user.IsAdmin())
             {
                 ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
-                return;
+                return OnReturnPage();
             }
             if (org.PinnedAmphorae.IsPinned(Amphora))
             {
@@ -103,48 +99,57 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     ModelState.AddModelError(string.Empty, res.Message);
                 }
+                else
+                {
+                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                }
             }
             else
             {
                 ModelState.AddModelError(string.Empty, "Amphora is not currently pinned");
             }
+            return OnReturnPage();
         }
 
-        private async Task UnpinFromUser()
+        private async Task<IActionResult> UnpinFromUser()
         {
             var user = Result.User;
             if (user.PinnedAmphorae.IsPinned(Amphora))
             {
                 user.PinnedAmphorae.Unpin(Amphora);
                 await userService.UserManager.UpdateAsync(user);
+                return RedirectToPage("./Detail", new { Id = Amphora.Id });
             }
             else
             {
                 ModelState.AddModelError(string.Empty, "Amphora is not currently pinned");
+                return OnReturnPage();
             }
         }
 
-        private async Task PinToUser()
+        private async Task<IActionResult> PinToUser()
         {
             var user = Result.User;
             if (user.PinnedAmphorae.AreAnyNull())
             {
                 user.PinnedAmphorae.PinToLeastNull(Amphora);
                 await userService.UserManager.UpdateAsync(user);
+                return RedirectToPage("./Detail", new { Id = Amphora.Id });
             }
             else
             {
                 ModelState.AddModelError(string.Empty, "No free places to pin");
+                return OnReturnPage();
             }
         }
-        private async Task PinToOrg()
+        private async Task<IActionResult> PinToOrg()
         {
             var user = Result.User;
             var org = user.Organisation;
             if (!user.IsAdmin())
             {
                 ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
-                return;
+                return OnReturnPage();
             }
             if (org.PinnedAmphorae.AreAnyNull())
             {
@@ -154,11 +159,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     ModelState.AddModelError(string.Empty, res.Message);
                 }
+                else
+                {
+                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                }
             }
             else
             {
                 ModelState.AddModelError(string.Empty, "No free places to pin");
             }
+            return OnReturnPage();
         }
 
         private async Task SetPagePropertiesAsync()
