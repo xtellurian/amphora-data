@@ -27,7 +27,7 @@ namespace Amphora.Api.Models.Search
         public double? Coverage { get; set; }
 
         [JsonProperty(PropertyName = "@search.facets")]
-        public IDictionary<string, IList<FacetResult>> Facets { get; set; }
+        public IDictionary<string, IList<FacetResult>> Facets { get; set; } = new Dictionary<string, IList<FacetResult>>();
         public IList<SearchResult<T>> Results { get; set; }
     }
 }
