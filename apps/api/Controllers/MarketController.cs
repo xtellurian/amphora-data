@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -57,8 +58,9 @@ namespace Amphora.Api.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Find(string query, int? top, int? skip)
         {
-            var s = await marketService.FindAsync(query, skip: skip, top: top);
-            var dto = mapper.Map<List<AmphoraDto>>(s);
+            var searchResult = await marketService.FindAsync(query, skip: skip, top: top);
+            var entities = searchResult.Results.Select(_ => _.Entity);
+            var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
     }
