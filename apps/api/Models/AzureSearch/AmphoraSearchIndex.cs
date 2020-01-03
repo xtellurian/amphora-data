@@ -49,6 +49,19 @@ namespace Amphora.Api.Models.AzureSearch
                 IsFacetable = true,
                 IsFilterable = true
             });
+            // labels
+            fields.Add(new Field(nameof(AmphoraModel.Labels), DataType.Collection(DataType.Complex),
+                new List<Field>
+                {
+                    new Field(nameof(Label.Name), DataType.String)
+                    {
+                        IsRetrievable = true,
+                        IsSearchable = true,
+                        IsFacetable = true,
+                        IsFilterable = true
+                    }
+                })
+            { IsFacetable = true });
             // created by
             fields.Add(new Field(nameof(AmphoraModel.CreatedById), DataType.String)
             {
@@ -74,6 +87,6 @@ namespace Amphora.Api.Models.AzureSearch
             Fields = fields;
         }
 
-        public static string IndexName => "amphora-index";
+        public static string IndexName => $"{ApiVersion.CurrentVersion.ToSemver('-')}-amphora-index";
     }
 }

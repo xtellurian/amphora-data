@@ -36,12 +36,12 @@ namespace Amphora.Api
             Patch = patch;
             Suffixes = suffixes?.ToList();
         }
-        public string ToSemver()
+        public string ToSemver(char delimiter = '.')
         {
-            var version = $"{Major}.{Minor}.{Patch}";
+            var version = $"{Major}{delimiter}{Minor}{delimiter}{Patch}";
             if (Suffixes != null && Suffixes.Count > 0)
             {
-                version += "." + string.Join('.', Suffixes);
+                version += delimiter + string.Join(delimiter, Suffixes);
             }
             return version;
         }
