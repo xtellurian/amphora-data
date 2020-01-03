@@ -70,7 +70,7 @@ namespace Amphora.Api.Services.Market
         private static SearchParameters PrepareParameters(GeoLocation location, double? distance, int? skip, int? top, IEnumerable<string> labels)
         {
             var d = distance.HasValue ? distance.Value : 100; // default to 100km
-            var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted().IncludeLabelsFacet();
+            var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted().IncludeLabelsFacet().WithTotalResultCount();
             if (labels != null && labels.Count() > 0)
             {
                 parameters = parameters.FilterByLabel(new List<Label>(labels.Select(_ => new Label(_))));

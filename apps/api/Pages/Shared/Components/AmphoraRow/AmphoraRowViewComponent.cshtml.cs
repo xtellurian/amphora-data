@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Amphora.Api.Areas.Amphorae.Pages.Components
+namespace Amphora.Api.Pages.Shared.Components
 {
     [ViewComponent(Name = "AmphoraRow")]
     public class AmphoraRowViewComponent : ViewComponent

@@ -93,25 +93,17 @@
         </div>
         <div class="col-sm-8">
             <div>
-                <table id="market-table" class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price ($)</th>
-                            <th> Action</th>
-                        </tr>
-                    </thead>
+                <table id="market-table" class="table table-borderless table-striped">
                     <tbody>
+                    @if(Model.Entities?.Count() == 0)
+                    {
+                        <td class="text-center">
+                            No Results
+                        </td>
+                    }
                     @foreach (var entity in Model.Entities)
                     {
-                        <tr class="market-item">
-                            <th scope="row">@entity.Name</th>
-                            <td>@entity.Price</td>
-                            <td> <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@entity.Id">
-                                    <button class="btn btn-link text-success">More</button> 
-                                </a>
-                            </td>
-                        </tr>
+                        @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
                     }
                     </tbody>
                 </table>

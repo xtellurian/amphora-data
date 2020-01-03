@@ -31,26 +31,12 @@ namespace Amphora.Api.Pages.Market
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var geo = GetGeo();
-            this.Count = await marketService.CountAsync(SearchDefinition.Term,
-                                                        geo,
-                                                        SearchDefinition.Dist,
-                                                        SearchDefinition.Skip,
-                                                        SearchDefinition.Top) ?? 0;
             await RunSearch();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var geo = GetGeo();
-            ParallelQuery<string> labels = GetLabels();
-            this.Count = await marketService.CountAsync(SearchDefinition.Term,
-                                                         geo,
-                                                         SearchDefinition.Dist,
-                                                         SearchDefinition.Skip,
-                                                         SearchDefinition.Top,
-                                                         labels) ?? 0;
             await RunSearch();
             return Page();
         }
@@ -73,8 +59,10 @@ namespace Amphora.Api.Pages.Market
                                                           SearchDefinition.Skip,
                                                           SearchDefinition.Top,
                                                           labels);
+
+            this.Count = res.Count.HasValue ? res.Count.Value : 0;
             this.Entities = res.Results.Select(_ => _.Entity);
-            if(res.Facets.TryGetValue($"{nameof(AmphoraModel.Labels)}/{nameof(Label.Name)}", out var labelFacets))
+            if (res.Facets.TryGetValue($"{nameof(AmphoraModel.Labels)}/{nameof(Label.Name)}", out var labelFacets))
             {
                 this.LabelFacets = labelFacets;
             }
