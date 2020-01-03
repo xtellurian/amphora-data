@@ -50,7 +50,7 @@ namespace Amphora.Api.Services.Market
             return count;
         }
 
-        public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12, IEnumerable<string> labels = null)
+        public async Task<EntitySearchResult<AmphoraModel>> FindAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12, IEnumerable<string> labels = null)
         {
             searchTerm ??= "";
             var parameters = PrepareParameters(location, distance, skip, top, labels);
@@ -64,16 +64,16 @@ namespace Amphora.Api.Services.Market
                 cache.Set(key, result, cacheEntryOptions);
             }
 
-            return result.Results.Select(s => s.Entity);
+            return result;
         }
 
         private static SearchParameters PrepareParameters(GeoLocation location, double? distance, int? skip, int? top, IEnumerable<string> labels)
         {
             var d = distance.HasValue ? distance.Value : 100; // default to 100km
-            var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted();
+            var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted().IncludeLabelsFacet();
             if (labels != null && labels.Count() > 0)
             {
-                parameters = parameters.IncludeLabelsFacet().FilterByLabel(new List<Label>(labels.Select(_ => new Label(_))));
+                parameters = parameters.FilterByLabel(new List<Label>(labels.Select(_ => new Label(_))));
             }
             if (location != null && location.Lat().HasValue && location.Lon().HasValue)
             {

@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Models.Search;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Azure.Search.Models;
 
 namespace Amphora.Api.Pages.Market
 {
@@ -28,6 +27,7 @@ namespace Amphora.Api.Pages.Market
         public long Count { get; set; }
 
         public IEnumerable<AmphoraModel> Entities { get; set; }
+        public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -67,12 +67,17 @@ namespace Amphora.Api.Pages.Market
         {
             var geo = GetGeo();
             var labels = GetLabels();
-            this.Entities = await marketService.FindAsync(SearchDefinition.Term,
+            var res = await marketService.FindAsync(SearchDefinition.Term,
                                                           geo,
                                                           SearchDefinition.Dist,
                                                           SearchDefinition.Skip,
                                                           SearchDefinition.Top,
                                                           labels);
+            this.Entities = res.Results.Select(_ => _.Entity);
+            if(res.Facets.TryGetValue($"{nameof(AmphoraModel.Labels)}/{nameof(Label.Name)}", out var labelFacets))
+            {
+                this.LabelFacets = labelFacets;
+            }
         }
 
         private GeoLocation GetGeo()
