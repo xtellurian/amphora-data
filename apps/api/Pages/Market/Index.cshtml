@@ -19,41 +19,69 @@
                         <button id="button-addon3" type="submit" class="btn btn-link text-success"><i class="icon fa fa-search"></i></button>
                     </div>
                 </div>
-                <div class="card mb-2">
-                    <a class="float-left" data-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                        <i class="fas fa-angle-down"></i>
-                    </a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="advanced" class="col-sm-4 text-center">
 
-                    <div class="collapse" id="filterCollapse">
-                        <div class="container card-body">
-                            <div class="row mb-2">
-                                <div class="col-4 body ui-widget">
-                                    <input id="autoComplete" type="text" tabindex="1" autocomplete="off">
-                                </div>
-                                <div class="col selection"></div>
+            <div class="card mb-2">
+                <h4 class="mt-1">Advanced</h4>
+                <a class="float-left" data-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                    <i class="fas fa-angle-down"></i>
+                </a>
+
+                <div class="collapse" id="filterCollapse">
+                    <div class="container card-body">
+                        <div class="row mb-2">
+                            <div class="col-4 body ui-widget">
+                                <input id="autoComplete" form="searchform" type="text" tabindex="1" autocomplete="off">
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input id="lat" asp-for="SearchDefinition.Lat" placeholder="Latitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="SearchDefinition.Lat" class="text-danger"></span>
-                                </div>
-                                <div class="col">
-                                    <input id="lon" asp-for="SearchDefinition.Lon" placeholder="Longitude" class="form-control bg-none border-1">
-                                    <span asp-validation-for="SearchDefinition.Lon" class="text-danger"></span>
-                                </div>
-                                <div class="col">
-                                    <input id="dist" asp-for="SearchDefinition.Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
-                                    <span asp-validation-for="SearchDefinition.Dist" class="text-danger"></span>
+                            <div class="col selection"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <input id="lat" form="searchform" asp-for="SearchDefinition.Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                                <span asp-validation-for="SearchDefinition.Lat" class="text-danger"></span>
+                            </div>
+                            <div class="col">
+                                <input id="lon" form="searchform" asp-for="SearchDefinition.Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                                <span asp-validation-for="SearchDefinition.Lon" class="text-danger"></span>
+                            </div>
+                            <div class="col">
+                                <input id="dist" form="searchform" asp-for="SearchDefinition.Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
+                                <span asp-validation-for="SearchDefinition.Dist" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <input id="label" form="searchform" asp-for="SearchDefinition.Labels" placeholder="Labels (comma separated)" class="form-control bg-none border-1">
+                                <span asp-validation-for="SearchDefinition.Labels" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group-append">
+                                    <button id="button-addon3" form="searchform" type="submit" class="btn btn-primary btn-block">Search</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
+
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
+        <div class="col-sm-8">
             <div>
                 <table id="market-table" class="table">
                     <thead>

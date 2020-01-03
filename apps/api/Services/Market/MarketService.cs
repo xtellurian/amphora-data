@@ -33,10 +33,10 @@ namespace Amphora.Api.Services.Market
             this.cache = cache;
         }
 
-        public async Task<long?> CountAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12)
+        public async Task<long?> CountAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12, IEnumerable<string> labels = null)
         {
             searchTerm ??= "";
-            var parameters = PrepareParameters( location, distance, skip, top);
+            var parameters = PrepareParameters(location, distance, skip, top, labels);
             var key = searchTerm + JsonConvert.SerializeObject(parameters) + "count";
             long? count;
             if (!cache.TryGetValue(key, out count))
@@ -50,10 +50,10 @@ namespace Amphora.Api.Services.Market
             return count;
         }
 
-        public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12)
+        public async Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12, IEnumerable<string> labels = null)
         {
             searchTerm ??= "";
-            var parameters = PrepareParameters(location, distance, skip, top);
+            var parameters = PrepareParameters(location, distance, skip, top, labels);
             EntitySearchResult<AmphoraModel> result;
             var key = searchTerm + parameters.GetHashCode() + "search";
             if (!cache.TryGetValue(key, out result))
@@ -67,16 +67,21 @@ namespace Amphora.Api.Services.Market
             return result.Results.Select(s => s.Entity);
         }
 
-        private static SearchParameters PrepareParameters(GeoLocation location, double? distance, int? skip, int? top)
+        private static SearchParameters PrepareParameters(GeoLocation location, double? distance, int? skip, int? top, IEnumerable<string> labels)
         {
             var d = distance.HasValue ? distance.Value : 100; // default to 100km
             var parameters = new SearchParameters().WithPublicAmphorae().NotDeleted();
+            if (labels != null && labels.Count() > 0)
+            {
+                parameters = parameters.IncludeLabelsFacet().FilterByLabel(new List<Label>(labels.Select(_ => new Label(_))));
+            }
             if (location != null && location.Lat().HasValue && location.Lon().HasValue)
             {
                 parameters.WithGeoSearch(location.Lat().Value, location.Lon().Value, d);
             }
             parameters.Top = top;
             parameters.Skip = skip;
+
             return parameters;
         }
     }

@@ -60,8 +60,7 @@ namespace Amphora.Api.Models.AzureSearch
                         IsFacetable = true,
                         IsFilterable = true
                     }
-                })
-            { IsFacetable = true });
+                }));
             // created by
             fields.Add(new Field(nameof(AmphoraModel.CreatedById), DataType.String)
             {

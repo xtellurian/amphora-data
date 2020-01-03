@@ -8,11 +8,17 @@ namespace Amphora.Api.Contracts
     {
         ISearchService searchService { get; }
 
-        Task<long?> CountAsync(string searchTerm, GeoLocation location = null, double? distance = null, int? skip = 0, int? top = 12);
+        Task<long?> CountAsync(string searchTerm,
+                               GeoLocation location = null,
+                               double? distance = null,
+                               int? skip = 0,
+                               int? top = 12,
+                               IEnumerable<string> labels = null);
         Task<IEnumerable<AmphoraModel>> FindAsync(string searchTerm,
                                                   GeoLocation location = null,
                                                   double? distance = null,
                                                   int? skip = 0,
-                                                  int? top = 15);
+                                                  int? top = 15,
+                                                  IEnumerable<string> labels = null);
     }
 }
