@@ -61,10 +61,6 @@ namespace Amphora.Api.Services.Azure
             try
             {
                 var results = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
-                foreach (var r in results.Results)
-                {
-                    r.Document.FixAzureSearchId();  // fixes the id field
-                }
 
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
             }
@@ -77,10 +73,6 @@ namespace Amphora.Api.Services.Azure
             try
             {
                 var results_secondTry = await indexClient.Documents.SearchAsync<AmphoraModel>(searchText, parameters);
-                foreach (var r in results_secondTry.Results)
-                {
-                    r.Document.FixAzureSearchId(); // fixes the id field
-                }
 
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results_secondTry);
             }
