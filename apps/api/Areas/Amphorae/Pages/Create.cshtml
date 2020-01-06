@@ -15,26 +15,31 @@
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Input.Name" class="control-label"></label>
-                    <input asp-for="Input.Name" class="form-control" />
-                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    <label asp-for="AmphoraDto.Name" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Name" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.Description" class="control-label"></label>
-                    <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                    <label asp-for="AmphoraDto.Description" class="control-label"></label>
+                    <textarea asp-for="AmphoraDto.Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="AmphoraDto.Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.Price" class="control-label"></label>
-                    <input asp-for="Input.Price" class="form-control" />
-                    <span asp-validation-for="Input.Price" class="text-danger"></span>
+                    <label asp-for="AmphoraDto.Price" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Price" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AmphoraDto.Labels" class="control-label"></label>
+                    <input asp-for="AmphoraDto.Labels" class="form-control" />
+                    <span asp-validation-for="AmphoraDto.Labels" class="text-danger"></span>
                 </div>
                 @if(@Model.TermsAndConditions.Any())
                 {
                 <div class="form-group">
-                    <label asp-for="Input.TermsAndConditionsId"></label>
-                    <select class="custom-select" asp-for="Input.TermsAndConditionsId" asp-items="Model.TermsAndConditions"></select> 
-                    <span asp-validation-for="Input.TermsAndConditionsId" class="text-danger"></span>
+                    <label asp-for="AmphoraDto.TermsAndConditionsId"></label>
+                    <select class="custom-select" asp-for="AmphoraDto.TermsAndConditionsId" asp-items="Model.TermsAndConditions"></select> 
+                    <span asp-validation-for="AmphoraDto.TermsAndConditionsId" class="text-danger"></span>
                 </div>
                 }
                 <div class="form-group">
@@ -44,14 +49,14 @@
                     <div class="selection"></div>
                     <div class="row">
                         <div class="col">
-                            <label asp-for="Input.Lat" class="control-label"></label>
-                            <input id="lat" asp-for="Input.Lat" class="form-control" />
-                            <span asp-validation-for="Input.Lat" class="text-danger"></span>
+                            <label asp-for="AmphoraDto.Lat" class="control-label"></label>
+                            <input id="lat" asp-for="AmphoraDto.Lat" class="form-control" />
+                            <span asp-validation-for="AmphoraDto.Lat" class="text-danger"></span>
                         </div>
                         <div class="col">
-                            <label asp-for="Input.Lon" class="control-label"></label>
-                            <input id="lon" asp-for="Input.Lon" class="form-control" />
-                            <span asp-validation-for="Input.Lon" class="text-danger"></span>
+                            <label asp-for="AmphoraDto.Lon" class="control-label"></label>
+                            <input id="lon" asp-for="AmphoraDto.Lon" class="form-control" />
+                            <span asp-validation-for="AmphoraDto.Lon" class="text-danger"></span>
                         </div>
                     </div>
                 </div>

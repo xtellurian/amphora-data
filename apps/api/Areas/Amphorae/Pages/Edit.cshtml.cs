@@ -6,7 +6,6 @@ using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
@@ -50,10 +49,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 if (this.TryValidateModel(AmphoraDto, nameof(AmphoraDto)))
                 {
                     var a = readResult.Entity;
-                    var labels = AmphoraDto.Labels.Trim().Split(',').ToList();
-                    a.Labels = new List<Label>(labels
-                        .Where(name => !string.IsNullOrEmpty(name))
-                        .Select(name => new Label(name)));
+                    a.Labels = AmphoraDto.GetLabels();
                     a.Name = AmphoraDto.Name;
                     a.Description = AmphoraDto.Description;
                     a.Price = AmphoraDto.Price;
