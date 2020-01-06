@@ -7,19 +7,19 @@ namespace Amphora.Common.Configuration
 {
     public class KeyVaultConfigProvider
     {
-        private const string kvUri = "kvUri";
-        private const string disableKv = "disableKv";
+        private const string KvUri = "kvUri";
+        private const string DisableKv = "disableKv";
         public static void Configure(IConfigurationBuilder config,
                                      IConfigurationRoot builtConfig,
                                      string? vaultUri = null,
                                      IKeyVaultSecretManager? manager = null)
         {
-            vaultUri ??= builtConfig[kvUri];
+            vaultUri ??= builtConfig[KvUri];
             manager ??= new DefaultKeyVaultSecretManager();
 
-            if (!string.IsNullOrEmpty(vaultUri) && string.IsNullOrEmpty(builtConfig[disableKv]))
+            if (!string.IsNullOrEmpty(vaultUri) && string.IsNullOrEmpty(builtConfig[DisableKv]))
             {
-                System.Console.WriteLine($"Using KeyVault {builtConfig[kvUri]} as Config Provider");
+                System.Console.WriteLine($"Using KeyVault {builtConfig[KvUri]} as Config Provider");
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(
                     new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
@@ -39,6 +39,7 @@ namespace Amphora.Common.Configuration
                     System.Console.WriteLine($"KeyVault DNS Lookup Failed!");
                     throw ex;
                 }
+
                 System.Console.WriteLine("KeyVault Configuration Loaded!");
             }
             else

@@ -28,14 +28,13 @@ namespace Amphora.Migrate
 
         public string GetKey(SecretBundle secret)
         {
-            // Remove the prefix from the secret name and replace two 
-            // dashes in any name with the KeyDelimiter, which is the 
-            // delimiter used in configuration (usually a colon). Azure 
+            // Remove the prefix from the secret name and replace two
+            // dashes in any name with the KeyDelimiter, which is the
+            // delimiter used in configuration (usually a colon). Azure
             // Key Vault doesn't allow a colon in secret names.
             var del = ConfigurationPath.KeyDelimiter;
 
             return $"{group}{del}{secret.SecretIdentifier.Name.Replace("--", del)}";
-
         }
     }
 }

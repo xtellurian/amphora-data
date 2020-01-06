@@ -3,7 +3,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Services.Azure
 {
-    public class AzureServiceTokenProviderWrapper: IAzureServiceTokenProvider
+    public class AzureServiceTokenProviderWrapper : IAzureServiceTokenProvider
     {
         private readonly Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider az;
 
@@ -11,6 +11,7 @@ namespace Amphora.Api.Services.Azure
         {
             this.az = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider(connectionString);
         }
+
         public async Task<string> GetAccessTokenAsync(string resource, string? tenantId = null)
         {
             return await az.GetAccessTokenAsync(resource, tenantId);

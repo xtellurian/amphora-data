@@ -1,22 +1,21 @@
-
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
+using Amphora.Common.Options;
 using Microsoft.Azure.TimeSeriesInsights;
 using Microsoft.Azure.TimeSeriesInsights.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Rest;
 using DateTimeRange = Microsoft.Azure.TimeSeriesInsights.Models.DateTimeRange;
-using Microsoft.Extensions.Options;
-using Amphora.Common.Options;
-using Amphora.Common.Contracts;
-using Amphora.Api.Contracts;
-using Microsoft.Extensions.Logging;
-using System;
 
 namespace Amphora.Common.Services.Azure
 {
     public class TsiService : ITsiService
     {
-        private const string resource = "https://api.timeseries.azure.com/";
+        private const string Resource = "https://api.timeseries.azure.com/";
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<TsiService> logger;
@@ -31,7 +30,7 @@ namespace Amphora.Common.Services.Azure
 
         public async Task InitAsync()
         {
-            if (client != null) return;
+            if (client != null) { return; }
             this.client = await GetTimeSeriesInsightsClientAsync();
         }
 
@@ -77,7 +76,6 @@ namespace Amphora.Common.Services.Azure
                            // projectedProperties: properties,
                            filter: null)));
 
-
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
@@ -108,7 +106,6 @@ namespace Amphora.Common.Services.Azure
                            projectedVariables: projections,
                            inlineVariables: variables)));
 
-
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
@@ -136,7 +133,6 @@ namespace Amphora.Common.Services.Azure
                            projectedVariables: projections,
                            inlineVariables: variables)));
 
-
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
@@ -147,7 +143,7 @@ namespace Amphora.Common.Services.Azure
         private async Task<ITimeSeriesInsightsClient> GetTimeSeriesInsightsClientAsync()
         {
             logger.LogInformation($"Start {nameof(GetTimeSeriesInsightsClientAsync)}");
-            var token = await tokenProvider.GetAccessTokenAsync(resource);
+            var token = await tokenProvider.GetAccessTokenAsync(Resource);
             var serviceClientCredentials = new TokenCredentials(token);
 
             var timeSeriesInsightsClient = new Microsoft.Azure.TimeSeriesInsights.TimeSeriesInsightsClient(credentials: serviceClientCredentials)

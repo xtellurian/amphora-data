@@ -18,7 +18,7 @@ namespace Amphora.Common.Models.Users
         public bool? IsGlobalAdmin { get; set; }
         public virtual PinnedAmphorae PinnedAmphorae { get; set; } = new PinnedAmphorae();
 
-        //navigation
+        // navigation
         public string? OrganisationId { get; set; }
         public virtual OrganisationModel? Organisation { get; set; }
 

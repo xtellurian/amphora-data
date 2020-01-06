@@ -14,10 +14,11 @@ namespace Amphora.Common.Configuration.Options
 
         public string GenerateConnectionString(string? key)
         {
-            if(key == null)
+            if (key == null)
             {
                 throw new System.NullReferenceException($"Key cannot be null in {nameof(GenerateConnectionString)}");
             }
+
             return $"AccountEndpoint={Endpoint};AccountKey={key};Database={Database}";
         }
     }

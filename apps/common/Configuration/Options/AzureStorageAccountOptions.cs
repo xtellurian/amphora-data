@@ -1,4 +1,3 @@
-
 namespace Amphora.Common.Configuration.Options
 {
     public class AzureStorageAccountOptions

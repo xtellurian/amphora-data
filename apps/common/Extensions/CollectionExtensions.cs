@@ -8,8 +8,8 @@ namespace Amphora.Common.Extensions
         public static TCol AddRange<TCol, TItem>(this TCol destination, IEnumerable<TItem> source)
             where TCol : ICollection<TItem>
         {
-            if(destination == null) throw new ArgumentNullException(nameof(destination));
-            if(source == null) throw new ArgumentNullException(nameof(source));
+            if (destination == null) { throw new ArgumentNullException(nameof(destination)); }
+            if (source == null) { throw new ArgumentNullException(nameof(source)); }
 
             // don't cast to IList to prevent recursion
             if (destination is List<TItem> list)

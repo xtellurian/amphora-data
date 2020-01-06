@@ -14,18 +14,21 @@ namespace Amphora.Common.Models.Purchases
             PurchasedByUserId = null!;
             PurchasedByOrganisationId = null!;
         }
+
         protected PurchaseModel(string amphoraId, string purchasedByUserId, string purchasedByOrganisationId)
         {
             AmphoraId = amphoraId;
             PurchasedByUserId = purchasedByUserId;
             PurchasedByOrganisationId = purchasedByOrganisationId;
         }
+
         public PurchaseModel(ApplicationUser user, AmphoraModel amphora)
         {
-            if(user.OrganisationId == null)
+            if (user.OrganisationId == null)
             {
                 throw new NullReferenceException($"User OrganisationId was null, userId: {user.OrganisationId}");
             }
+
             this.PurchasedByUser = user;
             this.PurchasedByUserId = user.Id;
             this.Amphora = amphora;
@@ -35,6 +38,7 @@ namespace Amphora.Common.Models.Purchases
             this.LastModified = System.DateTime.UtcNow;
             this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
         }
+
         public double? Price { get; set; }
         public DateTimeOffset? LastDebitTime { get; set; }
 
@@ -45,6 +49,5 @@ namespace Amphora.Common.Models.Purchases
         public virtual ApplicationUser PurchasedByUser { get; set; } = null!;
         public string PurchasedByOrganisationId { get; set; }
         public virtual OrganisationModel PurchasedByOrganisation { get; set; } = null!;
-
     }
 }

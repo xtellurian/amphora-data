@@ -10,6 +10,7 @@ namespace Amphora.Common.Models.Organisations
             Name = name;
             Contents = contents;
         }
+
         public string Id { get; set; }
         public string Name { get; set; }
         public string Contents { get; set; }

@@ -9,10 +9,12 @@ namespace Amphora.Common.Models.Organisations.Accounts
         {
             Id = id;
         }
+
         public Invoice()
         {
             Id = null!;
         }
+
         public string Id { get; set; }
         public virtual Account Account { get; set; } = null!;
         public string? Name { get; set; }

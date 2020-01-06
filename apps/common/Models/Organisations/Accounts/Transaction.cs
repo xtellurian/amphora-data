@@ -9,6 +9,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
             Label = label;
             Amount = amount;
         }
+
         public string? Id { get; set; }
         public string? AmphoraId { get; set; }
         public DateTimeOffset? CreatedDate { get; set; } = DateTime.UtcNow;

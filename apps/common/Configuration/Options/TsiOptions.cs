@@ -1,4 +1,3 @@
-
 namespace Amphora.Common.Options
 {
     public class TsiOptions

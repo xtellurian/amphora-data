@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Signals;
-using Amphora.Common.Models.Purchases;
-using Amphora.Common.Models.Users;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Purchases;
+using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Amphorae
@@ -17,6 +17,7 @@ namespace Amphora.Common.Models.Amphorae
             Description = null!;
             OrganisationId = null!;
         }
+
         [JsonConstructor]
         public AmphoraModel(string name, string description, double? price, string organisationId)
         {
@@ -25,6 +26,7 @@ namespace Amphora.Common.Models.Amphorae
             Price = price;
             OrganisationId = organisationId;
         }
+
         public AmphoraModel(
             string name,
             string description,

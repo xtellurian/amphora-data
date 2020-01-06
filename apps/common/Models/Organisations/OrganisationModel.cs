@@ -19,6 +19,7 @@ namespace Amphora.Common.Models.Organisations
             WebsiteUrl = null!;
             Address = null!;
         }
+
         public OrganisationModel(string name, string about, string websiteUrl, string address)
         {
             Name = name;
@@ -26,11 +27,12 @@ namespace Amphora.Common.Models.Organisations
             WebsiteUrl = websiteUrl;
             Address = address;
         }
+
         public string Name { get; set; }
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
         public string Address { get; set; }
-        // owned 
+        // owned
         public virtual Accounts.Account Account { get; set; } = new Accounts.Account();
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
@@ -45,7 +47,7 @@ namespace Amphora.Common.Models.Organisations
 
         public void AddOrUpdateMembership(ApplicationUser user, Roles role = Roles.User)
         {
-            if (this.Memberships == null) this.Memberships = new List<Membership>();
+            if (this.Memberships == null) { this.Memberships = new List<Membership>(); }
             var existing = this.Memberships.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
 
             this.Memberships.Add(new Membership(user, role));
@@ -55,13 +57,15 @@ namespace Amphora.Common.Models.Organisations
         {
             return this.Memberships?.Any(u => string.Equals(u.UserId, user.Id)) ?? false;
         }
+
         public bool AddTermsAndConditions(TermsAndConditionsModel model)
         {
-            if (this.TermsAndConditions == null) this.TermsAndConditions = new List<TermsAndConditionsModel>();
+            if (this.TermsAndConditions == null) { this.TermsAndConditions = new List<TermsAndConditionsModel>(); }
             if (this.TermsAndConditions.Any(t => t.Id == model.Id))
             {
                 return false;
             }
+
             this.TermsAndConditions.Add(model);
             return true;
         }

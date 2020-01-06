@@ -19,23 +19,27 @@ namespace Amphora.Common.Models.Organisations.Accounts
             var debit = this.Debits?.Sum(d => d.Amount) ?? 0;
             return credit - debit;
         }
+
         public void DebitAccount(string label, double amount, string? amphoraId = null)
         {
             if (amount < 0)
             {
                 throw new System.ArgumentException("Amount < 0");
             }
-            if (Debits == null) Debits = new List<AccountDebit>();
-            if(amphoraId == null) Debits.Add(new AccountDebit(label, amount));
-            else Debits.Add(new AccountDebit(label, amount, amphoraId));
+
+            if (Debits == null) { Debits = new List<AccountDebit>(); }
+            if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount)); }
+            else { Debits.Add(new AccountDebit(label, amount, amphoraId)); }
         }
+
         public void CreditAccount(string label, double amount)
         {
             if (amount < 0)
             {
                 throw new System.ArgumentException("Amount < 0");
             }
-            if (Credits == null) Credits = new List<AccountCredit>();
+
+            if (Credits == null) { Credits = new List<AccountCredit>(); }
             Credits.Add(new AccountCredit(label, amount));
         }
     }
