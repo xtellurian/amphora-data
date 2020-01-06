@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +35,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         }
 
         [BindProperty]
-        public CreateAmphoraDto Input { get; set; }
+        public CreateAmphoraDto AmphoraDto { get; set; }
         public List<SelectListItem> TermsAndConditions { get; set; } = new List<SelectListItem>();
         public string Token { get; set; }
 
@@ -54,15 +52,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (ModelState.IsValid)
             {
                 GeoLocation location = null;
-                if (Input.Lat.HasValue && Input.Lon.HasValue)
+                if (AmphoraDto.Lat.HasValue && AmphoraDto.Lon.HasValue)
                 {
-                    location = new GeoLocation(Input.Lon.Value, Input.Lat.Value);
+                    location = new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value);
                 }
-                var entity = new AmphoraModel(Input.Name, Input.Description, Input.Price, null, null, Input.TermsAndConditionsId)
+                var entity = new AmphoraModel(AmphoraDto.Name, AmphoraDto.Description, AmphoraDto.Price, null, null, AmphoraDto.TermsAndConditionsId)
                 {
                     GeoLocation = location,
                     IsPublic = true,
                 };
+                entity.Labels = AmphoraDto.GetLabels();
 
                 var setResult = await amphoraeService.CreateAsync(User, entity);
                 if (setResult.Succeeded)
