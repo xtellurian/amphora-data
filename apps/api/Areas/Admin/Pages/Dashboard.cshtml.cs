@@ -35,7 +35,7 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.memoryCache = memoryCache;
         }
 
-        private Expression<Func<T, bool>> Active<T>() where T : IEntity => (a => a.LastModified > monthAgo);
+        private Expression<Func<T, bool>> Active<T>() where T : IEntity => a => a.LastModified > monthAgo;
         private DateTime monthAgo = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, 0);
 
         public async Task<IActionResult> OnGetAsync()
@@ -56,6 +56,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                      .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
                 memoryCache.Set(nameof(Stats), this.Stats, cacheEntryOptions);
             }
+
             return Page();
         }
 
@@ -64,6 +65,7 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.Stats.Users.TotalCount = await userService.UserStore.CountAsync();
             this.Stats.Users.ActiveCount = await userService.UserStore.CountAsync(Active<ApplicationUser>());
         }
+
         private async Task LoadOrganisationStats()
         {
             this.Stats.Organisations.TotalCount = await organisationService.Store.CountAsync();
@@ -74,6 +76,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Distinct()
                 .Count();
         }
+
         private async Task LoadDebitStats()
         {
             this.Stats.Debits.TotalCount = (await organisationService.Store
@@ -99,6 +102,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Where(_ => _.CreatedDate > monthAgo)
                 .Average(_ => _.Amount);
         }
+
         private async Task LoadAmphoraStats()
         {
             this.Stats.Amphorae.MeanActivePrice =
@@ -124,6 +128,4 @@ namespace Amphora.Api.Areas.Admin.Pages
         public int? ActiveCount { get; set; }
         public double? MeanActivePrice { get; set; }
     }
-
-
 }

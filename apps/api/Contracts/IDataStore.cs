@@ -6,7 +6,7 @@ using Amphora.Common.Contracts;
 namespace Amphora.Api.Contracts
 {
     [Obsolete]
-    public interface IDataStore<T,TData> where T: IEntity
+    public interface IDataStore<T, TData> where T : IEntity
     {
         Task<TData> GetDataAsync(T entity, string path);
         Task<IEnumerable<string>> ListNamesAsync(T entity);

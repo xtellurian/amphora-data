@@ -14,9 +14,8 @@ namespace Amphora.Tests.Integration
     [Collection(nameof(IntegrationFixtureCollection))]
     public class SearchTests : IntegrationTestBase
     {
-        public SearchTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public SearchTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-
         }
 
         [Theory]
@@ -25,7 +24,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
+            var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(SearchAmphorae_ByLocation));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
@@ -42,20 +41,18 @@ namespace Amphora.Tests.Integration
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-           //  Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
+                                                //  Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
 
             await DestroyAmphoraAsync(adminClient, a.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
-
         }
-     
 
         [Theory]
         [InlineData("api/search/amphorae/byLocation")]
         public async Task SearchAmphorae_ByLocation(string url)
         {
-            var (client, user, org) = await base.NewOrgAuthenticatedClientAsync();
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var rnd = new Random();
             var lat = rnd.Next(90);
             var lon = rnd.Next(90);

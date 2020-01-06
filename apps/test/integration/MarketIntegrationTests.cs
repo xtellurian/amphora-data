@@ -13,7 +13,6 @@ namespace Amphora.Tests.Integration
     {
         public MarketIntegrationTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-
         }
 
         [Fact]
@@ -21,7 +20,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (client, user, org) = await base.GetNewClientInOrg(adminClient, adminOrg);
+            var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 
             var amphorae = new List<AmphoraExtendedDto>();
@@ -36,6 +35,7 @@ namespace Amphora.Tests.Integration
                 amphorae.Add(a);
                 i++;
             }
+
             // try reindex
             var indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
             if (indexRes.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -45,6 +45,7 @@ namespace Amphora.Tests.Integration
                 await Task.Delay(180 * 1000);
                 indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
             }
+
             indexRes.EnsureSuccessStatusCode();
             // how do we get this to index first?
             var top = 2;
@@ -58,6 +59,7 @@ namespace Amphora.Tests.Integration
             {
                 await DestroyAmphoraAsync(adminClient, x.Id);
             }
+
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }

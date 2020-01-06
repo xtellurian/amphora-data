@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
-using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration.Amphorae
@@ -16,6 +13,7 @@ namespace Amphora.Tests.Integration.Amphorae
         public AmphoraStatisticsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
+
         [Fact]
         public async Task CanCreateSignalOnAmphora()
         {

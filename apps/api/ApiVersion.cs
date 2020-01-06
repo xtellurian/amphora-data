@@ -29,6 +29,7 @@ namespace Amphora.Api
             Patch = patch;
             Suffixes = suffixes?.ToList();
         }
+
         public ApiVersionIdentifier(int major, int minor, int patch, IEnumerable<string> suffixes)
         {
             Major = major;
@@ -36,6 +37,7 @@ namespace Amphora.Api
             Patch = patch;
             Suffixes = suffixes?.ToList();
         }
+
         public string ToSemver(char delimiter = '.')
         {
             var version = $"{Major}{delimiter}{Minor}{delimiter}{Patch}";
@@ -43,13 +45,14 @@ namespace Amphora.Api
             {
                 version += delimiter + string.Join(delimiter, Suffixes);
             }
+
             return version;
         }
 
         public static ApiVersionIdentifier FromSemver(string semver)
         {
             var lines = semver.Split('.');
-            if (lines.Count() < 3) throw new System.ArgumentException("SemVer must have at least 3 sections");
+            if (lines.Count() < 3) { throw new System.ArgumentException("SemVer must have at least 3 sections"); }
 
             var identifier = new ApiVersionIdentifier(int.Parse(lines[0]), int.Parse(lines[1]), int.Parse(lines[2]), lines.Skip(3));
             return identifier;

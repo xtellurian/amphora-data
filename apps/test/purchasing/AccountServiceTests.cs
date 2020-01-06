@@ -9,6 +9,6 @@ namespace Amphora.Tests.Unit.Purchasing
         public void PurchaseThisMonth_DeductsFromBalance()
         {
             // TODO
-        } 
+        }
     }
 }

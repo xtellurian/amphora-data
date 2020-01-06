@@ -5,7 +5,6 @@ namespace Amphora.Api.Pages
 {
     public class IndexModel : PageModel
     {
-
         public IndexModel()
         {
         }

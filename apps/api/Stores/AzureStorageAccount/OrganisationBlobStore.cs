@@ -15,7 +15,6 @@ namespace Amphora.Api.Stores.AzureStorageAccount
     {
         public OrganisationBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase> logger) : base(options, logger)
         {
-
         }
 
         public async Task<byte[]> ReadBytesAsync(OrganisationModel org, string path)
@@ -44,6 +43,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 logger.LogError($"{path} already exists in {GetContainerName(org)}. ${blob.Uri}");
                 throw new ArgumentException($"{path} already exists in {GetContainerName(org)}. ${blob.Uri}");
             }
+
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
         }
 
@@ -52,7 +52,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             var container = GetContainerReference(entity);
             if (await container.ExistsAsync())
             {
-                return await base.ListNamesAsync(container);
+                return await ListNamesAsync(container);
             }
             else
             {
@@ -62,9 +62,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
         public async Task<DateTimeOffset?> LastModifiedAsync(OrganisationModel entity)
         {
-             // 1 container per amphora
+            // 1 container per amphora
             var container = GetContainerReference(entity);
-            if(await container.ExistsAsync())
+            if (await container.ExistsAsync())
             {
                 await container.FetchAttributesAsync();
                 return container.Properties.LastModified;

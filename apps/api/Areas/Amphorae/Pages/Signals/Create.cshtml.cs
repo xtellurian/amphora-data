@@ -23,27 +23,27 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         }
 
         [BindProperty]
-        public SignalDto Signal {get;set;}
+        public SignalDto Signal { get; set; }
         public SelectList Options { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             Options = new SelectList(SignalModel.Options);
             return OnReturnPage();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             var signalModel = new SignalModel(Signal.Property, Signal.ValueType);
             var res = await signalService.AddSignal(User, Amphora, signalModel);
 
-            if(res.Succeeded)
+            if (res.Succeeded)
             {
-                return RedirectToPage("./Index", new {Id = Amphora.Id});
+                return RedirectToPage("./Index", new { Id = Amphora.Id });
             }
-            else if(res.WasForbidden)
+            else if (res.WasForbidden)
             {
                 return RedirectToPage("Amphorae/Forbidden");
             }

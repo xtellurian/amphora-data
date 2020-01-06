@@ -1,12 +1,11 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Models.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Amphora.Api.Models.Dtos.Platform;
-using Amphora.Api;
 
 namespace Amphora.Tests.Integration
 {
@@ -39,6 +38,7 @@ namespace Amphora.Tests.Integration
             user.OrganisationId = org.Id;
             return (client, user, org);
         }
+
         protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> NewOrgAuthenticatedClientAsync(
             bool denyGlobalAdmin = false,
             int majorVersion = 0)
@@ -56,11 +56,13 @@ namespace Amphora.Tests.Integration
             var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
             deleteResponse.EnsureSuccessStatusCode();
         }
+
         protected async Task DestroyUserAsync(HttpClient client, UserDto user)
         {
             var response = await client.DeleteAsync($"api/users/{user.UserName}");
             response.EnsureSuccessStatusCode();
         }
+
         protected async Task DestroyOrganisationAsync(HttpClient client, OrganisationDto org)
         {
             var response = await client.DeleteAsync($"api/organisations/{org.Id}");

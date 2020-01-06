@@ -2,9 +2,7 @@ namespace Amphora.Api.Models.Host
 {
     public class HostOptions
     {
-        public HostOptions()
-        {
-        }
+        public HostOptions() { }
         public HostOptions(string mainHost)
         {
             MainHost = mainHost;
@@ -18,14 +16,17 @@ namespace Amphora.Api.Models.Host
             {
                 throw new System.NullReferenceException("MainHost is null");
             }
+
             if (MainHost.StartsWith("http://"))
             {
                 throw new System.ArgumentException("MainHost should not start with unencryped http://");
             }
-            if(! MainHost.EndsWith('/'))
+
+            if (!MainHost.EndsWith('/'))
             {
                 MainHost += "/";
             }
+
             if (!MainHost.StartsWith("https://"))
             {
                 return $"https://{MainHost}";

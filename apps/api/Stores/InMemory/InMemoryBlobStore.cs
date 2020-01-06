@@ -14,8 +14,7 @@ namespace Amphora.Api.Stores
         {
             return Task<byte[]>.Factory.StartNew(() =>
             {
-
-                if (entity?.Id == null) throw new ArgumentException();
+                if (entity?.Id == null) { throw new ArgumentException(); }
                 if (store.ContainsKey(entity.Id))
                 {
                     var dataStore = store[entity.Id];
@@ -37,15 +36,16 @@ namespace Amphora.Api.Stores
 
         public Task WriteBytesAsync(T entity, string path, byte[] bytes)
         {
-
             if (string.IsNullOrEmpty(entity.Id))
             {
                 entity.Id = Guid.NewGuid().ToString();
             }
+
             if (!store.ContainsKey(entity.Id))
             {
                 store[entity.Id] = new Dictionary<string, byte[]>();
             }
+
             var dataStore = store[entity.Id];
             dataStore[path] = bytes;
             return Task.CompletedTask;

@@ -7,7 +7,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae
 {
     public class AmphoraDto : EntityDto
     {
-
         [Required]
         public string Name { get; set; }
         [Required]
@@ -24,6 +23,5 @@ namespace Amphora.Api.Models.Dtos.Amphorae
                 .Where(name => !string.IsNullOrEmpty(name))
                 .Select(name => new Label(name)));
         }
-
     }
 }

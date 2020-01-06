@@ -7,7 +7,7 @@ namespace Amphora.Api.Contracts
 {
     public interface IMarketService
     {
-        ISearchService searchService { get; }
+        ISearchService SearchService { get; }
 
         Task<long?> CountAsync(string searchTerm,
                                GeoLocation location = null,

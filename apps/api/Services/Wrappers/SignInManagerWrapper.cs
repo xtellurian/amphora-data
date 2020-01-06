@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Contracts;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -44,7 +43,7 @@ namespace Amphora.Api.Services.Wrappers
 
         public async Task SignInAsync(ApplicationUser user, bool isPersistent, string authenticationMethod = null)
         {
-            if(user is T)
+            if (user is T)
             {
                 await signInManager.SignInAsync(user as T, isPersistent, authenticationMethod);
             }

@@ -5,8 +5,7 @@ namespace Amphora.Api.AspNet
 {
     internal class GlobalAdminAuthorizeAttribute : AuthorizeAttribute
     {
-
-        public GlobalAdminAuthorizeAttribute() 
+        public GlobalAdminAuthorizeAttribute()
         {
             Policy = GlobalAdminRequirement.GlobalAdminPolicyName;
         }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Services.Basic
@@ -24,8 +23,7 @@ namespace Amphora.Api.Services.Basic
             var entities = new List<AmphoraModel>();
 
             var res = await amphoraeService.AmphoraStore.QueryAsync(
-                a => a.Name.Contains(searchText)
-                || (a.Description.Contains(searchText)));
+                a => a.Name.Contains(searchText) || a.Description.Contains(searchText));
             entities.AddRange(res);
 
             if (parameters.Skip.HasValue && parameters.Top.HasValue)
@@ -33,6 +31,7 @@ namespace Amphora.Api.Services.Basic
                 var toRemove = parameters.Skip * parameters.Top;
                 entities.RemoveRange(0, toRemove.Value);
             }
+
             var take = parameters.Top ?? entities.Count;
             return new EntitySearchResult<AmphoraModel>(entities.Take(take).ToList());
         }

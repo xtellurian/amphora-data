@@ -34,7 +34,8 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Searches for Amphorae.
         /// </summary>
-        /// <param name="parameters">Search parameters</param>
+        /// <param name="parameters">Search parameters.</param>
+        /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpPost("api/search/amphorae")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -45,12 +46,14 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
+
         /// <summary>
         /// Searches for Amphorae by loction.
         /// </summary>
-        /// <param name="lat">Latitude</param>
-        /// <param name="lon">Longitude</param>
-        /// <param name="dist">Distance from Latitude and Longitude in which to search</param>
+        /// <param name="lat">Latitude.</param>
+        /// <param name="lon">Longitude.</param>
+        /// <param name="dist">Distance from Latitude and Longitude in which to search.</param>
+        /// <returns>A collection of Amphora.</returns>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byLocation")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -65,22 +68,25 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Searches for Amphorae in an Organisation.
         /// </summary>
-        /// <param name="orgId">Organisation Id</param>
+        /// <param name="orgId">Organisation Id.</param>
+        /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byOrganisation")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
-            if (string.IsNullOrEmpty(orgId)) return BadRequest("OrgId cannot be null");
+            if (string.IsNullOrEmpty(orgId)) { return BadRequest("OrgId cannot be null"); }
             var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId, typeof(AmphoraModel)));
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
         }
+
         /// <summary>
         /// Searches for Amphorae by creator.
         /// </summary>
-        /// <param name="userName">User Name of the creator</param>
+        /// <param name="userName">User Name of the creator.</param>
+        /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/search/amphorae/byCreator")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -93,7 +99,7 @@ namespace Amphora.Api.Controllers
             }
             else
             {
-                user = (await userService.UserManager.FindByNameAsync(userName));
+                user = await userService.UserManager.FindByNameAsync(userName);
             }
 
             var response = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));
@@ -108,8 +114,8 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> TryReindex()
         {
             var res = await searchService.TryIndex();
-            if (res) return Ok();
-            else return BadRequest();
+            if (res) { return Ok(); }
+            else { return BadRequest(); }
         }
     }
 }

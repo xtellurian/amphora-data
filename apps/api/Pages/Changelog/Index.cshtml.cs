@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Amphora.Api.Models.Versions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api.Pages.Changelog
 {
@@ -17,6 +15,7 @@ namespace Amphora.Api.Pages.Changelog
             Env = env;
             ContentRootPath = Env.ContentRootPath;
         }
+
         public static string RootName = "wwwroot";
         public static string ChangelogsRelativePath = "docs/changelog";
         public IWebHostEnvironment Env { get; }
@@ -29,10 +28,10 @@ namespace Amphora.Api.Pages.Changelog
                 .ToList()
                 .OrderByDescending(_ => _);
 
-            foreach(var f in fullyQualifiedPaths)
+            foreach (var f in fullyQualifiedPaths)
             {
                 var version = Path.GetFileNameWithoutExtension(f).Replace('_', '.');
-                var p = f.Substring(f.IndexOf(RootName) + RootName.Length );
+                var p = f.Substring(f.IndexOf(RootName) + RootName.Length);
                 VersionDetails.Add(new VersionFile(version, p));
             }
 

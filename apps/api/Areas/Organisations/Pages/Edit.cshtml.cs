@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Models;
-using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +47,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnGetAsync(string id)
         {
             var user = await userService.ReadUserModelAsync(User);
-            if (id == null) id = user.OrganisationId;
+            if (id == null) { id = user.OrganisationId; }
             this.OrganisationId = id;
             var organisation = await organisationService.Store.ReadAsync(id);
 
@@ -73,7 +72,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             if (ModelState.IsValid)
             {
                 var user = await userService.ReadUserModelAsync(User);
-                if (id == null) id = user.OrganisationId;
+                if (id == null) { id = user.OrganisationId; }
                 var organisation = await organisationService.Store.ReadAsync(id);
 
                 var authorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Update);
@@ -95,6 +94,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                         }
                     }
                 }
+
                 return RedirectToPage("./Detail", new { Id = organisation.Id });
             }
             else

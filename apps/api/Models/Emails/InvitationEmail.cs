@@ -8,12 +8,13 @@ namespace Amphora.Api.Models.Emails
         public InvitationEmail(InvitationModel recipient, string baseUrl = null)
         {
             this.Email = recipient.TargetEmail;
-            if(baseUrl != null) BaseUrl = baseUrl;
+            if (baseUrl != null) { BaseUrl = baseUrl; }
         }
-        private const string templateId = "d-25458a4c163b4003aa5579bb328c281a";
+
+        private const string TemplateId = "d-25458a4c163b4003aa5579bb328c281a";
 
         [JsonIgnore]
-        public string SendGridTemplateId => templateId;
+        public string SendGridTemplateId => TemplateId;
         [JsonIgnore]
         public string ToEmail => Email;
         [JsonIgnore]

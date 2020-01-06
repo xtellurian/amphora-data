@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Amphora.Api.Controllers.Amphorae
 {
     public partial class AmphoraeController : Controller
     {
         /// <summary>
-        /// Get's a list of an Amphora's files
+        /// Get's a list of an Amphora's files.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
         [HttpGet("api/amphorae/{id}/files")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -37,11 +37,13 @@ namespace Amphora.Api.Controllers.Amphorae
                 return NotFound("Amphora not found");
             }
         }
+
         /// <summary>
-        /// Get's the contents of a file. Returns application/octet-stream
+        /// Get's the contents of a file. Returns application/octet-stream.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="file">The name of the file</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <returns>The file contents.</returns>
         [HttpGet("api/amphorae/{id}/files/{file}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DownloadFile(string id, string file)
@@ -73,12 +75,14 @@ namespace Amphora.Api.Controllers.Amphorae
                 return NotFound("Amphora not found");
             }
         }
+
         /// <summary>
         /// Set's the contents of a file. The request body becomes the content.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="file">The name of the file</param> 
-        /// <param name="content">The content of the filex</param> 
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <param name="content">The content of the file.</param>
+        /// <returns>An object with a blob URL.</returns>
         [HttpPut("api/amphorae/{id}/files/{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -101,25 +105,24 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     fileResult = await amphoraFileService.WriteFileAsync(User, result.Entity, await Request.Body.ReadFullyAsync(), file);
                 }
+
                 if (fileResult.Succeeded)
                 {
                     return Ok(fileResult.Entity);
                 }
-                else if (result.WasForbidden) return StatusCode(403, result.Errors);
-
-                else return NotFound();
-
+                else if (result.WasForbidden) { return StatusCode(403, result.Errors); }
+                else { return NotFound(); }
             }
-            else if (result.WasForbidden) return StatusCode(403, result.Errors);
-            else return NotFound();
-
+            else if (result.WasForbidden) { return StatusCode(403, result.Errors); }
+            else { return NotFound(); }
         }
 
         /// <summary>
         /// Creates a file. Returns a blob URL to upload to.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="file">The name of the file</param> 
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <returns>An object with a blob URL.</returns>
         [HttpPost("api/amphorae/{id}/files/{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -134,12 +137,11 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else if (result.WasForbidden) return StatusCode(403, result.Message);
-                else return NotFound();
-
+                else if (result.WasForbidden) { return StatusCode(403, result.Message); }
+                else { return NotFound(); }
             }
-            else if (result.WasForbidden) return StatusCode(403, result.Message);
-            else return NotFound();
+            else if (result.WasForbidden) { return StatusCode(403, result.Message); }
+            else { return NotFound(); }
         }
     }
 }

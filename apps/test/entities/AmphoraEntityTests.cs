@@ -1,18 +1,17 @@
-using Xunit;
-using Amphora.Api.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Newtonsoft.Json;
-using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Stores.EFCore;
+using Xunit;
 
 namespace Amphora.Tests.Unit.Entities
 {
     public class AmphoraEntityTests : UnitTestBase
     {
-
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {

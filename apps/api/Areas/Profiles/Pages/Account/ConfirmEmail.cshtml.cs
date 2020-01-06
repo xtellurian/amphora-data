@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {

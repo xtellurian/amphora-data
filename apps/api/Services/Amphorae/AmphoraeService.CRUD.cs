@@ -1,16 +1,16 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
-using Microsoft.Extensions.Logging;
 using Amphora.Api.Models;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Purchases;
-using System.Linq;
-using Microsoft.Extensions.Options;
 using Amphora.Api.Options;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Purchases;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Services.Amphorae
 {
@@ -41,13 +41,14 @@ namespace Amphora.Api.Services.Amphorae
             this.userService = userService;
             this.logger = logger;
         }
+
         public async Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model)
         {
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(user)))
             {
                 // set the required fields
-                if (string.IsNullOrEmpty(model.OrganisationId)) model.OrganisationId = user.OrganisationId;
+                if (string.IsNullOrEmpty(model.OrganisationId)) { model.OrganisationId = user.OrganisationId; }
                 model.CreatedById = user.Id;
                 model.CreatedBy = user;
                 model.CreatedDate = DateTime.UtcNow;
@@ -65,10 +66,10 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     // check tnc's exist
                     var tnc = organisation.TermsAndConditions.FirstOrDefault(_ => _.Id == model.TermsAndConditionsId);
-                    if(tnc == null)
+                    if (tnc == null)
                     {
                         logger.LogInformation($"CreateAsync failed with invalid TermsAndConditionsId: {model.TermsAndConditionsId}");
-                        var allTermsAndConditions = string.Join( ',' , organisation.TermsAndConditions.Select(_ => _.Id));
+                        var allTermsAndConditions = string.Join(',', organisation.TermsAndConditions.Select(_ => _.Id));
                         return new EntityOperationResult<AmphoraModel>(user, $"Invalid TermsAndConditionsId. Use one of {allTermsAndConditions}");
                     }
                 }
@@ -90,7 +91,10 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-        public async Task<EntityOperationResult<AmphoraModel>> ReadAsync(ClaimsPrincipal principal, string id, bool includeChildren = false, string orgId = null)
+        public async Task<EntityOperationResult<AmphoraModel>> ReadAsync(ClaimsPrincipal principal,
+                                                                         string id,
+                                                                         bool includeChildren = false,
+                                                                         string orgId = null)
         {
             var user = await userService.ReadUserModelAsync(principal);
 
@@ -104,6 +108,7 @@ namespace Amphora.Api.Services.Amphorae
                     logger.LogError($"{id} Not Found");
                     return new EntityOperationResult<AmphoraModel>(user, $"{id} Not Found");
                 }
+
                 if (entity.Public())
                 {
                     logger.LogInformation($"Permission granted to public entity {entity.Id}");
@@ -120,7 +125,6 @@ namespace Amphora.Api.Services.Amphorae
                     return new EntityOperationResult<AmphoraModel>(user, "Denied") { WasForbidden = true };
                 }
             }
-
         }
 
         public async Task<EntityOperationResult<AmphoraModel>> UpdateAsync(ClaimsPrincipal principal, AmphoraModel entity)
@@ -159,7 +163,7 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<EntityOperationResult<AmphoraModel>> DeleteAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
-            if (entity == null) throw new NullReferenceException("Entity cannot be null");
+            if (entity == null) { throw new NullReferenceException("Entity cannot be null"); }
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(user)))
             {
@@ -170,6 +174,7 @@ namespace Amphora.Api.Services.Amphorae
                     logger.LogError($"{entity.Id} Not Found");
                     return new EntityOperationResult<AmphoraModel>(user, $"{entity.Id} Not Found");
                 }
+
                 var authorized = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.Delete);
                 if (authorized)
                 {

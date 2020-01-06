@@ -9,10 +9,10 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class GracefulErrorsTests: IntegrationTestBase
+    public class GracefulErrorsTests : IntegrationTestBase
     {
         private int _apiVersion = 0;
-        public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -47,7 +47,6 @@ namespace Amphora.Tests.Integration
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-            
         }
     }
 }

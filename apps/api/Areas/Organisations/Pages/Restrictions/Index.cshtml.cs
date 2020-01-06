@@ -24,6 +24,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
             {
                 return RedirectToPage("./Index", new { Id = readRes.User.OrganisationId }); // reload page
             }
+
             if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;

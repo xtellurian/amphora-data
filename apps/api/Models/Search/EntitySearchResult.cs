@@ -7,19 +7,21 @@ namespace Amphora.Api.Models.Search
     // Microsoft.Azure.Search.Models.DocumentSearchResult<T>
     public class EntitySearchResult<T>
     {
-        public EntitySearchResult() {}
+        public EntitySearchResult() { }
         public EntitySearchResult(IList<SearchResult<T>> results)
         {
             this.Results = results;
         }
+
         public EntitySearchResult(IEnumerable<T> entities)
         {
             this.Results = new List<SearchResult<T>>();
-            foreach(var e in entities)
+            foreach (var e in entities)
             {
                 this.Results.Add(new SearchResult<T>(e));
             }
         }
+
         public string ContinuationToken { get; set; }
         [JsonProperty(PropertyName = "@odata.count")]
         public long? Count { get; set; }

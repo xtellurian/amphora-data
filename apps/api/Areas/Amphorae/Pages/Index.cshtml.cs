@@ -33,16 +33,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.Amphorae = new List<AmphoraModel>();
         }
 
-        private const int defaultTop = 8;
+        private const int DefaultTop = 8;
         public IEnumerable<AmphoraModel> Amphorae { get; set; }
         public string ViewType { get; private set; }
         public int? Count { get; set; } = null;
         public int? Skip { get; set; } = 0;
-        public int? Top { get; set; } = defaultTop;
+        public int? Top { get; set; } = DefaultTop;
 
-        public int TotalSkip => (Skip ?? 0) * (Top ?? defaultTop);
+        public int TotalSkip => (Skip ?? 0) * (Top ?? DefaultTop);
 
-        public async Task<IActionResult> OnGetAsync(string viewType, int? skip = 0, int? top = defaultTop)
+        public async Task<IActionResult> OnGetAsync(string viewType, int? skip = 0, int? top = DefaultTop)
         {
             Skip = skip;
             Top = top;
@@ -58,14 +58,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 default:
                     ViewType = "mine";
                     return await MyAmphorae();
-
             }
         }
 
         private async Task<IActionResult> MyPurchasedAmphorae()
         {
             var user = await this.userService.UserManager.GetUserAsync(User);
-            if (user == null) return RedirectToPage("/Account/Login", new { area = "Profiles" });
+            if (user == null) { return RedirectToPage("/Account/Login", new { area = "Profiles" }); }
 
             var amphorae = await amphoraeService.AmphoraPurchasedBy(User, user);
             Count = await amphorae.CountAsync();
@@ -80,6 +79,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
+
             // get my amphora
             var amphorae = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == user.OrganisationId);
             Count = await amphorae.CountAsync();
@@ -94,6 +94,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
+
             // get my amphora
             var amphorae = amphoraeService.AmphoraStore.Query(a => a.CreatedById == user.Id);
             Count = await amphorae.CountAsync();

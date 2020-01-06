@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +27,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.mapper = mapper;
             this.userService = userService;
         }
+
         public class InputModel
         {
             [DataType(DataType.EmailAddress)]
@@ -52,6 +51,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     this.ModelState.AddModelError(string.Empty, "Unauthoirized");
                 }
+
                 return Page();
             }
             else if (result.WasForbidden)
@@ -71,6 +71,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 ModelState.AddModelError(string.Empty, "Not Found");
                 return Page();
             }
+
             var user = await userService.UserManager.GetUserAsync(User);
             var result = await amphoraeService.ReadAsync(User, id);
             var authorized = await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.Administer);

@@ -8,7 +8,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Pages
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class BasicWebServer: IntegrationTestBase
+    public class BasicWebServer : IntegrationTestBase
     {
         public BasicWebServer(WebApplicationFactory<Startup> factory) : base(factory)
         {
@@ -94,8 +94,6 @@ namespace Amphora.Tests.Integration.Pages
                 otherResponse.Content.Headers.ContentType.ToString());
         }
 
-
-
         [Fact]
         public async Task Get_NotAPage_Error()
         {
@@ -108,9 +106,6 @@ namespace Amphora.Tests.Integration.Pages
 
             // Assert
             Assert.False(response.IsSuccessStatusCode); // Status Code 200-299
-
         }
-
-
     }
 }

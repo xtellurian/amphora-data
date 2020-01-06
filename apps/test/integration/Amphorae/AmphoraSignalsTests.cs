@@ -17,13 +17,14 @@ namespace Amphora.Tests.Integration.Amphorae
         public AmphoraSignalsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
+
         [Fact]
         public async Task CanCreateSignalOnAmphora()
         {
             var testName = nameof(CanCreateSignalOnAmphora);
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-        
+
             // create an amphora
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
@@ -53,12 +54,12 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-         public async Task CreateSignalOnAmphora_Symbol_Error()
+        public async Task CreateSignalOnAmphora_Symbol_Error()
         {
             var testName = nameof(CanCreateSignalOnAmphora);
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-        
+
             // create an amphora
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);

@@ -35,6 +35,7 @@ namespace Amphora.Tests.Unit.Services
             this.azureSearchLogger = azureSearchLogger;
             this.initLogger = initLogger;
         }
+
         // these need keys are are hard to run automatically
         // [Fact]
         public async Task CreateIndex_Success()
@@ -51,7 +52,6 @@ namespace Amphora.Tests.Unit.Services
         // [Fact]
         public async Task SearchAmphora_Success()
         {
-
             var sut = new AzureSearchService(
                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
                Mock.Of<IAzureSearchInitialiser>(),

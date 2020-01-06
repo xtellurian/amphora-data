@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 {
-    public class IndexModel: PageModel
+    public class IndexModel : PageModel
     {
         private readonly IOrganisationService organisationService;
 
@@ -21,12 +20,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         public async Task<IActionResult> OnGetAsync(string id)
         {
             var result = await organisationService.ReadAsync(User, id);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 this.Organisation = result.Entity;
                 return Page();
             }
-            else 
+            else
             {
                 return RedirectToPage("/Index");
             }

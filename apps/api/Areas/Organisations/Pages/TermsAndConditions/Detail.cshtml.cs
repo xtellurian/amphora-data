@@ -20,6 +20,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             this.userService = userService;
             this.logger = logger;
         }
+
         public string ReturnUrl { get; set; }
         public OrganisationModel Organisation { get; private set; }
         public TermsAndConditionsModel TermsAndConditions { get; private set; }
@@ -27,7 +28,6 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 
         public async Task<IActionResult> OnGetAsync(string id, string tncId, string returnUrl = null)
         {
-
             this.ReturnUrl = returnUrl ?? Url.Content("~/");
 
             var result = await this.organisationService.ReadAsync(User, id);
@@ -78,33 +78,36 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         private async Task SetCanAccept()
         {
             // set TermsAndConditions before calling this method
-            if(this.TermsAndConditions == null) throw new System.Exception("Terms and Conditions must not be null when calling this method.");
+            if (this.TermsAndConditions == null) { throw new System.Exception("Terms and Conditions must not be null when calling this method."); }
             try
             {
                 var user = await userService.ReadUserModelAsync(User);
-                if(user.OrganisationId == Organisation.Id) 
+                if (user.OrganisationId == Organisation.Id)
                 {
-                    // user in org can't accept 
+                    // user in org can't accept
                     CanAccept = false;
                     return;
                 }
-                if(user.Organisation.TermsAndConditionsAccepted == null) 
+
+                if (user.Organisation.TermsAndConditionsAccepted == null)
                 {
                     // nothing accepted yet, so can accept.
                     CanAccept = true;
                     return;
                 }
-                if(user.Organisation.TermsAndConditionsAccepted.Any(t => 
-                    t.TermsAndConditionsOrganisationId == Organisation.Id 
-                    && t.TermsAndConditionsId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
+
+                if (user.Organisation.TermsAndConditionsAccepted.Any(t =>
+                     t.TermsAndConditionsOrganisationId == Organisation.Id
+                     && t.TermsAndConditionsId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
                 {
                     // org has already accepted
                     CanAccept = false;
                     return;
                 }
+
                 CanAccept = true;
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 logger.LogError(ex.Message, ex);
             }

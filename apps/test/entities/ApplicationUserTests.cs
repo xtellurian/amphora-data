@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Amphora.Tests.Unit.Entities
 {
-    public class ApplicationUserTests: UnitTestBase
+    public class ApplicationUserTests : UnitTestBase
     {
         [Fact]
         public async Task CanPinAmphorae()
         {
-            var context = base.GetContext();
-            
+            var context = GetContext();
+
             var user = new ApplicationUser();
 
             await context.Users.AddAsync(user);

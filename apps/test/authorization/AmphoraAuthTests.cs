@@ -11,15 +11,13 @@ using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Authorization
 {
-    public class AmphoraAuthTests: UnitTestBase
+    public class AmphoraAuthTests : UnitTestBase
     {
-
         public AmphoraAuthTests()
         {
         }
@@ -42,13 +40,13 @@ namespace Amphora.Tests.Unit.Authorization
                 var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllButReadByDefault), false); // ensure amphora is not public (auto deny access)
                 a = await amphoraStore.CreateAsync(a);
 
-                var permissionService = new PermissionService( orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+                var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
                 var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userService.Object);
 
-                var readReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
-                var updateReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Update} };
-                var deleteReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Administer} };
-                var createReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Administer} };
+                var readReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Read } };
+                var updateReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Update } };
+                var deleteReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Administer } };
+                var createReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Administer } };
 
                 var authContext = new AuthorizationHandlerContext(readReq, principal, a);
                 await handler.HandleAsync(authContext);
@@ -90,12 +88,12 @@ namespace Amphora.Tests.Unit.Authorization
                 var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
                 var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userService.Object);
-                var requirements = new List<IAuthorizationRequirement> { new AuthorizationRequirement{MinimumLevel = AccessLevels.Read} };
+                var requirements = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Read } };
                 var authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.True(authContext.HasSucceeded);
 
-                requirements.Add(new AuthorizationRequirement{MinimumLevel = AccessLevels.Update});
+                requirements.Add(new AuthorizationRequirement { MinimumLevel = AccessLevels.Update });
                 authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.False(authContext.HasSucceeded);

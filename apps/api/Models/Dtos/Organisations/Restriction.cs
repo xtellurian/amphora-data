@@ -6,9 +6,7 @@ namespace Amphora.Api.Models.Dtos.Organisations
 {
     public class Restriction
     {
-        public Restriction()
-        {
-        }
+        public Restriction() { }
         public Restriction(string targetOrganisationId, RestrictionKind? kind = RestrictionKind.Deny)
         {
             TargetOrganisationId = targetOrganisationId;

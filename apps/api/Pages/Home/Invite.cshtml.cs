@@ -45,7 +45,7 @@ namespace Amphora.Api.Pages.Home
             var user = await userService.ReadUserModelAsync(User);
             this.Organisation = user.Organisation;
 
-            if (Organisation == null) return RedirectToPage("./Detail");
+            if (Organisation == null) { return RedirectToPage("./Detail"); }
             var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, ResourcePermissions.Create);
             if (authorized)
             {
@@ -93,7 +93,6 @@ namespace Amphora.Api.Pages.Home
                 ModelState.AddModelError(string.Empty, "Email required");
                 return Page();
             }
-
         }
     }
 }

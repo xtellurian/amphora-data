@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Amphora.Api.Contracts;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {

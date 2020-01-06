@@ -42,14 +42,15 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 logger.LogError($"{path} already exists in {entity.Id}. ${blob.Uri}");
                 throw new ArgumentException($"{path} already exists in {entity.Id}. ${blob.Uri}");
             }
+
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
         }
 
         public async Task<DateTimeOffset?> LastModifiedAsync(AmphoraModel entity)
         {
-             // 1 container per amphora
+            // 1 container per amphora
             var container = GetContainerReference(entity);
-            if(await container.ExistsAsync())
+            if (await container.ExistsAsync())
             {
                 await container.FetchAttributesAsync();
                 return container.Properties.LastModified;
@@ -63,10 +64,11 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         public async Task<string> GetWritableUrl(AmphoraModel entity, string fileName)
         {
             var container = GetContainerReference(entity);
-            if(await container.CreateIfNotExistsAsync())
+            if (await container.CreateIfNotExistsAsync())
             {
                 logger.LogInformation($"Created blob container {container.Name}");
             }
+
             SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
             sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30);
             sasConstraints.Permissions = SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create;
@@ -75,6 +77,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             var uri = $"{blob.Uri}{blob.GetSharedAccessSignature(sasConstraints)}";
             return uri;
         }
+
         public async Task<byte[]> GetDataAsync(AmphoraModel entity, string name)
         {
             return await this.ReadBytesAsync(entity, name);
@@ -114,7 +117,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             {
                 return new List<string>(); // empty
             }
-            return await base.ListNamesAsync(container);
+
+            return await ListNamesAsync(container);
         }
     }
 }

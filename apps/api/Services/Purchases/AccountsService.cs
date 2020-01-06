@@ -1,14 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Amphora.Api.Services.Purchases
 {
@@ -27,9 +27,11 @@ namespace Amphora.Api.Services.Purchases
             this.orgStore = orgStore;
             this.logger = logger;
         }
+
         /// <summary>
         /// Takes all the purchases from this month and creates debits in the system.
         /// </summary>
+        /// <returns> An awaitable Task. </returns>
         public async Task PopulateDebitsAsync()
         {
             var startOfMonth = System.DateTime.UtcNow.StartOfMonth();
@@ -57,13 +59,20 @@ namespace Amphora.Api.Services.Purchases
                     org.Account.DebitAccount($"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})", purchase.Price.Value, purchase.AmphoraId);
                     await orgStore.UpdateAsync(org);
                 }
+
                 purchase.LastDebitTime = System.DateTime.UtcNow;
                 await purchaseStore.UpdateAsync(purchase);
             }
         }
+
         /// <summary>
-        /// Generates and stores invoices for the provided month
+        /// Generates and stores invoices for the provided month.
         /// </summary>
+        /// <param name="month"> The month to generate invoice for.</param>
+        /// <param name="organisationId"> The Organisastion Id to generate the invoice for.</param>
+        /// <param name="isPreview"> Flag whether this is a preview invoice.</param>
+        /// <param name="regenerate"> Override existing invoices.</param>
+        /// <returns> An Invoice. </returns>
         public async Task<Invoice> GenerateInvoiceAsync(DateTimeOffset month,
                                                         string organisationId,
                                                         bool isPreview = true,
@@ -90,13 +99,14 @@ namespace Amphora.Api.Services.Purchases
             var som = month.StartOfMonth();
             var eom = month.EndOfMonth();
             var thisMonthsDebits = org.Account.Debits
-                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom );
+                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             var thisMonthsCredits = org.Account.Credits
                 .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
                 invoice.Credits.Add(new InvoiceCredit(c.Label, c.Amount));
             }
+
             foreach (var d in thisMonthsDebits)
             {
                 invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount) { AmphoraId = d.AmphoraId });
@@ -132,6 +142,7 @@ namespace Amphora.Api.Services.Purchases
             {
                 throw new ArgumentNullException(nameof(debits));
             }
+
             invoice.CountCredits = credits.Count();
             invoice.CountDebits = debits.Count();
             invoice.TotalCredits ??= 0;
@@ -141,6 +152,7 @@ namespace Amphora.Api.Services.Purchases
             {
                 invoice.TotalCredits += credits.Sum(c => c.Amount) ?? 0;
             }
+
             if (invoice.CountDebits > 0)
             {
                 invoice.TotalDebits += debits.Sum(d => d.Amount) ?? 0;

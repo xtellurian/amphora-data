@@ -11,7 +11,7 @@ namespace Amphora.Api.Models.Emails
         {
             this.ToEmail = user.Email;
             this.ToName = user.FullName;
-            if (!user.IsAdmin()) throw new ArgumentException("User is not an administrator");
+            if (!user.IsAdmin()) { throw new ArgumentException("User is not an administrator"); }
             this.ToName = user.FullName;
             // set user properties for email
             this.Name = user.FullName;
@@ -22,7 +22,6 @@ namespace Amphora.Api.Models.Emails
 
             this.TotalCredits = invoice.TotalCredits ?? 0;
             this.TotalDebits = invoice.TotalDebits ?? 0;
-
         }
 
         public string SendGridTemplateId => "d-39a5a2ad988c4dc48371dd14c97dcc45";
@@ -47,6 +46,5 @@ namespace Amphora.Api.Models.Emails
         public double OpeningBalance { get; set; }
         [JsonProperty("InvoiceBalance")]
         public double InvoiceBalance { get; set; }
-
     }
 }

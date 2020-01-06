@@ -13,7 +13,6 @@ namespace Amphora.Tests.Integration.Amphorae
     [Collection(nameof(IntegrationFixtureCollection))]
     public class AmphoraDataTests : IntegrationTestBase
     {
-
         public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
@@ -28,8 +27,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
-                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
-                );
+                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
@@ -66,8 +64,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_DownloadFiles_AsOtherUsers));
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
-                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json")
-                );
+                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
@@ -83,7 +80,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // Act and Assert
             // now let's download by someone in the same org - should work
-            var (sameOrgClient, sameOrgUser, sameOrgOrg) = await base.GetNewClientInOrg(adminClient, adminOrg);
+            var (sameOrgClient, sameOrgUser, sameOrgOrg) = await GetNewClientInOrg(adminClient, adminOrg);
             var downloadResponse = await sameOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
             downloadResponse.EnsureSuccessStatusCode();
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
@@ -91,7 +88,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // other org user is denied access
             var (otherOrgClient, otherOrgUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
             downloadResponse = await otherOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
-            Assert.Equal(HttpStatusCode.Forbidden,  downloadResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, downloadResponse.StatusCode);
 
             // cleanup
             await DeleteAmphora(adminClient, amphora.Id);

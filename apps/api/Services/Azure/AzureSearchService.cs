@@ -19,8 +19,6 @@ namespace Amphora.Api.Services.Azure
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
 
-
-
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
             IAzureSearchInitialiser searchInitialiser,
@@ -67,6 +65,7 @@ namespace Amphora.Api.Services.Azure
                 {
                     r.Document.FixAzureSearchId();  // fixes the id field
                 }
+
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results);
             }
             catch (Microsoft.Rest.Azure.CloudException ex)
@@ -82,6 +81,7 @@ namespace Amphora.Api.Services.Azure
                 {
                     r.Document.FixAzureSearchId(); // fixes the id field
                 }
+
                 return mapper.Map<EntitySearchResult<AmphoraModel>>(results_secondTry);
             }
             catch (Microsoft.Rest.Azure.CloudException ex)

@@ -10,14 +10,15 @@ namespace Amphora.Api.Controllers
     {
         private readonly ILogger<HealthzController> logger;
 
-
         public HealthzController(ILogger<HealthzController> logger)
         {
             this.logger = logger;
         }
+
         /// <summary>
         /// Health endpoint.
-        /// </summary> 
+        /// </summary>
+        /// <returns> Simply 200. </returns>
         [HttpGet("healthz")]
         [OpenApiIgnore]
         public Task<IActionResult> HealthCheckAsync()

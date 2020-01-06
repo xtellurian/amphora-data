@@ -7,7 +7,6 @@ namespace Amphora.Tests.Integration.Pages
     [Collection(nameof(IntegrationFixtureCollection))]
     public class ProfilePagesTests : IntegrationTestBase
     {
-
         public ProfilePagesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }

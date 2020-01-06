@@ -40,21 +40,23 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
-            if (user.OrganisationId == amphora.OrganisationId) return false;
+            if (user.OrganisationId == amphora.OrganisationId) { return false; }
             var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByUserId, user.Id)) ?? false;
             return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
         }
+
         public async Task<bool> CanPurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
             var user = await userService.ReadUserModelAsync(principal);
             return await this.CanPurchaseAmphoraAsync(user, amphora);
         }
+
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
-            if (user.OrganisationId == null) return new EntityOperationResult<PurchaseModel>(user, "User has no organisation");
+            if (user.OrganisationId == null) { return new EntityOperationResult<PurchaseModel>(user, "User has no organisation"); }
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
-                if (!await CanPurchaseAmphoraAsync(user, amphora)) return new EntityOperationResult<PurchaseModel>(user, "Purchase permission denied");
+                if (!await CanPurchaseAmphoraAsync(user, amphora)) { return new EntityOperationResult<PurchaseModel>(user, "Purchase permission denied"); }
                 var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
                 if (purchases.Any())
                 {
@@ -72,10 +74,9 @@ namespace Amphora.Api.Services.Purchases
                         // debit the account initially
                         logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
-                        if (org.Account == null) org.Account = new Account();
+                        if (org.Account == null) { org.Account = new Account(); }
                         org.Account.DebitAccount($"Initial Purchase {purchase.AmphoraId}", purchase.Price.Value, purchase.AmphoraId);
                         org = await orgStore.UpdateAsync(org);
-
                     }
                     else
                     {
@@ -95,13 +96,13 @@ namespace Amphora.Api.Services.Purchases
         {
             var user = await userService.ReadUserModelAsync(principal);
             return this.HasAgreedToTermsAndConditions(user, amphora);
-
         }
+
         public bool HasAgreedToTermsAndConditions(ApplicationUser user, AmphoraModel amphora)
         {
-            if (amphora.TermsAndConditionsId == null) return true; // no terms and conditions
-            if (user.OrganisationId == amphora.OrganisationId) return true; // no need to accept your own terms and conditions
-            if (user?.Organisation?.TermsAndConditionsAccepted == null) return false;
+            if (amphora.TermsAndConditionsId == null) { return true; } // no terms and conditions
+            if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms and conditions
+            if (user?.Organisation?.TermsAndConditionsAccepted == null) { return false; }
 
             return user.Organisation.TermsAndConditionsAccepted.Any(t =>
                 t.TermsAndConditionsOrganisationId == amphora.OrganisationId

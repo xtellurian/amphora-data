@@ -31,18 +31,19 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             if (Amphora != null)
             {
                 this.AmphoraDto = mapper.Map<EditAmphora>(Amphora);
                 LoadTnC();
             }
+
             return OnReturnPage();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             var readResult = await amphoraeService.ReadAsync(User, id);
             if (readResult.Succeeded)
             {

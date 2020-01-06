@@ -1,15 +1,14 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api;
 using Amphora.Api.Models;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Models.Organisations;
+using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
-using Amphora.Api.Models.Dtos.Organisations;
-using Amphora.Api;
-using Amphora.Tests.Helpers;
 
 namespace Amphora.Tests.Integration
 {
@@ -20,7 +19,6 @@ namespace Amphora.Tests.Integration
         public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
-
 
         [Fact]
         public async Task CanCreateUser_FromAmphoraDataDomain()

@@ -12,7 +12,7 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<DocumentSearchResult<AmphoraModel>, EntitySearchResult<AmphoraModel>>();
 
             CreateMap<Microsoft.Azure.Search.Models.SearchResult<AmphoraModel>, Search.SearchResult<AmphoraModel>>()
-            .ForMember( a => a.Entity, opt => opt.MapFrom(src => src.Document));
+            .ForMember(a => a.Entity, opt => opt.MapFrom(src => src.Document));
             // .ForMember(p => p., o => o.Ignore())
         }
     }

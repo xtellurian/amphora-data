@@ -15,7 +15,7 @@ namespace Amphora.Tests.Unit
         [Fact]
         public async Task AddSignalToAmphora()
         {
-            using (var context = base.GetContext(nameof(AddSignalToAmphora)))
+            using (var context = GetContext(nameof(AddSignalToAmphora)))
             {
                 var testName = nameof(AddSignalToAmphora);
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
@@ -45,14 +45,14 @@ namespace Amphora.Tests.Unit
         [Fact]
         public void EFCore_ProducesDGML()
         {
-            var context = base.GetContext();
+            var context = GetContext();
             var path = Environment.GetEnvironmentVariable("DGML_PATH");
-            if(string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 path = Directory.GetCurrentDirectory() + "/Entities.dgml";
             }
-            System.IO.File.WriteAllText(path, context.AsDgml(), System.Text.Encoding.UTF8);
 
+            System.IO.File.WriteAllText(path, context.AsDgml(), System.Text.Encoding.UTF8);
         }
     }
 }

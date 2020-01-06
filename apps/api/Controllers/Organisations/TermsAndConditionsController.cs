@@ -27,10 +27,12 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Adds new Terms and Conditions to your Organisations T/C Library
+        /// Adds new Terms and Conditions to your Organisations T/C Library.
         /// </summary>
-        /// <param name="dto">The new Terms and Conditions</param>  
-        /// <param name="id">The Id of the Organisation</param>  
+        /// <param name="id">The Id of the Organisation.</param>
+        /// <param name="dto">The new Terms and Conditions.</param>
+        /// <returns> The organisation metadaa. </returns>
+        /// <returns> The Terms and Conditions. </returns>
         [Produces(typeof(TermsAndConditionsDto))]
         [ProducesResponseType(400)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -45,7 +47,7 @@ namespace Amphora.Api.Controllers.Organisations
 
             var model = mapper.Map<TermsAndConditionsModel>(dto);
 
-            if(! org.AddTermsAndConditions(model))
+            if (!org.AddTermsAndConditions(model))
             {
                 return BadRequest($"{model.Id} already exists");
             }
@@ -67,9 +69,10 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Get's a list of an Organisation's Terms and Conditions
-        /// </summary> 
-        /// <param name="id">The Id of the Organisation</param>  
+        /// Get's a list of an Organisation's Terms and Conditions.
+        /// </summary>
+        /// <param name="id">The Id of the Organisation.</param>
+        /// <returns> The Terms and Conditions. </returns>
         [Produces(typeof(IEnumerable<TermsAndConditionsDto>))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("api/Organisations/{id}/TermsAndConditions")]
@@ -77,7 +80,6 @@ namespace Amphora.Api.Controllers.Organisations
         {
             var org = await organisationService.Store.ReadAsync(id);
             return Ok(mapper.Map<List<TermsAndConditionsDto>>(org.TermsAndConditions));
-
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if(id == null) return RedirectToPage("./Index");
+            if (id == null) { return RedirectToPage("./Index"); }
             this.Id = id;
             this.Organisation = await orgStore.ReadAsync(id);
             return Page();
@@ -40,11 +40,11 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            if(id == null) return RedirectToPage("./Index");
+            if (id == null) { return RedirectToPage("./Index"); }
             this.Id = id;
             this.Organisation = await orgStore.ReadAsync(id);
             this.Organisation.Account ??= new Account();
-            if(Amount > 0)
+            if (Amount > 0)
             {
                 this.Organisation.Account.CreditAccount(Label, Amount);
                 this.Organisation = await orgStore.UpdateAsync(Organisation);
@@ -54,6 +54,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             {
                 Message = "Amount was 0. No action taken.";
             }
+
             return Page();
         }
     }

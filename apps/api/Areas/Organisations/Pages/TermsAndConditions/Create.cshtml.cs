@@ -39,28 +39,28 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             }
         }
 
-
         public async Task<IActionResult> OnPostAsync(string id)
         {
             var result = await organisationService.ReadAsync(User, id);
             if (result.Succeeded)
             {
                 this.Organisation = result.Entity;
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return Page();
                 }
+
                 var model = mapper.Map<TermsAndConditionsModel>(this.TermsAndConditions);
-                if(! this.Organisation.AddTermsAndConditions(model))
+                if (!this.Organisation.AddTermsAndConditions(model))
                 {
                     // duplicate id
                     ModelState.AddModelError(string.Empty, $"The Id '{model.Id}' already exists.");
                     return Page();
                 }
-                
+
                 var updateResult = await organisationService.UpdateAsync(User, Organisation);
-                if (updateResult.Succeeded) return RedirectToPage("./Index", new { Id = Organisation.Id });
-                else this.ModelState.AddModelError(string.Empty, updateResult.Message);
+                if (updateResult.Succeeded) { return RedirectToPage("./Index", new { Id = Organisation.Id }); }
+                else { this.ModelState.AddModelError(string.Empty, updateResult.Message); }
                 return Page();
             }
             else

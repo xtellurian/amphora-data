@@ -39,6 +39,7 @@ namespace Amphora.Tests.Integration.Pages
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }
+
         [Theory]
         [InlineData("/Admin/Accounts/Detail")]
         public async Task CanLoadPage_OrganisationSpecific(string path)
@@ -59,7 +60,6 @@ namespace Amphora.Tests.Integration.Pages
             var otherResponse = await otherClient.GetAsync($"{path}?id={otherOrg.Id}");
             Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
             Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other is not authorized
-            
 
             await DestroyOrganisationAsync(otherClient, otherOrg);
             await DestroyUserAsync(otherClient, otherUser);

@@ -7,9 +7,7 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public UserModelProfile()
         {
-
             CreateMap<ApplicationUser, UserDto>();
-
         }
     }
 }

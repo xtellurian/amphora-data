@@ -10,6 +10,5 @@ namespace Amphora.Api.Pages.Shared
         {
             ResourceId = resourceId;
         }
-
     }
 }

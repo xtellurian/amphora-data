@@ -30,17 +30,16 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     summary.DaysSinceFilesLastUpdated = DaysSince(await fileService.Store.LastModifiedAsync(amphora));
                 }
+
                 if (summary.CountSignals > 0)
                 {
                     summary.DaysSinceSignalsLastUpdated = DaysSince(new DateTime(await signalService.MaxWriteTimeAsync(amphora)));
                 }
-
             }
             catch (Exception ex)
             {
                 logger.LogError("Error when generating DataQualitySummary for amphora " + amphora.Id, ex);
             }
-
 
             return summary;
         }
@@ -48,8 +47,8 @@ namespace Amphora.Api.Services.Amphorae
         private int? DaysSince(DateTimeOffset? dt)
         {
             var ts = System.DateTime.Now - dt;
-            if (ts.HasValue) return ts.Value.Days;
-            else return null;
+            if (ts.HasValue) { return ts.Value.Days; }
+            else { return null; }
         }
     }
 }

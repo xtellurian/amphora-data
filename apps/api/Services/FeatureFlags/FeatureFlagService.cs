@@ -14,14 +14,14 @@ namespace Amphora.Api.Services.FeatureFlags
 
         public bool IsEnabled(string component)
         {
-            switch(component?.ToLower())
+            switch (component?.ToLower())
             {
                 case "signals":
-                return options.CurrentValue?.IsSignalsEnabled ?? true;
+                    return options.CurrentValue?.IsSignalsEnabled ?? true;
                 case "invoices":
-                return options.CurrentValue?.IsInvoicesEnabled ?? true;
+                    return options.CurrentValue?.IsInvoicesEnabled ?? true;
                 default:
-                return false;
+                    return false;
             }
         }
     }

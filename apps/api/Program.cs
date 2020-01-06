@@ -10,7 +10,7 @@ namespace Amphora.Api
     {
         public static async Task Main(string[] args)
         {
-            //await CreateWebHostBuilder(args).Build().RunAsync();
+            // await CreateWebHostBuilder(args).Build().RunAsync();
             await CreateHostBuilder(args).Build().RunAsync();
         }
 

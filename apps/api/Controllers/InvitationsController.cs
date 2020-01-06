@@ -27,8 +27,9 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Returns all the invitations sent to me
+        /// Returns all the invitations sent to me.
         /// </summary>
+        /// <returns> A collection of invitations.</returns>
         [HttpGet("api/invitations/")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ReadMyInvitations()
@@ -38,15 +39,16 @@ namespace Amphora.Api.Controllers
             {
                 return Ok(res.Entity);
             }
-            else if (res.WasForbidden) return StatusCode(403);
-            else return BadRequest(res.Message);
+            else if (res.WasForbidden) { return StatusCode(403); }
+            else { return BadRequest(res.Message); }
         }
 
         /// <summary>
-        /// Accepts an invitation sent to me
+        /// Accepts an invitation sent to me.
         /// </summary>
-        /// <param name="orgId">Organisation to accept invitation for</param>
-        /// <param name="dto">Invitation to accept</param>
+        /// <param name="orgId">Organisation to accept invitation for.</param>
+        /// <param name="dto">Invitation to accept.</param>
+        /// <returns> An object with an invitation id. </returns>
         [HttpPost("api/invitations/{orgId}")]
         [Produces(typeof(AcceptInvitationDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -56,22 +58,25 @@ namespace Amphora.Api.Controllers
             if (res.Succeeded)
             {
                 var acceptResult = await invitationService.AcceptInvitationAsync(User, res.Entity);
-                if(acceptResult.Succeeded)
+                if (acceptResult.Succeeded)
                 {
                     return Ok(dto);
                 }
-                else if (acceptResult.WasForbidden) return StatusCode(403);
-                else return BadRequest(acceptResult.Message);
+                else if (acceptResult.WasForbidden) { return StatusCode(403); }
+                else { return BadRequest(acceptResult.Message); }
             }
-            else if (res.WasForbidden) return StatusCode(403);
-            else return BadRequest(res.Message);
-
+            else if (res.WasForbidden) { return StatusCode(403); }
+            else
+            {
+                return BadRequest(res.Message);
+            }
         }
 
         /// <summary>
-        /// Invite a new email address to Amphora Data
+        /// Invite a new email address to Amphora Data.
         /// </summary>
-        /// <param name="invitation">Invitation details</param>
+        /// <param name="invitation">Invitation details.</param>
+        /// <returns> An Invitation Object. </returns>
         [HttpPost("api/invitations/")]
         [Produces(typeof(InvitationDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -83,7 +88,7 @@ namespace Amphora.Api.Controllers
             {
                 return Ok(invitation);
             }
-            else if (res.WasForbidden) return StatusCode(403);
+            else if (res.WasForbidden) { return StatusCode(403); }
             else
             {
                 return BadRequest(res.Message);

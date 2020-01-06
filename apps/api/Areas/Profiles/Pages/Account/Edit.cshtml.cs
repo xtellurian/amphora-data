@@ -34,6 +34,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             {
                 return RedirectToPage("./Missing");
             }
+
             About = AppUser.About;
             FullName = AppUser.FullName;
             return Page();
@@ -46,17 +47,17 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 AppUser = await userService.ReadUserModelAsync(User);
                 AppUser.About = About;
                 AppUser.FullName = FullName;
-                
+
                 try
                 {
                     var response = await userService.UserManager.UpdateAsync(AppUser);
                     return RedirectToPage("./Detail");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ErrorMessage = ex.Message;
                     return Page();
-                }                
+                }
             }
             else
             {

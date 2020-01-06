@@ -13,9 +13,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
 
-        private Random rand => new Random();
-        public string CelebrationImagePath => Images[rand.Next(0, Images.Count)];
-        private static List<string> Images = new List<string>
+        private Random Rand => new Random();
+        public string CelebrationImagePath => images[Rand.Next(0, images.Count)];
+        private static List<string> images = new List<string>
         {
             "/images/stock/celebrate/undraw_Beer_celebration_cefj.svg",
             "/images/stock/celebrate/undraw_celebration_0jvk.svg",
@@ -47,6 +47,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     return StatusCode(403);
                 }
+
                 if (hasAgreed)
                 {
                     this.Success = true;

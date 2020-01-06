@@ -24,10 +24,11 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await userService.ReadUserModelAsync(User);
-            if(! user.IsAdmin())
+            if (!user.IsAdmin())
             {
                 return StatusCode(403);
             }
+
             this.Organisation = user.Organisation;
             this.Account = this.Organisation.Account;
             return Page();

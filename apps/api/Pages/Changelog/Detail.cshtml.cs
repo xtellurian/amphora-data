@@ -1,19 +1,19 @@
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.Changelog
 {
-    public class DetailModel: PageModel
+    public class DetailModel : PageModel
     {
         public DetailModel(IWebHostEnvironment env)
         {
             Env = env;
             ContentRootPath = Env.ContentRootPath;
         }
+
         private string ChangelogsRelativePath => IndexModel.ChangelogsRelativePath;
         private string Rootname => IndexModel.RootName;
         private IWebHostEnvironment Env { get; }
@@ -29,12 +29,12 @@ namespace Amphora.Api.Pages.Changelog
             var fileName = version.Replace('.', '_');
 
             var absolutePath = versionFiles.FirstOrDefault(f => f.Contains(fileName));
-            if(absolutePath == null)
+            if (absolutePath == null)
             {
                 return NotFound();
             }
 
-            this.RelativePath = absolutePath.Substring(absolutePath.IndexOf(Rootname) + Rootname.Length );
+            this.RelativePath = absolutePath.Substring(absolutePath.IndexOf(Rootname) + Rootname.Length);
 
             return Page();
         }

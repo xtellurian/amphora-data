@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
-using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
 using Xunit;
 
@@ -12,7 +12,7 @@ namespace Amphora.Tests.Unit.Services
 {
     public class AccountsServiceTests : UnitTestBase
     {
-        Random rand = new Random();
+        private Random rand = new Random();
 
         [Fact]
         public async Task InvoicesAreGenerated_NullOrg_ThrowsNullRefernce()
@@ -23,9 +23,8 @@ namespace Amphora.Tests.Unit.Services
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var sut = new AccountsService(purchaseStore, orgStore, CreateMockLogger<AccountsService>());
 
-
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                await Assert.ThrowsAsync<System.ArgumentNullException>( () => sut.GenerateInvoiceAsync(lastMonth, null));
+                await Assert.ThrowsAsync<System.ArgumentNullException>(() => sut.GenerateInvoiceAsync(lastMonth, null));
             }
         }
 
@@ -42,10 +41,10 @@ namespace Amphora.Tests.Unit.Services
                 org = await orgStore.CreateAsync(org);
                 var otherOrg = EntityLibrary.GetOrganisationModel();
                 otherOrg = await orgStore.CreateAsync(otherOrg);
-                var credit = rand.Next(1,105);
-                var debit = rand.Next(1,105);
+                var credit = rand.Next(1, 105);
+                var debit = rand.Next(1, 105);
                 org.Account.CreditAccount("Test Credit", credit); // credit 100
-                org.Account.DebitAccount("Test Debit", debit);// debit 50
+                org.Account.DebitAccount("Test Debit", debit); // debit 50
 
                 otherOrg.Account.CreditAccount("Test Credit", debit); // swap
                 otherOrg.Account.DebitAccount("Test Debit", credit);
@@ -81,11 +80,11 @@ namespace Amphora.Tests.Unit.Services
                 var otherOrg = EntityLibrary.GetOrganisationModel();
                 otherOrg = await orgStore.CreateAsync(otherOrg);
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                org.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit) { CreatedDate = lastMonth }); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit) { CreatedDate = lastMonth }); // debit 50
 
-                otherOrg.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
-                otherOrg.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
+                otherOrg.Account.Credits.Add(new AccountCredit("Test Credit", credit) { CreatedDate = lastMonth }); // credit 100
+                otherOrg.Account.Debits.Add(new AccountDebit("Test Debit", debit) { CreatedDate = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
@@ -95,7 +94,7 @@ namespace Amphora.Tests.Unit.Services
                 Assert.NotNull(thisMonthsInvoice);
                 Assert.Empty(thisMonthsInvoice.Credits);
                 Assert.Empty(thisMonthsInvoice.Debits);
-                Assert.Equal( 0 ,thisMonthsInvoice.InvoiceBalance);
+                Assert.Equal(0, thisMonthsInvoice.InvoiceBalance);
 
                 invoice = await sut.GenerateInvoiceAsync(lastMonth.StartOfMonth(), org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
@@ -121,13 +120,13 @@ namespace Amphora.Tests.Unit.Services
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
-                
+
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                
-                var credit = rand.Next(1,105);
-                var debit = rand.Next(1,105);
-                org.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
+
+                var credit = rand.Next(1, 105);
+                var debit = rand.Next(1, 105);
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit) { CreatedDate = lastMonth }); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit) { CreatedDate = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true);
 
@@ -137,7 +136,6 @@ namespace Amphora.Tests.Unit.Services
 
                 Assert.NotEqual(invoice.Id, regenereratedInvoice.Id);
                 Assert.Equal(invoice.InvoiceBalance, regenereratedInvoice.InvoiceBalance);
-
             }
         }
 
@@ -152,13 +150,13 @@ namespace Amphora.Tests.Unit.Services
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
-                
+
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                
-                var credit = rand.Next(1,105);
-                var debit = rand.Next(1,105);
-                org.Account.Credits.Add( new AccountCredit("Test Credit", credit){ CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add( new AccountDebit("Test Debit", debit){ CreatedDate = lastMonth }); // debit 50
+
+                var credit = rand.Next(1, 105);
+                var debit = rand.Next(1, 105);
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit) { CreatedDate = lastMonth }); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit) { CreatedDate = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true);
 

@@ -1,14 +1,13 @@
-using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
+using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Amphora.Common.Models.Signals;
-using Amphora.Common.Models.Platform;
-using Amphora.Common.Models.Permissions;
-using System.Linq;
 
 namespace Amphora.Api.DbContexts
 {
@@ -44,7 +43,6 @@ namespace Amphora.Api.DbContexts
                 b.HasOne(p => p.Signal).WithMany().HasForeignKey(p => p.SignalId);
             });
 
-
             modelBuilder.Entity<SignalModel>(b =>
             {
                 b.HasKey(_ => _.Id);
@@ -73,7 +71,7 @@ namespace Amphora.Api.DbContexts
                     a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
                 });
                 // Pinned Amphorae
-                organisation.OwnsOne(_ => _.PinnedAmphorae, p => 
+                organisation.OwnsOne(_ => _.PinnedAmphorae, p =>
                 {
                     p.HasOne(_ => _.Amphora1).WithMany().HasForeignKey(_ => _.AmphoraId1);
                     p.HasOne(_ => _.Amphora2).WithMany().HasForeignKey(_ => _.AmphoraId2);
@@ -140,7 +138,7 @@ namespace Amphora.Api.DbContexts
             modelBuilder.Entity<ApplicationUser>(b =>
             {
                 b.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
-                b.OwnsOne(_ => _.PinnedAmphorae, p => 
+                b.OwnsOne(_ => _.PinnedAmphorae, p =>
                 {
                     p.HasOne(_ => _.Amphora1).WithMany().HasForeignKey(_ => _.AmphoraId1);
                     p.HasOne(_ => _.Amphora2).WithMany().HasForeignKey(_ => _.AmphoraId2);

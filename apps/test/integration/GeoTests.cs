@@ -8,15 +8,15 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class GeoTests: IntegrationTestBase
+    public class GeoTests : IntegrationTestBase
     {
-
-        public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory): base(factory)
+        public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
+
         [Fact]
-       public async Task FuzzySearchTests()
-       {
+        public async Task FuzzySearchTests()
+        {
             // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
 
@@ -32,7 +32,6 @@ namespace Amphora.Tests.Integration
             var obj = JsonConvert.DeserializeObject<FuzzySearchResponse>(content);
             Assert.NotNull(obj);
             Assert.NotEmpty(obj.Results);
-
-       }
+        }
     }
 }

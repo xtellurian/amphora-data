@@ -11,7 +11,6 @@ namespace Amphora.Tests.Helpers
 {
     public static class EntityLibrary
     {
-
         private static Random rnd = new Random();
         public static AmphoraExtendedDto GetAmphoraDto(string orgId, string testName = null)
         {
@@ -58,21 +57,22 @@ namespace Amphora.Tests.Helpers
                .RuleFor(o => o.WebsiteUrl, f => f.Random.String2(1, 10))
                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
-            return org.Generate();;
+            return org.Generate();
         }
-        public static OrganisationModel GetOrganisationModel([CallerMemberName]  string testName = "")
+
+        public static OrganisationModel GetOrganisationModel([CallerMemberName] string testName = "")
         {
             var testOrgs = new Faker<OrganisationModel>()
-                //Ensure all properties have rules. By default, StrictMode is false
-                //Set a global policy by using Faker.DefaultStrictMode
+                // Ensure all properties have rules. By default, StrictMode is false
+                // Set a global policy by using Faker.DefaultStrictMode
                 .StrictMode(false)
                 .CustomInstantiator(f => new OrganisationModel(testName, f.Random.String2(10), f.Random.String2(10), f.Address.FullAddress()))
-                //OrderId is deterministic
-                //Pick some fruit from a basket
+                // OrderId is deterministic
+                // Pick some fruit from a basket
                 .RuleFor(o => o.Id, f => f.Random.Guid().ToString())
                 .RuleFor(o => o.Address, f => f.Random.String2(1, 10));
-            //A nullable int? with 80% probability of being null.
-            //The .OrNull extension is in the Bogus.Extensions namespace.;
+            // A nullable int? with 80% probability of being null.
+            // The .OrNull extension is in the Bogus.Extensions namespace.;
 
             var org = testOrgs.Generate();
             return org;
@@ -82,6 +82,7 @@ namespace Amphora.Tests.Helpers
         {
             return new SignalModel(testName, SignalModel.Numeric);
         }
+
         public static SignalDto GetSignalDto(string property)
         {
             return new SignalDto() { Property = property, ValueType = SignalModel.Numeric };
