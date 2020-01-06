@@ -67,14 +67,9 @@ namespace Amphora.Tests.Unit.Entities
             using (var context = GetContext(nameof(InMemoryEntityStoreReturnsNullAsync)))
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                await GetMissingAmphoraAsync(sut);
+                var missing = await sut.ReadAsync("missing_amphora");
+                Assert.Null(missing);
             }
-        }
-
-        private async Task GetMissingAmphoraAsync(IEntityStore<AmphoraModel> sut)
-        {
-            var missing = await sut.ReadAsync("missing");
-            Assert.Null(missing);
         }
     }
 }

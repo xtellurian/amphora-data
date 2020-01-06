@@ -32,7 +32,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
             if (AppUser == null)
             {
-                return RedirectToPage("./Missing");
+                return RedirectToPage("./UserMissing");
             }
 
             About = AppUser.About;

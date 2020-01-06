@@ -46,7 +46,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
             if (AppUser == null)
             {
-                return RedirectToPage("./Missing");
+                return RedirectToPage("./UserMissing");
             }
 
             if (AppUser.Id == currentUser.Id)
