@@ -104,12 +104,12 @@ namespace Amphora.Api.Services.Purchases
                 .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
-                invoice.Credits.Add(new InvoiceCredit(c.Label, c.Amount));
+                invoice.Transactions.Add(new InvoiceTransaction(c.Label, c.Amount, isCredit: true));
             }
 
             foreach (var d in thisMonthsDebits)
             {
-                invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount) { AmphoraId = d.AmphoraId });
+                invoice.Transactions.Add(new InvoiceTransaction(d.Label, d.Amount, isDebit: true) { AmphoraId = d.AmphoraId });
             }
 
             CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);
@@ -143,8 +143,6 @@ namespace Amphora.Api.Services.Purchases
                 throw new ArgumentNullException(nameof(debits));
             }
 
-            invoice.CountCredits = credits.Count();
-            invoice.CountDebits = debits.Count();
             invoice.TotalCredits ??= 0;
             invoice.TotalDebits ??= 0;
 

@@ -99,15 +99,10 @@ namespace Amphora.Api.DbContexts
                     account.OwnsMany(b => b.Invoices, invoice =>
                     {
                         invoice.Property(_ => _.Id).ValueGeneratedOnAdd();
-                        invoice.OwnsMany(_ => _.Debits, debit =>
+                        invoice.OwnsMany(_ => _.Transactions, transaction =>
                         {
-                            debit.Property(_ => _.Id).ValueGeneratedOnAdd();
-                            debit.HasKey(_ => _.Id);
-                        });
-                        invoice.OwnsMany(_ => _.Credits, credit =>
-                        {
-                            credit.Property(_ => _.Id).ValueGeneratedOnAdd();
-                            credit.HasKey(_ => _.Id);
+                            transaction.Property(_ => _.Id).ValueGeneratedOnAdd();
+                            transaction.HasKey(_ => _.Id);
                         });
                         invoice.HasKey(_ => _.Id);
                         invoice.WithOwner(_ => _.Account);

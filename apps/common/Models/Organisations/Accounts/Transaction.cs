@@ -15,7 +15,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public DateTimeOffset? CreatedDate { get; set; } = DateTime.UtcNow;
         public double? Amount { get; set; }
         public string Label { get; set; }
-        public abstract bool IsCredit { get; }
-        public abstract bool IsDebit { get; }
+        public bool IsCredit { get; set; }
+        public bool IsDebit { get; set; }
     }
 }

@@ -6,8 +6,20 @@
 }
 
 <div class="container">
-    <h1>Invoice</h1>
-    <h3>@Model.Invoice?.Name ?? Error</h3>
+    <div class="row">
+        <div class="col-4">
+            <h1>Invoice</h1>
+            <h3>@Model.Invoice?.Name</h3>
+        </div>
+        @{var textColour = "text-success";}
+        @if(@Model.Invoice.InvoiceBalance < 0)
+        {
+            textColour = "text-danger";
+        }
+        <div class="col-4 text-center align-self-center @textColour">
+            Balance: @Model.Invoice.InvoiceBalance
+        </div>
+    </div>
     <hr/>
     <div class="row">
         <!-- unpaid row -->

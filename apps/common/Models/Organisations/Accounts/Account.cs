@@ -13,6 +13,44 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public string OrganisationId { get; set; } = null!;
         public double? Balance => GetBalance();
 
+        public IList<Invoice> GetUnpaidInvoices(bool includePreview = false)
+        {
+            IList<Invoice> unpaidInvoices;
+            if (includePreview)
+            {
+                unpaidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                    && !_.IsPaid.Value).ToList();
+            }
+            else
+            {
+                unpaidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                    && !_.IsPaid.Value
+                    && _.IsPreview.HasValue
+                    && !_.IsPreview.Value).ToList();
+            }
+
+            return unpaidInvoices;
+        }
+
+        public IList<Invoice> GetPaidInvoices(bool includePreview = false)
+        {
+            IList<Invoice> paidInvoices;
+            if (includePreview)
+            {
+                paidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                && _.IsPaid.Value).ToList();
+            }
+            else
+            {
+                paidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                    && _.IsPaid.Value
+                    && _.IsPreview.HasValue
+                    && !_.IsPreview.Value).ToList();
+            }
+
+            return paidInvoices;
+        }
+
         public double? GetBalance()
         {
             var credit = this.Credits?.Sum(c => c.Amount) ?? 0;

@@ -65,11 +65,16 @@
     }
     else
     {
+        var textColour = "text-success";
+        @if(@Model.Invoice.InvoiceBalance < 0)
+        {
+            textColour = "text-danger";
+        }
         <div class="row">
             <div class="col-4">
                 <h2>@Model.Invoice.Name</h2>
             </div>
-            <div class="col-4">
+            <div class="col-4 @textColour">
                 Balance: @Model.Invoice.InvoiceBalance
             </div>
         </div>

@@ -4,12 +4,9 @@ namespace Amphora.Common.Models.Organisations.Accounts
     {
         public AccountCredit(string label, double? amount) : base(label, amount)
         {
+            IsCredit = true;
         }
 
         public virtual Account Account { get; set; } = null!;
-
-        public override bool IsCredit => true;
-
-        public override bool IsDebit => false;
     }
 }
