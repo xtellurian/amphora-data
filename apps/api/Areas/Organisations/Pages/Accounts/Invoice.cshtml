@@ -22,31 +22,13 @@
     </div>
     <hr/>
     <div class="row">
-        <!-- unpaid row -->
         <div class="col">
-            <h2>Credits</h2>
-            @if(Model.Invoice.CountCredits > 0)
+            <h2>Transactions</h2>
+            @if(Model.Invoice.Transactions.Count > 0)
             {
-                @foreach(var c in Model.Invoice.Credits)
+                @foreach(var t in Model.Invoice.Transactions)
                 {
-                    @await Component.InvokeAsync("TransactionRow", new {transaction = c, size = "default" })
-                }
-            }
-            else
-            {
-                <div>
-                    None
-                </div>
-            }
-            <hr/>
-        </div>
-        <div class="col">
-            <h2>Debits</h2>
-            @if(Model.Invoice.CountDebits > 0)
-            {
-                @foreach(var d in Model.Invoice.Debits)
-                {
-                    @await Component.InvokeAsync("TransactionRow", new {transaction = d, size = "default" })
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = t, size = "default" })
                 }
             }
             else
