@@ -10,6 +10,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [Required]
         public string Name { get; set; }
         [Required]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "2 decimal places")]
         [DataType(DataType.Currency)]
         public double Price { get; set; }
         [Display(Name = "Labels")]

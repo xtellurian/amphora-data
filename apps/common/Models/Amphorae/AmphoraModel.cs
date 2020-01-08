@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Amphora.Common.Models.Amphorae
         {
             Name = name;
             Description = description;
-            Price = price;
+            Price = price.HasValue ? Math.Round(price.Value, 2) : 0;
             OrganisationId = organisationId;
         }
 

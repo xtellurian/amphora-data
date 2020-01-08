@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +15,13 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
     {
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IAccountsService accountService;
+        private readonly IDateTimeProvider dateTimeProvider;
 
-        public AddCreditPageModel(IEntityStore<OrganisationModel> orgStore, IAccountsService accountService)
+        public AddCreditPageModel(IEntityStore<OrganisationModel> orgStore, IAccountsService accountService, IDateTimeProvider dateTimeProvider)
         {
             this.orgStore = orgStore;
             this.accountService = accountService;
+            this.dateTimeProvider = dateTimeProvider;
         }
 
         public string Id { get; private set; }
@@ -26,8 +30,12 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
         public string Message { get; set; }
 
         [BindProperty]
+        [Required]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "2 decimal places")]
         public double Amount { get; set; }
         [BindProperty]
+        [Required]
+        [MinLength(5)]
         public string Label { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -46,7 +54,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             this.Organisation.Account ??= new Account();
             if (Amount > 0)
             {
-                this.Organisation.Account.CreditAccount(Label, Amount);
+                this.Organisation.Account.CreditAccount(Label, Amount, dateTimeProvider.UtcNow);
                 this.Organisation = await orgStore.UpdateAsync(Organisation);
                 Message = $"Organisation {Organisation.Name} was credited {Amount}";
             }

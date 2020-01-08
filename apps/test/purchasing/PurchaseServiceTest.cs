@@ -8,6 +8,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
+using Amphora.Tests.Mocks;
 using Moq;
 using Xunit;
 
@@ -19,6 +20,7 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task PurchasingAmphora_SendsEmail()
         {
             var context = GetContext();
+            var dtProvider = new MockDateTimeProvider();
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
@@ -53,7 +55,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, logger);
+            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, dtProvider, logger);
 
             var result = await sut.PurchaseAmphoraAsync(user_emailconfirmed, amphora);
             Assert.True(result.Succeeded);
@@ -78,6 +80,7 @@ namespace Amphora.Tests.Unit.Purchasing
         [Fact]
         public async Task AcceptedTermsAndConditions_EvaluatesTrue()
         {
+            var dtProvider = new MockDateTimeProvider();
             var context = GetContext();
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
@@ -113,7 +116,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.True(result);
@@ -123,6 +126,7 @@ namespace Amphora.Tests.Unit.Purchasing
         public async Task NotAcceptedTermsAndConditions_EvaluatesFalse()
         {
             var context = GetContext();
+            var dtProvider = new MockDateTimeProvider();
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
@@ -153,7 +157,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.False(result);
@@ -162,6 +166,7 @@ namespace Amphora.Tests.Unit.Purchasing
         [Fact]
         public async Task PurchaseAmphora_DeductsBalance()
         {
+            var dtProvider = new MockDateTimeProvider();
             var context = GetContext();
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
@@ -173,7 +178,7 @@ namespace Amphora.Tests.Unit.Purchasing
             {
                 Credits = new List<AccountCredit>()
                     {
-                        new AccountCredit("initial", 100)
+                        new AccountCredit("initial", 100, dtProvider.UtcNow)
                     }
             };
 
@@ -195,7 +200,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var mockEmailSender = new Mock<IEmailSender>();
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, dtProvider, CreateMockLogger<PurchaseService>());
             var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
             Assert.True(purchase.Succeeded);
             org = await orgStore.ReadAsync(org.Id); // reload, just in case

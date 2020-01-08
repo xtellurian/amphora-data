@@ -10,7 +10,7 @@ namespace Amphora.Api.Contracts
                                            string organisationId,
                                            bool isPreview = true,
                                            bool regenerate = false);
-        Task PopulateDebitsAsync();
+        Task PopulateDebitsAndCreditsAsync();
         Task<Invoice> PublishInvoice(Invoice invoice);
     }
 }

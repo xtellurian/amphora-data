@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Amphora.Api;
 using Amphora.Api.DbContexts;
@@ -37,14 +38,24 @@ namespace Amphora.Tests.Unit
             return memoryCache;
         }
 
+        private Dictionary<string, AmphoraContext> contexts = new Dictionary<string, AmphoraContext>();
         protected AmphoraContext GetContext([CallerMemberName] string databaseName = "")
         {
-            var options = new DbContextOptionsBuilder<AmphoraContext>()
+            if (contexts.TryGetValue(databaseName, out var x))
+            {
+                return x;
+            }
+            else
+            {
+                var options = new DbContextOptionsBuilder<AmphoraContext>()
                 .UseInMemoryDatabase(databaseName: databaseName)
                 .Options;
 
-            // Run the test against one instance of the context
-            return new AmphoraContext(options);
+                // Run the test against one instance of the context
+                var context = new AmphoraContext(options);
+                contexts[databaseName] = context;
+                return context;
+            }
         }
 
         protected IMapper Mapper { get; }

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
@@ -20,6 +21,7 @@ namespace Amphora.Api.Services.Purchases
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
+        private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<PurchaseService> logger;
 
         public PurchaseService(
@@ -28,6 +30,7 @@ namespace Amphora.Api.Services.Purchases
             IPermissionService permissionService,
             IUserService userService,
             IEmailSender emailSender,
+            IDateTimeProvider dateTimeProvider,
             ILogger<PurchaseService> logger)
         {
             this.purchaseStore = purchaseStore;
@@ -35,6 +38,7 @@ namespace Amphora.Api.Services.Purchases
             this.permissionService = permissionService;
             this.userService = userService;
             this.emailSender = emailSender;
+            this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
         }
 
@@ -75,8 +79,14 @@ namespace Amphora.Api.Services.Purchases
                         logger.LogInformation($"Debiting account {purchase.Price.Value}");
                         var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
                         if (org.Account == null) { org.Account = new Account(); }
-                        org.Account.DebitAccount($"Initial Purchase {purchase.AmphoraId}", purchase.Price.Value, purchase.AmphoraId);
+                        org.Account.DebitAccountFromPurchase(purchase, dateTimeProvider.UtcNow);
                         org = await orgStore.UpdateAsync(org);
+
+                        // credit the selling account
+                        var sellerOrg = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
+                        if (sellerOrg.Account == null) { sellerOrg.Account = new Account(); }
+                        sellerOrg.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+                        sellerOrg = await orgStore.UpdateAsync(sellerOrg);
                     }
                     else
                     {

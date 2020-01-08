@@ -1,17 +1,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Amphora.Common.Models.Purchases;
 
 namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class Account
     {
+        private const double DefaultCommissionRate = 0.8; // i.e. the fraction kept by the provider
         public virtual ICollection<AccountCredit> Credits { get; set; } = new Collection<AccountCredit>();
         public virtual ICollection<AccountDebit> Debits { get; set; } = new Collection<AccountDebit>();
         public virtual ICollection<Invoice> Invoices { get; set; } = new Collection<Invoice>();
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public string OrganisationId { get; set; } = null!;
         public double? Balance => GetBalance();
+
+        /// <summary>
+        /// The fraction of a purchase taken by Amphora Data.
+        /// Is multiplied by the Purchase Amount (i.e. the debit amount) to generate the credit amount.
+        /// </summary>
+        public double? CommissionRate { get; set; } = DefaultCommissionRate;
+
+        private double GetCommissionRate() => CommissionRate ?? DefaultCommissionRate;
 
         public IList<Invoice> GetUnpaidInvoices(bool includePreview = false)
         {
@@ -58,7 +68,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
             return credit - debit;
         }
 
-        public void DebitAccount(string label, double amount, string? amphoraId = null)
+        public void DebitAccount(string label, double amount, System.DateTimeOffset? timestamp, string? amphoraId = null)
         {
             if (amount < 0)
             {
@@ -66,11 +76,19 @@ namespace Amphora.Common.Models.Organisations.Accounts
             }
 
             if (Debits == null) { Debits = new List<AccountDebit>(); }
-            if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount)); }
-            else { Debits.Add(new AccountDebit(label, amount, amphoraId)); }
+            if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount, timestamp)); }
+            else { Debits.Add(new AccountDebit(label, amount, timestamp, amphoraId)); }
         }
 
-        public void CreditAccount(string label, double amount)
+        public void DebitAccountFromPurchase(PurchaseModel purchase, System.DateTimeOffset? timestamp)
+        {
+            if (purchase.Price == 0) { return; }
+            if (Debits == null) { Debits = new List<AccountDebit>(); }
+            var label = $"Purchased {purchase.AmphoraId}";
+            Debits.Add(new AccountDebit(label, purchase.Price, timestamp, purchase.AmphoraId));
+        }
+
+        public void CreditAccount(string label, double amount, System.DateTimeOffset? timestamp, string? amphoraId = null)
         {
             if (amount < 0)
             {
@@ -78,7 +96,17 @@ namespace Amphora.Common.Models.Organisations.Accounts
             }
 
             if (Credits == null) { Credits = new List<AccountCredit>(); }
-            Credits.Add(new AccountCredit(label, amount));
+            if (amphoraId == null) { Credits.Add(new AccountCredit(label, amount, timestamp)); }
+            else { Credits.Add(new AccountCredit(label, amount, timestamp, amphoraId)); }
+        }
+
+        public void CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
+        {
+            if (purchase.Price == 0) { return; }
+            if (Credits == null) { Credits = new List<AccountCredit>(); }
+            var label = $"Sold {purchase.AmphoraId}";
+            var amount = purchase.Price * GetCommissionRate();
+            Credits.Add(new AccountCredit(label, amount, timestamp, purchase.AmphoraId));
         }
     }
 }

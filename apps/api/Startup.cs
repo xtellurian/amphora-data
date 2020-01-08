@@ -95,6 +95,7 @@ namespace Amphora.Api
             services.AddTransient<IPurchaseService, PurchaseService>();
             services.AddTransient<IAccountsService, AccountsService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
+            services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();

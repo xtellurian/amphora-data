@@ -21,7 +21,7 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await accountsService.PopulateDebitsAsync();
+            await accountsService.PopulateDebitsAndCreditsAsync();
             Message = "Done";
             return Page();
         }
