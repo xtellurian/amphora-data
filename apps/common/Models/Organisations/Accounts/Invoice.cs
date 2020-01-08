@@ -34,8 +34,8 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public int? CountCredits => Credits.Count();
         public int? CountDebits => Debits.Count();
 
-        public virtual IEnumerable<InvoiceTransaction> Credits => Transactions.Where(c => c.IsCredit).ToList();
-        public virtual IEnumerable<InvoiceTransaction> Debits => Transactions.Where(c => c.IsDebit).ToList();
+        public virtual IEnumerable<InvoiceTransaction> Credits => Transactions.Where(c => c.IsCredit == true).ToList();
+        public virtual IEnumerable<InvoiceTransaction> Debits => Transactions.Where(c => c.IsDebit == true).ToList();
         public virtual ICollection<InvoiceTransaction> Transactions { get; set; } = new Collection<InvoiceTransaction>();
     }
 }

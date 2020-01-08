@@ -8,7 +8,7 @@
         <div class="col-7 text-truncate">
             @Model.Transaction.Label
         </div>
-        @if(Model.Transaction.IsDebit)
+        @if(Model.Transaction.IsDebit ==  true)
         {
             <!-- Red text for debits -->
             <div class="col-2 text-danger">

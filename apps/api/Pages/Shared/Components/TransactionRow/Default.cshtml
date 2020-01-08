@@ -6,7 +6,7 @@
             @Model.Transaction.Label
         </div>
         @{var textColour = "text-danger"; }
-        @if(Model.Transaction.IsCredit)
+        @if(Model.Transaction.IsCredit == true)
         {
             textColour = "text-success";
         }
