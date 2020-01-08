@@ -39,6 +39,7 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.Name, b.Name);
+            Assert.Equal(a.Labels, b.Labels);
 
             await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
@@ -164,6 +165,57 @@ namespace Amphora.Tests.Integration.Amphorae
             // Assert
             Assert.False(response.IsSuccessStatusCode);
 
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task UpdateAmphora_Success()
+        {
+            var url = "/api/amphorae";
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
+            var s = JsonConvert.SerializeObject(a);
+            var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
+
+            // Act
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.PostAsync(url, requestBody);
+
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("application/json; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(responseBody);
+            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            Assert.NotNull(a.Id);
+
+            // now update
+            var newName = System.Guid.NewGuid().ToString();
+            var newDescription = System.Guid.NewGuid().ToString();
+            var newLabels = System.Guid.NewGuid().ToString();
+
+            a.Name = newName;
+            a.Description = newDescription;
+            a.Labels = newLabels;
+            var updateResponse = await adminClient.PutAsJsonAsync($"{url}/{a.Id}", a);
+            var updateResponseBody = await updateResponse.Content.ReadAsStringAsync();
+            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(updateResponseBody);
+
+            // Assert
+            Assert.True(updateResponse.IsSuccessStatusCode);
+            Assert.NotNull(b);
+            Assert.NotNull(b.Id);
+            Assert.Equal(a.Id, b.Id);
+            Assert.Equal(a.Price, b.Price);
+            // the updated properties
+            Assert.Equal(newDescription, b.Description);
+            Assert.Equal(newName, b.Name);
+            Assert.Equal(newLabels, b.Labels);
+
+            await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }

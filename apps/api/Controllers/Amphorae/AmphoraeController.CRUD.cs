@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Amphorae;
@@ -113,8 +114,9 @@ namespace Amphora.Api.Controllers.Amphorae
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
             if (a == null) { return NotFound(); }
-            var model = mapper.Map<AmphoraModel>(dto);
-            var result = await this.amphoraeService.UpdateAsync(User, model);
+            var model = await this.amphoraeService.ReadAsync(User, id);
+            var entity = model.Entity.UpdateProperties(dto);
+            var result = await this.amphoraeService.UpdateAsync(User, entity);
             if (result.Succeeded)
             {
                 return Ok(mapper.Map<AmphoraExtendedDto>(result.Entity));
