@@ -85,12 +85,13 @@ namespace Amphora.Tests.Unit.Purchasing
             Assert.Single(buyerOrg.Account.Debits);
             var debit = buyerOrg.Account.Debits.FirstOrDefault();
             Assert.Equal(amphora.Id, debit.AmphoraId);
-            Assert.Equal(amphora.Price, debit.Amount);
+
+            MathHelpers.AssertCloseEnough(amphora.Price, debit.Amount);
 
             Assert.Single(sellerOrg.Account.Credits);
             var credit = sellerOrg.Account.Credits.FirstOrDefault();
             Assert.Equal(amphora.Id, credit.AmphoraId);
-            Assert.Equal(amphora.Price * sellerOrg.Account.CommissionRate, credit.Amount);
+            MathHelpers.AssertCloseEnough(amphora.Price * sellerOrg.Account.CommissionRate, credit.Amount);
 
             // fast fwd one month, and now we should see the recurring debit and credit
             dtProvider.Now = dtProvider.Now.AddMonths(1);
@@ -101,13 +102,13 @@ namespace Amphora.Tests.Unit.Purchasing
             var debit2 = buyerOrg.Account.Debits.Where(d => d.Timestamp == dtProvider.Now).FirstOrDefault();
             Assert.NotNull(debit2);
             Assert.Equal(amphora.Id, debit2.AmphoraId);
-            Assert.Equal(amphora.Price, debit2.Amount);
+            MathHelpers.AssertCloseEnough(amphora.Price, debit2.Amount);
 
             Assert.Equal(2, sellerOrg.Account.Credits.Count);
             var credit2 = sellerOrg.Account.Credits.FirstOrDefault();
             Assert.NotNull(credit2);
             Assert.Equal(amphora.Id, credit2.AmphoraId);
-            Assert.Equal(amphora.Price * sellerOrg.Account.CommissionRate, credit2.Amount);
+            MathHelpers.AssertCloseEnough(amphora.Price * sellerOrg.Account.CommissionRate, credit2.Amount);
         }
     }
 }
