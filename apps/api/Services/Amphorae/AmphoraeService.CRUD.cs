@@ -135,7 +135,7 @@ namespace Amphora.Api.Services.Amphorae
                 var existingEntity = await AmphoraStore.ReadAsync(entity.Id);
                 logger.LogInformation($"Updating Amphora {entity.Id}");
 
-                if (entity == null)
+                if (existingEntity == null)
                 {
                     logger.LogError($"{entity.Id} Not Found");
                     return new EntityOperationResult<AmphoraModel>(user, $"{entity.Id} Not Found");
