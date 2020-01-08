@@ -2,6 +2,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class InvoiceTransaction : Transaction
     {
+        public InvoiceTransaction(string label, double? amount) : base(label, amount) { }
         protected InvoiceTransaction(string label, double? amount, System.DateTimeOffset? timestamp) : base(label, amount, timestamp) { }
 
         public InvoiceTransaction(string label, double? amount, System.DateTimeOffset? timestamp, bool? isCredit = null, bool? isDebit = null) : this(label, amount, timestamp)

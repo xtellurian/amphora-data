@@ -2,6 +2,11 @@ namespace Amphora.Common.Models.Organisations.Accounts
 {
     public class AccountDebit : Transaction
     {
+        public AccountDebit(string label, double? amount) : base(label, amount)
+        {
+            IsDebit = true;
+        }
+
         public AccountDebit(string label, double? amount, System.DateTimeOffset? timestamp) : base(label, amount, timestamp)
         {
             IsDebit = true;
