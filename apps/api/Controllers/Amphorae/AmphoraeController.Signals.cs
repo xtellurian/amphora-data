@@ -19,7 +19,8 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <summary>
         /// Get's the signals associated with an Amphora.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A collection of signals.</returns>
         [Produces(typeof(List<SignalDto>))]
         [HttpGet("api/amphorae/{id}/signals")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -41,11 +42,13 @@ namespace Amphora.Api.Controllers.Amphorae
                 return BadRequest(result.Message);
             }
         }
+
         /// <summary>
         /// Associates a signal with an Amphora. Signal is created if not existing.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="dto">Signal Details</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="dto">Signal Details.</param>
+        /// <returns>Signal metadata.</returns>
         [Produces(typeof(SignalDto))]
         [HttpPost("api/amphorae/{id}/signals")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -62,7 +65,7 @@ namespace Amphora.Api.Controllers.Amphorae
 
                     if (updateRes.Succeeded)
                     {
-                        //happy path
+                        // happy path
                         dto = mapper.Map<SignalDto>(updateRes.Entity);
                         return Ok(dto);
                     }
@@ -95,10 +98,11 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Uploads values to an Amphora signal(s)
+        /// Uploads values to an Amphora signal(s).
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="data">Signal Values</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="data">Signal Values.</param>
+        /// <returns>The signal values.</returns>
         [HttpPost("api/amphorae/{id}/signals/values")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
@@ -114,7 +118,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(res.Entity);
                 }
-                else return BadRequest(res.Message);
+                else { return BadRequest(res.Message); }
             }
             else if (result.WasForbidden)
             {
@@ -127,10 +131,11 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Uploads values in batch to an Amphora signal(s)
+        /// Uploads values in batch to an Amphora signal(s).
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="data">Signal Values</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="data">Signal Values.</param>
+        /// <returns>A collection of signal values.</returns>
         [HttpPost("api/amphorae/{id}/signals/batchvalues")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
@@ -146,7 +151,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(res.Entity);
                 }
-                else return BadRequest(res.Message);
+                else { return BadRequest(res.Message); }
             }
             else if (result.WasForbidden)
             {

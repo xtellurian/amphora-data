@@ -1,18 +1,17 @@
-using Xunit;
-using Amphora.Api.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Tests.Helpers;
 using Newtonsoft.Json;
-using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Stores.EFCore;
+using Xunit;
 
 namespace Amphora.Tests.Unit.Entities
 {
     public class AmphoraEntityTests : UnitTestBase
     {
-
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
@@ -68,14 +67,9 @@ namespace Amphora.Tests.Unit.Entities
             using (var context = GetContext(nameof(InMemoryEntityStoreReturnsNullAsync)))
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                await GetMissingAmphoraAsync(sut);
+                var missing = await sut.ReadAsync("missing_amphora");
+                Assert.Null(missing);
             }
-        }
-
-        private async Task GetMissingAmphoraAsync(IEntityStore<AmphoraModel> sut)
-        {
-            var missing = await sut.ReadAsync("missing");
-            Assert.Null(missing);
         }
     }
 }

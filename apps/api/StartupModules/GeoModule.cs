@@ -3,35 +3,34 @@ using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Amphora.Api.StartupModules
 {
     public class GeoModule
     {
-        private readonly IWebHostEnvironment HostingEnvironment;
-        private readonly IConfiguration Configuration;
+        private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly IConfiguration configuration;
 
         public GeoModule(IConfiguration configuration, IWebHostEnvironment env)
         {
-            this.HostingEnvironment = env;
-            this.Configuration = configuration;
+            this.hostingEnvironment = env;
+            this.configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AzureMapsOptions>(Configuration.GetSection("AzureMaps"));
+            services.Configure<AzureMapsOptions>(configuration.GetSection("AzureMaps"));
 
-            if (HostingEnvironment.IsProduction() || Configuration["PersistentStores"] == "true")
+            if (hostingEnvironment.IsProduction() || configuration["PersistentStores"] == "true")
             {
                 services.AddTransient<IMapService, AzureMapService>();
             }
-            else if (HostingEnvironment.IsDevelopment())
+            else if (hostingEnvironment.IsDevelopment())
             {
                 services.AddTransient<IMapService, InMemoryMapService>();
             }
-            
         }
     }
 }

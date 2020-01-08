@@ -38,6 +38,7 @@ namespace Amphora.Api.Services.Platform
             {
                 return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must confirm email address to invite");
             }
+
             if (invitation.TargetOrganisationId != null && !user.IsAdmin())
             {
                 return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must be an administrator to invite to an organisation");
@@ -51,7 +52,7 @@ namespace Amphora.Api.Services.Platform
             }
             else
             {
-                if (inviteToOrg) invitation.TargetOrganisationId = user.OrganisationId;
+                if (inviteToOrg) { invitation.TargetOrganisationId = user.OrganisationId; }
                 invitation.CreatedDate = System.DateTime.UtcNow;
                 invitation.LastModified = System.DateTime.UtcNow;
                 var created = await invitationStore.CreateAsync(invitation);
@@ -64,7 +65,7 @@ namespace Amphora.Api.Services.Platform
         public async Task<EntityOperationResult<IList<InvitationModel>>> GetMyInvitations(ClaimsPrincipal principal)
         {
             var user = await userService.ReadUserModelAsync(principal);
-            if (user == null) return new EntityOperationResult<IList<InvitationModel>>(user, "null user") { WasForbidden = true };
+            if (user == null) { return new EntityOperationResult<IList<InvitationModel>>(user, "null user") { WasForbidden = true }; }
             var existing = await invitationStore.QueryAsync(i => i.TargetEmail == user.NormalizedEmail);
             if (existing.Count() > 0)
             {
@@ -83,8 +84,8 @@ namespace Amphora.Api.Services.Platform
                 i.TargetEmail == user.NormalizedEmail
                 && i.TargetOrganisationId == orgId);
             var invite = existing.FirstOrDefault();
-            if (invite != null) return new EntityOperationResult<InvitationModel>(user, invite);
-            else return new EntityOperationResult<InvitationModel>(user, "Invitation does not exist");
+            if (invite != null) { return new EntityOperationResult<InvitationModel>(user, invite); }
+            else { return new EntityOperationResult<InvitationModel>(user, "Invitation does not exist"); }
         }
 
         public async Task<InvitationModel> GetInvitationByEmailAsync(string email)
@@ -100,16 +101,17 @@ namespace Amphora.Api.Services.Platform
                     i.TargetDomain == domain);
                 invite = existing.FirstOrDefault();
             }
+
             return invite;
         }
 
         public async Task<EntityOperationResult<InvitationModel>> AcceptInvitationAsync(ClaimsPrincipal principal, InvitationModel invitation)
         {
-            if (invitation.TargetOrganisationId == null) throw new System.ArgumentException("TargetOrganisationId cannot be null");
+            if (invitation.TargetOrganisationId == null) { throw new System.ArgumentException("TargetOrganisationId cannot be null"); }
 
             var user = await userService.ReadUserModelAsync(principal);
 
-            if (!string.Equals(user.NormalizedEmail, invitation.TargetEmail)) throw new System.ArgumentException("Emails do not match");
+            if (!string.Equals(user.NormalizedEmail, invitation.TargetEmail)) { throw new System.ArgumentException("Emails do not match"); }
 
             user.OrganisationId = invitation.TargetOrganisationId;
             user.Organisation.AddOrUpdateMembership(user, Common.Models.Organisations.Roles.User);
@@ -124,7 +126,6 @@ namespace Amphora.Api.Services.Platform
             {
                 return new EntityOperationResult<InvitationModel>(user, res.Errors?.Select(_ => _.Description));
             }
-
         }
     }
 }

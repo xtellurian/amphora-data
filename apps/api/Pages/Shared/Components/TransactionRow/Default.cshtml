@@ -5,7 +5,12 @@
         <div class="col-8 text-truncate">
             @Model.Transaction.Label
         </div>
-        <div class="col-2">
+        @{var textColour = "text-danger"; }
+        @if(Model.Transaction.IsCredit)
+        {
+            textColour = "text-success";
+        }
+        <div class="col-2 @textColour">
             @Model.Transaction.Amount
         </div>
         <div class="col-2">

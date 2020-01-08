@@ -23,14 +23,15 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
         public async Task<IActionResult> OnGetAsync(string invoiceId)
         {
             var user = await userService.ReadUserModelAsync(User);
-            if(user.IsAdmin())
+            if (user.IsAdmin())
             {
                 this.Organisation = user.Organisation;
                 this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
-                if(this.Invoice == null)
+                if (this.Invoice == null)
                 {
                     return NotFound();
                 }
+
                 return Page();
             }
             else

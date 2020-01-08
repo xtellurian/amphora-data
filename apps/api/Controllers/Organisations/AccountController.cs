@@ -26,7 +26,8 @@ namespace Amphora.Api.Controllers.Organisations
         /// <summary>
         /// Deletes an organisation.
         /// </summary>
-        /// <param name="id">Organisation Id</param>
+        /// <param name="id">Organisation Id.</param>
+        /// <returns>An Organisation's account metadata. </returns>
         [Produces(typeof(Models.Dtos.Organisations.Account))]
         [HttpGet("api/Organisations/{id}/Account")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

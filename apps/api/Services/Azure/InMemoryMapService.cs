@@ -9,7 +9,7 @@ namespace Amphora.Api.Services.Azure
     {
         public Task<FuzzySearchResponse> FuzzySearchAsync(string query)
         {
-            return Task<FuzzySearchResponse>.Factory.StartNew(() => 
+            return Task<FuzzySearchResponse>.Factory.StartNew(() =>
             {
                 return new FuzzySearchResponse
                 {
@@ -18,7 +18,7 @@ namespace Amphora.Api.Services.Azure
                     {
                         new Result
                         {
-                            Address = new Address { FreeformAddress = "A Fake Address "},
+                            Address = new Address { FreeformAddress = "A Fake Address" },
                             Id = "fake"
                         }
                     }

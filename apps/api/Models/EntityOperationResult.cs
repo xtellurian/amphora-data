@@ -10,25 +10,30 @@ namespace Amphora.Api.Models
         {
             Succeeded = succeeded;
         }
-        public EntityOperationResult(ApplicationUser user, bool succeeded = false): this(succeeded)
+
+        public EntityOperationResult(ApplicationUser user, bool succeeded = false) : this(succeeded)
         {
             this.User = user;
         }
+
         public EntityOperationResult(ApplicationUser user, params string[] errors) : this(user)
         {
             this.Errors = errors.ToList();
             Succeeded = false;
         }
+
         public EntityOperationResult(ApplicationUser user, IEnumerable<string> errors) : this(user)
         {
             this.Errors = errors.ToList();
             Succeeded = false;
         }
+
         public EntityOperationResult(ApplicationUser user, T entity) : this(user)
         {
             Entity = entity;
             Succeeded = true;
         }
+
         public T Entity { get; }
         public ApplicationUser User { get; set; }
         public List<string> Errors { get; } = new List<string>();

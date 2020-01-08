@@ -20,30 +20,34 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             this.signalService = signalService;
         }
 
-        public List<SignalModel> Signals => new List<SignalModel>{Signal};
+        public List<SignalModel> Signals => new List<SignalModel> { Signal };
         public SignalModel Signal { get; private set; }
         public string QueryResponse { get; private set; }
         public IEnumerable<string> Values { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
         {
-            if(signalId == null) return RedirectToPage("./Index", new {id = id});
-            await base.LoadAmphoraAsync(id);
+            if (signalId == null)
+            {
+                return RedirectToPage("./Index", new { id = id });
+            }
+
+            await LoadAmphoraAsync(id);
 
             if (Amphora != null)
             {
                 Signal = this.Amphora.Signals?.FirstOrDefault(s => s.SignalId == signalId)?.Signal;
-                if(Signal.IsString)
+                if (Signal.IsString)
                 {
                     var uniqueValues = await signalService.GetUniqueValuesForStringProperties(User, Amphora);
-                    if(uniqueValues.TryGetValue(Signal, out var values))
+                    if (uniqueValues.TryGetValue(Signal, out var values))
                     {
                         this.Values = values;
                     }
                 }
+
                 QueryResponse = await GetQueryResponse();
             }
-
 
             return OnReturnPage();
         }

@@ -27,10 +27,11 @@ namespace Amphora.Api.Pages.Shared.Components.FeaturedAmphora
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            if(! string.IsNullOrEmpty(options.CurrentValue?.FeaturedAmphoraId))
+            if (!string.IsNullOrEmpty(options.CurrentValue?.FeaturedAmphoraId))
             {
                 this.Amphora = await amphoraeService.AmphoraStore.ReadAsync(options.CurrentValue.FeaturedAmphoraId);
             }
+
             return View(this);
         }
     }

@@ -24,8 +24,8 @@ namespace Amphora.Api.Services.Auth
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                    AuthorizationRequirement requirement,
-                                                       AmphoraModel entity)
+                                                             AuthorizationRequirement requirement,
+                                                             AmphoraModel entity)
         {
             var user = await userService.ReadUserModelAsync(context.User);
             using (logger.BeginScope(new LoggerScope<AmphoraAuthorizationHandler>(user)))

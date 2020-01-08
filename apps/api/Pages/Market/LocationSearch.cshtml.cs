@@ -12,10 +12,10 @@ namespace Amphora.Api.Pages.Market
         private readonly IMapService mapService;
 
         public LocationSearchModel(IMapService mapService)
-
         {
             this.mapService = mapService;
         }
+
         public async Task<IActionResult> OnGetAsync(string query)
         {
             var response = await mapService.FuzzySearchAsync(query);

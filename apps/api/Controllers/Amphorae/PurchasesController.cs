@@ -23,7 +23,8 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <summary>
         /// Purchases an Amphora as the logged in user.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A Message.</returns>
         [HttpPost("api/Amphorae/{id}/Purchases")]
         [Produces(typeof(string))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -36,6 +37,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return StatusCode(403);
                 }
+
                 var result = await purchaseService.PurchaseAmphoraAsync(User, a.Entity);
                 if (result.Succeeded)
                 {

@@ -35,7 +35,6 @@ namespace Amphora.Tests.Integration
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
-
         [Fact]
         public async Task CaseMismatch_Error()
         {
@@ -71,8 +70,8 @@ namespace Amphora.Tests.Integration
             // act
             var vals = new Dictionary<string, object>
                 {
-                    {p1.ToUpper(), 5}, // uppercase should error
-                    {p2.ToUpper(), "hello"}
+                    { p1.ToUpper(), 5 }, // uppercase should error
+                    { p2.ToUpper(), "hello" }
                 };
 
             var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
@@ -82,13 +81,13 @@ namespace Amphora.Tests.Integration
             {
                 new Dictionary<string, object>
                 {
-                    {p1, 6},
-                    {p2, "batch1"}
+                    { p1, 6 },
+                    { p2, "batch1" }
                 },
                 new Dictionary<string, object>
                 {
-                    {p1.ToUpper(), 7},
-                    {p2.ToUpper(), "batch2"}
+                    { p1.ToUpper(), 7 },
+                    { p2.ToUpper(), "batch2" }
                 }
             };
 
@@ -99,6 +98,7 @@ namespace Amphora.Tests.Integration
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }
+
         [Fact]
         public async Task CanUploadSignal()
         {
@@ -135,11 +135,9 @@ namespace Amphora.Tests.Integration
 
             var vals = new Dictionary<string, object>
                 {
-                    {p1, 5},
-                    {p2, "hello"}
+                    { p1, 5 },
+                    { p2, "hello" }
                 };
-
-
 
             var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
             valRes.EnsureSuccessStatusCode();
@@ -148,13 +146,13 @@ namespace Amphora.Tests.Integration
             {
                 new Dictionary<string, object>
                 {
-                    {p1, 6},
-                    {p2, "batch1"}
+                    { p1, 6 },
+                    { p2, "batch1" }
                 },
                 new Dictionary<string, object>
                 {
-                    {p1, 7},
-                    {p2, "batch2"}
+                    { p1, 7 },
+                    { p2, "batch2" }
                 }
             };
 

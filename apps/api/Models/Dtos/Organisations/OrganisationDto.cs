@@ -1,6 +1,6 @@
 namespace Amphora.Api.Models.Dtos.Organisations
 {
-    public class OrganisationDto: EntityDto
+    public class OrganisationDto : EntityDto
     {
         public string Name { get; set; }
         public string About { get; set; }

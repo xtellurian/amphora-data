@@ -5,7 +5,6 @@ namespace Amphora.Api.Pages.Shared.Components
 {
     public class TransactionRowViewComponent : ViewComponent
     {
-
         public TransactionRowViewComponent()
         {
         }
@@ -23,7 +22,6 @@ namespace Amphora.Api.Pages.Shared.Components
                 case "medium":
                 return View("Medium", this);
             }
-            
         }
     }
 }

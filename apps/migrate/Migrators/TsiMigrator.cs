@@ -28,13 +28,12 @@ namespace Amphora.Migrate.Migrators
 
         public async Task MigrateAsync()
         {
-            //signalService.RunGetEventsAsync()
+            // signalService.RunGetEventsAsync()
             var instances = await tsiService.GetInstancesAsync();
 
             var start = System.DateTime.UtcNow.AddYears(-1);
             var end = System.DateTime.UtcNow.AddMonths(2);
             var range = new DateTimeRange(start, end);
-
 
             foreach (var instance in instances)
             {
@@ -47,14 +46,15 @@ namespace Amphora.Migrate.Migrators
         private IList<Dictionary<string, object?>> ConstructPayload(QueryResultPage page)
         {
             var events = page.Timestamps.Select(_ => new Dictionary<string, object?> { { SpecialProperties.Timestamp, _ } }).ToList();
-            for(var i = 0; i < page.Timestamps.Count; i++)
+            for (var i = 0; i < page.Timestamps.Count; i++)
             {
-                var currentEvent = events[i];     
+                var currentEvent = events[i];
                 foreach (var prop in page.Properties)
                 {
                     currentEvent[prop.Name] = prop.Values[i];
                 }
             }
+
             return events;
         }
 
@@ -85,9 +85,8 @@ namespace Amphora.Migrate.Migrators
             {
                 logger.LogInformation($"There were {properties.Count} properties and {timestamps.Count} timestamps");
             }
+
             return new QueryResultPage(null, timestamps, properties);
         }
-
-
     }
 }

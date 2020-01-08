@@ -15,16 +15,12 @@ namespace Amphora.Api.Converters
         public override bool CanRead => true;
         public override bool CanWrite => true;
 
-
-
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (objectType != typeof(TimeSpan))
-                throw new ArgumentException();
+            if (objectType != typeof(TimeSpan)) { throw new ArgumentException(); }
 
             var spanString = reader.Value as string;
-            if (spanString == null)
-                return null;
+            if (spanString == null) { return null; }
             return XmlConvert.ToTimeSpan(spanString);
         }
 

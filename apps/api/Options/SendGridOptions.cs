@@ -6,6 +6,5 @@ namespace Amphora.Api.Options
         public string FromEmail { get; set; }
         public string FromName { get; set; }
         public bool? Suppress { get; set; }
-
     }
 }

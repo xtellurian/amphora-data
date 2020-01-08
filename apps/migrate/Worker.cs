@@ -22,8 +22,7 @@ namespace Amphora.Migrate
                       IOptionsMonitor<CosmosMigrationOptions> options,
                       CosmosCollectionMigrator cosmosMigrator,
                       BlobMigrator blobMigrator,
-                      TsiMigrator tsiMigrator
-                      )
+                      TsiMigrator tsiMigrator)
         {
             this.logger = logger;
             this.options = options;
@@ -48,6 +47,7 @@ namespace Amphora.Migrate
             {
                 logger.LogError($"Error Migrating, {ex.Message}", ex);
             }
+
             logger.LogInformation("Stopping");
             await this.StopAsync(stoppingToken);
             Environment.Exit(0);

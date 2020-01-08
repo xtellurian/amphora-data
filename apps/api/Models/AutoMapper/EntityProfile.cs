@@ -13,7 +13,6 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(p => p.IsDeleted, o => o.Ignore())
                 .ForMember(p => p.LastModified, o => o.Ignore())
                 .ReverseMap();
-
         }
     }
 }

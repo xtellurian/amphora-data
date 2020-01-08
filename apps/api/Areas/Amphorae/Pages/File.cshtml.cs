@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -37,17 +36,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id, string name)
         {
-            if(string.IsNullOrEmpty(name)) return RedirectToPage("./Detail", new {Id = id});
+            if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
             var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
                 return RedirectToPage("./Index");
             }
+
             var user = await userService.UserManager.GetUserAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
             {
                 var file = await blobStore.ReadBytesAsync(entity, name);
-                if(file == null || file.Length == 0) return RedirectToPage("./Detail", new {Id = id});
+                if (file == null || file.Length == 0) { return RedirectToPage("./Detail", new { Id = id }); }
                 return File(file, "application/octet-stream", name);
             }
             else

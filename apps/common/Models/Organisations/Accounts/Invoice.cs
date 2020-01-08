@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Amphora.Common.Models.Organisations.Accounts
 {
@@ -9,10 +10,12 @@ namespace Amphora.Common.Models.Organisations.Accounts
         {
             Id = id;
         }
+
         public Invoice()
         {
             Id = null!;
         }
+
         public string Id { get; set; }
         public virtual Account Account { get; set; } = null!;
         public string? Name { get; set; }
@@ -28,10 +31,11 @@ namespace Amphora.Common.Models.Organisations.Accounts
 
         // I know this seems weird, but when the list of credits or debits is empty, an exception is thrown
         // https://github.com/aspnet/EntityFrameworkCore/issues/19299
-        public int? CountCredits { get; set; }
-        public int? CountDebits { get; set; }
+        public int? CountCredits => Credits.Count();
+        public int? CountDebits => Debits.Count();
 
-        public virtual ICollection<InvoiceCredit> Credits { get; set; } = new Collection<InvoiceCredit>();
-        public virtual ICollection<InvoiceDebit> Debits { get; set; } = new Collection<InvoiceDebit>();
+        public virtual IEnumerable<InvoiceTransaction> Credits => Transactions.Where(c => c.IsCredit).ToList();
+        public virtual IEnumerable<InvoiceTransaction> Debits => Transactions.Where(c => c.IsDebit).ToList();
+        public virtual ICollection<InvoiceTransaction> Transactions { get; set; } = new Collection<InvoiceTransaction>();
     }
 }

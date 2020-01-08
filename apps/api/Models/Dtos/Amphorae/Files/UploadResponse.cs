@@ -6,6 +6,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae.Files
         {
             Url = url;
         }
+
         public string Url { get; set; }
     }
 }

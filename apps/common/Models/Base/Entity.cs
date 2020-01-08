@@ -11,6 +11,7 @@ namespace Amphora.Common.Models
             ttl = -1; // means no expiry
             CreatedDate = DateTime.UtcNow;
         }
+
         /// <summary>
         /// The entity Id.
         /// </summary>

@@ -20,11 +20,13 @@ namespace Amphora.Api.Controllers.Amphorae
             this.memoryCache = memoryCache;
         }
 
-        private const string countKey = "amphoraeCount";
+        private const string CountKey = "amphoraeCount";
 
         /// <summary>
-        /// Gets ta count of all the Amphora
+        /// Gets the count of all the Amphora.
         /// </summary>
+        /// <param name="iFrame">Boolean, whether to render as an iFrame.</param>
+        /// <returns>The total number of Amphora.</returns>
         [Produces(typeof(int))]
         [HttpGet("api/amphoraeStats/count")]
         [OpenApiIgnore]
@@ -32,7 +34,7 @@ namespace Amphora.Api.Controllers.Amphorae
         {
             // using a cache to prevent this public endpoint being smashed;
             int cacheEntry;
-            if (!memoryCache.TryGetValue(countKey, out cacheEntry))
+            if (!memoryCache.TryGetValue(CountKey, out cacheEntry))
             {
                 // Key not in cache, so get data.
                 cacheEntry = await amphoraeService.AmphoraStore.CountAsync();
@@ -41,8 +43,9 @@ namespace Amphora.Api.Controllers.Amphorae
                     .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
 
                 // Save data in cache.
-                memoryCache.Set(countKey, cacheEntry, cacheEntryOptions);
+                memoryCache.Set(CountKey, cacheEntry, cacheEntryOptions);
             }
+
             if (iFrame.HasValue && iFrame.Value)
             {
                 string myHostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";

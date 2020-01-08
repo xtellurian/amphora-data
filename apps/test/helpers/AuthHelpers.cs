@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Models.Organisations;
 using Newtonsoft.Json;
 
 namespace Amphora.Tests.Helpers
@@ -25,7 +24,7 @@ namespace Amphora.Tests.Helpers
                 FullName = fullName,
             };
             var requestPath = "api/users";
-            if (denyGlobalAdmin) requestPath += "?DenyGlobalAdmin=true";
+            if (denyGlobalAdmin) { requestPath += "?DenyGlobalAdmin=true"; }
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             var response = await client.PostAsync(requestPath, content);
             var password = await response.Content.ReadAsStringAsync();

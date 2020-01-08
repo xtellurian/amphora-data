@@ -1,35 +1,30 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    public class DeleteModel: AmphoraPageModel
+    public class DeleteModel : AmphoraPageModel
     {
-
-        public DeleteModel(IAmphoraeService amphoraeService): base(amphoraeService)
-        {
-        }
+        public DeleteModel(IAmphoraeService amphoraeService) : base(amphoraeService) { }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
-            return base.OnReturnPage();
+            await LoadAmphoraAsync(id);
+            return OnReturnPage();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
-            if(readResult.Succeeded)
+            if (readResult.Succeeded)
             {
                 var deleteResult = await amphoraeService.DeleteAsync(User, readResult.Entity);
-                if(deleteResult.Succeeded)
+                if (deleteResult.Succeeded)
                 {
                     return RedirectToPage("./Index");
                 }
-                else if(deleteResult.WasForbidden)
+                else if (deleteResult.WasForbidden)
                 {
                     return RedirectToPage("./Forbidden");
                 }

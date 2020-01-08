@@ -32,6 +32,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.permissionService = permissionService;
             this.userService = userService;
         }
+
         public OrganisationModel Organisation { get; set; }
         public bool CanEdit { get; private set; }
         public bool CanRestrict { get; private set; }
@@ -47,12 +48,12 @@ namespace Amphora.Api.Areas.Organisations.Pages
             if (string.IsNullOrEmpty(id))
             {
                 this.Organisation = await entityStore.ReadAsync(user.OrganisationId);
-                if (this.Organisation == null) return RedirectToPage("./Create");
+                if (this.Organisation == null) { return RedirectToPage("./Create"); }
             }
             else
             {
                 this.Organisation = await entityStore.ReadAsync(id);
-                if (this.Organisation == null) return RedirectToPage("./Index");
+                if (this.Organisation == null) { return RedirectToPage("./Index"); }
             }
 
             this.IsInOrg = this.Organisation.IsInOrgansation(user);
@@ -62,7 +63,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
             // get pinned
             var query = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == Organisation.Id);
-            this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull() 
+            this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull()
                 ? await query.Take(6).ToListAsync()
                 : Organisation.PinnedAmphorae as IEnumerable<AmphoraModel>;
             return Page();

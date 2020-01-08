@@ -1,15 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Exceptions;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using Amphora.Common.Models.Permissions;
-using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Organisations
 {
@@ -42,17 +39,17 @@ namespace Amphora.Api.Services.Organisations
             ClaimsPrincipal principal,
             OrganisationModel org)
         {
-            // we do this when a new user signs up without an invite from an existing org 
+            // we do this when a new user signs up without an invite from an existing org
             var user = await userService.UserManager.GetUserAsync(principal);
-            if (user == null) return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login");
+            if (user == null) { return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login"); }
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
                 org.CreatedById = user.Id;
                 org.CreatedBy = user;
                 org.CreatedDate = DateTime.UtcNow;
                 org.LastModified = DateTime.UtcNow;
-                
-                if (!org.IsValid()) throw new ArgumentException("Organisation is Invalid");
+
+                if (!org.IsValid()) { throw new ArgumentException("Organisation is Invalid"); }
                 org.AddOrUpdateMembership(user, Roles.Administrator);
                 // we good - create an org
                 org = await Store.CreateAsync(org);
@@ -67,6 +64,7 @@ namespace Amphora.Api.Services.Organisations
                             user.OrganisationId = org.Id; // set home org
                             var result = await userService.UserManager.UpdateAsync(user);
                         }
+
                         logger.LogInformation($"Assigned user to organisation, Name: {org.Name}, Id: {org.Id}");
                         return new EntityOperationResult<OrganisationModel>(user, org);
                     }
@@ -91,7 +89,7 @@ namespace Amphora.Api.Services.Organisations
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
                 var org = await Store.ReadAsync(id);
-                if (org == null) return new EntityOperationResult<OrganisationModel>(user, $"{id} not found");
+                if (org == null) { return new EntityOperationResult<OrganisationModel>(user, $"{id} not found"); }
                 var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Read);
                 if (authorized)
                 {
@@ -135,6 +133,7 @@ namespace Amphora.Api.Services.Organisations
                 {
                     user.Organisation.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>();
                 }
+
                 var model = new TermsAndConditionsAcceptanceModel(user.Organisation, termsAndConditions);
                 user.Organisation.TermsAndConditionsAccepted.Add(model);
                 var o = await Store.UpdateAsync(user.Organisation);

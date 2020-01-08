@@ -13,8 +13,8 @@ namespace Amphora.Tests.Integration
     {
         public PurchaseTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-
         }
+
         [Fact]
         public async Task PurchasingAmphora_DeductsFromBalance()
         {
@@ -33,7 +33,7 @@ namespace Amphora.Tests.Integration
             var account1 = JsonConvert.DeserializeObject<Account>(accountContent);
             Assert.NotNull(account1);
 
-            var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new {});
+            var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
             var purhcaseContent = await purchaseRes.Content.ReadAsStringAsync();
             purchaseRes.EnsureSuccessStatusCode();
             // get account again
@@ -44,7 +44,6 @@ namespace Amphora.Tests.Integration
             // get balance is deducted
             Assert.Equal(account1.Balance - dto.Price, account2.Balance);
 
-            
             await DestroyAmphoraAsync(adminClient, dto.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
@@ -75,10 +74,10 @@ namespace Amphora.Tests.Integration
             restrictRes.EnsureSuccessStatusCode();
 
             // attempt to purchase
-            var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new {});
+            var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
             var purhcaseContent = await purchaseRes.Content.ReadAsStringAsync();
             Assert.False(purchaseRes.IsSuccessStatusCode);
-            
+
             await DestroyAmphoraAsync(adminClient, dto.Id);
 
             await DestroyOrganisationAsync(adminClient, adminOrg);
@@ -86,6 +85,5 @@ namespace Amphora.Tests.Integration
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
         }
-
     }
 }

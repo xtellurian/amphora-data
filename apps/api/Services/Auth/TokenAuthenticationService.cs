@@ -6,16 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Models.Users;
 using Amphora.Api.Options;
-using Amphora.Common.Contracts;
+using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api.Services.Auth
 {
-
     public class TokenAuthenticationService : IAuthenticateService
     {
         private readonly IUserService userService;
@@ -36,7 +34,7 @@ namespace Amphora.Api.Services.Auth
         public async Task<(bool success, string token)> GetToken(ClaimsPrincipal principal)
         {
             var user = await userService.ReadUserModelAsync(principal);
-            if (user == null) return (false, null);
+            if (user == null) { return (false, null); }
             using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
                 if (userService.IsSignedIn(principal))
@@ -51,22 +49,22 @@ namespace Amphora.Api.Services.Auth
                 }
             }
         }
+
         public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
         {
             var user = await userService.UserManager.FindByNameAsync(request.Username);
-            if (user == null) return (false, null);
+            if (user == null) { return (false, null); }
             using (logger.BeginScope(new LoggerScope<TokenAuthenticationService>(user)))
             {
                 var token = string.Empty;
 
                 var signInResult = await userService.PasswordSignInAsync(request.Username, request.Password, false, false);
-                if (!signInResult.Succeeded) return (false, token);
+                if (!signInResult.Succeeded) { return (false, token); }
                 token = GenerateToken(user);
                 logger.LogInformation("Generated token. User Is Authenticated");
                 return (true, token);
             }
         }
-
 
         private static Random random = new Random();
         public static string RandomString(int length)
@@ -75,12 +73,14 @@ namespace Amphora.Api.Services.Auth
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
         private string GenerateToken(ApplicationUser user)
         {
             if (user == null)
             {
                 throw new NullReferenceException("Cannot generate token for null user");
             }
+
             logger.LogInformation($"Generating token for {user.UserName}");
             string token;
             var claim = new[]
@@ -96,8 +96,8 @@ namespace Amphora.Api.Services.Auth
                 tokenManagement.CurrentValue.Audience,
                 claim,
                 expires: DateTime.Now.AddMinutes(tokenManagement.CurrentValue.AccessExpiration),
-                signingCredentials: credentials
-            );
+                signingCredentials: credentials);
+
             token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             return token;
         }

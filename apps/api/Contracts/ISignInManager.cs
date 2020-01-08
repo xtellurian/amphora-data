@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Users;
-using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
@@ -17,4 +16,4 @@ namespace Amphora.Api.Contracts
         Task SignInAsync(ApplicationUser user, bool isPersistent, string authenticationMethod = null);
         Task SignOutAsync();
     }
-}   
+}

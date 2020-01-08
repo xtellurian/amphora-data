@@ -55,17 +55,17 @@ namespace Amphora.Tests.Integration
                     var prodVersion = ApiVersionIdentifier.FromSemver(prodContent);
 
                     Assert.True(thisVersion.Major >= prodVersion.Major);
-                    if(thisVersion.Major == prodVersion.Major)
+                    if (thisVersion.Major == prodVersion.Major)
                     {
                         // MAJOR hasn't been incremented.
                         Assert.True(thisVersion.Minor >= prodVersion.Minor);
-                        if(thisVersion.Minor == prodVersion.Minor)
+                        if (thisVersion.Minor == prodVersion.Minor)
                         {
                             // MINOR hasn't been incremented
                             Assert.True(thisVersion.Patch >= prodVersion.Patch);
                         }
                     }
-                    
+
                     // Assert at least one must be strictly greater than
                     Assert.True(thisVersion.Major > prodVersion.Major || thisVersion.Minor > prodVersion.Minor || thisVersion.Patch > prodVersion.Patch);
                 }

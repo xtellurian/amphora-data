@@ -6,35 +6,29 @@
 }
 
 <div class="container">
-    <h1>Invoice</h1>
-    <h3>@Model.Invoice?.Name ?? Error</h3>
+    <div class="row">
+        <div class="col-4">
+            <h1>Invoice</h1>
+            <h3>@Model.Invoice?.Name</h3>
+        </div>
+        @{var textColour = "text-success";}
+        @if(@Model.Invoice.InvoiceBalance < 0)
+        {
+            textColour = "text-danger";
+        }
+        <div class="col-4 text-center align-self-center @textColour">
+            Balance: @Model.Invoice.InvoiceBalance
+        </div>
+    </div>
     <hr/>
     <div class="row">
-        <!-- unpaid row -->
         <div class="col">
-            <h2>Credits</h2>
-            @if(Model.Invoice.CountCredits > 0)
+            <h2>Transactions</h2>
+            @if(Model.Invoice.Transactions.Count > 0)
             {
-                @foreach(var c in Model.Invoice.Credits)
+                @foreach(var t in Model.Invoice.Transactions)
                 {
-                    @await Component.InvokeAsync("TransactionRow", new {transaction = c, size = "default" })
-                }
-            }
-            else
-            {
-                <div>
-                    None
-                </div>
-            }
-            <hr/>
-        </div>
-        <div class="col">
-            <h2>Debits</h2>
-            @if(Model.Invoice.CountDebits > 0)
-            {
-                @foreach(var d in Model.Invoice.Debits)
-                {
-                    @await Component.InvokeAsync("TransactionRow", new {transaction = d, size = "default" })
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = t, size = "default" })
                 }
             }
             else

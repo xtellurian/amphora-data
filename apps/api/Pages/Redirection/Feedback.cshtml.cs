@@ -11,7 +11,7 @@ namespace Amphora.Api.Pages.Redirection
     {
         private readonly IOptionsMonitor<FeedbackOptions> options;
         private readonly ILogger<FeedbackModel> logger;
-        private string bodyTemplate(string from) => $">Please Keep this section. Issue from '{from}'.%0A";
+        private string BodyTemplate(string from) => $">Please Keep this section. Issue from '{from}'.%0A";
 
         public FeedbackModel(IOptionsMonitor<FeedbackOptions> options, ILogger<FeedbackModel> logger)
         {
@@ -21,8 +21,8 @@ namespace Amphora.Api.Pages.Redirection
 
         public IActionResult OnGet(string from)
         {
-            if(options.CurrentValue.RedirectUrl == null) throw new NullReferenceException("Feedback URL was null");
-            var red = $"{options.CurrentValue.RedirectUrl}?body={this.bodyTemplate(from)}";
+            if (options.CurrentValue.RedirectUrl == null) { throw new NullReferenceException("Feedback URL was null"); }
+            var red = $"{options.CurrentValue.RedirectUrl}?body={BodyTemplate(from)}";
             logger.LogInformation($"Redirecting user to {red}");
             return Redirect(red);
         }

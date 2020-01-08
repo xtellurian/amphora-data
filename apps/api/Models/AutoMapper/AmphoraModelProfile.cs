@@ -12,7 +12,6 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public AmphoraModelProfile()
         {
-
             CreateMap<AmphoraModel, AmphoraDto>()
                 .IncludeBase<Entity, EntityDto>();
 

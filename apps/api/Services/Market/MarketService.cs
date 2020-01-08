@@ -17,7 +17,7 @@ namespace Amphora.Api.Services.Market
         private readonly IUserService userService;
         private readonly IMemoryCache cache;
 
-        public ISearchService searchService { get; }
+        public ISearchService SearchService { get; }
 
         public MarketService(
             ISearchService searchService,
@@ -26,7 +26,7 @@ namespace Amphora.Api.Services.Market
             IUserService userService,
             IMemoryCache cache)
         {
-            this.searchService = searchService;
+            this.SearchService = searchService;
             this.amphoraeService = amphoraeService;
             this.mapper = mapper;
             this.userService = userService;
@@ -41,7 +41,7 @@ namespace Amphora.Api.Services.Market
             long? count;
             if (!cache.TryGetValue(key, out count))
             {
-                count = await searchService.SearchAmphoraCount(searchTerm, parameters);
+                count = await SearchService.SearchAmphoraCount(searchTerm, parameters);
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(System.DateTime.Now.AddMinutes(5));
                 cache.Set(key, count, cacheEntryOptions);
@@ -58,7 +58,7 @@ namespace Amphora.Api.Services.Market
             var key = searchTerm + parameters.GetHashCode() + "search";
             if (!cache.TryGetValue(key, out result))
             {
-                result = await searchService.SearchAmphora(searchTerm, parameters);
+                result = await SearchService.SearchAmphora(searchTerm, parameters);
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(System.DateTime.Now.AddMinutes(5));
                 cache.Set(key, result, cacheEntryOptions);
@@ -75,10 +75,12 @@ namespace Amphora.Api.Services.Market
             {
                 parameters = parameters.FilterByLabel(new List<Label>(labels.Select(_ => new Label(_))));
             }
+
             if (location != null && location.Lat().HasValue && location.Lon().HasValue)
             {
                 parameters.WithGeoSearch(location.Lat().Value, location.Lon().Value, d);
             }
+
             parameters.Top = top;
             parameters.Skip = skip;
 

@@ -1,11 +1,12 @@
 ARG DOTNET_VERSION=3.1
+ARG TreatWarningsAsErrors=false
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_VERSION} AS builder
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
 COPY . ./
-RUN dotnet build
+RUN dotnet build /p:TreatWarningsAsErrors=${TreatWarningsAsErrors}
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV AZURE_CONFIG_DIR=/.azure/
 

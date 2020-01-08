@@ -37,9 +37,10 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Updates the details of an Amphora by Id
+        /// Updates the details of an Amphora by Id.
         /// </summary>
-        /// <param name="query">Time Series query. See https://github.com/microsoft/tsiclient/blob/master/docs/Server.md#functions</param>  
+        /// <param name="query">Time Series query. See https://github.com/microsoft/tsiclient/blob/master/docs/Server.md#functions .</param>
+        /// <returns>A Query Result.</returns>
         [HttpPost("api/timeseries/query")]
         [Authorize(AuthenticationSchemes = "Identity.Application" + "," + JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(QueryResultPage))]
@@ -53,10 +54,12 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 ids.AddRange(query.AggregateSeries?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
             }
+
             if (query.GetEvents?.TimeSeriesId != null)
             {
                 ids.AddRange(query.GetEvents?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));
             }
+
             if (query.GetSeries?.TimeSeriesId != null)
             {
                 ids.AddRange(query.GetSeries?.TimeSeriesId.Select(_ => _ as string).Where(_ => _ != null));

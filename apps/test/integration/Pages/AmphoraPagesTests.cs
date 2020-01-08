@@ -33,7 +33,7 @@ namespace Amphora.Tests.Integration.Pages
             createResponse.EnsureSuccessStatusCode();
             dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
-            
+
             var response = await adminClient.GetAsync($"{path}?id={id}");
             response.EnsureSuccessStatusCode();
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
@@ -56,7 +56,7 @@ namespace Amphora.Tests.Integration.Pages
             createResponse.EnsureSuccessStatusCode();
             dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
-            
+
             var response = await otherClient.GetAsync($"{path}?id={id}");
             response.EnsureSuccessStatusCode();
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
@@ -81,7 +81,7 @@ namespace Amphora.Tests.Integration.Pages
             createResponse.EnsureSuccessStatusCode();
             dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
-            
+
             var response = await adminClient.GetAsync($"{path}?id={id}");
             response.EnsureSuccessStatusCode();
             Assert.Contains("image/", response.Content.Headers.ContentType.ToString());

@@ -1,29 +1,28 @@
-﻿using Amphora.Api.Contracts;
+﻿using System.Linq;
+using Amphora.Api.AspNet;
+using Amphora.Api.Contracts;
+using Amphora.Api.Options;
+using Amphora.Api.Services;
+using Amphora.Api.Services.Amphorae;
+using Amphora.Api.Services.Azure;
+using Amphora.Api.Services.FeatureFlags;
+using Amphora.Api.Services.Organisations;
+using Amphora.Api.Services.Purchases;
+using Amphora.Api.StartupModules;
+using Amphora.Common.Contracts;
+using Amphora.Common.Options;
+using Amphora.Common.Services.Azure;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Rest.Serialization;
 using Newtonsoft.Json.Serialization;
-using Amphora.Api.Options;
-using Amphora.Api.Services;
-using Amphora.Api.StartupModules;
-using Amphora.Api.Services.Amphorae;
-using Amphora.Api.Services.Azure;
-using Amphora.Api.Services.Organisations;
-using Amphora.Api.Services.FeatureFlags;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using System.Linq;
-using Amphora.Api.Converters;
-using Amphora.Api.Services.Purchases;
-using Amphora.Api.AspNet;
-using Amphora.Common.Contracts;
-using Amphora.Common.Services.Azure;
-using Amphora.Common.Options;
-using Microsoft.Rest.Serialization;
-using Microsoft.Azure.TimeSeriesInsights.Models;
 using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api
@@ -35,22 +34,21 @@ namespace Amphora.Api
             Configuration = configuration;
             HostingEnvironment = env;
 
-            this.AuthenticationModule = new AuthModule(configuration, env);
-            this.IdentityModule = new IdentityModule(configuration, env);
-            this.StorageModule = new StorageModule(configuration, env);
-            this.GeoModule = new GeoModule(configuration, env);
-            this.MarketModule = new MarketModule(configuration, env);
+            this.authenticationModule = new AuthModule(configuration, env);
+            this.identityModule = new IdentityModule(configuration, env);
+            this.storageModule = new StorageModule(configuration, env);
+            this.geoModule = new GeoModule(configuration, env);
+            this.marketModule = new MarketModule(configuration, env);
         }
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment HostingEnvironment { get; }
 
-        private readonly AuthModule AuthenticationModule;
-        private readonly IdentityModule IdentityModule;
-        private readonly StorageModule StorageModule;
-        private readonly GeoModule GeoModule;
-        private readonly MarketModule MarketModule;
-
+        private readonly AuthModule authenticationModule;
+        private readonly IdentityModule identityModule;
+        private readonly StorageModule storageModule;
+        private readonly GeoModule geoModule;
+        private readonly MarketModule marketModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -68,11 +66,11 @@ namespace Amphora.Api
 
             services.Configure<Amphora.Api.Models.Host.HostOptions>(Configuration.GetSection("Host"));
 
-            this.StorageModule.ConfigureServices(services);
-            this.IdentityModule.ConfigureServices(services);
-            this.AuthenticationModule.ConfigureServices(services);
-            this.GeoModule.ConfigureServices(services);
-            this.MarketModule.ConfigureServices(services);
+            this.storageModule.ConfigureServices(services);
+            this.identityModule.ConfigureServices(services);
+            this.authenticationModule.ConfigureServices(services);
+            this.geoModule.ConfigureServices(services);
+            this.marketModule.ConfigureServices(services);
 
             services.Configure<SignalOptions>(Configuration.GetSection("Signals"));
 
@@ -97,6 +95,7 @@ namespace Amphora.Api
             services.AddTransient<IPurchaseService, PurchaseService>();
             services.AddTransient<IAccountsService, AccountsService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
+            services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();
@@ -130,7 +129,6 @@ namespace Amphora.Api
                 options.LoginPath = $"/Profiles/Account/Login";
                 options.LogoutPath = $"/Profiles/Account/Logout";
                 options.AccessDeniedPath = $"/Profiles/Account/AccessDenied"; // TODO: create access denided oasge
-                
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -146,8 +144,7 @@ namespace Amphora.Api
                 });
 
                 document.OperationProcessors.Add(
-                    new AmphoraDataApiVersionOperationProcessor()
-                );
+                    new AmphoraDataApiVersionOperationProcessor());
 
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
@@ -155,18 +152,16 @@ namespace Amphora.Api
                 document.Description = "API for interacting with the Amphora Data platform.";
                 document.Title = "Amphora Data Api";
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
-
             });
         }
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
-            this.IdentityModule.Configure(app, env, mapper);
-            this.StorageModule.Configure(app, env);
+            this.identityModule.Configure(app, env, mapper);
+            this.storageModule.Configure(app, env);
 
             if (env.IsDevelopment())
             {
@@ -188,10 +183,7 @@ namespace Amphora.Api
             app.UseCookiePolicy();
 
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
-            app.UseSwaggerUi3(settings =>
-           {
-
-           }); // serve Swagger UI
+            app.UseSwaggerUi3(settings => { }); // serve Swagger UI
             app.UseReDoc(); // serve ReDoc UI
 
             app.UseForwardedHeaders();

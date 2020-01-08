@@ -26,24 +26,8 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
         public OrganisationModel Organisation { get; private set; }
         public ICollection<Invoice> Invoices { get; private set; }
 
-        public IEnumerable<Invoice> PaidInvoices => GetPaidInvoices();
-        public IEnumerable<Invoice> UnpaidInvoices => GetUnpaidInvoices();
-
-        private IEnumerable<Invoice> GetUnpaidInvoices()
-        {
-            return this.Organisation.Account.Invoices.Where(_ => _.IsPaid.HasValue
-                && _.IsPaid.Value
-                && _.IsPreview.HasValue
-                && _.IsPreview.Value);
-        }
-
-        private IEnumerable<Invoice> GetPaidInvoices()
-        {
-            return this.Organisation.Account.Invoices.Where(_ => _.IsPaid.HasValue
-            && _.IsPaid.Value
-            && _.IsPreview.HasValue
-            && _.IsPreview.Value);
-        }
+        public IEnumerable<Invoice> PaidInvoices => this.Organisation.Account.GetPaidInvoices();
+        public IEnumerable<Invoice> UnpaidInvoices => this.Organisation.Account.GetUnpaidInvoices();
 
         public async Task<IActionResult> OnGetAsync()
         {

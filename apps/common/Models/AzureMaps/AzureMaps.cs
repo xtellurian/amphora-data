@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-// this was generated using QuickType 
+// this was generated using QuickType
 namespace Amphora.Common.Models.AzureMaps
 {
     public partial class FuzzySearchResponse

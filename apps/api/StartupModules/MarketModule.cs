@@ -23,9 +23,9 @@ namespace Amphora.Api.StartupModules
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IMarketService, MarketService>();
-            
+
             var key = Configuration.GetSection("AzureSearch")["PrimaryKey"];
-            if(string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key))
             {
                 // otherwise use basic search
                 services.AddTransient<ISearchService, BasicSearchService>();

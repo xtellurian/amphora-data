@@ -41,6 +41,7 @@ namespace Amphora.Api.Services
                 logger.LogError($"Failed to send email, {ex.Message}", ex);
             }
         }
+
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             var msg = new SendGridMessage();
@@ -65,7 +66,7 @@ namespace Amphora.Api.Services
             {
                 logger.LogWarning($"Send Grid API Key not provided. Email not sent.");
             }
-            else if(options.Suppress.HasValue && options.Suppress.Value)
+            else if (options.Suppress.HasValue && options.Suppress.Value)
             {
                 logger.LogWarning($"Email suppressed via configuration.");
             }

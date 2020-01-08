@@ -44,9 +44,10 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Creates a new empty Amphora in the user's organisation
+        /// Creates a new empty Amphora in the user's organisation.
         /// </summary>
-        /// <param name="dto">Information for the new Amphora</param>  
+        /// <param name="dto">Information for the new Amphora.</param>
+        /// <returns>A new Amphora.</returns>
         [HttpPost("api/amphorae")]
         [Produces(typeof(AmphoraExtendedDto))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -56,6 +57,7 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 return BadRequest("Invalid Model");
             }
+
             var model = mapper.Map<AmphoraModel>(dto);
             model.IsPublic = true;
             var result = await amphoraeService.CreateAsync(User, model);
@@ -72,10 +74,12 @@ namespace Amphora.Api.Controllers.Amphorae
                 return NotFound(result);
             }
         }
+
         /// <summary>
-        /// Get's details of an Amphora by Id
+        /// Get's details of an Amphora by Id.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>The Amphora details.</returns>
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpGet("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -95,18 +99,20 @@ namespace Amphora.Api.Controllers.Amphorae
                 return NotFound(result.Errors);
             }
         }
+
         /// <summary>
-        /// Updates the details of an Amphora by Id
+        /// Updates the details of an Amphora by Id.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
-        /// <param name="dto">Information to update</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="dto">Information to update. Nulls are NOT ignored.</param>
+        /// <returns>The Amphora details.</returns>
         [Produces(typeof(AmphoraExtendedDto))]
         [HttpPut("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Update(string id, [FromBody] AmphoraExtendedDto dto)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
-            if (a == null) return NotFound();
+            if (a == null) { return NotFound(); }
             var model = mapper.Map<AmphoraModel>(dto);
             var result = await this.amphoraeService.UpdateAsync(User, model);
             if (result.Succeeded)
@@ -124,16 +130,17 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Deletes an Amphora
+        /// Deletes an Amphora.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A Message.</returns>
         [HttpDelete("api/amphorae/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(string))]
         public async Task<IActionResult> Delete(string id)
         {
             var readResult = await amphoraeService.ReadAsync(User, id);
-            if (!readResult.Succeeded) return NotFound();
+            if (!readResult.Succeeded) { return NotFound(); }
             var result = await this.amphoraeService.DeleteAsync(User, readResult.Entity);
             if (result.Succeeded)
             {

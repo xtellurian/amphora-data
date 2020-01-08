@@ -22,18 +22,22 @@ namespace Amphora.Api.Services.Wrappers
         {
             return await userManager.CreateAsync(user, password);
         }
+
         public async Task<ApplicationUser> FindByIdAsync(string userId)
         {
             return await userManager.FindByIdAsync(userId);
         }
+
         public async Task<bool> HasPasswordAsync(ApplicationUser user)
         {
             return await userManager.HasPasswordAsync(user);
         }
+
         public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
         {
             return await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
+
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);
@@ -45,6 +49,7 @@ namespace Amphora.Api.Services.Wrappers
         {
             return await userManager.FindByNameAsync(userName);
         }
+
         public async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
         {
             var mapped = mapper.Map<T>(user);

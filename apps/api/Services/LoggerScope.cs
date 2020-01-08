@@ -13,8 +13,8 @@ namespace Amphora.Api.Services
         public LoggerScope() : base() { }
         public LoggerScope(IUser user, [CallerMemberName] string method = "") : this()
         {
-            if (user?.UserName != null) this.Add(UserName, user.UserName);
-            else this.Add(UserName, "NULL");
+            if (user?.UserName != null) { this.Add(UserName, user.UserName); }
+            else { this.Add(UserName, "NULL"); }
             this.Add(Method, method);
             this.Add(Type, typeof(T));
         }

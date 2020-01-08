@@ -23,17 +23,17 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task EnableCosmosTimeToLive()
         {
-            if(cosmos.CurrentValue?.Endpoint != null && cosmos.CurrentValue?.PrimaryKey != null  && cosmos.CurrentValue?.Database != null )
+            if (cosmos.CurrentValue?.Endpoint != null && cosmos.CurrentValue?.PrimaryKey != null && cosmos.CurrentValue?.Database != null)
             {
                 logger.LogInformation($"Enabling Cosmos TTL on database {cosmos.CurrentValue?.Database} and container {containerName}");
-                var ttl =  cosmos.CurrentValue?.DefaultTimeToLive ?? -1; 
+                var ttl = cosmos.CurrentValue?.DefaultTimeToLive ?? -1;
                 var client = new CosmosClient(cosmos.CurrentValue.Endpoint, cosmos.CurrentValue.PrimaryKey);
                 var container = client.GetContainer(cosmos.CurrentValue.Database, containerName);
 
                 var containerResponse = await container.ReadContainerAsync();
-                
+
                 ContainerProperties containerProperties = containerResponse;
-                if(containerProperties.DefaultTimeToLive != ttl )
+                if (containerProperties.DefaultTimeToLive != ttl)
                 {
                     logger.LogWarning($"Setting TTL to {ttl}");
                     containerProperties.DefaultTimeToLive = ttl; // never expire by default

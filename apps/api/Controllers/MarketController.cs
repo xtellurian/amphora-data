@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Amphora.Api.Controllers
 {
     [ApiMajorVersion(0)]
@@ -37,7 +36,8 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Executes a fuzzy location search.
         /// </summary>
-        /// <param name="query">Search Text</param>
+        /// <param name="query">Search Text.</param>
+        /// <returns> A fuzzy search response. </returns>
         [Produces(typeof(FuzzySearchResponse))]
         [HttpGet("api/location/fuzzy")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -48,11 +48,12 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Finds Amphora using a fuzzy search
+        /// Finds Amphora using a fuzzy search.
         /// </summary>
-        /// <param name="query">Amphora Id</param>
-        /// <param name="top">How many results to return</param>
-        /// <param name="skip">How many pages (in multiples of top) to skip</param>
+        /// <param name="query">A string as a search term.</param>
+        /// <param name="top">How many results to return.</param>
+        /// <param name="skip">How many pages (in multiples of top) to skip.</param>
+        /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<AmphoraDto>))]
         [HttpGet("api/market/search")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

@@ -17,15 +17,19 @@ namespace Amphora.Api.AspNet
             }).ToList(), "Value", "Text");
         }
 
-        // NOTE: returns Descriptor if there is no Description 
+        // NOTE: returns Descriptor if there is no Description
         private static string GetEnumDescription(Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
             DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (attributes != null && attributes.Length > 0)
+            {
                 return attributes[0].Description;
+            }
             else
+            {
                 return value.ToString();
+            }
         }
     }
 }

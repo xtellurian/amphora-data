@@ -26,6 +26,7 @@ namespace Amphora.Api.Stores.EFCore
             this.context = context;
             this.selectDbSet = selectDbSet;
         }
+
         public EFStoreBase(AmphoraContext context,
                            ILogger<EFStoreBase<T>> logger,
                            Func<AmphoraContext, DbSet<T>> entitySetExpression) : this(context, entitySetExpression)
@@ -36,8 +37,8 @@ namespace Amphora.Api.Stores.EFCore
         private DbSet<T> Set => this.selectDbSet(context);
         public virtual async Task<int> CountAsync(Expression<Func<T, bool>> where = null)
         {
-            if (where == null) return await this.Set.CountAsync();
-            else return await Set.Where(where).CountAsync();
+            if (where == null) { return await this.Set.CountAsync(); }
+            else { return await Set.Where(where).CountAsync(); }
         }
 
         public virtual async Task<T> CreateAsync(T entity)
@@ -46,6 +47,7 @@ namespace Amphora.Api.Stores.EFCore
             await context.SaveChangesAsync();
             return addTask.Entity;
         }
+
         public virtual async Task<T> ReadAsync(string id)
         {
             var result = await Set.SingleOrDefaultAsync(a => a.Id == id);
@@ -69,14 +71,17 @@ namespace Amphora.Api.Stores.EFCore
                 await context.SaveChangesAsync();
             }
         }
+
         public virtual IQueryable<T> Query(Expression<Func<T, bool>> where)
         {
             return Set.Where(where);
         }
+
         public virtual async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where)
         {
             return await Set.Where(where).ToListAsync();
         }
+
         public virtual async Task<IList<T>> TopAsync()
         {
             return await Set.Take(10).ToListAsync();
@@ -86,11 +91,12 @@ namespace Amphora.Api.Stores.EFCore
         {
             if (e.Entry.Entity is IEntity && e.Entry.State == EntityState.Modified)
             {
-                var entity = ((IEntity)e.Entry.Entity);
+                var entity = (IEntity)e.Entry.Entity;
                 entity.LastModified = System.DateTime.UtcNow;
                 logger.LogInformation($"Enitity {entity.Id} was modified");
             }
         }
+
         private void OnUpdateEntity(ITtl entity)
         {
             if (entity != null && entity.ttl == null)

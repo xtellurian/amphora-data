@@ -7,17 +7,18 @@ namespace Amphora.Common.Models.Permissions
     /// </summary>
     public class RestrictionModel
     {
-
         public RestrictionModel()
         {
             TargetOrganisationId = null!;
             TargetOrganisation = null!;
         }
+
         public RestrictionModel(string targetOrganisationId)
         {
             TargetOrganisationId = targetOrganisationId;
             TargetOrganisation = null!;
         }
+
         public RestrictionModel(OrganisationModel sourceOrganisation, OrganisationModel targetOrganisation, RestrictionKind? kind = RestrictionKind.Deny)
         {
             TargetOrganisationId = targetOrganisation.Id;
@@ -26,6 +27,7 @@ namespace Amphora.Common.Models.Permissions
             SourceOrganisationId = sourceOrganisation.Id;
             Kind = kind;
         }
+
         /// <summary>
         /// This restriction applies to all organisations.
         /// TargetOrganisationId is ignored.
@@ -38,7 +40,6 @@ namespace Amphora.Common.Models.Permissions
         /// <summary>
         /// The organisation that is restricted.
         /// </summary>
-
 
         // Navigation
         public string? SourceOrganisationId { get; set; }

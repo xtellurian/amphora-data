@@ -18,12 +18,14 @@ namespace Amphora.Api.Models.Dtos.Amphorae
             Property = property;
             ValueType = valueType;
         }
+
         /// <summary>
-        /// The name of the property
+        /// Gets or sets the name of the property.
         /// </summary>
         public string Property { get; set; }
+
         /// <summary>
-        /// One of Numeric, String, or DateTime
+        /// Gets or sets one of Numeric, String, or DateTime.
         /// </summary>
         [StringRange(AllowableValues = new[] { SignalModel.Numeric, SignalModel.String, SignalModel.DateTime },
             ErrorMessage = "ValueType must be Numeric, String, or DateTime")]
@@ -36,19 +38,21 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public DateTime? DateTimeValue { get; set; }
         private string GetValue()
         {
-            if (IsNumeric) return NumericValue.ToString();
-            else if (IsDateTime) return DateTimeValue?.ToString();
-            else if (IsString) return StringValue?.ToString();
-            else return null;
+            if (IsNumeric) { return NumericValue.ToString(); }
+            else if (IsDateTime) { return DateTimeValue?.ToString(); }
+            else if (IsString) { return StringValue?.ToString(); }
+            else { return null; }
         }
+
         private void SetValue(string value)
         {
-            if (IsNumeric) NumericValue = double.Parse(value);
-            if (IsDateTime) DateTimeValue = DateTime.Parse(value);
-            if (IsString) StringValue = value;
+            if (IsNumeric) { NumericValue = double.Parse(value); }
+            if (IsDateTime) { DateTimeValue = DateTime.Parse(value); }
+            if (IsString) { StringValue = value; }
         }
+
         /// <summary>
-        /// The value (as a string, eg '7')
+        /// Gets or sets the value (as a string, eg '7').
         /// </summary>
         public string Value { get => GetValue(); set => SetValue(value); }
 

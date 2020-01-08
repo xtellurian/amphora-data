@@ -45,7 +45,7 @@ namespace Amphora.Api.Services.Amphorae
             var end = DateTime.UtcNow.AddYears(1);
             var variables = new Dictionary<string, Variable>
             {
-                {"maxWt", new AggregateVariable(new Tsx("max($event.wt)"))}
+                { "maxWt", new AggregateVariable(new Tsx("max($event.wt)")) }
             };
 
             var result = await tsiService.RunGetAggregateAsync(new List<object> { entity.Id },
@@ -59,6 +59,7 @@ namespace Amphora.Api.Services.Amphorae
             {
                 return m;
             }
+
             return DateTime.MaxValue.Ticks;
         }
 
@@ -76,6 +77,7 @@ namespace Amphora.Api.Services.Amphorae
                     {
                         return new EntityOperationResult<Dictionary<string, object>>(user, "Invalid properties");
                     }
+
                     AddDefaultSignalProperties(entity, values);
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<Dictionary<string, object>>(user, values);
@@ -94,7 +96,7 @@ namespace Amphora.Api.Services.Amphorae
             foreach (var s in values.Keys)
             {
                 // check if key is not in the signals, and its not a timestamp
-                if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) isInvalid = true;
+                if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) { isInvalid = true; }
             }
 
             return isInvalid;
@@ -103,7 +105,7 @@ namespace Amphora.Api.Services.Amphorae
         private static void AddDefaultSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
         {
             values[SpecialProperties.TimeSeriesId] = entity.Id;
-            if (!values.ContainsKey(SpecialProperties.Timestamp)) values.Add(SpecialProperties.Timestamp, DateTime.UtcNow);
+            if (!values.ContainsKey(SpecialProperties.Timestamp)) { values.Add(SpecialProperties.Timestamp, DateTime.UtcNow); }
             values[SpecialProperties.WriteTime] = DateTime.UtcNow.Ticks;
         }
 
@@ -121,8 +123,10 @@ namespace Amphora.Api.Services.Amphorae
                         {
                             return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Invalid properties");
                         }
+
                         AddDefaultSignalProperties(entity, value);
                     }
+
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, values);
                 }
@@ -137,15 +141,17 @@ namespace Amphora.Api.Services.Amphorae
         {
             logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
             var res = new List<QueryResultPage>();
-            if (entity.Signals.Count == 0) return res;
+            if (entity.Signals.Count == 0) { return res; }
 
             foreach (var s in entity.Signals.Where(s => s.Signal.IsNumeric))
             {
                 var r = await this.GetTsiSignalAsync(principal, entity, s.Signal, false);
                 res.Add(r);
             }
+
             return res;
         }
+
         public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = true)
         {
             var user = await userService.ReadUserModelAsync(principal);
@@ -153,7 +159,7 @@ namespace Amphora.Api.Services.Amphorae
             {
                 logger.LogInformation($"Getting Signal Property {signal.Property} for Amphora Id {entity.Id}");
                 var variables = new Dictionary<string, Variable>();
-                if (entity.Signals.Count == 0) return default(QueryResultPage);
+                if (entity.Signals.Count == 0) { return default(QueryResultPage); }
                 // add the inital key
                 variables.Add(signal.Property, new NumericVariable(
                                         value: new Tsx($"$event.{signal.Property}"),
@@ -168,11 +174,13 @@ namespace Amphora.Api.Services.Amphorae
                                         aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
                     }
                 }
+
                 IList<string> projections = null;
                 if (!includeOtherSignals)
                 {
                     projections = new List<string> { signal.Property };
                 }
+
                 var start = DateTime.UtcNow.AddDays(-30);
                 var end = DateTime.UtcNow.AddDays(7);
                 var res = await tsiService.RunGetSeriesAsync(new List<object> { entity.Id }, variables, new DateTimeRange(start, end), projections);
@@ -198,8 +206,9 @@ namespace Amphora.Api.Services.Amphorae
                 foreach (var s in stringSignals)
                 {
                     var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Signal.Property);
-                    if (p?.Values != null) dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct());
+                    if (p?.Values != null) { dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct()); }
                 }
+
                 return dic;
             }
         }
@@ -210,12 +219,13 @@ namespace Amphora.Api.Services.Amphorae
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
                 var authorized = await permissionService.IsAuthorizedAsync(user, amphora, AccessLevels.Update);
-                if (!authorized) return new EntityOperationResult<SignalModel>(user, false) { WasForbidden = true };
+                if (!authorized) { return new EntityOperationResult<SignalModel>(user, false) { WasForbidden = true }; }
 
                 if ((await signalStore.CountAsync(_ => _.Id == signal.Id)) > 0)
                 {
                     signal = await signalStore.ReadAsync(signal.Id);
                 }
+
                 var amphoraSignalModel = new AmphoraSignalModel(amphora, signal);
                 amphora.Signals.Add(amphoraSignalModel);
                 signal = await signalStore.UpdateAsync(signal);
@@ -223,7 +233,5 @@ namespace Amphora.Api.Services.Amphorae
                 return new EntityOperationResult<SignalModel>(user, signal);
             }
         }
-
-
     }
 }

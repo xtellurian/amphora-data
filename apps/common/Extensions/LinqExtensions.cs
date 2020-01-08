@@ -13,12 +13,10 @@ namespace Amphora.Common.Extensions
 
             foreach (var item in source)
             {
-                if (bucket == null)
-                    bucket = new TSource[size];
+                if (bucket == null) { bucket = new TSource[size]; }
 
                 bucket[count++] = item;
-                if (count != size)
-                    continue;
+                if (count != size) { continue; }
 
                 yield return bucket;
 
@@ -26,8 +24,7 @@ namespace Amphora.Common.Extensions
                 count = 0;
             }
 
-            if (bucket != null && count > 0)
-                yield return bucket.Take(count).ToArray();
+            if (bucket != null && count > 0) { yield return bucket.Take(count).ToArray(); }
         }
     }
 }

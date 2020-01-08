@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
-
 [assembly: HostingStartup(typeof(Amphora.Api.Areas.Amphorae.AdminHostingStartup))]
 namespace Amphora.Api.Areas.Amphorae
 {
@@ -8,8 +7,7 @@ namespace Amphora.Api.Areas.Amphorae
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) => {
-            });
+            builder.ConfigureServices((context, services) => { });
         }
     }
 }

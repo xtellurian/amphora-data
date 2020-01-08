@@ -10,7 +10,8 @@ namespace Amphora.Api.Extensions
         /// data is returned as a byte array. An IOException is
         /// thrown if any of the underlying IO calls fail.
         /// </summary>
-        /// <param name="stream">The stream to read data from</param>
+        /// <param name="stream">The stream to read data from.</param>
+        /// <returns> The contents of the stream as a byte array. </returns>
         public static async Task<byte[]> ReadFullyAsync(this Stream stream)
         {
             byte[] buffer = new byte[32768];
@@ -19,8 +20,7 @@ namespace Amphora.Api.Extensions
                 while (true)
                 {
                     int read = await stream.ReadAsync(buffer, 0, buffer.Length);
-                    if (read <= 0)
-                        return ms.ToArray();
+                    if (read <= 0) { return ms.ToArray(); }
                     ms.Write(buffer, 0, read);
                 }
             }

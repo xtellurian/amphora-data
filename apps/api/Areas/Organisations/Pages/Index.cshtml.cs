@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Amphora.Api.Areas.Organisations.Pages
 {
     [Authorize]
-    public class IndexModel: PageModel
+    public class IndexModel : PageModel
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
 
@@ -19,7 +18,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.entityStore = entityStore;
         }
 
-        public IList<OrganisationModel> Orgs {get; set;}
+        public IList<OrganisationModel> Orgs { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {

@@ -65,11 +65,16 @@
     }
     else
     {
+        var textColour = "text-success";
+        @if(@Model.Invoice.InvoiceBalance < 0)
+        {
+            textColour = "text-danger";
+        }
         <div class="row">
             <div class="col-4">
                 <h2>@Model.Invoice.Name</h2>
             </div>
-            <div class="col-4">
+            <div class="col-4 @textColour">
                 Balance: @Model.Invoice.InvoiceBalance
             </div>
         </div>
@@ -80,12 +85,12 @@
         </div>
         <div class="row">
             <div class="col">
-                <h4>Debits</h4>
-                @if(Model.Invoice.CountDebits > 0)
+                <h4>Transactions</h4>
+                @if(Model.Invoice.Transactions.Count > 0)
                 {
-                    @foreach(var d in Model.Invoice.Debits)
+                    @foreach(var t in Model.Invoice.Transactions)
                     {
-                        @await Component.InvokeAsync("TransactionRow", new {transaction = d })
+                        @await Component.InvokeAsync("TransactionRow", new {transaction = t })
                     }
                 }
                 else
@@ -96,23 +101,6 @@
                     </div>
                 }
                 
-            </div>
-            <div class="col">
-                <h4>Credits</h4>
-                @if(Model.Invoice.CountCredits > 0)
-                {
-                    @foreach(var c in Model.Invoice.Credits)
-                {
-                    @await Component.InvokeAsync("TransactionRow", new {transaction = c })
-                }
-                }
-                else
-                {
-                    <!-- Theres a bug where iterating though an empty list throws -->
-                    <div>
-                        No Credits
-                    </div>
-                }
             </div>
         </div>
     }

@@ -49,6 +49,7 @@ namespace Amphora.Api.Services.Amphorae
                 }
             }
         }
+
         public async Task<EntityOperationResult<UploadResponse>> CreateFileAsync(
             ClaimsPrincipal principal,
             AmphoraModel entity,
@@ -72,7 +73,6 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-
         public async Task<EntityOperationResult<UploadResponse>> WriteFileAsync(
             ClaimsPrincipal principal,
             AmphoraModel entity,
@@ -95,6 +95,7 @@ namespace Amphora.Api.Services.Amphorae
                     {
                         logger.LogInformation("Contents are empty");
                     }
+
                     var url = await this.Store.GetWritableUrl(entity, file);
                     return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
                 }
@@ -105,6 +106,5 @@ namespace Amphora.Api.Services.Amphorae
                 }
             }
         }
-
     }
 }

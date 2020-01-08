@@ -1,15 +1,15 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
-using Amphora.Common.Models.Users;
+using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
-using Amphora.Api.Models.Dtos.Platform;
-using Amphora.Api;
 
 namespace Amphora.Tests.Integration.Organisations
 {
@@ -52,7 +52,6 @@ namespace Amphora.Tests.Integration.Organisations
 
             await DeleteOrganisation(b, client);
             await DestroyUserAsync(client, user);
-
         }
 
         [Theory]
@@ -86,7 +85,6 @@ namespace Amphora.Tests.Integration.Organisations
 
             await DeleteOrganisation(a, client);
             await DestroyUserAsync(client, user);
-
         }
 
         [Fact]
@@ -108,7 +106,6 @@ namespace Amphora.Tests.Integration.Organisations
 
             Assert.NotNull(responseBody);
             org = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
-
 
             var client2 = _factory.CreateClient();
             client2.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());

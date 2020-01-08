@@ -32,7 +32,6 @@ namespace Amphora.Api.Models.AutoMapper
             .ReverseMap();
 
             CreateMap<Common.Models.Organisations.Accounts.Account, Dtos.Organisations.Account>();
-
         }
     }
 }

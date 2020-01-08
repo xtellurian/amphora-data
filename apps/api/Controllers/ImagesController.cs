@@ -19,15 +19,16 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Gets an organisations profile picture
+        /// Gets an organisations profile picture.
         /// </summary>
-        /// <param name="id">Amphora Id</param>  
+        /// <param name="id">User Id.</param>
+        /// <returns> A profile image.</returns>
         [HttpGet("api/organisations/{id}/profile.jpg")]
         [OpenApiIgnore]
         public async Task<IActionResult> GetOrganisationProfileImage(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            if (org == null) return NotFound();
+            if (org == null) { return NotFound(); }
             var image = await organisationService.ReadrofilePictureJpg(org);
             return new FileContentResult(image, "image/jpeg");
         }

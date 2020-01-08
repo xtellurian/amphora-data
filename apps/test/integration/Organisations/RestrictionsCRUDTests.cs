@@ -8,11 +8,12 @@ using Xunit;
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class RestrictionsCRUDTests: IntegrationTestBase
+    public class RestrictionsCRUDTests : IntegrationTestBase
     {
         public RestrictionsCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
+
         [Fact]
         public async Task CanCreateAndDeleteRestriction()
         {

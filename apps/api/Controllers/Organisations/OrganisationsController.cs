@@ -37,11 +37,12 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Creates a new Organisation. This will assign the logged in user to the organisation.
         /// </summary>
-        /// <param name="dto">Information of the new Organisation</param>  
+        /// <param name="dto">Information of the new Organisation.</param>
+        /// <returns> The Organisation metadata. </returns>
         [Produces(typeof(OrganisationDto))]
         [HttpPost("api/organisations")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Create([FromBody]OrganisationDto dto) 
+        public async Task<IActionResult> Create([FromBody]OrganisationDto dto)
         {
             var org = mapper.Map<OrganisationModel>(dto);
             var result = await organisationService.CreateOrganisationAsync(User, org);
@@ -63,14 +64,15 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Updates an organisation.
         /// </summary>
-        /// <param name="id">Organisation Id</param>  
-        /// <param name="org">Organisation Information. All fields are updated.</param>  
+        /// <param name="id">Organisation Id.</param>
+        /// <param name="org">Organisation Information. All fields are updated.</param>
+        /// <returns> The organisation metadaa. </returns>
         [HttpPut("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Update(string id, [FromBody]OrganisationDto org)
         {
             var entity = await entityStore.ReadAsync(id);
-            if (entity == null) return NotFound();
+            if (entity == null) { return NotFound(); }
             entity.Name = org.Name;
             entity.About = org.About;
             entity.Address = org.Address;
@@ -79,17 +81,19 @@ namespace Amphora.Api.Controllers
             var dto = mapper.Map<OrganisationDto>(result);
             return Ok(dto);
         }
+
         /// <summary>
         /// Gets an organisation's details.
         /// </summary>
-        /// <param name="id">Organisation Id</param>
+        /// <param name="id">Organisation Id.</param>
+        /// <returns> The organisation metadata. </returns>
         [Produces(typeof(OrganisationDto))]
         [HttpGet("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Read(string id)
         {
             var org = await entityStore.ReadAsync(id);
-            if (org == null) return NotFound();
+            if (org == null) { return NotFound(); }
             else
             {
                 var dto = mapper.Map<OrganisationDto>(org);
@@ -100,14 +104,15 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Deletes an organisation.
         /// </summary>
-        /// <param name="id">Organisation Id</param>
+        /// <param name="id">Organisation Id.</param>
+        /// <returns> A Message. </returns>
         [Produces(typeof(string))]
         [HttpDelete("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(string id)
         {
             var org = await entityStore.ReadAsync(id);
-            if (org == null) return NotFound();
+            if (org == null) { return NotFound(); }
             await entityStore.DeleteAsync(org);
             return Ok("Deleted Organisation");
         }

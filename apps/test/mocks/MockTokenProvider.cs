@@ -3,7 +3,7 @@ using Amphora.Common.Contracts;
 
 namespace Amphora.Tests.Mocks
 {
-    class MockTokenProvider : IAzureServiceTokenProvider
+    internal class MockTokenProvider : IAzureServiceTokenProvider
     {
         public static string Token => "tokenz";
 

@@ -2,7 +2,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -13,7 +12,6 @@ namespace Amphora.Tests.Integration.Amphorae
     public class AmphoraCRUDTests : IntegrationTestBase
     {
         public AmphoraCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory) { }
-
 
         [Fact]
         public async Task Post_CreatesAmphora_AsAdmin()
@@ -71,7 +69,6 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
-
             Assert.NotNull(responseBody);
             var c = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
             Assert.Equal(b.Id, c.Id);
@@ -112,10 +109,9 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyAmphoraAsync(adminClient, dto.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
-            
+
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
-
         }
 
         [Fact]
@@ -140,10 +136,10 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(content);
             Assert.Equal(dto.Description, b.Description);
-            Assert.True( b.Lat.HasValue);
-            Assert.True( b.Lon.HasValue);
-            Assert.Equal( dto.Lat, b.Lat);
-            Assert.Equal( dto.Lon, b.Lon);
+            Assert.True(b.Lat.HasValue);
+            Assert.True(b.Lon.HasValue);
+            Assert.Equal(dto.Lat, b.Lat);
+            Assert.Equal(dto.Lon, b.Lon);
 
             await DestroyAmphoraAsync(adminClient, dto.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
@@ -171,6 +167,5 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
         }
-
     }
 }

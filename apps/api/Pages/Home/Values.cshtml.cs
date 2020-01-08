@@ -4,8 +4,6 @@ namespace Amphora.Api.Pages.Home
 {
     public class ValuesModel : PageModel
     {
-        public ValuesModel ()
-        {
-        }
+        public ValuesModel() { }
     }
 }

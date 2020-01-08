@@ -22,6 +22,7 @@ namespace Amphora.Api.Pages.Market
             this.marketService = marketService;
             this.authenticateService = authenticateService;
         }
+
         [BindProperty(SupportsGet = true)]
         public MarketSearch SearchDefinition { get; set; } = new MarketSearch();
         public long Count { get; set; }
@@ -75,8 +76,9 @@ namespace Amphora.Api.Pages.Market
             {
                 geo = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
             }
-            if (SearchDefinition.Skip == null) SearchDefinition.Page = 0;
-            if (SearchDefinition.Top == null) SearchDefinition.Top = 8;
+
+            if (SearchDefinition.Skip == null) { SearchDefinition.Page = 0; }
+            if (SearchDefinition.Top == null) { SearchDefinition.Top = 8; }
             return geo;
         }
     }

@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -47,7 +46,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
             if (AppUser == null)
             {
-                return RedirectToPage("./Missing");
+                return RedirectToPage("./UserMissing");
             }
 
             if (AppUser.Id == currentUser.Id)

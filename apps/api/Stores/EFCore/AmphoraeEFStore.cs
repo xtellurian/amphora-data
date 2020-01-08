@@ -7,7 +7,7 @@ namespace Amphora.Api.Stores.EFCore
 {
     public class AmphoraeEFStore : EFStoreBase<AmphoraModel>, IEntityStore<AmphoraModel>
     {
-        public AmphoraeEFStore(AmphoraContext context, ILogger<AmphoraeEFStore> logger): base(context, logger, db => db.Amphorae)
+        public AmphoraeEFStore(AmphoraContext context, ILogger<AmphoraeEFStore> logger) : base(context, logger, db => db.Amphorae)
         {
         }
     }

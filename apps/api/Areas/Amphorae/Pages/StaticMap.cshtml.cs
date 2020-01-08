@@ -16,7 +16,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id, int? height, int? width)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             if (Amphora != null && Amphora.GeoLocation != null && Amphora.GeoLocation.Lat().HasValue && Amphora.GeoLocation.Lon().HasValue)
             {
                 byte[] image;
@@ -28,7 +28,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     image = await mapService.GetStaticMapImageAsync(Amphora.GeoLocation);
                 }
-                if (image == null) return Redirect("/images/stock/earth.jpg");
+
+                if (image == null) { return Redirect("/images/stock/earth.jpg"); }
                 return File(image, "image/png"); // image is a png
             }
             else

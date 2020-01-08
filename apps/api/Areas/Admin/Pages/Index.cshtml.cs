@@ -4,8 +4,5 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Amphora.Api.Areas.Admin.Pages
 {
     [GlobalAdminAuthorize]
-    public class IndexModel: PageModel
-    {
-
-    }
+    public class IndexModel : PageModel { }
 }

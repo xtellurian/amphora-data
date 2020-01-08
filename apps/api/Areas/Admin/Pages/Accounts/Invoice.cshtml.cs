@@ -51,10 +51,11 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
         public async Task<IActionResult> OnGetAsync(string id, string invoiceId)
         {
             this.Organisation = await organisationService.Store.ReadAsync(id);
-            if(invoiceId != null)
+            if (invoiceId != null)
             {
                 this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
             }
+
             return Page();
         }
 
@@ -66,6 +67,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
                 ModelState.AddModelError(string.Empty, "Month is required");
                 return Page();
             }
+
             switch (Action?.ToLower())
             {
                 case "preview":
@@ -75,6 +77,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
                     this.Invoice = await accountsService.GenerateInvoiceAsync(Month.Value, id, isPreview: false, regenerate: Regenerate);
                     break;
             }
+
             return Page();
         }
     }

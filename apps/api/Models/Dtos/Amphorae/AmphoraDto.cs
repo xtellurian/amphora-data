@@ -7,10 +7,10 @@ namespace Amphora.Api.Models.Dtos.Amphorae
 {
     public class AmphoraDto : EntityDto
     {
-
         [Required]
         public string Name { get; set; }
         [Required]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "2 decimal places")]
         [DataType(DataType.Currency)]
         public double Price { get; set; }
         [Display(Name = "Labels")]
@@ -24,6 +24,5 @@ namespace Amphora.Api.Models.Dtos.Amphorae
                 .Where(name => !string.IsNullOrEmpty(name))
                 .Select(name => new Label(name)));
         }
-
     }
 }

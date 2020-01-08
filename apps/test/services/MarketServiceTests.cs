@@ -1,23 +1,22 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
-using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace Amphora.Tests.Unit.Services
 {
     public class MarketServiceTests : UnitTestBase
     {
-
         public MarketServiceTests()
         {
         }

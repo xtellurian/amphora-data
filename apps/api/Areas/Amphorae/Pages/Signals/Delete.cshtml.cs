@@ -30,7 +30,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
 
             if (Result.Succeeded)
             {
@@ -40,12 +40,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     ModelState.AddModelError(string.Empty, $"Signal {signalId} not found");
                     return Page();
                 }
+
                 var user = await userService.ReadUserModelAsync(User);
                 var authorized = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Update);
                 if (!authorized)
                 {
                     ModelState.AddModelError(string.Empty, "Delete permission denied");
                 }
+
                 return Page();
             }
             else
@@ -56,7 +58,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
         public async Task<IActionResult> OnPostAsync(string id, string signalId)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
             if (Result.Succeeded)
             {
                 Signal = Amphora.Signals.FirstOrDefault(a => a.SignalId == signalId);
@@ -65,11 +67,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     ModelState.AddModelError(string.Empty, $"Signal {signalId} not found");
                     return Page();
                 }
+
                 Amphora.Signals.Remove(Signal);
                 var result = await amphoraeService.UpdateAsync(User, Amphora);
                 if (result.Succeeded)
                 {
-                    return RedirectToPage("./Index", new {Id = Amphora.Id});
+                    return RedirectToPage("./Index", new { Id = Amphora.Id });
                 }
                 else if (result.WasForbidden)
                 {
@@ -82,7 +85,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     return Page();
                 }
             }
-            return RedirectToPage("./Index", new {Id = Amphora.Id});
+
+            return RedirectToPage("./Index", new { Id = Amphora.Id });
         }
     }
 }

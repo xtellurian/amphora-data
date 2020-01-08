@@ -19,10 +19,12 @@ namespace Amphora.Api.Controllers
         {
             this.authService = authService;
         }
+
         /// <summary>
         ///  Returns a JWT (JSON Web Token).
         /// </summary>
-        /// <param name="request">Token Request Parameters</param>
+        /// <returns>A JWT Token.</returns>
+        /// <param name="request">Token Request Parameters.</param>
         [Produces(typeof(string))]
         [AllowAnonymous]
         [HttpPost("request")]

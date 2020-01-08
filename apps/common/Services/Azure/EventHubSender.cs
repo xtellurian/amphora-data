@@ -13,9 +13,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Common.Services.Azure
 {
-    public class EventHubSender: IDisposable
+    public class EventHubSender : IDisposable
     {
-        private const int MAX_EVENTS = 500;
+        private const int MaxEvents = 500;
         private readonly ILogger<EventHubSender> logger;
         private readonly EventHubClient? eventHubClient;
         private JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
@@ -46,12 +46,11 @@ namespace Amphora.Common.Services.Azure
 
         public async Task SendToEventHubAsync(IEnumerable<Dictionary<string, object?>> signals)
         {
-            foreach(var s in signals.Batch(MAX_EVENTS))
+            foreach (var s in signals.Batch(MaxEvents))
             {
                 var content = JsonConvert.SerializeObject(s,
                                             Newtonsoft.Json.Formatting.None,
-                                            jsonSerializerSettings
-                                            );
+                                            jsonSerializerSettings);
                 await SendContentAsync(content);
             }
         }

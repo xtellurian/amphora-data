@@ -1,4 +1,3 @@
-
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +29,6 @@ namespace Amphora.Tests.Unit
             {
                 Assert.False(good);
             }
-
         }
     }
 }

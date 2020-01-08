@@ -11,14 +11,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
     [Authorize]
     public class IndexModel : AmphoraPageModel
     {
-        public IndexModel(IAmphoraeService amphoraeService) : base(amphoraeService)
-        {
-        }
+        public IndexModel(IAmphoraeService amphoraeService) : base(amphoraeService) { }
         public IEnumerable<SignalModel> Signals { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            await base.LoadAmphoraAsync(id);
+            await LoadAmphoraAsync(id);
 
             if (Amphora != null)
             {
@@ -26,9 +24,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             }
 
             return OnReturnPage();
-
         }
     }
 }
-
-

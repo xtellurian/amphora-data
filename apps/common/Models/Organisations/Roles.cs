@@ -3,13 +3,11 @@ using Amphora.Common.Models.Permissions;
 
 namespace Amphora.Common.Models.Organisations
 {
-
     [Flags]
     public enum Roles
     {
         User = 0,
         Administrator = 1
-
     }
 
     public static class RolesExtensions
@@ -26,6 +24,7 @@ namespace Amphora.Common.Models.Organisations
                     level = AccessLevels.ReadContents;
                     break;
             }
+
             return level;
         }
     }

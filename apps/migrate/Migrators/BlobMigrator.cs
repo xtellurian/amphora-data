@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
-    public class BlobMigrator: IMigrator
+    public class BlobMigrator : IMigrator
     {
         private readonly ILogger<BlobMigrator> logger;
         private readonly StorageMigrationOptions options;
@@ -22,6 +22,7 @@ namespace Amphora.Migrate.Migrators
             {
                 throw new NullReferenceException("Source Connection String cannot be null");
             }
+
             if (options.CurrentValue?.Sink?.Storage?.StorageConnectionString == null)
             {
                 throw new NullReferenceException("Sink Connection String cannot be null");

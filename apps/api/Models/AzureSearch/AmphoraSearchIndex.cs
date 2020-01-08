@@ -13,7 +13,7 @@ namespace Amphora.Api.Models.AzureSearch
             {
                 IsKey = true
             });
-            // org id for filtering 
+            // org id for filtering
             fields.Add(new Field(nameof(AmphoraModel.OrganisationId), DataType.String)
             {
                 IsFacetable = true,

@@ -25,6 +25,7 @@ namespace Amphora.Api.Services.Azure
             this.cosmosOptions = cosmosOptions;
             this.serviceClient = new SearchServiceClient(options.CurrentValue.Name, new SearchCredentials(options.CurrentValue.PrimaryKey));
         }
+
         private bool isInitialised;
         private bool isCreatingIndex;
         private readonly ILogger<AzureSearchInitialiser> logger;
@@ -35,25 +36,27 @@ namespace Amphora.Api.Services.Azure
         public async Task<bool> TryIndex()
         {
             // ensure created:
-            if(! await serviceClient.Indexers.ExistsAsync(IndexerName))
+            if (!await serviceClient.Indexers.ExistsAsync(IndexerName))
             {
                 logger.LogInformation($"Index request resulted in creation of full index.");
                 await CreateAmphoraIndexAsync();
             }
+
             try
             {
                 await serviceClient.Indexers.RunAsync(IndexerName);
                 return true;
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 logger.LogError($"TryIndex failed for indexer {IndexerName}", ex);
                 return false;
             }
         }
+
         public async Task CreateAmphoraIndexAsync()
         {
-            if (isInitialised) return;
+            if (isInitialised) { return; }
             var startTime = System.DateTime.Now;
             if (await serviceClient.Indexes.ExistsAsync(AmphoraSearchIndex.IndexName))
             {
@@ -92,6 +95,7 @@ namespace Amphora.Api.Services.Azure
                         logger.LogCritical("Max Attempts reached", ex);
                         throw ex;
                     }
+
                     await Task.Delay(500); // wait half a second before retrying
                 }
             }
@@ -111,6 +115,7 @@ namespace Amphora.Api.Services.Azure
             {
                 index = await serviceClient.Indexes.CreateOrUpdateAsync(index);
             }
+
             return index;
         }
 
@@ -122,9 +127,9 @@ namespace Amphora.Api.Services.Azure
             var dataSource = DataSource.CosmosDb("cosmos",
                                                  cosmosDbConnectionString,
                                                  nameof(AmphoraContext),
-                                                 query, 
+                                                 query,
                                                  true,
-                                                 deletionPolicy, 
+                                                 deletionPolicy,
                                                  $"Created by C# code {nameof(AzureSearchInitialiser)}");
             dataSource.Validate();
             dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
@@ -140,10 +145,11 @@ namespace Amphora.Api.Services.Azure
                 {
                     Configuration = new Dictionary<string, object>
                     {
-                        {"assumeOrderByHighWaterMarkColumn", true}
+                        { "assumeOrderByHighWaterMarkColumn", true }
                     }
                 },
-                FieldMappings = new List<FieldMapping> {
+                FieldMappings = new List<FieldMapping>
+                {
                     // encodes a field for use as the index key
                 }
             };
@@ -153,6 +159,7 @@ namespace Amphora.Api.Services.Azure
             {
                 indexer = await serviceClient.Indexers.CreateOrUpdateAsync(indexer);
             }
+
             return indexer;
         }
     }

@@ -1,18 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
+using Amphora.Api.Contracts;
+using Amphora.Api.Models.Emails;
+using Amphora.Api.Models.Host;
+using Amphora.Api.Options;
+using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Amphora.Api.Contracts;
 using Microsoft.Extensions.Options;
-using Amphora.Api.Options;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Users;
-using Amphora.Api.AspNet;
-using Amphora.Api.Models.Emails;
-using Amphora.Api.Models.Host;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
@@ -45,7 +45,6 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             this.logger = logger;
             this.orgStore = orgStore;
             this.emailSender = emailSender;
-
         }
 
         [BindProperty]
@@ -82,7 +81,6 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-
         }
 
         public async Task<IActionResult> OnGet(string returnUrl = null, string email = null)
@@ -126,6 +124,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                     ModelState.AddModelError(string.Empty, $"{user.Email} has not been invited to Amphora Data");
                     return Page();
                 }
+
                 var result = await userService.CreateAsync(user, invitation, Input.Password);
 
                 if (result.Succeeded)
@@ -175,7 +174,6 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             {
                 await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
             }
         }
     }

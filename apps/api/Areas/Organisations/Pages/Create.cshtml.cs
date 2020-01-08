@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +53,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync(string message)
         {
-            if (!string.IsNullOrEmpty(message)) this.ModelState.AddModelError(string.Empty, message);
+            if (!string.IsNullOrEmpty(message)) { this.ModelState.AddModelError(string.Empty, message); }
             var response = await authenticateService.GetToken(User);
             Organisations = await organisationService.Store.TopAsync();
             if (response.success)
@@ -65,6 +64,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             {
                 logger.LogError("Couldn't get token");
             }
+
             return Page();
         }
 
@@ -95,6 +95,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 {
                     ModelState.AddModelError(string.Empty, e);
                 }
+
                 return Page();
             }
         }

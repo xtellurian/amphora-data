@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
-    public class MembersModel: PageModel
+    public class MembersModel : PageModel
     {
         private readonly IOrganisationService orgService;
 
@@ -23,8 +23,11 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnGetAsync(string id)
         {
             this.Organisation = await orgService.Store.ReadAsync(id);
-            if(Organisation == null) return RedirectToPage("./Index");
-            
+            if (Organisation == null)
+            {
+                return RedirectToPage("./Index");
+            }
+
             return Page();
         }
     }

@@ -1,14 +1,14 @@
-using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Extensions;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Amphora.Api.Services.Purchases
 {
@@ -16,62 +16,88 @@ namespace Amphora.Api.Services.Purchases
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
+        private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<AccountsService> logger;
 
         public AccountsService(
             IEntityStore<PurchaseModel> purchaseStore,
             IEntityStore<OrganisationModel> orgStore,
+            IDateTimeProvider dateTimeProvider,
             ILogger<AccountsService> logger)
         {
             this.purchaseStore = purchaseStore;
             this.orgStore = orgStore;
+            this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
         }
+
         /// <summary>
         /// Takes all the purchases from this month and creates debits in the system.
         /// </summary>
-        public async Task PopulateDebitsAsync()
+        /// <returns> An awaitable Task. </returns>
+        public async Task PopulateDebitsAndCreditsAsync()
         {
-            var startOfMonth = System.DateTime.UtcNow.StartOfMonth();
+            var startOfMonth = dateTimeProvider.UtcNow.StartOfMonth();
             var thisMonth = await purchaseStore.QueryAsync(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
 
             foreach (var purchase in thisMonth)
             {
                 if (purchase.Price.HasValue)
                 {
-                    // lazy loading isn't working??? Load this way instead.
-                    var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
-                    if (org == null)
-                    {
-                        await purchaseStore.DeleteAsync(purchase);
-                        logger.LogWarning($"Purchase for non-existing org {purchase.PurchasedByOrganisationId}");
-                        continue;
-                    }
-
-                    if (org.Account == null)
-                    {
-                        org.Account = new Account();
-                        logger.LogWarning($"New account for {org.Id}");
-                    }
-
-                    org.Account.DebitAccount($"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})", purchase.Price.Value, purchase.AmphoraId);
-                    await orgStore.UpdateAsync(org);
+                    var name = $"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})";
+                    await DebitPurchasingOrganisation(purchase, name);
+                    await CreditAmphoraOrganisation(purchase, name);
                 }
-                purchase.LastDebitTime = System.DateTime.UtcNow;
+
+                purchase.LastDebitTime = dateTimeProvider.UtcNow;
                 await purchaseStore.UpdateAsync(purchase);
             }
         }
+
+        private async Task DebitPurchasingOrganisation(PurchaseModel purchase, string name)
+        {
+            // lazy loading isn't working??? Load this way instead.
+            var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
+            if (org == null)
+            {
+                await purchaseStore.DeleteAsync(purchase);
+                logger.LogWarning($"Purchase for non-existing org {purchase.PurchasedByOrganisationId}");
+                return;
+            }
+
+            if (org.Account == null)
+            {
+                org.Account = new Account();
+                logger.LogWarning($"New account for {org.Id}");
+            }
+
+            org.Account.DebitAccount(name, purchase.Price.Value, dateTimeProvider.UtcNow, purchase.AmphoraId);
+            await orgStore.UpdateAsync(org);
+        }
+
+        private async Task CreditAmphoraOrganisation(PurchaseModel purchase, string name)
+        {
+            var org = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
+            org.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+            org = await orgStore.UpdateAsync(org);
+        }
+
         /// <summary>
-        /// Generates and stores invoices for the provided month
+        /// Generates and stores invoices for the provided month.
         /// </summary>
-        public async Task<Invoice> GenerateInvoiceAsync(DateTimeOffset month,
+        /// <param name="month"> The month to generate invoice for.</param>
+        /// <param name="organisationId"> The Organisastion Id to generate the invoice for.</param>
+        /// <param name="isPreview"> Flag whether this is a preview invoice.</param>
+        /// <param name="regenerate"> Override existing invoices.</param>
+        /// <returns> An Invoice. </returns>
+        public async Task<Invoice> GenerateInvoiceAsync(System.DateTimeOffset month,
                                                         string organisationId,
                                                         bool isPreview = true,
                                                         bool regenerate = false)
         {
             if (organisationId is null)
             {
-                throw new ArgumentNullException(nameof(organisationId));
+                throw new System.ArgumentNullException(nameof(organisationId));
             }
 
             var org = await orgStore.ReadAsync(organisationId);
@@ -84,22 +110,23 @@ namespace Amphora.Api.Services.Purchases
 
             invoice = new Invoice()
             {
-                DateCreated = DateTime.UtcNow,
+                DateCreated = dateTimeProvider.UtcNow,
                 Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
             };
             var som = month.StartOfMonth();
             var eom = month.EndOfMonth();
             var thisMonthsDebits = org.Account.Debits
-                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom );
+                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             var thisMonthsCredits = org.Account.Credits
                 .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
-                invoice.Credits.Add(new InvoiceCredit(c.Label, c.Amount));
+                invoice.Transactions.Add(new InvoiceTransaction(c.Label, c.Amount, dateTimeProvider.UtcNow, isCredit: true));
             }
+
             foreach (var d in thisMonthsDebits)
             {
-                invoice.Debits.Add(new InvoiceDebit(d.Label, d.Amount) { AmphoraId = d.AmphoraId });
+                invoice.Transactions.Add(new InvoiceTransaction(d.Label, d.Amount, dateTimeProvider.UtcNow, isDebit: true) { AmphoraId = d.AmphoraId });
             }
 
             CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);
@@ -125,15 +152,14 @@ namespace Amphora.Api.Services.Purchases
         {
             if (credits is null)
             {
-                throw new ArgumentNullException(nameof(credits));
+                throw new System.ArgumentNullException(nameof(credits));
             }
 
             if (debits is null)
             {
-                throw new ArgumentNullException(nameof(debits));
+                throw new System.ArgumentNullException(nameof(debits));
             }
-            invoice.CountCredits = credits.Count();
-            invoice.CountDebits = debits.Count();
+
             invoice.TotalCredits ??= 0;
             invoice.TotalDebits ??= 0;
 
@@ -141,6 +167,7 @@ namespace Amphora.Api.Services.Purchases
             {
                 invoice.TotalCredits += credits.Sum(c => c.Amount) ?? 0;
             }
+
             if (invoice.CountDebits > 0)
             {
                 invoice.TotalDebits += debits.Sum(d => d.Amount) ?? 0;

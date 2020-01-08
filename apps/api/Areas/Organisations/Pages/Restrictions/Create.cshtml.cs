@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -19,6 +18,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
         {
             this.organisationService = organisationService;
         }
+
         public SelectList Kinds = Selectlists.EnumSelectlist<RestrictionKind>(true);
         [BindProperty]
         public Restriction NewRestriction { get; set; } = new Restriction();
@@ -31,15 +31,15 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
             {
                 return RedirectToPage("./Create", new { id = readRes.User.OrganisationId, targetOrganisationId = targetOrganisationId }); // reload page
             }
+
             this.NewRestriction.TargetOrganisationId = targetOrganisationId;
             if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
                 return Page();
             }
-            else if (readRes.WasForbidden) return StatusCode(403);
-            else return RedirectToPage("/Detail", new { Area = "Organisations", Id = id });
-
+            else if (readRes.WasForbidden) { return StatusCode(403); }
+            else { return RedirectToPage("/Detail", new { Area = "Organisations", Id = id }); }
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
@@ -53,6 +53,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                     ModelState.AddModelError(string.Empty, "Organisation with that Id doesn't exist");
                     return Page();
                 }
+
                 var restriction = new RestrictionModel(NewRestriction.TargetOrganisationId)
                 {
                     Kind = NewRestriction.Kind,
@@ -60,16 +61,16 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                 };
                 this.Organisation.Restrictions.Add(restriction);
                 var updateRes = await organisationService.UpdateAsync(User, Organisation);
-                if (updateRes.Succeeded) return RedirectToPage("./Index", new { Id = Organisation.Id });
-                else if (updateRes.WasForbidden) return StatusCode(403);
+                if (updateRes.Succeeded) { return RedirectToPage("./Index", new { Id = Organisation.Id }); }
+                else if (updateRes.WasForbidden) { return StatusCode(403); }
                 else
                 {
                     ModelState.AddModelError(string.Empty, updateRes.Message);
                     return Page();
                 }
             }
-            else if (readRes.WasForbidden) return StatusCode(403);
-            else return RedirectToPage("/Detail", new { Area = "Organisations", Id = id });
+            else if (readRes.WasForbidden) { return StatusCode(403); }
+            else { return RedirectToPage("/Detail", new { Area = "Organisations", Id = id }); }
         }
 
         private async Task<bool> IsTargetReal()

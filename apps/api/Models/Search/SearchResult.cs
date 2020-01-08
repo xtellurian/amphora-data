@@ -6,11 +6,12 @@ namespace Amphora.Api.Models.Search
     // maps from Microsoft.Azure.Search.Models.SearchResult<T>
     public class SearchResult<T>
     {
-        public SearchResult() {}
+        public SearchResult() { }
         public SearchResult(T entity)
         {
             Entity = entity;
         }
+
         public T Entity { get; set; }
         [JsonProperty(PropertyName = "@search.score")]
         public double Score { get; set; }

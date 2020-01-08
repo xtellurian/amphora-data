@@ -1,4 +1,3 @@
-
 using Amphora.Api.Models.Host;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
@@ -14,6 +13,7 @@ namespace Amphora.Api.Models.Emails
             this.ToEmail = user.Email;
             this.Link = $"{options.GetBaseUrl()}{page}?userId={user.Id}&code={code}";
         }
+
         public string SendGridTemplateId => "d-b6be9fdd4d49426ca958b83c166f3d1f";
 
         public string ToEmail { get; private set; }

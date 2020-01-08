@@ -3,12 +3,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
-using Amphora.Common.Models.Users;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
-using Microsoft.Extensions.Logging;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
 {
@@ -47,6 +47,7 @@ namespace Amphora.Api.Services.Auth
                 user.LastLoggedIn = System.DateTime.UtcNow;
                 await UserManager.UpdateAsync(user);
             }
+
             return res;
         }
 
@@ -74,12 +75,13 @@ namespace Amphora.Api.Services.Auth
                     logger.LogWarning($"Creating global admin {user.Email}");
                     user.IsGlobalAdmin = invitation.IsGlobalAdmin;
                 }
+
                 user.LastModified = System.DateTime.UtcNow;
                 var result = await UserManager.CreateAsync(user, password);
                 if (result.Succeeded)
                 {
                     user = await UserManager.FindByNameAsync(user.UserName);
-                    if (user == null) throw new System.Exception("Unable to retrieve user");
+                    if (user == null) { throw new System.Exception("Unable to retrieve user"); }
                     // create role here
                     return new EntityOperationResult<ApplicationUser>(user, user);
                 }
@@ -98,7 +100,7 @@ namespace Amphora.Api.Services.Auth
                 if (currentUser.Id == user.Id)
                 {
                     logger.LogWarning("User is deleting self");
-                    if (currentUser == null) return new EntityOperationResult<ApplicationUser>(currentUser, "User does not exist");
+                    if (currentUser == null) { return new EntityOperationResult<ApplicationUser>(currentUser, "User does not exist"); }
                     var result = await UserManager.DeleteAsync(currentUser);
                     if (result.Succeeded)
                     {

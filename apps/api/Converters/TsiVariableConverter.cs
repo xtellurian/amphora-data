@@ -38,7 +38,6 @@ namespace Amphora.Api.Converters
             {
                 throw new NotImplementedException("Unknown start");
             }
-
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

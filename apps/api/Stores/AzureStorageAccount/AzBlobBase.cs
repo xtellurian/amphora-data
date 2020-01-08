@@ -37,6 +37,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             {
                 throw new ArgumentException($"Container {container} does not exist");
             }
+
             var names = new List<string>();
             BlobContinuationToken blobContinuationToken = null;
             do
@@ -48,7 +49,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 {
                     names.Add(Path.GetFileName(item.Uri.LocalPath));
                 }
-            } while (blobContinuationToken != null); // Loop while the continuation token is not null.
+            }
+            while (blobContinuationToken != null); // Loop while the continuation token is not null.
 
             return names;
         }
@@ -91,8 +93,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         private static SharedAccessBlobPolicy CreateAdHocSasPolicy(SharedAccessBlobPermissions permissions)
         {
             // Create a new access policy and define its constraints.
-            // Note that the SharedAccessBlobPolicy class is used both to define the parameters of an ad-hoc SAS, and 
-            // to construct a shared access policy that is saved to the container's shared access policies. 
+            // Note that the SharedAccessBlobPolicy class is used both to define the parameters of an ad-hoc SAS, and
+            // to construct a shared access policy that is saved to the container's shared access policies.
 
             return new SharedAccessBlobPolicy()
             {

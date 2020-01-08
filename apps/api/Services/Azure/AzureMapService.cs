@@ -19,10 +19,9 @@ namespace Amphora.Api.Services.Azure
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<AzureMapService> logger;
         private readonly string subscriptionKey;
-        private const string apiVersion = "1.0";
-        private const string countrySet = "AU";
-        private string QueryString() => $"subscription-key={subscriptionKey}&api-version={apiVersion}&countrySet={countrySet}";
-
+        private const string ApiVersion = "1.0";
+        private const string CountrySet = "AU";
+        private string QueryString() => $"subscription-key={subscriptionKey}&api-version={ApiVersion}&countrySet={CountrySet}";
 
         public AzureMapService(IHttpClientFactory factory,
             IAzureServiceTokenProvider tokenProvider,
@@ -42,6 +41,7 @@ namespace Amphora.Api.Services.Azure
                 client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.Key);
                 logger.LogInformation("Using Active Directiory based authentication");
             }
+
             this.tokenProvider = tokenProvider;
             this.logger = logger;
         }
@@ -49,7 +49,7 @@ namespace Amphora.Api.Services.Azure
         private bool isInit;
         private async Task InitAsync()
         {
-            if (isInit) return; // if we're not using AD auth
+            if (isInit) { return; } // if we're not using AD auth
             var token = await tokenProvider.GetAccessTokenAsync("https://atlas.microsoft.com/");
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             isInit = true;
@@ -57,7 +57,7 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<FuzzySearchResponse> FuzzySearchAsync(string query)
         {
-            if (query == null) return new FuzzySearchResponse() { Results = new List<Result>() };
+            if (query == null) { return new FuzzySearchResponse() { Results = new List<Result>() }; }
             await InitAsync();
             try
             {
@@ -74,6 +74,7 @@ namespace Amphora.Api.Services.Azure
                 logger.LogError("Fuzzy Location Search error", ex);
                 this.isInit = false;
             }
+
             return new FuzzySearchResponse { Results = new List<Result>() };
         }
 
@@ -106,6 +107,5 @@ namespace Amphora.Api.Services.Azure
                 return null;
             }
         }
-
     }
 }

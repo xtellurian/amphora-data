@@ -14,7 +14,7 @@ namespace Amphora.Migrate
 {
     public class Program
     {
-        private static IConfiguration? Configuration;
+        private static IConfiguration? configuration;
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -31,29 +31,30 @@ namespace Amphora.Migrate
                     KeyVaultConfigProvider.Configure(config, builtConfig, sourceVault, new SectionReplacementSecretManager(sourceVault, "Source"));
                     KeyVaultConfigProvider.Configure(config, builtConfig, sinkVault, new SectionReplacementSecretManager(sinkVault, "Sink"));
 
-                    Configuration = config.Build();
+                    configuration = config.Build();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    if (Configuration == null)
+                    if (configuration == null)
                     {
                         throw new System.NullReferenceException("Configuration cannot be null");
                     }
+
                     services.AddHostedService<Worker>();
 
                     services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
 
                     services.AddSingleton<BlobMigrator>();
-                    services.Configure<StorageMigrationOptions>(Configuration);
+                    services.Configure<StorageMigrationOptions>(configuration);
 
                     services.AddSingleton<CosmosCollectionMigrator>();
-                    services.Configure<CosmosMigrationOptions>(Configuration);
+                    services.Configure<CosmosMigrationOptions>(configuration);
 
                     services.AddTransient<ITsiService, TsiService>();
                     services.AddSingleton<TsiMigrator>();
                     services.AddTransient<EventHubSender>();
-                    services.Configure<TsiOptions>(Configuration.GetSection("Source").GetSection("Tsi"));
-                    services.Configure<EventHubOptions>(Configuration.GetSection("Sink").GetSection("TsiEventHub"));
+                    services.Configure<TsiOptions>(configuration.GetSection("Source").GetSection("Tsi"));
+                    services.Configure<EventHubOptions>(configuration.GetSection("Sink").GetSection("TsiEventHub"));
                 });
     }
 }

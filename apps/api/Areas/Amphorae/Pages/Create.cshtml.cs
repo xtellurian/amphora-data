@@ -56,6 +56,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     location = new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value);
                 }
+
                 var entity = new AmphoraModel(AmphoraDto.Name, AmphoraDto.Description, AmphoraDto.Price, null, null, AmphoraDto.TermsAndConditionsId)
                 {
                     GeoLocation = location,

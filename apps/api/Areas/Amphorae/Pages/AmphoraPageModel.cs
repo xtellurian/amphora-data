@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    public abstract class AmphoraPageModel: PageModel
+    public abstract class AmphoraPageModel : PageModel
     {
         protected readonly IAmphoraeService amphoraeService;
 
@@ -16,27 +16,25 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.amphoraeService = amphoraeService;
         }
 
-    //[BindProperty] // this shouldn't be bound, as it messes with model validation, and shouldn't be sent by the client
+        // [BindProperty] // this shouldn't be bound, as it messes with model validation, and shouldn't be sent by the client
         public AmphoraModel Amphora { get; set; }
         public EntityOperationResult<AmphoraModel> Result { get; private set; }
 
         public virtual async Task LoadAmphoraAsync(string id)
         {
-            if(id == null) return;
+            if (id == null) { return; }
             this.Result = await amphoraeService.ReadAsync(User, id, true);
-            if(Result.Succeeded) this.Amphora = Result.Entity;
-            else Amphora = null;;
+            if (Result.Succeeded) { this.Amphora = Result.Entity; }
+            else { Amphora = null; }
         }
-
 
         public IActionResult OnReturnPage()
         {
-            if (Amphora == null) return RedirectToPage("./Index");
+            if (Amphora == null) { return RedirectToPage("./Index"); }
             if (Result.WasForbidden)
             {
                 return RedirectToPage("Amphorae/Forbidden");
             }
-
             else if (Result.Succeeded)
             {
                 if (Amphora == null)

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Pages.Redirection
 {
-    public class ChatModel: PageModel
+    public class ChatModel : PageModel
     {
         private readonly IOptionsMonitor<ChatOptions> options;
         private readonly ILogger<ChatModel> logger;
@@ -16,6 +16,7 @@ namespace Amphora.Api.Pages.Redirection
             this.options = options;
             this.logger = logger;
         }
+
         public IActionResult OnGet()
         {
             var red = options.CurrentValue.RedirectUrl;

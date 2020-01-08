@@ -30,15 +30,16 @@ namespace Amphora.Api.Areas.Organisations.Pages
             {
                 this.Organisation = await organisationService.Store.ReadAsync(id);
                 this.TargetMembership = Organisation.Memberships.FirstOrDefault(m => m.UserId == userId);
-                if (TargetMembership == null) return RedirectToPage("./Members");
+                if (TargetMembership == null) { return RedirectToPage("./Members"); }
                 // this section is a fix for bug 382 >>
                 var user = await userService.ReadUserModelAsync(User);
                 var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, Common.Models.Permissions.AccessLevels.Administer);
-                if(!authorized)
+                if (!authorized)
                 {
                     ModelState.AddModelError(string.Empty, "Unauthorised");
                     return Page();
                 }
+
                 // << end fix
                 TargetMembership.Role = Common.Models.Organisations.Roles.Administrator;
                 var res = await organisationService.UpdateAsync(User, Organisation);

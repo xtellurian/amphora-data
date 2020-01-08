@@ -33,6 +33,7 @@ namespace Amphora.Api.Middleware
                 logger.LogInformation($"Redirecting {user.UserName} to {CreateOrgPath}");
                 httpContext.Response.Redirect($"{CreateOrgPath}{QueryString}");
             }
+
             await _next(httpContext);
         }
     }

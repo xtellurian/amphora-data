@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,13 +34,12 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 {
                     this.Invitation = res.Entity.FirstOrDefault(_ => !_.IsClaimed.HasValue || !_.IsClaimed.Value); // either null or false
                 }
-                else if (res.WasForbidden) return StatusCode(403);
-                else 
+                else if (res.WasForbidden) { return StatusCode(403); }
+                else
                 {
                     ModelState.AddModelError(string.Empty, res.Message);
                     return Page();
                 }
-
             }
             else
             {
@@ -50,29 +48,32 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 {
                     this.Invitation = res2.Entity;
                 }
-                else if (res2.WasForbidden) return StatusCode(403);
-                else return BadRequest();
+                else if (res2.WasForbidden) { return StatusCode(403); }
+                else { return BadRequest(); }
             }
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string invitationId)
         {
-            if(invitationId == null) throw new System.NullReferenceException("invitationId was null");
-            if(!AcceptInvitation)
+            if (invitationId == null) { throw new System.NullReferenceException("invitationId was null"); }
+            if (!AcceptInvitation)
             {
                 ModelState.AddModelError(string.Empty, "You must accept the invitation to continue.");
                 return Page();
             }
+
             this.Invitation = await invitationService.Store.ReadAsync(invitationId);
-            if(Invitation == null) 
+            if (Invitation == null)
             {
                 return BadRequest();
             }
+
             var result = await invitationService.AcceptInvitationAsync(User, Invitation);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
-                return RedirectToPage("./Detail", new {id = Invitation.TargetOrganisationId });
+                return RedirectToPage("./Detail", new { id = Invitation.TargetOrganisationId });
             }
             else
             {

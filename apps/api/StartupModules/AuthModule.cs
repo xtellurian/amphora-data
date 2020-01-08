@@ -2,33 +2,33 @@ using System.Text;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Auth;
+using Amphora.Api.Services.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
-using Amphora.Api.Services.Platform;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api.StartupModules
 {
     public class AuthModule
     {
-        private readonly IWebHostEnvironment HostingEnvironment;
-        private readonly IConfiguration Configuration;
+        private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly IConfiguration configuration;
 
         public AuthModule(IConfiguration configuration, IWebHostEnvironment env)
         {
-            this.HostingEnvironment = env;
-            this.Configuration = configuration;
+            this.hostingEnvironment = env;
+            this.configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TokenManagementOptions>(Configuration.GetSection("tokenManagement"));
-            var token = Configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
+            services.Configure<TokenManagementOptions>(configuration.GetSection("tokenManagement"));
+            var token = configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -39,7 +39,7 @@ namespace Amphora.Api.StartupModules
 
             services.AddAuthentication().AddJwtBearer(x =>
                 {
-                    x.RequireHttpsMetadata = HostingEnvironment.IsProduction();
+                    x.RequireHttpsMetadata = hostingEnvironment.IsProduction();
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -57,7 +57,7 @@ namespace Amphora.Api.StartupModules
                 options.AddPolicy(GlobalAdminRequirement.GlobalAdminPolicyName, policy =>
                     policy.Requirements.Add(new GlobalAdminRequirement()));
             });
-           
+
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();

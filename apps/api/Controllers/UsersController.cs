@@ -1,16 +1,16 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
 using Amphora.Api.Options;
+using Amphora.Common.Models.Users;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NSwag.Annotations;
-using Amphora.Api.AspNet;
 
 namespace Amphora.Api.Controllers
 {
@@ -37,9 +37,11 @@ namespace Amphora.Api.Controllers
             this.mapper = mapper;
             this.logger = logger;
         }
+
         /// <summary>
         /// Get's logged in users information.
         /// </summary>
+        /// <returns> Your own details. </returns>
         [Produces(typeof(UserDto))]
         [HttpGet("api/users/self")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -50,20 +52,24 @@ namespace Amphora.Api.Controllers
             {
                 return NotFound();
             }
+
             return Ok(mapper.Map<UserDto>(user));
         }
+
         /// <summary>
         /// Creates a new User. Returns the password.
         /// </summary>
-        /// <param name="dto">User parameters</param>
+        /// <param name="dto">User parameters.</param>
+        /// <returns> A password string.</returns>
         [Produces(typeof(string))]
         [HttpPost("api/users")]
         public async Task<IActionResult> Create([FromBody] UserDto dto)
         {
-            if(! ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
             string password = System.Guid.NewGuid().ToString() + "!1A";
 
             var applicationUser = new ApplicationUser()
@@ -72,13 +78,13 @@ namespace Amphora.Api.Controllers
                 UserName = dto.UserName
             };
 
-            if(Request.Query.TryGetValue("DenyGlobalAdmin", out var val))
+            if (Request.Query.TryGetValue("DenyGlobalAdmin", out var val))
             {
                 applicationUser.IsGlobalAdmin = false;
             }
 
             var invitation = await invitationService.GetInvitationByEmailAsync(dto.Email.ToUpper());
-            if(invitation == null)
+            if (invitation == null)
             {
                 return BadRequest($"{dto.Email} has not been invited to Amphora Data");
             }
@@ -97,21 +103,23 @@ namespace Amphora.Api.Controllers
                     logger.LogError(e);
                 }
             }
+
             return BadRequest(JsonConvert.SerializeObject(result.Errors));
         }
 
         /// <summary>
-        /// Deletes a user
+        /// Deletes a user.
         /// </summary>
         /// <param name="userName">UserName of user to delete.</param>
+        /// <returns> Empty.</returns>
         [HttpDelete("api/users/{username}")]
         [OpenApiIgnore]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(string userName)
         {
-            if (userName == null) return BadRequest("username is required");
-            var user = (await userService.UserManager.FindByNameAsync(userName));
-            if (user == null) return NotFound();
+            if (userName == null) { return BadRequest("username is required"); }
+            var user = await userService.UserManager.FindByNameAsync(userName);
+            if (user == null) { return NotFound(); }
             var result = await userService.DeleteAsync(User, user);
             if (result.Succeeded)
             {
@@ -126,7 +134,6 @@ namespace Amphora.Api.Controllers
                 logger.LogError("Failed to create user!");
                 return BadRequest(result.Message);
             }
-
         }
     }
 }

@@ -11,7 +11,6 @@ namespace Amphora.Tests.Helpers
 {
     public static class EntityLibrary
     {
-
         private static Random rnd = new Random();
         public static AmphoraExtendedDto GetAmphoraDto(string orgId, string testName = null)
         {
@@ -19,7 +18,7 @@ namespace Amphora.Tests.Helpers
                .StrictMode(false)
                .RuleFor(o => o.OrganisationId, f => orgId)
                .RuleFor(o => o.Name, f => testName ?? f.Random.String2(1, 10))
-               .RuleFor(o => o.Description, f => f.Random.String2(1, 10))
+               .RuleFor(o => o.Description, f => f.Lorem.Sentences())
                .RuleFor(o => o.Price, f => f.Random.Number(0, 99))
                .RuleFor(o => o.Lat, f => f.Random.Number(0, 89))
                .RuleFor(o => o.Lon, f => f.Random.Number(0, 89));
@@ -29,16 +28,17 @@ namespace Amphora.Tests.Helpers
 
         public static AmphoraModel GetAmphoraModel(OrganisationModel org, string testName, bool isPublic = true)
         {
-            var lat = -32.868 + rnd.Next(2); // near sydney
-            var lon = 150.2093 + rnd.Next(2);
+            var faker = new Faker<AmphoraModel>()
+               .StrictMode(false)
+               .RuleFor(_ => _.OrganisationId, f => org.Id)
+               .RuleFor(_ => _.Name, f => f.Random.Word())
+               .RuleFor(_ => _.Price, f => f.Random.Double(1, 100))
+               .RuleFor(_ => _.Description, f => f.Lorem.Sentences())
+               .RuleFor(_ => _.CreatedDate, f => f.Date.Past())
+               .RuleFor(_ => _.IsPublic, f => isPublic)
+               .RuleFor(_ => _.GeoLocation, f => new GeoLocation(f.Address.Longitude(), f.Address.Latitude()));
 
-            return new AmphoraModel("test: " + testName, DateTime.Now.ToString(), rnd.Next(0, 99), org.Id, null, null)
-            {
-                Id = System.Guid.NewGuid().ToString(),
-                Organisation = org,
-                GeoLocation = new GeoLocation(lon, lat),
-                IsPublic = isPublic
-            };
+            return faker.Generate();
         }
 
         public static AmphoraModel GetInvalidAmphora(string id = null)
@@ -49,30 +49,25 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static OrganisationDto GetOrganisationDto([CallerMemberName] string testName = null)
+        public static OrganisationDto GetOrganisationDto([CallerMemberName] string testName = "")
         {
             var org = new Faker<OrganisationDto>()
                .StrictMode(false)
-               .RuleFor(o => o.Name, f => f.Random.String2(1, 10))
-               .RuleFor(o => o.About, f => testName ?? f.Random.String2(1, 10))
-               .RuleFor(o => o.WebsiteUrl, f => f.Random.String2(1, 10))
+               .RuleFor(o => o.Name, f => f.Company.CompanyName())
+               .RuleFor(o => o.About, f => testName + f.Lorem.Sentences())
+               .RuleFor(o => o.WebsiteUrl, f => f.Internet.Url())
                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
-            return org.Generate();;
+            return org.Generate();
         }
-        public static OrganisationModel GetOrganisationModel([CallerMemberName]  string testName = "")
+
+        public static OrganisationModel GetOrganisationModel([CallerMemberName] string testName = "")
         {
             var testOrgs = new Faker<OrganisationModel>()
-                //Ensure all properties have rules. By default, StrictMode is false
-                //Set a global policy by using Faker.DefaultStrictMode
+                // Ensure all properties have rules. By default, StrictMode is false
                 .StrictMode(false)
-                .CustomInstantiator(f => new OrganisationModel(testName, f.Random.String2(10), f.Random.String2(10), f.Address.FullAddress()))
-                //OrderId is deterministic
-                //Pick some fruit from a basket
                 .RuleFor(o => o.Id, f => f.Random.Guid().ToString())
-                .RuleFor(o => o.Address, f => f.Random.String2(1, 10));
-            //A nullable int? with 80% probability of being null.
-            //The .OrNull extension is in the Bogus.Extensions namespace.;
+                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
             var org = testOrgs.Generate();
             return org;
@@ -82,6 +77,7 @@ namespace Amphora.Tests.Helpers
         {
             return new SignalModel(testName, SignalModel.Numeric);
         }
+
         public static SignalDto GetSignalDto(string property)
         {
             return new SignalDto() { Property = property, ValueType = SignalModel.Numeric };

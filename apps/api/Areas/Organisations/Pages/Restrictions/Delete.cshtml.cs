@@ -28,21 +28,22 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                 return RedirectToPage("./Delete", new { id = readRes.User.OrganisationId, targetOrganisationId = targetOrganisationId }); // reload page
             }
 
-            if(readRes.Succeeded)
+            if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
                 this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
-                if(Target == null)
+                if (Target == null)
                 {
                     return RedirectToDetail(id);
                 }
+
                 return Page();
             }
-            else if(readRes.WasForbidden) return StatusCode(403);
-            else return RedirectToDetail(id);
+            else if (readRes.WasForbidden) { return StatusCode(403); }
+            else { return RedirectToDetail(id); }
         }
 
-        public async Task<IActionResult> OnPostAsync(string id, string targetOrganisationId )
+        public async Task<IActionResult> OnPostAsync(string id, string targetOrganisationId)
         {
             var readRes = await organisationService.ReadAsync(User, id);
             if (id == null)
@@ -50,29 +51,29 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                 return RedirectToPage("./Delete", new { id = readRes.User.OrganisationId, targetOrganisationId = targetOrganisationId }); // reload page
             }
 
-            if(readRes.Succeeded)
+            if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
                 this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
-                if(Target == null)
+                if (Target == null)
                 {
                     return RedirectToDetail(id);
                 }
 
                 this.Organisation.Restrictions.Remove(this.Target);
                 var updateRes = await organisationService.UpdateAsync(User, Organisation);
-                if(updateRes.Succeeded) return RedirectToDetail(id);
-                else if(updateRes.WasForbidden) return StatusCode(403);
-                else ModelState.AddModelError(string.Empty, updateRes.Message);
+                if (updateRes.Succeeded) { return RedirectToDetail(id); }
+                else if (updateRes.WasForbidden) { return StatusCode(403); }
+                else { ModelState.AddModelError(string.Empty, updateRes.Message); }
                 return Page();
             }
-            else if(readRes.WasForbidden) return StatusCode(403);
-            else return RedirectToDetail(id);
+            else if (readRes.WasForbidden) { return StatusCode(403); }
+            else { return RedirectToDetail(id); }
         }
 
         private IActionResult RedirectToDetail(string id)
         {
-            return RedirectToPage("/Detail", new { Area = "Organisations", Id = id }); 
+            return RedirectToPage("/Detail", new { Area = "Organisations", Id = id });
         }
     }
 }
