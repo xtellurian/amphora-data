@@ -12,7 +12,7 @@ steps:
   displayName: Run Versioning Tests
 - script: |
     prodVersion=$(curl https://beta.amphoradata.com/api/version)
-    nextVersion=$(cat apps/test/bin/Debug/netcoreapp3.0/version.txt)
+    nextVersion=$(cat apps/test/bin/Debug/netcoreapp${DOTNET_VERSION}/version.txt)
     prodMajor=$(echo "$prodVersion" | awk -F'.' '{print $1}')
     nextMajor=$(echo "$nextVersion" | awk -F'.' '{print $1}')
     prodMinor=$(echo "$prodVersion" | awk -F'.' '{print $2}')
@@ -27,9 +27,12 @@ steps:
     then
         echo This is a patch update
         echo "##vso[task.setvariable variable=IS_PATCH]True"
-        echo "##vso[task.setvariable variable=APP_VERSION]$nextVersion"
     else
         echo This is NOT a patch update
     fi
+    echo "Setting APP_VERSION: ${nextVersion}"
+    echo "##vso[task.setvariable variable=APP_VERSION]$nextVersion"
   displayName: Set IS_PATCH variable
+  env:
+    DOTNET_VERSION: "3.1"
     
