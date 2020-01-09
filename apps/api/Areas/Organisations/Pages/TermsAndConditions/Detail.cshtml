@@ -19,7 +19,7 @@
             <form method="post" asp-route-returnUrl="@Model.ReturnUrl" 
                                 asp-route-id="@Model.Organisation.Id" 
                                 asp-route-tncId="@Model.TermsAndConditions.Id">
-
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <button class="btn btn-success btn-block">Accept</button>
             </form>
             }
