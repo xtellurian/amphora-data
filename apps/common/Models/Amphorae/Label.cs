@@ -8,6 +8,7 @@ namespace Amphora.Common.Models.Amphorae
             Name = name.Trim();
         }
 
+        public string? Id { get; set; }
         public string? Name { get; set; }
     }
 }

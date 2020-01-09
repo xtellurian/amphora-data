@@ -34,16 +34,12 @@ namespace Amphora.Api.DbContexts
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
-                amphora.Property(_ => _.Labels)
-                    .HasConversion(_ => JsonConvert.SerializeObject(_),
-                    _ => JsonConvert.DeserializeObject<Collection<Label>>(_));
+                amphora.OwnsMany(_ => _.Labels, _ =>
+                {
+                    _.Property(label => label.Id).ValueGeneratedOnAdd();
+                    _.HasKey(label => new { id = label.Id, name = label.Name });
+                });
 
-                var comparer = new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<ICollection<Label>>(
-                    (c1, c2) => c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => (ICollection<Label>)c.ToHashSet());
-
-                amphora.Property(_ => _.Labels).Metadata.SetValueComparer(comparer);
                 amphora.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
                 amphora.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
                 amphora.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
