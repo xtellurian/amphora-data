@@ -30,7 +30,11 @@ namespace Amphora.Api.DbContexts
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<GeoLocation>(v));
-                amphora.OwnsMany(_ => _.Labels).WithOwner();
+                amphora.OwnsMany(_ => _.Labels, o =>
+                {
+                    o.HasKey(m => m.Name);
+                    o.WithOwner();
+                });
                 amphora.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
                 amphora.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
                 amphora.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);

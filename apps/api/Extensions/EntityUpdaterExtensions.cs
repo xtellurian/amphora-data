@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 
@@ -9,7 +10,7 @@ namespace Amphora.Api.Extensions
         {
             entity.Name = dto.Name;
             entity.Price = dto.Price;
-            entity.Labels = dto.GetLabels();
+            SetLabels(entity, dto);
             return entity;
         }
 
@@ -24,6 +25,16 @@ namespace Amphora.Api.Extensions
             }
 
             return entity;
+        }
+
+        private static void SetLabels(AmphoraModel entity, AmphoraDto dto)
+        {
+            if (entity.Labels == null) { entity.Labels = new Collection<Label>(); }
+            else { entity.Labels.Clear(); }
+            foreach (var l in dto.GetLabels())
+            {
+                entity.Labels.Add(l);
+            }
         }
     }
 }
