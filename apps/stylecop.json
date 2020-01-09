@@ -1,8 +1,31 @@
 {
     "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
     "settings": {
-        "orderingRules": {
-            "usingDirectivesPlacement": "outsideNamespace"
-        }
+      "documentationRules": {
+        "copyrightText": "Licensed under the MIT license. See LICENSE file in the samples root for full license information.",
+        "companyName": "Microsoft",
+        "xmlHeader": false,
+        "documentExposedElements": false
+      },
+      "layoutRules": {
+        "newlineAtEndOfFile": "allow"
+      },
+      "indentation": {
+        "indentationSize": 4,
+        "useTabs": false
+      },
+      "namingRules": {},
+      "orderingRules": {
+        "systemUsingDirectivesFirst": true,
+        "usingDirectivesPlacement": "outsideNamespace",
+        "elementOrder": [
+          "kind",
+          "constant",
+          "accessibility",
+          "static",
+          "readonly"
+        ]
+      }
     }
-}
+  }
+  
