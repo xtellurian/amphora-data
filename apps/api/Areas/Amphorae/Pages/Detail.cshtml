@@ -1,5 +1,4 @@
 @page
-@using Amphora.Common.Models.Permissions
 @model Amphora.Api.Areas.Amphorae.Pages.DetailModel
 @inject Amphora.Api.Services.FeatureFlags.FeatureFlagService FeatureFlags
 @{
@@ -83,7 +82,7 @@
                             <span class="d-none" id=amphoraId> <small>@Model.Amphora.Id </small> </span>
                         </span>
                         <div>
-                            @foreach(var l in Model.Amphora.Labels)
+                            @foreach(var l in Model.Amphora.GetSafe(_ => _.Labels))
                             {
                                 <span class="badge badge-dark m-1">@l.Name</span>
                             }

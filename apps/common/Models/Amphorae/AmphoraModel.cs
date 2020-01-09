@@ -45,7 +45,7 @@ namespace Amphora.Common.Models.Amphorae
         public double? Price { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
-        public virtual ICollection<Label> Labels { get; set; } = new Collection<Label>();
+        public virtual ICollection<Label>? Labels { get; set; } = new Collection<Label>();
 
         // navigation
         public string OrganisationId { get; set; }
@@ -65,6 +65,14 @@ namespace Amphora.Common.Models.Amphorae
         public bool Public()
         {
             return this.IsPublic.HasValue && this.IsPublic.Value;
+        }
+
+        /// <summary>
+        /// Useful incase a collection is null.
+        /// </summary>
+        public ICollection<T> GetSafe<T>(Func<AmphoraModel, ICollection<T>> selector)
+        {
+            return selector(this) ?? new Collection<T>();
         }
     }
 }
