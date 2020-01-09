@@ -1,4 +1,10 @@
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 3.1.100
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 - script: |
     pushd apps
     dotnet test --filter Category=Versioning
