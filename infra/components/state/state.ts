@@ -72,7 +72,7 @@ export class State extends pulumi.ComponentResource {
     const gitHubTokenSecret = this.storeInVault(
       "gitHubToken",
       "GitHubOptions--Token",
-      pulumi.interpolate `config.getSecret("gitHubToken")`,
+      pulumi.interpolate `${config.getSecret("gitHubToken")}`,
     );
     this.createEventHubs(stateRg);
     this.createCosmosDb(stateRg);
