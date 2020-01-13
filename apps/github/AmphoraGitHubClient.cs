@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Amphora.GitHub.Contracts;
 using Amphora.GitHub.Models;
@@ -30,7 +31,10 @@ namespace Amphora.GitHub
         {
             var repo = await GetRepoAsync();
             var body = LinkInformation.Template(amphoraId);
-            return $"{repo.HtmlUrl}/issues/new?title={title}&body={body}";
+            var sb = new StringBuilder(repo.HtmlUrl).Append("/issues/new?");
+            if (title != null) { sb.Append($"title={title}"); }
+            sb.Append($"&body={body}");
+            return sb.ToString();
         }
 
         public async Task<IReadOnlyList<GitHubIssue>> GetIssuesAsync(string? owner = null, string? repo = null)

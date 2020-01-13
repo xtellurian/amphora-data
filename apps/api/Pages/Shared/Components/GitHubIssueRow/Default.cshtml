@@ -1,0 +1,23 @@
+@model Amphora.Api.Pages.Shared.Components.GitHubIssueRowViewComponent
+@using Westwind.AspNetCore.Markdown
+
+<div class="row">
+    <div class="col-3">
+        @Model.Issue.Title
+    </div>
+    <div class="col-7">
+        <div>
+            <button class="btn btn-link btn-block float-left" data-toggle="collapse" href="#bodyCollapse" role="button" aria-expanded="false" aria-controls="bodyCollapse">
+                Show
+            </button>
+        </div>
+        <div id="bodyCollapse" class="collapse card">
+            <div class="card-body">
+                @Markdown.ParseHtmlString(Model.Issue.Body)
+            </div>
+        </div>
+    </div>
+    <div class="col-2 text-right">
+        <a href="@Model.Issue.HtmlUrl"><i class="fab fa-lg fa-github"></i></a>
+    </div>
+</div>

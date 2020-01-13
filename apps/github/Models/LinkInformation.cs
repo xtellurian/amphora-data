@@ -48,7 +48,7 @@ namespace Amphora.GitHub.Models
 
         public static string Template(string amphoraId)
         {
-            return NewLines(1) + "---" + NewLines(2) + TemplateHeader + NewLines(2) + LinkingSectionHeaderMd + NewLines(1) + IdLinePrefix + amphoraId;
+            return TemplateHeader + NewLines(2) + "---" + NewLines(2) + LinkingSectionHeaderMd + NewLines(1) + IdLinePrefix + amphoraId;
         }
 
         private static string? ExtractAmphoraId(string? fullBody)

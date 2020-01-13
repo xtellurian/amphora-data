@@ -23,5 +23,10 @@ namespace Amphora.Api.Services.GitHub
             var forThisId = issues.Where(_ => _.LinkInfo.AmphoraId == amphoraId);
             return new List<LinkedGitHubIssue>(forThisId);
         }
+
+        public async Task<string> NewIssueUrlAsync(string amphoraId)
+        {
+            return await this.client.NewIssueUrlAsync(amphoraId, null);
+        }
     }
 }
