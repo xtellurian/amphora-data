@@ -6,6 +6,7 @@ using Amphora.Api.Services;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.FeatureFlags;
+using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
@@ -96,6 +97,10 @@ namespace Amphora.Api
             services.AddTransient<IAccountsService, AccountsService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
+
+            // external services
+            services.Configure<GitHub.Configuration>(Configuration.GetSection("GitHubOptions"));
+            services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();
