@@ -72,6 +72,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
+            await SetGitHubProperties();
 
             switch (target?.ToLower())
             {
