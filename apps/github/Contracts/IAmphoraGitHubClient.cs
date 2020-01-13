@@ -6,7 +6,7 @@ namespace Amphora.GitHub.Contracts
 {
     public interface IAmphoraGitHubClient
     {
-        Task<IReadOnlyList<GitHubIssue>> GetIssues(string? owner = null, string? repo = null);
-        Task<string> NewIssueUrl(string title, string body);
+        Task<IReadOnlyList<GitHubIssue>> GetIssuesAsync(string? owner = null, string? repo = null);
+        Task<string> NewIssueUrlAsync(string amphoraId, string title);
     }
 }

@@ -26,15 +26,14 @@ namespace Amphora.GitHub
             return await client.Repository.Get(owner, repo);
         }
 
-        public async Task<string> NewIssueUrl(string title, string body)
+        public async Task<string> NewIssueUrlAsync(string amphoraId, string title)
         {
             var repo = await GetRepoAsync();
-            var titleHtml = System.Web.HttpUtility.HtmlEncode(title);
-            var bodyHtml = System.Web.HttpUtility.HtmlEncode(body);
-            return $"{repo.HtmlUrl}/issues/new?title={titleHtml}&body={bodyHtml}";
+            var body = LinkInformation.Template(amphoraId);
+            return $"{repo.HtmlUrl}/issues/new?title={title}&body={body}";
         }
 
-        public async Task<IReadOnlyList<GitHubIssue>> GetIssues(string? owner = null, string? repo = null)
+        public async Task<IReadOnlyList<GitHubIssue>> GetIssuesAsync(string? owner = null, string? repo = null)
         {
             DefaultIfNull(ref owner, ref repo);
             var issues = await client.Issue.GetAllForRepository(owner, repo);
@@ -43,7 +42,7 @@ namespace Amphora.GitHub
 
         public async Task<IReadOnlyList<LinkedGitHubIssue>> GetLinkedIssues(string? owner = null, string? repo = null)
         {
-            var issues = await this.GetIssues(owner, repo);
+            var issues = await this.GetIssuesAsync(owner, repo);
             return issues
                 .Where(_ => _ is LinkedGitHubIssue)
                 .Cast<LinkedGitHubIssue>()

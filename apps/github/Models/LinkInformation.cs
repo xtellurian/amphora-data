@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Amphora.GitHub.Models
@@ -9,7 +10,18 @@ namespace Amphora.GitHub.Models
         public static string IdLinePrefix => "* AmphoraId: ";
         private static string FullIdLinkRegex => @"(\* AmphoraId:[ ]*)" + GuidRegex; // matches "* AmphoraId: <GUID>"
         private static string GuidRegex => @"({{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}}{0,1})";
-        private static string TemplateHeader => "<!-- Write here --> \n\n";
+        private static string TemplateHeader => "<!-- Write here -->";
+        private static string NewLines(int times = 1)
+        {
+            var sb = new StringBuilder();
+            for (int i = 1; i <= times; i++)
+            {
+                sb.Append("%0A");
+            }
+
+            return sb.ToString();
+        }
+
         public LinkInformation(string? amphoraId = null)
         {
             AmphoraId = amphoraId;
@@ -36,7 +48,7 @@ namespace Amphora.GitHub.Models
 
         public static string Template(string amphoraId)
         {
-            return TemplateHeader + LinkingSectionHeaderMd + IdLinePrefix + amphoraId;
+            return NewLines(1) + "---" + NewLines(2) + TemplateHeader + NewLines(2) + LinkingSectionHeaderMd + NewLines(1) + IdLinePrefix + amphoraId;
         }
 
         private static string? ExtractAmphoraId(string? fullBody)

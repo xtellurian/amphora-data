@@ -1,8 +1,10 @@
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api.Services.GitHub;
 using Amphora.GitHub;
 using Amphora.GitHub.Contracts;
+using Bogus;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -11,6 +13,8 @@ namespace Amphora.Tests.GitHub
 {
     public class GitHubConnectorTests
     {
+        private Faker faker = new Faker("en");
+
         private string token = System.Environment.GetEnvironmentVariable("GITHUB_TOKEN");
         private string defaultUser = "xtellurian";
         private string defaultRepo = "mynewrepo";
@@ -20,8 +24,8 @@ namespace Amphora.Tests.GitHub
         {
             var configuration = new Configuration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
-
-            var url = await sut.NewIssueUrl("blah&&&", "blah&&*?&");
+            var id = System.Guid.NewGuid().ToString();
+            var url = await sut.NewIssueUrlAsync(id, "blah&&&");
             Assert.NotNull(url);
         }
 
@@ -31,7 +35,7 @@ namespace Amphora.Tests.GitHub
             var configuration = new Configuration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
 
-            var issues = await sut.GetIssues();
+            var issues = await sut.GetIssuesAsync();
             Assert.NotNull(issues);
             Assert.NotEmpty(issues);
         }
@@ -43,7 +47,7 @@ namespace Amphora.Tests.GitHub
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
 
             var id = System.Guid.NewGuid().ToString();
-            var issues = await sut.GetIssues();
+            var issues = await sut.GetIssuesAsync();
             Assert.NotNull(issues);
             var filtered = issues.Where(i => i.Body.Contains(id)).ToList();
             Assert.NotNull(filtered);
@@ -64,6 +68,20 @@ namespace Amphora.Tests.GitHub
             Assert.NotEmpty(issues);
             var issue = issues.FirstOrDefault();
             Assert.True(issue.LinkInfo.AmphoraId == id);
+        }
+
+        [Fact]
+        public async Task CanGenerateCreateIssueUrl()
+        {
+            var config = new Configuration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
+            var client = new AmphoraGitHubClient(config);
+            var id = System.Guid.NewGuid().ToString();
+            var url = await client.NewIssueUrlAsync(id, faker.Rant.Review("amphora"));
+            using (var httpClient = new HttpClient())
+            {
+                var res = await httpClient.GetAsync(url);
+                Assert.True(res.IsSuccessStatusCode);
+            }
         }
     }
 }
