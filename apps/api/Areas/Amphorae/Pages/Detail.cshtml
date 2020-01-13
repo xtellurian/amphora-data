@@ -176,12 +176,6 @@
                                     <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
                                         <i class="fas fa-users"></i> Show has purchased
                                     </button>
-                                    @if(Model.CanUploadFiles)
-                                    {    
-                                    <button class="dropdown-item" data-toggle="collapse" href="#uploadFileCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                                        <i class="fas fa-upload"></i> Upload File
-                                    </button>
-                                    }
                                 </div>
                             </span>
                             }
@@ -213,25 +207,11 @@
                 </ul>
             </div>
             }
-            
         </div>
     </div>
-
-    <div class="row mb-2">
-        <div class="col">
-            <a href="@Html.Raw(@Model.NewIssueUrl)" class="btn btn-primary float-right"><i class="fas fa-plus"></i> New Issue</a>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="container">
-                @foreach(var i in Model.Issues)
-                {
-                    @await Component.InvokeAsync("GitHubIssueRow", new {issue = i})
-                }
-            </div>
-        </div>
+    <hr/>
+    <div>
+        @await Component.InvokeAsync("GitHubIssuesSection", new {amphora = Model.Amphora})
     </div>
 </div>
 

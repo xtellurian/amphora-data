@@ -52,30 +52,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         public ICollection<Common.Models.Purchases.PurchaseModel> Purchases { get; private set; }
         public bool CanBuy { get; set; }
         public IReadOnlyList<LinkedGitHubIssue> Issues { get; private set; }
-        public string NewIssueUrl { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            await SetGitHubProperties();
             return OnReturnPage();
-        }
-
-        private async Task SetGitHubProperties()
-        {
-            if (Amphora != null)
-            {
-                this.Issues = await this.github.GetLinkedIssues(Amphora.Id);
-                this.NewIssueUrl = await this.github.NewIssueUrlAsync(this.Amphora.Id);
-            }
         }
 
         public async Task<IActionResult> OnPostPinAsync(string id, string target)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            await SetGitHubProperties();
 
             switch (target?.ToLower())
             {
