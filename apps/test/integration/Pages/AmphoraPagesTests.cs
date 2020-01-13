@@ -20,6 +20,7 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Amphorae/Detail")]
         [InlineData("/Amphorae/Edit")]
         [InlineData("/Amphorae/File")]
+        [InlineData("/Amphorae/Files")]
         [InlineData("/Amphorae/Forbidden")]
         [InlineData("/Amphorae/Index")]
         [InlineData("/Amphorae/Invite")]

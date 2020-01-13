@@ -18,5 +18,6 @@ namespace Amphora.GitHub
         public string? DefaultUser { get; set; }
         public string? DefaultRepo { get; set; }
         public string? Token { get; set; }
+        public bool SuppressRateLimitExceptions { get; set; }
     }
 }

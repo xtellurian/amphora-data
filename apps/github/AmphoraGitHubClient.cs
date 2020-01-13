@@ -29,19 +29,43 @@ namespace Amphora.GitHub
 
         public async Task<string> NewIssueUrlAsync(string amphoraId, string title)
         {
-            var repo = await GetRepoAsync();
-            var body = LinkInformation.Template(amphoraId);
-            var sb = new StringBuilder(repo.HtmlUrl).Append("/issues/new?");
-            if (title != null) { sb.Append($"title={title}"); }
-            sb.Append($"&body={body}");
-            return sb.ToString();
+            try
+            {
+                var repo = await GetRepoAsync();
+                var body = LinkInformation.Template(amphoraId);
+                var sb = new StringBuilder(repo.HtmlUrl).Append("/issues/new?");
+                if (title != null) { sb.Append($"title={title}"); }
+                sb.Append($"&body={body}");
+                return sb.ToString();
+            }
+            catch (RateLimitExceededException ex)
+            {
+                HandleException(ex);
+                return "";
+            }
+        }
+
+        private void HandleException(RateLimitExceededException ex)
+        {
+            if (config.SuppressRateLimitExceptions == false)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IReadOnlyList<GitHubIssue>> GetIssuesAsync(string? owner = null, string? repo = null)
         {
-            DefaultIfNull(ref owner, ref repo);
-            var issues = await client.Issue.GetAllForRepository(owner, repo);
-            return Mapper.ToGitHubIssue(issues);
+            try
+            {
+                DefaultIfNull(ref owner, ref repo);
+                var issues = await client.Issue.GetAllForRepository(owner, repo);
+                return Mapper.ToGitHubIssue(issues);
+            }
+            catch (RateLimitExceededException ex)
+            {
+                HandleException(ex);
+                return new List<GitHubIssue>();
+            }
         }
 
         public async Task<IReadOnlyList<LinkedGitHubIssue>> GetLinkedIssues(string? owner = null, string? repo = null)

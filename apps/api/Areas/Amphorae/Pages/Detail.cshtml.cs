@@ -64,8 +64,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task SetGitHubProperties()
         {
-            this.Issues = await this.github.GetLinkedIssues(Amphora.Id);
-            this.NewIssueUrl = await this.github.NewIssueUrlAsync(this.Amphora.Id);
+            if (Amphora != null)
+            {
+                this.Issues = await this.github.GetLinkedIssues(Amphora.Id);
+                this.NewIssueUrl = await this.github.NewIssueUrlAsync(this.Amphora.Id);
+            }
         }
 
         public async Task<IActionResult> OnPostPinAsync(string id, string target)
