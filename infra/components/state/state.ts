@@ -69,6 +69,11 @@ export class State extends pulumi.ComponentResource {
       `Storage--${CONSTANTS.AzStorage_KV_CS_SecretName}`,
       this.storageAccount.primaryConnectionString,
     );
+    const gitHubTokenSecret = this.storeInVault(
+      "gitHubToken",
+      "GitHubOptions--Token",
+      pulumi.interpolate `config.getSecret("gitHubToken")`,
+    );
     this.createEventHubs(stateRg);
     this.createCosmosDb(stateRg);
   }
