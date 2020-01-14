@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Services.GitHub;
 using Amphora.GitHub;
 using Amphora.GitHub.Contracts;
+using Amphora.Tests.Mocks;
 using Bogus;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -56,10 +57,11 @@ namespace Amphora.Tests.GitHub
         [Fact]
         public async Task CanGetIssueForEmptyGuid()
         {
+            var dtProvider = new MockDateTimeProvider();
             var config = new Configuration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
             var client = new AmphoraGitHubClient(config);
             var options = Mock.Of<IOptionsMonitor<Configuration>>(_ => _.CurrentValue == config);
-            var sut = new AmphoraGitHubIssueConnectorService(options);
+            var sut = new AmphoraGitHubIssueConnectorService(options, dtProvider);
             // act
             var id = System.Guid.Empty.ToString();
             var issues = await sut.GetLinkedIssues(id);
