@@ -1,0 +1,29 @@
+@model Amphora.Api.Pages.Shared.Components.GitHubIssuesSectionViewComponent
+
+<div class="container">
+    <div class="row mb-1">
+        <div class="col">
+            <h3>Related Issues</h3>
+        </div>
+        <div class="col text-right">
+            <a href="@Html.Raw(@Model.NewIssueUrl)" class="btn btn-primary"><i class="fas fa-plus"></i> New Issue</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="container">
+                @foreach(var i in Model.Issues)
+                {
+                    @await Component.InvokeAsync("GitHubIssueRow", new {issue = i})
+                }
+                @if(Model.Issues.Count == 0)
+                {
+                    <div>
+                        No related issues
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,23 +2,25 @@ config:
   acr:sku: Standard
   amphora:SendGridApiKey:
     secure: AAABAFEcDbMSEIdmLWezhAXmWkpva0c2GTV0XsGwYF85c73b56WOvrDxGqzShLmCcOzarCJWMB4kmNvb1sr21NuICDeYiU8gclKLrXMM8PPSA1oIQCA6tlddmHc6CfjoxwN9H0g=
+  amphora:gitHubToken:
+    secure: AAABAEzpbQ/lOq3o0ZNC5THOWXhl18+hWvWxu1NeBKXz5YcxmTzqwY008jTNeGQvJE7kkM+2p0LyOk9Chg/vBA476uqHBfO6
   amphora:tokenManagement__secret:
     secure: AAABAIMhhPFRlitMsvSNYpEBkGUjMARPHcu0WFItMieKRh7l8xBh0pQ4pDdbZsDXYiNMeA==
   apps:plans:
-  - name: appSvc
-    location: australiasoutheast
+  - location: australiasoutheast
+    name: appSvc
     planSize: S1
     planTier: Standard
-  - name: syd
-    location: australiaeast
+  - location: australiaeast
+    name: syd
     planSize: S1
     planTier: Standard
+  auth:ids:
+  - name: rian
+    objectId: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
+  - appId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
+    name: sp
+    objectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
   azure:environment: public
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   azuresearch:sku: basic
-  auth:ids:
-  - objectId: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
-    name: rian
-  - appId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
-    objectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
-    name: sp

@@ -100,6 +100,7 @@
                             <a class="btn btn-info m-1" asp-page="./Edit" asp-route-id="@Model.Amphora.Id">Edit</a>
                         }
                         <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light m-1" @signalsButtonMode>Signals</button></a>
+                        <a asp-page="./Files" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light m-1" @signalsButtonMode>Files</button></a>
                         <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success m-1" @buttonMode>Buy</button></a>
                     </div>
                 </div>
@@ -175,38 +176,11 @@
                                     <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
                                         <i class="fas fa-users"></i> Show has purchased
                                     </button>
-                                    @if(Model.CanUploadFiles)
-                                    {    
-                                    <button class="dropdown-item" data-toggle="collapse" href="#uploadFileCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                                        <i class="fas fa-upload"></i> Upload File
-                                    </button>
-                                    }
                                 </div>
                             </span>
                             }
                         </div>
                     </div>
-                </div>
-            </div>
-            <div id="uploadFileCollapse" class="card mt-2 collapse">
-                <div class="card-header">
-                    <h5 class="card-title">Upload File</h5>
-                </div>
-                <div class="card-body">
-                    <div class="container">
-                        <form asp-route-id="@Model.Amphora.Id" asp-page-handler="upload" method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <input class="form-control-file" type="file" name="files">
-                                <small class="form-text card-text text-muted">This becomes content in the Amphora.</small>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="submit" value="Upload" data-toggle="collapse" href="#isUploading">
-                            </div>
-                        </form> 
-                        <div id="isUploading" class="progress collapse">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
-                        </div>
-                    </div>                                                        
                 </div>
             </div>
             @if(Model.CanEditPermissions)
@@ -233,27 +207,11 @@
                 </ul>
             </div>
             }
-            
         </div>
     </div>
+    <hr/>
     <div>
-        <table id="file-table" class="table">
-            <thead>
-                <tr>
-                <th scope="col">Filename</th>
-                <th> Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var n in Model.Names)
-                {
-                <tr class="file-item">
-                    <th scope="row">@n</th>
-                    <td><a asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./File"><button class="btn btn-primary">Download</button></a></td>
-                </tr>
-                }
-            </tbody>
-        </table>
+        @await Component.InvokeAsync("GitHubIssuesSection", new {amphora = Model.Amphora})
     </div>
 </div>
 
