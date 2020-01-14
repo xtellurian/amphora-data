@@ -21,10 +21,10 @@ namespace Amphora.GitHub
         {
             if (LinkInformation.TryParse(issue.Body, out var info))
             {
-                return new LinkedGitHubIssue(issue.Body, issue.Title, issue.HtmlUrl, info!);
+                return new LinkedGitHubIssue(issue.Id, issue.Body, issue.Title, issue.HtmlUrl, info!);
             }
 
-            return new GitHubIssue(issue.Body, issue.Title, issue.HtmlUrl);
+            return new GitHubIssue(issue.Id, issue.Body, issue.Title, issue.HtmlUrl);
         }
     }
 }

@@ -2,13 +2,18 @@ namespace Amphora.GitHub.Models
 {
     public class GitHubIssue
     {
-        public GitHubIssue(string? body, string? title, string? htmlUrl)
+        public GitHubIssue(int? id, string? body, string? title, string? htmlUrl)
         {
+            Id = id;
             Body = body;
             Title = title;
             HtmlUrl = htmlUrl;
         }
 
+        /// <summary>
+        ///  The Id of the issue
+        /// </summary>
+        public int? Id { get; protected set; }
         /// <summary>
         ///  Details about the issue.
         /// </summary>
