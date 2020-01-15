@@ -5,9 +5,9 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Amphora</h4>
+<a asp-page="./Index"><button class="float-right btn btn-secondary">Cancel</button></a>
+<h2>Package your data</h2>
+<h4>Create a new Amphora</h4>
 <hr />
 <div class="container">
     <div class="row">
@@ -16,22 +16,22 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="AmphoraDto.Name" class="control-label"></label>
-                    <input asp-for="AmphoraDto.Name" class="form-control" />
+                    <input asp-for="AmphoraDto.Name" class="form-control" placeholder="What data are you packaging?" />
                     <span asp-validation-for="AmphoraDto.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AmphoraDto.Description" class="control-label"></label>
-                    <textarea asp-for="AmphoraDto.Description" class="form-control" rows="4"></textarea>
+                    <textarea asp-for="AmphoraDto.Description" class="form-control" rows="4" placeholder="Go into detail..."></textarea>
                     <span asp-validation-for="AmphoraDto.Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AmphoraDto.Price" class="control-label"></label>
-                    <input asp-for="AmphoraDto.Price" class="form-control" />
+                    <input asp-for="AmphoraDto.Price" class="form-control" placeholder="You can charge a monthly fee." />
                     <span asp-validation-for="AmphoraDto.Price" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AmphoraDto.Labels" class="control-label"></label>
-                    <input asp-for="AmphoraDto.Labels" class="form-control" />
+                    <input asp-for="AmphoraDto.Labels" class="form-control" placeholder="Choose 2 or 3 labels to help categorise the data."/>
                     <span asp-validation-for="AmphoraDto.Labels" class="text-danger"></span>
                 </div>
                 @if(@Model.TermsAndConditions.Any())
@@ -43,29 +43,30 @@
                 </div>
                 }
                 <div class="form-group">
-                    <div class="body ui-widget">
-                        <input id="autoComplete" type="text" tabindex="1">
-                    </div>
-                    <div class="selection"></div>
                     <div class="row">
-                        <div class="col">
+                        <div class="col-2">
+                            <label>GeoLocation</label>
+                        </div>
+                        <div class="col-6 body ui-widget">
+                            <input id="autoComplete" type="text" tabindex="1">
+                        </div>
+                        <div class="selection"></div>
+                        <div class="col-sm-2">
                             <label asp-for="AmphoraDto.Lat" class="control-label"></label>
                             <input id="lat" asp-for="AmphoraDto.Lat" class="form-control" />
                             <span asp-validation-for="AmphoraDto.Lat" class="text-danger"></span>
                         </div>
-                        <div class="col">
+                        <div class="col-sm-2">
                             <label asp-for="AmphoraDto.Lon" class="control-label"></label>
                             <input id="lon" asp-for="AmphoraDto.Lon" class="form-control" />
                             <span asp-validation-for="AmphoraDto.Lon" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <input class="btn btn-primary" type="submit" value="Create a new Amphora" />
                 </div>
             </form>
-            <a asp-page="./Index"><button class="btn btn-secondary">Cancel</button></a>
         </div>
     </div>
 </div>
