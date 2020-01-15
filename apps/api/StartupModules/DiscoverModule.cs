@@ -42,7 +42,6 @@ namespace Amphora.Api.StartupModules
                 services.AddSingleton<IAzureSearchInitialiser<AmphoraModel>, AmphoraSearchInitialiser>();
                 services.AddSingleton<IAzureSearchInitialiser<DataRequestModel>, DataRequestSearchInitialiser>();
             }
-
         }
     }
 }
