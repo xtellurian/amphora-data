@@ -3,8 +3,9 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
-using Amphora.Common.Extensions;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.DataRequests;
 using AutoMapper;
 using Microsoft.Azure.Search;
 using Microsoft.Extensions.Logging;
@@ -15,30 +16,36 @@ namespace Amphora.Api.Services.Azure
     public class AzureSearchService : ISearchService
     {
         private readonly SearchServiceClient serviceClient;
-        private readonly IAzureSearchInitialiser searchInitialiser;
+        private readonly IAzureSearchInitialiser<AmphoraModel> amphoraSearchInitialiser;
+        private readonly IAzureSearchInitialiser<DataRequestModel> dataRequestSearchInitialiser;
         private readonly ILogger<AzureSearchService> logger;
         private readonly IMapper mapper;
 
         public AzureSearchService(
             IOptionsMonitor<AzureSearchOptions> options,
-            IAzureSearchInitialiser searchInitialiser,
+            IAzureSearchInitialiser<AmphoraModel> amphoraSearchInitialiser,
+            IAzureSearchInitialiser<DataRequestModel> dataRequestSearchInitialiser,
             ILogger<AzureSearchService> logger,
             IMapper mapper)
         {
             this.serviceClient = new SearchServiceClient(options.CurrentValue.Name, new SearchCredentials(options.CurrentValue.PrimaryKey));
-            this.searchInitialiser = searchInitialiser;
+            this.amphoraSearchInitialiser = amphoraSearchInitialiser;
+            this.dataRequestSearchInitialiser = dataRequestSearchInitialiser;
             this.logger = logger;
             this.mapper = mapper;
         }
 
         public async Task<bool> TryIndex()
         {
-            return await this.searchInitialiser.TryIndex();
+            var t1 = this.amphoraSearchInitialiser.TryIndex();
+            var t2 = this.dataRequestSearchInitialiser.TryIndex();
+            var res = await Task.WhenAll(t1, t2);
+            return t1.Result && t2.Result;
         }
 
         public async Task<long?> SearchAmphoraCount(string searchText, Models.Search.SearchParameters parameters)
         {
-            await this.searchInitialiser.CreateAmphoraIndexAsync();
+            await this.amphoraSearchInitialiser.CreateIndexAsync();
             parameters.WithTotalResultCount();
             var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
             try
@@ -55,7 +62,7 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
         {
-            await this.searchInitialiser.CreateAmphoraIndexAsync();
+            await this.amphoraSearchInitialiser.CreateIndexAsync();
 
             var indexClient = serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
             try
@@ -80,6 +87,41 @@ namespace Amphora.Api.Services.Azure
             {
                 logger.LogError($"{indexClient.IndexName} threw on second try Search Async.", ex);
                 throw ex;
+            }
+        }
+
+        public async Task<EntitySearchResult<T>> SearchAsync<T>(string searchText, Models.Search.SearchParameters parameters) where T : ISearchable
+        {
+            using (var client = await GetSearchClientAsync<T>())
+            {
+                try
+                {
+                    var results = await client.Documents.SearchAsync<T>(searchText, parameters);
+                    return mapper.Map<EntitySearchResult<T>>(results);
+                }
+                catch (Microsoft.Rest.Azure.CloudException ex)
+                {
+                    logger.LogWarning($"{client.IndexName} threw on Search Async.", ex);
+                    return new EntitySearchResult<T>();
+                }
+            }
+        }
+
+        private async Task<ISearchIndexClient> GetSearchClientAsync<T>() where T : ISearchable
+        {
+            if (typeof(T) == typeof(AmphoraModel))
+            {
+                await this.amphoraSearchInitialiser.CreateIndexAsync();
+                return serviceClient.Indexes.GetClient(AmphoraSearchIndex.IndexName);
+            }
+            else if (typeof(T) == typeof(DataRequestModel))
+            {
+                await this.dataRequestSearchInitialiser.CreateIndexAsync();
+                return serviceClient.Indexes.GetClient(DataRequestSearchIndex.IndexName);
+            }
+            else
+            {
+                throw new System.ArgumentException($"Unknown Search Type, {typeof(T)}");
             }
         }
     }

@@ -9,7 +9,7 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<OrganisationModel> Store { get; }
         Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions);
-        Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(ClaimsPrincipal principal, OrganisationModel org);
+        Task<EntityOperationResult<OrganisationModel>> CreateAsync(ClaimsPrincipal principal, OrganisationModel org);
         Task<EntityOperationResult<OrganisationModel>> ReadAsync(ClaimsPrincipal principal, string id);
         Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation);
         Task<EntityOperationResult<OrganisationModel>> UpdateAsync(ClaimsPrincipal principal, OrganisationModel org);

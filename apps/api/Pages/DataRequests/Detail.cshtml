@@ -1,0 +1,31 @@
+@page
+@model Amphora.Api.Pages.DataRequests.DetailPageModel
+@{
+    ViewData["Title"] = "Data Request: " + Model.DataRequest.Name;
+}
+<div class="container">
+    <div clas="row">
+        <div class="col">
+            <h2>Data Request</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            @await Component.InvokeAsync("Map", new {geo = Model.DataRequest.GeoLocation})
+        </div>
+        <div class="col-8">
+            <div class="float-right">
+                <form method="post" asp-route-id="@Model.DataRequest.Id" asp-page-handler="vote">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="mr-1">@Model.DataRequest.UserIdVotes?.Count</span> <i class="fas fa-thumbs-up"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <h4>@Model.DataRequest.Name</h4>
+            <p>@Model.DataRequest.Description</p>
+        </div>
+    </div>
+</div>

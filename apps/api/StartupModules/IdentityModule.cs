@@ -1,5 +1,5 @@
 using Amphora.Api.Contracts;
-using Amphora.Api.DbContexts;
+using Amphora.Api.EntityFramework;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Wrappers;

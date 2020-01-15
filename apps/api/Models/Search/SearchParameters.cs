@@ -1,19 +1,101 @@
-using System;
 using System.Collections.Generic;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Models.Search
 {
     public class SearchParameters : Microsoft.Azure.Search.Models.SearchParameters
     {
-        public bool IsForUserAsCreator { get; private set; }
-        public SearchParameters WithGeoSearch(double lat, double lon, double dist)
+        public SearchParameters()
         {
-            if (this.Filter == null) { this.Filter = ""; }
-            else if (this.Filter.Length > 1) { this.Filter += " and "; }
-            this.Filter += $"geo.distance({nameof(AmphoraModel.GeoLocation)}, geography'POINT({lon} {lat})') le {dist}";
+            if (Filter == null) { Filter = ""; }
+        }
+
+        private string LabelsProperty => nameof(AmphoraModel.Labels);
+        private string IsPublicProperty => nameof(AmphoraModel.IsPublic);
+        private string GeoLocationProperty => nameof(AmphoraModel.GeoLocation);
+        private string OrganisationIdProperty => nameof(AmphoraModel.OrganisationId);
+        private string PurchasesPropertyName => nameof(AmphoraModel.Purchases);
+        public SearchParameters NotDeleted()
+        {
+            if (this.Filter.Length > 1) { this.Filter += " and "; }
+            Filter += $"{nameof(ISearchable.IsDeleted)} ne true";
+            return this;
+        }
+
+        public SearchParameters IncludeLabelsFacet<T>() where T : ISearchable
+        {
+            if (HasProperty<T>(LabelsProperty))
+            {
+                if (Facets == null) { Facets = new List<string>(); }
+                Facets.Add($"{LabelsProperty}/Name");
+            }
+
+            return this;
+        }
+
+        public SearchParameters PublicOnly<T>() where T : ISearchable
+        {
+            if (HasProperty<T>(IsPublicProperty))
+            {
+                if (this.Filter.Length > 1) { this.Filter += " and "; }
+                Filter += $"{IsPublicProperty} eq true";
+            }
+
+            return this;
+        }
+
+        public SearchParameters WithGeoSearch<T>(double lat, double lon, double dist) where T : ISearchable
+        {
+            if (HasProperty<T>(GeoLocationProperty))
+            {
+                if (this.Filter.Length > 1) { this.Filter += " and "; }
+                this.Filter += $"geo.distance({GeoLocationProperty}, geography'POINT({lon} {lat})') le {dist}";
+            }
+
+            return this;
+        }
+
+        public SearchParameters FilterByLabel<T>(IEnumerable<Label> labels) where T : ISearchable
+        {
+            if (HasProperty<T>(LabelsProperty))
+            {
+                foreach (var l in labels)
+                {
+                    if (Filter.Length > 1) { Filter += " and "; }
+                    this.Filter += $"{LabelsProperty}/any(t: t/Name eq '{l.Name}') ";
+                }
+            }
+
+            return this;
+        }
+
+        public SearchParameters ForUserAsCreator(IUser user)
+        {
+            if (Filter.Length > 1) { Filter += " and "; }
+            Filter = $"{nameof(ISearchable.CreatedById)} eq '{user.Id}'";
+            return this;
+        }
+
+        public SearchParameters FilterByOrganisation<T>(string orgId) where T : ISearchable
+        {
+            if (HasProperty<T>(OrganisationIdProperty))
+            {
+                if (Filter.Length > 1) { Filter += " and "; }
+                Filter = $"{OrganisationIdProperty} eq '{orgId}'";
+            }
+
+            return this;
+        }
+
+        public SearchParameters PurchasedByUser<T>(string userId) where T : ISearchable
+        {
+            if (HasProperty<T>(PurchasesPropertyName))
+            {
+                if (Filter.Length > 1) { Filter += " and "; }
+                Filter = $"{PurchasesPropertyName}/any(h: h/Id eq '{userId}')";
+            }
+
             return this;
         }
 
@@ -23,85 +105,9 @@ namespace Amphora.Api.Models.Search
             return this;
         }
 
-        public SearchParameters NotDeleted()
+        public static bool HasProperty<T>(string propertyName)
         {
-            if (this.Filter == null) { Filter = ""; }
-            else if (this.Filter.Length > 1) { this.Filter += " and "; }
-            Filter += $"{nameof(AmphoraModel.IsDeleted)} ne true";
-            return this;
-        }
-
-        public SearchParameters WithPublicAmphorae()
-        {
-            if (this.Filter == null) { Filter = ""; }
-            else if (this.Filter.Length > 1) { this.Filter += " and "; }
-            Filter += $"{nameof(AmphoraModel.IsPublic)} eq true";
-            return this;
-        }
-
-        public static SearchParameters ForUserAsCreator(IUser user)
-        {
-            var p = new SearchParameters()
-            {
-                IsForUserAsCreator = true,
-                Filter = $"{nameof(AmphoraModel.CreatedById)} eq '{user.Id}'"
-            };
-            return p.NotDeleted();
-        }
-
-        public SearchParameters IncludeLabelsFacet()
-        {
-            if (Facets == null) { Facets = new List<string>(); }
-            Facets.Add($"{nameof(AmphoraModel.Labels)}/Name");
-            return this;
-        }
-
-        public SearchParameters FilterByLabel(params Label[] labels)
-        {
-            return this.FilterByLabel(labels);
-        }
-
-        public SearchParameters FilterByLabel(IEnumerable<Label> labels)
-        {
-            if (Filter == null) { Filter = ""; }
-            foreach (var l in labels)
-            {
-                if (Filter.Length > 1) { Filter += " and "; }
-                this.Filter += $"{nameof(AmphoraModel.Labels)}/any(t: t/Name eq '{l.Name}') ";
-            }
-
-            return this;
-        }
-
-        public static SearchParameters GeoSearch(double lat, double lon, double dist)
-        {
-            return new SearchParameters().WithGeoSearch(lat, lon, dist).NotDeleted();
-        }
-
-        public static SearchParameters ByOrganisation(string orgId, Type discriminator)
-        {
-            return new SearchParameters
-            {
-                Filter = $"{nameof(AmphoraModel.OrganisationId)} eq '{orgId}' and Discriminator eq '{nameof(discriminator)}'"
-            }.NotDeleted();
-        }
-
-        public static SearchParameters AllPurchased(string userId)
-        {
-            var p = nameof(ApplicationUser.Id);
-            return new SearchParameters
-            {
-                // tags/any(t: t eq 'wifi')
-                Filter = $"{nameof(AmphoraModel.Purchases)}/any(h: h/{p} eq '{userId}')"
-            }.NotDeleted();
-        }
-
-        public static SearchParameters PublicAmphorae()
-        {
-            return new SearchParameters
-            {
-                Filter = $"{nameof(AmphoraModel.IsPublic)} eq true"
-            }.NotDeleted();
+            return typeof(T).GetProperty(propertyName) != null;
         }
     }
 }

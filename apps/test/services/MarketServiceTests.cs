@@ -29,6 +29,7 @@ namespace Amphora.Tests.Unit.Services
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+                var dataRequestStore = new DataRequestsEFStore(context, CreateMockLogger<DataRequestsEFStore>());
                 var mockUserService = new Mock<IUserService>();
                 mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
@@ -41,11 +42,11 @@ namespace Amphora.Tests.Unit.Services
                                                          permissionService,
                                                          mockUserService.Object,
                                                          CreateMockLogger<AmphoraeService>());
-                var service = new BasicSearchService(amphoraService);
+                var service = new BasicSearchService(amphoraService, dataRequestStore);
                 var orgModel = EntityLibrary.GetOrganisationModel();
                 var amphora = EntityLibrary.GetAmphoraModel(orgModel, nameof(MarketServiceTests)); // dumy org id
                 var entity = await amphoraStore.CreateAsync(amphora);
-                var sut = new MarketService(service, amphoraService, Mapper, mockUserService.Object, CreateMemoryCache()) as IMarketService;
+                var sut = new MarketService(service, amphoraService, mockUserService.Object, CreateMemoryCache()) as IMarketService;
 
                 var response = await sut.FindAsync("");
                 Assert.NotNull(response);

@@ -45,7 +45,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Create([FromBody]OrganisationDto dto)
         {
             var org = mapper.Map<OrganisationModel>(dto);
-            var result = await organisationService.CreateOrganisationAsync(User, org);
+            var result = await organisationService.CreateAsync(User, org);
             if (result.Succeeded)
             {
                 dto = mapper.Map<OrganisationDto>(result.Entity);

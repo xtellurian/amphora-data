@@ -5,12 +5,14 @@ using Amphora.Api.Options;
 using Amphora.Api.Services;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
+using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using AutoMapper;
@@ -39,7 +41,7 @@ namespace Amphora.Api
             this.identityModule = new IdentityModule(configuration, env);
             this.storageModule = new StorageModule(configuration, env);
             this.geoModule = new GeoModule(configuration, env);
-            this.marketModule = new MarketModule(configuration, env);
+            this.discoverModule = new DiscoverModule(configuration, env);
         }
 
         public IConfiguration Configuration { get; }
@@ -49,7 +51,7 @@ namespace Amphora.Api
         private readonly IdentityModule identityModule;
         private readonly StorageModule storageModule;
         private readonly GeoModule geoModule;
-        private readonly MarketModule marketModule;
+        private readonly DiscoverModule discoverModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -71,7 +73,7 @@ namespace Amphora.Api
             this.identityModule.ConfigureServices(services);
             this.authenticationModule.ConfigureServices(services);
             this.geoModule.ConfigureServices(services);
-            this.marketModule.ConfigureServices(services);
+            this.discoverModule.ConfigureServices(services);
 
             services.Configure<SignalOptions>(Configuration.GetSection("Signals"));
 
@@ -89,6 +91,8 @@ namespace Amphora.Api
 
             services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
 
+            // permissioned stores
+            services.AddTransient<IPermissionedEntityStore<DataRequestModel>, DataRequestService>();
             // logical services
             services.AddTransient<IAmphoraeService, AmphoraeService>();
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();

@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Platform;
@@ -13,7 +10,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.DbContexts
+namespace Amphora.Api.EntityFramework
 {
     // DbContext is injected with a Scoped lifetime
     public class AmphoraContext : IdentityDbContext<ApplicationUser>
@@ -25,6 +22,8 @@ namespace Amphora.Api.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
             modelBuilder.Entity<AmphoraModel>(amphora =>
             {
@@ -163,6 +162,7 @@ namespace Amphora.Api.DbContexts
 
         public DbSet<AmphoraModel> Amphorae { get; set; }
         public DbSet<OrganisationModel> Organisations { get; set; }
+        public DbSet<DataRequestModel> DataRequests { get; set; }
         public DbSet<PurchaseModel> Purchases { get; set; }
         public DbSet<SignalModel> Signals { get; set; }
         public DbSet<InvitationModel> Invitations { get; set; }

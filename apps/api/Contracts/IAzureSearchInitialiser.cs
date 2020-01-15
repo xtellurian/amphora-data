@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 
 namespace Amphora.Api.Contracts
 {
-    public interface IAzureSearchInitialiser
+    public interface IAzureSearchInitialiser<T>
     {
-        Task CreateAmphoraIndexAsync();
+        Task CreateIndexAsync();
         Task<bool> TryIndex();
     }
 }

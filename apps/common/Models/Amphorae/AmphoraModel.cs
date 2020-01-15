@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Signals;
@@ -10,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Amphorae
 {
-    public class AmphoraModel : Entity
+    public class AmphoraModel : Entity, ISearchable
     {
         public AmphoraModel()
         {

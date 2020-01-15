@@ -4,6 +4,8 @@ using Amphora.Api.Models.Search;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Amphora.Common.Configuration.Options;
+using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.DataRequests;
 using Amphora.Tests.Unit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,11 +17,11 @@ namespace Amphora.Tests.Unit.Services
     public class AzureSearchTests : UnitTestBase
     {
         private readonly ILogger<AzureSearchService> azureSearchLogger;
-        private readonly ILogger<AzureSearchInitialiser> initLogger;
+        private readonly ILogger<AmphoraSearchInitialiser> initLogger;
         private CosmosOptions cosmosOptions;
         private AzureSearchOptions searchOptions;
 
-        public AzureSearchTests(ILogger<AzureSearchService> azureSearchLogger, ILogger<AzureSearchInitialiser> initLogger)
+        public AzureSearchTests(ILogger<AzureSearchService> azureSearchLogger, ILogger<AmphoraSearchInitialiser> initLogger)
         {
             this.cosmosOptions = new CosmosOptions()
             {
@@ -41,12 +43,12 @@ namespace Amphora.Tests.Unit.Services
         public async Task CreateIndex_Success()
         {
             // Setup
-            var sut = new AzureSearchInitialiser(
+            var sut = new AmphoraSearchInitialiser(
                 initLogger,
                 Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
                 Mock.Of<IOptionsMonitor<CosmosOptions>>(_ => _.CurrentValue == cosmosOptions));
             // act
-            await sut.CreateAmphoraIndexAsync();
+            await sut.CreateIndexAsync();
         }
 
         // [Fact]
@@ -54,7 +56,8 @@ namespace Amphora.Tests.Unit.Services
         {
             var sut = new AzureSearchService(
                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
-               Mock.Of<IAzureSearchInitialiser>(),
+               Mock.Of<IAzureSearchInitialiser<AmphoraModel>>(),
+               Mock.Of<IAzureSearchInitialiser<DataRequestModel>>(),
                azureSearchLogger,
                Mapper);
 

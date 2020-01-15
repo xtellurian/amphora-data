@@ -1,0 +1,6 @@
+@model Amphora.Api.Pages.Shared.Components.MapViewComponent
+
+@{
+string iSrc = $"/Maps/Image?lat={Model.Geo?.Lat()}&lon={Model.Geo?.Lon()}"; //The src path.
+}
+<img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">

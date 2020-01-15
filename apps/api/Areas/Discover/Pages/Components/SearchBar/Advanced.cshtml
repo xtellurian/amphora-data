@@ -1,0 +1,62 @@
+@model Amphora.Api.Areas.Discover.Pages.Components.SearchBarViewComponent
+
+<div class="card">
+    <div class="container card-body">
+        <div class="row mb-2">
+            <div class="col">
+                <h4>Advanced</h4>
+            </div>
+        </div>
+        <div class="row">
+                <div class="col-4 body ui-widget">
+                <input id="autoComplete" form="searchform" type="text" tabindex="1" autocomplete="off">
+                <div class="selection"></div>
+            </div>
+            <div class="col">
+                <input id="lat" form="searchform" asp-for="SearchDefinition.Lat" placeholder="Latitude" class="form-control bg-none border-1">
+                <span asp-validation-for="SearchDefinition.Lat" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <input id="lon" form="searchform" asp-for="SearchDefinition.Lon" placeholder="Longitude" class="form-control bg-none border-1">
+                <span asp-validation-for="SearchDefinition.Lon" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <input id="dist" form="searchform" asp-for="SearchDefinition.Dist" placeholder="Distance (km)" class="form-control bg-none border-1">
+                <span asp-validation-for="SearchDefinition.Dist" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr/>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col">
+                <input id="labels" form="searchform" asp-for="SearchDefinition.Labels" placeholder="Labels (comma separated)" class="form-control bg-none border-1">
+                <span asp-validation-for="SearchDefinition.Labels" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row text-left">
+            <div class="col">
+                @foreach(var f in Model.LabelFacets)
+                {
+                    <span class="d-inline-block text-truncate badge badge-dark" style="max-width: 50px;" onclick="onFacetLabelClicked('@f.Value')">
+                        @f.Value
+                    </span>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="input-group-append">
+                    <button id="primary-search-button" form="searchform" type="submit" class="btn btn-primary btn-block">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

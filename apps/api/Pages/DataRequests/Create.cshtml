@@ -1,0 +1,63 @@
+@page
+@model Amphora.Api.Pages.DataRequests.CreatePageModel
+@{
+    ViewData["Title"] = "Create Data Request";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Create a Data Request</h2>
+            <p>Data Requests help data providers know what kinds of data they should upload next.</p>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="DataRequest.Name" class="control-label"></label>
+                    <input asp-for="DataRequest.Name" class="form-control" placeholder="What data are you looking for?"/>
+                    <span asp-validation-for="DataRequest.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DataRequest.Description" class="control-label"></label>
+                    <textarea asp-for="DataRequest.Description" class="form-control" rows="4" placeholder="Go into detail..."></textarea>
+                    <span asp-validation-for="DataRequest.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="body ui-widget">
+                        <input id="autoComplete" type="text" tabindex="1">
+                    </div>
+                    <div class="selection"></div>
+                    <div class="row">
+                        <div class="col">
+                            <label asp-for="DataRequest.Lat" class="control-label"></label>
+                            <input id="lat" asp-for="DataRequest.Lat" class="form-control" />
+                            <span asp-validation-for="DataRequest.Lat" class="text-danger"></span>
+                        </div>
+                        <div class="col">
+                            <label asp-for="DataRequest.Lon" class="control-label"></label>
+                            <input id="lon" asp-for="DataRequest.Lon" class="form-control" />
+                            <span asp-validation-for="DataRequest.Lon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary btn-block" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const url = '/Market/LocationSearch'
+        autocompleteGeoSearch(null, url, "#lat", "#lon")
+    </script>
+}

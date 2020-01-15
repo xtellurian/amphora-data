@@ -1,11 +1,12 @@
 using System;
 using Amphora.Api.Contracts;
-using Amphora.Api.DbContexts;
+using Amphora.Api.EntityFramework;
 using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
@@ -98,6 +99,7 @@ namespace Amphora.Api.StartupModules
             // entity stores
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
+            services.AddScoped<IEntityStore<DataRequestModel>, DataRequestsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             services.AddScoped<IEntityStore<SignalModel>, SignalsEFStore>();
