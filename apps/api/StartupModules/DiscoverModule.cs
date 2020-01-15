@@ -26,6 +26,7 @@ namespace Amphora.Api.StartupModules
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IMarketService, MarketService>();
+            services.AddScoped<IDiscoverService<DataRequestModel>, DataRequestDiscoveryService>();
 
             var key = Configuration.GetSection("AzureSearch")["PrimaryKey"];
             if (string.IsNullOrEmpty(key))
@@ -40,8 +41,8 @@ namespace Amphora.Api.StartupModules
                 services.AddTransient<ISearchService, AzureSearchService>();
                 services.AddSingleton<IAzureSearchInitialiser<AmphoraModel>, AmphoraSearchInitialiser>();
                 services.AddSingleton<IAzureSearchInitialiser<DataRequestModel>, DataRequestSearchInitialiser>();
-                services.AddSingleton<IDiscoverService<DataRequestModel>, DataRequestDiscoveryService>();
             }
+
         }
     }
 }
