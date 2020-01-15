@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.DbContexts;
+using Amphora.Api.EntityFramework;
 using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;
 

@@ -1,5 +1,5 @@
 using Amphora.Api.Contracts;
-using Amphora.Api.DbContexts;
+using Amphora.Api.EntityFramework;
 using Amphora.Common.Models.Platform;
 using Microsoft.Extensions.Logging;
 

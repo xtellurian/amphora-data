@@ -1,0 +1,58 @@
+@page
+@model DataRequests.IndexPageModel
+
+@{
+    ViewData["Title"] = "Discover Data Requests";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="display-4">Discover</h2>
+            <nav class="nav nav-pills nav-justified">
+                <a class="nav-item nav-link" asp-page="../Index">Amphora</a>
+                <a class="nav-item nav-link active" asp-page="./Index">Data Requests</a>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           <hr/>
+       </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            @await Component.InvokeAsync("SearchBar", new {searchDefinition = Model.SearchDefinition, formId = "searchform"})
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div>
+                <table id="market-table" class="table table-borderless table-striped">
+                    <tbody>
+                    @if(Model.Entities?.Count() == 0)
+                    {
+                        <td class="text-center">
+                            No Results
+                        </td>
+                    }
+                    @foreach (var dr in Model.Entities)
+                    {
+                        @await Component.InvokeAsync("DataRequestRow", new { dataRequest=dr, isTable=true })
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const url = '/Market/LocationSearch';
+        autocompleteGeoSearch(null, url, "#lat", "#lon")
+    </script>
+}

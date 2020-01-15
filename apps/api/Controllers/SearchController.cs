@@ -59,7 +59,7 @@ namespace Amphora.Api.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
-            var response = await searchService.SearchAmphora("", SearchParameters.GeoSearch(lat, lon, dist));
+            var response = await searchService.SearchAmphora("", new SearchParameters().WithGeoSearch<AmphoraModel>(lat, lon, dist));
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
@@ -76,7 +76,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
         {
             if (string.IsNullOrEmpty(orgId)) { return BadRequest("OrgId cannot be null"); }
-            var response = await searchService.SearchAmphora("", SearchParameters.ByOrganisation(orgId, typeof(AmphoraModel)));
+            var response = await searchService.SearchAmphora("", new SearchParameters().FilterByOrganisation<AmphoraModel>(orgId));
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);
@@ -102,7 +102,7 @@ namespace Amphora.Api.Controllers
                 user = await userService.UserManager.FindByNameAsync(userName);
             }
 
-            var response = await searchService.SearchAmphora("", SearchParameters.ForUserAsCreator(user));
+            var response = await searchService.SearchAmphora("", new SearchParameters().ForUserAsCreator(user));
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<AmphoraDto>>(entities);
             return Ok(dto);

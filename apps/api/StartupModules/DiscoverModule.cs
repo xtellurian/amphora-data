@@ -2,16 +2,19 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Basic;
+using Amphora.Api.Services.Discover;
 using Amphora.Api.Services.Market;
+using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.DataRequests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Amphora.Api.StartupModules
 {
-    public class MarketModule
+    public class DiscoverModule
     {
-        public MarketModule(IConfiguration configuration, IWebHostEnvironment env)
+        public DiscoverModule(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.HostingEnvironment = env;
             this.Configuration = configuration;
@@ -23,6 +26,7 @@ namespace Amphora.Api.StartupModules
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IMarketService, MarketService>();
+            services.AddScoped<IDiscoverService<DataRequestModel>, DataRequestDiscoveryService>();
 
             var key = Configuration.GetSection("AzureSearch")["PrimaryKey"];
             if (string.IsNullOrEmpty(key))
@@ -35,7 +39,8 @@ namespace Amphora.Api.StartupModules
                 // use azure search
                 services.Configure<AzureSearchOptions>(Configuration.GetSection("AzureSearch"));
                 services.AddTransient<ISearchService, AzureSearchService>();
-                services.AddSingleton<IAzureSearchInitialiser, AzureSearchInitialiser>();
+                services.AddSingleton<IAzureSearchInitialiser<AmphoraModel>, AmphoraSearchInitialiser>();
+                services.AddSingleton<IAzureSearchInitialiser<DataRequestModel>, DataRequestSearchInitialiser>();
             }
         }
     }

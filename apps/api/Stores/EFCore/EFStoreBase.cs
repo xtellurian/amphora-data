@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Amphora.Api.DbContexts;
+using Amphora.Api.EntityFramework;
 using Amphora.Common.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -32,6 +32,11 @@ namespace Amphora.Api.Stores.EFCore
                            Func<AmphoraContext, DbSet<T>> entitySetExpression) : this(context, entitySetExpression)
         {
             this.logger = logger;
+        }
+
+        public bool IsModified<TProperty>(T model, Expression<Func<T, TProperty>> propertyExpression)
+        {
+            return this.context.Entry(model).Property(propertyExpression).IsModified;
         }
 
         private DbSet<T> Set => this.selectDbSet(context);

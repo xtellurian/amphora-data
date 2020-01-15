@@ -1,0 +1,179 @@
+@page
+@model IndexPageModel
+
+@{
+    ViewData["Title"] = "Discover Amphora";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="display-4">Discover</h2>
+            <nav class="nav nav-pills nav-justified">
+                <a class="nav-item nav-link active" asp-page="../Index">Amphora</a>
+                <a class="nav-item nav-link" asp-page="./DataRequests/Index">Data Requests</a>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           <hr/>
+       </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col-11 text-center">
+            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform"})
+        </div>
+        <div class="col-1 text-left">
+            <div>
+                <a data-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                    <i class="fas fa-filter fa-2x"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="advanced" class="col text-center">
+            <div id="filterCollapse" class="collapse mb-2">
+                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, isAdvanced=true, formId="searchform"})
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div>
+                <table id="market-table" class="table table-borderless table-striped">
+                    <tbody>
+                    @if(Model.Entities?.Count() == 0)
+                    {
+                        <td class="text-center">
+                            No Results
+                        </td>
+                    }
+                    @foreach (var entity in Model.Entities)
+                    {
+                        @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col text-center">
+            <a asp-page="/DataRequests/Create" class="btn btn-link">I can't find what I'm looking for</a>
+        </div>
+    </div>
+
+    @{
+        var d = Model.SearchDefinition;
+        // skip is zero based
+        int numPages = (int)(Model.Count / d.Top) + 1;
+        int currentPage = (int)d.Page;
+        var previousPage = d.Page - 1;
+        var nextPage = d.Page + 2;
+        var startPage = Math.Max(0, currentPage - 3);
+        var endPage = Math.Min(numPages, currentPage + 3);
+        string nextEnabled = "";
+        string previousEnabled = "";
+        if(nextPage > numPages) nextEnabled = "disabled";
+        if(previousPage < 1) previousEnabled = "disabled";
+    }
+    <div class="row">
+        <div class="col text-center">
+            <hr/>
+            <p> Page @currentPage of @(numPages - 1)</p>
+            <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @previousEnabled">
+                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="0"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            tabindex="-1">
+                            <<
+                        </a>
+                    </li>
+                    <li class="page-item @previousEnabled">
+                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@previousPage"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            tabindex="-1">
+                            <
+                        </a>
+                    </li>
+                    @for(var p = startPage; p < endPage; p++)
+                    {
+                        var active = "";
+                        if(p == currentPage) active = "active";
+                        <li class="page-item @active">
+                            <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                                asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                                asp-route-SearchDefinition.Page="@p" 
+                                asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                                asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                                asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                                asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                                @p
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @nextEnabled">
+                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@nextPage"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                        >
+                        </a>
+                    </li>
+                    <li class="page-item @nextEnabled">
+                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                            asp-route-SearchDefinition.Page="@(numPages -1)"
+                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                        >>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script src="~/js/geo.js"></script>
+    <script>
+        const url = '/Market/LocationSearch';
+        autocompleteGeoSearch(null, url, "#lat", "#lon")
+    </script>
+    <script>
+        function onFacetLabelClicked(label) {
+            var labelWithComma = label + ",";
+            var currrentValue = document.getElementById("labels").value;
+            if(currrentValue.includes(labelWithComma))
+            {
+                document.getElementById("labels").value = currrentValue.replace(labelWithComma, '');
+            }
+            else
+            {
+                document.getElementById("labels").value += labelWithComma; 
+            }
+        }
+    </script>
+
+}

@@ -12,7 +12,7 @@ namespace Amphora.Api.Services.Organisations
 {
     // step 1: create user
     // step 2: create Org and asign user to that org
-    public class OrganisationService : IOrganisationService
+    public class OrganisationService : IOrganisationService, IPermissionedEntityStore<OrganisationModel>
     {
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
@@ -35,7 +35,7 @@ namespace Amphora.Api.Services.Organisations
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<OrganisationModel>> CreateOrganisationAsync(
+        public async Task<EntityOperationResult<OrganisationModel>> CreateAsync(
             ClaimsPrincipal principal,
             OrganisationModel org)
         {
@@ -153,6 +153,11 @@ namespace Amphora.Api.Services.Organisations
         public async Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation)
         {
             return await orgBlobStore.ReadBytesAsync(organisation, "profile.jpg") ?? new byte[0];
+        }
+
+        public Task<EntityOperationResult<OrganisationModel>> DeleteAsync(ClaimsPrincipal principal, OrganisationModel model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

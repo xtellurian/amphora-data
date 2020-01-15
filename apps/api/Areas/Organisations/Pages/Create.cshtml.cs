@@ -72,7 +72,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         {
             var org = new OrganisationModel(Input.Name, Input.About, Input.Website, Input.Address);
 
-            var result = await organisationService.CreateOrganisationAsync(User, org);
+            var result = await organisationService.CreateAsync(User, org);
             if (result.Succeeded)
             {
                 var formFile = files.FirstOrDefault();
