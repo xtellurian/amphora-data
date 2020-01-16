@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Services.FeatureFlags;
@@ -49,21 +50,34 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         public bool CanEditPermissions { get; set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
+        public int FileCount => this.Quality.CountFiles ?? 0;
+        public int SignalCount => this.Quality.CountSignals ?? 0;
         public ICollection<Common.Models.Purchases.PurchaseModel> Purchases { get; private set; }
         public bool CanBuy { get; set; }
         public IReadOnlyList<LinkedGitHubIssue> Issues { get; private set; }
+        public Common.Models.Purchases.PurchaseModel Purchase { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
+            TryLoadPurchase();
             return OnReturnPage();
+        }
+
+        private void TryLoadPurchase()
+        {
+            if (this.Amphora != null)
+            {
+                this.Purchase = Amphora.Purchases.FirstOrDefault(_ => _.PurchasedByOrganisationId == Result.User.OrganisationId);
+            }
         }
 
         public async Task<IActionResult> OnPostPinAsync(string id, string target)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
+            TryLoadPurchase();
 
             switch (target?.ToLower())
             {

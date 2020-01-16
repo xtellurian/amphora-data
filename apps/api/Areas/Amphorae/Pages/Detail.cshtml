@@ -88,20 +88,34 @@
                             }
                         </div>
                     </div>
-                    @{
-                        var buttonMode = string.Empty;
-                        var signalsButtonMode = string.Empty;
-                        if(! Model.CanBuy) { buttonMode = "disabled"; } 
-                        if(Model.CanBuy && !Model.CanUploadFiles) { signalsButtonMode = "disabled"; } 
-                    }
                     <div class="float-right">
                         @if(Model.CanEditDetails)
                         {
-                            <a class="btn btn-info m-1" asp-page="./Edit" asp-route-id="@Model.Amphora.Id">Edit</a>
+                            <div id="adminAction">
+                                <a class="btn btn-info m-1" asp-page="./Edit" asp-route-id="@Model.Amphora.Id">Edit</a>
+                            </div>
                         }
-                        <a asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light m-1" @signalsButtonMode>Signals</button></a>
-                        <a asp-page="./Files" asp-route-id="@Model.Amphora.Id"><button class="btn btn-light m-1" @signalsButtonMode>Files</button></a>
-                        <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success m-1" @buttonMode>Buy</button></a>
+                        @if(Model.Purchase != null || Model.CanEditDetails)
+                        {
+                            <div id="alreadyPurchasedActions" class="text-right">
+                                <div>
+                                    <a class="btn btn-light m-1" asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id">Signals (@Model.SignalCount)</a>
+                                    <a class="btn btn-light m-1" asp-page="./Files" asp-route-id="@Model.Amphora.Id">Files (@Model.FileCount)</a>
+                                </div>
+                                @if(Model.Purchase != null)
+                                {
+                                    <div>
+                                        <small class="text-success">Purchased by @Model.Purchase.PurchasedByUser.UserName on @Model.Purchase.CreatedDate.Value.ToString("dd MMM yy")</small>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else if(Model.CanBuy)
+                        { 
+                            <div id="yetToPurchaseActions">
+                                <a asp-page="./Purchase" asp-route-id="@Model.Amphora.Id"><button class="btn btn-success m-1">Buy</button></a>
+                            </div>
+                        }
                     </div>
                 </div>
                     <div class="card-body">
