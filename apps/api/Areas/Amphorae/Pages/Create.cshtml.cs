@@ -41,14 +41,20 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            await LoadTermsAndConditions();
+            return Page();
+        }
+
+        private async Task LoadTermsAndConditions()
+        {
             var user = await userService.ReadUserModelAsync(User);
             var items = user.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
             this.TermsAndConditions = new List<SelectListItem>(items);
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            await LoadTermsAndConditions();
             if (ModelState.IsValid)
             {
                 GeoLocation location = null;
@@ -67,7 +73,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 var setResult = await amphoraeService.CreateAsync(User, entity);
                 if (setResult.Succeeded)
                 {
-                    return RedirectToPage("./Index");
+                    return RedirectToPage("./Detail", new { id = setResult.Entity.Id });
                 }
                 else
                 {
