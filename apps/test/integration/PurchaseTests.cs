@@ -85,5 +85,40 @@ namespace Amphora.Tests.Integration
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
         }
+
+        [Fact]
+        public async Task MultipleUsersInSameOrg_CantPurchaseTwice()
+        {
+            // going to need 3 users in 2 orgs
+            var (sellingClient, sellingUser, sellingOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(sellingOrg.Id);
+            sellingClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await sellingClient.PostAsJsonAsync("api/amphorae", amphora);
+            createResponse.EnsureSuccessStatusCode();
+            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+
+            // make the buyers
+            var (buyerClient1, buyer1, buyingOrg) = await NewOrgAuthenticatedClientAsync();
+            var (buyerClient2, buyer2, buyingOrg2) = await GetNewClientInOrg(buyerClient1, buyingOrg, true);
+
+            // buyer 1 can purchase
+            var purchase1Response = await buyerClient1.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });
+            var purchase1Content = await purchase1Response.Content.ReadAsStringAsync();
+            Assert.True(purchase1Response.IsSuccessStatusCode);
+
+            // buyer 2 purchase should fail
+            var purchase2Response = await buyerClient2.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });
+            var purchase2Content = await purchase2Response.Content.ReadAsStringAsync();
+            Assert.False(purchase2Response.IsSuccessStatusCode);
+
+            await DestroyAmphoraAsync(sellingClient, amphora.Id);
+
+            await DestroyOrganisationAsync(sellingClient, sellingOrg);
+            await DestroyUserAsync(sellingClient, sellingUser);
+            await DestroyUserAsync(buyerClient2, buyer2);
+            await DestroyOrganisationAsync(buyerClient1, buyingOrg);
+            await DestroyUserAsync(buyerClient1, buyer1);
+        }
     }
 }
