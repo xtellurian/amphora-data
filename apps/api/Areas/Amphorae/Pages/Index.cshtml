@@ -22,15 +22,15 @@
                 <div class="card-body">
                     @{
                         var thisUrl = Url.Content("~");
-                        var mineUrl = $"{thisUrl}?viewType=mine";
-                        var orgUrl = $"{thisUrl}?viewType=org";
-                        var purchasedUrl = $"{thisUrl}?viewType=purchased";
+                        var mineUrl = $"{thisUrl}?handler=mine";
+                        var orgUrl = $"{thisUrl}?handler=org";
+                        var purchasedUrl = $"{thisUrl}?handler=purchased";
                         string mine = string.Empty;
                         string org = string.Empty;
                         string pur = string.Empty;
-                        if (string.Equals(Model.ViewType, "mine" )) {mine = "active";}
-                        if( string.Equals(Model.ViewType, "org" )) {org = "active";}
-                        if( string.Equals(Model.ViewType, "purchased" )){ pur = "active";}
+                        if (string.Equals(Model.Handler, "mine" )) {mine = "active";}
+                        if( string.Equals(Model.Handler, "org" )) {org = "active";}
+                        if( string.Equals(Model.Handler, "purchased" )){ pur = "active";}
                     }
                     <a href="@mineUrl">
                         <button type="button" class="m-1 btn btn-light btn-block @mine">Mine</button>
@@ -59,10 +59,16 @@
                     <tbody>
                         @foreach (var entity in Model.Amphorae)
                         {
-                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true, isSelectable=true})
                         }
                     </tbody>
                 </table>
+                <form method="post" asp-page-handler="delete">
+                    <input hidden id="selectedAmphoraInput" asp-for="JsonSelectedAmphoraIdArray"/>
+                     <div class="form-group" id="actionButtonsDiv" style="display: none;">
+                        <input class="btn btn-danger" type="submit" value="Delete" />
+                    </div>
+                </form>
             </div>
         }
     </div>
@@ -87,7 +93,7 @@
                     }
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-page="./Index" 
-                            asp-route-viewType="@Model.ViewType"
+                            asp-route-handler="@Model.Handler"
                             asp-route-skip="@previousSkip"
                             asp-route-top="@Model.Top" 
                             tabindex="-1">
@@ -100,7 +106,7 @@
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
                             <a class="page-link" asp-page="./Index" 
-                                asp-route-viewType="@Model.ViewType"
+                                asp-route-handler="@Model.Handler"
                                 asp-route-skip="@(p - 1)"
                                 asp-route-top="@Model.Top" >
                                 @p
@@ -109,7 +115,7 @@
                     }
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-page="./Index" 
-                            asp-route-viewType="@Model.ViewType"
+                            asp-route-handler="@Model.Handler"
                             asp-route-skip="@nextSkip"
                             asp-route-top="@Model.Top"  >
                             >
@@ -117,7 +123,7 @@
                     </li>
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-page="./Index" 
-                            asp-route-viewType="@Model.ViewType"
+                            asp-route-handler="@Model.Handler"
                             asp-route-skip="@(numPages - 1)"
                             asp-route-top="@Model.Top"  >
                             >>
@@ -134,6 +140,31 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
             })
+    </script>
+    <script>
+        selectedAmphora = [];
+        function onSelectAmphora(amphoraId) {
+            // Get the checkbox
+            var checkBox = document.getElementById("select-" + amphoraId);
+            var actionDiv = document.getElementById("actionButtonsDiv");
+
+            // If the checkbox is checked, display the output text
+            if (checkBox.checked == true){
+                selectedAmphora.push(amphoraId);
+            } else {
+                selectedAmphora = selectedAmphora.filter(e => e !== amphoraId); // will return ['A', 'C']
+            }
+
+            if(selectedAmphora.length == 0)
+            {
+                actionDiv.style.display = "none";
+            } else {
+
+                actionDiv.style.display = "block";
+            }
+
+            document.getElementById("selectedAmphoraInput").value = JSON.stringify(selectedAmphora);
+        } 
     </script>
 }
 

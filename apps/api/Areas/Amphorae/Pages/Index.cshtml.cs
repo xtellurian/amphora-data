@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
@@ -35,30 +36,63 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private const int DefaultTop = 8;
         public IEnumerable<AmphoraModel> Amphorae { get; set; }
-        public string ViewType { get; private set; }
+        public string Handler { get; private set; }
         public int? Count { get; set; } = null;
         public int? Skip { get; set; } = 0;
         public int? Top { get; set; } = DefaultTop;
 
         public int TotalSkip => (Skip ?? 0) * (Top ?? DefaultTop);
+        [BindProperty]
+        public string JsonSelectedAmphoraIdArray { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string viewType, int? skip = 0, int? top = DefaultTop)
+        public async Task<IActionResult> OnGetAsync()
+        {
+            return await this.OnGetMineAsync();
+        }
+
+        public async Task<IActionResult> OnGetMineAsync(int? skip = 0, int? top = DefaultTop)
         {
             Skip = skip;
             Top = top;
-            switch (viewType?.ToLower())
+            Handler = "mine";
+            return await MyAmphorae();
+        }
+
+        public async Task<IActionResult> OnGetOrgAsync(int? skip = 0, int? top = DefaultTop)
+        {
+            Skip = skip;
+            Top = top;
+            Handler = "org";
+            return await OrgAmphorae();
+        }
+
+        public async Task<IActionResult> OnGetPurchasedAsync(int? skip = 0, int? top = DefaultTop)
+        {
+            Skip = skip;
+            Top = top;
+            Handler = "purchased";
+            return await MyPurchasedAmphorae();
+        }
+
+        public ActionResult OnPostDelete()
+        {
+            List<string> ids = new List<string>();
+            try
             {
-                case "purchased":
-                    ViewType = "purchased";
-                    return await MyPurchasedAmphorae();
-                case "org":
-                    ViewType = "org";
-                    return await OrgAmphorae();
-                case "mine":
-                default:
-                    ViewType = "mine";
-                    return await MyAmphorae();
+                ids = JsonConvert.DeserializeObject<List<string>>(JsonSelectedAmphoraIdArray);
             }
+            catch (System.Exception)
+            {
+                return RedirectToPage("./Index");
+            }
+
+            if (ids.Count == 0)
+            {
+                return RedirectToPage("Index");
+            }
+
+            // now delete many
+            return RedirectToPage("./DeleteMany", new { ids = ids });
         }
 
         private async Task<IActionResult> MyPurchasedAmphorae()

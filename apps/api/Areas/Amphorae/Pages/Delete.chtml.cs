@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
+    [Authorize]
     public class DeleteModel : AmphoraPageModel
     {
         public DeleteModel(IAmphoraeService amphoraeService) : base(amphoraeService) { }
