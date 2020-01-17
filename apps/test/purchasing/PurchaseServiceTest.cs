@@ -26,10 +26,12 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var org = EntityLibrary.GetOrganisationModel();
             var otherOrg = EntityLibrary.GetOrganisationModel();
+            var thirdOrg = EntityLibrary.GetOrganisationModel();
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
+            thirdOrg = await orgStore.CreateAsync(thirdOrg);
             var user_emailconfirmed = new ApplicationUser()
             {
                 Email = "test@amphoradata.com",
@@ -40,7 +42,7 @@ namespace Amphora.Tests.Unit.Purchasing
             {
                 Email = "other@amphoradata.com",
                 EmailConfirmed = false,
-                OrganisationId = org.Id
+                OrganisationId = thirdOrg.Id
             };
             var user_noOrg = new ApplicationUser()
             {

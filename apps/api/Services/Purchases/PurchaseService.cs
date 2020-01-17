@@ -45,7 +45,7 @@ namespace Amphora.Api.Services.Purchases
         public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
             if (user.OrganisationId == amphora.OrganisationId) { return false; }
-            var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByUserId, user.Id)) ?? false;
+            var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByOrganisationId, user.OrganisationId)) ?? false;
             return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
         }
 

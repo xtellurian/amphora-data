@@ -1,0 +1,38 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.DeleteManyPageModel
+@{
+    ViewData["Title"] = "Delete Many";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            @if(! string.IsNullOrEmpty(Model.DeleteMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    @Model.DeleteMessage
+                </div>
+            }
+            <h1>Delete Many Amphora</h1>
+            <hr/>
+        </div>
+    </div>
+    @if( @Model.Entities.Count > 0 ) 
+    {
+    <div class="row">
+        <div class="col-md-6">
+
+            <h3>Are you sure you want to delete @Model.Entities.Count Amphorae? </h3>
+
+            <form method="post">
+                <div class="form-group">
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <img class="img-fluid" src="~/images/stock/warning/undraw_notify_88a4.svg"/>
+        </div>
+    </div>
+    }
+</div>
