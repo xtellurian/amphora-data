@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
@@ -16,14 +17,14 @@ namespace Amphora.Api.Services.Amphorae
 {
     public class SignalsService : ISignalService
     {
-        private readonly EventHubSender eventHubSender;
+        private readonly IEventHubSender eventHubSender;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
         private readonly IEntityStore<SignalModel> signalStore;
         private readonly ILogger<SignalsService> logger;
 
-        public SignalsService(EventHubSender eventHubSender,
+        public SignalsService(IEventHubSender eventHubSender,
                               IUserService userService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
