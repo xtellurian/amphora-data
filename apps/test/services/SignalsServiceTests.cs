@@ -63,6 +63,46 @@ namespace Amphora.Tests.Unit.Services
             var res_ok = await sut.WriteSignalAsync(mockPrincipal.Object, amphora, data_ok);
             Assert.False(res_ok.WasForbidden); // make sure this isn't a permissions test
             Assert.True(res_ok.Succeeded);
+            Assert.False(string.IsNullOrEmpty(res.Message));
+        }
+
+        [Fact]
+        public async Task UploadSignalWithIncorrectCase_ReturnsError()
+        {
+            var context = GetContext();
+            var mockSender = new Mock<IEventHubSender>();
+            var mockUserService = new Mock<IUserService>();
+            var mockPermissionService = new Mock<IPermissionService>();
+            mockPermissionService.Setup(_ => _.IsAuthorizedAsync(It.IsAny<IUser>(),
+                                                                 It.IsAny<AmphoraModel>(),
+                                                                 It.IsAny<AccessLevels>())).Returns(Task.FromResult(true));
+            var mockTsi = new Mock<ITsiService>();
+            var signalStore = new SignalsEFStore(context, CreateMockLogger<SignalsEFStore>());
+            var mockPrincipal = new Mock<ClaimsPrincipal>();
+            var sut = new SignalsService(mockSender.Object,
+                                         mockUserService.Object,
+                                         mockPermissionService.Object,
+                                         mockTsi.Object,
+                                         signalStore,
+                                         CreateMockLogger<SignalsService>());
+
+            var numericSignal = new SignalModel("numeric", SignalModel.Numeric);
+            var stringSignal = new SignalModel("string", SignalModel.String);
+            var amphora = new AmphoraModel();
+            amphora.Signals.Add(new AmphoraSignalModel(amphora, numericSignal));
+            amphora.Signals.Add(new AmphoraSignalModel(amphora, stringSignal));
+            numericSignal = await signalStore.CreateAsync(numericSignal);
+            stringSignal = await signalStore.CreateAsync(stringSignal);
+
+            var data = new Dictionary<string, object>()
+            {
+                { "STRING", "a regular string" },
+                { "NUMERIC", 7 }
+            };
+            var res = await sut.WriteSignalAsync(mockPrincipal.Object, amphora, data);
+            Assert.False(res.WasForbidden); // make sure this isn't a permissions test
+            Assert.False(res.Succeeded);
+            Assert.False(string.IsNullOrEmpty(res.Message));
         }
     }
 }
