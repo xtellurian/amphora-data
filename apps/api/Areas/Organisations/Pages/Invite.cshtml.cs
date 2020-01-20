@@ -9,9 +9,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Home
+namespace Amphora.Api.Areas.Organisations.Pages
 {
-    public class InviteModel : PageModel
+    public class InvitePageModel : PageModel
     {
         private readonly IOrganisationService organisationService;
         private readonly IMapper mapper;
@@ -19,7 +19,7 @@ namespace Amphora.Api.Pages.Home
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
 
-        public InviteModel(
+        public InvitePageModel(
             IOrganisationService organisationService,
             IMapper mapper,
             IInvitationService invitationService,
@@ -77,6 +77,8 @@ namespace Amphora.Api.Pages.Home
             if (Input?.TargetEmail != null)
             {
                 var model = mapper.Map<InvitationModel>(Input);
+                model.TargetOrganisationId = this.Organisation.Id;
+                model.TargetOrganisation = this.Organisation;
                 var op = await invitationService.CreateInvitation(User, model, InviteToOrganisation);
                 if (op.Succeeded)
                 {

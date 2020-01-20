@@ -55,7 +55,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string invitationId)
+        public async Task<IActionResult> OnPostAcceptAsync(string invitationId)
         {
             if (invitationId == null) { throw new System.NullReferenceException("invitationId was null"); }
             if (!AcceptInvitation)
@@ -80,6 +80,20 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 ModelState.AddModelError(string.Empty, result.Message);
                 return Page();
             }
+        }
+
+        public async Task<IActionResult> OnPostRejectAsync(string invitationId)
+        {
+            if (invitationId == null) { throw new System.NullReferenceException("invitationId was null"); }
+
+            this.Invitation = await invitationService.Store.ReadAsync(invitationId);
+            if (Invitation == null)
+            {
+                return BadRequest();
+            }
+
+            await invitationService.Store.DeleteAsync(Invitation);
+            return RedirectToPage("./Index");
         }
     }
 }

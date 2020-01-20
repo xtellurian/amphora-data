@@ -6,45 +6,43 @@
     <div class="row main-header">
         <div class="col">
             <span>
-                <h1 class="display-4">Organisations</h1>
-                <a asp-page="./Create"><button class="btn btn-primary">Create</button></a>
+                <a class="btn btn-primary float-right" asp-page="./Create">Create New</a>
+                <h2 class="display-4">Find an Organisation</h2>
             </span>
+            <hr/>
         </div>
     </div>
     <div class="row">
-        <div class="col-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="card-title">Information</h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        <em>Organisations</em> are companies or farms operating within the Amphora ecosystem.
-                    </p>                                       
-                </div>
-            </div>
-        </div>
         <div class="col">
+            <form method="get">
+                <div class="form-group">
+                    <label>Filter</label>
+                    <input asp-for="Name" class="form-control" placeholder="An Organisation's Name"/>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <hr/>
+            </form>
             <table id="entity-table" class="table table-borderless table-striped">
-                <thead>
-                    <tr>
-                    <th scope="col">Org Name</th>
-                    <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var entity in Model.Orgs)
-                    {
-                     <tr class="entity-item">
-                        <th scope="row"> @entity.Name </th>
-                        <td>  
-                            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@entity.Id"> 
-                                <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
-                            </a>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
+                @if(Model.Orgs?.Count == 0)
+                {
+                    <p>None</p>
+                }
+                else
+                {
+                    <tbody>
+                        @foreach (var entity in Model.Orgs)
+                        {
+                        <tr class="entity-item">
+                            <th scope="row"> @entity.Name </th>
+                            <td>  
+                                <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@entity.Id"> 
+                                    <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
+                                </a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                }
             </table>
         </div>
     </div>

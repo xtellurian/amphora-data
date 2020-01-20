@@ -52,7 +52,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         [BindProperty]
         [IsTrue(ErrorMessage = "You must accept the service agreement.")]
         public bool AcceptServiceAgreement { get; set; }
-        public OrganisationModel Organisation { get; private set; }
+        // public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
 
         public class InputModel
@@ -90,7 +90,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             if (email != null)
             {
                 var invitation = await invitationService.GetInvitationByEmailAsync(email);
-                this.Organisation = invitation?.TargetOrganisation;
+                // this.Organisation = invitation?.TargetOrganisation;
                 Input.Email = email;
             }
 
@@ -146,7 +146,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
         private async Task SendConfirmationEmailAsync(ApplicationUser user)
         {
-            var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user); // bug here
+            var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user);
 
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",

@@ -15,7 +15,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <form method="post" asp-route-invitationId="@Model.Invitation.Id">
+                <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="accept">
                     <div class="form-group">
                         <label asp-for="AcceptInvitation" class="control-label"></label>
                         <input asp-for="AcceptInvitation" class="form-control" />
@@ -23,6 +23,15 @@
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="reject">
+                    <div class="form-group">
+                        <input type="submit" value="Reject Invitation to @Model.Invitation.TargetOrganisation.Name" class="btn btn-danger btn-block" />
                     </div>
                 </form>
             </div>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +20,19 @@ namespace Amphora.Api.Areas.Organisations.Pages
     {
         private readonly IOrganisationService organisationService;
         private readonly IAuthenticateService authenticateService;
+        private readonly IInvitationService invitationService;
         private readonly ISignInManager signInManager;
         private readonly ILogger<CreateModel> logger;
 
         public CreateModel(IOrganisationService organisationService,
                            IAuthenticateService authenticateService,
+                           IInvitationService invitationService,
                            ISignInManager signInManager,
                            ILogger<CreateModel> logger)
         {
             this.organisationService = organisationService;
             this.authenticateService = authenticateService;
+            this.invitationService = invitationService;
             this.signInManager = signInManager;
             this.logger = logger;
         }
@@ -38,6 +42,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         [BindProperty]
         public InputModel Input { get; set; }
         public IList<OrganisationModel> Organisations { get; set; }
+        public InvitationModel Invitation { get; private set; }
 
         public class InputModel
         {
@@ -54,6 +59,12 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnGetAsync(string message)
         {
             if (!string.IsNullOrEmpty(message)) { this.ModelState.AddModelError(string.Empty, message); }
+            var res = await invitationService.GetMyInvitations(User);
+            if(res.Succeeded)
+            {
+                this.Invitation = res.Entity.FirstOrDefault();
+            }
+
             var response = await authenticateService.GetToken(User);
             Organisations = await organisationService.Store.TopAsync();
             if (response.success)
