@@ -5,6 +5,7 @@ using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Configuration.Options;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
@@ -63,7 +64,7 @@ namespace Amphora.Api.StartupModules
                 Console.WriteLine("Not Configuring DataProtection");
             }
 
-            services.AddScoped<EventHubSender>();
+            services.AddScoped<IEventHubSender, EventHubSender>();
 
             services.Configure<AzureStorageAccountOptions>(configuration.GetSection("Storage"));
             services.Configure<EventHubOptions>(configuration.GetSection("TsiEventHub"));

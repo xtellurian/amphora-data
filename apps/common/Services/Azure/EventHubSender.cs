@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Options;
 using Microsoft.Azure.EventHubs;
@@ -13,7 +14,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Amphora.Common.Services.Azure
 {
-    public class EventHubSender : IDisposable
+    public class EventHubSender : IEventHubSender, IDisposable
     {
         private const int MaxEvents = 500;
         private readonly ILogger<EventHubSender> logger;

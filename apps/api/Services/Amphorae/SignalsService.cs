@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
@@ -16,14 +17,14 @@ namespace Amphora.Api.Services.Amphorae
 {
     public class SignalsService : ISignalService
     {
-        private readonly EventHubSender eventHubSender;
+        private readonly IEventHubSender eventHubSender;
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
         private readonly IEntityStore<SignalModel> signalStore;
         private readonly ILogger<SignalsService> logger;
 
-        public SignalsService(EventHubSender eventHubSender,
+        public SignalsService(IEventHubSender eventHubSender,
                               IUserService userService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
@@ -97,6 +98,16 @@ namespace Amphora.Api.Services.Amphorae
             {
                 // check if key is not in the signals, and its not a timestamp
                 if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) { isInvalid = true; }
+                // check that numeric values are numeric
+                var property = sigs.FirstOrDefault(_ => _.Signal.Property == s);
+                if (property != null) // just check incase
+                {
+                    var value = values[property.Signal.Property];
+                    if (value is string && property.Signal.IsNumeric)
+                    {
+                        isInvalid = true;
+                    }
+                }
             }
 
             return isInvalid;
