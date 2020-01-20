@@ -70,7 +70,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             // check email confirmed
             if (!user.EmailConfirmed)
             {
-                ModelState.AddModelError(string.Empty, "You must have a confirmed email address");
+                ModelState.AddModelError(string.Empty, "You haven't confirmed your email, so you can't invite anyone");
                 return Page();
             }
 
