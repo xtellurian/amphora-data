@@ -83,7 +83,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-        public async Task<IActionResult> OnGet(string returnUrl = null, string email = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null, string email = null)
         {
             ReturnUrl = returnUrl;
 
@@ -91,14 +91,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             {
                 var invitation = await invitationService.GetInvitationByEmailAsync(email);
                 this.Organisation = invitation?.TargetOrganisation;
-                if (invitation == null)
-                {
-                    ModelState.AddModelError(string.Empty, $"{email} has not been invited to Amphora Data");
-                }
-                else
-                {
-                    Input.Email = email;
-                }
+                Input.Email = email;
             }
 
             return Page();
@@ -118,12 +111,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                     FullName = Input.FullName
                 };
 
-                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email);
-                if (invitation == null)
-                {
-                    ModelState.AddModelError(string.Empty, $"{user.Email} has not been invited to Amphora Data");
-                    return Page();
-                }
+                var invitation = await invitationService.GetInvitationByEmailAsync(Input.Email);
 
                 var result = await userService.CreateAsync(user, invitation, Input.Password);
 
@@ -134,13 +122,13 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
                     await signInManager.SignInAsync(result.Entity, isPersistent: false);
 
-                    if (string.IsNullOrEmpty(invitation.TargetOrganisationId))
+                    if (string.IsNullOrEmpty(invitation?.TargetOrganisationId))
                     {
                         return RedirectToPage("./Create");
                     }
                     else
                     {
-                        return RedirectToPage("/Join", new { area = "organisations", orgId = invitation.TargetOrganisationId });
+                        return RedirectToPage("/Join", new { area = "organisations", orgId = invitation?.TargetOrganisationId });
                     }
                 }
                 else
