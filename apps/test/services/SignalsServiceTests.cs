@@ -39,21 +39,26 @@ namespace Amphora.Tests.Unit.Services
                                          signalStore,
                                          CreateMockLogger<SignalsService>());
 
-            var signal = new SignalModel("test", SignalModel.Numeric);
+            var numericSignal = new SignalModel("numeric", SignalModel.Numeric);
+            var stringSignal = new SignalModel("string", SignalModel.String);
             var amphora = new AmphoraModel();
-            amphora.Signals.Add(new AmphoraSignalModel(amphora, signal));
-            signal = await signalStore.CreateAsync(signal);
+            amphora.Signals.Add(new AmphoraSignalModel(amphora, numericSignal));
+            amphora.Signals.Add(new AmphoraSignalModel(amphora, stringSignal));
+            numericSignal = await signalStore.CreateAsync(numericSignal);
+            stringSignal = await signalStore.CreateAsync(stringSignal);
 
             var data = new Dictionary<string, object>()
             {
-                { "test", "an unexpected string" }
+                { "string", "a regular string" },
+                { "numeric", "an unexpected string" }
             };
             var res = await sut.WriteSignalAsync(mockPrincipal.Object, amphora, data);
             Assert.False(res.WasForbidden); // make sure this isn't a permissions test
             Assert.False(res.Succeeded);
             var data_ok = new Dictionary<string, object>()
             {
-                { "test", 2 }
+                { "string", "a regular string" },
+                { "numeric", 2 }
             };
             var res_ok = await sut.WriteSignalAsync(mockPrincipal.Object, amphora, data_ok);
             Assert.False(res_ok.WasForbidden); // make sure this isn't a permissions test

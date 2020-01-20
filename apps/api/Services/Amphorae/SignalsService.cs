@@ -98,6 +98,16 @@ namespace Amphora.Api.Services.Amphorae
             {
                 // check if key is not in the signals, and its not a timestamp
                 if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) { isInvalid = true; }
+                // check that numeric values are numeric
+                var property = sigs.FirstOrDefault(_ => _.Signal.Property == s);
+                if (property != null) // just check incase
+                {
+                    var value = values[property.Signal.Property];
+                    if (value is string && property.Signal.IsNumeric)
+                    {
+                        isInvalid = true;
+                    }
+                }
             }
 
             return isInvalid;
