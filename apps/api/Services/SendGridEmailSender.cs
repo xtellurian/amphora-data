@@ -79,9 +79,12 @@ namespace Amphora.Api.Services
             if (string.IsNullOrEmpty(options.ApiKey))
             {
                 logger.LogError($"Send Grid API Key not provided. Email not sent.");
-                throw new System.ArgumentNullException($"Send Grid API Key not provided. Email not sent.");
+                if (options.Suppress == false)
+                {
+                    throw new System.ArgumentNullException($"Send Grid API Key not provided. Email not sent.");
+                }
             }
-            else if (options.Suppress.HasValue && options.Suppress.Value)
+            else if (options.Suppress == true)
             {
                 logger.LogWarning($"Email suppressed via configuration.");
                 logger.LogTrace(JsonConvert.SerializeObject(msg));
