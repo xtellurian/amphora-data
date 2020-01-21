@@ -33,8 +33,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
             else
             {
-                Orgs = await entityStore.Query(_ => _.Name.IndexOf(Name, StringComparison.OrdinalIgnoreCase) != -1
-                    || _.About.IndexOf(Name, StringComparison.OrdinalIgnoreCase) != -1).Take(10).ToListAsync();
+                var lowerName = Name.ToLower();
+                Orgs = (await entityStore.QueryAsync(_ => true)).Where(o => o.Name.ToLower().Contains(Name.ToLower())).ToList();
             }
 
             return Page();
