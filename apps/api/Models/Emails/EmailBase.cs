@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using Amphora.Common.Contracts;
+using Newtonsoft.Json;
 
 namespace Amphora.Api.Models.Emails
 {
@@ -10,5 +10,8 @@ namespace Amphora.Api.Models.Emails
         public IList<IEmailRecipient> Recipients { get; private set; } = new List<IEmailRecipient>();
 
         public abstract string SendGridTemplateId { get; }
+
+        [JsonProperty("baseUrl")]
+        public string BaseUrl { get; set; } = AmphoraHost.MainHost;
     }
 }

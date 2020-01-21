@@ -18,8 +18,5 @@ namespace Amphora.Api.Models.Emails
         // template data
         [JsonProperty("email")]
         public string Email { get; set; }
-
-        [JsonProperty("baseUrl")]
-        public string BaseUrl { get; set; } = "https://beta.amphoradata.com";
     }
 }
