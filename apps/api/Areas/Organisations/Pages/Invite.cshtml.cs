@@ -40,10 +40,15 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public bool InviteToOrganisation { get; set; }
         public OrganisationModel Organisation { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string email = null)
         {
             var user = await userService.ReadUserModelAsync(User);
             this.Organisation = user.Organisation;
+            if (email != null)
+            {
+                Input ??= new InvitationDto();
+                Input.TargetEmail = email;
+            }
 
             if (Organisation == null) { return RedirectToPage("./Detail"); }
             var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, ResourcePermissions.Create);

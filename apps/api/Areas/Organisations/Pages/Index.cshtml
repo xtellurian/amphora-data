@@ -32,14 +32,7 @@
                     <tbody>
                         @foreach (var entity in Model.Orgs)
                         {
-                        <tr class="entity-item">
-                            <th scope="row"> @entity.Name </th>
-                            <td>  
-                                <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@entity.Id"> 
-                                    <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
-                                </a>
-                            </td>
-                        </tr>
+                            @await Component.InvokeAsync("OrganisationRow", new {org = entity, isTable = true})
                         }
                     </tbody>
                 }

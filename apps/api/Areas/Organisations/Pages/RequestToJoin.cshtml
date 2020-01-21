@@ -6,17 +6,20 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h2>Would you like to join @Model.Organisation.Name ?</h2>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <form method="post" asp-route-id="@Model.Organisation.Id">
-                <input type="submit" value="Yes"/>
-            </form>
             @if(Model.Succeeded)
             {
                 <div>
                     <h2>Congratulations</h2>
-                    <p>Your request has been sent. Please wait for confirmation.</p>
+                    <p>Your request to join @Model.Organisation.Name has been sent. You will recieve an email when your invitation is ready.</p>
                 </div>
+            }
+            else
+            {
+                <h2>Would you like to join @Model.Organisation.Name ?</h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <form method="post" asp-route-id="@Model.Organisation.Id">
+                    <input class="btn btn-success" type="submit" value="Yes"/>
+                </form>
             }
         </div>
     </div>

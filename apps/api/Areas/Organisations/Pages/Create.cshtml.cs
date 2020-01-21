@@ -60,7 +60,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         {
             if (!string.IsNullOrEmpty(message)) { this.ModelState.AddModelError(string.Empty, message); }
             var res = await invitationService.GetMyInvitations(User);
-            if(res.Succeeded)
+            if (res.Succeeded)
             {
                 this.Invitation = res.Entity.FirstOrDefault();
             }

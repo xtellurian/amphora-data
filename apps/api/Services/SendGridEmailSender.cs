@@ -6,6 +6,7 @@ using Amphora.Api.Models.Emails;
 using Amphora.Api.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -24,21 +25,34 @@ namespace Amphora.Api.Services
             this.logger = logger;
         }
 
-        public async Task SendEmailAsync(IEmail email)
+        public async Task<bool> SendEmailAsync(IEmail email)
         {
             try
             {
                 var msg = new SendGridMessage();
                 msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
-                msg.AddTo(new EmailAddress(email.ToEmail, email.ToName));
+                foreach (var r in email.Recipients)
+                {
+                    if (r.Email != null)
+                    {
+                        msg.AddTo(new EmailAddress(r.Email, r.FullName));
+                    }
+                    else
+                    {
+                        logger.LogWarning($"Cannot send email to user without an email");
+                    }
+                }
+
                 msg.SetTemplateId(email.SendGridTemplateId);
 
                 msg.SetTemplateData(email);
                 await TrySendMessage(msg);
+                return true;
             }
             catch (Exception ex)
             {
                 logger.LogError($"Failed to send email, {ex.Message}", ex);
+                return false;
             }
         }
 
@@ -64,15 +78,17 @@ namespace Amphora.Api.Services
         {
             if (string.IsNullOrEmpty(options.ApiKey))
             {
-                logger.LogWarning($"Send Grid API Key not provided. Email not sent.");
+                logger.LogError($"Send Grid API Key not provided. Email not sent.");
+                throw new System.ArgumentNullException($"Send Grid API Key not provided. Email not sent.");
             }
             else if (options.Suppress.HasValue && options.Suppress.Value)
             {
                 logger.LogWarning($"Email suppressed via configuration.");
+                logger.LogTrace(JsonConvert.SerializeObject(msg));
             }
             else
             {
-                logger.LogInformation($"Sending email to {msg.From}");
+                logger.LogInformation($"Sending email from {msg.From}");
                 var client = new SendGridClient(options.ApiKey);
                 var response = await client.SendEmailAsync(msg);
                 var body = await response.Body.ReadAsStringAsync();

@@ -3,22 +3,17 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Models.Emails
 {
-    public class InvitationEmail : IEmail
+    public class InvitationEmail : EmailBase, IEmail
     {
         public InvitationEmail(InvitationModel recipient, string baseUrl = null)
         {
+            this.Recipients.Add(new EmailRecipient(recipient.TargetEmail, ""));
             this.Email = recipient.TargetEmail;
             if (baseUrl != null) { BaseUrl = baseUrl; }
         }
 
-        private const string TemplateId = "d-25458a4c163b4003aa5579bb328c281a";
-
         [JsonIgnore]
-        public string SendGridTemplateId => TemplateId;
-        [JsonIgnore]
-        public string ToEmail => Email;
-        [JsonIgnore]
-        public string ToName { get; set; }
+        public override string SendGridTemplateId => "d-25458a4c163b4003aa5579bb328c281a";
 
         // template data
         [JsonProperty("email")]

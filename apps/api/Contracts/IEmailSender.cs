@@ -6,6 +6,6 @@ namespace Amphora.Api.Contracts
     public interface IEmailSender
     {
         Task SendEmailAsync(string email, string subject, string message);
-        Task SendEmailAsync(IEmail email);
+        Task<bool> SendEmailAsync(IEmail email);
     }
 }

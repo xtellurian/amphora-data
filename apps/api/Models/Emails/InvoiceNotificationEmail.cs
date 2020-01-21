@@ -5,14 +5,12 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Models.Emails
 {
-    public class InvoiceNotificationEmail : IEmail
+    public class InvoiceNotificationEmail : EmailBase, IEmail
     {
         public InvoiceNotificationEmail(ApplicationUser user, Invoice invoice)
         {
-            this.ToEmail = user.Email;
-            this.ToName = user.FullName;
             if (!user.IsAdmin()) { throw new ArgumentException("User is not an administrator"); }
-            this.ToName = user.FullName;
+            Recipients.Add(new EmailRecipient(user.Email, user.FullName));
             // set user properties for email
             this.Name = user.FullName;
             this.Organisation = user.Organisation.Name;
@@ -24,11 +22,7 @@ namespace Amphora.Api.Models.Emails
             this.TotalDebits = invoice.TotalDebits ?? 0;
         }
 
-        public string SendGridTemplateId => "d-39a5a2ad988c4dc48371dd14c97dcc45";
-
-        public string ToEmail { get; private set; }
-
-        public string ToName { get; private set; }
+        public override string SendGridTemplateId => "d-39a5a2ad988c4dc48371dd14c97dcc45";
 
         [JsonProperty("Name")]
         public string Name { get; set; }

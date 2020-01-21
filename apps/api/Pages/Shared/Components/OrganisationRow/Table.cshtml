@@ -1,0 +1,23 @@
+@model Amphora.Api.Pages.Shared.Components.OrganisationRowViewComponent
+
+<tr class="row align-items-center entity-item">
+    <th class="col-3" scope="row">
+        <a class="btn btn-link" asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Org.Id"> 
+            @Model.Org.Name 
+        </a>
+    </th>
+    <td class="col-4 text-left">
+        <span style="white-space: pre-line">@Model.Org.About</span>
+    </td>
+    <td class="col-2">
+        <a href="@Model.Org.WebsiteUrl" target="_blank">Website</a>
+    </td>
+    <td class="col-2">
+        <a class="btn btn-link text-success" asp-area="Organisations" asp-page="/RequestToJoin" asp-route-id="@Model.Org.Id">Join Organisation</a>
+    </td>
+    <td class="col-1">  
+        <a class="btn btn-link text-success" asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Org.Id"> 
+            <i class="fas fa-info-circle"></i>
+        </a>
+    </td>
+</tr>
