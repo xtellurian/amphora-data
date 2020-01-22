@@ -61,16 +61,24 @@ namespace Amphora.Tests.Unit.Purchasing
 
             // create a test org
             var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
-            double amount = random.Next(1, 150) / random.Next(1, 10);
-            var expectedBalance = org.Account.Balance + amount;
-            org.Account.CreditAccount("test", amount, dtProvider.Now);
+            double creditAmount = random.NextDouble() * random.Next(1, 150);
+            double debitAmount = random.NextDouble() * random.Next(1, 150);
+
+            org.Account.CreditAccount("test credit", creditAmount, dtProvider.Now);
+            org.Account.CreditAccount("test debit", debitAmount, dtProvider.Now.AddSeconds(5));
 
             var invoice = await sut.GenerateInvoiceAsync(dtProvider.Now, org.Id);
 
-            Assert.Single(invoice.Transactions);
-            var t = invoice.Transactions.FirstOrDefault();
-            Assert.NotNull(t.Balance);
-            Assert.Equal(t.Balance, org.Account.Balance);
+            Assert.Equal(2, invoice.Transactions.Count);
+            double? balance = 0;
+            foreach (var t in invoice.Transactions)
+            {
+                Assert.NotNull(t.Balance);
+                balance += t.IsCredit == true ? t.Amount : -t.Amount;
+                MathHelpers.AssertCloseEnough(balance, t.Balance);
+            }
+
+            Assert.Equal(balance, org.Account.Balance);
         }
 
         [Fact]
