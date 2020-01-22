@@ -30,7 +30,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var dtProvider = new MockDateTimeProvider();
             var sut = new Account();
             var invoice = new Invoice();
-            invoice.Transactions.Add(new InvoiceTransaction("test1", 5, dtProvider.UtcNow, isCredit: true));
+            invoice.Transactions.Add(new InvoiceTransaction("test1", 5, 10, dtProvider.UtcNow, isCredit: true));
             invoice.IsPaid = false;
             invoice.IsPreview = false;
             sut.Invoices.Add(invoice);
@@ -48,6 +48,29 @@ namespace Amphora.Tests.Unit.Purchasing
             // swapped
             Assert.Single(paid);
             Assert.Empty(unpaid);
+        }
+
+        [Fact]
+        public async Task AccountWithInvoice_InvoiceBalanceMatchesAccountBalance()
+        {
+            var context = GetContext();
+            var dtProvider = new MockDateTimeProvider();
+            var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+
+            // create a test org
+            var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            double amount = random.Next(1, 150) / random.Next(1, 10);
+            var expectedBalance = org.Account.Balance + amount;
+            org.Account.CreditAccount("test", amount, dtProvider.Now);
+
+            var invoice = await sut.GenerateInvoiceAsync(dtProvider.Now, org.Id);
+
+            Assert.Single(invoice.Transactions);
+            var t = invoice.Transactions.FirstOrDefault();
+            Assert.NotNull(t.Balance);
+            Assert.Equal(t.Balance, org.Account.Balance);
         }
 
         [Fact]

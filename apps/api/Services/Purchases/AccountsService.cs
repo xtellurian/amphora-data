@@ -121,12 +121,12 @@ namespace Amphora.Api.Services.Purchases
                 .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
-                invoice.Transactions.Add(new InvoiceTransaction(c.Label, c.Amount, dateTimeProvider.UtcNow, isCredit: true));
+                invoice.Transactions.Add(new InvoiceTransaction(c));
             }
 
             foreach (var d in thisMonthsDebits)
             {
-                invoice.Transactions.Add(new InvoiceTransaction(d.Label, d.Amount, dateTimeProvider.UtcNow, isDebit: true) { AmphoraId = d.AmphoraId });
+                invoice.Transactions.Add(new InvoiceTransaction(d));
             }
 
             CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);

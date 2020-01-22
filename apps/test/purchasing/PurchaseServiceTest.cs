@@ -180,7 +180,7 @@ namespace Amphora.Tests.Unit.Purchasing
             {
                 Credits = new List<AccountCredit>()
                     {
-                        new AccountCredit("initial", 100, dtProvider.UtcNow)
+                        new AccountCredit("initial", 100, -20, dtProvider.UtcNow)
                     }
             };
 
