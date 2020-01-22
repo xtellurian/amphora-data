@@ -14,5 +14,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public double? Lat { get; set; }
         [Display(Name = "Longitude")]
         public double? Lon { get; set; }
+        [Display(Name = "Purchase Count")]
+        public int? PurchaseCount { get; set; }
     }
 }

@@ -85,6 +85,7 @@ namespace Amphora.Api.Services.Market
                 .PublicOnly<AmphoraModel>()
                 .IncludeLabelsFacet<AmphoraModel>()
                 .NotDeleted()
+                .OrderByPurchaseCount<AmphoraModel>()
                 .WithTotalResultCount();
 
             if (labels != null && labels.Count() > 0)

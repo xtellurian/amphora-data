@@ -50,6 +50,35 @@ namespace Amphora.Tests.Integration
         }
 
         [Fact]
+        public async Task PurchasingAmphora_IncrementsPurchaseCount()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(PurchasingAmphora_DeductsFromBalance));
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            createResponse.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
+            var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
+            var purchaseContent = await purchaseRes.Content.ReadAsStringAsync();
+            purchaseRes.EnsureSuccessStatusCode();
+
+            // get the amphora again from the server
+            var res = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
+            res.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await res.Content.ReadAsStringAsync());
+
+            Assert.NotNull(dto.PurchaseCount);
+            Assert.True(dto.PurchaseCount > 0);
+
+            await DestroyAmphoraAsync(adminClient, dto.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
         public async Task CantPurchaseWhenRestricted()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
