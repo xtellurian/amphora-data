@@ -44,7 +44,7 @@ namespace Amphora.Api.Services.Purchases
             {
                 if (purchase.Price.HasValue)
                 {
-                    var name = $"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})";
+                    var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
                     await DebitPurchasingOrganisation(purchase, name);
                     await CreditAmphoraOrganisation(purchase, name);
                 }

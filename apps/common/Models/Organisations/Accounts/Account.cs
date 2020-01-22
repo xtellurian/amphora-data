@@ -85,7 +85,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         {
             if (purchase.Price == 0) { return; }
             if (Debits == null) { Debits = new List<AccountDebit>(); }
-            var label = $"Purchased {purchase.AmphoraId}";
+            var label = $"Purchase: {purchase.Amphora.Name}";
             var currentBalance = Balance;
             Debits.Add(new AccountDebit(label, purchase.Price, currentBalance, timestamp, purchase.AmphoraId));
         }
