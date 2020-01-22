@@ -84,8 +84,8 @@
                         var previousSkip = Model.Skip - 1;
                         var nextPage = Model.Skip + 2;
                         var nextSkip = Model.Skip + 1;
-                        var startPage = Math.Max(1, currentPage - 3);
-                        var endPage = Math.Min(numPages, currentPage + 3);
+                        var startPage = Math.Max(1, currentPage - 2);
+                        var endPage = Math.Min(numPages, currentPage + 2);
                         string nextEnabled = "";
                         string previousEnabled = "";
                         if(nextPage > numPages) nextEnabled = "disabled";
@@ -94,10 +94,19 @@
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-page="./Index" 
                             asp-route-handler="@Model.Handler"
+                            asp-route-skip="0"
+                            asp-route-top="@Model.Top" 
+                            tabindex="-1">
+                            <<
+                        </a>
+                    </li>
+                    <li class="page-item @previousEnabled">
+                        <a class="page-link" asp-page="./Index" 
+                            asp-route-handler="@Model.Handler"
                             asp-route-skip="@previousSkip"
                             asp-route-top="@Model.Top" 
                             tabindex="-1">
-                            Previous
+                            <
                         </a>
                     </li>
                     @for(var p = startPage; p <= endPage; p++)
