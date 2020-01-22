@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
@@ -12,6 +15,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
     public class IndexModel : PageModel
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
+        [BindProperty(SupportsGet = true)]
+        public string Name { get; set; }
 
         public IndexModel(IEntityStore<OrganisationModel> entityStore)
         {
@@ -22,7 +27,16 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Orgs = await entityStore.TopAsync();
+            if (string.IsNullOrEmpty(Name))
+            {
+                Orgs = await entityStore.TopAsync();
+            }
+            else
+            {
+                var lowerName = Name.ToLower();
+                Orgs = (await entityStore.QueryAsync(_ => true)).Where(o => o.Name.ToLower().Contains(Name.ToLower())).ToList();
+            }
+
             return Page();
         }
     }

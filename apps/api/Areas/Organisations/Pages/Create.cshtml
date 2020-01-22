@@ -5,31 +5,41 @@
     ViewData["Title"] = "Create Organisation";
 }
 
-
-<hr />
 <div class="container">
     <div class="row">
-        <div class="col-md-4">
-            <h3>Create a new Organisation</h3>
+        <div class="col">
+            <h2>Create a new Organisation</h2>
+            @if(Model.Invitation != null)
+            {
+                <a class="btn btn-success float-right" asp-page="./Join" asp-route-orgId="@Model.Invitation?.TargetOrganisation?.Name">
+                    Join @Model.Invitation?.TargetOrganisation?.Name
+                </a>
+            }
+            <a class="btn btn-link btn-lg" asp-area="Organisations" asp-page="./Index">Find my Organisation</a>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
             <form method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Name" class="control-label"></label>
-                    <input asp-for="Input.Name" class="form-control" />
+                    <input asp-for="Input.Name" class="form-control" placeholder="Your Organisation's Name"/>
                     <span asp-validation-for="Input.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input class="form-control-file" type="file" name="files" accept="image/jpeg">
-                    <small class="form-text card-text text-muted">Profile Picture.</small>
+                    <small class="form-text card-text text-muted">Choose a Profile Picture.</small>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.About" class="control-label"></label>
-                    <input asp-for="Input.About" class="form-control" />
+                    <textarea asp-for="Input.About" class="form-control" aria-label="About Your Organisation" placeholder="Tell us about your org"></textarea>
                     <span asp-validation-for="Input.About" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.Website" class="control-label"></label>
-                    <input asp-for="Input.Website" class="form-control" />
+                    <input asp-for="Input.Website" class="form-control" placeholder="https://mycompany.com" />
                     <span asp-validation-for="Input.Website" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -40,17 +50,9 @@
                     <div class="selection"></div>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <input type="submit" value="Create New Organisation" class="btn btn-primary btn-block" />
                 </div>
             </form>
-        </div>
-        <div class="col-md-4 d-flex justify-content-center">
-            <h3>OR</h3>
-        </div>
-
-        <div class="col-md-4 justify-content-center">
-            <h3>Join an existing Organisation</h3>
-            <a asp-area="Organisations" asp-page="/Join"><button class="btn btn-primary">Find Organisation</button></a>
         </div>
     </div>
 </div>

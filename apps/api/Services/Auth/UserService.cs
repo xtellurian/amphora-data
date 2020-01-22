@@ -60,6 +60,7 @@ namespace Amphora.Api.Services.Auth
                                                                               InvitationModel invitation,
                                                                               string password)
         {
+            // invitation model could be null
             using (logger.BeginScope(new LoggerScope<UserService>(user)))
             {
                 var existing = await UserManager.FindByIdAsync(user.Id);
@@ -70,7 +71,7 @@ namespace Amphora.Api.Services.Auth
                 }
 
                 logger.LogInformation("Creating User...");
-                if (invitation.IsGlobalAdmin.HasValue && invitation.IsGlobalAdmin.Value && !user.IsGlobalAdmin.HasValue)
+                if (invitation?.IsGlobalAdmin == true && !user.IsGlobalAdmin.HasValue)
                 {
                     logger.LogWarning($"Creating global admin {user.Email}");
                     user.IsGlobalAdmin = invitation.IsGlobalAdmin;

@@ -68,6 +68,7 @@ namespace Amphora.Api
             }
 
             services.Configure<Amphora.Api.Models.Host.HostOptions>(Configuration.GetSection("Host"));
+            AmphoraHost.SetHost(Configuration.GetSection("Host")["MainHost"]);
 
             this.storageModule.ConfigureServices(services);
             this.identityModule.ConfigureServices(services);

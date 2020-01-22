@@ -9,9 +9,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Home
+namespace Amphora.Api.Areas.Organisations.Pages
 {
-    public class InviteModel : PageModel
+    public class InvitePageModel : PageModel
     {
         private readonly IOrganisationService organisationService;
         private readonly IMapper mapper;
@@ -19,7 +19,7 @@ namespace Amphora.Api.Pages.Home
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
 
-        public InviteModel(
+        public InvitePageModel(
             IOrganisationService organisationService,
             IMapper mapper,
             IInvitationService invitationService,
@@ -40,10 +40,15 @@ namespace Amphora.Api.Pages.Home
         public bool InviteToOrganisation { get; set; }
         public OrganisationModel Organisation { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string email = null)
         {
             var user = await userService.ReadUserModelAsync(User);
             this.Organisation = user.Organisation;
+            if (email != null)
+            {
+                Input ??= new InvitationDto();
+                Input.TargetEmail = email;
+            }
 
             if (Organisation == null) { return RedirectToPage("./Detail"); }
             var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, ResourcePermissions.Create);
@@ -70,13 +75,15 @@ namespace Amphora.Api.Pages.Home
             // check email confirmed
             if (!user.EmailConfirmed)
             {
-                ModelState.AddModelError(string.Empty, "You must have a confirmed email address");
+                ModelState.AddModelError(string.Empty, "You haven't confirmed your email, so you can't invite anyone");
                 return Page();
             }
 
             if (Input?.TargetEmail != null)
             {
                 var model = mapper.Map<InvitationModel>(Input);
+                model.TargetOrganisationId = this.Organisation.Id;
+                model.TargetOrganisation = this.Organisation;
                 var op = await invitationService.CreateInvitation(User, model, InviteToOrganisation);
                 if (op.Succeeded)
                 {

@@ -1,0 +1,27 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.RequestToJoinPageModel
+@{
+    ViewData["Title"] = "Request to Join " + Model.Organisation.Name;
+}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            @if(Model.Succeeded)
+            {
+                <div>
+                    <h2>Congratulations</h2>
+                    <p>Your request to join @Model.Organisation.Name has been sent. You will recieve an email when your invitation is ready.</p>
+                </div>
+            }
+            else
+            {
+                <h2>Would you like to join @Model.Organisation.Name ?</h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <form method="post" asp-route-id="@Model.Organisation.Id">
+                    <input class="btn btn-success" type="submit" value="Yes"/>
+                </form>
+            }
+        </div>
+    </div>
+
+</div>

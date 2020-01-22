@@ -16,6 +16,7 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Organisations/Detail")]
         [InlineData("/Organisations/Edit")]
         [InlineData("/Organisations/Index")]
+        [InlineData("/Organisations?Name=kittens")]
         [InlineData("/Organisations/Join")]
         [InlineData("/Organisations/Members")]
         [InlineData("/Organisations/TermsAndConditions")]

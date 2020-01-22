@@ -52,7 +52,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         [BindProperty]
         [IsTrue(ErrorMessage = "You must accept the service agreement.")]
         public bool AcceptServiceAgreement { get; set; }
-        public OrganisationModel Organisation { get; private set; }
+        // public OrganisationModel Organisation { get; private set; }
         public string ReturnUrl { get; set; }
 
         public class InputModel
@@ -83,22 +83,15 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-        public async Task<IActionResult> OnGet(string returnUrl = null, string email = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null, string email = null)
         {
             ReturnUrl = returnUrl;
 
             if (email != null)
             {
                 var invitation = await invitationService.GetInvitationByEmailAsync(email);
-                this.Organisation = invitation?.TargetOrganisation;
-                if (invitation == null)
-                {
-                    ModelState.AddModelError(string.Empty, $"{email} has not been invited to Amphora Data");
-                }
-                else
-                {
-                    Input.Email = email;
-                }
+                // this.Organisation = invitation?.TargetOrganisation;
+                Input.Email = email;
             }
 
             return Page();
@@ -118,12 +111,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                     FullName = Input.FullName
                 };
 
-                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email);
-                if (invitation == null)
-                {
-                    ModelState.AddModelError(string.Empty, $"{user.Email} has not been invited to Amphora Data");
-                    return Page();
-                }
+                var invitation = await invitationService.GetInvitationByEmailAsync(Input.Email);
 
                 var result = await userService.CreateAsync(user, invitation, Input.Password);
 
@@ -134,13 +122,13 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
                     await signInManager.SignInAsync(result.Entity, isPersistent: false);
 
-                    if (string.IsNullOrEmpty(invitation.TargetOrganisationId))
+                    if (string.IsNullOrEmpty(invitation?.TargetOrganisationId))
                     {
                         return RedirectToPage("./Create");
                     }
                     else
                     {
-                        return RedirectToPage("/Join", new { area = "organisations", orgId = invitation.TargetOrganisationId });
+                        return RedirectToPage("/Join", new { area = "organisations", orgId = invitation?.TargetOrganisationId });
                     }
                 }
                 else
@@ -158,7 +146,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
         private async Task SendConfirmationEmailAsync(ApplicationUser user)
         {
-            var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user); // bug here
+            var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(user);
 
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
