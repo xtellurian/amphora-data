@@ -36,6 +36,12 @@ namespace Amphora.Api.Models.AzureSearch
             {
                 IsSearchable = true
             });
+            // add description
+            fields.Add(new Field(nameof(AmphoraModel.PurchaseCount), DataType.Int32)
+            {
+                IsRetrievable = true,
+                IsSortable = true
+            });
             // add IsDeleted for soft delete
             fields.Add(new Field(nameof(AmphoraModel.IsDeleted), DataType.Boolean)
             {

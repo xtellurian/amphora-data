@@ -93,7 +93,9 @@ namespace Amphora.Api.Services.Purchases
                         logger.LogWarning($"Amphora {amphora.Id} has no Price.");
                     }
 
-                    // update the purchase
+                    // update the purchase and the amphora
+                    amphora.PurchaseCount ??= 0;
+                    amphora.PurchaseCount = await purchaseStore.CountAsync(_ => _.AmphoraId == amphora.Id);
                     purchase.LastDebitTime = DateTime.UtcNow;
                     purchase = await purchaseStore.UpdateAsync(purchase);
 

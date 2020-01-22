@@ -15,7 +15,7 @@ namespace Amphora.Api.Models.Search
         private string IsPublicProperty => nameof(AmphoraModel.IsPublic);
         private string GeoLocationProperty => nameof(AmphoraModel.GeoLocation);
         private string OrganisationIdProperty => nameof(AmphoraModel.OrganisationId);
-        private string PurchasesPropertyName => nameof(AmphoraModel.Purchases);
+        private string PurchaseCountPropertyName => nameof(AmphoraModel.PurchaseCount);
         public SearchParameters NotDeleted()
         {
             if (this.Filter.Length > 1) { this.Filter += " and "; }
@@ -29,6 +29,17 @@ namespace Amphora.Api.Models.Search
             {
                 if (Facets == null) { Facets = new List<string>(); }
                 Facets.Add($"{LabelsProperty}/Name");
+            }
+
+            return this;
+        }
+
+        public SearchParameters OrderByPurchaseCount<T>() where T : ISearchable
+        {
+            if (HasProperty<T>(PurchaseCountPropertyName))
+            {
+                OrderBy ??= new List<string>();
+                OrderBy.Add(PurchaseCountPropertyName);
             }
 
             return this;
@@ -83,17 +94,6 @@ namespace Amphora.Api.Models.Search
             {
                 if (Filter.Length > 1) { Filter += " and "; }
                 Filter = $"{OrganisationIdProperty} eq '{orgId}'";
-            }
-
-            return this;
-        }
-
-        public SearchParameters PurchasedByUser<T>(string userId) where T : ISearchable
-        {
-            if (HasProperty<T>(PurchasesPropertyName))
-            {
-                if (Filter.Length > 1) { Filter += " and "; }
-                Filter = $"{PurchasesPropertyName}/any(h: h/Id eq '{userId}')";
             }
 
             return this;
