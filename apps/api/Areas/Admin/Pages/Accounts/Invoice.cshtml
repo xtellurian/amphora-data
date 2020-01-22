@@ -88,7 +88,7 @@
                 <h4>Transactions</h4>
                 @if(Model.Invoice.Transactions.Count > 0)
                 {
-                    @foreach(var t in Model.Invoice.Transactions)
+                    @foreach(var t in Model.Invoice.Transactions.OrderBy(_ => _.Timestamp ))
                     {
                         @await Component.InvokeAsync("TransactionRow", new {transaction = t })
                     }

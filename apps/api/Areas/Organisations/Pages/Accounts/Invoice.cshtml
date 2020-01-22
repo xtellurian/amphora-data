@@ -6,19 +6,24 @@
 }
 
 <div class="container">
-    <div class="row">
-        <div class="col-4">
+    <div class="row">       
+        <div class="col">
+            <h3 class="float-right">@Model.Invoice?.Name</h3>
             <h1>Invoice</h1>
-            <h3>@Model.Invoice?.Name</h3>
         </div>
-        @{var textColour = "text-success";}
-        @if(@Model.Invoice.InvoiceBalance < 0)
+    </div>
+    <div class="row">       
+        <div class="col">
+           Organisation Id: @Model.Organisation.Id
+        </div>
+    </div>
+    <div class="row">       
+        @if(Model.Invoice.DateCreated.HasValue)
         {
-            textColour = "text-danger";
+            <div class="col">
+                Created On: @Model.Invoice.DateCreated.Value.ToString("dd MMM")
+            </div>
         }
-        <div class="col-4 text-center align-self-center @textColour">
-            Balance: @Model.Invoice.InvoiceBalance
-        </div>
     </div>
     <hr/>
     <div class="row">
@@ -26,7 +31,7 @@
             <h2>Transactions</h2>
             @if(Model.Invoice.Transactions.Count > 0)
             {
-                @foreach(var t in Model.Invoice.Transactions)
+                @foreach(var t in Model.Invoice.Transactions.OrderBy(_ => _.Timestamp))
                 {
                     @await Component.InvokeAsync("TransactionRow", new {transaction = t, size = "default" })
                 }
@@ -38,6 +43,18 @@
                 </div>
             }
             <hr/>
+        </div>
+    </div>
+    <div class="row">
+        @{var textColour = "text-success";}
+        @if(@Model.Invoice.InvoiceBalance < 0)
+        {
+            textColour = "text-danger";
+        }
+        <div class="col text-right @textColour font-weight-bolder">
+            <h5>
+                Final Balance: @Model.Invoice.InvoiceBalance
+            </h5>
         </div>
     </div>
 </div>

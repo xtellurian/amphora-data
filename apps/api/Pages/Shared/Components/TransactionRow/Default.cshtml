@@ -2,18 +2,33 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-8 text-truncate">
+        <div class="col-1 text-truncate">
+            @if(Model.Transaction.Timestamp.HasValue)
+            {
+                var longDate = @Model.Transaction.Timestamp.Value.ToString("dd/MM/yyyy hh:mm");
+                var shortDate = @Model.Transaction.Timestamp.Value.ToString("dd MMM");
+                <abbr title="@longDate">@shortDate</abbr>
+            }
+        </div>
+        <div class="col-5 text-truncate">
             @Model.Transaction.Label
         </div>
-        @{var textColour = "text-danger"; }
-        @if(Model.Transaction.IsCredit == true)
-        {
-            textColour = "text-success";
-        }
-        <div class="col-2 @textColour">
-            @Model.Transaction.Amount
+        <div class="col-1 text-success">
+            @if(Model.Transaction.IsCredit == true)
+            {
+                @Model.Transaction.Amount
+            }
         </div>
-        <div class="col-2">
+        <div class="col-1 text-danger">
+            @if(Model.Transaction.IsDebit == true)
+            {
+                @Model.Transaction.Amount
+            }
+        </div>
+        <div class="col-1">
+            @Model.Transaction.Balance
+        </div>
+        <div class="col-2 text-right">
             @if(@Model.Transaction.AmphoraId != null)
             {
                 <!-- Links to an Amphora -->
