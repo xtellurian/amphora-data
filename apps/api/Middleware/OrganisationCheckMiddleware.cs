@@ -22,6 +22,7 @@ namespace Amphora.Api.Middleware
         private const string FindOrgPath = "/Organisations";
         private const string OrgDetailPath = "/Organisations/Detail";
         private const string ConfirmEmailPath = "/Profiles/Account/ConfirmEmail";
+        private const string LocationSearchPath = "/Market/LocationSearch";
         private const string QueryString = "?message=You must belong to an Organisation to continue";
         public async Task Invoke(HttpContext httpContext, IUserService userService, IOrganisationService organisationService)
         {
@@ -34,6 +35,7 @@ namespace Amphora.Api.Middleware
                  && !string.Equals(FindOrgPath, httpContext.Request.Path) // and don't redirect if we're trying to find our org
                  && !string.Equals(OrgDetailPath, httpContext.Request.Path) // and don't redirect if we're trying to find our org
                  && !string.Equals(ConfirmEmailPath, httpContext.Request.Path) // and don't redirect if we're trying confirm email
+                 && !string.Equals(LocationSearchPath, httpContext.Request.Path) // and don't redirect the search bar for locations
                  && !httpContext.Request.Path.StartsWithSegments("/api")) // don't redirect API calls
             {
                 logger.LogInformation($"Redirecting {user.UserName} to {CreateOrgPath}");
