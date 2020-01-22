@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Pages.Shared.Components
 {
+    [ViewComponent(Name = "TransactionRow")]
     public class TransactionRowViewComponent : ViewComponent
     {
         public TransactionRowViewComponent()
