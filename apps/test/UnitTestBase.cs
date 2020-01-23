@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Amphora.Api;
+using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,11 @@ namespace Amphora.Tests.Unit
         {
             var logger = Mock.Of<ILogger<T>>();
             return logger;
+        }
+
+        protected IEventPublisher CreateMockEventPublisher()
+        {
+            return Mock.Of<IEventPublisher>();
         }
 
         protected IMemoryCache CreateMemoryCache()

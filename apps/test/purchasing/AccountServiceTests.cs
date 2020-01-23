@@ -90,7 +90,13 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphoraStore = new AmphoraeEFStore(GetContext(), CreateMockLogger<AmphoraeEFStore>());
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
             var userStore = new ApplicationUserStore(GetContext(), CreateMockLogger<ApplicationUserStore>());
-            var userService = new UserService(CreateMockLogger<UserService>(), orgStore, userStore, permissionService, null, null);
+            var userService = new UserService(CreateMockLogger<UserService>(),
+                                              orgStore,
+                                              userStore,
+                                              permissionService,
+                                              CreateMockEventPublisher(),
+                                              null,
+                                              null);
             var purchaseService = new PurchaseService(purchaseStore,
                                                       orgStore,
                                                       permissionService,

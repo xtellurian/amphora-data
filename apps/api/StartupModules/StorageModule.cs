@@ -70,7 +70,7 @@ namespace Amphora.Api.StartupModules
             services.Configure<EventHubOptions>(configuration.GetSection("TsiEventHub"));
             services.Configure<CosmosOptions>(configuration.GetSection("Cosmos"));
 
-            if (HostingEnvironment.IsProduction() || configuration["PersistentStores"] == "true")
+            if (HostingEnvironment.IsProduction() || configuration.IsPersistentStores())
             {
                 var cosmos = new CosmosOptions();
                 configuration.GetSection("Cosmos").Bind(cosmos);
@@ -113,6 +113,7 @@ namespace Amphora.Api.StartupModules
             using (var context = scope.ServiceProvider.GetService<AmphoraContext>())
             {
                 context.Database.EnsureCreated();
+                // CosmosExecutionStrategy
             }
 
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
