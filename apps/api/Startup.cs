@@ -100,6 +100,7 @@ namespace Amphora.Api
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
             services.AddTransient<IAccountsService, AccountsService>();
+            services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
 

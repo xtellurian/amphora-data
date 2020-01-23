@@ -31,6 +31,19 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return buffer.ToArray();
         }
 
+        public async Task<bool> ExistsAsync(AmphoraModel amphora, string path)
+        {
+            var container = GetContainerReference(amphora);
+            if (await container.ExistsAsync())
+            {
+                return await BlobExistsAsync(container, path);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task WriteBytesAsync(AmphoraModel entity, string path, byte[] bytes)
         {
             // 1 container per amphora
@@ -119,6 +132,20 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
 
             return await ListNamesAsync(container);
+        }
+
+        public async Task<Stream> GetWritableStreamAsync(AmphoraModel amphora, string path)
+        {
+            var container = GetContainerReference(amphora);
+            await container.CreateIfNotExistsAsync();
+            var blob = container.GetBlockBlobReference(path);
+            if (await blob.ExistsAsync())
+            {
+                logger.LogError($"{path} already exists in {GetContainerName(amphora)}. ${blob.Uri}");
+                throw new ArgumentException($"{path} already exists in {GetContainerName(amphora)}. ${blob.Uri}");
+            }
+
+            return await blob.OpenWriteAsync();
         }
     }
 }

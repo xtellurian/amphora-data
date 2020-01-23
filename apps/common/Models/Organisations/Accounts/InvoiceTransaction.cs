@@ -7,6 +7,24 @@ namespace Amphora.Common.Models.Organisations.Accounts
                                      double? amount,
                                      System.DateTimeOffset? timestamp) : base(label, amount, timestamp) { }
 
+        public double? RelativeAmount => GetRelativeAmount();
+
+        private double? GetRelativeAmount()
+        {
+            if (IsDebit == true)
+            {
+                return -Amount;
+            }
+            else if (IsCredit == true)
+            {
+                return Amount;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public InvoiceTransaction(Transaction transaction) : this(transaction.Label, transaction.Amount, transaction.Timestamp)
         {
             if (transaction is null)

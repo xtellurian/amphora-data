@@ -55,6 +55,9 @@
             <h5>
                 Final Balance: @Model.Invoice.InvoiceBalance
             </h5>
+            <a class="btn btn-primary" asp-page="./Invoice" asp-route-invoiceId="@Model.Invoice.Id" asp-page-handler="downloadcsv">
+                Download Transactions (csv)
+            </a>
         </div>
     </div>
 </div>

@@ -31,6 +31,11 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
         }
 
+        protected async Task<bool> BlobExistsAsync(CloudBlobContainer container, string path)
+        {
+            return await container.GetBlobReference(path).ExistsAsync();
+        }
+
         protected async Task<IList<string>> ListNamesAsync(CloudBlobContainer container)
         {
             if (!await container.ExistsAsync())
