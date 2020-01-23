@@ -94,6 +94,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 acr.loginServer
                 }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
+            EventGrid__AppTopic__Endpoint: this.params.monitoring.appTopic.endpoint,
             Host__MainHost: host,
             Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
