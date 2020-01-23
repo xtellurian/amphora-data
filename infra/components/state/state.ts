@@ -74,6 +74,18 @@ export class State extends pulumi.ComponentResource {
       "GitHubOptions--Token",
       pulumi.interpolate `${config.getSecret("gitHubToken")}`,
     );
+    const appTopicPrimaryKey = this.storeInVault(
+      "appTopicPrimaryKey",
+      "EventGrid--AppTopic--PrimaryKey",
+      this.monitoring.appTopic.primaryAccessKey,
+      this.monitoring.appTopic,
+    );
+    const appTopicSecondaryKey = this.storeInVault(
+      "appTopicSecondaryKey",
+      "EventGrid--AppTopic--SecondaryKey",
+      this.monitoring.appTopic.secondaryAccessKey,
+      this.monitoring.appTopic,
+    );
     this.createEventHubs(stateRg);
     this.createCosmosDb(stateRg);
   }
