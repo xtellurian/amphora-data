@@ -86,6 +86,12 @@ export class State extends pulumi.ComponentResource {
       this.monitoring.appTopic.secondaryAccessKey,
       this.monitoring.appTopic,
     );
+    const appTopicEndpoint = this.storeInVault(
+      "appTopicEndpoint",
+      "EventGrid--AppTopic--Endpoint",
+      this.monitoring.appTopic.endpoint,
+      this.monitoring.appTopic,
+    );
     this.createEventHubs(stateRg);
     this.createCosmosDb(stateRg);
   }
