@@ -25,3 +25,9 @@ steps:
     kvName: $(pulumi.kvName)
     pulumiStack: $(pulumi.stack)
     webAppResourceId: $(pulumi.webAppResourceId)
+
+- script: ./infra/scripts/subscribe_logic_app_to_eventgrid.sh -t "$workflowTriggerId" -e "$appEventGridTopicId"
+  displayName: Subscribe LogicApp to EventGrid 
+  env: 
+    workflowTriggerId: $(pulumi.workflowTriggerId)
+    appEventGridTopicId: $(pulumi.appEventGridTopicId)
