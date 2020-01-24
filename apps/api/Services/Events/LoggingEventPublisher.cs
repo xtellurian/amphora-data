@@ -7,9 +7,9 @@ namespace Amphora.Api.Services.Events
 {
     public class LoggingEventPublisher : IEventPublisher
     {
-        private readonly ILogger logger;
+        private readonly ILogger<LoggingEventPublisher> logger;
 
-        public LoggingEventPublisher(ILogger logger)
+        public LoggingEventPublisher(ILogger<LoggingEventPublisher> logger)
         {
             this.logger = logger;
         }
