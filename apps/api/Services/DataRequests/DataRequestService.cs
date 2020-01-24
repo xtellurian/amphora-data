@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Models.DataRequests;
+using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Api.Services.DataRequests
@@ -11,11 +12,13 @@ namespace Amphora.Api.Services.DataRequests
     {
         private readonly IEntityStore<DataRequestModel> dataRequestStore;
         private readonly IUserService userService;
+        private readonly IEventPublisher eventPublisher;
 
-        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserService userService)
+        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserService userService, IEventPublisher eventPublisher)
         {
             this.dataRequestStore = dataRequestStore;
             this.userService = userService;
+            this.eventPublisher = eventPublisher;
         }
 
         public async Task<EntityOperationResult<DataRequestModel>> CreateAsync(ClaimsPrincipal principal, DataRequestModel model)
@@ -26,7 +29,7 @@ namespace Amphora.Api.Services.DataRequests
             model.CreatedBy = user;
 
             model = await dataRequestStore.CreateAsync(model);
-
+            await eventPublisher.PublishEventAsync(new DataRequestCreatedEvent(model));
             return new EntityOperationResult<DataRequestModel>(user, model);
         }
 

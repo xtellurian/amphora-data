@@ -8,7 +8,8 @@ namespace Amphora.Common.Models.Events
         public OrganisationCreatedEvent(OrganisationModel org)
         {
             Subject = org.Id;
-            Data = new {
+            Data = new
+            {
                 Name = org.Name,
                 About = org.About,
                 Address = org.Address,
