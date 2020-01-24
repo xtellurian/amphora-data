@@ -75,17 +75,19 @@ namespace Amphora.Common.Models.Organisations.Accounts
                 throw new System.ArgumentException("Amount < 0");
             }
 
+            var currentBalance = Balance;
             if (Debits == null) { Debits = new List<AccountDebit>(); }
-            if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount, timestamp)); }
-            else { Debits.Add(new AccountDebit(label, amount, timestamp, amphoraId)); }
+            if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount, currentBalance, timestamp)); }
+            else { Debits.Add(new AccountDebit(label, amount, currentBalance, timestamp, amphoraId)); }
         }
 
         public void DebitAccountFromPurchase(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
             if (purchase.Price == 0) { return; }
             if (Debits == null) { Debits = new List<AccountDebit>(); }
-            var label = $"Purchased {purchase.AmphoraId}";
-            Debits.Add(new AccountDebit(label, purchase.Price, timestamp, purchase.AmphoraId));
+            var label = $"Purchase: {purchase.Amphora.Name}";
+            var currentBalance = Balance;
+            Debits.Add(new AccountDebit(label, purchase.Price, currentBalance, timestamp, purchase.AmphoraId));
         }
 
         public void CreditAccount(string label, double amount, System.DateTimeOffset? timestamp, string? amphoraId = null)
@@ -95,18 +97,20 @@ namespace Amphora.Common.Models.Organisations.Accounts
                 throw new System.ArgumentException("Amount < 0");
             }
 
+            var currentBalance = Balance;
             if (Credits == null) { Credits = new List<AccountCredit>(); }
-            if (amphoraId == null) { Credits.Add(new AccountCredit(label, amount, timestamp)); }
-            else { Credits.Add(new AccountCredit(label, amount, timestamp, amphoraId)); }
+            if (amphoraId == null) { Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp)); }
+            else { Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, amphoraId)); }
         }
 
         public void CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
             if (purchase.Price == 0) { return; }
             if (Credits == null) { Credits = new List<AccountCredit>(); }
+            var currentBalance = Balance;
             var label = $"Sold {purchase.AmphoraId}";
             var amount = purchase.Price * GetCommissionRate();
-            Credits.Add(new AccountCredit(label, amount, timestamp, purchase.AmphoraId));
+            Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, purchase.AmphoraId));
         }
     }
 }

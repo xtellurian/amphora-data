@@ -11,12 +11,6 @@ const COMPONENTS = {
   State: Symbol.for("State"),
 };
 
-const COMPONENT_PARAMS = {
-  ApplicationParams: Symbol.for("ApplicationParams"),
-  MonitoringParams: Symbol.for("MonitoringParams"),
-  StateParams: Symbol.for("StateParams"),
-};
-
 const CONSTANTS = {
   AzStorage_KV_CS_SecretName: "StorageConnectionString",
   application: {
@@ -31,4 +25,4 @@ const CONSTANTS = {
   },
 };
 
-export { COMPONENTS, COMPONENT_PARAMS, CONSTANTS };
+export { COMPONENTS, CONSTANTS };

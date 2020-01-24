@@ -30,6 +30,8 @@ kvUri=$(pulumi stack output kvUri)
 kvName=$(pulumi stack output kvName)
 acrName=$(pulumi stack output acrName)
 webAppResourceId=$(pulumi stack output webAppResourceId)
+workflowTriggerId=$(pulumi stack output workflowTriggerId)
+appEventGridTopicId=$(pulumi stack output appEventGridTopicId)
 
 # Save the stack output variables to job variables.
 echo "##vso[task.setvariable variable=kvUri;isOutput=true]$kvUri"
@@ -37,5 +39,7 @@ echo "##vso[task.setvariable variable=kvName;isOutput=true]$kvName"
 echo "##vso[task.setvariable variable=acrName;isOutput=true]$acrName" 
 echo "##vso[task.setvariable variable=stack;isOutput=true]$STACK" 
 echo "##vso[task.setvariable variable=webAppResourceId;isOutput=true]$webAppResourceId" 
+echo "##vso[task.setvariable variable=workflowTriggerId;isOutput=true]$workflowTriggerId" 
+echo "##vso[task.setvariable variable=appEventGridTopicId;isOutput=true]$appEventGridTopicId" 
 
 popd

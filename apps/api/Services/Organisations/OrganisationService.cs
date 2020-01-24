@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace Amphora.Api.Services.Organisations
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly IBlobStore<OrganisationModel> orgBlobStore;
+        private readonly IEventPublisher eventPublisher;
 
         public IEntityStore<OrganisationModel> Store { get; }
         private readonly ILogger<OrganisationService> logger;
@@ -26,12 +28,14 @@ namespace Amphora.Api.Services.Organisations
             IPermissionService permissionService,
             IEntityStore<OrganisationModel> orgStore,
             IBlobStore<OrganisationModel> orgBlobStore,
+            IEventPublisher eventPublisher,
             ILogger<OrganisationService> logger)
         {
             this.userService = userService;
             this.permissionService = permissionService;
             this.Store = orgStore;
             this.orgBlobStore = orgBlobStore;
+            this.eventPublisher = eventPublisher;
             this.logger = logger;
         }
 
@@ -53,6 +57,7 @@ namespace Amphora.Api.Services.Organisations
                 org.AddOrUpdateMembership(user, Roles.Administrator);
                 // we good - create an org
                 org = await Store.CreateAsync(org);
+                await eventPublisher.PublishEventAsync(new OrganisationCreatedEvent(org));
                 logger.LogTrace($"Organisation Created. Name: {org.Name}, Id: {org.Id}");
                 if (org != null)
                 {

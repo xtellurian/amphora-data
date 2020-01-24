@@ -7,12 +7,20 @@ namespace Amphora.Common.Models.Organisations.Accounts
             IsDebit = true;
         }
 
-        public AccountDebit(string label, double? amount, System.DateTimeOffset? timestamp) : base(label, amount, timestamp)
+        public AccountDebit(string label,
+                            double? amount,
+                            double? balanceBeforeTransaction,
+                            System.DateTimeOffset? timestamp) : base(label, amount, timestamp)
         {
             IsDebit = true;
+            this.Balance = balanceBeforeTransaction - amount;
         }
 
-        public AccountDebit(string label, double? amount, System.DateTimeOffset? timestamp, string amphoraId) : this(label, amount, timestamp)
+        public AccountDebit(string label,
+                            double? amount,
+                            double? balanceBeforeTransaction,
+                            System.DateTimeOffset? timestamp,
+                            string amphoraId) : this(label, amount, balanceBeforeTransaction, timestamp)
         {
             this.AmphoraId = amphoraId;
         }

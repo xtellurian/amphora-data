@@ -3,9 +3,54 @@ namespace Amphora.Common.Models.Organisations.Accounts
     public class InvoiceTransaction : Transaction
     {
         public InvoiceTransaction(string label, double? amount) : base(label, amount) { }
-        protected InvoiceTransaction(string label, double? amount, System.DateTimeOffset? timestamp) : base(label, amount, timestamp) { }
+        protected InvoiceTransaction(string? label,
+                                     double? amount,
+                                     System.DateTimeOffset? timestamp) : base(label, amount, timestamp) { }
 
-        public InvoiceTransaction(string label, double? amount, System.DateTimeOffset? timestamp, bool? isCredit = null, bool? isDebit = null) : this(label, amount, timestamp)
+        public double? RelativeAmount => GetRelativeAmount();
+
+        private double? GetRelativeAmount()
+        {
+            if (IsDebit == true)
+            {
+                return -Amount;
+            }
+            else if (IsCredit == true)
+            {
+                return Amount;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public InvoiceTransaction(Transaction transaction) : this(transaction.Label, transaction.Amount, transaction.Timestamp)
+        {
+            if (transaction is null)
+            {
+                throw new System.ArgumentNullException(nameof(transaction));
+            }
+
+            if (transaction.IsDebit == true)
+            {
+                IsDebit = true;
+            }
+            else if (transaction.IsCredit == true)
+            {
+                IsCredit = true;
+            }
+
+            this.Balance = transaction.Balance;
+            this.AmphoraId = transaction.AmphoraId;
+        }
+
+        public InvoiceTransaction(string label,
+                                  double? amount,
+                                  double? balanceBeforeTransaction,
+                                  System.DateTimeOffset? timestamp,
+                                  bool? isCredit = null,
+                                  bool? isDebit = null) : this(label, amount, timestamp)
         {
             if (isCredit.HasValue && isCredit.Value && isDebit.HasValue && isDebit.Value)
             {
@@ -31,6 +76,15 @@ namespace Amphora.Common.Models.Organisations.Accounts
             else
             {
                 throw new System.ArgumentException("IsCredit and IsDebit are both false and amount is null.");
+            }
+
+            if (this.IsCredit == true)
+            {
+                this.Balance = balanceBeforeTransaction + amount;
+            }
+            else if (this.IsDebit == true)
+            {
+                this.Balance = balanceBeforeTransaction - amount;
             }
         }
     }

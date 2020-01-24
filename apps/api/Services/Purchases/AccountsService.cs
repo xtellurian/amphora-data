@@ -44,7 +44,7 @@ namespace Amphora.Api.Services.Purchases
             {
                 if (purchase.Price.HasValue)
                 {
-                    var name = $"Subscription {purchase.AmphoraId} ({startOfMonth.ToString("MMMM")})";
+                    var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
                     await DebitPurchasingOrganisation(purchase, name);
                     await CreditAmphoraOrganisation(purchase, name);
                 }
@@ -121,12 +121,12 @@ namespace Amphora.Api.Services.Purchases
                 .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
             foreach (var c in thisMonthsCredits)
             {
-                invoice.Transactions.Add(new InvoiceTransaction(c.Label, c.Amount, dateTimeProvider.UtcNow, isCredit: true));
+                invoice.Transactions.Add(new InvoiceTransaction(c));
             }
 
             foreach (var d in thisMonthsDebits)
             {
-                invoice.Transactions.Add(new InvoiceTransaction(d.Label, d.Amount, dateTimeProvider.UtcNow, isDebit: true) { AmphoraId = d.AmphoraId });
+                invoice.Transactions.Add(new InvoiceTransaction(d));
             }
 
             CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);

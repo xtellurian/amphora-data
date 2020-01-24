@@ -7,6 +7,7 @@ using Amphora.Api.Models;
 using Amphora.Api.Options;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Purchases;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IEntityStore<OrganisationModel> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
+        private readonly IEventPublisher eventPublisher;
         private readonly ILogger<AmphoraeService> logger;
 
         public AmphoraeService(IOptionsMonitor<AmphoraManagementOptions> options,
@@ -31,6 +33,7 @@ namespace Amphora.Api.Services.Amphorae
                                IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserService userService,
+                               IEventPublisher eventPublisher,
                                ILogger<AmphoraeService> logger)
         {
             this.options = options;
@@ -39,6 +42,7 @@ namespace Amphora.Api.Services.Amphorae
             this.organisationStore = organisationStore;
             this.permissionService = permissionService;
             this.userService = userService;
+            this.eventPublisher = eventPublisher;
             this.logger = logger;
         }
 
@@ -80,6 +84,7 @@ namespace Amphora.Api.Services.Amphorae
                 if (isAuthorized)
                 {
                     model = await AmphoraStore.CreateAsync(model);
+                    await eventPublisher.PublishEventAsync(new AmphoraCreatedEvent(model));
                     return new EntityOperationResult<AmphoraModel>(user, model);
                 }
                 else

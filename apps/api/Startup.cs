@@ -6,6 +6,7 @@ using Amphora.Api.Services;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
+using Amphora.Api.Services.Events;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.Organisations;
@@ -91,6 +92,15 @@ namespace Amphora.Api
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
             services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
+            if (Configuration.IsPersistentStores())
+            {
+                services.Configure<AzureEventGridTopic>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
+                services.AddTransient<IEventPublisher, EventGridService>();
+            }
+            else
+            {
+                services.AddTransient<IEventPublisher, LoggingEventPublisher>();
+            }
 
             // permissioned stores
             services.AddTransient<IPermissionedEntityStore<DataRequestModel>, DataRequestService>();
@@ -100,6 +110,7 @@ namespace Amphora.Api
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
             services.AddTransient<IAccountsService, AccountsService>();
+            services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
 

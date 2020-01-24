@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -80,6 +81,23 @@ namespace Amphora.Api.Stores
         public Task<DateTimeOffset?> LastModifiedAsync(T entity)
         {
             return Task.FromResult<DateTimeOffset?>(DateTimeOffset.Now);
+        }
+
+        public Task<bool> ExistsAsync(T entity, string path)
+        {
+            if (store.ContainsKey(entity.Id))
+            {
+                return Task.FromResult(store[entity.Id].ContainsKey(path));
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<Stream> GetWritableStreamAsync(T entity, string path)
+        {
+            return Task.FromResult<Stream>(new MemoryStream());
         }
     }
 }

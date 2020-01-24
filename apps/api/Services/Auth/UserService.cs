@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
@@ -17,12 +18,14 @@ namespace Amphora.Api.Services.Auth
         private readonly ILogger<UserService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
+        private readonly IEventPublisher eventPublisher;
         private readonly ISignInManager signInManager;
 
         public UserService(ILogger<UserService> logger,
                            IEntityStore<OrganisationModel> orgStore,
                            IEntityStore<ApplicationUser> userStore,
                            IPermissionService permissionService,
+                           IEventPublisher eventPublisher,
                            IUserManager userManager,
                            ISignInManager signInManager)
         {
@@ -30,6 +33,7 @@ namespace Amphora.Api.Services.Auth
             this.orgStore = orgStore;
             UserStore = userStore;
             this.permissionService = permissionService;
+            this.eventPublisher = eventPublisher;
             this.UserManager = userManager;
             this.signInManager = signInManager;
         }
@@ -46,6 +50,7 @@ namespace Amphora.Api.Services.Auth
                 var user = await UserManager.FindByNameAsync(userName);
                 user.LastLoggedIn = System.DateTime.UtcNow;
                 await UserManager.UpdateAsync(user);
+                await eventPublisher.PublishEventAsync(new SignInEvent(user));
             }
 
             return res;
@@ -83,6 +88,7 @@ namespace Amphora.Api.Services.Auth
                 {
                     user = await UserManager.FindByNameAsync(user.UserName);
                     if (user == null) { throw new System.Exception("Unable to retrieve user"); }
+                    await eventPublisher.PublishEventAsync(new UserCreatedEvent(user));
                     // create role here
                     return new EntityOperationResult<ApplicationUser>(user, user);
                 }

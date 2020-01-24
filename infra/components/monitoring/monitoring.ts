@@ -3,7 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { CONSTANTS, IComponentParams } from "../../components";
 
 import { getDashboardTemplate } from "./dashboards-arm";
-const azTags = {
+const tags = {
   component: "monitoring",
   project: pulumi.getProject(),
   source: "pulumi",
@@ -15,6 +15,7 @@ const rgName = pulumi.getStack() + "-monitor";
 export class Monitoring extends pulumi.ComponentResource {
   public logAnalyticsWorkspace: azure.operationalinsights.AnalyticsWorkspace;
   public applicationInsights: azure.appinsights.Insights;
+  public appTopic: azure.eventgrid.Topic;
 
   constructor(
     params: IComponentParams,
@@ -29,7 +30,7 @@ export class Monitoring extends pulumi.ComponentResource {
       rgName,
       {
         location: CONSTANTS.location.primary,
-        tags: azTags,
+        tags,
       },
       { parent: this },
     );
@@ -39,7 +40,7 @@ export class Monitoring extends pulumi.ComponentResource {
       {
         resourceGroupName: rg.name,
         sku: "PerGB2018",
-        tags: azTags,
+        tags,
       },
       {
         dependsOn: rg,
@@ -53,13 +54,19 @@ export class Monitoring extends pulumi.ComponentResource {
         applicationType: "web",
         location: "AustraliaEast", // only supported region in AUS
         resourceGroupName: rg.name,
-        tags: azTags,
+        tags,
       },
       {
         dependsOn: rg,
         parent: rg,
       },
     );
+
+    this.appTopic = new azure.eventgrid.Topic("appEGTopic", {
+      location: rg.location,
+      resourceGroupName: rg.name,
+      tags,
+    });
 
     // new azure.core.TemplateDeployment("dashboard", {
     //     resourceGroupName: rg.name,

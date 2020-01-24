@@ -20,7 +20,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         public async Task<byte[]> ReadBytesAsync(OrganisationModel org, string path)
         {
             var container = GetContainerReference(org);
-            if (await container.ExistsAsync())
+            if (await container.ExistsAsync() && await BlobExistsAsync(container, path))
             {
                 var blob = container.GetBlockBlobReference(path);
                 var buffer = new MemoryStream();
@@ -31,6 +31,33 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             {
                 return null;
             }
+        }
+
+        public async Task<bool> ExistsAsync(OrganisationModel org, string path)
+        {
+            var container = GetContainerReference(org);
+            if (await container.ExistsAsync())
+            {
+                return await BlobExistsAsync(container, path);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<Stream> GetWritableStreamAsync(OrganisationModel org, string path)
+        {
+            var container = GetContainerReference(org);
+            await container.CreateIfNotExistsAsync();
+            var blob = container.GetBlockBlobReference(path);
+            if (await blob.ExistsAsync())
+            {
+                logger.LogError($"{path} already exists in {GetContainerName(org)}. ${blob.Uri}");
+                throw new ArgumentException($"{path} already exists in {GetContainerName(org)}. ${blob.Uri}");
+            }
+
+            return await blob.OpenWriteAsync();
         }
 
         public async Task WriteBytesAsync(OrganisationModel org, string path, byte[] bytes)
@@ -56,7 +83,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
             else
             {
-                return null;
+                return new List<string>();
             }
         }
 

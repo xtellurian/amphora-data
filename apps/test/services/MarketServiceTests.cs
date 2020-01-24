@@ -41,6 +41,7 @@ namespace Amphora.Tests.Unit.Services
                                                          orgStore,
                                                          permissionService,
                                                          mockUserService.Object,
+                                                         CreateMockEventPublisher(),
                                                          CreateMockLogger<AmphoraeService>());
                 var service = new BasicSearchService(amphoraService, dataRequestStore);
                 var orgModel = EntityLibrary.GetOrganisationModel();

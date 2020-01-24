@@ -18,14 +18,17 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
     public class InvoicePageModel : PageModel
     {
         private readonly IOrganisationService organisationService;
+        private readonly IInvoiceFileService invoiceFileService;
         private readonly IAccountsService accountsService;
         private readonly ILogger<InvoicePageModel> logger;
 
         public InvoicePageModel(IOrganisationService organisationService,
-                                        IAccountsService accountsService,
-                                        ILogger<InvoicePageModel> logger)
+                                IInvoiceFileService invoiceFileService,
+                                IAccountsService accountsService,
+                                ILogger<InvoicePageModel> logger)
         {
             this.organisationService = organisationService;
+            this.invoiceFileService = invoiceFileService;
             this.accountsService = accountsService;
             this.logger = logger;
         }
@@ -54,6 +57,20 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             if (invoiceId != null)
             {
                 this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnGetDownloadCsvAsync(string id, string invoiceId)
+        {
+            this.Organisation = await organisationService.Store.ReadAsync(id);
+            if (invoiceId != null)
+            {
+                this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+
+                var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(Invoice);
+                return File(f.Raw, "text/csv", $"invoice-{f.FileName}");
             }
 
             return Page();

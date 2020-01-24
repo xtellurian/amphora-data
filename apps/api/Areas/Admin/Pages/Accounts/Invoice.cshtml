@@ -88,7 +88,7 @@
                 <h4>Transactions</h4>
                 @if(Model.Invoice.Transactions.Count > 0)
                 {
-                    @foreach(var t in Model.Invoice.Transactions)
+                    @foreach(var t in Model.Invoice.Transactions.OrderBy(_ => _.Timestamp ))
                     {
                         @await Component.InvokeAsync("TransactionRow", new {transaction = t })
                     }
@@ -101,6 +101,13 @@
                     </div>
                 }
                 
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col text-right">
+                <a class="btn btn-primary" asp-page="./Invoice" asp-route-id="@Model.Organisation.Id" asp-route-invoiceId="@Model.Invoice.Id" asp-page-handler="downloadcsv">
+                    Download Transactions (csv)
+                </a>
             </div>
         </div>
     }
