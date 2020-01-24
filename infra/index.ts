@@ -70,7 +70,7 @@ export let acrName = result.then((r) =>
 export let workflowTriggerId = result.then((r) =>
   r.business.workflowTrigger.id,
 );
-export let appEventHubTopicId = result.then((r) =>
+export let appEventGridTopicId = result.then((r) =>
   r.monitoring.appTopic.id,
 );
 export let webAppResourceId = result.then((r) => generateIdList(r.application.appSvc.apps));
