@@ -88,6 +88,7 @@ namespace Amphora.Api.Services.Auth
                 {
                     user = await UserManager.FindByNameAsync(user.UserName);
                     if (user == null) { throw new System.Exception("Unable to retrieve user"); }
+                    await eventPublisher.PublishEventAsync(new UserCreatedEvent(user));
                     // create role here
                     return new EntityOperationResult<ApplicationUser>(user, user);
                 }
