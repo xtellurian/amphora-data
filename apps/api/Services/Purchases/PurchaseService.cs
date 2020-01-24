@@ -6,6 +6,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
@@ -21,6 +22,7 @@ namespace Amphora.Api.Services.Purchases
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
+        private readonly IEventPublisher eventPublisher;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<PurchaseService> logger;
 
@@ -30,6 +32,7 @@ namespace Amphora.Api.Services.Purchases
             IPermissionService permissionService,
             IUserService userService,
             IEmailSender emailSender,
+            IEventPublisher eventPublisher,
             IDateTimeProvider dateTimeProvider,
             ILogger<PurchaseService> logger)
         {
@@ -38,6 +41,7 @@ namespace Amphora.Api.Services.Purchases
             this.permissionService = permissionService;
             this.userService = userService;
             this.emailSender = emailSender;
+            this.eventPublisher = eventPublisher;
             this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
         }
@@ -98,6 +102,7 @@ namespace Amphora.Api.Services.Purchases
                     amphora.PurchaseCount = await purchaseStore.CountAsync(_ => _.AmphoraId == amphora.Id);
                     purchase.LastDebitTime = DateTime.UtcNow;
                     purchase = await purchaseStore.UpdateAsync(purchase);
+                    await eventPublisher.PublishEventAsync(new PurchaseEvent(purchase));
 
                     return new EntityOperationResult<PurchaseModel>(user, purchase);
                 }

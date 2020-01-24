@@ -57,7 +57,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, dtProvider, logger);
+            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, logger);
 
             var result = await sut.PurchaseAmphoraAsync(user_emailconfirmed, amphora);
             Assert.True(result.Succeeded);
@@ -118,7 +118,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.True(result);
@@ -159,7 +159,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.False(result);
@@ -202,7 +202,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var mockEmailSender = new Mock<IEmailSender>();
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
             Assert.True(purchase.Succeeded);
             org = await orgStore.ReadAsync(org.Id); // reload, just in case

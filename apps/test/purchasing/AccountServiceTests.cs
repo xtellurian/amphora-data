@@ -102,6 +102,7 @@ namespace Amphora.Tests.Unit.Purchasing
                                                       permissionService,
                                                       userService,
                                                       null,
+                                                      CreateMockEventPublisher(),
                                                       dtProvider,
                                                       CreateMockLogger<PurchaseService>());
 
