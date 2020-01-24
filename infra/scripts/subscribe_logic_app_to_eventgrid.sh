@@ -23,7 +23,7 @@ else
 fi
 
 endpoint=$(az rest -m post -u "$TRIGGER_ID/listCallbackUrl?api-version=2016-06-01" --query value -o tsv)
-echo "subscribing to $endpoint"
+
 az eventgrid event-subscription create --name test1 \
     --source-resource-id $EVENT_GRID_TOPIC_ID \
     --endpoint $endpoint
