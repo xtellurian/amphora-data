@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { Application } from "./components/application/application";
 import { IPlanAndSlot } from "./components/application/appSvc/appSvc";
+import { Business } from "./components/business/business";
 import { Monitoring } from "./components/monitoring/monitoring";
 import { Network } from "./components/network/network";
 import { State } from "./components/state/state";
@@ -10,6 +11,7 @@ import { State } from "./components/state/state";
 
 interface IMainResult {
   application: Application;
+  business: Business;
   monitoring: Monitoring;
   state: State;
 }
@@ -24,8 +26,11 @@ async function main(): Promise<IMainResult> {
 
   const application = new Application({ name: "application" }, monitoring, network, state);
 
+  const business = new Business({ name: "business" }, monitoring);
+
   return {
     application,
+    business,
     monitoring,
     state,
   };
@@ -34,7 +39,7 @@ async function main(): Promise<IMainResult> {
 // https://github.com/pulumi/pulumi/issues/2910
 
 const generateIdList = (apps: IPlanAndSlot[]): pulumi.Output<string> =>
-  pulumi.output(apps.map((a) => pulumi.interpolate `${a.appSvc.id} `)).apply((array) => array.join(" "));
+  pulumi.output(apps.map((a) => pulumi.interpolate`${a.appSvc.id} `)).apply((array) => array.join(" "));
 
 const result: Promise<IMainResult> = main();
 
@@ -62,7 +67,12 @@ export let imageName = result.then((r) =>
 export let acrName = result.then((r) =>
   r.application.acr.name,
 );
-
+export let workflowTriggerId = result.then((r) =>
+  r.business.workflowTrigger.id,
+);
+export let appEventHubTopicId = result.then((r) =>
+  r.monitoring.appTopic.id,
+);
 export let webAppResourceId = result.then((r) => generateIdList(r.application.appSvc.apps));
 
 export let webAppResourceIds = result.then((r) =>
