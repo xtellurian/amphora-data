@@ -1,15 +1,46 @@
 function eventGridExportSchema() {
     return {
-        data: {
-            userId: "",
+        items: {
+            properties: {
+                data: {
+                    properties: {},
+                    type: "object",
+                },
+                dataVersion: {
+                    type: "string",
+                },
+                eventTime: {
+                    type: "string",
+                },
+                eventType: {
+                    type: "string",
+                },
+                id: {
+                    type: "string",
+                },
+                metadataVersion: {
+                    type: "string",
+                },
+                subject: {
+                    type: "string",
+                },
+                topic: {
+                    type: "string",
+                },
+            },
+            required: [
+                "id",
+                "subject",
+                "data",
+                "eventType",
+                "eventTime",
+                "dataVersion",
+                "metadataVersion",
+                "topic",
+            ],
+            type: "object",
         },
-        dataVersion: "2",
-        eventTime: "2017-06-26T18:41:00.9584103Z",
-        eventType: "AmphoraData.Users.SignIn",
-        id: "831e1650-001e-001b-66ab-eeb76e069631",
-        metadataVersion: "1",
-        subject: "Name of subject",
-        topic: "the name of the topic",
+        type: "array",
     };
 }
 
