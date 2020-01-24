@@ -15,4 +15,5 @@ jobs:
   - group: Pulumi xtellurian
 
   steps:
-    - template: infra.create.steps.yaml
+  - template: az-login.steps.yaml
+  - template: infra.create.steps.yaml
