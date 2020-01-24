@@ -18,7 +18,7 @@ namespace Amphora.Common.Models.Events
             Subject = purchase.Id;
         }
 
-        public string EventType => "AmphoraData.Purchase.NewPurchase";
+        public string EventType => "AmphoraData.Purchases.NewPurchase";
 
         public object Data { get; private set; }
 

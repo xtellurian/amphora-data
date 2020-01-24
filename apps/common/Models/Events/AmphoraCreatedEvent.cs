@@ -19,7 +19,7 @@ namespace Amphora.Common.Models.Events
             this.Subject = amphora.Id;
         }
 
-        public string EventType => "AmphoraData.Amphora.NewAmphora";
+        public string EventType => "AmphoraData.Amphorae.NewAmphora";
 
         public object Data { get; private set; }
 
