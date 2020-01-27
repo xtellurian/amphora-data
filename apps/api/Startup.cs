@@ -92,7 +92,7 @@ namespace Amphora.Api
             services.Configure<CreateOptions>(Configuration.GetSection("Create"));
 
             services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
-            if (Configuration.IsPersistentStores())
+            if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
                 services.Configure<AzureEventGridTopic>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
                 services.AddTransient<IEventPublisher, EventGridService>();
