@@ -6,13 +6,39 @@
 }
 
 <div class="container">
+    <h2 class="display-4">Discover</h2>
     <div class="row">
         <div class="col-6">
-            <h2 class="display-4">Discover</h2>
             <nav class="nav nav-pills nav-justified">
                 <a class="nav-item nav-link active" asp-page="../Index">Amphora</a>
                 <a class="nav-item nav-link" asp-page="./DataRequests/Index">Data Requests</a>
             </nav>
+        </div>
+        <div class="col-6 text-right">
+            @if(Model.MapView)
+            {
+                <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
+                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    View as List
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
+                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    View on Map
+                </a>
+            }
         </div>
     </div>
     <div class="row">
@@ -39,24 +65,32 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-sm">
-            <div>
-                <table id="market-table" class="table table-borderless table-striped">
-                    <tbody>
-                    @if(Model.Entities?.Count() == 0)
-                    {
-                        <td class="text-center">
-                            No Results
-                        </td>
-                    }
-                    @foreach (var entity in Model.Entities)
-                    {
-                        @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
-                    }
-                    </tbody>
-                </table>
-            </div>
+            @if(Model.MapView)
+            {
+                <div class="w-100" id="discoverMap"></div>
+            }
+            else
+            {
+                <div>
+                    <table id="market-table" class="table table-borderless table-striped">
+                        <tbody>
+                        @if(Model.Entities?.Count() == 0)
+                        {
+                            <td class="text-center">
+                                No Results
+                            </td>
+                        }
+                        @foreach (var entity in Model.Entities)
+                        {
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 
@@ -154,8 +188,20 @@
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/azure-maps-control/dist/atlas.min.css" type="text/css"> 
+    <style>
+        #discoverMap {
+            height: 66vh;
+        }
+    </style>
+}
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script>
+        $('.dropdown-toggle').dropdown()
+    </script>
     <script src="~/js/geo.js"></script>
     <script>
         const url = '/Market/LocationSearch';
@@ -175,5 +221,23 @@
             }
         }
     </script>
-
+    @if(Model.MapView)
+    {
+        var lat = Model.SearchDefinition?.Lat ?? 0;
+        var lon = Model.SearchDefinition?.Lon ?? 0;
+        var zoom = Model.SearchDefinition?.Lat == null ? default(int) : 6; 
+        <script src="~/lib/azure-maps-control/dist/atlas.min.js"></script>
+        <script type="text/javascript">
+            var map = new atlas.Map('discoverMap', {
+                center: [@lon, @lat],
+                view: "Auto",
+                zoom: @zoom,
+                language: 'en-AU',
+                authOptions: {
+                    authType: 'subscriptionKey',
+                    subscriptionKey: '@Model.MapKey'
+                }
+            });
+        </script>
+    }
 }
