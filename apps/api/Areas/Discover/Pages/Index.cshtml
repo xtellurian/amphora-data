@@ -6,13 +6,39 @@
 }
 
 <div class="container">
+    <h2 class="display-4">Discover</h2>
     <div class="row">
         <div class="col-6">
-            <h2 class="display-4">Discover</h2>
             <nav class="nav nav-pills nav-justified">
                 <a class="nav-item nav-link active" asp-page="../Index">Amphora</a>
                 <a class="nav-item nav-link" asp-page="./DataRequests/Index">Data Requests</a>
             </nav>
+        </div>
+        <div class="col-6 text-right">
+            @if(Model.MapView)
+            {
+                <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
+                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    View as List
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
+                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
+                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
+                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    View on Map
+                </a>
+            }
         </div>
     </div>
     <div class="row">
@@ -22,7 +48,7 @@
     </div>
     <div class="row align-items-center">
         <div class="col-11 text-center">
-            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform"})
+            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
         </div>
         <div class="col-1 text-left">
             <div>
@@ -35,28 +61,36 @@
     <div class="row">
         <div id="advanced" class="col text-center">
             <div id="filterCollapse" class="collapse mb-2">
-                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, isAdvanced=true, formId="searchform"})
+                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-sm">
-            <div>
-                <table id="market-table" class="table table-borderless table-striped">
-                    <tbody>
-                    @if(Model.Entities?.Count() == 0)
-                    {
-                        <td class="text-center">
-                            No Results
-                        </td>
-                    }
-                    @foreach (var entity in Model.Entities)
-                    {
-                        @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
-                    }
-                    </tbody>
-                </table>
-            </div>
+            @if(Model.MapView)
+            {
+                <div class="w-100" id="discoverMap"></div>
+            }
+            else
+            {
+                <div>
+                    <table id="market-table" class="table table-borderless table-striped">
+                        <tbody>
+                        @if(Model.Entities?.Count() == 0)
+                        {
+                            <td class="text-center">
+                                No Results
+                            </td>
+                        }
+                        @foreach (var entity in Model.Entities)
+                        {
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 
@@ -88,6 +122,7 @@
                 <ul class="pagination justify-content-center">
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="0"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -100,6 +135,7 @@
                     </li>
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@previousPage"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -116,6 +152,7 @@
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
                             <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                                asp-page-handler="@Model.Handler"
                                 asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                                 asp-route-SearchDefinition.Page="@p" 
                                 asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -127,7 +164,8 @@
                         </li>
                     }
                     <li class="page-item @nextEnabled">
-                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                        <a class="page-link" asp-area="Discover" asp-page="/Index"
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@nextPage"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -138,7 +176,8 @@
                         </a>
                     </li>
                     <li class="page-item @nextEnabled">
-                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                        <a class="page-link" asp-area="Discover" asp-page="/Index"
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@(numPages -1)"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -154,8 +193,20 @@
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/azure-maps-control/dist/atlas.min.css" type="text/css"> 
+    <style>
+        #discoverMap {
+            height: 50vh;
+        }
+    </style>
+}
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/@@tarekraafat/autocomplete.js@@6.1.0/dist/js/autoComplete.js"></script>
+    <script>
+        $('.dropdown-toggle').dropdown()
+    </script>
     <script src="~/js/geo.js"></script>
     <script>
         const url = '/Market/LocationSearch';
@@ -175,5 +226,78 @@
             }
         }
     </script>
+    @{
+        var lat = Model.MapCenter?.Lat() ?? 0;
+        var lon = Model.MapCenter?.Lon() ?? 0;
+        var zoom = Model.Zoom ;
+    }
+        <script src="~/lib/azure-maps-control/dist/atlas.min.js"></script>
+        <script type="text/javascript">
+            if(document.getElementById('discoverMap'))
+            {
+                let center = [@lon, @lat];
+                var map = new atlas.Map('discoverMap', {
+                    center,
+                    view: "Auto",
+                    zoom: @zoom,
+                    language: 'en-AU',
+                    authOptions: {
+                        authType: 'subscriptionKey',
+                        subscriptionKey: '@Model.MapKey'
+                    }
+                });
+                //Construct a zoom control and add it to the map.
+                map.controls.add(new atlas.control.ZoomControl(), {
+                    position: 'bottom-right'
+                });
+                //Wait until the map resources are ready.
+                map.events.add('ready', function () {
+                    /*Construct a style control*/
+                    var styleControl = new atlas.control.StyleControl({
+                        mapStyles: ['road', 'grayscale_dark', 'road_shaded_relief'] // 'satellite' is not available in S0 maps SKU
+                    });
+                    
+                    /*Add the Style Control to the map*/
+                    map.controls.add(styleControl, {
+                        position: "top-right"
+                    })  
+                });
+                
+                var entities = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Entities));
+                entities.forEach((e) => {
+                    if(e.GeoLocation)
+                    {
+                        let lon = e.GeoLocation.coordinates[0];
+                        let lat = e.GeoLocation.coordinates[1];
+                        let nameLength = Math.min(30, e.Name.length );
+                        let descLength = Math.min(50, e.Description.length );
+                        let contentString = `
+                        <div class="p-2 text-wrap">
+                            <h5>${e.Name.substring(0, nameLength)}</h5>
+                            <hr/>
+                            <p>${e.Description.substring(0, descLength)}</p>
+                            <a class="btn btn-link" href="Amphorae/Detail?id=${e.Id}">View</a>
+                        </div>
+                        `
 
+                        //Create a HTML marker and add it to the map.
+                        let marker = new atlas.HtmlMarker({
+                            color: '#18171790',
+                            text: "🏺",
+                            position: [lon, lat],
+                            popup: new atlas.Popup({
+                                content: contentString,
+                                pixelOffset: [0, 0]
+                            })
+                        });
+
+                        map.markers.add(marker);
+                        //Add a click event to toggle the popup.
+                        map.events.add('click', marker, () => {
+                            marker.togglePopup();
+                        });
+                    }
+                });
+            }
+        </script>
 }

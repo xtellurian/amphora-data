@@ -26,6 +26,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/tsiclient@1.3.5/tsiclient.css">
     <script src="https://unpkg.com/tsiclient@1.3.5/tsiclient.js"></script>
     @Html.Raw(JavaScriptSnippet.FullScript)
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
