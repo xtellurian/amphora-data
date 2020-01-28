@@ -48,7 +48,7 @@
     </div>
     <div class="row align-items-center">
         <div class="col-11 text-center">
-            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform"})
+            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
         </div>
         <div class="col-1 text-left">
             <div>
@@ -61,7 +61,7 @@
     <div class="row">
         <div id="advanced" class="col text-center">
             <div id="filterCollapse" class="collapse mb-2">
-                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, isAdvanced=true, formId="searchform"})
+                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
             </div>
         </div>
     </div>
@@ -122,6 +122,7 @@
                 <ul class="pagination justify-content-center">
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="0"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -134,6 +135,7 @@
                     </li>
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@previousPage"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -150,6 +152,7 @@
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
                             <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                                asp-page-handler="@Model.Handler"
                                 asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                                 asp-route-SearchDefinition.Page="@p" 
                                 asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -161,7 +164,8 @@
                         </li>
                     }
                     <li class="page-item @nextEnabled">
-                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                        <a class="page-link" asp-area="Discover" asp-page="/Index"
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@nextPage"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -172,7 +176,8 @@
                         </a>
                     </li>
                     <li class="page-item @nextEnabled">
-                        <a class="page-link" asp-area="Discover" asp-page="/Index" 
+                        <a class="page-link" asp-area="Discover" asp-page="/Index"
+                            asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@(numPages -1)"
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
@@ -192,7 +197,7 @@
     <link rel="stylesheet" href="~/lib/azure-maps-control/dist/atlas.min.css" type="text/css"> 
     <style>
         #discoverMap {
-            height: 66vh;
+            height: 50vh;
         }
     </style>
 }
@@ -221,23 +226,78 @@
             }
         }
     </script>
-    @if(Model.MapView)
-    {
-        var lat = Model.SearchDefinition?.Lat ?? 0;
-        var lon = Model.SearchDefinition?.Lon ?? 0;
-        var zoom = Model.SearchDefinition?.Lat == null ? default(int) : 6; 
+    @{
+        var lat = Model.MapCenter?.Lat() ?? 0;
+        var lon = Model.MapCenter?.Lon() ?? 0;
+        var zoom = Model.Zoom ;
+    }
         <script src="~/lib/azure-maps-control/dist/atlas.min.js"></script>
         <script type="text/javascript">
-            var map = new atlas.Map('discoverMap', {
-                center: [@lon, @lat],
-                view: "Auto",
-                zoom: @zoom,
-                language: 'en-AU',
-                authOptions: {
-                    authType: 'subscriptionKey',
-                    subscriptionKey: '@Model.MapKey'
-                }
-            });
+            if(document.getElementById('discoverMap'))
+            {
+                let center = [@lon, @lat];
+                var map = new atlas.Map('discoverMap', {
+                    center,
+                    view: "Auto",
+                    zoom: @zoom,
+                    language: 'en-AU',
+                    authOptions: {
+                        authType: 'subscriptionKey',
+                        subscriptionKey: '@Model.MapKey'
+                    }
+                });
+                //Construct a zoom control and add it to the map.
+                map.controls.add(new atlas.control.ZoomControl(), {
+                    position: 'bottom-right'
+                });
+                //Wait until the map resources are ready.
+                map.events.add('ready', function () {
+                    /*Construct a style control*/
+                    var styleControl = new atlas.control.StyleControl({
+                        mapStyles: ['road', 'grayscale_dark', 'road_shaded_relief'] // 'satellite' is not available in S0 maps SKU
+                    });
+                    
+                    /*Add the Style Control to the map*/
+                    map.controls.add(styleControl, {
+                        position: "top-right"
+                    })  
+                });
+                
+                var entities = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Entities));
+                entities.forEach((e) => {
+                    if(e.GeoLocation)
+                    {
+                        let lon = e.GeoLocation.coordinates[0];
+                        let lat = e.GeoLocation.coordinates[1];
+                        let nameLength = Math.min(30, e.Name.length );
+                        let descLength = Math.min(50, e.Description.length );
+                        let contentString = `
+                        <div class="p-2 text-wrap">
+                            <h5>${e.Name.substring(0, nameLength)}</h5>
+                            <hr/>
+                            <p>${e.Description.substring(0, descLength)}</p>
+                            <a class="btn btn-link" href="Amphorae/Detail?id=${e.Id}">View</a>
+                        </div>
+                        `
+
+                        //Create a HTML marker and add it to the map.
+                        let marker = new atlas.HtmlMarker({
+                            color: '#18171790',
+                            text: "🏺",
+                            position: [lon, lat],
+                            popup: new atlas.Popup({
+                                content: contentString,
+                                pixelOffset: [0, 0]
+                            })
+                        });
+
+                        map.markers.add(marker);
+                        //Add a click event to toggle the popup.
+                        map.events.add('click', marker, () => {
+                            marker.togglePopup();
+                        });
+                    }
+                });
+            }
         </script>
-    }
 }

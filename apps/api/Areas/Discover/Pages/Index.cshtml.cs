@@ -20,6 +20,8 @@ namespace Amphora.Api.Areas.Discover.Pages
         private readonly IAuthenticateService authenticateService;
 
         public string MapKey { get; }
+        public GeoLocation MapCenter { get; private set; } = new GeoLocation(133.77, -25.27);
+        public int Zoom { get; private set; } = 1;
 
         public IndexPageModel(IMarketService marketService,
                               IAuthenticateService authenticateService,
@@ -37,41 +39,59 @@ namespace Amphora.Api.Areas.Discover.Pages
         public IEnumerable<AmphoraModel> Entities { get; set; }
         public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
         public bool MapView { get; private set; }
+        public string Handler { get; private set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
+            Handler ??= "ListView";
             await RunSearch();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Handler ??= "ListView";
             await RunSearch();
             return Page();
-        }
-
-        public async Task<IActionResult> OnGetMapViewAsync()
-        {
-            this.MapView = true;
-            return await OnGetAsync();
-        }
-
-        public async Task<IActionResult> OnPostMapViewAsync()
-        {
-            this.MapView = true;
-            return await OnPostAsync();
         }
 
         public async Task<IActionResult> OnGetListViewAsync()
         {
             this.MapView = false;
+            this.Handler = "ListView";
             return await OnGetAsync();
         }
 
         public async Task<IActionResult> OnPostListViewAsync()
         {
             this.MapView = false;
+            this.Handler = "ListView";
             return await OnPostAsync();
+        }
+
+        public async Task<IActionResult> OnGetMapViewAsync()
+        {
+            this.MapView = true;
+            this.Handler = "MapView";
+            CheckCenter();
+            return await OnGetAsync();
+        }
+
+        public async Task<IActionResult> OnPostMapViewAsync()
+        {
+            this.MapView = true;
+            this.Handler = "MapView";
+            CheckCenter();
+            return await OnPostAsync();
+        }
+
+        private void CheckCenter()
+        {
+            if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
+            {
+                MapCenter = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
+                Zoom = 8;
+            }
         }
 
         private ParallelQuery<string> GetLabels()
