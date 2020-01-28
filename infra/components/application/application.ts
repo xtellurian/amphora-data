@@ -146,6 +146,7 @@ export class Application extends pulumi.ComponentResource
     //   });
 
     this.state.storeInVault("AzureMapsKey", "AzureMaps--Key", this.AzureMaps.maps.primaryAccessKey);
+    this.state.storeInVault("AzureMapsSecondaryKey", "AzureMaps--SecondaryKey", this.AzureMaps.maps.secondaryAccessKey);
     this.state.storeInVault("AzureMapsClientId", "AzureMaps--ClientId", this.AzureMaps.maps.xMsClientId);
   }
 }
