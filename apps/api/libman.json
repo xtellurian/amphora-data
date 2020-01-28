@@ -9,6 +9,11 @@
     {
       "library": "color-scheme@1.0.1",
       "destination": "wwwroot/lib/color-scheme"
+    },
+    {
+      "provider": "unpkg",
+      "library": "azure-maps-control@2.0.20",
+      "destination": "wwwroot/lib/azure-maps-control"
     }
   ]
 }
