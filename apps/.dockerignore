@@ -4,4 +4,4 @@
 Dockerfile
 azure-pipelines.yaml
 .gitignore
-**/appsettings.Development.json
+# **/appsettings.Development.json
