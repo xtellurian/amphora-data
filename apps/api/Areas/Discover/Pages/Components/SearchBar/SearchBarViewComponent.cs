@@ -11,6 +11,7 @@ namespace Amphora.Api.Areas.Discover.Pages.Components
         public string FormId { get; private set; }
         public string Handler { get; private set; }
         public string Placeholder { get; private set; }
+        [BindProperty]
         public MarketSearch SearchDefinition { get; private set; }
         public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
         public IViewComponentResult Invoke(MarketSearch searchDefinition,
