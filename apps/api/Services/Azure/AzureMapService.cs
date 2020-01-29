@@ -20,7 +20,7 @@ namespace Amphora.Api.Services.Azure
         private readonly ILogger<AzureMapService> logger;
         private readonly string subscriptionKey;
         private const string ApiVersion = "1.0";
-        private const string CountrySet = "AU";
+        private const string CountrySet = "AU,US";
         private string QueryString() => $"subscription-key={subscriptionKey}&api-version={ApiVersion}&countrySet={CountrySet}";
 
         public AzureMapService(IHttpClientFactory factory,
