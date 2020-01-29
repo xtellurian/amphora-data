@@ -50,7 +50,7 @@ namespace Amphora.Api.Services.Auth
                 var user = await UserManager.FindByNameAsync(userName);
                 user.LastLoggedIn = System.DateTime.UtcNow;
                 await UserManager.UpdateAsync(user);
-                if (isAcquiringToken) // don't publish the token acquisition logins
+                if (!isAcquiringToken) // don't publish the token acquisition logins
                 {
                     await eventPublisher.PublishEventAsync(new SignInEvent(user, isAcquiringToken));
                 }
