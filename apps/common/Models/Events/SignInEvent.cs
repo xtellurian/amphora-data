@@ -7,14 +7,26 @@ namespace Amphora.Common.Models.Events
     {
         public SignInEvent(IUser user)
         {
-            Data = new { UserId = user.Id, orgId = user.OrganisationId };
+            Data = new SignInEventData(user.OrganisationId, user.UserName);
             Subject = user.UserName;
         }
 
         public string EventType => "AmphoraData.Users.SignIn";
 
-        public object Data { get; private set; }
+        public IEventData Data { get; private set; }
 
         public string Subject { get; private set; }
+        private class SignInEventData : IEventData
+        {
+            public SignInEventData(string? organisationId, string? triggeredByUserName)
+            {
+                OrganisationId = organisationId;
+                TriggeredByUserName = triggeredByUserName;
+            }
+
+            public string? AmphoraId { get; set; }
+            public string? OrganisationId { get; set; }
+            public string? TriggeredByUserName { get; set; }
+        }
     }
 }

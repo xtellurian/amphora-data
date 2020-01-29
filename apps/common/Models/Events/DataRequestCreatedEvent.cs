@@ -8,22 +8,40 @@ namespace Amphora.Common.Models.Events
         public DataRequestCreatedEvent(DataRequestModel dataRequest)
         {
             Subject = dataRequest.Id;
-            Data = new
-            {
-                DataRequestId = dataRequest.Id,
-                Name = dataRequest.Name,
-                Description = dataRequest.Description,
-                CreatedByUserId = dataRequest.CreatedById,
-                CreatedByUserName = dataRequest.CreatedBy?.UserName,
-                CreatedByUserEmail = dataRequest.CreatedBy?.Email,
-                CreatedByUserOrg = dataRequest.CreatedBy?.OrganisationId
-            };
+            Data = new DataRequestCreatedEventData(dataRequest.CreatedBy?.OrganisationId,
+                                                   dataRequest.Id,
+                                                   dataRequest.CreatedBy?.UserName,
+                                                   dataRequest.Name,
+                                                   dataRequest.Description);
         }
 
         public string EventType => "AmphoraData.DataRequests.DataRequestCreated";
 
-        public object Data { get; private set; }
+        public IEventData Data { get; private set; }
 
         public string Subject { get; private set; }
+
+        private class DataRequestCreatedEventData : IEventData
+        {
+            public DataRequestCreatedEventData(string? organisationId,
+                                               string dataRequestId,
+                                               string? triggeredByUserName,
+                                               string name,
+                                               string description)
+            {
+                OrganisationId = organisationId;
+                DataRequestId = dataRequestId;
+                TriggeredByUserName = triggeredByUserName;
+                Name = name;
+                Description = description;
+            }
+
+            public string? AmphoraId { get; set; }
+            public string? OrganisationId { get; set; }
+            public string? TriggeredByUserName { get; set; }
+            public string DataRequestId { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+        }
     }
 }
