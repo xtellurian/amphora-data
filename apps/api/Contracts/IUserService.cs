@@ -16,7 +16,7 @@ namespace Amphora.Api.Contracts
         Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user, InvitationModel invitation, string password);
         Task<EntityOperationResult<ApplicationUser>> DeleteAsync(ClaimsPrincipal principal, IUser user);
         bool IsSignedIn(ClaimsPrincipal principal);
-        Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure);
+        Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure, bool isAcquiringToken = false);
         Task<ApplicationUser> ReadUserModelAsync(ClaimsPrincipal principal);
     }
 }

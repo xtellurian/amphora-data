@@ -5,9 +5,9 @@ namespace Amphora.Common.Models.Events
 {
     public class SignInEvent : EventBase, IEvent
     {
-        public SignInEvent(IUser user)
+        public SignInEvent(IUser user, bool? isAcquiringToken = false)
         {
-            Data = new SignInEventData(user.OrganisationId, user.UserName);
+            Data = new SignInEventData(user.OrganisationId, user.UserName, isAcquiringToken);
             Subject = user.UserName;
         }
 
@@ -18,15 +18,17 @@ namespace Amphora.Common.Models.Events
         public string Subject { get; private set; }
         private class SignInEventData : IEventData
         {
-            public SignInEventData(string? organisationId, string? triggeredByUserName)
+            public SignInEventData(string? organisationId, string? triggeredByUserName, bool? isAcquiringToken)
             {
                 OrganisationId = organisationId;
                 TriggeredByUserName = triggeredByUserName;
+                IsAcquiringToken = isAcquiringToken;
             }
 
-            public string? AmphoraId { get; set; }
+            public string? AmphoraId { get; set; } = null;
             public string? OrganisationId { get; set; }
             public string? TriggeredByUserName { get; set; }
+            public bool? IsAcquiringToken { get; set; }
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        public async Task<(bool success, string token)> IsAuthenticated(TokenRequest request)
+        public async Task<(bool success, string token)> GetToken(TokenRequest request)
         {
             var user = await userService.UserManager.FindByNameAsync(request.Username);
             if (user == null) { return (false, null); }
@@ -58,7 +58,7 @@ namespace Amphora.Api.Services.Auth
             {
                 var token = string.Empty;
 
-                var signInResult = await userService.PasswordSignInAsync(request.Username, request.Password, false, false);
+                var signInResult = await userService.PasswordSignInAsync(request.Username, request.Password, false, false, true);
                 if (!signInResult.Succeeded) { return (false, token); }
                 token = GenerateToken(user);
                 logger.LogInformation("Generated token. User Is Authenticated");

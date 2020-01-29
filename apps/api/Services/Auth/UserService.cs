@@ -41,7 +41,7 @@ namespace Amphora.Api.Services.Auth
         public IEntityStore<ApplicationUser> UserStore { get; }
         public IUserManager UserManager { get; protected set; }
 
-        public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
+        public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure, bool isAcquiringToken = false)
         {
             var res = await signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
             if (res.Succeeded)
@@ -50,7 +50,10 @@ namespace Amphora.Api.Services.Auth
                 var user = await UserManager.FindByNameAsync(userName);
                 user.LastLoggedIn = System.DateTime.UtcNow;
                 await UserManager.UpdateAsync(user);
-                await eventPublisher.PublishEventAsync(new SignInEvent(user));
+                if (isAcquiringToken) // don't publish the token acquisition logins
+                {
+                    await eventPublisher.PublishEventAsync(new SignInEvent(user, isAcquiringToken));
+                }
             }
 
             return res;
