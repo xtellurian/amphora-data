@@ -89,12 +89,6 @@
                         </div>
                     </div>
                     <div class="float-right">
-                        @if(Model.CanEditDetails)
-                        {
-                            <div id="adminAction">
-                                <a class="btn btn-info m-1" asp-page="./Edit" asp-route-id="@Model.Amphora.Id">Edit</a>
-                            </div>
-                        }
                         @if(Model.Purchase != null || Model.CanEditDetails)
                         {
                             <div id="alreadyPurchasedActions" class="text-right">
@@ -148,15 +142,24 @@
                             {
 
                             <span class="dropdown show">
-                                <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Options
+                                <a class="btn btn-sm btn-link dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </a>
 
                                 <div class="dropdown-menu" aria-labelledby="pinActionLink">
+                                    @if(Model.CanEditDetails)
+                                    {
+                                        <a class="dropdown-item" asp-page="./Edit" asp-route-id="@Model.Amphora.Id">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                                            <i class="fas fa-users"></i> Show has purchased
+                                        </button>
+                                    }
                                     @if(Model.Result.User?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
                                     {
                                         <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
-                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                            <button class="dropdown-item" type="submit">
                                                 <i class="fas fa-thumbtack"></i> Unpin from User
                                             </button>
                                         </form>
@@ -164,7 +167,7 @@
                                     else
                                     {
                                         <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToUser">
-                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                            <button class="dropdown-item" type="submit">
                                                 <i class="fas fa-thumbtack"></i> Pin to User
                                             </button>
                                         </form>
@@ -173,7 +176,7 @@
                                     @if(Model.Amphora.Organisation?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
                                     {
                                         <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromOrg">
-                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                            <button class="dropdown-item" type="submit">
                                                 <i class="fas fa-thumbtack"></i> Unpin from Organisation
                                             </button>
                                         </form>
@@ -181,15 +184,20 @@
                                     else
                                     {
                                         <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToOrg">
-                                            <button class="dropdown-item" type="submit" class="btn btn-primary">
+                                            <button class="dropdown-item" type="submit">
                                                 <i class="fas fa-thumbtack"></i> Pin to Organisation
                                             </button>
                                         </form>
                                     }
-                                    
-                                    <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                                        <i class="fas fa-users"></i> Show has purchased
-                                    </button>
+                                    @if(Model.Amphora.GeoLocation != null)
+                                    {
+                                        <a class="dropdown-item" asp-area="Discover" asp-page="./Index" asp-page-handler="MapView" 
+                                            asp-route-lat="@Model.Amphora.GeoLocation.Lat()" 
+                                            asp-route-lon="@Model.Amphora.GeoLocation.Lon()"
+                                            asp-route-dist=50>
+                                            <i class="fas fa-arrows-alt"></i> Discover Nearby
+                                        </a>
+                                    }
                                 </div>
                             </span>
                             }
