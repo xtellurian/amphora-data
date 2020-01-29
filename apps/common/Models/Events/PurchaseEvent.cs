@@ -7,21 +7,34 @@ namespace Amphora.Common.Models.Events
     {
         public PurchaseEvent(PurchaseModel purchase)
         {
-            Data = new
-            {
-                PurchaseId = purchase.Id,
-                AmphoraId = purchase.AmphoraId,
-                Price = purchase.Price,
-                PurchasedByUserId = purchase.PurchasedByUserId,
-                PurchasedByOrgId = purchase.PurchasedByOrganisationId
-            };
-            Subject = purchase.Id;
+            Data = new PurchaseEventData(purchase.AmphoraId,
+                                         purchase.PurchasedByOrganisationId,
+                                         purchase.PurchasedByUser?.UserName,
+                                         purchase.Price);
+
+            Subject = $"Amphora Name: {purchase.Amphora.Name}";
         }
 
         public string EventType => "AmphoraData.Purchases.NewPurchase";
 
-        public object Data { get; private set; }
+        public IEventData Data { get; private set; }
 
         public string Subject { get; private set; }
+
+        private class PurchaseEventData : IEventData
+        {
+            public PurchaseEventData(string? amphoraId, string? organisationId, string? triggeredByUserName, double? price)
+            {
+                AmphoraId = amphoraId;
+                OrganisationId = organisationId;
+                TriggeredByUserName = triggeredByUserName;
+                Price = price;
+            }
+
+            public string? AmphoraId { get; set; }
+            public string? OrganisationId { get; set; }
+            public string? TriggeredByUserName { get; set; }
+            public double? Price { get; set; }
+        }
     }
 }

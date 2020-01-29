@@ -20,8 +20,8 @@ namespace Amphora.Api.Areas.Discover.Pages
         private readonly IAuthenticateService authenticateService;
 
         public string MapKey { get; }
-        public GeoLocation MapCenter { get; private set; } = new GeoLocation(133.77, -25.27);
-        public int Zoom { get; private set; } = 1;
+        public GeoLocation MapCenter { get; private set; } = new GeoLocation(133.77, -25.27); // centre of Aust
+        public int Zoom { get; private set; } = 3;
 
         public IndexPageModel(IMarketService marketService,
                               IAuthenticateService authenticateService,

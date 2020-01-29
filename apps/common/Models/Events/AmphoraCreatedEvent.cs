@@ -7,22 +7,37 @@ namespace Amphora.Common.Models.Events
     {
         public AmphoraCreatedEvent(AmphoraModel amphora)
         {
-            this.Data = new
-            {
-                AmphoraId = amphora.Id,
-                Price = amphora.Price,
-                CreatedByUserId = amphora.CreatedById,
-                CreatedByUserName = amphora.CreatedBy?.UserName,
-                OrganisationId = amphora.OrganisationId
-            };
+            this.Data = new AmphoraCreatedEventData(amphora.Id,
+                                                    amphora.OrganisationId,
+                                                    amphora.Price,
+                                                    amphora.CreatedBy?.UserName);
 
             this.Subject = amphora.Id;
         }
 
         public string EventType => "AmphoraData.Amphorae.NewAmphora";
 
-        public object Data { get; private set; }
+        public IEventData Data { get; private set; }
 
         public string Subject { get; private set; }
+
+        private class AmphoraCreatedEventData : IEventData
+        {
+            public AmphoraCreatedEventData(string amphoraId,
+                                           string? organisationId,
+                                           double? price,
+                                           string? triggeredByUserName)
+            {
+                AmphoraId = amphoraId;
+                OrganisationId = organisationId;
+                Price = price;
+                TriggeredByUserName = triggeredByUserName;
+            }
+
+            public string? AmphoraId { get; set; }
+            public string? OrganisationId { get; set; }
+            public string? TriggeredByUserName { get; set; }
+            public double? Price { get; set; }
+        }
     }
 }

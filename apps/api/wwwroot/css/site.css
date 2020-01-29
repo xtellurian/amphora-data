@@ -124,3 +124,13 @@ body {
 #homeCarousel .carousel-caption {
   background-image: linear-gradient( transparent,  var(--amphora-black), transparent);
 }
+
+/* Autocomplete styles
+-------------------------------------------------- */
+
+#autoComplete_results_list {
+  position: absolute;  /* <-- added declarations */
+  left: 0; top: 100%;  /*     here               */
+  width: 100%;         /*     and here...        */
+  z-index: 999;
+}

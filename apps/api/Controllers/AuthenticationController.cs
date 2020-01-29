@@ -35,7 +35,7 @@ namespace Amphora.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var token = await authService.IsAuthenticated(request);
+            var token = await authService.GetToken(request);
             if (token.success)
             {
                 return Ok(token.token);
