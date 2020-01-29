@@ -20,10 +20,12 @@
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
                     asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                     asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                     asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                     asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                     asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                    asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
                     View as List
                 </a>
             }
@@ -32,10 +34,12 @@
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
                     asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                     asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
+                    asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                     asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                     asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                     asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                    asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
                     View on Map
                 </a>
             }
@@ -125,10 +129,12 @@
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="0"
+                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" 
                             tabindex="-1">
                             <<
                         </a>
@@ -138,10 +144,12 @@
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@previousPage"
+                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" 
                             tabindex="-1">
                             <
                         </a>
@@ -155,10 +163,12 @@
                                 asp-page-handler="@Model.Handler"
                                 asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                                 asp-route-SearchDefinition.Page="@p" 
+                                asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                                 asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                                 asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                                 asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                                asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                                asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                                asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" >
                                 @p
                             </a>
                         </li>
@@ -168,10 +178,12 @@
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@nextPage"
+                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
                         >
                         </a>
                     </li>
@@ -180,10 +192,12 @@
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
                             asp-route-SearchDefinition.Page="@(numPages -1)"
+                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
                             asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist" >
+                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
+                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
                         >>
                         </a>
                     </li>

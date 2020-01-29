@@ -7,6 +7,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public string Term { get; set; }
         public int? Page { get; set; }
         public int? Skip => Top * Page;
+        [Display(Name = "Results per Page")]
         public int? Top { get; set; }
 
         [Display(Name = "Latitude")]
