@@ -44,13 +44,11 @@
                 }
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-2">
-                            <label>GeoLocation</label>
+                        <div class="col-sm-8 body ui-widget">
+                            <label class="control-label">GeoLocation</label>
+                            <input id="autoComplete" class="form-control" type="text" tabindex="1">
+                            <div class="selection"></div>
                         </div>
-                        <div class="col-6 body ui-widget">
-                            <input id="autoComplete" type="text" tabindex="1">
-                        </div>
-                        <div class="selection"></div>
                         <div class="col-sm-2">
                             <label asp-for="AmphoraDto.Lat" class="control-label"></label>
                             <input id="lat" asp-for="AmphoraDto.Lat" class="form-control" />
