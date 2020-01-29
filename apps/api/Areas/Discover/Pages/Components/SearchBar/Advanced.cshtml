@@ -30,10 +30,19 @@
                 <hr/>
             </div>
         </div>
-        <div class="row mb-2">
-            <div class="col">
+        <div class="row justify-content-between mb-2">
+            <div class="col-6">
                 <input id="labels" form="searchform" asp-for="SearchDefinition.Labels" placeholder="Labels (comma separated)" class="form-control bg-none border-1">
                 <span asp-validation-for="SearchDefinition.Labels" class="text-danger"></span>
+            </div>
+            <div class="col-2">
+                <select form="searchform" asp-for="SearchDefinition.Top" class="form-control">
+                    <option value="8">8</option>
+                    <option value="16">16</option>
+                    <option value="32">32</option>
+                </select>
+                <label asp-for="SearchDefinition.Top" class="control-label"></label>
+                <span asp-validation-for="SearchDefinition.Top" class="text-danger"></span>
             </div>
         </div>
         <div class="row text-left">
