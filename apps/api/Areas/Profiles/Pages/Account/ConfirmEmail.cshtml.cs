@@ -5,17 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
     [AllowAnonymous]
-    public class ConfirmEmailModel : PageModel
+    public class ConfirmEmailPageModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<ConfirmEmailPageModel> logger;
 
-        public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
+        public ConfirmEmailPageModel(UserManager<ApplicationUser> userManager, ILogger<ConfirmEmailPageModel> logger)
         {
             _userManager = userManager;
+            this.logger = logger;
         }
 
         public bool Succeeded { get; private set; }
@@ -36,9 +39,11 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
+                logger.LogCritical("Failed to confirm email");
                 foreach (var e in result.Errors)
                 {
-                    ModelState.AddModelError(e.Code, e.Description);
+                    logger.LogError(e.Description);
+                    ModelState.AddModelError(string.Empty, e.Description);
                 }
             }
 
