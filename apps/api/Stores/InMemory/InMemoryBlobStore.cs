@@ -99,5 +99,19 @@ namespace Amphora.Api.Stores
         {
             return Task.FromResult<Stream>(new MemoryStream());
         }
+
+        public Task<bool> DeleteAsync(T entity, string path)
+        {
+            if (this.store.TryGetValue(entity.Id, out var x))
+            {
+                if (x.ContainsKey(path))
+                {
+                    x.Remove(path);
+                    return Task.FromResult(true);
+                }
+            }
+
+            return Task.FromResult(false);
+        }
     }
 }

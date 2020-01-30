@@ -21,7 +21,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Filename</th>
-                        <th class="text-center"> Action</th>
+                        <th class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -29,7 +29,20 @@
                     {
                     <tr class="file-item">
                         <th scope="row">@n</th>
-                        <td class="text-center"><a asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./File"><button class="btn btn-primary">Download</button></a></td>
+                        <td class="text-right">
+                            @if(Model.CanDownloadFiles)
+                            {
+                                <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./File">
+                                    Download
+                                </a>
+                            }
+                            @if(Model.CanDeleteFiles)
+                            {
+                                <a class="btn btn-danger" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./DeleteFile">
+                                    Delete
+                                </a>
+                            }
+                        </td>
                     </tr>
                     }
                 </tbody>
