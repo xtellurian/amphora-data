@@ -122,5 +122,12 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         {
             throw new NotImplementedException();
         }
+
+        public async Task<bool> DeleteAsync(OrganisationModel entity, string path)
+        {
+            var container = GetContainerReference(entity);
+            var blob = container.GetBlockBlobReference(path);
+            return await blob.DeleteIfExistsAsync();
+        }
     }
 }

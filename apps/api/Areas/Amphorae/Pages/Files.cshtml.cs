@@ -29,7 +29,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         }
 
         public IList<string> Names { get; private set; }
+        public bool CanDeleteFiles { get; private set; }
         public bool CanUploadFiles { get; private set; }
+        public bool CanDownloadFiles { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -93,7 +95,25 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 var user = await userService.ReadUserModelAsync(User);
                 Names = await blobStore.ListBlobsAsync(Amphora);
-                CanUploadFiles = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
+                CanDeleteFiles = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Update);
+                // set the three types of permission for the page
+                if (CanDeleteFiles)
+                {
+                    CanUploadFiles = true;
+                }
+                else
+                {
+                    CanUploadFiles = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.WriteContents);
+                }
+
+                if (CanUploadFiles)
+                {
+                    CanDownloadFiles = true;
+                }
+                else
+                {
+                    CanDownloadFiles = await permissionService.IsAuthorizedAsync(user, this.Amphora, ResourcePermissions.ReadContents);
+                }
             }
         }
     }

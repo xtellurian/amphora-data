@@ -16,5 +16,6 @@ namespace Amphora.Api.Contracts
         Task<IList<string>> ListBlobsAsync(T entity);
         Task<byte[]> ReadBytesAsync(T entity, string path);
         Task WriteBytesAsync(T entity, string path, byte[] bytes);
+        Task<bool> DeleteAsync(T entity, string path);
     }
 }

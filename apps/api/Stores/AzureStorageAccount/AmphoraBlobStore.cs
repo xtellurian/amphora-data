@@ -147,5 +147,12 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
             return await blob.OpenWriteAsync();
         }
+
+        public async Task<bool> DeleteAsync(AmphoraModel entity, string path)
+        {
+            var container = GetContainerReference(entity);
+            var blob = container.GetBlockBlobReference(path);
+            return await blob.DeleteIfExistsAsync();
+        }
     }
 }
