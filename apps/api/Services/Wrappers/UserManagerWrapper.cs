@@ -52,8 +52,7 @@ namespace Amphora.Api.Services.Wrappers
 
         public async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
         {
-            var mapped = mapper.Map<T>(user);
-            return await userManager.GenerateEmailConfirmationTokenAsync(mapped);
+            return await userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
         public string GetUserName(ClaimsPrincipal principal)
