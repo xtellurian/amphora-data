@@ -79,8 +79,15 @@
                             </div>
                             
                         </td>
-                        <td><a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail"><button class="btn btn-primary m-1">View</button></a>
-                        <a asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"><button class="btn btn-danger m-1">Delete</button></a></td>
+                        <td>
+                            <a class="btn btn-primary m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail">
+                                View
+                            </a>
+                        @if(Model.CanDeleteProperty)
+                        {
+                            <a class="btn btn-danger m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Delete"> Delete</a>
+                        }
+                        </td>
                     </tr>
                     }
                     @if(Model.Signals?.Count() > 0 ) 
