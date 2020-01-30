@@ -154,15 +154,19 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 values: new { userId = user.Id, code = code },
                 protocol: Request.Scheme);
 
-            if (!string.IsNullOrEmpty(hostOptions.CurrentValue?.MainHost))
-            {
-                await emailSender.SendEmailAsync(new ConfirmEmailEmail(user, hostOptions.CurrentValue, code));
-            }
-            else
-            {
-                await emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+            // the links are broken when you do it this way
+            // if (!string.IsNullOrEmpty(hostOptions.CurrentValue?.MainHost))
+            // {
+            //     await emailSender.SendEmailAsync(new ConfirmEmailEmail(user, hostOptions.CurrentValue, code));
+            // }
+            // else
+            // {
+            //     await emailSender.SendEmailAsync(Input.Email, "Please confirm your email",
+            //     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            // }
+
+            await emailSender.SendEmailAsync(Input.Email, "Please confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-            }
         }
     }
 }
