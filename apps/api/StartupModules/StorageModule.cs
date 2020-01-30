@@ -56,6 +56,7 @@ namespace Amphora.Api.StartupModules
                 container.CreateIfNotExists();
                 var keyIdentifier = $"{kvUri}keys/dataprotection/";
                 services.AddDataProtection()
+                    .SetApplicationName("AmphoraData")
                     .PersistKeysToAzureBlobStorage(container, "keys.xml")
                     .ProtectKeysWithAzureKeyVault(keyVaultClient, keyIdentifier);
             }
