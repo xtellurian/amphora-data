@@ -34,6 +34,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.mapper = mapper;
         }
 
+        public bool Succeeded { get; private set; }
+
         public async Task<IActionResult> OnGetAsync(string id, string name)
         {
             if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
@@ -47,7 +49,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
             {
                 var file = await blobStore.ReadBytesAsync(entity, name);
-                if (file == null || file.Length == 0) { return RedirectToPage("./Detail", new { Id = id }); }
+                if (file == null || file.Length == 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Uh Oh, this file appears to be empty.");
+                    this.Succeeded = false;
+                    return Page();
+                }
+
                 return File(file, "application/octet-stream", name);
             }
             else
