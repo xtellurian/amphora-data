@@ -10,12 +10,10 @@ namespace Amphora.Api.Services.Wrappers
     public class UserManagerWrapper<T> : IUserManager where T : ApplicationUser
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly IMapper mapper;
 
-        public UserManagerWrapper(UserManager<ApplicationUser> userManager, IMapper mapper)
+        public UserManagerWrapper(UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
-            this.mapper = mapper;
         }
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
@@ -40,7 +38,6 @@ namespace Amphora.Api.Services.Wrappers
 
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user)
         {
-            var mapped = mapper.Map<T>(user);
             var u = await userManager.FindByIdAsync(user.Id);
             return await userManager.DeleteAsync(u);
         }
@@ -52,8 +49,7 @@ namespace Amphora.Api.Services.Wrappers
 
         public async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
         {
-            var mapped = mapper.Map<T>(user);
-            return await userManager.GenerateEmailConfirmationTokenAsync(mapped);
+            return await userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
         public string GetUserName(ClaimsPrincipal principal)

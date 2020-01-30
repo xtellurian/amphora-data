@@ -18,6 +18,8 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             _userManager = userManager;
         }
 
+        public bool Succeeded { get; private set; }
+
         public async Task<IActionResult> OnGetAsync(string userId, string code)
         {
             if (userId == null || code == null)
@@ -34,9 +36,13 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
+                foreach (var e in result.Errors)
+                {
+                    ModelState.AddModelError(e.Code, e.Description);
+                }
             }
 
+            this.Succeeded = result.Succeeded;
             return Page();
         }
     }
