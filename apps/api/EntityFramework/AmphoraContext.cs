@@ -145,7 +145,7 @@ namespace Amphora.Api.EntityFramework
         public DbSet<OrganisationModel> Organisations { get; set; }
         public DbSet<DataRequestModel> DataRequests { get; set; }
         public DbSet<PurchaseModel> Purchases { get; set; }
-        public DbSet<SignalModel> Signals { get; set; }
+        public DbSet<SignalModel> Signals { get; set; } // TODO: remove from context
         public DbSet<InvitationModel> Invitations { get; set; }
     }
 }
