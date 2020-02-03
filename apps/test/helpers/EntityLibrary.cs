@@ -50,9 +50,9 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static OrganisationDto GetOrganisationDto([CallerMemberName] string testName = "")
+        public static Organisation GetOrganisationDto([CallerMemberName] string testName = "")
         {
-            var org = new Faker<OrganisationDto>()
+            var org = new Faker<Organisation>()
                .StrictMode(false)
                .RuleFor(o => o.Name, f => f.Company.CompanyName())
                .RuleFor(o => o.About, f => testName + f.Lorem.Sentences())

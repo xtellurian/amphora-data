@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -46,7 +46,7 @@ namespace Amphora.Tests.Integration.Organisations
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
+            var b = JsonConvert.DeserializeObject<Organisation>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Name, b.Name);
 
@@ -69,7 +69,7 @@ namespace Amphora.Tests.Integration.Organisations
             var createResponse = await client.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode(); // Status Code 200-299
             var responseBody = await createResponse.Content.ReadAsStringAsync();
-            a = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
+            a = JsonConvert.DeserializeObject<Organisation>(responseBody);
 
             // Act
             a.Name = System.Guid.NewGuid().ToString();
@@ -105,7 +105,7 @@ namespace Amphora.Tests.Integration.Organisations
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            org = JsonConvert.DeserializeObject<OrganisationDto>(responseBody);
+            org = JsonConvert.DeserializeObject<Organisation>(responseBody);
 
             var client2 = _factory.CreateClient();
             client2.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
@@ -113,18 +113,18 @@ namespace Amphora.Tests.Integration.Organisations
             var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation));
 
             var inviteResponse = await client.PostAsJsonAsync($"api/invitations/",
-                new InvitationDto { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });
+                new Invitation { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });
             var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
             inviteResponse.EnsureSuccessStatusCode();
 
-            var acceptDto = new AcceptInvitationDto { TargetOrganisationId = org.Id };
+            var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var acceptResponse = await client2.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             acceptResponse.EnsureSuccessStatusCode();
 
             var selfResponse = await client2.GetAsync("api/users/self");
             var selfContent = await selfResponse.Content.ReadAsStringAsync();
             selfResponse.EnsureSuccessStatusCode();
-            var self = JsonConvert.DeserializeObject<UserDto>(selfContent);
+            var self = JsonConvert.DeserializeObject<AmphoraUser>(selfContent);
             Assert.Equal(org.Id, self.OrganisationId);
 
             await DestroyOrganisationAsync(client, org);
@@ -132,7 +132,7 @@ namespace Amphora.Tests.Integration.Organisations
             await DestroyUserAsync(client2, otherUser);
         }
 
-        private async Task DeleteOrganisation(OrganisationDto a, HttpClient client)
+        private async Task DeleteOrganisation(Organisation a, HttpClient client)
         {
             var deleteResponse = await client.DeleteAsync($"api/organisations/{a.Id}");
             deleteResponse.EnsureSuccessStatusCode();

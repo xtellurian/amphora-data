@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Amphorae
 {
-    public class AmphoraModel : Entity, ISearchable
+    public class AmphoraModel : EntityBase, ISearchable
     {
         public AmphoraModel()
         {

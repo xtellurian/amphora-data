@@ -5,7 +5,7 @@ using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.DataRequests
 {
-    public class DataRequestModel : Entity, ISearchable
+    public class DataRequestModel : EntityBase, ISearchable
     {
         public DataRequestModel(string name, string description, GeoLocation? geoLocation)
         {

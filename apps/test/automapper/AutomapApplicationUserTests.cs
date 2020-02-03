@@ -1,4 +1,5 @@
 using Amphora.Api;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using AutoMapper;
 using Xunit;
@@ -22,7 +23,7 @@ namespace Amphora.Tests.Unit
         public void ConvertUserModelToDTO()
         {
             var appUser = new ApplicationUser();
-            var result = mapper.Map<UserDto>(appUser);
+            var result = mapper.Map<AmphoraUser>(appUser);
             Assert.NotNull(result);
         }
 

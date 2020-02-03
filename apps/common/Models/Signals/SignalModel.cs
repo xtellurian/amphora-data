@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Amphora.Common.Models.Signals
 {
     [Obsolete]
-    public class SignalModel : Entity
+    public class SignalModel : EntityBase
     {
         public const string Numeric = nameof(Numeric);
         public const string String = nameof(String);

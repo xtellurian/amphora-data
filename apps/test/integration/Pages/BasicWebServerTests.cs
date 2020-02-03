@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
-using Amphora.Api.Models.Dtos;
+using Amphora.Api.Models.Dtos.Organisations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -77,7 +77,7 @@ namespace Amphora.Tests.Integration.Pages
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var tnc = new TermsAndConditionsDto();
+            var tnc = new TermsAndConditions();
             tnc.Id = System.Guid.NewGuid().ToString();
             tnc.Name = System.Guid.NewGuid().ToString();
             tnc.Contents = System.Guid.NewGuid().ToString();

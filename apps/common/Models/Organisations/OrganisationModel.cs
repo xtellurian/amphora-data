@@ -10,7 +10,7 @@ using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Organisations
 {
-    public class OrganisationModel : Entity, IEntity
+    public class OrganisationModel : EntityBase, IEntity
     {
         public OrganisationModel()
         {

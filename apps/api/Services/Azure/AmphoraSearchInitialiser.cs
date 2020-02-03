@@ -74,7 +74,7 @@ namespace Amphora.Api.Services.Azure
         {
             var query = "SELECT * FROM c WHERE c.Discriminator = 'AmphoraModel' AND c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
-            var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(Entity.IsDeleted), "true");
+            var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(EntityBase.IsDeleted), "true");
             var dataSource = DataSource.CosmosDb("cosmos-amphora",
                                                  cosmosDbConnectionString,
                                                  nameof(AmphoraContext),

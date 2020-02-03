@@ -2,7 +2,7 @@ using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Common.Models.Platform
 {
-    public class InvitationModel : Entity
+    public class InvitationModel : EntityBase
     {
         public InvitationModel() { }
         public string? TargetEmail { get; set; }

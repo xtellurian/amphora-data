@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -18,9 +19,9 @@ namespace Amphora.Tests.Integration
             _factory = factory;
         }
 
-        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> GetNewClientInOrg(
+        protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> GetNewClientInOrg(
             HttpClient currentClient,
-            OrganisationDto org,
+            Organisation org,
             bool denyGlobalAdmin = false,
             int majorVersion = 0)
         {
@@ -28,10 +29,10 @@ namespace Amphora.Tests.Integration
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
-                new InvitationDto { TargetEmail = email, TargetOrganisationId = org.Id });
+                new Invitation { TargetEmail = email, TargetOrganisationId = org.Id });
             inviteResponse.EnsureSuccessStatusCode();
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString(), denyGlobalAdmin);
-            var acceptDto = new AcceptInvitationDto { TargetOrganisationId = org.Id };
+            var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
             inviteResponse.EnsureSuccessStatusCode();
@@ -39,7 +40,7 @@ namespace Amphora.Tests.Integration
             return (client, user, org);
         }
 
-        protected async Task<(HttpClient client, UserDto user, OrganisationDto org)> NewOrgAuthenticatedClientAsync(
+        protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> NewOrgAuthenticatedClientAsync(
             bool denyGlobalAdmin = false,
             int majorVersion = 0)
         {
@@ -57,13 +58,13 @@ namespace Amphora.Tests.Integration
             deleteResponse.EnsureSuccessStatusCode();
         }
 
-        protected async Task DestroyUserAsync(HttpClient client, UserDto user)
+        protected async Task DestroyUserAsync(HttpClient client, AmphoraUser user)
         {
             var response = await client.DeleteAsync($"api/users/{user.UserName}");
             response.EnsureSuccessStatusCode();
         }
 
-        protected async Task DestroyOrganisationAsync(HttpClient client, OrganisationDto org)
+        protected async Task DestroyOrganisationAsync(HttpClient client, Organisation org)
         {
             var response = await client.DeleteAsync($"api/organisations/{org.Id}");
             response.EnsureSuccessStatusCode();
