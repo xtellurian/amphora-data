@@ -9,12 +9,15 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Organisations
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Organisations")]
+    [Route("api/Organisations/{id}/TermsAndConditions")]
     public class TermsAndConditionsController : Controller
     {
         private readonly IOrganisationService organisationService;
@@ -36,7 +39,7 @@ namespace Amphora.Api.Controllers.Organisations
         [Produces(typeof(TermsAndConditionsDto))]
         [ProducesResponseType(400)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("api/Organisations/{id}/TermsAndConditions")]
+        [HttpPost]
         public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditionsDto dto)
         {
             var org = await organisationService.Store.ReadAsync(id);
@@ -75,7 +78,7 @@ namespace Amphora.Api.Controllers.Organisations
         /// <returns> The Terms and Conditions. </returns>
         [Produces(typeof(IEnumerable<TermsAndConditionsDto>))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("api/Organisations/{id}/TermsAndConditions")]
+        [HttpGet]
         public async Task<IActionResult> Read(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);

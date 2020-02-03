@@ -4,11 +4,14 @@ using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiMajorVersion(0)]
     [SkipStatusCodePages]
+    [OpenApiTag("Amphorae")]
+    [Route("api/Amphorae/{id}/Purchases")]
     public class PurchasesController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
@@ -25,7 +28,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A Message.</returns>
-        [HttpPost("api/Amphorae/{id}/Purchases")]
+        [HttpPost]
         [Produces(typeof(string))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Purchase(string id)
