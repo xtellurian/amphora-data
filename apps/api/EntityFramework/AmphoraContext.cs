@@ -25,25 +25,6 @@ namespace Amphora.Api.EntityFramework
 
             modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<AmphoraModel>(amphora =>
-            {
-                amphora.Property(p => p.Id).ValueGeneratedOnAdd();
-                amphora.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
-                amphora.Property(e => e.GeoLocation)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<GeoLocation>(v));
-                amphora.OwnsMany(_ => _.Labels, _ =>
-                {
-                    _.Property(label => label.Id).ValueGeneratedOnAdd();
-                    _.HasKey(label => new { id = label.Id, name = label.Name });
-                });
-
-                amphora.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
-                amphora.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-                amphora.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
-            });
-
             modelBuilder.Entity<AmphoraSignalModel>(b =>
             {
                 b.HasKey(c => new { c.AmphoraId, c.SignalId });
