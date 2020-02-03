@@ -21,7 +21,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
                 .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
 
-            CreateMap<CreateAmphoraDto, AmphoraModel>()
+            CreateMap<CreateAmphora, AmphoraModel>()
                 .ConstructUsing(_ => new AmphoraModel(_.Name, _.Description, _.Price, null))
                 .ForMember(o => o.Id, p => p.Ignore())
                 .ForMember(o => o.Organisation, p => p.Ignore())
@@ -43,7 +43,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.GeoLocation, p => p.MapFrom(src =>
                     src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value) : null));
 
-            CreateMap<AmphoraModel, AmphoraExtendedDto>()
+            CreateMap<AmphoraModel, DetailedAmphora>()
             .IncludeBase<AmphoraModel, AmphoraDto>()
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));

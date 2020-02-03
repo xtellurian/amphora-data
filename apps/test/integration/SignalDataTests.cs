@@ -55,7 +55,7 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
             var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };
@@ -119,7 +119,7 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
             var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };

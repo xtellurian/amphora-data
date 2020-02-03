@@ -38,7 +38,7 @@ namespace Amphora.Tests.Unit.Entities
         {
             var a = EntityLibrary.GetAmphoraDto("123", nameof(CanSerialiseAndDeserialiseAmphora));
             var a_serialised = JsonConvert.SerializeObject(a);
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(a_serialised);
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(a_serialised);
             Assert.NotNull(b);
             Assert.Equal(a.OrganisationId, b.OrganisationId);
         }

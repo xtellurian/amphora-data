@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createContent);
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
             var generator = new RandomGenerator(1);
@@ -65,7 +65,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createContent);
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
             var generator = new RandomGenerator(1);

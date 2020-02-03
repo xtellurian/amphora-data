@@ -12,9 +12,9 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static AmphoraExtendedDto GetAmphoraDto(string orgId, string testName = null)
+        public static DetailedAmphora GetAmphoraDto(string orgId, string testName = null)
         {
-            var a = new Faker<AmphoraExtendedDto>()
+            var a = new Faker<DetailedAmphora>()
                .StrictMode(false)
                .RuleFor(o => o.OrganisationId, f => orgId)
                .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(5)))

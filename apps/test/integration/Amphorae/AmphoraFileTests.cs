@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);

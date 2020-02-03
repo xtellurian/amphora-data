@@ -32,7 +32,7 @@ namespace Amphora.Tests.Integration.Pages
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
 
             var response = await adminClient.GetAsync($"{path}?id={id}");
@@ -55,7 +55,7 @@ namespace Amphora.Tests.Integration.Pages
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
 
             var response = await otherClient.GetAsync($"{path}?id={id}");
@@ -80,7 +80,7 @@ namespace Amphora.Tests.Integration.Pages
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
 
             var response = await adminClient.GetAsync($"{path}?id={id}");
