@@ -28,7 +28,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             await LoadAmphoraAsync(id);
             if (Amphora != null)
             {
-                var signals = this.Amphora.Signals.Select(s => s.Signal).ToList();
+                var signals = Amphora.V2Signals;
                 this.Values = new List<SignalValueDto>();
                 foreach (var s in signals)
                 {
@@ -47,12 +47,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             if (Amphora != null)
             {
                 var values = new Dictionary<string, object>();
-                foreach (var s in Amphora.Signals)
+                foreach (var s in Amphora.V2Signals)
                 {
-                    var dto = Values.FirstOrDefault(d => d.Property == s.Signal.Property); // d.Property is null (not bound?)
+                    var dto = Values.FirstOrDefault(d => d.Property == s.Property); // d.Property is null (not bound?)
                     if (dto == null) { continue; }
-                    if (dto.IsNumeric) { values.Add(s.Signal.Property, dto.NumericValue); }
-                    else if (dto.IsString) { values.Add(s.Signal.Property, dto.StringValue); }
+                    if (dto.IsNumeric) { values.Add(s.Property, dto.NumericValue); }
+                    else if (dto.IsString) { values.Add(s.Property, dto.StringValue); }
                 }
 
                 if (Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.HasValue ?? false)

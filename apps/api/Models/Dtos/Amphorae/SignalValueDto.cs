@@ -1,5 +1,6 @@
 using System;
 using Amphora.Api.AspNet;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +28,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         /// <summary>
         /// Gets or sets one of Numeric, String, or DateTime.
         /// </summary>
-        [StringRange(AllowableValues = new[] { SignalModel.Numeric, SignalModel.String, SignalModel.DateTime },
+        [StringRange(AllowableValues = new[] { SignalV2.Numeric, SignalV2.String, SignalV2.DateTime },
             ErrorMessage = "ValueType must be Numeric, String, or DateTime")]
         public string ValueType { get; set; }
         [JsonIgnore]
@@ -57,10 +58,10 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public string Value { get => GetValue(); set => SetValue(value); }
 
         [JsonIgnore]
-        public bool IsNumeric => this.ValueType == SignalModel.Numeric;
+        public bool IsNumeric => this.ValueType == SignalV2.Numeric;
         [JsonIgnore]
-        public bool IsString => this.ValueType == SignalModel.String;
+        public bool IsString => this.ValueType == SignalV2.String;
         [JsonIgnore]
-        public bool IsDateTime => this.ValueType == SignalModel.DateTime;
+        public bool IsDateTime => this.ValueType == SignalV2.DateTime;
     }
 }

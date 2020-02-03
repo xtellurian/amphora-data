@@ -24,7 +24,7 @@ namespace Amphora.Api.Services.Amphorae
             var summary = new DataQualitySummary();
             try
             {
-                summary.CountSignals = amphora.Signals.Count;
+                summary.CountSignals = amphora.V2Signals.Count;
                 summary.CountFiles = (await fileService.Store.ListBlobsAsync(amphora))?.Count ?? 0;
                 if (summary.CountFiles > 0)
                 {

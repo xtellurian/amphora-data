@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Amphora.Common.Models.Amphorae;
 
@@ -20,6 +21,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [Display(Name = "Files MetaData")]
         public Dictionary<string, MetaDataStore> FilesMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
         [Display(Name = "Signals MetaData")]
-        public MetaDataStore SignalsMetaData { get; set; } = new MetaDataStore();
+        public Dictionary<string, MetaDataStore> SignalsMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
     }
 }

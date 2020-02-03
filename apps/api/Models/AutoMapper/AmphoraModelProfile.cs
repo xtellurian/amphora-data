@@ -3,7 +3,6 @@ using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Signals;
 using AutoMapper;
 
 namespace Amphora.Api.Models.AutoMapper
@@ -29,7 +28,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.OrganisationId, p => p.Ignore())
                 .ForMember(o => o.TermsAndConditions, p => p.Ignore())
                 .ForMember(o => o.FilesMetaData, p => p.Ignore())
-                .ForMember(o => o.SignalsMetaData, p => p.Ignore())
+                .ForMember(o => o.V2Signals, p => p.Ignore())
                 .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
                 .ForMember(o => o.Signals, p => p.Ignore())
                 .ForMember(o => o.Purchases, p => p.Ignore())
@@ -45,10 +44,10 @@ namespace Amphora.Api.Models.AutoMapper
 
             CreateMap<AmphoraModel, DetailedAmphora>()
             .IncludeBase<AmphoraModel, AmphoraDto>()
+            .ForMember(o => o.SignalsMetaData, p => p.MapFrom(src => src.V2Signals.ToMetadataDictionary()))
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
 
-            CreateMap<SignalModel, SignalDto>();
         }
     }
 }

@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +22,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             this.signalService = signalService;
         }
 
-        public List<SignalModel> Signals => new List<SignalModel> { Signal };
-        public SignalModel Signal { get; private set; }
+        public List<SignalV2> Signals => new List<SignalV2> { Signal };
+        public SignalV2 Signal { get; private set; }
         public string QueryResponse { get; private set; }
         public IEnumerable<string> Values { get; private set; }
 
@@ -36,7 +38,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
             if (Amphora != null)
             {
-                Signal = this.Amphora.Signals?.FirstOrDefault(s => s.SignalId == signalId)?.Signal;
+                this.Amphora.EnsureV2Signals();
+                Signal = this.Amphora.V2Signals?.FirstOrDefault(s => s.Id == signalId);
                 if (Signal.IsString)
                 {
                     var uniqueValues = await signalService.GetUniqueValuesForStringProperties(User, Amphora);

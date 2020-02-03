@@ -1,12 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
+using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
-using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace Amphora.Api.Controllers.Amphorae
     [ApiController]
     [SkipStatusCodePages]
     [Produces("application/json")]
-    [Route("api/amphorae/{id}/signals")]
+    [Route("api/amphorae/{id}")]
     [OpenApiTag("Amphorae")]
     public class AmphoraeSignalsController : Controller
     {
@@ -45,17 +46,29 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A collection of signals.</returns>
-        [Produces(typeof(List<SignalDto>))]
-        [HttpGet]
+        [Produces(typeof(List<Signal>))]
+        [HttpGet("signals")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetSignals(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
             if (result.Succeeded)
             {
-                var signals = result.Entity.Signals.Select(s => s.Signal);
-                var res = mapper.Map<List<SignalDto>>(signals);
-                return Ok(signals);
+                var amphora = result.Entity;
+                amphora.EnsureV2Signals();
+                var res = new List<Signal>();
+                foreach (var s in amphora.V2Signals)
+                {
+                    res.Add(new Signal
+                    {
+                        Id = s.Id,
+                        ValueType = s.ValueType,
+                        Property = s.Property,
+                        Meta = s.Meta?.MetaData
+                    });
+                }
+
+                return Ok(res);
             }
             else if (result.WasForbidden)
             {
@@ -71,27 +84,28 @@ namespace Amphora.Api.Controllers.Amphorae
         /// Associates a signal with an Amphora. Signal is created if not existing.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
-        /// <param name="dto">Signal Details.</param>
+        /// <param name="signal">Signal Details.</param>
         /// <returns>Signal metadata.</returns>
-        [Produces(typeof(SignalDto))]
-        [HttpPost]
+        [Produces(typeof(Signal))]
+        [HttpPost("signals")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> CreateSignal(string id, [FromBody] SignalDto dto)
+        public async Task<IActionResult> CreateSignal(string id, [FromBody] Signal signal)
         {
             try
             {
-                var signal = new SignalModel(dto.Property, dto.ValueType);
-
                 var result = await amphoraeService.ReadAsync(User, id, true);
                 if (result.Succeeded)
                 {
-                    var updateRes = await signalService.AddSignal(User, result.Entity, signal);
-
+                    var amphora = result.Entity;
+                    amphora.EnsureV2Signals();
+                    var newSignal = new SignalV2(signal.Property, signal.ValueType);
+                    amphora.V2Signals.Add(newSignal);
+                    var updateRes = await amphoraeService.UpdateAsync(User, amphora);
                     if (updateRes.Succeeded)
                     {
                         // happy path
-                        dto = mapper.Map<SignalDto>(updateRes.Entity);
-                        return Ok(dto);
+                        signal.Id = newSignal.Id;
+                        return Ok(signal);
                     }
                     else if (result.WasForbidden)
                     {
@@ -122,12 +136,53 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
+        /// Associates a signal with an Amphora. Signal is created if not existing.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="signalId">Signal Details.</param>
+        /// <param name="signal">Signal properties to update.</param>
+        /// <returns>Signal metadata.</returns>
+        [Produces(typeof(Signal))]
+        [HttpPut("signals/{signalId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> UpdateSignal(string id, string signalId, [FromBody] UpdateSignal signal)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var amphora = result.Entity;
+                var existingSignal = amphora.V2Signals.FirstOrDefault(s => s.Id == signalId);
+                if (existingSignal == null)
+                {
+                    return BadRequest("Signal not found");
+                }
+
+                existingSignal.Meta = new MetaDataStore(signal.Meta);
+                var updateRes = await amphoraeService.UpdateAsync(User, amphora);
+                if (updateRes.Succeeded)
+                {
+                    return Ok(new Signal(existingSignal.Id, existingSignal.Property, existingSignal.ValueType, existingSignal.Meta.MetaData));
+                }
+                else { return BadRequest(updateRes.Message); }
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        /// <summary>
         /// Uploads values to an Amphora signal(s).
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="data">Signal Values.</param>
         /// <returns>The signal values.</returns>
-        [HttpPost("values")]
+        [HttpPost("signals/values")]
+        [HttpPost("signalValues")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
@@ -160,7 +215,8 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <param name="data">Signal Values.</param>
         /// <returns>A collection of signal values.</returns>
-        [HttpPost("batchvalues")]
+        [HttpPost("signals/batchvalues")] // TODO: make obsolete
+        [HttpPost("batchSignalValues")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
@@ -178,6 +234,18 @@ namespace Amphora.Api.Controllers.Amphorae
                 else { return BadRequest(res.Message); }
             }
             else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        private IActionResult NotFoundOrForbidden(EntityOperationResult<AmphoraModel> result)
+        {
+            if (result.WasForbidden)
             {
                 return StatusCode(403, result.Message);
             }

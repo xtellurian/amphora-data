@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Common.Extensions
@@ -13,6 +12,21 @@ namespace Amphora.Common.Extensions
             else
             {
                 return string.Join(',', labels.Select(_ => _.Name));
+            }
+        }
+
+        public static Dictionary<string, MetaDataStore> ToMetadataDictionary(this ICollection<SignalV2> v2Signals)
+        {
+            if (v2Signals == null) { return new Dictionary<string, MetaDataStore>(); }
+            else
+            {
+                var meta = new Dictionary<string, MetaDataStore>();
+                foreach (var s in v2Signals)
+                {
+                    meta[s.Id] = s.Meta;
+                }
+
+                return meta;
             }
         }
     }

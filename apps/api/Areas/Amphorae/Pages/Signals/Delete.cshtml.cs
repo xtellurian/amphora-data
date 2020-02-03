@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +27,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             this.logger = logger;
         }
 
-        public AmphoraSignalModel Signal { get; private set; }
+        public SignalV2 Signal { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
         {
@@ -34,7 +35,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
             if (Result.Succeeded)
             {
-                Signal = Amphora.Signals.FirstOrDefault(a => a.SignalId == signalId);
+                Signal = Amphora.V2Signals.FirstOrDefault(a => a.Id == signalId);
                 if (Signal == null)
                 {
                     ModelState.AddModelError(string.Empty, $"Signal {signalId} not found");
@@ -61,14 +62,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             await LoadAmphoraAsync(id);
             if (Result.Succeeded)
             {
-                Signal = Amphora.Signals.FirstOrDefault(a => a.SignalId == signalId);
+                Signal = Amphora.V2Signals.FirstOrDefault(a => a.Id == signalId);
                 if (Signal == null)
                 {
                     ModelState.AddModelError(string.Empty, $"Signal {signalId} not found");
                     return Page();
                 }
 
-                Amphora.Signals.Remove(Signal);
+                Amphora.V2Signals.Remove(Signal);
                 var result = await amphoraeService.UpdateAsync(User, Amphora);
                 if (result.Succeeded)
                 {
