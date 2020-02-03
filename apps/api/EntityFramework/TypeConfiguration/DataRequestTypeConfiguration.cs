@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
 
 namespace Amphora.Api.EntityFramework.TypeConfiguration
 {
