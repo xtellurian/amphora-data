@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,22 +33,22 @@ namespace Amphora.Api.Controllers.Organisations
         /// Adds new Terms and Conditions to your Organisations T/C Library.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
-        /// <param name="dto">The new Terms and Conditions.</param>
+        /// <param name="tnc">The new Terms and Conditions.</param>
         /// <returns> The organisation metadaa. </returns>
         /// <returns> The Terms and Conditions. </returns>
-        [Produces(typeof(TermsAndConditionsDto))]
+        [Produces(typeof(TermsAndConditions))]
         [ProducesResponseType(400)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditionsDto dto)
+        public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditions tnc)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            if (org.TermsAndConditions?.Any(t => t.Id == dto.Id) ?? false)
+            if (org.TermsAndConditions?.Any(t => t.Id == tnc.Id) ?? false)
             {
-                return BadRequest($"{dto.Id} already exists");
+                return BadRequest($"{tnc.Id} already exists");
             }
 
-            var model = mapper.Map<TermsAndConditionsModel>(dto);
+            var model = mapper.Map<TermsAndConditionsModel>(tnc);
 
             if (!org.AddTermsAndConditions(model))
             {
@@ -58,8 +58,8 @@ namespace Amphora.Api.Controllers.Organisations
             var result = await organisationService.UpdateAsync(User, org);
             if (result.Succeeded)
             {
-                dto = mapper.Map<TermsAndConditionsDto>(model);
-                return Ok(dto);
+                tnc = mapper.Map<TermsAndConditions>(model);
+                return Ok(tnc);
             }
             else if (result.WasForbidden)
             {
@@ -76,13 +76,13 @@ namespace Amphora.Api.Controllers.Organisations
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
         /// <returns> The Terms and Conditions. </returns>
-        [Produces(typeof(IEnumerable<TermsAndConditionsDto>))]
+        [Produces(typeof(IEnumerable<TermsAndConditions>))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<IActionResult> Read(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            return Ok(mapper.Map<List<TermsAndConditionsDto>>(org.TermsAndConditions));
+            return Ok(mapper.Map<List<TermsAndConditions>>(org.TermsAndConditions));
         }
     }
 }

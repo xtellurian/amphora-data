@@ -8,7 +8,7 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public InvitationsProfile()
         {
-            CreateMap<InvitationDto, InvitationModel>()
+            CreateMap<Invitation, InvitationModel>()
                 .ForMember(p => p.TargetOrganisation, o => o.Ignore())
                 .ForMember(p => p.TargetDomain, o => o.Ignore())
                 .ForMember(p => p.IsClaimed, o => o.Ignore())

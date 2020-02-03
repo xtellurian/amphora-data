@@ -1,4 +1,3 @@
-using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
@@ -11,9 +10,9 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public AmphoraModelProfile()
         {
-            CreateMap<AmphoraModel, AmphoraDto>()
+            CreateMap<AmphoraModel, BasicAmphora>()
                 .ForMember(o => o.Labels, p => p.MapFrom(src => src.Labels.ToLabelString()))
-                .IncludeBase<Entity, EntityDto>();
+                .IncludeBase<EntityBase, Amphora.Api.Models.Dtos.Entity>();
 
             CreateMap<AmphoraModel, EditAmphora>()
                 .ForMember(o => o.Labels, p => p.MapFrom(src => src.Labels.ToLabelString()))
@@ -43,7 +42,7 @@ namespace Amphora.Api.Models.AutoMapper
                     src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value) : null));
 
             CreateMap<AmphoraModel, DetailedAmphora>()
-            .IncludeBase<AmphoraModel, AmphoraDto>()
+            .IncludeBase<AmphoraModel, BasicAmphora>()
             .ForMember(o => o.SignalsMetaData, p => p.MapFrom(src => src.V2Signals.ToMetadataDictionary()))
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));

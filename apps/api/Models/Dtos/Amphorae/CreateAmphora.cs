@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class CreateAmphora : AmphoraDto
+    public class CreateAmphora : BasicAmphora
     {
         [Required]
         [DataType(DataType.MultilineText)]

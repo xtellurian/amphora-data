@@ -8,7 +8,7 @@ namespace Amphora.Api.Extensions
 {
     public static class EntityUpdaterExtensions
     {
-        public static AmphoraModel UpdateProperties(this AmphoraModel entity, AmphoraDto dto)
+        public static AmphoraModel UpdateProperties(this AmphoraModel entity, BasicAmphora dto)
         {
             entity.Name = dto.Name;
             entity.Price = dto.Price;
@@ -18,7 +18,7 @@ namespace Amphora.Api.Extensions
 
         public static AmphoraModel UpdateProperties(this AmphoraModel entity, DetailedAmphora dto)
         {
-            UpdateProperties(entity, dto as AmphoraDto);
+            UpdateProperties(entity, dto as BasicAmphora);
             entity.TermsAndConditionsId = dto.TermsAndConditionsId;
             entity.Description = dto.Description;
             if (dto.Lat.HasValue && dto.Lon.HasValue)
@@ -29,7 +29,7 @@ namespace Amphora.Api.Extensions
             return entity;
         }
 
-        private static void SetLabels(AmphoraModel entity, AmphoraDto dto)
+        private static void SetLabels(AmphoraModel entity, BasicAmphora dto)
         {
             if (entity.Labels == null) { entity.Labels = new Collection<Label>(); }
             else { entity.Labels.Clear(); }

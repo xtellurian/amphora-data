@@ -1,20 +1,17 @@
 using System;
 using Amphora.Api.AspNet;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Signals;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NSwag.Annotations;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class SignalValueDto
+    public class SignalValue
     {
-        public SignalValueDto()
+        public SignalValue()
         {
         }
 
-        public SignalValueDto(string property, string valueType) : this()
+        public SignalValue(string property, string valueType) : this()
         {
             Property = property;
             ValueType = valueType;

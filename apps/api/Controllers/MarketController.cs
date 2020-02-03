@@ -54,14 +54,14 @@ namespace Amphora.Api.Controllers
         /// <param name="top">How many results to return.</param>
         /// <param name="skip">How many pages (in multiples of top) to skip.</param>
         /// <returns> A collection of Amphora. </returns>
-        [Produces(typeof(List<AmphoraDto>))]
+        [Produces(typeof(List<BasicAmphora>))]
         [HttpGet("api/market/search")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Find(string query, int? top, int? skip)
         {
             var searchResult = await marketService.FindAsync(query, skip: skip, top: top);
             var entities = searchResult.Results.Select(_ => _.Entity);
-            var dto = mapper.Map<List<AmphoraDto>>(entities);
+            var dto = mapper.Map<List<BasicAmphora>>(entities);
             return Ok(dto);
         }
     }

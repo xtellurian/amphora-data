@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Platform
 {
-    public class InvitationDto
+    public class Invitation
     {
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Target Email Address")]

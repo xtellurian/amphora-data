@@ -2,7 +2,7 @@ using System;
 
 namespace Amphora.Api.Models.Dtos
 {
-    public abstract class EntityDto
+    public abstract class Entity
     {
         public virtual string Id { get; set; }
         public bool? IsDeleted { get; set; }

@@ -21,7 +21,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         }
 
         [BindProperty]
-        public List<SignalValueDto> Values { get; set; }
+        public List<SignalValue> Values { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -29,13 +29,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             if (Amphora != null)
             {
                 var signals = Amphora.V2Signals;
-                this.Values = new List<SignalValueDto>();
+                this.Values = new List<SignalValue>();
                 foreach (var s in signals)
                 {
-                    this.Values.Add(new SignalValueDto(s.Property, s.ValueType));
+                    this.Values.Add(new SignalValue(s.Property, s.ValueType));
                 }
 
-                this.Values.Add(new SignalValueDto("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
+                this.Values.Add(new SignalValue("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
             }
 
             return OnReturnPage();

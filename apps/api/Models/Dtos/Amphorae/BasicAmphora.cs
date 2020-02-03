@@ -5,7 +5,7 @@ using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class AmphoraDto : EntityDto
+    public class BasicAmphora : Entity
     {
         [Required]
         public string Name { get; set; }

@@ -4,7 +4,7 @@ using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class DetailedAmphora : AmphoraDto
+    public class DetailedAmphora : BasicAmphora
     {
         public string OrganisationId { get; set; }
         public string TermsAndConditionsId { get; set; }

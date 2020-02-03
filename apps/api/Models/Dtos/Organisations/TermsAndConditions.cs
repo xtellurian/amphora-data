@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Amphora.Api.Models.Dtos
+namespace Amphora.Api.Models.Dtos.Organisations
 {
-    public class TermsAndConditionsDto
+    public class TermsAndConditions
     {
         [Required]
         public string Id { get; set; }

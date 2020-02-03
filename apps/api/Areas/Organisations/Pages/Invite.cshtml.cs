@@ -34,7 +34,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         }
 
         [BindProperty]
-        public InvitationDto Input { get; set; }
+        public Invitation Input { get; set; }
         [BindProperty]
         [Display(Name = "Invite to my Organisation")]
         public bool InviteToOrganisation { get; set; }
@@ -46,7 +46,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.Organisation = user.Organisation;
             if (email != null)
             {
-                Input ??= new InvitationDto();
+                Input ??= new Invitation();
                 Input.TargetEmail = email;
             }
 

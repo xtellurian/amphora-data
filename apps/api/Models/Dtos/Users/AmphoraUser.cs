@@ -2,9 +2,9 @@ using System;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 
-namespace Amphora.Common.Models.Users
+namespace Amphora.Common.Models.Dtos.Users
 {
-    public class UserDto : IUser
+    public class AmphoraUser : IUser
     {
         public string Id { get; set; }
         public string Email { get; set; }

@@ -1,3 +1,4 @@
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using AutoMapper;
 
@@ -7,7 +8,7 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public UserModelProfile()
         {
-            CreateMap<ApplicationUser, UserDto>();
+            CreateMap<ApplicationUser, AmphoraUser>();
         }
     }
 }
