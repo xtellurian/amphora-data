@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
@@ -16,5 +17,9 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public double? Lon { get; set; }
         [Display(Name = "Purchase Count")]
         public int? PurchaseCount { get; set; }
+        [Display(Name = "Files MetaData")]
+        public MetaDataStore FilesMetaData { get; set; } = new MetaDataStore();
+        [Display(Name = "Signals MetaData")]
+        public MetaDataStore SignalsMetaData { get; set; } = new MetaDataStore();
     }
 }

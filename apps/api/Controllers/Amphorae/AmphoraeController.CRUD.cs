@@ -3,45 +3,35 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Options;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
     [ApiMajorVersion(0)]
     [ApiController]
-    [Produces("application/json")]
     [SkipStatusCodePages]
-    public partial class AmphoraeController : Controller
+    [Produces("application/json")]
+    [Route("api/amphorae")]
+    [OpenApiTag("Amphorae")]
+    public class AmphoraeController : Controller
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IAmphoraFileService amphoraFileService;
         private readonly IAuthorizationService authorizationService;
-        private readonly IUserManager userManager;
-        private readonly ISignalService signalService;
         private readonly IMapper mapper;
 
         public AmphoraeController(
             IAmphoraeService amphoraeService,
-            IAmphoraFileService amphoraFileService,
             IAuthorizationService authorizationService,
-            IUserManager userManager,
-            ISignalService signalService,
-            IMapper mapper,
-            IOptionsMonitor<SignalOptions> options)
+            IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
-            this.amphoraFileService = amphoraFileService;
             this.authorizationService = authorizationService;
-            this.userManager = userManager;
-            this.signalService = signalService;
             this.mapper = mapper;
-            this.options = options;
         }
 
         /// <summary>
@@ -49,7 +39,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="amphora">Information for the new Amphora.</param>
         /// <returns>A new Amphora.</returns>
-        [HttpPost("api/amphorae")]
+        [HttpPost]
         [Produces(typeof(DetailedAmphora))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromBody] CreateAmphora amphora)
@@ -82,7 +72,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>The Amphora details.</returns>
         [Produces(typeof(DetailedAmphora))]
-        [HttpGet("api/amphorae/{id}")]
+        [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Read(string id)
         {
@@ -108,7 +98,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="amphora">Information to update. Nulls are NOT ignored.</param>
         /// <returns>The Amphora details.</returns>
         [Produces(typeof(DetailedAmphora))]
-        [HttpPut("api/amphorae/{id}")]
+        [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Update(string id, [FromBody] DetailedAmphora amphora)
         {
@@ -136,7 +126,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A Message.</returns>
-        [HttpDelete("api/amphorae/{id}")]
+        [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(string))]
         public async Task<IActionResult> Delete(string id)

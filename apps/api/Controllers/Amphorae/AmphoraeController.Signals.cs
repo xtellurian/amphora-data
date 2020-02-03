@@ -2,19 +2,43 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
+using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Signals;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
-    public partial class AmphoraeController : Controller
+    [ApiMajorVersion(0)]
+    [ApiController]
+    [SkipStatusCodePages]
+    [Produces("application/json")]
+    [Route("api/amphorae/{id}/signals")]
+    [OpenApiTag("Amphorae")]
+    public class AmphoraeSignalsController : Controller
     {
+        private readonly IAmphoraeService amphoraeService;
+        private readonly ISignalService signalService;
+        private readonly IMapper mapper;
         private readonly IOptionsMonitor<SignalOptions> options;
+
+        public AmphoraeSignalsController(IAmphoraeService amphoraeService,
+                                         ISignalService signalService,
+                                         IMapper mapper,
+                                         IOptionsMonitor<SignalOptions> options)
+        {
+            this.amphoraeService = amphoraeService;
+            this.signalService = signalService;
+            this.mapper = mapper;
+            this.options = options;
+        }
 
         /// <summary>
         /// Get's the signals associated with an Amphora.
@@ -22,7 +46,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>A collection of signals.</returns>
         [Produces(typeof(List<SignalDto>))]
-        [HttpGet("api/amphorae/{id}/signals")]
+        [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetSignals(string id)
         {
@@ -50,7 +74,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="dto">Signal Details.</param>
         /// <returns>Signal metadata.</returns>
         [Produces(typeof(SignalDto))]
-        [HttpPost("api/amphorae/{id}/signals")]
+        [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateSignal(string id, [FromBody] SignalDto dto)
         {
@@ -103,7 +127,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <param name="data">Signal Values.</param>
         /// <returns>The signal values.</returns>
-        [HttpPost("api/amphorae/{id}/signals/values")]
+        [HttpPost("values")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
@@ -136,7 +160,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <param name="data">Signal Values.</param>
         /// <returns>A collection of signal values.</returns>
-        [HttpPost("api/amphorae/{id}/signals/batchvalues")]
+        [HttpPost("batchvalues")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]

@@ -1,24 +1,43 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
+using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Amphorae
 {
-    public partial class AmphoraeController : Controller
+    [ApiMajorVersion(0)]
+    [ApiController]
+    [SkipStatusCodePages]
+    [Produces("application/json")]
+    [Route("api/amphorae/{id}/files")]
+    [OpenApiTag("Amphorae")]
+    public class AmphoraeFilesController : Controller
     {
+        private readonly IAmphoraeService amphoraeService;
+        private readonly IAmphoraFileService amphoraFileService;
+
+        public AmphoraeFilesController(IAmphoraeService amphoraeService, IAmphoraFileService amphoraFileService)
+        {
+            this.amphoraeService = amphoraeService;
+            this.amphoraFileService = amphoraFileService;
+        }
+
         /// <summary>
         /// Get's a list of an Amphora's files.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
-        [HttpGet("api/amphorae/{id}/files")]
+        [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ListFiles(string id)
         {
@@ -28,14 +47,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var blobs = await amphoraFileService.Store.ListBlobsAsync(result.Entity);
                 return Ok(blobs);
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
-            else
-            {
-                return NotFound("Amphora not found");
-            }
+            else { return NotFoundOrForbidden(result); }
         }
 
         /// <summary>
@@ -44,7 +56,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>
         /// <returns>The file contents.</returns>
-        [HttpGet("api/amphorae/{id}/files/{file}")]
+        [HttpGet("{file}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
@@ -57,23 +69,9 @@ namespace Amphora.Api.Controllers.Amphorae
                     // error when null
                     return File(fileResult.Entity, "application/octet-stream", file);
                 }
-                else if (fileResult.WasForbidden)
-                {
-                    return StatusCode(403, fileResult.Message);
-                }
-                else
-                {
-                    return BadRequest(fileResult.Message);
-                }
+                else { return NotFoundOrForbidden(fileResult); }
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
-            else
-            {
-                return NotFound("Amphora not found");
-            }
+            else { return NotFoundOrForbidden(result); }
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="file">The name of the file.</param>
         /// <param name="content">The content of the file.</param>
         /// <returns>An object with a blob URL.</returns>
-        [HttpPut("api/amphorae/{id}/files/{file}")]
+        [HttpPut("{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadFile(string id, string file, IFormFile content)
@@ -110,11 +108,9 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else if (result.WasForbidden) { return StatusCode(403, result.Errors); }
-                else { return NotFound(); }
+                else { return NotFoundOrForbidden(fileResult); }
             }
-            else if (result.WasForbidden) { return StatusCode(403, result.Errors); }
-            else { return NotFound(); }
+            else { return NotFoundOrForbidden(result); }
         }
 
         /// <summary>
@@ -123,7 +119,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>
         /// <returns>An object with a blob URL.</returns>
-        [HttpPost("api/amphorae/{id}/files/{file}")]
+        [HttpPost("{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateFileRequest(string id, string file)
@@ -137,10 +133,56 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else if (result.WasForbidden) { return StatusCode(403, result.Message); }
-                else { return NotFound(); }
+                else { return NotFoundOrForbidden(fileResult); }
             }
-            else if (result.WasForbidden) { return StatusCode(403, result.Message); }
+            else
+            {
+                return NotFoundOrForbidden(result);
+            }
+        }
+
+        /// <summary>
+        /// Get's a list of an Amphora's files.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <param name="metadata">A dict containing metadata for the file.</param>
+        /// <returns>A list of file names.</returns>
+        [Produces(typeof(Dictionary<string, string>))]
+        [HttpPost("{file}/meta")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> WriteFileMetadata(string id, string file, [FromBody] Dictionary<string, string> metadata)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var entity = result.Entity;
+                var fileResult = await amphoraFileService.CreateFileAsync(User, result.Entity, file);
+
+                if (fileResult.Succeeded)
+                {
+                    // the file exists, now update the metadata
+                    if (entity.FilesMetaData == null)
+                    {
+                        entity.FilesMetaData = new Common.Models.Amphorae.MetaDataStore();
+                    }
+
+                    entity.FilesMetaData.SetMetadata(file, metadata);
+                    var updateRes = await amphoraeService.UpdateAsync(User, entity);
+                    if (updateRes.Succeeded)
+                    {
+                        return Ok(metadata);
+                    }
+                    else { return NotFoundOrForbidden(updateRes); }
+                }
+                else { return NotFoundOrForbidden(fileResult); }
+            }
+            else { return NotFoundOrForbidden(result); }
+        }
+
+        private IActionResult NotFoundOrForbidden<T>(EntityOperationResult<T> result)
+        {
+            if (result.WasForbidden) { return StatusCode(403, result.Message); }
             else { return NotFound(); }
         }
     }

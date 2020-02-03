@@ -47,8 +47,8 @@ namespace Amphora.Common.Models.Amphorae
         public int? PurchaseCount { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
-        public MetaDataStore? FilesMetaData { get; set; }
-        public MetaDataStore? SignalsMetaData { get; set; }
+        public MetaDataStore? FilesMetaData { get; set; } = new MetaDataStore();
+        public MetaDataStore? SignalsMetaData { get; set; } = new MetaDataStore();
         public virtual ICollection<Label>? Labels { get; set; } = new Collection<Label>();
 
         // navigation
