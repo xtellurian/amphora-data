@@ -1,7 +1,9 @@
+using System;
 using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Common.Models.Signals
 {
+    [Obsolete]
     public class AmphoraSignalModel
     {
         public AmphoraSignalModel() { }
