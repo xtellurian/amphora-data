@@ -18,7 +18,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [Display(Name = "Purchase Count")]
         public int? PurchaseCount { get; set; }
         [Display(Name = "Files MetaData")]
-        public MetaDataStore FilesMetaData { get; set; } = new MetaDataStore();
+        public Dictionary<string, MetaDataStore> FilesMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
         [Display(Name = "Signals MetaData")]
         public MetaDataStore SignalsMetaData { get; set; } = new MetaDataStore();
     }

@@ -1,11 +1,13 @@
 using Amphora.Api.AspNet;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Version")]
     public class VersionController : Controller
     {
         public VersionController()

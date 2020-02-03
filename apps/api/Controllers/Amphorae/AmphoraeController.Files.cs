@@ -6,6 +6,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -164,10 +165,10 @@ namespace Amphora.Api.Controllers.Amphorae
                     // the file exists, now update the metadata
                     if (entity.FilesMetaData == null)
                     {
-                        entity.FilesMetaData = new Common.Models.Amphorae.MetaDataStore();
+                        entity.FilesMetaData = new Dictionary<string, MetaDataStore>();
                     }
 
-                    entity.FilesMetaData.SetMetadata(file, metadata);
+                    entity.FilesMetaData[file] = new MetaDataStore(metadata);
                     var updateRes = await amphoraeService.UpdateAsync(User, entity);
                     if (updateRes.Succeeded)
                     {
