@@ -85,7 +85,8 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPut("{file}")]
         [Produces(typeof(UploadResponse))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadFile(string id, string file, IFormFile content)
+        [OpenApiIgnore]
+        public async Task<IActionResult> UploadFile(string id, string file, [FromForm] IFormFile content)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
