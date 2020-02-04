@@ -10,15 +10,15 @@ using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Amphora.Api.Areas.Amphorae.Pages
+namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
-    public class FilesPageModel : AmphoraPageModel
+    public class IndexPageModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
         private readonly IBlobStore<AmphoraModel> blobStore;
 
-        public FilesPageModel(IAmphoraeService amphoraeService,
+        public IndexPageModel(IAmphoraeService amphoraeService,
                               IPermissionService permissionService,
                               IUserService userService,
                               IBlobStore<AmphoraModel> blobStore) : base(amphoraeService)
@@ -47,14 +47,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 throw new System.ArgumentException("Only 1 file is supported");
             }
 
-            if (string.IsNullOrEmpty(id)) { return RedirectToPage("./Index"); }
+            if (string.IsNullOrEmpty(id)) { return RedirectToPage("../Index"); }
 
             var result = await amphoraeService.ReadAsync(User, id);
             var user = result.User;
 
             if (result.Succeeded)
             {
-                if (result.Entity == null) { return RedirectToPage("./Index"); }
+                if (result.Entity == null) { return RedirectToPage("../Index"); }
 
                 if (await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.WriteContents))
                 {
@@ -77,15 +77,15 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
                 this.Amphora = result.Entity;
                 await SetPagePropertiesAsync();
-                return RedirectToPage("./Files", new { Id = id });
+                return RedirectToPage("./Index", new { Id = id });
             }
             else if (result.WasForbidden)
             {
-                return RedirectToPage("./Forbidden");
+                return RedirectToPage("../Forbidden");
             }
             else
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("../Index");
             }
         }
 

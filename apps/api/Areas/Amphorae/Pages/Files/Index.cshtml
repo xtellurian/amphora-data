@@ -1,5 +1,5 @@
 @page
-@model FilesPageModel
+@model Files.IndexPageModel
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " Files";
@@ -32,7 +32,7 @@
                         <td class="text-right">
                             @if(Model.CanDownloadFiles)
                             {
-                                <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./File">
+                                <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
                                     Download
                                 </a>
                             }
