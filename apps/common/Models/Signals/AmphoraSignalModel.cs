@@ -3,7 +3,7 @@ using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Common.Models.Signals
 {
-    [Obsolete]
+    // [Obsolete]
     public class AmphoraSignalModel
     {
         public AmphoraSignalModel() { }

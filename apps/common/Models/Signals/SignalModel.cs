@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Amphora.Common.Models.Signals
 {
-    [Obsolete]
+    // [Obsolete]
     public class SignalModel : EntityBase
     {
         public const string Numeric = nameof(Numeric);

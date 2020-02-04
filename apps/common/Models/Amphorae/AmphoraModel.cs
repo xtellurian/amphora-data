@@ -56,7 +56,7 @@ namespace Amphora.Common.Models.Amphorae
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public string? CreatedById { get; set; }
         public virtual ApplicationUser? CreatedBy { get; set; }
-        [Obsolete]
+        // [Obsolete]
         public virtual ICollection<AmphoraSignalModel> Signals { get; set; } = new Collection<AmphoraSignalModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? TermsAndConditionsId { get; set; }
