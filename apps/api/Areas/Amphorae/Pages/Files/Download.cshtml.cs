@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
