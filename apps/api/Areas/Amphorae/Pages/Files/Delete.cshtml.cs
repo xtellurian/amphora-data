@@ -1,22 +1,21 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Areas.Amphorae.Pages
+namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
     [Authorize]
-    public class DeleteFilePageModel : PageModel
+    public class DeletePageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
 
-        public DeleteFilePageModel(
+        public DeletePageModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
             IPermissionService permissionService,
@@ -34,11 +33,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id, string name)
         {
-            if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
+            if (string.IsNullOrEmpty(name)) { return RedirectToPage("../Detail", new { Id = id }); }
             await LoadProperties(id, name);
             if (Amphora == null)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("../Index");
             }
 
             var user = await userService.UserManager.GetUserAsync(User);
@@ -48,7 +47,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else
             {
-                return RedirectToPage("./Forbidden");
+                return RedirectToPage("../Forbidden");
             }
         }
 
@@ -58,18 +57,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             await LoadProperties(id, name);
             if (Amphora == null)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("../Index");
             }
 
             var user = await userService.UserManager.GetUserAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
             {
                 await blobStore.DeleteAsync(Amphora, name);
-                return RedirectToPage("./Detail", new { id = id });
+                return RedirectToPage("./Index", new { id = id });
             }
             else
             {
-                return RedirectToPage("./Forbidden");
+                return RedirectToPage("../Forbidden");
             }
         }
 
