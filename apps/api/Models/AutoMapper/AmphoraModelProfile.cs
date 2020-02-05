@@ -46,7 +46,6 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(o => o.SignalsMetaData, p => p.MapFrom(src => src.V2Signals.ToMetadataDictionary()))
             .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
             .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
-
         }
     }
 }
