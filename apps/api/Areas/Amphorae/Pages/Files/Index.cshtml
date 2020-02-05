@@ -5,52 +5,63 @@
     ViewData["Title"] = Model.Amphora.Name + " Files";
 }
 
+@{var idDic = new Dictionary<string,string>();}
+@foreach (var n in Model.Names)
+{
+    var id = "A" + System.Guid.NewGuid().ToString();
+    idDic[n] = id;
+    <div>
+        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FilesMetaData.GetValueOrDefault(n)})
+    </div>
+}
+
 
 <div class="container">
     <div class="row">
         <div class="col">
-            <a asp-page="./Detail" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-secondary m-1">Amphora</button></a>
+            <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-secondary m-1">Amphora</button></a>
             <h3>@Model.Amphora.Name</h3>
             <small>Files</small>
             <hr/>
         </div>
     </div>
-    <div clas="row">
-        <div clas="col">
-            <table id="file-table" class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Filename</th>
-                        <th class="text-center"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var n in Model.Names)
-                    {
-                    <tr class="file-item">
-                        <th scope="row">@n</th>
-                        <td class="text-right">
-                            @if(Model.CanDownloadFiles)
-                            {
-                                <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
-                                    Download
-                                </a>
-                            }
-                            @if(Model.CanDeleteFiles)
-                            {
-                                <a class="btn btn-danger" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./DeleteFile">
-                                    Delete
-                                </a>
-                            }
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+    <div class="row">
+        <div class="col">
+            @foreach (var n in Model.Names)
+            {
+                <div class="row m-2">
+                    <div class="col-4">
+                        @n
+                    </div>
+                    <div class="col-sm-8 text-right">
+                        @if(Model.CanDownloadFiles)
+                        {
+                            <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
+                                Download
+                            </a>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#@idDic[n]">View Info</button>
+                        }
+                        @if(Model.CanUploadFiles)
+                        {
+                            <a class="btn btn-secondary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
+                                Edit Metadata
+                            </a>
+                        }
+                        @if(Model.CanDeleteFiles)
+                        {
+                            <a class="btn btn-danger" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./Delete">
+                                Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
         </div>
     </div>
     @if(Model.CanUploadFiles)
     {
+        <hr/>
     <div class="row">
         <div class="col">
             <h5 class="card-title">Upload File</h5>
