@@ -102,7 +102,7 @@ jobs:
         BUILD_REASON: $(Build.Reason) # will run some tests on a PR
 
     - task: PublishTestResults@2
-      condition: always()
+      condition: succeededOrFailed()
       inputs:
         testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
         testRunner: VSTest
@@ -111,6 +111,7 @@ jobs:
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Report
+      condition: succeededOrFailed()
       inputs:
         summaryFileLocation: $(Build.SourcesDirectory)/apps/coverage.cobertura.xml
         codecoverageTool: cobertura
