@@ -94,7 +94,7 @@
                             <div id="alreadyPurchasedActions" class="text-right">
                                 <div>
                                     <a class="btn btn-light m-1" asp-page="./Signals/Index" asp-route-id="@Model.Amphora.Id">Signals (@Model.SignalCount)</a>
-                                    <a class="btn btn-light m-1" asp-page="./Files" asp-route-id="@Model.Amphora.Id">Files (@Model.FileCount)</a>
+                                    <a class="btn btn-light m-1" asp-page="./Files/Index" asp-route-id="@Model.Amphora.Id">Files (@Model.FileCount)</a>
                                 </div>
                                 @if(Model.Purchase != null)
                                 {
