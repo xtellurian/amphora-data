@@ -63,8 +63,8 @@ async function tsi(id, signals, filters) {
         lineChart.render(data,
             {
                 theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked',
-                noAnimate: true, includeDots: false, offset: timezone,
-                includeEnvelope: true, dateLocale: 'en-AU',
+                noAnimate: true, includeDots: false, offset: timezone, includeEnvelope: true, dateLocale: 'en-AU',
+                strings: {'Display Grid': 'Show Table'},
             },
             linechartTsqExpressions);
 
