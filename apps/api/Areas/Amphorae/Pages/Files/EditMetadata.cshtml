@@ -84,8 +84,8 @@
 
         function addMetaDataRow(newMeta) {
             // first check if ther bottom key is empty
-            var maxIndex = Math.max(...Object.keys(meta));
-            if(!meta[maxIndex].Key) return; // return if bottom key is empty
+            var maxIndex = Math.max(...Object.keys(meta), 0);
+            if(meta[maxIndex] && !meta[maxIndex].Key) return; // return if bottom key is empty
 
             var index = Math.max(...Object.keys(meta), 0);
             if(Object.keys(meta).length > 0) {
