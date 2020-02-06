@@ -6,12 +6,15 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers.Organisations
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Organisations")]
+    [Route("api/Organisations/{id}/Account")]
     public class AccountController : Controller
     {
         private readonly IOrganisationService organisationService;
@@ -24,12 +27,12 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Deletes an organisation.
+        /// Get's an Organisation's account information.
         /// </summary>
         /// <param name="id">Organisation Id.</param>
         /// <returns>An Organisation's account metadata. </returns>
         [Produces(typeof(Models.Dtos.Organisations.Account))]
-        [HttpGet("api/Organisations/{id}/Account")]
+        [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Read(string id)
         {

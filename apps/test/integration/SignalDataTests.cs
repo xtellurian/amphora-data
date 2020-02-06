@@ -55,11 +55,11 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
-            var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };
-            var sSignal = new SignalDto() { Property = p2, ValueType = "String" };
+            var dSignal = new Signal() { Property = p1, ValueType = "Numeric" };
+            var sSignal = new Signal() { Property = p2, ValueType = "String" };
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
@@ -119,11 +119,11 @@ namespace Amphora.Tests.Integration
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
-            var dSignal = new SignalDto() { Property = p1, ValueType = "Numeric" };
-            var sSignal = new SignalDto() { Property = p2, ValueType = "String" };
+            var dSignal = new Signal() { Property = p1, ValueType = "Numeric" };
+            var sSignal = new Signal() { Property = p2, ValueType = "String" };
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);

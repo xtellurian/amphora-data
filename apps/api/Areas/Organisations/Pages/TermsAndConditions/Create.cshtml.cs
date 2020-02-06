@@ -22,7 +22,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         }
 
         [BindProperty]
-        public TermsAndConditionsDto TermsAndConditions { get; set; }
+        public Amphora.Api.Models.Dtos.Organisations.TermsAndConditions TermsAndConditions { get; set; }
         public OrganisationModel Organisation { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)

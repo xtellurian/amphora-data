@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Signals;
 using Bogus;
 
 namespace Amphora.Tests.Helpers
@@ -12,9 +12,9 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static AmphoraExtendedDto GetAmphoraDto(string orgId, string testName = null)
+        public static DetailedAmphora GetAmphoraDto(string orgId, string testName = null)
         {
-            var a = new Faker<AmphoraExtendedDto>()
+            var a = new Faker<DetailedAmphora>()
                .StrictMode(false)
                .RuleFor(o => o.OrganisationId, f => orgId)
                .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(5)))
@@ -50,9 +50,9 @@ namespace Amphora.Tests.Helpers
             };
         }
 
-        public static OrganisationDto GetOrganisationDto([CallerMemberName] string testName = "")
+        public static Organisation GetOrganisationDto([CallerMemberName] string testName = "")
         {
-            var org = new Faker<OrganisationDto>()
+            var org = new Faker<Organisation>()
                .StrictMode(false)
                .RuleFor(o => o.Name, f => f.Company.CompanyName())
                .RuleFor(o => o.About, f => testName + f.Lorem.Sentences())
@@ -74,14 +74,21 @@ namespace Amphora.Tests.Helpers
             return org;
         }
 
-        public static SignalModel GetSignalModel(string testName)
+        public static SignalV2 GetV2Signal([CallerMemberName] string testName = "")
         {
-            return new SignalModel(testName, SignalModel.Numeric);
+            return new SignalV2(testName, SignalV2.Numeric);
         }
 
-        public static SignalDto GetSignalDto(string property)
+        public static Signal GetSignalDto(string property)
         {
-            return new SignalDto() { Property = property, ValueType = SignalModel.Numeric };
+            var faker = new Faker("en");
+            var meta = new Dictionary<string, string>
+            {
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+            };
+
+            return new Signal() { Property = property, ValueType = SignalV2.Numeric, Meta = meta };
         }
     }
 }

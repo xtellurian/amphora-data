@@ -1,4 +1,5 @@
 using System;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Emails;
@@ -47,6 +48,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             await LoadProperties();
+
             if (WebHost.IsDevelopment())
             {
                 // just set the email thing to true
@@ -56,7 +58,16 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account.Manage
             else
             {
                 var code = await userService.UserManager.GenerateEmailConfirmationTokenAsync(AppUser);
-                await emailSender.SendEmailAsync(new ConfirmEmailEmail(AppUser, hostOptions.CurrentValue, code));
+                var callbackUrl = Url.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { userId = AppUser.Id, code = code },
+                    protocol: Request.Scheme);
+
+                // this line is broken
+                // await emailSender.SendEmailAsync(new ConfirmEmailEmail(AppUser, hostOptions.CurrentValue, code));
+                await emailSender.SendEmailAsync(AppUser.Email, "Please confirm your email",
+                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
             }
 
             this.Success = true;

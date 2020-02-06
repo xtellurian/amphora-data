@@ -31,13 +31,13 @@ namespace Amphora.Tests.Integration
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             createResponse.EnsureSuccessStatusCode();
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             // Act
             var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var amphorae = JsonConvert.DeserializeObject<List<AmphoraExtendedDto>>(content);
+            var amphorae = JsonConvert.DeserializeObject<List<DetailedAmphora>>(content);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -63,13 +63,13 @@ namespace Amphora.Tests.Integration
             a.Lon = lon;
             var content = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var createResponse = await client.PostAsync("api/amphorae", content);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             createResponse.EnsureSuccessStatusCode();
             var response = await client.GetAsync($"{url}?lat={lat}&lon={lon}&dist=10");
             var responseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
 
-            var responseList = JsonConvert.DeserializeObject<List<AmphoraExtendedDto>>(responseContent);
+            var responseList = JsonConvert.DeserializeObject<List<DetailedAmphora>>(responseContent);
             // Assert.Contains(responseList, b => string.Equals(b.Id, a.Id)); // how to wait for the indexer to run?
 
             await DestroyAmphoraAsync(client, a.Id);

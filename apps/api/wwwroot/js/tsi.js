@@ -63,8 +63,8 @@ async function tsi(id, signals, filters) {
         lineChart.render(data,
             {
                 theme: 'light', grid: true, tooltip: true, legend: 'compact', yAxisState: 'stacked',
-                noAnimate: true, includeDots: false, offset: timezone,
-                includeEnvelope: true, dateLocale: 'en-AU',
+                noAnimate: true, includeDots: false, offset: timezone, includeEnvelope: true, dateLocale: 'en-AU',
+                strings: {'Display Grid': 'Show Table'},
             },
             linechartTsqExpressions);
 
@@ -90,10 +90,11 @@ async function tsi(id, signals, filters) {
 
 async function getLineChartExpressions(tsiClient, id, signals, filters, from, to, bucketSize) {
     var scheme = new ColorScheme;
-    scheme.from_hue(signals.length)
-        .scheme('triade')
-        .variation('soft');
-    var colors = scheme.colors();
+
+    scheme.from_hue(Math.max(signals.length, 10))
+        .scheme('tetrade')
+        .variation('pastel');
+    var colors = shuffle(scheme.colors()).slice(0, signals.length);
     let colourCount = 0;
 
     var tsx = "";
@@ -136,3 +137,19 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
     });
     return linechartTsqExpressions;
 }
+
+/**
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+

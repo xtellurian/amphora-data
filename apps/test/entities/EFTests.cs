@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Amphora.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -25,20 +26,16 @@ namespace Amphora.Tests.Unit
                 var a = EntityLibrary.GetAmphoraModel(org, testName);
                 a = await amphoraStore.CreateAsync(a);
 
-                var signal = EntityLibrary.GetSignalModel(testName);
+                var signal = EntityLibrary.GetV2Signal();
                 Assert.NotNull(signal.Id);
-                var amphoraSignalModel = new AmphoraSignalModel(a, signal);
-                a.Signals.Add(amphoraSignalModel);
+                a.V2Signals.Add(signal);
                 a = await amphoraStore.UpdateAsync(a);
 
                 Assert.NotNull(signal.Id);
 
                 a = await amphoraStore.ReadAsync(a.Id);
-                Assert.NotNull(a.Signals);
-                Assert.Contains(a.Signals, m => string.Equals(m.SignalId, signal.Id));
-
-                var s2 = context.Signals.FirstOrDefault(s => s.Id == signal.Id);
-                Assert.NotNull(s2);
+                Assert.NotNull(a.V2Signals);
+                Assert.Contains(a.V2Signals, m => string.Equals(m.Id, signal.Id));
             }
         }
 

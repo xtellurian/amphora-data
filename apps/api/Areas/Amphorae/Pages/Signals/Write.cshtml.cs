@@ -21,21 +21,21 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         }
 
         [BindProperty]
-        public List<SignalValueDto> Values { get; set; }
+        public List<SignalValue> Values { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
             if (Amphora != null)
             {
-                var signals = this.Amphora.Signals.Select(s => s.Signal).ToList();
-                this.Values = new List<SignalValueDto>();
+                var signals = Amphora.V2Signals;
+                this.Values = new List<SignalValue>();
                 foreach (var s in signals)
                 {
-                    this.Values.Add(new SignalValueDto(s.Property, s.ValueType));
+                    this.Values.Add(new SignalValue(s.Property, s.ValueType));
                 }
 
-                this.Values.Add(new SignalValueDto("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
+                this.Values.Add(new SignalValue("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
             }
 
             return OnReturnPage();
@@ -47,12 +47,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             if (Amphora != null)
             {
                 var values = new Dictionary<string, object>();
-                foreach (var s in Amphora.Signals)
+                foreach (var s in Amphora.V2Signals)
                 {
-                    var dto = Values.FirstOrDefault(d => d.Property == s.Signal.Property); // d.Property is null (not bound?)
+                    var dto = Values.FirstOrDefault(d => d.Property == s.Property); // d.Property is null (not bound?)
                     if (dto == null) { continue; }
-                    if (dto.IsNumeric) { values.Add(s.Signal.Property, dto.NumericValue); }
-                    else if (dto.IsString) { values.Add(s.Signal.Property, dto.StringValue); }
+                    if (dto.IsNumeric) { values.Add(s.Property, dto.NumericValue); }
+                    else if (dto.IsString) { values.Add(s.Property, dto.StringValue); }
                 }
 
                 if (Values.FirstOrDefault(v => v.IsDateTime)?.DateTimeValue.HasValue ?? false)

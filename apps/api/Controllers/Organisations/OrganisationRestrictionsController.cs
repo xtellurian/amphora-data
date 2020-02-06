@@ -8,12 +8,14 @@ using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Organisations")]
     public class OrganisationRestrictionController : Controller
     {
         private readonly IOrganisationService organisationService;

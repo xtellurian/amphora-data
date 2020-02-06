@@ -34,7 +34,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(b.Id);
             Assert.Equal(a.Description, b.Description);
             Assert.Equal(a.Price, b.Price);
@@ -58,7 +58,7 @@ namespace Amphora.Tests.Integration.Amphorae
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
             createResponse.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -71,7 +71,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 response.Content.Headers.ContentType.ToString());
 
             Assert.NotNull(responseBody);
-            var c = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            var c = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.Equal(b.Id, c.Id);
             Assert.Equal(b.Description, c.Description);
             Assert.Equal(b.Price, c.Price);
@@ -95,7 +95,7 @@ namespace Amphora.Tests.Integration.Amphorae
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
             var c = await createResponse.Content.ReadAsStringAsync();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(c);
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(c);
             createResponse.EnsureSuccessStatusCode();
             // Act
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
@@ -103,7 +103,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
             response.EnsureSuccessStatusCode();
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseContent);
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(responseContent);
             Assert.NotNull(b);
             Assert.Equal(dto.Id, b.Id);
 
@@ -126,7 +126,7 @@ namespace Amphora.Tests.Integration.Amphorae
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var purchaseResponse = await otherClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
             purchaseResponse.EnsureSuccessStatusCode();
@@ -135,7 +135,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var content = await readResponse.Content.ReadAsStringAsync();
             readResponse.EnsureSuccessStatusCode();
 
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(content);
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(content);
             Assert.Equal(dto.Description, b.Description);
             Assert.True(b.Lat.HasValue);
             Assert.True(b.Lon.HasValue);
@@ -189,7 +189,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.NotNull(responseBody);
-            a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(responseBody);
+            a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
 
             // now update
@@ -202,7 +202,7 @@ namespace Amphora.Tests.Integration.Amphorae
             a.Labels = newLabels;
             var updateResponse = await adminClient.PutAsJsonAsync($"{url}/{a.Id}", a);
             var updateResponseBody = await updateResponse.Content.ReadAsStringAsync();
-            var b = JsonConvert.DeserializeObject<AmphoraExtendedDto>(updateResponseBody);
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(updateResponseBody);
 
             // Assert
             Assert.True(updateResponse.IsSuccessStatusCode);

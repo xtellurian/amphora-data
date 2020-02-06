@@ -21,21 +21,18 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IUserService userService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
-        private readonly IEntityStore<SignalModel> signalStore;
         private readonly ILogger<SignalsService> logger;
 
         public SignalsService(IEventHubSender eventHubSender,
                               IUserService userService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
-                              IEntityStore<SignalModel> signalStore,
                               ILogger<SignalsService> logger)
         {
             this.eventHubSender = eventHubSender;
             this.userService = userService;
             this.permissionService = permissionService;
             this.tsiService = tsiService;
-            this.signalStore = signalStore;
             this.logger = logger;
         }
 
@@ -93,17 +90,16 @@ namespace Amphora.Api.Services.Amphorae
         private bool InvalidSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
         {
             var isInvalid = false;
-            var sigs = entity.Signals.ToList();
             foreach (var s in values.Keys)
             {
                 // check if key is not in the signals, and its not a timestamp
-                if (!sigs.Any(_ => _.Signal.Property == s) && s != SpecialProperties.Timestamp) { isInvalid = true; }
+                if (!entity.V2Signals.Any(_ => _.Property == s) && s != SpecialProperties.Timestamp) { isInvalid = true; }
                 // check that numeric values are numeric
-                var property = sigs.FirstOrDefault(_ => _.Signal.Property == s);
+                var property = entity.V2Signals.FirstOrDefault(_ => _.Property == s);
                 if (property != null) // just check incase
                 {
-                    var value = values[property.Signal.Property];
-                    if (value is string && property.Signal.IsNumeric)
+                    var value = values[property.Property];
+                    if (value is string && property.IsNumeric)
                     {
                         isInvalid = true;
                     }
@@ -148,40 +144,25 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-        public async Task<IEnumerable<QueryResultPage>> GetTsiSignalsAsync(ClaimsPrincipal principal, AmphoraModel entity)
-        {
-            logger.LogInformation($"Getting TSI signals for Amphora Id {entity.Id}");
-            var res = new List<QueryResultPage>();
-            if (entity.Signals.Count == 0) { return res; }
-
-            foreach (var s in entity.Signals.Where(s => s.Signal.IsNumeric))
-            {
-                var r = await this.GetTsiSignalAsync(principal, entity, s.Signal, false);
-                res.Add(r);
-            }
-
-            return res;
-        }
-
-        public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalModel signal, bool includeOtherSignals = true)
+        public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalV2 signal, bool includeOtherSignals = false)
         {
             var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
             {
                 logger.LogInformation($"Getting Signal Property {signal.Property} for Amphora Id {entity.Id}");
                 var variables = new Dictionary<string, Variable>();
-                if (entity.Signals.Count == 0) { return default(QueryResultPage); }
+                if (entity.V2Signals.Count == 0) { return default(QueryResultPage); }
                 // add the inital key
                 variables.Add(signal.Property, new NumericVariable(
                                         value: new Tsx($"$event.{signal.Property}"),
                                         aggregation: new Tsx("avg($value)")));
 
-                foreach (var s in entity.Signals.Where(s => s.SignalId != signal.Id))
+                foreach (var s in entity.V2Signals.Where(s => s.Id != signal.Id))
                 {
-                    if (s.Signal.IsNumeric) // only numeric signals can be plotted here
+                    if (s.IsNumeric) // only numeric signals can be plotted here
                     {
-                        variables.Add(s.Signal.Property, new NumericVariable(
-                                        value: new Tsx($"$event.{s.Signal.Property}"),
+                        variables.Add(s.Property, new NumericVariable(
+                                        value: new Tsx($"$event.{s.Property}"),
                                         aggregation: new Tsx("avg($value)"))); // aggregation actually gets ignored
                     }
                 }
@@ -200,7 +181,7 @@ namespace Amphora.Api.Services.Amphorae
             }
         }
 
-        public async Task<IDictionary<SignalModel, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity)
+        public async Task<IDictionary<SignalV2, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity)
         {
             var user = await userService.ReadUserModelAsync(principal);
 
@@ -208,40 +189,19 @@ namespace Amphora.Api.Services.Amphorae
             {
                 var start = DateTime.UtcNow.AddDays(-30);
                 var end = DateTime.UtcNow.AddDays(7);
-                var stringSignals = entity.Signals.Where(s => s.Signal.IsString);
+                var stringSignals = entity.V2Signals.Where(s => s.IsString);
                 var result = await tsiService.RunGetEventsAsync(new List<object> { entity.Id },
                     new DateTimeRange(start, end),
-                    stringSignals.Select(s => s.Signal.Property).ToList());
-                var dic = new Dictionary<SignalModel, IEnumerable<string>>();
+                    stringSignals.Select(s => s.Property).ToList());
+                var dic = new Dictionary<SignalV2, IEnumerable<string>>();
 
                 foreach (var s in stringSignals)
                 {
-                    var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Signal.Property);
-                    if (p?.Values != null) { dic.Add(s.Signal, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct()); }
+                    var p = result?.Properties?.FirstOrDefault(_ => _?.Name == s.Property);
+                    if (p?.Values != null) { dic.Add(s, p.Values.Where(_ => _ != null).Select(_ => _.ToString()).Distinct()); }
                 }
 
                 return dic;
-            }
-        }
-
-        public async Task<EntityOperationResult<SignalModel>> AddSignal(ClaimsPrincipal principal, AmphoraModel amphora, SignalModel signal)
-        {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
-            {
-                var authorized = await permissionService.IsAuthorizedAsync(user, amphora, AccessLevels.Update);
-                if (!authorized) { return new EntityOperationResult<SignalModel>(user, false) { WasForbidden = true }; }
-
-                if ((await signalStore.CountAsync(_ => _.Id == signal.Id)) > 0)
-                {
-                    signal = await signalStore.ReadAsync(signal.Id);
-                }
-
-                var amphoraSignalModel = new AmphoraSignalModel(amphora, signal);
-                amphora.Signals.Add(amphoraSignalModel);
-                signal = await signalStore.UpdateAsync(signal);
-
-                return new EntityOperationResult<SignalModel>(user, signal);
             }
         }
     }

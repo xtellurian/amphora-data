@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace Amphora.Common.Models
 {
-    public abstract class Entity : IEntity, ITtl
+    public abstract class EntityBase : IEntity, ITtl
     {
-        public Entity()
+        public EntityBase()
         {
             ttl = -1; // means no expiry
             CreatedDate = DateTime.UtcNow;

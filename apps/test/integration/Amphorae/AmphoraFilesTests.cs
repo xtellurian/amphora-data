@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -11,9 +12,9 @@ using Xunit;
 namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class AmphoraDataTests : IntegrationTestBase
+    public class AmphoraFilesTests : IntegrationTestBase
     {
-        public AmphoraDataTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
+        public AmphoraFilesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -30,7 +31,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -67,7 +68,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             createResponse.EnsureSuccessStatusCode();
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             var generator = new Helpers.RandomGenerator(1024);
             var content = generator.GenerateBufferFromSeed(1024);
@@ -119,6 +120,47 @@ namespace Amphora.Tests.Integration.Amphorae
 
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
+        }
+
+        [Fact]
+        public async Task CanSetMetadataForFiles()
+        {
+            // Arrange
+            var url = "api/amphorae";
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
+            // create an amphora for us to work with
+            var createResponse = await adminClient.PostAsync(url,
+                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
+            createResponse.EnsureSuccessStatusCode();
+            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
+            // create a file for us to work with
+            var generator = new Helpers.RandomGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
+            var file = Guid.NewGuid().ToString();
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            uploadResponse.EnsureSuccessStatusCode();
+
+            // Act
+            var testMetadata = new Dictionary<string, string>()
+            {
+                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
+                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
+                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
+                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() }
+            };
+            var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/meta", testMetadata);
+            Assert.True(createMetaRes.IsSuccessStatusCode);
+            // get the amphora again
+            var readRes = await adminClient.GetAsync($"{url}/{amphora.Id}");
+            Assert.True(readRes.IsSuccessStatusCode);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await readRes.Content.ReadAsStringAsync());
+            Assert.NotNull(amphora.FilesMetaData);
+            Assert.Equal(testMetadata, amphora.FilesMetaData[file].MetaData);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

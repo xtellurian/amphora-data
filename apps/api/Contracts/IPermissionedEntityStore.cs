@@ -5,7 +5,7 @@ using Amphora.Common.Models;
 
 namespace Amphora.Api.Contracts
 {
-    public interface IPermissionedEntityStore<T> where T : Entity
+    public interface IPermissionedEntityStore<T> where T : EntityBase
     {
         Task<EntityOperationResult<T>> CreateAsync(ClaimsPrincipal principal, T model);
         Task<EntityOperationResult<T>> ReadAsync(ClaimsPrincipal principal, string id);

@@ -23,7 +23,7 @@ namespace Amphora.Tests.Integration
             var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 
-            var amphorae = new List<AmphoraExtendedDto>();
+            var amphorae = new List<DetailedAmphora>();
             int i = 0;
             while (i < 10)
             {
@@ -31,7 +31,7 @@ namespace Amphora.Tests.Integration
                 var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", a);
                 var createResponseContent = await createResponse.Content.ReadAsStringAsync();
                 createResponse.EnsureSuccessStatusCode();
-                a = JsonConvert.DeserializeObject<AmphoraExtendedDto>(createResponseContent);
+                a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
                 amphorae.Add(a);
                 i++;
             }
@@ -52,7 +52,7 @@ namespace Amphora.Tests.Integration
             var k = 0;
             var res = await adminClient.GetAsync($"api/market/search?query=&top={top}&skip={k}");
             var content = await res.Content.ReadAsStringAsync();
-            var list = JsonConvert.DeserializeObject<List<AmphoraDto>>(content);
+            var list = JsonConvert.DeserializeObject<List<BasicAmphora>>(content);
             // Assert.Equal(top, list.Count); // FIXME
 
             foreach (var x in amphorae)

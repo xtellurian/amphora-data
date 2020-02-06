@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +18,8 @@ namespace Amphora.Api.Controllers
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Users")]
+    [Route("api/users")]
     public class UsersController : Controller
     {
         private readonly IUserService userService;
@@ -42,8 +45,8 @@ namespace Amphora.Api.Controllers
         /// Get's logged in users information.
         /// </summary>
         /// <returns> Your own details. </returns>
-        [Produces(typeof(UserDto))]
-        [HttpGet("api/users/self")]
+        [Produces(typeof(AmphoraUser))]
+        [HttpGet("self")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ReadSelf()
         {
@@ -53,17 +56,17 @@ namespace Amphora.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(mapper.Map<UserDto>(user));
+            return Ok(mapper.Map<AmphoraUser>(user));
         }
 
         /// <summary>
         /// Creates a new User. Returns the password.
         /// </summary>
-        /// <param name="dto">User parameters.</param>
+        /// <param name="user">User parameters.</param>
         /// <returns> A password string.</returns>
         [Produces(typeof(string))]
-        [HttpPost("api/users")]
-        public async Task<IActionResult> Create([FromBody] UserDto dto)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] AmphoraUser user)
         {
             if (!ModelState.IsValid)
             {
@@ -74,8 +77,8 @@ namespace Amphora.Api.Controllers
 
             var applicationUser = new ApplicationUser()
             {
-                Email = dto.Email,
-                UserName = dto.UserName
+                Email = user.Email,
+                UserName = user.UserName
             };
 
             if (Request.Query.TryGetValue("DenyGlobalAdmin", out var val))
@@ -83,10 +86,10 @@ namespace Amphora.Api.Controllers
                 applicationUser.IsGlobalAdmin = false;
             }
 
-            var invitation = await invitationService.GetInvitationByEmailAsync(dto.Email.ToUpper());
+            var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
             if (invitation == null)
             {
-                return BadRequest($"{dto.Email} has not been invited to Amphora Data");
+                return BadRequest($"{user.Email} has not been invited to Amphora Data");
             }
 
             var result = await userService.CreateAsync(applicationUser, invitation, password);
@@ -112,7 +115,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="userName">UserName of user to delete.</param>
         /// <returns> Empty.</returns>
-        [HttpDelete("api/users/{username}")]
+        [HttpDelete("{username}")]
         [OpenApiIgnore]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(string userName)

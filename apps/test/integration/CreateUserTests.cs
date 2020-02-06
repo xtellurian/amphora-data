@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -29,7 +30,7 @@ namespace Amphora.Tests.Integration
 
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var user = new UserDto
+            var user = new AmphoraUser
             {
                 UserName = email,
                 Email = email,
@@ -93,7 +94,7 @@ namespace Amphora.Tests.Integration
 
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();
-            var createdOrg = JsonConvert.DeserializeObject<OrganisationDto>(orgCreateContent);
+            var createdOrg = JsonConvert.DeserializeObject<Organisation>(orgCreateContent);
 
             // now delete the org
             await client.DeleteAsync($"api/organisations/{createdOrg.Id}");

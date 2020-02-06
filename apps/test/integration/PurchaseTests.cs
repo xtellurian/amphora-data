@@ -24,7 +24,7 @@ namespace Amphora.Tests.Integration
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
@@ -58,7 +58,7 @@ namespace Amphora.Tests.Integration
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
@@ -68,7 +68,7 @@ namespace Amphora.Tests.Integration
             // get the amphora again from the server
             var res = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
             res.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await res.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await res.Content.ReadAsStringAsync());
 
             Assert.NotNull(dto.PurchaseCount);
             Assert.True(dto.PurchaseCount > 0);
@@ -87,7 +87,7 @@ namespace Amphora.Tests.Integration
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             createResponse.EnsureSuccessStatusCode();
-            dto = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
@@ -125,7 +125,7 @@ namespace Amphora.Tests.Integration
             sellingClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await sellingClient.PostAsJsonAsync("api/amphorae", amphora);
             createResponse.EnsureSuccessStatusCode();
-            amphora = JsonConvert.DeserializeObject<AmphoraExtendedDto>(await createResponse.Content.ReadAsStringAsync());
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             // make the buyers
             var (buyerClient1, buyer1, buyingOrg) = await NewOrgAuthenticatedClientAsync();

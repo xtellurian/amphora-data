@@ -47,20 +47,20 @@ namespace Amphora.Api.Controllers
         /// Accepts an invitation sent to me.
         /// </summary>
         /// <param name="orgId">Organisation to accept invitation for.</param>
-        /// <param name="dto">Invitation to accept.</param>
+        /// <param name="accept">Invitation to accept.</param>
         /// <returns> An object with an invitation id. </returns>
         [HttpPost("api/invitations/{orgId}")]
-        [Produces(typeof(AcceptInvitationDto))]
+        [Produces(typeof(AcceptInvitation))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> AcceptInvitation(string orgId, AcceptInvitationDto dto)
+        public async Task<IActionResult> AcceptInvitation(string orgId, AcceptInvitation accept)
         {
-            var res = await invitationService.GetInvitation(User, dto.TargetOrganisationId);
+            var res = await invitationService.GetInvitation(User, accept.TargetOrganisationId);
             if (res.Succeeded)
             {
                 var acceptResult = await invitationService.AcceptInvitationAsync(User, res.Entity);
                 if (acceptResult.Succeeded)
                 {
-                    return Ok(dto);
+                    return Ok(accept);
                 }
                 else if (acceptResult.WasForbidden) { return StatusCode(403); }
                 else { return BadRequest(acceptResult.Message); }
@@ -78,9 +78,9 @@ namespace Amphora.Api.Controllers
         /// <param name="invitation">Invitation details.</param>
         /// <returns> An Invitation Object. </returns>
         [HttpPost("api/invitations/")]
-        [Produces(typeof(InvitationDto))]
+        [Produces(typeof(Invitation))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> InviteNewUser(InvitationDto invitation)
+        public async Task<IActionResult> InviteNewUser(Invitation invitation)
         {
             var model = mapper.Map<InvitationModel>(invitation);
             var res = await invitationService.CreateInvitation(User, model);

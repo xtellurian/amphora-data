@@ -1,12 +1,11 @@
 using System;
-using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
 
 namespace Amphora.Common.Models.Purchases
 {
-    public class PurchaseModel : Entity
+    public class PurchaseModel : EntityBase
     {
         public PurchaseModel()
         {

@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Amphorae
 {
-    public class AmphoraModel : Entity, ISearchable
+    public class AmphoraModel : EntityBase, ISearchable
     {
         public AmphoraModel()
         {
@@ -47,6 +47,8 @@ namespace Amphora.Common.Models.Amphorae
         public int? PurchaseCount { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
+        public Dictionary<string, MetaDataStore>? FilesMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
+        public virtual ICollection<SignalV2>? V2Signals { get; set; } = new Collection<SignalV2>();
         public virtual ICollection<Label>? Labels { get; set; } = new Collection<Label>();
 
         // navigation
@@ -54,6 +56,7 @@ namespace Amphora.Common.Models.Amphorae
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public string? CreatedById { get; set; }
         public virtual ApplicationUser? CreatedBy { get; set; }
+        // [Obsolete]
         public virtual ICollection<AmphoraSignalModel> Signals { get; set; } = new Collection<AmphoraSignalModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? TermsAndConditionsId { get; set; }

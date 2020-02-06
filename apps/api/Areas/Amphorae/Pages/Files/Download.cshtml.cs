@@ -1,37 +1,30 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Areas.Amphorae.Pages
+namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
     [Authorize]
-    public class FileModel : PageModel
+    public class DownloadPageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
-        private readonly ITsiService tsiService;
-        private readonly IMapper mapper;
 
-        public FileModel(
+        public DownloadPageModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
             IPermissionService permissionService,
-            IUserService userService,
-            ITsiService tsiService,
-            IMapper mapper)
+            IUserService userService)
         {
             this.amphoraeService = amphoraeService;
             this.blobStore = blobStore;
             this.permissionService = permissionService;
             this.userService = userService;
-            this.tsiService = tsiService;
-            this.mapper = mapper;
         }
 
         public bool Succeeded { get; private set; }

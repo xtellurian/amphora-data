@@ -36,16 +36,11 @@ namespace Amphora.Tests.Unit.Services
                                          mockUserService.Object,
                                          mockPermissionService.Object,
                                          mockTsi.Object,
-                                         signalStore,
                                          CreateMockLogger<SignalsService>());
 
-            var numericSignal = new SignalModel("numeric", SignalModel.Numeric);
-            var stringSignal = new SignalModel("string", SignalModel.String);
             var amphora = new AmphoraModel();
-            amphora.Signals.Add(new AmphoraSignalModel(amphora, numericSignal));
-            amphora.Signals.Add(new AmphoraSignalModel(amphora, stringSignal));
-            numericSignal = await signalStore.CreateAsync(numericSignal);
-            stringSignal = await signalStore.CreateAsync(stringSignal);
+            amphora.V2Signals.Add(new SignalV2("numeric", SignalV2.Numeric));
+            amphora.V2Signals.Add(new SignalV2("string", SignalV2.String));
 
             var data = new Dictionary<string, object>()
             {
@@ -83,16 +78,11 @@ namespace Amphora.Tests.Unit.Services
                                          mockUserService.Object,
                                          mockPermissionService.Object,
                                          mockTsi.Object,
-                                         signalStore,
                                          CreateMockLogger<SignalsService>());
 
-            var numericSignal = new SignalModel("numeric", SignalModel.Numeric);
-            var stringSignal = new SignalModel("string", SignalModel.String);
             var amphora = new AmphoraModel();
-            amphora.Signals.Add(new AmphoraSignalModel(amphora, numericSignal));
-            amphora.Signals.Add(new AmphoraSignalModel(amphora, stringSignal));
-            numericSignal = await signalStore.CreateAsync(numericSignal);
-            stringSignal = await signalStore.CreateAsync(stringSignal);
+            amphora.V2Signals.Add(new SignalV2("numeric", SignalV2.Numeric));
+            amphora.V2Signals.Add(new SignalV2("string", SignalV2.String));
 
             var data = new Dictionary<string, object>()
             {

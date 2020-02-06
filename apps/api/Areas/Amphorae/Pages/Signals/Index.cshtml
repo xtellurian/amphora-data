@@ -33,7 +33,7 @@
                     <th scope="col">Property</th>
                     <th>Filters</th>
                     <th>
-                        @if(Model.Amphora.Signals.Count < 5)
+                        @if(Model.Amphora.V2Signals.Count < 5)
                         {
                             <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
                                 <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
@@ -176,7 +176,7 @@
         } 
 
         var filters = {};
-        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.Signals.Select(s => s.Signal).Where(s => s.IsNumeric)));
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.V2Signals.Where(s => s.IsNumeric)));
         var id = '@Model.Amphora.Id';
         var render = null
         loading(true)

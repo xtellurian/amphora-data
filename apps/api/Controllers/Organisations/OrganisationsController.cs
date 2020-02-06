@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
+    [OpenApiTag("Organisations")]
     public class OrganisationsController : Controller
     {
         private readonly IOptionsMonitor<CreateOptions> options;
@@ -37,19 +39,19 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Creates a new Organisation. This will assign the logged in user to the organisation.
         /// </summary>
-        /// <param name="dto">Information of the new Organisation.</param>
+        /// <param name="org">Information of the new Organisation.</param>
         /// <returns> The Organisation metadata. </returns>
-        [Produces(typeof(OrganisationDto))]
+        [Produces(typeof(Organisation))]
         [HttpPost("api/organisations")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Create([FromBody]OrganisationDto dto)
+        public async Task<IActionResult> Create([FromBody]Organisation org)
         {
-            var org = mapper.Map<OrganisationModel>(dto);
-            var result = await organisationService.CreateAsync(User, org);
+            var model = mapper.Map<OrganisationModel>(org);
+            var result = await organisationService.CreateAsync(User, model);
             if (result.Succeeded)
             {
-                dto = mapper.Map<OrganisationDto>(result.Entity);
-                return Ok(dto);
+                org = mapper.Map<Organisation>(result.Entity);
+                return Ok(org);
             }
             else if (result.WasForbidden)
             {
@@ -69,7 +71,7 @@ namespace Amphora.Api.Controllers
         /// <returns> The organisation metadaa. </returns>
         [HttpPut("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Update(string id, [FromBody]OrganisationDto org)
+        public async Task<IActionResult> Update(string id, [FromBody]Organisation org)
         {
             var entity = await entityStore.ReadAsync(id);
             if (entity == null) { return NotFound(); }
@@ -78,7 +80,7 @@ namespace Amphora.Api.Controllers
             entity.Address = org.Address;
             entity.WebsiteUrl = org.WebsiteUrl;
             var result = await entityStore.UpdateAsync(entity);
-            var dto = mapper.Map<OrganisationDto>(result);
+            var dto = mapper.Map<Organisation>(result);
             return Ok(dto);
         }
 
@@ -87,7 +89,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="id">Organisation Id.</param>
         /// <returns> The organisation metadata. </returns>
-        [Produces(typeof(OrganisationDto))]
+        [Produces(typeof(Organisation))]
         [HttpGet("api/organisations/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Read(string id)
@@ -96,7 +98,7 @@ namespace Amphora.Api.Controllers
             if (org == null) { return NotFound(); }
             else
             {
-                var dto = mapper.Map<OrganisationDto>(org);
+                var dto = mapper.Map<Organisation>(org);
                 return Ok(dto);
             }
         }

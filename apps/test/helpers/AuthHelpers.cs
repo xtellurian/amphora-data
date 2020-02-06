@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 
@@ -10,14 +11,14 @@ namespace Amphora.Tests.Helpers
 {
     public static class AuthHelpers
     {
-        public static async Task<(UserDto User, string Password)> CreateUserAsync(
+        public static async Task<(AmphoraUser User, string Password)> CreateUserAsync(
             this HttpClient client,
             string email,
             string fullName,
             bool denyGlobalAdmin = false)
         {
             // assumed the user has been invited
-            var user = new UserDto
+            var user = new AmphoraUser
             {
                 UserName = email,
                 Email = email,
@@ -35,18 +36,18 @@ namespace Amphora.Tests.Helpers
             return (User: user, Password: password);
         }
 
-        public static async Task<OrganisationDto> CreateOrganisationAsync(this HttpClient client, string testName)
+        public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client, string testName)
         {
             var a = Helpers.EntityLibrary.GetOrganisationDto(testName);
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var createResponseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
-            var org = JsonConvert.DeserializeObject<OrganisationDto>(createResponseContent);
+            var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
             return org;
         }
 
-        public static async Task GetTokenAsync(this HttpClient client, UserDto user, string password)
+        public static async Task GetTokenAsync(this HttpClient client, AmphoraUser user, string password)
         {
             // can log in
             var loginRequest = new TokenRequest()

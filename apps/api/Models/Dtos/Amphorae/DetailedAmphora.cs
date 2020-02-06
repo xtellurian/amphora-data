@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
-    public class AmphoraExtendedDto : AmphoraDto
+    public class DetailedAmphora : BasicAmphora
     {
         public string OrganisationId { get; set; }
         public string TermsAndConditionsId { get; set; }
@@ -16,5 +18,9 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public double? Lon { get; set; }
         [Display(Name = "Purchase Count")]
         public int? PurchaseCount { get; set; }
+        [Display(Name = "Files MetaData")]
+        public Dictionary<string, MetaDataStore> FilesMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
+        [Display(Name = "Signals MetaData")]
+        public Dictionary<string, MetaDataStore> SignalsMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
     }
 }

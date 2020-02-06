@@ -35,7 +35,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         }
 
         [BindProperty]
-        public CreateAmphoraDto AmphoraDto { get; set; }
+        public CreateAmphora AmphoraDto { get; set; }
         public List<SelectListItem> TermsAndConditions { get; set; } = new List<SelectListItem>();
         public string Token { get; set; }
 

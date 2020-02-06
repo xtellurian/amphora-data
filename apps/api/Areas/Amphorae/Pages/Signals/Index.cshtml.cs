@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +17,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             this.permissionService = permissionService;
         }
 
-        public IEnumerable<SignalModel> Signals { get; private set; }
+        public IEnumerable<SignalV2> Signals { get; private set; }
         public bool CanDeleteProperty { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -27,7 +26,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
             if (Amphora != null)
             {
-                this.Signals = this.Amphora.Signals.Select(s => s.Signal);
+                this.Signals = this.Amphora.V2Signals;
                 this.CanDeleteProperty = await permissionService.IsAuthorizedAsync(Result.User, Amphora, Common.Models.Permissions.AccessLevels.Update);
             }
 

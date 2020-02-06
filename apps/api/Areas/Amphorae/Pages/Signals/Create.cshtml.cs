@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
-using Amphora.Common.Models.Signals;
+using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,34 +24,41 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         }
 
         [BindProperty]
-        public SignalDto Signal { get; set; }
+        public Signal Signal { get; set; }
         public SelectList Options { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
-            Options = new SelectList(SignalModel.Options);
+            Options = new SelectList(SignalV2.Options);
             return OnReturnPage();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
             await LoadAmphoraAsync(id);
-            var signalModel = new SignalModel(Signal.Property, Signal.ValueType);
-            var res = await signalService.AddSignal(User, Amphora, signalModel);
-
-            if (res.Succeeded)
+            if (Amphora != null)
             {
-                return RedirectToPage("./Index", new { Id = Amphora.Id });
-            }
-            else if (res.WasForbidden)
-            {
-                return RedirectToPage("Amphorae/Forbidden");
+                Amphora.EnsureV2Signals();
+                Amphora.V2Signals.Add(new SignalV2(Signal.Property, Signal.ValueType));
+                var res = await amphoraeService.UpdateAsync(User, Amphora);
+                if (res.Succeeded)
+                {
+                    return RedirectToPage("./Index", new { Id = Amphora.Id });
+                }
+                else if (res.WasForbidden)
+                {
+                    return RedirectToPage("Amphorae/Forbidden");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, Result.Message);
+                    return Page();
+                }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, Result.Message);
-                return Page();
+                return NotFound();
             }
         }
     }
