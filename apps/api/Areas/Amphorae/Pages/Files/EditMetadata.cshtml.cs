@@ -25,6 +25,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             this.Name = name;
             if (Amphora != null)
             {
+                Amphora.FilesMetaData ??= new Dictionary<string, Common.Models.Amphorae.MetaDataStore>();
+
                 if (Amphora.FilesMetaData.TryGetValue(name, out var meta))
                 {
                     this.Meta = new Dictionary<string, CustomKVP>();
@@ -55,6 +57,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                     {
                         this.Meta = JsonConvert.DeserializeObject<Dictionary<string, CustomKVP>>(meta);
                         var dic = ToDictionary(this.Meta);
+                        Amphora.FilesMetaData ??= new Dictionary<string, Common.Models.Amphorae.MetaDataStore>();
                         Amphora.FilesMetaData[name] = new Common.Models.Amphorae.MetaDataStore(dic);
 
                         var res = await amphoraeService.UpdateAsync(User, Amphora);

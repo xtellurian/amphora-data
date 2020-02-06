@@ -164,10 +164,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 if (fileResult.Succeeded)
                 {
                     // the file exists, now update the metadata
-                    if (entity.FilesMetaData == null)
-                    {
-                        entity.FilesMetaData = new Dictionary<string, MetaDataStore>();
-                    }
+                    entity.FilesMetaData ??= new Dictionary<string, MetaDataStore>();
 
                     entity.FilesMetaData[file] = new MetaDataStore(metadata);
                     var updateRes = await amphoraeService.UpdateAsync(User, entity);

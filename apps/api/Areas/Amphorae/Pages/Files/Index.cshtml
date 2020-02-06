@@ -11,7 +11,7 @@
     var id = "A" + System.Guid.NewGuid().ToString();
     idDic[n] = id;
     <div>
-        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FilesMetaData.GetValueOrDefault(n)})
+        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FilesMetaData?.GetValueOrDefault(n)})
     </div>
 }
 
