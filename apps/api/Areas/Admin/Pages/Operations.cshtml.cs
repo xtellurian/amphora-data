@@ -28,10 +28,9 @@ namespace Amphora.Api.Areas.Admin.Pages
                 a.EnsureV2Signals();
                 await amphoraeService.AmphoraStore.UpdateAsync(a);
             }
+
             this.CompletedMessage = "Finish Ensuring V2 Signals on all Amphora";
             return Page();
         }
     }
-
-
 }
