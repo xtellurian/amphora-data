@@ -14,7 +14,8 @@ namespace Amphora.Api.EntityFramework.TypeConfiguration
             builder.Property(e => e.FilesMetaData).HasJsonConversion();
             builder.OwnsMany(e => e.V2Signals, _ =>
             {
-                _.HasKey(s => s.Id);
+                _.Property(s => s.UUID).ValueGeneratedOnAdd();
+                _.HasKey(s => s.UUID);
                 _.Property(s => s.Meta).HasJsonConversion();
             });
             builder.OwnsMany(_ => _.Labels, _ =>
