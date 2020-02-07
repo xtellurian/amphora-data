@@ -13,23 +13,29 @@ namespace Amphora.Common.Models
         }
 
         /// <summary>
-        /// The entity Id.
+        /// Gets or sets the entity Id.
         /// </summary>
         public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Time to Live, in Seconds
+        /// Gets or sets time to Live, in Seconds.
         /// </summary>
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; } = -1; // don't expire
+
         /// <summary>
-        /// Soft delete option.
+        /// Gets or sets soft delete option.
         /// </summary>
         public bool? IsDeleted { get; set; }
+
         /// <summary>
-        /// DateTime created in UTC
+        /// Gets or sets dateTime created in UTC.
         /// </summary>
         public DateTimeOffset? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets dateTime last modified in UTC.
+        /// </summary>
         public DateTimeOffset? LastModified { get; set; }
     }
 }

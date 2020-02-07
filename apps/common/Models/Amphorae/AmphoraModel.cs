@@ -65,7 +65,7 @@ namespace Amphora.Common.Models.Amphorae
         // methods
 
         /// <summary>
-        /// Method checks IsPublic is not null and is true
+        /// Method checks IsPublic is not null and is true.
         /// </summary>
         public bool Public()
         {

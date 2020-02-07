@@ -3,7 +3,7 @@ using Amphora.Common.Models.Organisations;
 namespace Amphora.Common.Models.Permissions
 {
     /// <summary>
-    /// Custom access restrictions to data in Amphora
+    /// Custom access restrictions to data in Amphora.
     /// </summary>
     public class RestrictionModel
     {
@@ -29,28 +29,33 @@ namespace Amphora.Common.Models.Permissions
         }
 
         /// <summary>
-        /// This restriction applies to all organisations.
+        /// Gets or sets this restriction applies to all organisations.
         /// TargetOrganisationId is ignored.
         /// </summary>
         public bool? AllOrganisations { get; set; }
+
         /// <summary>
-        /// The kind of restriction, Allow or Deny
-        /// </summary>
-        public RestrictionKind? Kind { get; set; }
-        /// <summary>
-        /// The organisation that is restricted.
+        /// Gets or sets the kind of restriction, Allow or Deny
         /// </summary>
 
+        public RestrictionKind? Kind { get; set; }
+
         // Navigation
-        public string? SourceOrganisationId { get; set; }
+
         /// <summary>
-        /// The organisation that owns the restriction.
+        /// Gets or sets the organisation that is restricted.
+        /// </summary>
+        public string? SourceOrganisationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the organisation that owns the restriction.
         /// </summary>
         public virtual OrganisationModel? SourceOrganisation { get; set; }
 
         public string? TargetOrganisationId { get; set; }
+
         /// <summary>
-        /// The organisation that is restricted.
+        /// Gets or sets the organisation that is restricted.
         /// </summary>
         public virtual OrganisationModel TargetOrganisation { get; set; }
     }
