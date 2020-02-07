@@ -16,7 +16,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public double? Balance => GetBalance();
 
         /// <summary>
-        /// The fraction of a purchase taken by Amphora Data.
+        /// Gets or sets the fraction of a purchase taken by Amphora Data.
         /// Is multiplied by the Purchase Amount (i.e. the debit amount) to generate the credit amount.
         /// </summary>
         public double? CommissionRate { get; set; } = DefaultCommissionRate;
