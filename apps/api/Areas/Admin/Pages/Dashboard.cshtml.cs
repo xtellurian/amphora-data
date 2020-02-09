@@ -77,12 +77,12 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Count();
 
             this.Stats.Organisations.AggregateBalance = (await organisationService.Store
-                .Query(_ => _.Account.Balance != null)
+                .Query(_ => _.Account != null)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Average(_ => _.Account.Balance);
 
             this.Stats.Organisations.AggregateBalance = (await organisationService.Store
-                .Query(_ => _.Account.Balance != null)
+                .Query(_ => _.Account != null)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Sum(_ => _.Account.Balance);
         }
