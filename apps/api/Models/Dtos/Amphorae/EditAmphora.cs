@@ -18,7 +18,5 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public string TermsAndConditionsId { get; set; }
         [Display(Name = "Files MetaData")]
         public Dictionary<string, AttributeStore> FileAttributes { get; set; } = new Dictionary<string, AttributeStore>();
-        [Display(Name = "Signals MetaData")]
-        public Dictionary<string, AttributeStore> SignalAttributes { get; set; } = new Dictionary<string, AttributeStore>();
     }
 }

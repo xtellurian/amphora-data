@@ -23,7 +23,7 @@ namespace Amphora.Common.Extensions
                 var meta = new Dictionary<string, AttributeStore>();
                 foreach (var s in v2Signals)
                 {
-                    meta[s.Id] = s.Meta;
+                    meta[s.Id] = s.Attributes;
                 }
 
                 return meta;

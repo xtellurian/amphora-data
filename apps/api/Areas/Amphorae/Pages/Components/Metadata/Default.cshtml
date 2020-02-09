@@ -10,9 +10,9 @@
         </button>
       </div>
       <div class="modal-body">
-        @if(Model.Meta?.MetaData != null)
+        @if(Model.Meta?.Attributes != null && Model.Meta?.Attributes.Count > 0)
         {
-          @foreach (var m in Model.Meta.MetaData)
+          @foreach (var m in Model.Meta.Attributes)
           {
             <div class="row">
               <div class="col">

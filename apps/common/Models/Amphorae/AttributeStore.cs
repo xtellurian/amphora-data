@@ -8,19 +8,19 @@ namespace Amphora.Common.Models.Amphorae
         {
         }
 
-        public AttributeStore(IDictionary<string, string> metaData)
+        public AttributeStore(IDictionary<string, string> attributes)
         {
-            MetaData = metaData;
+            Attributes = attributes;
         }
 
         // outer dictionary contains the id of the subject
         // inner dictionary contains a set of key value pairs
-        public IDictionary<string, string> MetaData { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
 
         public void AddMetadata(string key, string value)
         {
             CheckInputs(key, value);
-            this.MetaData[key] = value;
+            this.Attributes[key] = value;
         }
 
         private static void CheckInputs(string key, string value)

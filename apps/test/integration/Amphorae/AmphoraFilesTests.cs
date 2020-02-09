@@ -160,7 +160,7 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.True(readRes.IsSuccessStatusCode);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await readRes.Content.ReadAsStringAsync());
             Assert.NotNull(amphora.FileAttributes);
-            Assert.Equal(testMetadata, amphora.FileAttributes[file].MetaData);
+            Assert.Equal(testMetadata, amphora.FileAttributes[file].Attributes);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)
