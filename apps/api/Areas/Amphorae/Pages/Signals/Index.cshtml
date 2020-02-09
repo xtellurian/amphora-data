@@ -3,13 +3,16 @@
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " Signals";
+    var canCreateNewSignal = Model.Amphora.V2Signals.Count < 7;
+    var createSignalButtonHidden = canCreateNewSignal ? "" : "disabled";
 }
 
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
             <span>
-                <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-primary m-1">New Values</button></a>
+                <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-primary m-1">New Signal</button></a>
+                <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button @createSignalButtonHidden class="float-right btn btn-primary m-1">New Values</button></a>
                 <a asp-page="../Detail" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-secondary m-1">Amphora</button></a>
                 <h2>@Model.Amphora.Name </h2>
                 <strong>Signals</strong>
@@ -21,6 +24,7 @@
         <div class="col card text-center">
             <a class="m-1" data-toggle="collapse" href="#signalTable" 
                 role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
                 Advanced View
                 <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
             </a>
@@ -34,7 +38,7 @@
                     <th scope="col">Property</th>
                     <th>Filters</th>
                     <th>
-                        @if(Model.Amphora.V2Signals.Count < 5)
+                        @if(canCreateNewSignal)
                         {
                             <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
                                 <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
