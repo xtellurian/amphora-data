@@ -157,7 +157,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     return BadRequest("Signal not found");
                 }
 
-                existingSignal.Meta = new MetaDataStore(signal.Meta);
+                existingSignal.Meta = new AttributeStore(signal.Meta);
                 var updateRes = await amphoraeService.UpdateAsync(User, amphora);
                 if (updateRes.Succeeded)
                 {

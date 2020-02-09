@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace Amphora.Common.Models.Amphorae
 {
-    public class MetaDataStore
+    public class AttributeStore
     {
-        public MetaDataStore()
+        public AttributeStore()
         {
         }
 
-        public MetaDataStore(IDictionary<string, string> metaData)
+        public AttributeStore(IDictionary<string, string> metaData)
         {
             MetaData = metaData;
         }

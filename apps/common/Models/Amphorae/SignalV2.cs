@@ -28,7 +28,7 @@ namespace Amphora.Common.Models.Amphorae
         public string Id { get; set; }
         public string Property { get; set; }
         public string ValueType { get; set; }
-        public MetaDataStore Meta { get; set; } = new MetaDataStore();
+        public AttributeStore Meta { get; set; } = new AttributeStore();
 
         public bool IsNumeric => this.ValueType == Numeric;
         public bool IsString => this.ValueType == String;
