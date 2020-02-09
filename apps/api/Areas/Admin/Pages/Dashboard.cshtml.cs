@@ -75,6 +75,16 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Distinct()
                 .Count();
+
+            this.Stats.Organisations.AggregateBalance = (await organisationService.Store
+                .Query(_ => _.Account.Balance != null)
+                .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
+                .Average(_ => _.Account.Balance);
+
+            this.Stats.Organisations.AggregateBalance = (await organisationService.Store
+                .Query(_ => _.Account.Balance != null)
+                .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
+                .Sum(_ => _.Account.Balance);
         }
 
         private async Task LoadDebitStats()
@@ -118,8 +128,14 @@ namespace Amphora.Api.Areas.Admin.Pages
         public DateTimeOffset? GeneratedTime { get; set; }
         public StatisticsGroup Amphorae { get; set; } = new StatisticsGroup();
         public StatisticsGroup Users { get; set; } = new StatisticsGroup();
-        public StatisticsGroup Organisations { get; set; } = new StatisticsGroup();
+        public OrgStatsGroup Organisations { get; set; } = new OrgStatsGroup();
         public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
+    }
+
+    public class OrgStatsGroup : StatisticsGroup
+    {
+        public double? AggregateBalance { get; set; }
+        public double? MeanBalance { get; set; }
     }
 
     public class StatisticsGroup
