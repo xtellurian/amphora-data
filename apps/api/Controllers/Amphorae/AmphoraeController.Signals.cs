@@ -64,7 +64,7 @@ namespace Amphora.Api.Controllers.Amphorae
                         Id = s.Id,
                         ValueType = s.ValueType,
                         Property = s.Property,
-                        Meta = s.Meta?.MetaData
+                        Attributes = s.Meta?.MetaData
                     });
                 }
 

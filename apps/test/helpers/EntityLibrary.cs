@@ -88,7 +88,7 @@ namespace Amphora.Tests.Helpers
                 { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
             };
 
-            return new Signal() { Property = property, ValueType = SignalV2.Numeric, Meta = meta };
+            return new Signal() { Property = property, ValueType = SignalV2.Numeric, Attributes = meta };
         }
     }
 }
