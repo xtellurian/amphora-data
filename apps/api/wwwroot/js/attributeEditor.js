@@ -28,7 +28,6 @@ function redrawUI() {
                 <input class="form-control" type=text id="value${index}" value="${attributes[index].Value}" onchange="valueChanged(${index})">
             </div>
             <div class="col-2">
-                ${index}
                 <button class="btn btn-danger" onClick=removeMetaRow(${index})>Delete</button>
             </div>
         </div>
