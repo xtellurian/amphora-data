@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " " + Model.Signal.Property;
-    var id = System.Guid.NewGuid().ToString();
+    var id = "A" + System.Guid.NewGuid().ToString();
 }
 
 @await Component.InvokeAsync("Metadata", new {id = id, title = $"{Model.Signal.Property} Metadata", meta = Model.Signal.Attributes})

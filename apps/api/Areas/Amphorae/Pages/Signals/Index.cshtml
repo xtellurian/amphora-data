@@ -5,6 +5,14 @@
     ViewData["Title"] = Model.Amphora.Name + " Signals";
     var canCreateNewSignal = Model.Amphora.V2Signals.Count < 7;
     var createSignalButtonHidden = canCreateNewSignal ? "" : "disabled";
+    var idDic = new Dictionary<string,string>();
+}
+
+@foreach(var n in Model.Signals)
+{
+    idDic[n.UUID] = "A" + n.UUID;
+    <p>@n.Property</p>
+    @await Component.InvokeAsync("Metadata", new {id = $"A{n.UUID}", title = $"{n.Property} Metadata", meta = n.Attributes});
 }
 
 <div id="main" class="container">
@@ -91,6 +99,7 @@
                             
                         </td>
                         <td>
+                            <button type="button" class="btn btn-secondary m-1" data-toggle="modal" data-target="#@idDic[n.UUID]">Attributes</button>
                             <a class="btn btn-primary m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail">
                                 View
                             </a>
