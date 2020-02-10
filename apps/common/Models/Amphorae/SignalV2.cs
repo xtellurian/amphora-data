@@ -13,7 +13,7 @@ namespace Amphora.Common.Models.Amphorae
         public SignalV2(string property, string valueType)
         {
             Property = property ?? throw new System.ArgumentNullException(nameof(property));
-            this.Id = $"{Property}-{ValueType}";
+            this.Id = $"{property}-{valueType}";
             if (string.Equals(valueType, Numeric) || string.Equals(valueType, String) || string.Equals(valueType, DateTime))
             {
                 ValueType = valueType;
