@@ -113,7 +113,7 @@
                     @if(Model.Signals?.Count() > 0 ) 
                     {
                         <tr class="signal-item">
-                            <th scope="row">Write Time</th>
+                            <th scope="row">Maximum Write Date</th>
                             <td>
                                 <div class="input-group">
                                 @{
@@ -122,9 +122,8 @@
                                 }
                                     <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
                                     <input type="hidden" id="wt-operator" value=">">
-                                    <input type="range" class="form-control form-control-range m-1" id="wt-input" 
-                                        min="@minWt" max="@maxWt" step="@((maxWt - minWt) / 100)"
-                                        onchange="setFilterValue('wt-input', 'Double')">
+                                    <input type="hidden" id="wt-input" >
+                                    <input class="form-control ml-3" type="date" id="wt-date-input" name="DateTimeValue" onchange="onWtDateChanged()">
                                     <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
                                 </div>
                             </td>
@@ -280,6 +279,25 @@
             //new date is ticks, converted to microtime, minus difference from epoch microtime
             var tickDate = new Date(ticksToMicrotime - epochMicrotimeDiff);
             return tickDate;
+        }
+
+        function onWtDateChanged() {
+            var value = document.getElementById("wt-date-input").value;
+            var d = new Date(value)
+            var ticks = dateToTicks(d);
+            document.getElementById("wt-input").value = ticks
+            setFilterValue('wt-input', 'Double')
+        }
+
+        function dateToTicks(yourDate) {
+            // var yourDate = new Date();  // for example
+            // the number of .net ticks at the unix epoch
+            var epochTicks = 621355968000000000;
+            // there are 10000 .net ticks per millisecond
+            var ticksPerMillisecond = 10000;
+            // calculate the total number of .net ticks for your date
+            var yourTicks = epochTicks + (yourDate.getTime() * ticksPerMillisecond);
+            return yourTicks;
         }
 
     </script>
