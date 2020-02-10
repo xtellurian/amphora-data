@@ -47,7 +47,7 @@ namespace Amphora.Common.Models.Amphorae
         public int? PurchaseCount { get; set; }
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
-        public Dictionary<string, MetaDataStore>? FilesMetaData { get; set; } = new Dictionary<string, MetaDataStore>();
+        public Dictionary<string, AttributeStore>? FileAttributes { get; set; } = new Dictionary<string, AttributeStore>();
         public virtual ICollection<SignalV2>? V2Signals { get; set; } = new Collection<SignalV2>();
         public virtual ICollection<Label>? Labels { get; set; } = new Collection<Label>();
 
@@ -78,6 +78,20 @@ namespace Amphora.Common.Models.Amphorae
         public ICollection<T> GetSafe<T>(Func<AmphoraModel, ICollection<T>> selector)
         {
             return selector(this) ?? new Collection<T>();
+        }
+
+        /// <summary>
+        /// Useful incase a collection is null.
+        /// </summary>
+        public void AddSignal(SignalV2 signal)
+        {
+            if (this.V2Signals.Any(s => s.Property == signal.Property))
+            {
+                throw new ArgumentException($"Duplicate Signal Property, {signal.Property}");
+            }
+
+            V2Signals ??= new Collection<SignalV2>();
+            this.V2Signals.Add(signal);
         }
     }
 }

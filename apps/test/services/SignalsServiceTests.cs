@@ -39,8 +39,8 @@ namespace Amphora.Tests.Unit.Services
                                          CreateMockLogger<SignalsService>());
 
             var amphora = new AmphoraModel();
-            amphora.V2Signals.Add(new SignalV2("numeric", SignalV2.Numeric));
-            amphora.V2Signals.Add(new SignalV2("string", SignalV2.String));
+            amphora.AddSignal(new SignalV2("numeric", SignalV2.Numeric));
+            amphora.AddSignal(new SignalV2("string", SignalV2.String));
 
             var data = new Dictionary<string, object>()
             {
@@ -81,8 +81,8 @@ namespace Amphora.Tests.Unit.Services
                                          CreateMockLogger<SignalsService>());
 
             var amphora = new AmphoraModel();
-            amphora.V2Signals.Add(new SignalV2("numeric", SignalV2.Numeric));
-            amphora.V2Signals.Add(new SignalV2("string", SignalV2.String));
+            amphora.AddSignal(new SignalV2("numeric", SignalV2.Numeric));
+            amphora.AddSignal(new SignalV2("string", SignalV2.String));
 
             var data = new Dictionary<string, object>()
             {

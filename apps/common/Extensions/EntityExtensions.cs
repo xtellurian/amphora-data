@@ -15,19 +15,37 @@ namespace Amphora.Common.Extensions
             }
         }
 
-        public static Dictionary<string, MetaDataStore> ToMetadataDictionary(this ICollection<SignalV2> v2Signals)
+        public static Dictionary<string, AttributeStore> ToMetadataDictionary(this ICollection<SignalV2> v2Signals)
         {
-            if (v2Signals == null) { return new Dictionary<string, MetaDataStore>(); }
+            if (v2Signals == null) { return new Dictionary<string, AttributeStore>(); }
             else
             {
-                var meta = new Dictionary<string, MetaDataStore>();
+                var meta = new Dictionary<string, AttributeStore>();
                 foreach (var s in v2Signals)
                 {
-                    meta[s.Id] = s.Meta;
+                    meta[s.Id] = s.Attributes;
                 }
 
                 return meta;
             }
+        }
+
+        public static Dictionary<string, string> ToChildDictionary(this Dictionary<string, KeyValuePair<string, string>> kvps)
+        {
+            var dic = new Dictionary<string, string>();
+            foreach (var kvp in kvps)
+            {
+                if (!dic.ContainsKey(kvp.Value.Key))
+                {
+                    dic.Add(kvp.Value.Key, kvp.Value.Value);
+                }
+                else
+                {
+                    throw new System.ArgumentException("Duplicate key");
+                }
+            }
+
+            return dic;
         }
     }
 }

@@ -3,13 +3,19 @@
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " " + Model.Signal.Property;
+    var id = "A" + System.Guid.NewGuid().ToString();
 }
+
+@await Component.InvokeAsync("Metadata", new {id = id, title = $"{Model.Signal.Property} Metadata", meta = Model.Signal.Attributes})
+
 
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
             <div class="m-2">
-                <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-primary">All Signals</button></a>
+                <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-secondary m-1">All Signals</button></a>
+                <button type="button" class="btn btn-primary m-1" data-toggle="modal" data-target="#@id">View Attributes</button>
+                
                 <h2>@Model.Amphora.Name</h2>
                 <strong>Property: @Model.Signals.FirstOrDefault()?.Property</strong>
             </div>
@@ -33,6 +39,11 @@
             {
                 <p>This property has no values...</p>
             }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            @await Component.InvokeAsync("Metadata", new {})
         </div>
     </div>
     @if(Model.Signal.IsNumeric)

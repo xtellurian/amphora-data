@@ -64,7 +64,7 @@ namespace Amphora.Api.Controllers.Amphorae
                         Id = s.Id,
                         ValueType = s.ValueType,
                         Property = s.Property,
-                        Meta = s.Meta?.MetaData
+                        Attributes = s.Attributes?.Attributes
                     });
                 }
 
@@ -99,7 +99,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     var amphora = result.Entity;
                     amphora.EnsureV2Signals();
                     var newSignal = new SignalV2(signal.Property, signal.ValueType);
-                    amphora.V2Signals.Add(newSignal);
+                    amphora.AddSignal(newSignal);
                     var updateRes = await amphoraeService.UpdateAsync(User, amphora);
                     if (updateRes.Succeeded)
                     {
@@ -157,11 +157,11 @@ namespace Amphora.Api.Controllers.Amphorae
                     return BadRequest("Signal not found");
                 }
 
-                existingSignal.Meta = new MetaDataStore(signal.Meta);
+                existingSignal.Attributes = new AttributeStore(signal.Meta);
                 var updateRes = await amphoraeService.UpdateAsync(User, amphora);
                 if (updateRes.Succeeded)
                 {
-                    return Ok(new Signal(existingSignal.Id, existingSignal.Property, existingSignal.ValueType, existingSignal.Meta.MetaData));
+                    return Ok(new Signal(existingSignal.Id, existingSignal.Property, existingSignal.ValueType, existingSignal.Attributes.Attributes));
                 }
                 else { return BadRequest(updateRes.Message); }
             }

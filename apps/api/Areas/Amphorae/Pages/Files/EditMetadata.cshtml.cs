@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
         {
         }
 
-        public Dictionary<string, CustomKVP> Meta { get; set; } = new Dictionary<string, CustomKVP>();
+        public Dictionary<string, KeyValuePair<string, string>> Meta { get; set; } = new Dictionary<string, KeyValuePair<string, string>>();
 
         public string Name { get; private set; }
 
@@ -25,15 +26,15 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             this.Name = name;
             if (Amphora != null)
             {
-                Amphora.FilesMetaData ??= new Dictionary<string, Common.Models.Amphorae.MetaDataStore>();
+                Amphora.FileAttributes ??= new Dictionary<string, Common.Models.Amphorae.AttributeStore>();
 
-                if (Amphora.FilesMetaData.TryGetValue(name, out var meta))
+                if (Amphora.FileAttributes.TryGetValue(name, out var meta))
                 {
-                    this.Meta = new Dictionary<string, CustomKVP>();
+                    this.Meta = new Dictionary<string, KeyValuePair<string, string>>();
                     var index = 0;
-                    foreach (var m in meta.MetaData)
+                    foreach (var m in meta.Attributes)
                     {
-                        this.Meta.Add(index++.ToString(), new CustomKVP(m.Key, m.Value));
+                        this.Meta.Add(index++.ToString(), new KeyValuePair<string, string>(m.Key, m.Value));
                     }
                 }
             }
@@ -55,10 +56,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 {
                     try
                     {
-                        this.Meta = JsonConvert.DeserializeObject<Dictionary<string, CustomKVP>>(meta);
-                        var dic = ToDictionary(this.Meta);
-                        Amphora.FilesMetaData ??= new Dictionary<string, Common.Models.Amphorae.MetaDataStore>();
-                        Amphora.FilesMetaData[name] = new Common.Models.Amphorae.MetaDataStore(dic);
+                        this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
+                        var dic = this.Meta?.ToChildDictionary();
+                        Amphora.FileAttributes ??= new Dictionary<string, Common.Models.Amphorae.AttributeStore>();
+                        Amphora.FileAttributes[name] = new Common.Models.Amphorae.AttributeStore(dic);
 
                         var res = await amphoraeService.UpdateAsync(User, Amphora);
                         if (res.Succeeded)
@@ -86,40 +87,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             }
 
             return Page();
-        }
-
-        private Dictionary<string, string> ToDictionary(Dictionary<string, CustomKVP> kvps)
-        {
-            var dic = new Dictionary<string, string>();
-            foreach (var kvp in kvps)
-            {
-                if (!dic.ContainsKey(kvp.Value.Key))
-                {
-                    dic.Add(kvp.Value.Key, kvp.Value.Value);
-                }
-                else
-                {
-                    throw new ArgumentException("Duplicate key");
-                }
-            }
-
-            return dic;
-        }
-
-        public class CustomKVP
-        {
-            public CustomKVP()
-            {
-            }
-
-            public CustomKVP(string key, string value)
-            {
-                Key = key;
-                Value = value;
-            }
-
-            public string Key { get; set; }
-            public string Value { get; set; }
         }
     }
 }

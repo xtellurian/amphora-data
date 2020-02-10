@@ -42,7 +42,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var createdSignal = JsonConvert.DeserializeObject<Signal>(responseContent);
             Assert.NotNull(createdSignal);
             Assert.NotNull(createdSignal.Id);
-            Assert.Equal(signalDto.Meta, createdSignal.Meta);
+            Assert.Equal(signalDto.Attributes, createdSignal.Attributes);
             Assert.Equal(signalDto.Property, createdSignal.Property);
             Assert.Equal(signalDto.ValueType, createdSignal.ValueType);
 
@@ -114,8 +114,8 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var content = await updateRes.Content.ReadAsStringAsync();
             signal = JsonConvert.DeserializeObject<Signal>(content);
-            Assert.NotNull(signal.Meta);
-            Assert.Equal(updatedMetadata, signal.Meta);
+            Assert.NotNull(signal.Attributes);
+            Assert.Equal(updatedMetadata, signal.Attributes);
         }
     }
 }

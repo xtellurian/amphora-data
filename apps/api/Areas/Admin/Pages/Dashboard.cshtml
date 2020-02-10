@@ -57,7 +57,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Total</h5>
@@ -66,12 +66,30 @@
                 </div>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Count</h6>
                     <p class="card-text">@Model.Stats.Organisations.ActiveCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Aggregate Balance</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">$</h6>
+                    <p class="card-text">@Model.Stats.Organisations.AggregateBalance</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Balance</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">$</h6>
+                    <p class="card-text">@Model.Stats.Organisations.MeanBalance</p>
                 </div>
             </div>
         </div>

@@ -53,7 +53,7 @@ namespace Amphora.Api.Extensions
                 var v2 = new SignalV2(s.Signal.Property, s.Signal.ValueType);
                 if (!amphora.V2Signals.Any(_ => _.Property == s.Signal.Property && _.ValueType == s.Signal.ValueType))
                 {
-                    amphora.V2Signals.Add(new SignalV2(s.Signal.Property, s.Signal.ValueType));
+                    amphora.AddSignal(new SignalV2(s.Signal.Property, s.Signal.ValueType));
                 }
             }
         }

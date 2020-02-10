@@ -2,13 +2,13 @@
 @model Files.EditMetadataPageModel
 
 @{
-    ViewData["Title"] = "File Metadata";
+    ViewData["Title"] = "File Attributes";
 }
 
 <div class="container">
     <div class="row">
         <div class="col">
-            <h2>Edit Metadata</h2>
+            <h2>Edit Attributes</h2>
             <p>@Model.Name</p>
         </div>
         <div class="col">
@@ -25,82 +25,15 @@
         </div>
     </div>
     <div id="metaContainer">
-
     </div>
 </div>
 
-<button class="btn btn-primary" onClick="addMetaDataRow()"> New Meta Row</button>
+<button class="btn btn-primary" onClick="addMetaDataRow()"> New Attribute</button>
 
 @section Scripts {
+    <script src="~/js/attributeEditor.js"></script>
     <script>
         meta = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Meta));
-        redrawUI()
-        updateMetadataInput();
-        function keyChanged(index) {
-            var newKey = document.getElementById(`key${index}`).value
-            meta[index].Key = newKey;
-            updateMetadataInput();
-        }
-
-        function valueChanged(index) {
-            var newValue = document.getElementById(`value${index}`).value
-            meta[index].Value = newValue;
-            updateMetadataInput();
-        }
-
-        function removeMetaRow(index) {
-            delete meta[index]
-            updateMetadataInput()
-            redrawUI()
-        }
-
-        function updateMetadataInput() {
-            var metadataInput = document.getElementById("metadataInput");
-            metadataInput.value = JSON.stringify(meta);
-        }
-
-        function redrawUI() {
-            console.log("Updating UI")
-            // just clear and redo every time
-            var html = "";
-            for (var index of Object.keys(meta)) {
-                html += `
-                <div id="metaContainerChild${index}" class="row form-group">
-                    <div class="col-5">
-                        <input class="form-control" type=text id="key${index}" value="${meta[index].Key}" onchange="keyChanged(${index})">
-                    </div>
-                    <div class="col-5">
-                        <input class="form-control" type=text id="value${index}" value="${meta[index].Value}" onchange="valueChanged(${index})">
-                    </div>
-                    <div class="col-2">
-                        ${index}
-                        <button class="btn btn-danger" onClick=removeMetaRow(${index})>Delete</button>
-                    </div>
-                </div>
-                `
-            }
-            document.getElementById("metaContainer").innerHTML = html;
-        }
-
-        function addMetaDataRow(newMeta) {
-            // first check if ther bottom key is empty
-            var maxIndex = Math.max(...Object.keys(meta), 0);
-            if(meta[maxIndex] && !meta[maxIndex].Key) return; // return if bottom key is empty
-
-            var index = Math.max(...Object.keys(meta), 0);
-            if(Object.keys(meta).length > 0) {
-                // not the first entry
-                index += 1;
-            }
-
-            if(! newMeta) {
-                newMeta = {Key: "", Value: ""}
-            } 
-            meta[index] = newMeta;
-            redrawUI();
-            updateMetadataInput();
-        }
-        
-
+        attributeEditor(meta, "metaContainer", "metadataInput" )
     </script>
 }

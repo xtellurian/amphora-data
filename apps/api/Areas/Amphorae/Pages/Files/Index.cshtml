@@ -11,7 +11,7 @@
     var id = "A" + System.Guid.NewGuid().ToString();
     idDic[n] = id;
     <div>
-        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FilesMetaData?.GetValueOrDefault(n)})
+        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FileAttributes?.GetValueOrDefault(n)})
     </div>
 }
 
@@ -39,12 +39,12 @@
                             <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
                                 Download
                             </a>
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#@idDic[n]">View Info</button>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#@idDic[n]">View Attributes</button>
                         }
                         @if(Model.CanUploadFiles)
                         {
                             <a class="btn btn-secondary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
-                                Edit Metadata
+                                Edit Attributes
                             </a>
                         }
                         @if(Model.CanDeleteFiles)

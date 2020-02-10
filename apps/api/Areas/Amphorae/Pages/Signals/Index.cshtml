@@ -3,13 +3,29 @@
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " Signals";
+    var canCreateNewSignal = Model.Amphora.V2Signals.Count < 7;
+    var createSignalButtonHidden = canCreateNewSignal ? "" : "disabled";
+    var idDic = new Dictionary<string,string>();
+}
+
+@foreach(var n in Model.Signals)
+{
+    idDic[n.UUID] = "A" + n.UUID;
+    @await Component.InvokeAsync("Metadata", new {id = $"A{n.UUID}", title = $"{n.Property} Metadata", meta = n.Attributes});
 }
 
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
             <span>
-                <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-primary m-1">New Values</button></a>
+                @if(Model.CanWriteValues)
+                {
+                    <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-success m-1">New Values</button></a>
+                }
+                @if(Model.CanCreateNewSignal)
+                {
+                    <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button @createSignalButtonHidden class="float-right btn btn-primary m-1">New Signal</button></a>
+                }
                 <a asp-page="../Detail" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-secondary m-1">Amphora</button></a>
                 <h2>@Model.Amphora.Name </h2>
                 <strong>Signals</strong>
@@ -22,7 +38,9 @@
             <a class="m-1" data-toggle="collapse" href="#signalTable" 
                 role="button" aria-expanded="false" aria-controls="collapseAdvanced">
                 <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
-                </a>
+                Advanced View
+                <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
+            </a>
         </div>
     </div>
     <div id="signalTable" class="collapse">
@@ -33,7 +51,7 @@
                     <th scope="col">Property</th>
                     <th>Filters</th>
                     <th>
-                        @if(Model.Amphora.V2Signals.Count < 5)
+                        @if(canCreateNewSignal)
                         {
                             <a asp-page="./Create" asp-route-id="@Model.Amphora.Id">
                                 <i class="fas fa-plus float-right" data-toggle="tooltip" data-placement="left" title="New Property"></i>
@@ -80,6 +98,7 @@
                             
                         </td>
                         <td>
+                            <button type="button" class="btn btn-secondary m-1" data-toggle="modal" data-target="#@idDic[n.UUID]">Attributes</button>
                             <a class="btn btn-primary m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-page="./Detail">
                                 View
                             </a>
@@ -93,7 +112,7 @@
                     @if(Model.Signals?.Count() > 0 ) 
                     {
                         <tr class="signal-item">
-                            <th scope="row">Write Time</th>
+                            <th scope="row">Maximum Write Date</th>
                             <td>
                                 <div class="input-group">
                                 @{
@@ -102,9 +121,8 @@
                                 }
                                     <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
                                     <input type="hidden" id="wt-operator" value=">">
-                                    <input type="range" class="form-control form-control-range m-1" id="wt-input" 
-                                        min="@minWt" max="@maxWt" step="@((maxWt - minWt) / 100)"
-                                        onchange="setFilterValue('wt-input', 'Double')">
+                                    <input type="hidden" id="wt-input" >
+                                    <input class="form-control ml-3" type="date" id="wt-date-input" name="DateTimeValue" onchange="onWtDateChanged()">
                                     <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
                                 </div>
                             </td>
@@ -260,6 +278,25 @@
             //new date is ticks, converted to microtime, minus difference from epoch microtime
             var tickDate = new Date(ticksToMicrotime - epochMicrotimeDiff);
             return tickDate;
+        }
+
+        function onWtDateChanged() {
+            var value = document.getElementById("wt-date-input").value;
+            var d = new Date(value)
+            var ticks = dateToTicks(d);
+            document.getElementById("wt-input").value = ticks
+            setFilterValue('wt-input', 'Double')
+        }
+
+        function dateToTicks(yourDate) {
+            // var yourDate = new Date();  // for example
+            // the number of .net ticks at the unix epoch
+            var epochTicks = 621355968000000000;
+            // there are 10000 .net ticks per millisecond
+            var ticksPerMillisecond = 10000;
+            // calculate the total number of .net ticks for your date
+            var yourTicks = epochTicks + (yourDate.getTime() * ticksPerMillisecond);
+            return yourTicks;
         }
 
     </script>
