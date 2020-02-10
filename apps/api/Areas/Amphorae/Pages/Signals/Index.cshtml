@@ -11,8 +11,14 @@
     <div class="row main-header">
         <div class="col">
             <span>
-                <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-primary m-1">New Signal</button></a>
-                <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button @createSignalButtonHidden class="float-right btn btn-primary m-1">New Values</button></a>
+                @if(Model.CanWriteValues)
+                {
+                    <a asp-page="./Write" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-success m-1">New Values</button></a>
+                }
+                @if(Model.CanCreateNewSignal)
+                {
+                    <a asp-page="./Create" asp-route-id="@Model.Amphora.Id"><button @createSignalButtonHidden class="float-right btn btn-primary m-1">New Signal</button></a>
+                }
                 <a asp-page="../Detail" asp-route-id="@Model.Amphora.Id"><button class="float-right btn btn-secondary m-1">Amphora</button></a>
                 <h2>@Model.Amphora.Name </h2>
                 <strong>Signals</strong>
