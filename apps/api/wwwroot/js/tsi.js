@@ -56,7 +56,7 @@ async function tsi(id, signals, filters) {
                     color: '#BC312A'
                 }
             }
-    
+            
             linechartTsqExpressions.push({dataType: 'events', valueMapping: eventValueMapping, height: 10, eventElementType: 'diamond', onElementClick: null})
         }
 
@@ -119,7 +119,21 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
     signals.forEach((sig) => {
         const y = {};
         var kind = 'numeric';
-
+        var alias = sig.Property;
+        if(sig.Attributes && sig.Attributes.Attributes)
+        {
+            var a = sig.Attributes.Attributes;
+            if(a.Units)
+            {
+                // check units uppercase
+                alias += ` (${a.Units})`
+            }
+            if(a.units)
+            {
+                // check units lowercase
+                alias += ` (${a.units})`
+            }
+        }
         y[sig.Property] = {
             kind,
             value: { tsx: `$event.${sig.Property}` },
@@ -131,7 +145,7 @@ async function getLineChartExpressions(tsiClient, id, signals, filters, from, to
             y,
             { from, to, bucketSize },
             '#' + colors[colourCount++], // color
-            sig.Property);
+            alias);
 
         linechartTsqExpressions.push(x);
     });
