@@ -28,7 +28,7 @@ namespace Amphora.Tests.Unit
 
                 var signal = EntityLibrary.GetV2Signal();
                 Assert.NotNull(signal.Id);
-                a.V2Signals.Add(signal);
+                a.AddSignal(signal);
                 a = await amphoraStore.UpdateAsync(a);
 
                 Assert.NotNull(signal.Id);

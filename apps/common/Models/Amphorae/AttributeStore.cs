@@ -10,7 +10,7 @@ namespace Amphora.Common.Models.Amphorae
 
         public AttributeStore(IDictionary<string, string> attributes)
         {
-            Attributes = attributes;
+            Attributes = attributes ?? new Dictionary<string, string>();
         }
 
         // outer dictionary contains the id of the subject

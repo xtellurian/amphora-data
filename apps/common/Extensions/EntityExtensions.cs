@@ -29,5 +29,23 @@ namespace Amphora.Common.Extensions
                 return meta;
             }
         }
+
+        public static Dictionary<string, string> ToChildDictionary(this Dictionary<string, KeyValuePair<string, string>> kvps)
+        {
+            var dic = new Dictionary<string, string>();
+            foreach (var kvp in kvps)
+            {
+                if (!dic.ContainsKey(kvp.Value.Key))
+                {
+                    dic.Add(kvp.Value.Key, kvp.Value.Value);
+                }
+                else
+                {
+                    throw new System.ArgumentException("Duplicate key");
+                }
+            }
+
+            return dic;
+        }
     }
 }

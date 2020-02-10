@@ -79,5 +79,19 @@ namespace Amphora.Common.Models.Amphorae
         {
             return selector(this) ?? new Collection<T>();
         }
+
+        /// <summary>
+        /// Useful incase a collection is null.
+        /// </summary>
+        public void AddSignal(SignalV2 signal)
+        {
+            if (this.V2Signals.Any(s => s.Property == signal.Property))
+            {
+                throw new ArgumentException($"Duplicate Signal Property, {signal.Property}");
+            }
+
+            V2Signals ??= new Collection<SignalV2>();
+            this.V2Signals.Add(signal);
+        }
     }
 }

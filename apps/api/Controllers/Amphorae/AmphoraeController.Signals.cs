@@ -99,7 +99,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     var amphora = result.Entity;
                     amphora.EnsureV2Signals();
                     var newSignal = new SignalV2(signal.Property, signal.ValueType);
-                    amphora.V2Signals.Add(newSignal);
+                    amphora.AddSignal(newSignal);
                     var updateRes = await amphoraeService.UpdateAsync(User, amphora);
                     if (updateRes.Succeeded)
                     {
