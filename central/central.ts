@@ -105,6 +105,18 @@ const betaCName = new azure.dns.CNameRecord("betaCName",
     opts,
 );
 
+const appCName = new azure.dns.CNameRecord("appCName",
+    {
+        name: "app",
+        record: "amphora.azurefd.net",
+        resourceGroupName: rg.name,
+        tags,
+        ttl: 30,
+        zoneName: dnsZone.name,
+    },
+    opts,
+);
+
 // these come from O365
 
 const sipDirCName = new azure.dns.CNameRecord("sipDir",
@@ -324,12 +336,21 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
         hostName: "beta.amphoradata.com",
         name: "betaDomain",
         sessionAffinityEnabled: true,
+    }, {
+        customHttpsConfiguration: {
+            certificateSource: "FrontDoor",
+        },
+        customHttpsProvisioningEnabled: true,
+        hostName: "app.amphoradata.com",
+        name: "appDomain",
+        sessionAffinityEnabled: true,
     }],
     location: "global",
     name: "amphora",
     resourceGroupName: rg.name,
     routingRules: [
         {
+            // Squarespace Backend Route
             acceptedProtocols: [
                 "Https",
             ],
@@ -343,6 +364,7 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
             patternsToMatches: ["/*"],
         },
         {
+            // Prod Backend Route
             acceptedProtocols: [
                 "Https",
             ],
@@ -352,15 +374,16 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
                 cacheQueryParameterStripDirective: "StripNone",
                 forwardingProtocol: "HttpsOnly",
             },
-            frontendEndpoints: ["betaDomain"],
+            frontendEndpoints: ["betaDomain", "appDomain"],
             name: "routeToProdEnvironment",
             patternsToMatches: ["/*"],
         },
         {
+            // Https Redirects Route
             acceptedProtocols: [
                 "Http",
             ],
-            frontendEndpoints: ["defaultFrontend", "rootDomain", "wwwDomain", "betaDomain"],
+            frontendEndpoints: ["defaultFrontend", "rootDomain", "wwwDomain", "betaDomain", "appDomain"],
             name: "redirectToHttps",
             patternsToMatches: ["/*"],
             redirectConfiguration: {
