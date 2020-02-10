@@ -11,7 +11,6 @@
 @foreach(var n in Model.Signals)
 {
     idDic[n.UUID] = "A" + n.UUID;
-    <p>@n.Property</p>
     @await Component.InvokeAsync("Metadata", new {id = $"A{n.UUID}", title = $"{n.Property} Metadata", meta = n.Attributes});
 }
 
