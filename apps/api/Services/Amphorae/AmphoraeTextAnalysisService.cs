@@ -28,9 +28,9 @@ namespace Amphora.Api.Services.Amphorae
         {
             var allText = new List<string>();
             // use name, description, labels, and attributes.
-            foreach (var a in amphoraStore.Query(_ => true))
+            try
             {
-                try
+                foreach (var a in amphoraStore.Query(_ => true))
                 {
                     allText.AddRange(RemoveBlacklist(Clean(WordsFromText(a.Name))));
                     allText.AddRange(RemoveBlacklist(Clean(WordsFromText(a.Description))));
@@ -53,11 +53,11 @@ namespace Amphora.Api.Services.Amphorae
                         }
                     }
                 }
-                catch (System.Exception ex)
-                {
-                    // empty
-                    logger.LogWarning(ex.Message);
-                }
+            }
+            catch (System.Exception ex)
+            {
+                // empty
+                logger.LogWarning(ex.Message);
             }
 
             var result = CountWords(allText, maxWords);

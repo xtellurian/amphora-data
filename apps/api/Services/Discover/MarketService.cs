@@ -14,7 +14,7 @@ namespace Amphora.Api.Services.Market
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IUserService userService;
-        private readonly IMemoryCache cache;
+        private readonly ICache cache;
 
         public ISearchService SearchService { get; }
 
@@ -22,7 +22,7 @@ namespace Amphora.Api.Services.Market
             ISearchService searchService,
             IAmphoraeService amphoraeService,
             IUserService userService,
-            IMemoryCache cache)
+            ICache cache)
         {
             this.SearchService = searchService;
             this.amphoraeService = amphoraeService;
@@ -43,10 +43,9 @@ namespace Amphora.Api.Services.Market
             long? count;
             if (!cache.TryGetValue(key, out count))
             {
+                cache.Compact(50);
                 count = await SearchService.SearchAmphoraCount(searchTerm, parameters);
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(System.DateTime.Now.AddMinutes(5));
-                cache.Set(key, count, cacheEntryOptions);
+                cache.Set(key, count, System.DateTime.Now.AddMinutes(5));
             }
 
             return count;
@@ -65,10 +64,9 @@ namespace Amphora.Api.Services.Market
             var key = searchTerm + parameters.GetHashCode() + "search";
             if (!cache.TryGetValue(key, out result))
             {
+                cache.Compact();
                 result = await SearchService.SearchAmphora(searchTerm, parameters);
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(System.DateTime.Now.AddMinutes(5));
-                cache.Set(key, result, cacheEntryOptions);
+                cache.Set(key, result, System.DateTime.Now.AddMinutes(5));
             }
 
             return result;

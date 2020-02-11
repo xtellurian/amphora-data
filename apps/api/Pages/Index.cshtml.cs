@@ -12,13 +12,13 @@ namespace Amphora.Api.Pages
     {
         private const string TextAnalysisKey = nameof(TextAnalysisKey);
         private readonly IAmphoraeTextAnalysisService textAnalysisService;
-        private readonly IMemoryCache memoryCache;
+        private readonly ICache cache;
         private readonly IDateTimeProvider dateTimeProvider;
 
-        public IndexModel(IAmphoraeTextAnalysisService textAnalysisService, IMemoryCache memoryCache, IDateTimeProvider dateTimeProvider)
+        public IndexModel(IAmphoraeTextAnalysisService textAnalysisService, ICache memoryCache, IDateTimeProvider dateTimeProvider)
         {
             this.textAnalysisService = textAnalysisService;
-            this.memoryCache = memoryCache;
+            this.cache = memoryCache;
             this.dateTimeProvider = dateTimeProvider;
         }
 
@@ -29,16 +29,15 @@ namespace Amphora.Api.Pages
         public IActionResult OnGet()
         {
             Dictionary<string, int> cacheEntry;
-            if (!memoryCache.TryGetValue(TextAnalysisKey, out cacheEntry))
+            if (!cache.TryGetValue(TextAnalysisKey, out cacheEntry))
             {
+                // first clear the cache
+                cache.Compact(75);
                 // Key not in cache, so get data.
                 cacheEntry = textAnalysisService.WordFrequencies(500);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(dateTimeProvider.Now.AddHours(6));
-
                 // Save data in cache.
-                memoryCache.Set(TextAnalysisKey, cacheEntry, cacheEntryOptions);
+                cache.Set(TextAnalysisKey, cacheEntry, dateTimeProvider.Now.AddHours(6));
             }
 
             Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);

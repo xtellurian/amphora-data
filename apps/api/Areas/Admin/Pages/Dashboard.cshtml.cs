@@ -20,19 +20,19 @@ namespace Amphora.Api.Areas.Admin.Pages
         private readonly IAmphoraeService amphoraeService;
         private readonly IOrganisationService organisationService;
         private readonly IUserService userService;
-        private readonly IMemoryCache memoryCache;
+        private readonly ICache cache;
 
         public StatisticsCollection Stats { get; set; } = new StatisticsCollection();
 
         public DashboardPageModel(IAmphoraeService amphoraeService,
                                   IOrganisationService organisationService,
                                   IUserService userService,
-                                  IMemoryCache memoryCache)
+                                  ICache cache)
         {
             this.amphoraeService = amphoraeService;
             this.organisationService = organisationService;
             this.userService = userService;
-            this.memoryCache = memoryCache;
+            this.cache = cache;
         }
 
         private Expression<Func<T, bool>> Active<T>() where T : IEntity => a => a.LastModified > monthAgo;
@@ -40,7 +40,7 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (memoryCache.TryGetValue(nameof(Stats), out StatisticsCollection stats))
+            if (cache.TryGetValue(nameof(Stats), out StatisticsCollection stats))
             {
                 this.Stats = stats;
             }
@@ -52,9 +52,8 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadDebitStats();
                 this.Stats.GeneratedTime = DateTime.Now;
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                     .SetAbsoluteExpiration(DateTime.Now.AddHours(1));
-                memoryCache.Set(nameof(Stats), this.Stats, cacheEntryOptions);
+                cache.Compact();
+                cache.Set(nameof(Stats), this.Stats, DateTime.Now.AddHours(1));
             }
 
             return Page();

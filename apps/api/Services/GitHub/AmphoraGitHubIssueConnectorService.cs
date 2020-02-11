@@ -14,12 +14,12 @@ namespace Amphora.Api.Services.GitHub
     {
         private const string IssuesMemoryCacheKey = "githubissues";
         private readonly IDateTimeProvider dtProvider;
-        private readonly IMemoryCache cache;
+        private readonly ICache cache;
         private AmphoraGitHubClient client;
 
         public AmphoraGitHubIssueConnectorService(IOptionsMonitor<Amphora.GitHub.Configuration> config,
                                                   IDateTimeProvider dtProvider,
-                                                  IMemoryCache cache = null)
+                                                  ICache cache = null)
         {
             this.client = new AmphoraGitHubClient(config.CurrentValue);
             this.dtProvider = dtProvider;
@@ -30,6 +30,7 @@ namespace Amphora.Api.Services.GitHub
         {
             if (!TryGetCachedIssues(out var issues))
             {
+                cache?.Compact(50);
                 // load from GitHub
                 issues = await client.GetLinkedIssues();
                 TryCacheIssues(issues);
@@ -58,13 +59,8 @@ namespace Amphora.Api.Services.GitHub
         private void TryCacheIssues(IReadOnlyList<LinkedGitHubIssue> issues)
         {
             if (cache == null) { return; }
-            // Set cache options.
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                // Keep in cache for this time, reset time if accessed.
-                .SetSlidingExpiration(System.TimeSpan.FromSeconds(5));
-
             // Save data in cache.
-            cache.Set(IssuesMemoryCacheKey, issues, cacheEntryOptions);
+            cache.Set(IssuesMemoryCacheKey, issues, System.TimeSpan.FromSeconds(5));
         }
     }
 }
