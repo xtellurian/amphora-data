@@ -27,7 +27,7 @@ namespace Amphora.Tests.Helpers
             return a.Generate();
         }
 
-        public static AmphoraModel GetAmphoraModel(OrganisationModel org, string testName, bool isPublic = true)
+        public static AmphoraModel GetAmphoraModel(OrganisationModel org, bool isPublic = true)
         {
             var faker = new Faker<AmphoraModel>()
                .StrictMode(false)

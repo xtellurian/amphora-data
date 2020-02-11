@@ -16,17 +16,20 @@ namespace Amphora.Api.Services.Purchases
     {
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
+        private readonly ICommissionTrackingService commissionTracking;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<AccountsService> logger;
 
         public AccountsService(
             IEntityStore<PurchaseModel> purchaseStore,
             IEntityStore<OrganisationModel> orgStore,
+            ICommissionTrackingService commissionTracking,
             IDateTimeProvider dateTimeProvider,
             ILogger<AccountsService> logger)
         {
             this.purchaseStore = purchaseStore;
             this.orgStore = orgStore;
+            this.commissionTracking = commissionTracking;
             this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
         }
@@ -78,7 +81,8 @@ namespace Amphora.Api.Services.Purchases
         private async Task CreditAmphoraOrganisation(PurchaseModel purchase, string name)
         {
             var org = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
-            org.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+            var commissionAmount = org.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+            await commissionTracking.TrackCommissionAsync(purchase, commissionAmount);
             org = await orgStore.UpdateAsync(org);
         }
 

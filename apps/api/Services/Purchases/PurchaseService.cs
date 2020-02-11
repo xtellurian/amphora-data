@@ -20,6 +20,7 @@ namespace Amphora.Api.Services.Purchases
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
+        private readonly ICommissionTrackingService commissionTracker;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
         private readonly IEventPublisher eventPublisher;
@@ -30,6 +31,7 @@ namespace Amphora.Api.Services.Purchases
             IEntityStore<PurchaseModel> purchaseStore,
             IEntityStore<OrganisationModel> orgStore,
             IPermissionService permissionService,
+            ICommissionTrackingService commissionTracker,
             IUserService userService,
             IEmailSender emailSender,
             IEventPublisher eventPublisher,
@@ -39,6 +41,7 @@ namespace Amphora.Api.Services.Purchases
             this.purchaseStore = purchaseStore;
             this.orgStore = orgStore;
             this.permissionService = permissionService;
+            this.commissionTracker = commissionTracker;
             this.userService = userService;
             this.emailSender = emailSender;
             this.eventPublisher = eventPublisher;
@@ -89,8 +92,9 @@ namespace Amphora.Api.Services.Purchases
                         // credit the selling account
                         var sellerOrg = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
                         if (sellerOrg.Account == null) { sellerOrg.Account = new Account(); }
-                        sellerOrg.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+                        var commission = sellerOrg.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
                         sellerOrg = await orgStore.UpdateAsync(sellerOrg);
+                        await commissionTracker.TrackCommissionAsync(purchase, commission);
                     }
                     else
                     {

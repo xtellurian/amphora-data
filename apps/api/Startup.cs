@@ -81,6 +81,7 @@ namespace Amphora.Api
 
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.AddTransient<IAmphoraeTextAnalysisService, AmphoraeTextAnalysisService>();
 
             services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
@@ -109,6 +110,7 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
+            services.AddTransient<ICommissionTrackingService, CommissionTrackingService>();
             services.AddTransient<IAccountsService, AccountsService>();
             services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();

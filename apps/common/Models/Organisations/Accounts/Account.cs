@@ -103,14 +103,27 @@ namespace Amphora.Common.Models.Organisations.Accounts
             else { Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, amphoraId)); }
         }
 
-        public void CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
+        /// <summary>
+        /// Credits an account after a sale.
+        /// </summary>
+        /// <returns>
+        /// Returns the commission amount for the platform.
+        /// </returns>
+        public double? CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
-            if (purchase.Price == 0) { return; }
+            if (purchase.Price == 0) { return 0; }
             if (Credits == null) { Credits = new List<AccountCredit>(); }
             var currentBalance = Balance;
             var label = $"Sold {purchase.AmphoraId}";
-            var amount = purchase.Price * GetCommissionRate();
-            Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, purchase.AmphoraId));
+            var rawAmount = purchase.Price * GetCommissionRate();
+            if (rawAmount.HasValue)
+            {
+                var amount = System.Math.Round(rawAmount.Value, 2);
+                Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, purchase.AmphoraId));
+                return purchase.Price - amount;
+            }
+
+            return 0;
         }
     }
 }

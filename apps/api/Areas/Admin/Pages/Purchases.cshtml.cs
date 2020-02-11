@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Amphora.Api.Areas.Admin.Pages
 {
     [GlobalAdminAuthorize]
-    public class PurchasesModel : PageModel
+    public class PurchasesPageModel : PageModel
     {
         private readonly IAccountsService accountsService;
 
-        public PurchasesModel(IAccountsService accountsService)
+        public PurchasesPageModel(IAccountsService accountsService)
         {
             this.accountsService = accountsService;
         }

@@ -18,12 +18,11 @@ namespace Amphora.Tests.Unit
         {
             using (var context = GetContext(nameof(AddSignalToAmphora)))
             {
-                var testName = nameof(AddSignalToAmphora);
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var org = EntityLibrary.GetOrganisationModel(testName);
+                var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
-                var a = EntityLibrary.GetAmphoraModel(org, testName);
+                var a = EntityLibrary.GetAmphoraModel(org);
                 a = await amphoraStore.CreateAsync(a);
 
                 var signal = EntityLibrary.GetV2Signal();

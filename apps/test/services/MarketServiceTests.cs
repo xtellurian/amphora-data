@@ -45,7 +45,7 @@ namespace Amphora.Tests.Unit.Services
                                                          CreateMockLogger<AmphoraeService>());
                 var service = new BasicSearchService(amphoraService, dataRequestStore);
                 var orgModel = EntityLibrary.GetOrganisationModel();
-                var amphora = EntityLibrary.GetAmphoraModel(orgModel, nameof(MarketServiceTests)); // dumy org id
+                var amphora = EntityLibrary.GetAmphoraModel(orgModel); // dumy org id
                 var entity = await amphoraStore.CreateAsync(amphora);
                 var sut = new MarketService(service, amphoraService, mockUserService.Object, CreateMemoryCache()) as IMarketService;
 

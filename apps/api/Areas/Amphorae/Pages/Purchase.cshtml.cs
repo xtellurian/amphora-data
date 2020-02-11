@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    public class PurchaseModel : PageModel
+    public class PurchasePageModel : PageModel
     {
         private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
@@ -25,7 +25,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             "/images/stock/celebrate/undraw_online_wishes_dlmr.svg"
         };
 
-        public PurchaseModel(IPurchaseService purchaseService, IAmphoraeService amphoraeService)
+        public PurchasePageModel(IPurchaseService purchaseService, IAmphoraeService amphoraeService)
         {
             this.purchaseService = purchaseService;
             this.amphoraeService = amphoraeService;
