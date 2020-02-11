@@ -14,7 +14,7 @@ namespace Amphora.Tests.Unit.Services
             var context = GetContext();
             var store = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
-            var sut = new AmphoraeTextAnalysisService(store);
+            var sut = new AmphoraeTextAnalysisService(store, CreateMockLogger<AmphoraeTextAnalysisService>());
 
             // create some amphora
             var org = EntityLibrary.GetOrganisationModel();

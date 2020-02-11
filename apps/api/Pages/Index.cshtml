@@ -15,7 +15,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-10">
-            <div id="homeCarousel" class="carousel slide" data-ride="carousel">
+            <div id="homeCarousel" class="carousel slide" data-ride="carousel" data-interval="10000">
                 <div class="carousel-inner">
                     <div class="carousel-item active text-center">
                         <canvas id="wordcloud" width="1200px" height="800px"></canvas>
@@ -63,8 +63,12 @@
     <script src="~/lib/wordcloud/src/wordcloud2.js"></script>
     <script>
         var list = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Frequencies));
+        var maxWordCount = @Html.Raw(Model.MaxWordCount);
+        var minWordCount = @Html.Raw(Model.MinWordCount);
         var weightFactor = function (size) {
-            return Math.pow(size, 2.3) * $('#wordcloud').width() / 3000;
+            var normalisedSize = 1 + (size / maxWordCount);
+            var n = normalisedSize * Math.log(normalisedSize) * $('#wordcloud').width() ;
+            return n;
         }
 
         var clickCallback = function callback(item, dimension, event) {

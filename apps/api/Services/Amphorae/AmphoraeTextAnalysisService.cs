@@ -1,33 +1,56 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Amphorae
 {
     public class AmphoraeTextAnalysisService : IAmphoraeTextAnalysisService
     {
         private readonly IEntityStore<AmphoraModel> amphoraStore;
-        private string[] blacklist = { "a", "an", "on", "of", "or", "as", "i", "in", "is", "to", "the", "and", "for", "with", "not", "by" };
+        private readonly ILogger<AmphoraeTextAnalysisService> logger;
+        private string[] blacklist = { "a", "an", "on", "of", "or", "as", "i", "in", "is", "to", "the", "and", "for", "with", "not", "by", "from", "has", "been" };
 
-        public AmphoraeTextAnalysisService(IEntityStore<AmphoraModel> amphoraStore)
+        public AmphoraeTextAnalysisService(IEntityStore<AmphoraModel> amphoraStore, ILogger<AmphoraeTextAnalysisService> logger)
         {
             this.amphoraStore = amphoraStore;
+            this.logger = logger;
         }
 
-        public Dictionary<string, int> WordFrequencies()
+        public Dictionary<string, int> WordFrequencies(int maxWords = 200)
         {
             var allText = new List<string>();
             // use name, description, labels, and attributes.
             foreach (var a in amphoraStore.Query(_ => true))
             {
-                allText.AddRange(RemoveBlacklist(WordsFromText(a.Name)));
-                allText.AddRange(RemoveBlacklist(WordsFromText(a.Description)));
-                allText.AddRange(RemoveBlacklist(a.FileAttributes.Keys.ToList()));
-                allText.AddRange(RemoveBlacklist(Flatten(a.V2Signals.Select(_ => _.Attributes.Attributes.Keys))));
+                try
+                {
+                    allText.AddRange(RemoveBlacklist(WordsFromText(a.Name)));
+                    allText.AddRange(RemoveBlacklist(WordsFromText(a.Description)));
+                    if (a.FileAttributes?.Keys != null)
+                    {
+                        allText.AddRange(RemoveBlacklist(a.FileAttributes?.Keys.ToList()));
+                    }
+
+                    if (a.V2Signals != null)
+                    {
+                        foreach (var s in a.V2Signals)
+                        {
+                            allText.AddRange(RemoveBlacklist(s?.Attributes?.Attributes?.Keys.ToList() ?? new List<string>()));
+                            allText.AddRange(RemoveBlacklist(s?.Attributes?.Attributes?.Values.ToList() ?? new List<string>()));
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    // empty
+                    logger.LogWarning(ex.Message);
+                }
             }
 
-            var result = CountWords(allText);
+            var result = CountWords(allText, maxWords);
             return result;
         }
 
@@ -63,13 +86,18 @@ namespace Amphora.Api.Services.Amphorae
             return result;
         }
 
-        private Dictionary<string, int> CountWords(List<string> words)
+        private Dictionary<string, int> CountWords(List<string> words, int take)
         {
             var result = new Dictionary<string, int>();
             var keyWords = words.GroupBy(x => x).OrderByDescending(x => x.Count());
+            var count = 0;
             foreach (var word in keyWords)
             {
                 result.Add(word.Key, word.Count());
+                if (count++ >= take)
+                {
+                    break;
+                }
             }
 
             return result;
