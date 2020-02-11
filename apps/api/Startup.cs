@@ -81,6 +81,7 @@ namespace Amphora.Api
 
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.AddTransient<IAmphoraeTextAnalysisService, AmphoraeTextAnalysisService>();
 
             services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));

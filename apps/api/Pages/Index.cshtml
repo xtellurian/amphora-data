@@ -17,7 +17,10 @@
         <div class="col-10">
             <div id="homeCarousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
-                    <div class="carousel-item active">
+                    <div class="carousel-item active text-center">
+                        <canvas id="wordcloud" width="1200px" height="800px"></canvas>
+                    </div>
+                    <div class="carousel-item">
                         @await Component.InvokeAsync("FeaturedAmphora")
                     </div>
                     <div class="carousel-item">
@@ -55,3 +58,32 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/wordcloud/src/wordcloud2.js"></script>
+    <script>
+        var list = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Frequencies));
+        var weightFactor = function (size) {
+            return Math.pow(size, 2.3) * $('#wordcloud').width() / 3000;
+        }
+
+        var clickCallback = function callback(item, dimension, event) {
+            var base_url = window.location.origin;
+            if(item && item[0])
+            {
+                window.location = `${base_url}/Discover?SearchDefinition.Term=${item[0]}`;
+            }
+        }
+        window.addEventListener('load', function() {
+            var options = { list: list, 
+                weightFactor, 
+                shrinkToFit: true, 
+                shape: "square", 
+                clearCanvas: true, 
+                fontFamily: 'Fjalla One, sans-serif',
+                click: clickCallback}
+            WordCloud(document.getElementById('wordcloud'), options  );
+        });
+    </script>
+
+}

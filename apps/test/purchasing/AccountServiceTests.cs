@@ -113,7 +113,7 @@ namespace Amphora.Tests.Unit.Purchasing
             var buyerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Buyer"));
             var buyer = new ApplicationUser() { Organisation = buyerOrg, OrganisationId = buyerOrg.Id };
 
-            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(sellerOrg, nameof(WhenPurchasing_InitialDebitIsMatchedByCredit)));
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(sellerOrg));
 
             // purchase that amphora
             var purchaseRes = await purchaseService.PurchaseAmphoraAsync(buyer, amphora);

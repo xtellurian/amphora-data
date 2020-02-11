@@ -37,7 +37,7 @@ namespace Amphora.Tests.Unit.Authorization
                 userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                var a = EntityLibrary.GetAmphoraModel(org, nameof(DenyAllButReadByDefault), false); // ensure amphora is not public (auto deny access)
+                var a = EntityLibrary.GetAmphoraModel(org, false); // ensure amphora is not public (auto deny access)
                 a = await amphoraStore.CreateAsync(a);
 
                 var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
@@ -82,7 +82,7 @@ namespace Amphora.Tests.Unit.Authorization
                 userService.Setup(_ => _.ReadUserModelAsync(It.Is<ClaimsPrincipal>(p => p == principal))).Returns(Task.FromResult(user));
 
                 var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-                var a = EntityLibrary.GetAmphoraModel(org, nameof(OrgMember_ReadAccess_Amphora));
+                var a = EntityLibrary.GetAmphoraModel(org);
                 a = await amphoraStore.CreateAsync(a);
 
                 var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());

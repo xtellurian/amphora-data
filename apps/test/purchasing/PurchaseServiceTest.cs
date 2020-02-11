@@ -50,7 +50,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 EmailConfirmed = false
             };
 
-            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(PurchasingAmphora_SendsEmail));
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg);
             amphora.Id = System.Guid.NewGuid().ToString();
             var mockEmailSender = new Mock<IEmailSender>();
             var logger = CreateMockLogger<PurchaseService>();
@@ -113,7 +113,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 Organisation = usersOrg
             };
 
-            var amphora = EntityLibrary.GetAmphoraModel(othersOrg, nameof(AcceptedTermsAndConditions_EvaluatesTrue));
+            var amphora = EntityLibrary.GetAmphoraModel(othersOrg);
             amphora.TermsAndConditionsId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
@@ -154,7 +154,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 Organisation = usersOrg
             };
 
-            var amphora = EntityLibrary.GetAmphoraModel(othersOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse));
+            var amphora = EntityLibrary.GetAmphoraModel(othersOrg);
             amphora.TermsAndConditionsId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
@@ -188,7 +188,7 @@ namespace Amphora.Tests.Unit.Purchasing
 
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
-            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, nameof(NotAcceptedTermsAndConditions_EvaluatesFalse), true);
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, true);
             amphora.Price = 9;
             amphora = await amphoraStore.CreateAsync(amphora);
 
