@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.Contracts;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations.Accounts;
+using Amphora.Common.Models.Purchases;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
+using Moq;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Services
@@ -23,7 +26,9 @@ namespace Amphora.Tests.Unit.Services
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+                var commissionMock = new Mock<ICommissionTrackingService>();
+                commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+                var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
                 var lastMonth = DateTime.Now.AddMonths(-1);
                 await Assert.ThrowsAsync<System.ArgumentNullException>(() => sut.GenerateInvoiceAsync(lastMonth, null));
@@ -38,7 +43,9 @@ namespace Amphora.Tests.Unit.Services
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+                var commissionMock = new Mock<ICommissionTrackingService>();
+                commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+                var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
@@ -64,6 +71,8 @@ namespace Amphora.Tests.Unit.Services
                 Assert.Single(invoice.Credits);
                 Assert.Single(invoice.Debits);
                 Assert.Equal(credit - debit, invoice.InvoiceBalance);
+                // this is only called when we run the PopulateDebitsAndCreditsAsync()
+                commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
         }
 
@@ -73,11 +82,13 @@ namespace Amphora.Tests.Unit.Services
             var credit = 50;
             var debit = 100;
             var dtProvider = new MockDateTimeProvider();
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
             using (var context = GetContext())
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+                var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
@@ -110,6 +121,7 @@ namespace Amphora.Tests.Unit.Services
                 Assert.Single(invoice.Credits);
                 Assert.Single(invoice.Debits);
                 Assert.Equal(credit - debit, invoice.InvoiceBalance);
+                commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
         }
 
@@ -117,11 +129,13 @@ namespace Amphora.Tests.Unit.Services
         public async Task InvoicesAreGenerated_RegenerateNotEqual()
         {
             var dtProvider = new MockDateTimeProvider();
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
             using (var context = GetContext())
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+                var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
@@ -141,6 +155,7 @@ namespace Amphora.Tests.Unit.Services
 
                 Assert.NotEqual(invoice.Id, regenereratedInvoice.Id);
                 Assert.Equal(invoice.InvoiceBalance, regenereratedInvoice.InvoiceBalance);
+                commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
         }
 
@@ -148,11 +163,13 @@ namespace Amphora.Tests.Unit.Services
         public async Task InvoicesAreGenerated_DuplicateReturnsNull()
         {
             var dtProvider = new MockDateTimeProvider();
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
             using (var context = GetContext())
             {
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+                var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
@@ -171,6 +188,7 @@ namespace Amphora.Tests.Unit.Services
                 var regenereratedInvoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true, regenerate: false);
 
                 Assert.Null(regenereratedInvoice);
+                commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
         }
     }

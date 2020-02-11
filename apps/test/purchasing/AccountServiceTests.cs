@@ -1,15 +1,18 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.Contracts;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
+using Moq;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Purchasing
@@ -57,7 +60,9 @@ namespace Amphora.Tests.Unit.Purchasing
             var dtProvider = new MockDateTimeProvider();
             var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-            var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+            var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
             // create a test org
             var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
@@ -90,6 +95,8 @@ namespace Amphora.Tests.Unit.Purchasing
             var amphoraStore = new AmphoraeEFStore(GetContext(), CreateMockLogger<AmphoraeEFStore>());
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
             var userStore = new ApplicationUserStore(GetContext(), CreateMockLogger<ApplicationUserStore>());
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
             var userService = new UserService(CreateMockLogger<UserService>(),
                                               orgStore,
                                               userStore,
@@ -100,13 +107,13 @@ namespace Amphora.Tests.Unit.Purchasing
             var purchaseService = new PurchaseService(purchaseStore,
                                                       orgStore,
                                                       permissionService,
+                                                      commissionMock.Object,
                                                       userService,
                                                       null,
                                                       CreateMockEventPublisher(),
                                                       dtProvider,
                                                       CreateMockLogger<PurchaseService>());
-
-            var sut = new AccountsService(purchaseStore, orgStore, dtProvider, CreateMockLogger<AccountsService>());
+            var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
 
             // Create 2 orgs and some amphora
             var sellerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Seller"));
@@ -147,6 +154,10 @@ namespace Amphora.Tests.Unit.Purchasing
             Assert.NotNull(credit2);
             Assert.Equal(amphora.Id, credit2.AmphoraId);
             MathHelpers.AssertCloseEnough(amphora.Price * sellerOrg.Account.CommissionRate, credit2.Amount);
+
+            // check we earned commission
+            commissionMock.Verify(mock => mock.TrackCommissionAsync(purchaseRes.Entity,
+                It.IsInRange<double>(0, purchaseRes.Entity.Price.Value, Moq.Range.Exclusive)), Times.Exactly(2));
         }
     }
 }

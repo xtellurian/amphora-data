@@ -6,6 +6,7 @@ using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
@@ -56,8 +57,10 @@ namespace Amphora.Tests.Unit.Purchasing
             var logger = CreateMockLogger<PurchaseService>();
 
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService,  null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, logger);
+            var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, logger);
 
             var result = await sut.PurchaseAmphoraAsync(user_emailconfirmed, amphora);
             Assert.True(result.Succeeded);
@@ -117,8 +120,10 @@ namespace Amphora.Tests.Unit.Purchasing
             amphora.TermsAndConditionsId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.True(result);
@@ -158,8 +163,10 @@ namespace Amphora.Tests.Unit.Purchasing
             amphora.TermsAndConditionsId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var result = sut.HasAgreedToTermsAndConditions(user, amphora);
 
             Assert.False(result);
@@ -201,8 +208,10 @@ namespace Amphora.Tests.Unit.Purchasing
 
             var mockEmailSender = new Mock<IEmailSender>();
             mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
-            var sut = new PurchaseService(store, orgStore, permissionService, null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
+            var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
             var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
             Assert.True(purchase.Succeeded);
             org = await orgStore.ReadAsync(org.Id); // reload, just in case
