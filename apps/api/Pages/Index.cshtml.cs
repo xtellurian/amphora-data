@@ -32,7 +32,7 @@ namespace Amphora.Api.Pages
             if (!memoryCache.TryGetValue(TextAnalysisKey, out cacheEntry))
             {
                 // Key not in cache, so get data.
-                cacheEntry = textAnalysisService.WordFrequencies();
+                cacheEntry = textAnalysisService.WordFrequencies(500);
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(dateTimeProvider.Now.AddHours(6));
