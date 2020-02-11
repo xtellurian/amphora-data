@@ -110,6 +110,7 @@ namespace Amphora.Api
             services.AddTransient<IAmphoraFileService, AmphoraFileService>();
             services.AddTransient<IOrganisationService, OrganisationService>();
             services.AddTransient<IPurchaseService, PurchaseService>();
+            services.AddTransient<ICommissionTrackingService, CommissionTrackingService>();
             services.AddTransient<IAccountsService, AccountsService>();
             services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
