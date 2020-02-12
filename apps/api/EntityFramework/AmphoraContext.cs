@@ -132,13 +132,6 @@ namespace Amphora.Api.EntityFramework
                     p.HasOne(_ => _.Amphora6).WithMany().HasForeignKey(_ => _.AmphoraId6);
                 });
             });
-
-            modelBuilder.Entity<InvitationModel>(b =>
-            {
-                b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.HasOne(_ => _.TargetOrganisation).WithMany(_ => _.GlobalInvitations).HasForeignKey(_ => _.TargetOrganisationId);
-                b.HasData(new InvitationModel { TargetDomain = "AMPHORADATA.COM", Id = "01", IsGlobalAdmin = true });
-            });
         }
 
         public DbSet<AmphoraModel> Amphorae { get; set; }

@@ -129,7 +129,7 @@ namespace Amphora.Tests.Integration
 
             // make the buyers
             var (buyerClient1, buyer1, buyingOrg) = await NewOrgAuthenticatedClientAsync();
-            var (buyerClient2, buyer2, buyingOrg2) = await GetNewClientInOrg(buyerClient1, buyingOrg, true);
+            var (buyerClient2, buyer2, buyingOrg2) = await GetNewClientInOrg(buyerClient1, buyingOrg);
 
             // buyer 1 can purchase
             var purchase1Response = await buyerClient1.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });

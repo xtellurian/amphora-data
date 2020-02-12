@@ -75,7 +75,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Distinct()
                 .Count();
 
-            this.Stats.Organisations.AggregateBalance = (await organisationService.Store
+            this.Stats.Organisations.MeanBalance = (await organisationService.Store
                 .Query(_ => true)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Average(_ => _.Account.Balance);

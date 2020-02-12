@@ -55,7 +55,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>   
             <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
-            @if(appUser?.GlobalAdmin() ?? false)
+            @if(appUser?.IsAdminGlobal() ?? false)
             {
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item nav-link text-light" asp-area="Admin" asp-page="/Index">Admin</a>
