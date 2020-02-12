@@ -102,24 +102,5 @@ namespace Amphora.Tests.Integration
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
             deleteRequest.EnsureSuccessStatusCode();
         }
-
-        [Fact]
-        public async Task EmailCantSignupWithoutInvitation()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
-
-            // Act
-            var email = System.Guid.NewGuid().ToString() + "@example.com";
-            var user = new ApplicationUser
-            {
-                UserName = email,
-                Email = email,
-            };
-
-            var response = await client.PostAsJsonAsync("api/users", user);
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-        }
     }
 }
