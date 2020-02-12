@@ -40,11 +40,12 @@ namespace Amphora.Tests.Integration
         }
 
         protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> NewOrgAuthenticatedClientAsync(
+            string domain = "AmphoraData.com",
             int majorVersion = 0)
         {
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
-            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var email = System.Guid.NewGuid().ToString() + "@" + domain;
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             return (client, user, org);
