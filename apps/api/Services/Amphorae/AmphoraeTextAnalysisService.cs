@@ -24,6 +24,8 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
+        public string GetCacheKey() => "WordFrequencies";
+
         public Dictionary<string, int> WordFrequencies(int maxWords = 200)
         {
             var allText = new List<string>();
