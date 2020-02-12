@@ -15,7 +15,7 @@ CMD [ "dotnet", "test", "-l:trx;LogFileName=/output/TestOutput.xml ", "/p:Collec
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_VERSION} AS publisher
 WORKDIR /app
 COPY --from=builder /app .
-RUN dotnet publish -c Release -o out api
+RUN dotnet publish -c Release -o out api /p:TreatWarningsAsErrors=${TreatWarningsAsErrors}
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_VERSION}-alpine
