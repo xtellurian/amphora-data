@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
+using Amphora.Api.Services.Wrappers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -42,6 +43,11 @@ namespace Amphora.Tests.Unit
 
             var memoryCache = serviceProvider.GetService<IMemoryCache>();
             return memoryCache;
+        }
+
+        protected ICache CreateCache()
+        {
+            return new InMemoryCache();
         }
 
         private Dictionary<string, AmphoraContext> contexts = new Dictionary<string, AmphoraContext>();

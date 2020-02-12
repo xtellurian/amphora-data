@@ -1,6 +1,7 @@
 using System;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
+using Amphora.Api.Services.Wrappers;
 using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.EFCore;
@@ -107,6 +108,9 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
             // services.AddScoped<IEntityStore<SignalModel>, SignalsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUser>, ApplicationUserStore>();
+
+            // cache
+            services.AddSingleton<ICache, InMemoryCache>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

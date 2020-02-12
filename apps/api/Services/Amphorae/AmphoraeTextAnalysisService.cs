@@ -11,7 +11,12 @@ namespace Amphora.Api.Services.Amphorae
     {
         private readonly IEntityStore<AmphoraModel> amphoraStore;
         private readonly ILogger<AmphoraeTextAnalysisService> logger;
-        private string[] blacklist = { "a", "an", "on", "of", "or", "as", "i", "in", "is", "to", "the", "and", "for", "with", "not", "by", "from", "has", "been" };
+        private string[] blacklist =
+        {
+            "the", "and", "for", "with", "not", "from", "has", "been", "more", "user", "both",
+            "csiro", "resolution", "longitude", "longtitude", "latitude", "transformed", "includes",
+            "original", "weatherzone", "ph", "available", "effort", "format", "source", "second", "modelling"
+        };
 
         public AmphoraeTextAnalysisService(IEntityStore<AmphoraModel> amphoraStore, ILogger<AmphoraeTextAnalysisService> logger)
         {
@@ -23,31 +28,36 @@ namespace Amphora.Api.Services.Amphorae
         {
             var allText = new List<string>();
             // use name, description, labels, and attributes.
-            foreach (var a in amphoraStore.Query(_ => true))
+            try
             {
-                try
+                foreach (var a in amphoraStore.Query(_ => true))
                 {
-                    allText.AddRange(RemoveBlacklist(WordsFromText(a.Name)));
-                    allText.AddRange(RemoveBlacklist(WordsFromText(a.Description)));
+                    allText.AddRange(RemoveBlacklist(Clean(WordsFromText(a.Name))));
+                    allText.AddRange(RemoveBlacklist(Clean(WordsFromText(a.Description))));
+                    if (a.Labels != null && a.Labels.Count > 0)
+                    {
+                        allText.AddRange(RemoveBlacklist(Clean(a.Labels.Select(_ => _.Name))));
+                    }
+
                     if (a.FileAttributes?.Keys != null)
                     {
-                        allText.AddRange(RemoveBlacklist(a.FileAttributes?.Keys.ToList()));
+                        allText.AddRange(RemoveBlacklist(Clean(a.FileAttributes?.Keys.ToList())));
                     }
 
                     if (a.V2Signals != null)
                     {
                         foreach (var s in a.V2Signals)
                         {
-                            allText.AddRange(RemoveBlacklist(s?.Attributes?.Attributes?.Keys.ToList() ?? new List<string>()));
-                            allText.AddRange(RemoveBlacklist(s?.Attributes?.Attributes?.Values.ToList() ?? new List<string>()));
+                            allText.AddRange(RemoveBlacklist(Clean(s?.Attributes?.Attributes?.Keys.ToList() ?? new List<string>())));
+                            allText.AddRange(RemoveBlacklist(Clean(s?.Attributes?.Attributes?.Values.ToList() ?? new List<string>())));
                         }
                     }
                 }
-                catch (System.Exception ex)
-                {
-                    // empty
-                    logger.LogWarning(ex.Message);
-                }
+            }
+            catch (System.Exception ex)
+            {
+                // empty
+                logger.LogWarning(ex.Message);
             }
 
             var result = CountWords(allText, maxWords);
@@ -67,12 +77,23 @@ namespace Amphora.Api.Services.Amphorae
 
         private List<string> WordsFromText(string text)
         {
-            return text.ToLower().Split(' ').ToList();
+            return text.Split(' ').ToList();
         }
 
-        private List<string> RemoveBlacklist(List<string> words)
+        private List<string> Clean(IEnumerable<string> words)
         {
-            return words.Where(x => x.Length > 2).Where(x => !blacklist.Contains(x)).ToList();
+            return words
+                .Where(_ => !_.All(x => !char.IsLetter(x))) // not all chars are not letters
+                .Select(_ => _?.Trim(',').Trim('.').Trim(':').Trim()) // trim punctuation and whitespace
+                .Select(_ => _?.ToLower()) // make sure lowercase
+                .Where(_ => !string.IsNullOrEmpty(_)) // remove empties
+                .Where(x => x.Length > 2)
+                .ToList();
+        }
+
+        private List<string> RemoveBlacklist(IEnumerable<string> words)
+        {
+            return words.Where(x => !blacklist.Contains(x)).ToList();
         }
 
         private List<string> Flatten(IEnumerable<IEnumerable<string>> strings)
