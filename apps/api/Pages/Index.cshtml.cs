@@ -23,8 +23,8 @@ namespace Amphora.Api.Pages
         }
 
         public List<List<object>> Frequencies { get; set; } = new List<List<object>>();
-        public int MaxWordCount { get; set; }
-        public int MinWordCount { get; set; }
+        public int MaxWordCount { get; set; } = 0;
+        public int MinWordCount { get; set; } = 0;
 
         public IActionResult OnGet()
         {
@@ -41,8 +41,11 @@ namespace Amphora.Api.Pages
             }
 
             Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);
-            MaxWordCount = cacheEntry.Values.Max();
-            MinWordCount = cacheEntry.Values.Min();
+            if (cacheEntry.Values.Count > 0)
+            {
+                MaxWordCount = cacheEntry.Values.Max();
+                MinWordCount = cacheEntry.Values.Min();
+            }
 
             return Page();
         }
