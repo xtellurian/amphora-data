@@ -87,13 +87,6 @@ namespace Amphora.Api.Controllers
             };
 
             var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
-            if (invitation == null)
-            {
-                if (!IsTestUser(applicationUser))
-                {
-                    return BadRequest($"{user.Email} has not been invited to Amphora Data");
-                }
-            }
 
             var result = await userService.CreateAsync(applicationUser, invitation, password);
 
@@ -103,7 +96,7 @@ namespace Amphora.Api.Controllers
                 {
                     logger.LogWarning($"Automatically confirming email for {result.Entity.Email}");
                     result.Entity.EmailConfirmed = true;
-                    await userService.UserManager.UpdateAsync(result.Entity);
+                    var updateRes = await userService.UserManager.UpdateAsync(result.Entity);
                 }
 
                 return Ok(password);
