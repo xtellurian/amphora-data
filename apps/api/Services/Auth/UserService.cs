@@ -79,11 +79,6 @@ namespace Amphora.Api.Services.Auth
                 }
 
                 logger.LogInformation("Creating User...");
-                if (invitation?.IsGlobalAdmin == true && !user.IsGlobalAdmin.HasValue)
-                {
-                    logger.LogWarning($"Creating global admin {user.Email}");
-                    user.IsGlobalAdmin = invitation.IsGlobalAdmin;
-                }
 
                 user.LastModified = System.DateTime.UtcNow;
                 var result = await UserManager.CreateAsync(user, password);

@@ -20,7 +20,7 @@ namespace Amphora.Api.Services.Auth
                                                              GlobalAdminRequirement requirement)
         {
             var user = await userService.ReadUserModelAsync(context.User);
-            if (user != null && user.IsGlobalAdmin.HasValue && user.IsGlobalAdmin.Value)
+            if (user != null && user.IsAdminGlobal())
             {
                 logger.LogWarning($"{user.Email} has been granted global admin");
                 context.Succeed(requirement);

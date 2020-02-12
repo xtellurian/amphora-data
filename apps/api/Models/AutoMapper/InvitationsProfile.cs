@@ -13,7 +13,6 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(p => p.TargetDomain, o => o.Ignore())
                 .ForMember(p => p.IsClaimed, o => o.Ignore())
                 .ForMember(p => p.Id, o => o.Ignore())
-                .ForMember(p => p.IsGlobalAdmin, o => o.Ignore())
                 .ForMember(p => p.ttl, o => o.Ignore())
                 .ForMember(p => p.IsDeleted, o => o.Ignore())
                 .ForMember(p => p.LastModified, o => o.Ignore())

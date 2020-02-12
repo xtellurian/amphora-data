@@ -14,8 +14,7 @@ namespace Amphora.Tests.Helpers
         public static async Task<(AmphoraUser User, string Password)> CreateUserAsync(
             this HttpClient client,
             string email,
-            string fullName,
-            bool denyGlobalAdmin = false)
+            string fullName)
         {
             // assumed the user has been invited
             var user = new AmphoraUser
@@ -25,7 +24,6 @@ namespace Amphora.Tests.Helpers
                 FullName = fullName,
             };
             var requestPath = "api/users";
-            if (denyGlobalAdmin) { requestPath += "?DenyGlobalAdmin=true"; }
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             var response = await client.PostAsync(requestPath, content);
             var password = await response.Content.ReadAsStringAsync();

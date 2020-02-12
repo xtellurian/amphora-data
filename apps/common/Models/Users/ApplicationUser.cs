@@ -15,7 +15,7 @@ namespace Amphora.Common.Models.Users
     {
         public string? About { get; set; }
         public string? FullName { get; set; }
-        public bool? IsGlobalAdmin { get; set; }
+        public bool IsAdminGlobal() => EmailConfirmed && (Email?.ToLower()?.EndsWith("@amphoradata.com") ?? false);
         public virtual PinnedAmphorae PinnedAmphorae { get; set; } = new PinnedAmphorae();
 
         // navigation
@@ -38,11 +38,6 @@ namespace Amphora.Common.Models.Users
         {
             var membership = this.Organisation?.Memberships?.FirstOrDefault(m => m.UserId == this.Id);
             return membership?.Role == Roles.Administrator;
-        }
-
-        public bool GlobalAdmin()
-        {
-            return this.IsGlobalAdmin ?? false;
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Amphora.Tests.Integration
         protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> GetNewClientInOrg(
             HttpClient currentClient,
             Organisation org,
-            bool denyGlobalAdmin = false,
             int majorVersion = 0)
         {
             var client = _factory.CreateClient();
@@ -31,7 +30,7 @@ namespace Amphora.Tests.Integration
             var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
                 new Invitation { TargetEmail = email, TargetOrganisationId = org.Id });
             inviteResponse.EnsureSuccessStatusCode();
-            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString(), denyGlobalAdmin);
+            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
@@ -41,13 +40,12 @@ namespace Amphora.Tests.Integration
         }
 
         protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> NewOrgAuthenticatedClientAsync(
-            bool denyGlobalAdmin = false,
             int majorVersion = 0)
         {
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString(), denyGlobalAdmin);
+            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             return (client, user, org);
         }

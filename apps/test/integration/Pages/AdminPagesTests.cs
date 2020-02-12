@@ -21,7 +21,7 @@ namespace Amphora.Tests.Integration.Pages
         public async Task CanLoadPage(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync(true);
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -45,7 +45,7 @@ namespace Amphora.Tests.Integration.Pages
         public async Task CanLoadPage_OrganisationSpecific(string path)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync(true);
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");

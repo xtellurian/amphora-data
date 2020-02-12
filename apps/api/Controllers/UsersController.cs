@@ -7,7 +7,9 @@ using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -25,18 +27,21 @@ namespace Amphora.Api.Controllers
         private readonly IUserService userService;
         private readonly IInvitationService invitationService;
         private readonly IOptionsMonitor<CreateOptions> options;
+        private readonly IWebHostEnvironment environment;
         private readonly IMapper mapper;
         private readonly ILogger<UsersController> logger;
 
         public UsersController(IUserService userService,
                                IInvitationService invitationService,
                                IOptionsMonitor<CreateOptions> options,
+                               IWebHostEnvironment environment,
                                IMapper mapper,
                                ILogger<UsersController> logger)
         {
             this.userService = userService;
             this.invitationService = invitationService;
             this.options = options;
+            this.environment = environment;
             this.mapper = mapper;
             this.logger = logger;
         }
@@ -81,21 +86,26 @@ namespace Amphora.Api.Controllers
                 UserName = user.UserName
             };
 
-            if (Request.Query.TryGetValue("DenyGlobalAdmin", out var val))
-            {
-                applicationUser.IsGlobalAdmin = false;
-            }
-
             var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
             if (invitation == null)
             {
-                return BadRequest($"{user.Email} has not been invited to Amphora Data");
+                if (!IsTestUser(applicationUser))
+                {
+                    return BadRequest($"{user.Email} has not been invited to Amphora Data");
+                }
             }
 
             var result = await userService.CreateAsync(applicationUser, invitation, password);
 
             if (result.Succeeded)
             {
+                if (IsTestUser(result.Entity))
+                {
+                    logger.LogWarning($"Automatically confirming email for {result.Entity.Email}");
+                    result.Entity.EmailConfirmed = true;
+                    await userService.UserManager.UpdateAsync(result.Entity);
+                }
+
                 return Ok(password);
             }
             else
@@ -137,6 +147,11 @@ namespace Amphora.Api.Controllers
                 logger.LogError("Failed to create user!");
                 return BadRequest(result.Message);
             }
+        }
+
+        private bool IsTestUser(ApplicationUser user)
+        {
+            return environment.IsDevelopment() && (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false);
         }
     }
 }
