@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -11,40 +12,30 @@ namespace Amphora.Api.Pages
     public class IndexModel : PageModel
     {
         private const string TextAnalysisKey = nameof(TextAnalysisKey);
+        private readonly IBlobCache blobCache;
         private readonly IAmphoraeTextAnalysisService textAnalysisService;
-        private readonly ICache cache;
-        private readonly IDateTimeProvider dateTimeProvider;
 
-        public IndexModel(IAmphoraeTextAnalysisService textAnalysisService, ICache memoryCache, IDateTimeProvider dateTimeProvider)
+        public IndexModel(IBlobCache blobCache, IAmphoraeTextAnalysisService textAnalysisService)
         {
+            this.blobCache = blobCache;
             this.textAnalysisService = textAnalysisService;
-            this.cache = memoryCache;
-            this.dateTimeProvider = dateTimeProvider;
         }
 
         public List<List<object>> Frequencies { get; set; } = new List<List<object>>();
         public int MaxWordCount { get; set; } = 0;
         public int MinWordCount { get; set; } = 0;
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-            Dictionary<string, int> cacheEntry;
-            if (!cache.TryGetValue(TextAnalysisKey, out cacheEntry))
+            var cacheEntry = await blobCache.TryGetValue<Dictionary<string, int>>(textAnalysisService.GetCacheKey());
+            if (cacheEntry != null)
             {
-                // first clear the cache
-                cache.Compact(75);
-                // Key not in cache, so get data.
-                cacheEntry = textAnalysisService.WordFrequencies(500);
-
-                // Save data in cache.
-                cache.Set(TextAnalysisKey, cacheEntry, dateTimeProvider.Now.AddHours(6));
-            }
-
-            Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);
-            if (cacheEntry.Values.Count > 0)
-            {
-                MaxWordCount = cacheEntry.Values.Max();
-                MinWordCount = cacheEntry.Values.Min();
+                Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);
+                if (cacheEntry.Values.Count > 0)
+                {
+                    MaxWordCount = cacheEntry.Values.Max();
+                    MinWordCount = cacheEntry.Values.Min();
+                }
             }
 
             return Page();

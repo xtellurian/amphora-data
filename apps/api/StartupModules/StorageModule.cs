@@ -84,6 +84,7 @@ namespace Amphora.Api.StartupModules
 
                 services.AddSingleton<IBlobStore<AmphoraModel>, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
+                services.AddSingleton<IBlobCache, PlatformCacheBlobStore>();
             }
             else if (HostingEnvironment.IsDevelopment())
             {
@@ -95,6 +96,7 @@ namespace Amphora.Api.StartupModules
 
                 services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
+                services.AddSingleton<IBlobCache, InMemoryBlobCache>();
             }
 
             services.AddTransient<CosmosInitialiser>();
