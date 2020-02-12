@@ -10,7 +10,6 @@ namespace Amphora.Api.EntityFramework.TypeConfiguration
         {
             builder.Property(_ => _.Id).ValueGeneratedOnAdd();
             builder.HasOne(_ => _.PurchaseModel).WithMany().HasForeignKey(_ => _.PurchaseModelId);
-            builder.ToContainer("Platform");
         }
     }
 }
