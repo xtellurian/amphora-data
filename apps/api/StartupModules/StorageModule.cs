@@ -12,7 +12,6 @@ using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
@@ -74,12 +73,12 @@ namespace Amphora.Api.StartupModules
 
             if (HostingEnvironment.IsProduction() || configuration.IsPersistentStores())
             {
-                var cosmos = new CosmosOptions();
-                configuration.GetSection("Cosmos").Bind(cosmos);
+                var cosmosOptions = new CosmosOptions();
+                configuration.GetSection("Cosmos").Bind(cosmosOptions);
                 services.Configure<CosmosOptions>(configuration.GetSection("Cosmos"));
                 services.AddDbContext<AmphoraContext>(options =>
                 {
-                    options.UseCosmos(cosmos.Endpoint, cosmos.PrimaryKey, cosmos.Database);
+                    options.UseCosmos(cosmosOptions.Endpoint, cosmosOptions.PrimaryKey, cosmosOptions.Database);
                     options.UseLazyLoadingProxies();
                 });
 
@@ -116,15 +115,9 @@ namespace Amphora.Api.StartupModules
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var context = scope.ServiceProvider.GetService<AmphoraContext>())
-            {
-                context.Database.EnsureCreated();
-                // CosmosExecutionStrategy
-            }
-
-            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>();
+                initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
             }
         }
