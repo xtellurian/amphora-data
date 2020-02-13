@@ -1,0 +1,1 @@
+This folder is for all our own Amphoras. It includes our code for doing NDVI to png analysis and a few other amphoras
