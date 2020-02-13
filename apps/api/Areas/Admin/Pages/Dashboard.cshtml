@@ -13,6 +13,7 @@
             </div>
         </div>
     </div>
+
     <div class="row m-1">
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
@@ -49,6 +50,7 @@
             </div>
         </div>
     </div>
+
     <div class="row m-1">
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
@@ -94,6 +96,7 @@
             </div>
         </div>
     </div>
+
     <div class="row m-1">
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
@@ -121,6 +124,7 @@
             </div>
         </div>
     </div>
+    
     <div class="row m-1">
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
@@ -157,6 +161,81 @@
             </div>
         </div>
     </div>
+
+    <div class="row m-1">
+        <div class="col-sm-3">
+            <div class="card bg-light" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Purchases</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">                                     
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Purchases.TotalCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">                                     
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Active</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Purchases.ActiveCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Price of Active</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
+                    <p class="card-text">@Model.Stats.Purchases.MeanActivePrice</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-1">
+        <div class="col-sm-3">
+            <div class="card bg-light" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Commissions</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">                                     
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Commissions.TotalCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">                                     
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Active</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Commissions.ActiveCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Price of Active</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
+                    <p class="card-text">@Model.Stats.Commissions.MeanActivePrice</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-end m-3">
         <div class="col-2">
             <small>Generated at @Model.Stats?.GeneratedTime?.ToString("t")</small>
