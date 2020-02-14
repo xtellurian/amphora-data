@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -21,7 +22,7 @@ namespace Amphora.Api.Controllers.Amphorae
     [Produces("application/json")]
     [Route("api/amphorae/{id}/files")]
     [OpenApiTag("Amphorae")]
-    public class AmphoraeFilesController : Controller
+    public class AmphoraeFilesController : EntityController
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IAmphoraFileService amphoraFileService;
@@ -48,7 +49,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var blobs = await amphoraFileService.Store.ListBlobsAsync(result.Entity);
                 return Ok(blobs);
             }
-            else { return NotFoundOrForbidden(result); }
+            else { return Handle(result); }
         }
 
         /// <summary>
@@ -70,9 +71,9 @@ namespace Amphora.Api.Controllers.Amphorae
                     // error when null
                     return File(fileResult.Entity, "application/octet-stream", file);
                 }
-                else { return NotFoundOrForbidden(fileResult); }
+                else { return Handle(fileResult); }
             }
-            else { return NotFoundOrForbidden(result); }
+            else { return Handle(result); }
         }
 
         /// <summary>
@@ -84,7 +85,10 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>An object with a blob URL.</returns>
         [HttpPut("{file}")]
         [Produces(typeof(UploadResponse))]
+        [ProducesResponseType((int)HttpStatusCode.Conflict)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [DisableRequestSizeLimit]
         [OpenApiIgnore]
         public async Task<IActionResult> UploadFile(string id, string file, [FromForm] IFormFile content)
         {
@@ -110,9 +114,9 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else { return NotFoundOrForbidden(fileResult); }
+                else { return Handle(fileResult); }
             }
-            else { return NotFoundOrForbidden(result); }
+            else { return Handle(result); }
         }
 
         /// <summary>
@@ -135,11 +139,11 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(fileResult.Entity);
                 }
-                else { return NotFoundOrForbidden(fileResult); }
+                else { return Handle(fileResult); }
             }
             else
             {
-                return NotFoundOrForbidden(result);
+                return Handle(result);
             }
         }
 
@@ -159,9 +163,8 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 var entity = result.Entity;
-                var fileResult = await amphoraFileService.CreateFileAsync(User, result.Entity, file);
-
-                if (fileResult.Succeeded)
+                var fileExists = await amphoraFileService.Store.ExistsAsync(result.Entity, file);
+                if (fileExists)
                 {
                     // the file exists, now update the metadata
                     entity.FileAttributes ??= new Dictionary<string, AttributeStore>();
@@ -172,17 +175,11 @@ namespace Amphora.Api.Controllers.Amphorae
                     {
                         return Ok(metadata);
                     }
-                    else { return NotFoundOrForbidden(updateRes); }
+                    else { return Handle(updateRes); }
                 }
-                else { return NotFoundOrForbidden(fileResult); }
+                else { return NotFound(); }
             }
-            else { return NotFoundOrForbidden(result); }
-        }
-
-        private IActionResult NotFoundOrForbidden<T>(EntityOperationResult<T> result)
-        {
-            if (result.WasForbidden) { return StatusCode(403, result.Message); }
-            else { return NotFound(); }
+            else { return Handle(result); }
         }
     }
 }

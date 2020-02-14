@@ -91,7 +91,7 @@ namespace Amphora.Api.Services.DataRequests
             {
                 // only the user who created can delete
                 await dataRequestStore.DeleteAsync(model);
-                return new EntityOperationResult<DataRequestModel>(user, true);
+                return new EntityOperationResult<DataRequestModel>(user, 202, true);
             }
             else
             {

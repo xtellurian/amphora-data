@@ -62,6 +62,12 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (granted)
                 {
+                    if (await Store.ExistsAsync(entity, file))
+                    {
+                        // file already exists. Return error.
+                        return new EntityOperationResult<UploadResponse>(user, 409, $"{file} already exists. Delete the file and upload again.");
+                    }
+
                     var url = await this.Store.GetWritableUrl(entity, file);
                     return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
                 }
@@ -86,6 +92,12 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (granted)
                 {
+                    if (await Store.ExistsAsync(entity, file))
+                    {
+                        // file already exists. Return error.
+                        return new EntityOperationResult<UploadResponse>(user, 409, $"{file} already exists. Delete the file and upload again.");
+                    }
+
                     if (contents.Length > 0)
                     {
                         logger.LogInformation("Writing contents");
