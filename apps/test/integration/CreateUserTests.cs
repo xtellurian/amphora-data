@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
 
             // Act
-            var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
+            var email = System.Guid.NewGuid().ToString() + "@example.com";
             var user = new ApplicationUser
             {
                 UserName = email,
