@@ -5,27 +5,27 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Models;
-using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
+    [DisableRequestSizeLimit]
     public class IndexPageModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;
         private readonly IUserService userService;
-        private readonly IBlobStore<AmphoraModel> blobStore;
+        private readonly IAmphoraFileService amphoraFileService;
 
         public IndexPageModel(IAmphoraeService amphoraeService,
                               IPermissionService permissionService,
                               IUserService userService,
-                              IBlobStore<AmphoraModel> blobStore) : base(amphoraeService)
+                              IAmphoraFileService amphoraFileService) : base(amphoraeService)
         {
             this.permissionService = permissionService;
             this.userService = userService;
-            this.blobStore = blobStore;
+            this.amphoraFileService = amphoraFileService;
         }
 
         public IList<string> Names { get; private set; }
@@ -66,7 +66,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                         {
                             await formFile.CopyToAsync(stream);
                             stream.Seek(0, SeekOrigin.Begin);
-                            await this.blobStore.WriteBytesAsync(result.Entity, formFile.FileName, await stream.ReadFullyAsync());
+                            var res = await this.amphoraFileService.WriteFileAsync(User, result.Entity, await stream.ReadFullyAsync(), formFile.FileName);
+
+                            if (!res.Succeeded)
+                            {
+                                ModelState.AddModelError(string.Empty, res.Message);
+                                return Page();
+                            }
                         }
                     }
                 }
@@ -94,7 +100,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             if (Amphora != null)
             {
                 var user = await userService.ReadUserModelAsync(User);
-                Names = await blobStore.ListBlobsAsync(Amphora);
+                Names = await amphoraFileService.Store.ListBlobsAsync(Amphora);
                 CanDeleteFiles = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Update);
                 // set the three types of permission for the page
                 if (CanDeleteFiles)

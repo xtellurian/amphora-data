@@ -275,7 +275,7 @@ const prodBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBack
 for (let i = 0; i < prodBackendCount; i++) {
     prodBackends.push({
         address: prodHostnames.apply((h) => h[i]),
-        hostHeader: prodHostnames.apply((h) => h[i]),
+        hostHeader: "app.amphoradata.com",
         httpPort: 80,
         httpsPort: 443,
     });

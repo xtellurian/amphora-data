@@ -6,6 +6,7 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,6 +20,8 @@ namespace Amphora.Api.Areas.Admin.Pages
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly IOrganisationService organisationService;
+        private readonly IEntityStore<PurchaseModel> purchaseStore;
+        private readonly IEntityStore<CommissionModel> commissionStore;
         private readonly IUserService userService;
         private readonly ICache cache;
 
@@ -26,11 +29,15 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         public DashboardPageModel(IAmphoraeService amphoraeService,
                                   IOrganisationService organisationService,
+                                  IEntityStore<PurchaseModel> purchaseStore,
+                                  IEntityStore<CommissionModel> commissionStore,
                                   IUserService userService,
                                   ICache cache)
         {
             this.amphoraeService = amphoraeService;
             this.organisationService = organisationService;
+            this.purchaseStore = purchaseStore;
+            this.commissionStore = commissionStore;
             this.userService = userService;
             this.cache = cache;
         }
@@ -50,6 +57,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadUserStats();
                 await LoadOrganisationStats();
                 await LoadDebitStats();
+                await LoadPurchaseStats();
                 this.Stats.GeneratedTime = DateTime.Now;
 
                 cache.Compact();
@@ -84,6 +92,24 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Query(_ => true)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Sum(_ => _.Account.Balance);
+        }
+
+        private async Task LoadPurchaseStats()
+        {
+            this.Stats.Purchases.TotalCount = await purchaseStore.CountAsync();
+            this.Stats.Purchases.ActiveCount = await purchaseStore.CountAsync(Active<PurchaseModel>());
+            this.Stats.Purchases.MeanActivePrice =
+                (await purchaseStore.QueryAsync(Active<PurchaseModel>()))
+                .Average(_ => _.Price);
+        }
+
+        private async Task LoadCommissionStats()
+        {
+            this.Stats.Commissions.TotalCount = await commissionStore.CountAsync();
+            this.Stats.Commissions.ActiveCount = await commissionStore.CountAsync(Active<CommissionModel>());
+            this.Stats.Commissions.MeanActivePrice =
+                (await commissionStore.QueryAsync(Active<CommissionModel>()))
+                .Average(_ => _.Amount);
         }
 
         private async Task LoadDebitStats()
@@ -129,6 +155,8 @@ namespace Amphora.Api.Areas.Admin.Pages
         public StatisticsGroup Users { get; set; } = new StatisticsGroup();
         public OrgStatsGroup Organisations { get; set; } = new OrgStatsGroup();
         public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
+        public StatisticsGroup Purchases { get; set; } = new StatisticsGroup();
+        public StatisticsGroup Commissions { get; set; } = new StatisticsGroup();
     }
 
     public class OrgStatsGroup : StatisticsGroup

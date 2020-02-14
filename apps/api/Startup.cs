@@ -158,6 +158,29 @@ namespace Amphora.Api
 
             services.AddOpenApiDocument(document => // add OpenAPI v3 document
             {
+                document.DocumentName = "v1";
+                document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Bearer {your JWT token}."
+                });
+
+                document.OperationProcessors.Add(
+                    new AmphoraDataApiVersionOperationProcessor());
+
+                document.OperationProcessors.Add(
+                    new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
+
+                document.Description = "API for interacting with the Amphora Data platform.";
+                document.Title = "Amphora Data Api";
+                document.Version = ApiVersion.CurrentVersion.ToSemver();
+            });
+
+            services.AddSwaggerDocument(document => // add a Swagger (OpenAPI v2) doc
+            {
+                document.DocumentName = "v2";
                 document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.ApiKey,
@@ -207,7 +230,7 @@ namespace Amphora.Api
 
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
             app.UseSwaggerUi3(settings => { }); // serve Swagger UI
-            app.UseReDoc(); // serve ReDoc UI
+            // app.UseReDoc(); // serve ReDoc UI
 
             app.UseForwardedHeaders();
 

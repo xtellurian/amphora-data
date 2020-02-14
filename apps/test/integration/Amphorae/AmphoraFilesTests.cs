@@ -163,6 +163,34 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(testMetadata, amphora.FileAttributes[file].Attributes);
         }
 
+        [Fact]
+        public async Task UploadFileTwice_DuplicateError()
+        {
+            // Arrange
+            var url = "api/amphorae";
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
+            // create an amphora for us to work with
+            var createResponse = await adminClient.PostAsync(url,
+                new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
+            createResponse.EnsureSuccessStatusCode();
+            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
+            // create a file for us to work with
+            var generator = new Helpers.RandomGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
+            var file = Guid.NewGuid().ToString();
+            // upload the first time
+            var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            uploadResponse.EnsureSuccessStatusCode();
+            // upload the second time
+            var uploadResponse2 = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            Assert.False(uploadResponse2.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, uploadResponse2.StatusCode);
+        }
+
         private async Task DeleteAmphora(HttpClient client, string id)
         {
             var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");

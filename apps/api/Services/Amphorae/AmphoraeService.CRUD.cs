@@ -90,7 +90,7 @@ namespace Amphora.Api.Services.Amphorae
                 else
                 {
                     logger.LogWarning("User Unauthorized");
-                    return new EntityOperationResult<AmphoraModel>(user, "Unauthorized", $"Create permission required on {organisation.Id}")
+                    return new EntityOperationResult<AmphoraModel>(user, 403, "Unauthorized", $"Create permission required on {organisation.Id}")
                     { WasForbidden = true };
                 }
             }
@@ -111,7 +111,7 @@ namespace Amphora.Api.Services.Amphorae
                 if (entity == null)
                 {
                     logger.LogError($"{id} Not Found");
-                    return new EntityOperationResult<AmphoraModel>(user, $"{id} Not Found");
+                    return new EntityOperationResult<AmphoraModel>(user, 404, $"{id} Not Found");
                 }
 
                 if (entity.Public())
@@ -127,7 +127,7 @@ namespace Amphora.Api.Services.Amphorae
                 }
                 else
                 {
-                    return new EntityOperationResult<AmphoraModel>(user, "Denied") { WasForbidden = true };
+                    return new EntityOperationResult<AmphoraModel>(user, 403, "Denied") { WasForbidden = true };
                 }
             }
         }
