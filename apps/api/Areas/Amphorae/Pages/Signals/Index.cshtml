@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = Model.Amphora.Name + " Signals";
-    var canCreateNewSignal = Model.Amphora.V2Signals.Count < 7;
+    var canCreateNewSignal = Model.Amphora.CanAddNewSignal();
     var createSignalButtonHidden = canCreateNewSignal ? "" : "disabled";
     var idDic = new Dictionary<string,string>();
 }

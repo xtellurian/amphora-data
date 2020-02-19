@@ -38,7 +38,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
             if (Amphora != null)
             {
-                this.Amphora.EnsureV2Signals();
                 Signal = this.Amphora.V2Signals?.FirstOrDefault(s => s.Id == signalId);
                 if (Signal.IsString)
                 {

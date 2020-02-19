@@ -12,6 +12,7 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<Organisation, OrganisationModel>()
             .IncludeBase<Amphora.Api.Models.Dtos.Entity, EntityBase>()
             .ForMember(p => p.Account, o => o.Ignore())
+            .ForMember(p => p.Configuration, o => o.Ignore())
             .ForMember(p => p.PinnedAmphorae, o => o.Ignore())
             .ForMember(p => p.GlobalInvitations, o => o.Ignore())
             .ForMember(p => p.Memberships, o => o.Ignore())

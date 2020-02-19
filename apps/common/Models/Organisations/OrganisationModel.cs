@@ -34,6 +34,7 @@ namespace Amphora.Common.Models.Organisations
         public string Address { get; set; }
         // owned
         public virtual Accounts.Account? Account { get; set; } = new Accounts.Account();
+        public virtual Configuration? Configuration { get; set; } = new Configuration();
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
         public virtual ICollection<RestrictionModel> Restrictions { get; set; } = new Collection<RestrictionModel>();

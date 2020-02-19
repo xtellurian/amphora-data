@@ -26,7 +26,6 @@ namespace Amphora.Api.EntityFramework.TypeConfiguration
 
             builder.HasMany(p => p.Purchases).WithOne(a => a.Amphora).HasForeignKey(a => a.AmphoraId);
             builder.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-            builder.HasMany(p => p.Signals).WithOne(p => p.Amphora).HasForeignKey(p => p.AmphoraId);
         }
     }
 }

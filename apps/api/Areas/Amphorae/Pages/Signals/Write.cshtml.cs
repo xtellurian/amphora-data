@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     this.Values.Add(new SignalValue(s.Property, s.ValueType));
                 }
 
-                this.Values.Add(new SignalValue("TimeStamp", SignalModel.DateTime) { DateTimeValue = System.DateTime.UtcNow });
+                this.Values.Add(new SignalValue("TimeStamp", SignalV2.DateTime) { DateTimeValue = System.DateTime.UtcNow });
             }
 
             return OnReturnPage();
