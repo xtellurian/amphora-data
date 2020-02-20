@@ -90,53 +90,60 @@ namespace Amphora.Api.Controllers.Amphorae
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateSignal(string id, [FromBody] Signal signal)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var result = await amphoraeService.ReadAsync(User, id, true);
-                if (result.Succeeded)
+                try
                 {
-                    var amphora = result.Entity;
-                    var newSignal = new SignalV2(signal.Property, signal.ValueType);
-                    string message;
-                    if (amphora.TryAddSignal(newSignal, out message))
+                    var result = await amphoraeService.ReadAsync(User, id, true);
+                    if (result.Succeeded)
                     {
-                        var updateRes = await amphoraeService.UpdateAsync(User, amphora);
-                        if (updateRes.Succeeded)
+                        var amphora = result.Entity;
+                        var newSignal = new SignalV2(signal.Property, signal.ValueType);
+                        string message;
+                        if (amphora.TryAddSignal(newSignal, out message))
                         {
-                            // happy path
-                            signal.Id = newSignal.Id;
-                            return Ok(signal);
-                        }
-                        else if (result.WasForbidden)
-                        {
-                            return StatusCode(403, result.Message);
+                            var updateRes = await amphoraeService.UpdateAsync(User, amphora);
+                            if (updateRes.Succeeded)
+                            {
+                                // happy path
+                                signal.Id = newSignal.Id;
+                                return Ok(signal);
+                            }
+                            else if (result.WasForbidden)
+                            {
+                                return StatusCode(403, result.Message);
+                            }
+                            else
+                            {
+                                return BadRequest(result.Message);
+                            }
                         }
                         else
                         {
-                            return BadRequest(result.Message);
+                            return BadRequest(message);
                         }
+                    }
+                    else if (result.WasForbidden)
+                    {
+                        return StatusCode(403, result.Message);
                     }
                     else
                     {
-                        return BadRequest(message);
+                        return BadRequest(result.Message);
                     }
                 }
-                else if (result.WasForbidden)
+                catch (System.ArgumentException ex)
                 {
-                    return StatusCode(403, result.Message);
+                    return BadRequest(ex.Message);
                 }
-                else
+                catch (System.Exception ex)
                 {
-                    return BadRequest(result.Message);
+                    return BadRequest(ex.Message);
                 }
             }
-            catch (System.ArgumentException ex)
+            else
             {
-                return BadRequest(ex.Message);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
+                return BadRequest("Invalid Model");
             }
         }
 

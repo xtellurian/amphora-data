@@ -44,40 +44,48 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         {
             await LoadAmphoraAsync(id);
             Meta = new Dictionary<string, KeyValuePair<string, string>>();
-            if (Amphora != null)
+            Options = new SelectList(SignalV2.Options);
+            if (ModelState.IsValid)
             {
-                var signal = new SignalV2(Signal.Property, Signal.ValueType);
-
-                this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
-                var dic = this.Meta?.ToChildDictionary();
-                signal.Attributes = new Common.Models.Amphorae.AttributeStore(dic);
-                string message;
-                if (Amphora.TryAddSignal(signal, out message))
+                if (Amphora != null)
                 {
-                    var res = await amphoraeService.UpdateAsync(User, Amphora);
-                    if (res.Succeeded)
+                    var signal = new SignalV2(Signal.Property, Signal.ValueType);
+
+                    this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
+                    var dic = this.Meta?.ToChildDictionary();
+                    signal.Attributes = new Common.Models.Amphorae.AttributeStore(dic);
+                    string message;
+                    if (Amphora.TryAddSignal(signal, out message))
                     {
-                        return RedirectToPage("./Index", new { Id = Amphora.Id });
-                    }
-                    else if (res.WasForbidden)
-                    {
-                        return RedirectToPage("Amphorae/Forbidden");
+                        var res = await amphoraeService.UpdateAsync(User, Amphora);
+                        if (res.Succeeded)
+                        {
+                            return RedirectToPage("./Index", new { Id = Amphora.Id });
+                        }
+                        else if (res.WasForbidden)
+                        {
+                            return RedirectToPage("Amphorae/Forbidden");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, Result.Message);
+                            return Page();
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, Result.Message);
+                        this.ModelState.AddModelError(string.Empty, message);
                         return Page();
                     }
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, message);
-                    return Page();
+                    return NotFound();
                 }
             }
             else
             {
-                return NotFound();
+                return Page();
             }
         }
     }
