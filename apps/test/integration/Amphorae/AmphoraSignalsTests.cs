@@ -14,7 +14,8 @@ namespace Amphora.Tests.Integration.Amphorae
     [Collection(nameof(IntegrationFixtureCollection))]
     public class AmphoraSignalsTests : IntegrationTestBase
     {
-        private static string BadName => "HH78365^@*";
+        private const string BadName = "HH78365^@*";
+        private const string NameWithSpace = "hello world";
         public AmphoraSignalsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
@@ -73,6 +74,29 @@ namespace Amphora.Tests.Integration.Amphorae
             // create a signal
             var generator = new RandomGenerator(1);
             var signalDto = EntityLibrary.GetSignalDto(BadName);
+            var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Assert.False(response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task CreateSignalOnAmphora_Space_Error()
+        {
+            var testName = nameof(CanCreateSignalOnAmphora);
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            // create an amphora
+            var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            var createContent = await createResponse.Content.ReadAsStringAsync();
+            createResponse.EnsureSuccessStatusCode();
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
+
+            // create a signal
+            var generator = new RandomGenerator(1);
+            var signalDto = EntityLibrary.GetSignalDto(NameWithSpace);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
 
