@@ -10,6 +10,7 @@
 <h1>
     Accounts
 </h1>
+Total Orgs: @Model.OrgCount
 <div class="container">
     <div class="row">
         <div class="col">
@@ -36,11 +37,20 @@
                             <a asp-area="Admin" asp-page="./AddCredit" asp-route-id="@entity.Id"> 
                                 <button class="btn btn-link text-success">Add Credit</button> 
                             </a>
+                            <a asp-area="Admin" asp-page="./Configuration" asp-route-id="@entity.Id"> 
+                                <button class="btn btn-link text-success">Configuration</button> 
+                            </a>
                         </td>
                     </tr>
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Max(0, Model.PageNumber - 1)">Prev</a>
+            <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Min(Model.MaxPages, Model.PageNumber + 1)">Next</a>
         </div>
     </div>
 </div>

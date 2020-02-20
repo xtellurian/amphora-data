@@ -2,8 +2,8 @@ namespace Amphora.Common.Models.Organisations
 {
     public class Configuration
     {
-        public int? MaximumSignals { get; set; }
-
-        public int GetMaximumSignals() => MaximumSignals ?? 10;
+        private const int DefaultMaximumSignals = 10;
+        public int? MaximumSignals { get; set; } = DefaultMaximumSignals;
+        public int GetMaximumSignals() => MaximumSignals ?? DefaultMaximumSignals;
     }
 }
