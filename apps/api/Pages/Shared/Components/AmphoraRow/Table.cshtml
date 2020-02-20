@@ -22,7 +22,9 @@
         }
     </th>
     <td class="col-sm-6">
-        @Model.Amphora.Name 
+        <a class="text-dark" asp-page="/Detail" asp-area="Amphorae" asp-route-id="@Model.Amphora.Id"> 
+            @Model.Amphora.Name 
+        </a>
     </td>
     <td class="col-sm-2">
         @foreach(var l in Model.Amphora.Labels)
