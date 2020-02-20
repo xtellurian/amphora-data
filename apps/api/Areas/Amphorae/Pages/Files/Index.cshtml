@@ -42,15 +42,13 @@
             @foreach (var n in Model.Names)
             {
                 <div class="row m-2">
-                    <div class="col text-truncate">
-                        <span class="d-inline-block text-truncate"> 
-                            @n
-                        </span>
+                    <div class="col text-wrap">
+                        @n
+                    </div>
+                    <div class="col-sm-1">
                         @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
                         {
-                            <span class="d-inline-block">
-                                <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
-                            </span>
+                            <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
                         }
                     </div>
                     <div class="col-sm-8 text-right">
