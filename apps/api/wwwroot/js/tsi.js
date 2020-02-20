@@ -25,7 +25,7 @@ async function tsi(id, signals, filters) {
         if (!to) to = end;
         else end = to; // cache
         if (!timezone) timezone = 'Local'
-        if(!bucketSize) bucketSize = '2h';
+        if(!bucketSize) bucketSize = '30m';
 
         console.log(bucketSize)
 
