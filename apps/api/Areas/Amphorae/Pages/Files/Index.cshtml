@@ -5,14 +5,25 @@
     ViewData["Title"] = Model.Amphora.Name + " Files";
 }
 
-@{var idDic = new Dictionary<string,string>();}
+@{
+    var metadataModalIdDic = new Dictionary<string,string>();
+    var filePreviewModalIdDic = new Dictionary<string,string>();
+}
 @foreach (var n in Model.Names)
 {
-    var id = "A" + System.Guid.NewGuid().ToString();
-    idDic[n] = id;
+    var metadataId = "A" + System.Guid.NewGuid().ToString();
+    metadataModalIdDic[n] = metadataId;
     <div>
-        @await Component.InvokeAsync("Metadata", new {id = id, title = $"{n} Metadata", meta = Model.Amphora.FileAttributes?.GetValueOrDefault(n)})
+        @await Component.InvokeAsync("Metadata", new {id = metadataId, title = $"{n} Metadata", meta = Model.Amphora.FileAttributes?.GetValueOrDefault(n)})
     </div>
+    @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
+    {
+        var filePreviewId = "A" + System.Guid.NewGuid().ToString();
+        filePreviewModalIdDic[n] = filePreviewId;
+        <div>
+            @await Component.InvokeAsync("FilePreview", new {id = filePreviewId, amphora = Model.Amphora, name = n, user = Model.Result.User})
+        </div>
+    }
 }
 
 
@@ -31,26 +42,34 @@
             @foreach (var n in Model.Names)
             {
                 <div class="row m-2">
-                    <div class="col-4">
-                        @n
+                    <div class="col text-truncate">
+                        <span class="d-inline-block text-truncate"> 
+                            @n
+                        </span>
+                        @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
+                        {
+                            <span class="d-inline-block">
+                                <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
+                            </span>
+                        }
                     </div>
                     <div class="col-sm-8 text-right">
                         @if(Model.CanDownloadFiles)
                         {
-                            <a class="btn btn-primary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
+                            <a class="btn btn-primary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
                                 Download
                             </a>
-                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#@idDic[n]">View Attributes</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#@metadataModalIdDic[n]">View Attributes</button>
                         }
                         @if(Model.CanUploadFiles)
                         {
-                            <a class="btn btn-secondary" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
+                            <a class="btn btn-secondary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
                                 Edit Attributes
                             </a>
                         }
                         @if(Model.CanDeleteFiles)
                         {
-                            <a class="btn btn-danger" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./Delete">
+                            <a class="btn btn-danger btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./Delete">
                                 Delete
                             </a>
                         }

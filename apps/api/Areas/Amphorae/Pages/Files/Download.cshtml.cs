@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
 
         public bool Succeeded { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string id, string name)
+        public async Task<IActionResult> OnGetAsync(string id, string name, bool redirect = true)
         {
             if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
             var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
@@ -41,15 +42,28 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             var user = await userService.UserManager.GetUserAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
             {
-                var file = await blobStore.ReadBytesAsync(entity, name);
-                if (file == null || file.Length == 0)
+                if (!await blobStore.ExistsAsync(entity, name))
                 {
-                    ModelState.AddModelError(string.Empty, "Uh Oh, this file appears to be empty.");
-                    this.Succeeded = false;
-                    return Page();
+                    // file doesn't exist.
+                    return NotFound();
                 }
+                else if (redirect)
+                {
+                    var url = await blobStore.GetPublicUrl(entity, name);
+                    return Redirect(url);
+                }
+                else
+                {
+                    var file = await blobStore.ReadBytesAsync(entity, name);
+                    if (file == null || file.Length == 0)
+                    {
+                        ModelState.AddModelError(string.Empty, "Uh Oh, this file appears to be empty.");
+                        this.Succeeded = false;
+                        return Page();
+                    }
 
-                return File(file, "application/octet-stream", name);
+                    return File(file, ContentTypeRecogniser.GetContentType(name), name);
+                }
             }
             else
             {

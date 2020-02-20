@@ -51,6 +51,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
                     .Take(perPage)
                     .ToList();
             }
+
             return Page();
         }
     }
