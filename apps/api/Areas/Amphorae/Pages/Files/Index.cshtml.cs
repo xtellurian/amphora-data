@@ -42,21 +42,23 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
 
         public async Task<IActionResult> OnPostUploadAsync(string id, List<IFormFile> files)
         {
+            await LoadAmphoraAsync(id);
+            await SetPagePropertiesAsync();
+
             if (files == null || files.Count > 1)
             {
-                throw new System.ArgumentException("Only 1 file is supported");
+                ModelState.AddModelError(string.Empty, "You can only upload 1 file at a time");
+                return Page();
             }
 
             if (string.IsNullOrEmpty(id)) { return RedirectToPage("../Index"); }
+            var user = Result.User;
 
-            var result = await amphoraeService.ReadAsync(User, id);
-            var user = result.User;
-
-            if (result.Succeeded)
+            if (Result.Succeeded)
             {
-                if (result.Entity == null) { return RedirectToPage("../Index"); }
+                if (Amphora == null) { return RedirectToPage("../Index"); }
 
-                if (await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.WriteContents))
+                if (await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.WriteContents))
                 {
                     var formFile = files.FirstOrDefault();
 
@@ -66,7 +68,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                         {
                             await formFile.CopyToAsync(stream);
                             stream.Seek(0, SeekOrigin.Begin);
-                            var res = await this.amphoraFileService.WriteFileAsync(User, result.Entity, await stream.ReadFullyAsync(), formFile.FileName);
+                            var res = await this.amphoraFileService.WriteFileAsync(User, Amphora, await stream.ReadFullyAsync(), formFile.FileName);
 
                             if (!res.Succeeded)
                             {
@@ -81,11 +83,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                     return RedirectToPage("./Forbidden");
                 }
 
-                this.Amphora = result.Entity;
                 await SetPagePropertiesAsync();
                 return RedirectToPage("./Index", new { Id = id });
             }
-            else if (result.WasForbidden)
+            else if (Result.WasForbidden)
             {
                 return RedirectToPage("../Forbidden");
             }

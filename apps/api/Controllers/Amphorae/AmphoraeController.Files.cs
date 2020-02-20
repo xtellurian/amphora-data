@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,7 +18,6 @@ namespace Amphora.Api.Controllers.Amphorae
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
-    [Produces("application/json")]
     [Route("api/amphorae/{id}/files")]
     [OpenApiTag("Amphorae")]
     public class AmphoraeFilesController : EntityController
@@ -68,8 +66,8 @@ namespace Amphora.Api.Controllers.Amphorae
                 var fileResult = await amphoraFileService.ReadFileAsync(User, result.Entity, file);
                 if (fileResult.Succeeded && fileResult.Entity != null)
                 {
-                    // error when null
-                    return File(fileResult.Entity, "application/octet-stream", file);
+                    var contentType = ContentTypeRecogniser.GetContentType(file);
+                    return File(fileResult.Entity, contentType, file);
                 }
                 else { return Handle(fileResult); }
             }

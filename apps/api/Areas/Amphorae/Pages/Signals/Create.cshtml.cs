@@ -46,26 +46,32 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             Meta = new Dictionary<string, KeyValuePair<string, string>>();
             if (Amphora != null)
             {
-                Amphora.EnsureV2Signals();
                 var signal = new SignalV2(Signal.Property, Signal.ValueType);
 
                 this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
                 var dic = this.Meta?.ToChildDictionary();
                 signal.Attributes = new Common.Models.Amphorae.AttributeStore(dic);
-
-                Amphora.AddSignal(signal);
-                var res = await amphoraeService.UpdateAsync(User, Amphora);
-                if (res.Succeeded)
+                string message;
+                if (Amphora.TryAddSignal(signal, out message))
                 {
-                    return RedirectToPage("./Index", new { Id = Amphora.Id });
-                }
-                else if (res.WasForbidden)
-                {
-                    return RedirectToPage("Amphorae/Forbidden");
+                    var res = await amphoraeService.UpdateAsync(User, Amphora);
+                    if (res.Succeeded)
+                    {
+                        return RedirectToPage("./Index", new { Id = Amphora.Id });
+                    }
+                    else if (res.WasForbidden)
+                    {
+                        return RedirectToPage("Amphorae/Forbidden");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, Result.Message);
+                        return Page();
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, Result.Message);
+                    this.ModelState.AddModelError(string.Empty, message);
                     return Page();
                 }
             }

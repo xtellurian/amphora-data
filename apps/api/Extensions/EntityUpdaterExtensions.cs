@@ -38,34 +38,5 @@ namespace Amphora.Api.Extensions
                 entity.Labels.Add(l);
             }
         }
-
-        public static void EnsureV2Signals(this AmphoraModel amphora)
-        {
-            if (amphora.V2Signals == null)
-            {
-                amphora.V2Signals = new Collection<SignalV2>();
-            }
-
-            var signals = amphora.Signals; // TODO: remove after V2 migrate
-
-            foreach (var s in signals)
-            {
-                var v2 = new SignalV2(s.Signal.Property, s.Signal.ValueType);
-                if (!amphora.V2Signals.Any(_ => _.Property == s.Signal.Property && _.ValueType == s.Signal.ValueType))
-                {
-                    amphora.AddSignal(new SignalV2(s.Signal.Property, s.Signal.ValueType));
-                }
-            }
-        }
-
-        public static void RemoveV1Signals(this AmphoraModel amphora)
-        {
-            if (amphora.V2Signals == null)
-            {
-                amphora.V2Signals = new Collection<SignalV2>();
-            }
-
-            amphora.Signals = new Collection<AmphoraSignalModel>(); // TODO: remove after V2 migrate
-        }
     }
 }

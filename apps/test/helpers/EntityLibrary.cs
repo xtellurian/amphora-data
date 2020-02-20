@@ -42,6 +42,11 @@ namespace Amphora.Tests.Helpers
             return faker.Generate();
         }
 
+        public static SignalV2 GetSignalV2(string valueType = "Numeric")
+        {
+            return new SignalV2(Guid.NewGuid().ToString(), valueType);
+        }
+
         public static AmphoraModel GetInvalidAmphora(string id = null)
         {
             return new AmphoraModel("", null, -1 * rnd.Next(0, 99), null, null, null)

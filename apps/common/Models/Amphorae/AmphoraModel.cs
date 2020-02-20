@@ -56,8 +56,6 @@ namespace Amphora.Common.Models.Amphorae
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public string? CreatedById { get; set; }
         public virtual ApplicationUser? CreatedBy { get; set; }
-        // [Obsolete]
-        public virtual ICollection<AmphoraSignalModel> Signals { get; set; } = new Collection<AmphoraSignalModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? TermsAndConditionsId { get; set; }
         public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
@@ -83,15 +81,45 @@ namespace Amphora.Common.Models.Amphorae
         /// <summary>
         /// Useful incase a collection is null.
         /// </summary>
-        public void AddSignal(SignalV2 signal)
+        public bool TryAddSignal(SignalV2 signal, out string message)
         {
             if (this.V2Signals.Any(s => s.Property == signal.Property))
             {
-                throw new ArgumentException($"Duplicate Signal Property, {signal.Property}");
+                message = $"Duplicate property name: {signal.Property}";
+                return false;
+            }
+
+            if (!CanAddNewSignal())
+            {
+                // then don't add the signal
+                var limit = GetSignalsLimit();
+                message = $"You've reached your limit of {limit} signals";
+                return false;
             }
 
             V2Signals ??= new Collection<SignalV2>();
             this.V2Signals.Add(signal);
+            message = string.Empty;
+            return true;
+        }
+
+        public bool CanAddNewSignal()
+        {
+            var limit = GetSignalsLimit();
+            if (this.V2Signals?.Count >= limit)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private int? GetSignalsLimit()
+        {
+            if (this.Organisation == null) { return new Organisations.Configuration().GetMaximumSignals(); }
+            this.Organisation.Configuration ??= new Organisations.Configuration(); // just create one if its null
+            var limit = this.Organisation.Configuration?.GetMaximumSignals();
+            return limit;
         }
     }
 }

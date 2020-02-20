@@ -30,7 +30,6 @@ namespace Amphora.Tests.Unit.Services
                                                                  It.IsAny<AmphoraModel>(),
                                                                  It.IsAny<AccessLevels>())).Returns(Task.FromResult(true));
             var mockTsi = new Mock<ITsiService>();
-            var signalStore = new SignalsEFStore(context, CreateMockLogger<SignalsEFStore>());
             var mockPrincipal = new Mock<ClaimsPrincipal>();
             var sut = new SignalsService(mockSender.Object,
                                          mockUserService.Object,
@@ -39,8 +38,8 @@ namespace Amphora.Tests.Unit.Services
                                          CreateMockLogger<SignalsService>());
 
             var amphora = new AmphoraModel();
-            amphora.AddSignal(new SignalV2("numeric", SignalV2.Numeric));
-            amphora.AddSignal(new SignalV2("string", SignalV2.String));
+            Assert.True(amphora.TryAddSignal(new SignalV2("numeric", SignalV2.Numeric), out var m1));
+            Assert.True(amphora.TryAddSignal(new SignalV2("string", SignalV2.String), out var m2));
 
             var data = new Dictionary<string, object>()
             {
@@ -72,7 +71,6 @@ namespace Amphora.Tests.Unit.Services
                                                                  It.IsAny<AmphoraModel>(),
                                                                  It.IsAny<AccessLevels>())).Returns(Task.FromResult(true));
             var mockTsi = new Mock<ITsiService>();
-            var signalStore = new SignalsEFStore(context, CreateMockLogger<SignalsEFStore>());
             var mockPrincipal = new Mock<ClaimsPrincipal>();
             var sut = new SignalsService(mockSender.Object,
                                          mockUserService.Object,
@@ -81,8 +79,8 @@ namespace Amphora.Tests.Unit.Services
                                          CreateMockLogger<SignalsService>());
 
             var amphora = new AmphoraModel();
-            amphora.AddSignal(new SignalV2("numeric", SignalV2.Numeric));
-            amphora.AddSignal(new SignalV2("string", SignalV2.String));
+            amphora.TryAddSignal(new SignalV2("numeric", SignalV2.Numeric), out var message);
+            amphora.TryAddSignal(new SignalV2("string", SignalV2.String), out var message2);
 
             var data = new Dictionary<string, object>()
             {

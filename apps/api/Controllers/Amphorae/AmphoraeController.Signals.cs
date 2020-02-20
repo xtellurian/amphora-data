@@ -55,7 +55,6 @@ namespace Amphora.Api.Controllers.Amphorae
             if (result.Succeeded)
             {
                 var amphora = result.Entity;
-                amphora.EnsureV2Signals();
                 var res = new List<Signal>();
                 foreach (var s in amphora.V2Signals)
                 {
@@ -97,23 +96,29 @@ namespace Amphora.Api.Controllers.Amphorae
                 if (result.Succeeded)
                 {
                     var amphora = result.Entity;
-                    amphora.EnsureV2Signals();
                     var newSignal = new SignalV2(signal.Property, signal.ValueType);
-                    amphora.AddSignal(newSignal);
-                    var updateRes = await amphoraeService.UpdateAsync(User, amphora);
-                    if (updateRes.Succeeded)
+                    string message;
+                    if (amphora.TryAddSignal(newSignal, out message))
                     {
-                        // happy path
-                        signal.Id = newSignal.Id;
-                        return Ok(signal);
-                    }
-                    else if (result.WasForbidden)
-                    {
-                        return StatusCode(403, result.Message);
+                        var updateRes = await amphoraeService.UpdateAsync(User, amphora);
+                        if (updateRes.Succeeded)
+                        {
+                            // happy path
+                            signal.Id = newSignal.Id;
+                            return Ok(signal);
+                        }
+                        else if (result.WasForbidden)
+                        {
+                            return StatusCode(403, result.Message);
+                        }
+                        else
+                        {
+                            return BadRequest(result.Message);
+                        }
                     }
                     else
                     {
-                        return BadRequest(result.Message);
+                        return BadRequest(message);
                     }
                 }
                 else if (result.WasForbidden)

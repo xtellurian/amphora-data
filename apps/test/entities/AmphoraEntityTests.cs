@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
@@ -15,7 +14,7 @@ namespace Amphora.Tests.Unit.Entities
         [Fact]
         public async Task InMemoryCanStoreAndRetrieveAmphoraAsync()
         {
-            using (var context = GetContext(nameof(InMemoryCanStoreAndRetrieveAmphoraAsync)))
+            using (var context = GetContext())
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
 
@@ -46,7 +45,7 @@ namespace Amphora.Tests.Unit.Entities
         [Fact]
         public async Task InMemoryEntityStoreListAsync()
         {
-            using (var context = GetContext(nameof(InMemoryEntityStoreListAsync)))
+            using (var context = GetContext())
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 var a = new AmphoraModel("Test name", "Test Description", 44, null, null, null);
@@ -64,11 +63,69 @@ namespace Amphora.Tests.Unit.Entities
         [Fact]
         public async Task InMemoryEntityStoreReturnsNullAsync()
         {
-            using (var context = GetContext(nameof(InMemoryEntityStoreReturnsNullAsync)))
+            using (var context = GetContext())
             {
                 var sut = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
                 var missing = await sut.ReadAsync("missing_amphora");
                 Assert.Null(missing);
+            }
+        }
+
+        [Fact]
+        public async Task DefaultNumberOfSignals_10()
+        {
+            using (var context = GetContext())
+            {
+                var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+                var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+
+                var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+                var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(org));
+
+                for (var i = 0; i < 10; i++)
+                {
+                    // add 10 successfully
+                    Assert.True(amphora.TryAddSignal(EntityLibrary.GetSignalV2(), out var m));
+                }
+
+                // check it's 10
+                Assert.Equal(10, amphora.V2Signals.Count);
+
+                // then add the last one, should fail
+                string message;
+                Assert.False(amphora.TryAddSignal(EntityLibrary.GetSignalV2(), out message));
+                Assert.False(string.IsNullOrEmpty(message));
+            }
+        }
+
+        [Fact]
+        public async Task CustomNumberOfSignals()
+        {
+            using (var context = GetContext())
+            {
+                var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+                var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+
+                var customLimit = 21;
+                var org = EntityLibrary.GetOrganisationModel();
+                org.Configuration.MaximumSignals = customLimit;
+
+                org = await orgStore.CreateAsync(org);
+                var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(org));
+
+                for (var i = 0; i < customLimit; i++)
+                {
+                    // add 10 successfully
+                    Assert.True(amphora.TryAddSignal(EntityLibrary.GetSignalV2(), out var m));
+                }
+
+                // check it's the custom limit
+                Assert.Equal(customLimit, amphora.V2Signals.Count);
+
+                // then add the last one, should fail
+                string message;
+                Assert.False(amphora.TryAddSignal(EntityLibrary.GetSignalV2(), out message));
+                Assert.False(string.IsNullOrEmpty(message));
             }
         }
     }

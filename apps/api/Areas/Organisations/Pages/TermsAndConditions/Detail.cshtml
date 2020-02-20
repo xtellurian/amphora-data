@@ -1,14 +1,24 @@
 @page
 @model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.DetailModel
 
+@{
+    ViewData["Title"] = $"T&C: {Model.TermsAndConditions.Name}";
+}
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-8">
             <div class="m-3 card">
                 <div class="card-header">
+                    <div>
+
                     @Model.TermsAndConditions.Name <small class="float-right"> by 
                         <a asp-page="../Detail" asp-route-id="@Model.Organisation.Id">@Model.Organisation.Name</a>
                         </small>
+                    </div>
+                    <small>
+                        Id: @Model.TermsAndConditions.Id
+                    </small>
                 </div>
                 <div class="card-body">
                     <span style="white-space: pre-line">@Model.TermsAndConditions.Contents</span>
