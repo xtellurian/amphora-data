@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Authorization;
@@ -40,21 +40,9 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public string Token { get; set; }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public Organisation Input { get; set; }
         public IList<OrganisationModel> Organisations { get; set; }
         public InvitationModel Invitation { get; private set; }
-
-        public class InputModel
-        {
-            [DataType(DataType.Text)]
-            public string Name { get; set; }
-            [DataType(DataType.MultilineText)]
-            public string About { get; set; }
-            [DataType(DataType.Url)]
-            public string Website { get; set; }
-            [DataType(DataType.Text)]
-            public string Address { get; set; }
-        }
 
         public async Task<IActionResult> OnGetAsync(string message)
         {
@@ -81,32 +69,39 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnPostAsync(List<IFormFile> files)
         {
-            var org = new OrganisationModel(Input.Name, Input.About, Input.Website, Input.Address);
-
-            var result = await organisationService.CreateAsync(User, org);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                var formFile = files.FirstOrDefault();
+                var org = new OrganisationModel(Input.Name, Input.About, Input.WebsiteUrl, Input.Address);
 
-                if (formFile != null && formFile.Length > 0)
+                var result = await organisationService.CreateAsync(User, org);
+                if (result.Succeeded)
                 {
-                    using (var stream = new MemoryStream())
-                    {
-                        await formFile.CopyToAsync(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        await this.organisationService.WriteProfilePictureJpg(result.Entity, await stream.ReadFullyAsync());
-                    }
-                }
+                    var formFile = files.FirstOrDefault();
 
-                return RedirectToPage("/Home/Index");
+                    if (formFile != null && formFile.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await formFile.CopyToAsync(stream);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            await this.organisationService.WriteProfilePictureJpg(result.Entity, await stream.ReadFullyAsync());
+                        }
+                    }
+
+                    return RedirectToPage("/Home/Index");
+                }
+                else
+                {
+                    foreach (var e in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, e);
+                    }
+
+                    return Page();
+                }
             }
             else
             {
-                foreach (var e in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, e);
-                }
-
                 return Page();
             }
         }

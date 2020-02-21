@@ -38,9 +38,9 @@
                     <span asp-validation-for="Input.About" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.Website" class="control-label"></label>
-                    <input asp-for="Input.Website" class="form-control" placeholder="https://mycompany.com" />
-                    <span asp-validation-for="Input.Website" class="text-danger"></span>
+                    <label asp-for="Input.WebsiteUrl" class="control-label"></label>
+                    <input asp-for="Input.WebsiteUrl" class="form-control" placeholder="https://mycompany.com" />
+                    <span asp-validation-for="Input.WebsiteUrl" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <div>Address</div>
@@ -49,8 +49,38 @@
                     </div>
                     <div class="selection"></div>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Create New Organisation" class="btn btn-primary btn-block" />
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmationModal">
+                Create New Organisation
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 id="confirmationModalLabel" class="modal-title text-primary">
+                                    You are creating a new Organisation!
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    You will become the <em>first user and administrator</em> of a <strong>new</strong> Amphora Organisation.
+                                    If you are not the first person in your team to join Amphora Data, you should consider pressing 'Cancel' below, and requesting an invitation from your Organisations administrator.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <input type="submit" value="Create New Organisation" class="btn btn-primary" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
