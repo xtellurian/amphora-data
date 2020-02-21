@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -73,6 +74,25 @@ namespace Amphora.Tests.Integration
             // Assert.Contains(responseList, b => string.Equals(b.Id, a.Id)); // how to wait for the indexer to run?
 
             await DestroyAmphoraAsync(client, a.Id);
+            await DestroyOrganisationAsync(client, org);
+            await DestroyUserAsync(client, user);
+        }
+
+        [Fact]
+        public async Task CanSearchOrganisations()
+        {
+            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
+            // now we have an org, it should show up in the search.
+
+            var searchRes = await client.GetAsync($"api/search/organisations?term={org.Name}");
+            var content = await searchRes.Content.ReadAsStringAsync();
+            Assert.True(searchRes.IsSuccessStatusCode);
+            var orgs = JsonConvert.DeserializeObject<List<Organisation>>(content);
+
+            Assert.NotNull(orgs);
+            Assert.NotEmpty(orgs);
+            // Assert.Contains(orgs, _ => _.Id == org.Id);
+
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
         }

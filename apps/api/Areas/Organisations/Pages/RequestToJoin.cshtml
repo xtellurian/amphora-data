@@ -6,6 +6,14 @@
 <div class="container">
     <div class="row">
         <div class="col">
+            <a class="btn btn-secondary" asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Organisation.Id">
+                View Organisation Details
+            </a>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
             @if(Model.Succeeded)
             {
                 <div>
@@ -18,7 +26,7 @@
                 <h2>Would you like to join @Model.Organisation.Name ?</h2>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <form method="post" asp-route-id="@Model.Organisation.Id">
-                    <input class="btn btn-success" type="submit" value="Yes"/>
+                    <input class="btn btn-success w-25" type="submit" value="Yes"/>
                 </form>
             }
         </div>

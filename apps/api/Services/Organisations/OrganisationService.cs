@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -43,11 +44,20 @@ namespace Amphora.Api.Services.Organisations
             ClaimsPrincipal principal,
             OrganisationModel org)
         {
+            org.WebsiteUrl = org.WebsiteUrl?.ToLower();
             // we do this when a new user signs up without an invite from an existing org
             var user = await userService.UserManager.GetUserAsync(principal);
             if (user == null) { return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login"); }
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
+                if (await Store.CountAsync(_ => _.WebsiteUrl == org.WebsiteUrl) > 0)
+                {
+                    var existing = (await Store.QueryAsync(_ => _.WebsiteUrl == org.WebsiteUrl)).FirstOrDefault();
+                    // an organisation with that website already exists.
+                    return new EntityOperationResult<OrganisationModel>(user, 409, 
+                        $"An organisation called {existing?.Name} with website {existing?.WebsiteUrl} already exists. You may wish to join that org.");
+                }
+
                 org.CreatedById = user.Id;
                 org.CreatedBy = user;
                 org.CreatedDate = DateTime.UtcNow;

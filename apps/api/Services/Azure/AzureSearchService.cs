@@ -95,7 +95,7 @@ namespace Amphora.Api.Services.Azure
             }
         }
 
-        public async Task<EntitySearchResult<T>> SearchAsync<T>(string searchText, Models.Search.SearchParameters parameters) where T : ISearchable
+        public async Task<EntitySearchResult<T>> SearchAsync<T>(string searchText, Models.Search.SearchParameters parameters = null) where T : ISearchable
         {
             using (var client = await GetSearchClientAsync<T>())
             {

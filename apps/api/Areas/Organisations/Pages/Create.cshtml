@@ -20,12 +20,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-10">
+        <div class="col-8">
             <form method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Name" class="control-label"></label>
-                    <input asp-for="Input.Name" class="form-control" placeholder="Your Organisation's Name"/>
+                    <input id="orgNameInput" asp-for="Input.Name" class="form-control" placeholder="Your Organisation's Name"/>
                     <span asp-validation-for="Input.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -84,14 +84,23 @@
                 </div>
             </form>
         </div>
+        <div class="col-4">
+            <div id="orgListDestination">
+
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_AutocompleteImportPartial" />
     <script src="~/js/geo.js"></script>
+    <script src="~/js/orgCreateAutocomplete.js"></script>
     <script>
         const url = '/Market/LocationSearch';
         autocompleteGeoSearch(null, url)
+    </script>
+    <script>
+        orgCreateAutocomplete("orgNameInput", "orgNameInput_results_list", "orgListDestination", "/api/search/organisations")
     </script>
 }

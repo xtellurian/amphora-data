@@ -1,6 +1,7 @@
 using Amphora.Api.Models.Search;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
+using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.Azure.Search.Models;
 
@@ -10,17 +11,16 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public AzureSearchProfile()
         {
-            CreateMap<DocumentSearchResult<AmphoraModel>, EntitySearchResult<AmphoraModel>>();
+            CreateSearchMap<AmphoraModel>();
+            CreateSearchMap<DataRequestModel>();
+            CreateSearchMap<OrganisationModel>();
+        }
 
-            CreateMap<Microsoft.Azure.Search.Models.SearchResult<AmphoraModel>, Search.SearchResult<AmphoraModel>>()
-            .ForMember(a => a.Entity, opt => opt.MapFrom(src => src.Document));
-            // .ForMember(p => p., o => o.Ignore())
-
-            CreateMap<DocumentSearchResult<DataRequestModel>, EntitySearchResult<DataRequestModel>>();
-
-            CreateMap<Microsoft.Azure.Search.Models.SearchResult<DataRequestModel>, Search.SearchResult<DataRequestModel>>()
-            .ForMember(a => a.Entity, opt => opt.MapFrom(src => src.Document));
-            // .ForMember(p => p., o => o.Ignore())
+        private void CreateSearchMap<T>()
+        {
+            CreateMap<DocumentSearchResult<T>, EntitySearchResult<T>>();
+            CreateMap<Microsoft.Azure.Search.Models.SearchResult<T>, Search.SearchResult<T>>()
+                .ForMember(a => a.Entity, opt => opt.MapFrom(src => src.Document));
         }
     }
 }
