@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
     [ApiController]
-    [Authorize]
+    [CommonAuthorize]
     [SkipStatusCodePages]
     public class ImagesController : Controller
     {

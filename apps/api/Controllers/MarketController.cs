@@ -40,7 +40,7 @@ namespace Amphora.Api.Controllers
         /// <returns> A fuzzy search response. </returns>
         [Produces(typeof(FuzzySearchResponse))]
         [HttpGet("api/location/fuzzy")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> LookupLocationAsync(string query)
         {
             var response = await mapService.FuzzySearchAsync(query);
@@ -56,7 +56,7 @@ namespace Amphora.Api.Controllers
         /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<BasicAmphora>))]
         [HttpGet("api/market/search")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Find(string query, int? top, int? skip)
         {
             var searchResult = await marketService.FindAsync(query, skip: skip, top: top);

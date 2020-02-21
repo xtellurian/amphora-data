@@ -30,7 +30,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A Message.</returns>
         [HttpPost]
         [Produces(typeof(string))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Purchase(string id)
         {
             var a = await amphoraeService.ReadAsync(User, id);

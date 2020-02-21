@@ -6,7 +6,7 @@ using Amphora.Api.Services.Azure;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
-using Amphora.Tests.Unit;
+using Amphora.Common.Models.Organisations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -58,6 +58,7 @@ namespace Amphora.Tests.Unit.Services
                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
                Mock.Of<IAzureSearchInitialiser<AmphoraModel>>(),
                Mock.Of<IAzureSearchInitialiser<DataRequestModel>>(),
+               Mock.Of<IAzureSearchInitialiser<OrganisationModel>>(),
                azureSearchLogger,
                Mapper);
 

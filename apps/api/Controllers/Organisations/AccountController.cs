@@ -33,7 +33,7 @@ namespace Amphora.Api.Controllers.Organisations
         /// <returns>An Organisation's account metadata. </returns>
         [Produces(typeof(Models.Dtos.Organisations.Account))]
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Read(string id)
         {
             var res = await organisationService.ReadAsync(User, id);

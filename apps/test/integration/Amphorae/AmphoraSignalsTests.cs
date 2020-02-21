@@ -35,7 +35,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // create a signal
             var generator = new RandomGenerator(1);
-            var property = generator.RandomString(10) + "_" + generator.RandomString(2); // w/ underscore
+            var property = generator.RandomString(1).ToLower() + generator.RandomString(10) + "_" + generator.RandomString(2); // w/ underscore
             var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{amphora.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -119,7 +119,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // create a signal
             var generator = new RandomGenerator(1);
             var property = generator.RandomString(10) + "_" + generator.RandomString(2); // w/ underscore
-            var signal = EntityLibrary.GetSignalDto(property);
+            var signal = EntityLibrary.GetSignalDto(property.ToLower());
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signal);
             var responseContent = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();

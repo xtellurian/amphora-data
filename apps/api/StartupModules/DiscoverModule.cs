@@ -6,6 +6,7 @@ using Amphora.Api.Services.Discover;
 using Amphora.Api.Services.Market;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
+using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,7 @@ namespace Amphora.Api.StartupModules
                 services.AddTransient<ISearchService, AzureSearchService>();
                 services.AddSingleton<IAzureSearchInitialiser<AmphoraModel>, AmphoraSearchInitialiser>();
                 services.AddSingleton<IAzureSearchInitialiser<DataRequestModel>, DataRequestSearchInitialiser>();
+                services.AddSingleton<IAzureSearchInitialiser<OrganisationModel>, OrganisationSearchInitialiser>();
             }
         }
     }

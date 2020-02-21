@@ -42,9 +42,20 @@ namespace Amphora.Tests.Helpers
             return faker.Generate();
         }
 
-        public static SignalV2 GetSignalV2(string valueType = "Numeric")
+        public static SignalV2 GetSignalV2(string property = null, string valueType = "Numeric")
         {
-            return new SignalV2(Guid.NewGuid().ToString(), valueType);
+            property ??= "a" + Guid.NewGuid().ToString().Replace("-", "");
+            return new SignalV2(property, valueType);
+        }
+
+        public static Signal GetSignalDto(string property = null, string valueType = "Numeric")
+        {
+            property ??= "a" + Guid.NewGuid().ToString().Replace("-", "");
+            return new Signal
+            {
+                Property = property,
+                ValueType = valueType
+            };
         }
 
         public static AmphoraModel GetInvalidAmphora(string id = null)

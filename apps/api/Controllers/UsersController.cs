@@ -52,7 +52,7 @@ namespace Amphora.Api.Controllers
         /// <returns> Your own details. </returns>
         [Produces(typeof(AmphoraUser))]
         [HttpGet("self")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> ReadSelf()
         {
             var user = await userService.ReadUserModelAsync(User);
@@ -120,7 +120,7 @@ namespace Amphora.Api.Controllers
         /// <returns> Empty.</returns>
         [HttpDelete("{username}")]
         [OpenApiIgnore]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Delete(string userName)
         {
             if (userName == null) { return BadRequest("username is required"); }

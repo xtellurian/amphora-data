@@ -38,7 +38,7 @@ namespace Amphora.Api.Controllers.Organisations
         /// <returns> The Terms and Conditions. </returns>
         [Produces(typeof(TermsAndConditions))]
         [ProducesResponseType(400)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [HttpPost]
         public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditions tnc)
         {
@@ -77,7 +77,7 @@ namespace Amphora.Api.Controllers.Organisations
         /// <param name="id">The Id of the Organisation.</param>
         /// <returns> The Terms and Conditions. </returns>
         [Produces(typeof(IEnumerable<TermsAndConditions>))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [HttpGet]
         public async Task<IActionResult> Read(string id)
         {

@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -58,8 +59,8 @@ namespace Amphora.Tests.Integration
             a = JsonConvert.DeserializeObject<DetailedAmphora>(responseBody);
             Assert.NotNull(a.Id);
             // create a signal
-            var dSignal = new Signal() { Property = p1, ValueType = "Numeric" };
-            var sSignal = new Signal() { Property = p2, ValueType = "String" };
+            var dSignal = EntityLibrary.GetSignalDto(p1, "Numeric");
+            var sSignal = EntityLibrary.GetSignalDto(p2, "String");
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
@@ -127,7 +128,7 @@ namespace Amphora.Tests.Integration
 
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
-
+            var content = await dRes.Content.ReadAsStringAsync();
             dRes.EnsureSuccessStatusCode();
             sRes.EnsureSuccessStatusCode();
 

@@ -30,6 +30,7 @@ namespace Amphora.Tests.Unit.Services
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var dataRequestStore = new DataRequestsEFStore(context, CreateMockLogger<DataRequestsEFStore>());
+                var organisationStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var mockUserService = new Mock<IUserService>();
                 mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
@@ -43,7 +44,7 @@ namespace Amphora.Tests.Unit.Services
                                                          mockUserService.Object,
                                                          CreateMockEventPublisher(),
                                                          CreateMockLogger<AmphoraeService>());
-                var service = new BasicSearchService(amphoraService, dataRequestStore);
+                var service = new BasicSearchService(amphoraService, dataRequestStore, organisationStore);
                 var orgModel = EntityLibrary.GetOrganisationModel();
                 var amphora = EntityLibrary.GetAmphoraModel(orgModel); // dumy org id
                 var entity = await amphoraStore.CreateAsync(amphora);
