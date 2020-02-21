@@ -42,7 +42,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="query">Time Series query. See https://github.com/microsoft/tsiclient/blob/master/docs/Server.md#functions .</param>
         /// <returns>A Query Result.</returns>
         [HttpPost("api/timeseries/query")]
-        [Authorize(AuthenticationSchemes = "Identity.Application" + "," + JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [Produces(typeof(QueryResultPage))]
         [ProducesResponseType(403)]
         [AddJsonContentType]

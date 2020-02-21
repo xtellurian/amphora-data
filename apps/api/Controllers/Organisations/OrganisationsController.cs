@@ -43,7 +43,7 @@ namespace Amphora.Api.Controllers
         /// <returns> The Organisation metadata. </returns>
         [Produces(typeof(Organisation))]
         [HttpPost("api/organisations")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Create([FromBody]Organisation org)
         {
             var model = mapper.Map<OrganisationModel>(org);
@@ -70,7 +70,7 @@ namespace Amphora.Api.Controllers
         /// <param name="org">Organisation Information. All fields are updated.</param>
         /// <returns> The organisation metadaa. </returns>
         [HttpPut("api/organisations/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Update(string id, [FromBody]Organisation org)
         {
             var entity = await entityStore.ReadAsync(id);
@@ -91,7 +91,7 @@ namespace Amphora.Api.Controllers
         /// <returns> The organisation metadata. </returns>
         [Produces(typeof(Organisation))]
         [HttpGet("api/organisations/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Read(string id)
         {
             var org = await entityStore.ReadAsync(id);
@@ -110,7 +110,7 @@ namespace Amphora.Api.Controllers
         /// <returns> A Message. </returns>
         [Produces(typeof(string))]
         [HttpDelete("api/organisations/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Delete(string id)
         {
             var org = await entityStore.ReadAsync(id);

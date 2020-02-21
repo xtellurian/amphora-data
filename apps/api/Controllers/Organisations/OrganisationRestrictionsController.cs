@@ -33,7 +33,7 @@ namespace Amphora.Api.Controllers
         /// <returns> Simply 200. </returns>
         [Produces(typeof(Restriction))]
         [HttpPost("api/organisations/{id}/restrictions")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Create(string id, Restriction restriction)
         {
             var readRes = await organisationService.ReadAsync(User, id);
@@ -67,7 +67,7 @@ namespace Amphora.Api.Controllers
         /// <returns> Simply 200. </returns>
         [Produces(typeof(GenericResponse))]
         [HttpDelete("api/organisations/{id}/restrictions/{targetOrganisationId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Delete(string id, string targetOrganisationId)
         {
             var readRes = await organisationService.ReadAsync(User, id);

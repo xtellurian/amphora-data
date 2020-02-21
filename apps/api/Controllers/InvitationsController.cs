@@ -31,7 +31,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <returns> A collection of invitations.</returns>
         [HttpGet("api/invitations/")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> ReadMyInvitations()
         {
             var res = await invitationService.GetMyInvitations(User);
@@ -51,7 +51,7 @@ namespace Amphora.Api.Controllers
         /// <returns> An object with an invitation id. </returns>
         [HttpPost("api/invitations/{orgId}")]
         [Produces(typeof(AcceptInvitation))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> AcceptInvitation(string orgId, AcceptInvitation accept)
         {
             var res = await invitationService.GetInvitation(User, accept.TargetOrganisationId);
@@ -79,7 +79,7 @@ namespace Amphora.Api.Controllers
         /// <returns> An Invitation Object. </returns>
         [HttpPost("api/invitations/")]
         [Produces(typeof(Invitation))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> InviteNewUser(Invitation invitation)
         {
             var model = mapper.Map<InvitationModel>(invitation);
