@@ -38,6 +38,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
         }
 
         public string Token { get; set; }
+        [TempData]
+        public string CreateOrganisationMessage { get; set; }
 
         [BindProperty]
         public Organisation Input { get; set; }
@@ -46,7 +48,11 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync(string message)
         {
-            if (!string.IsNullOrEmpty(message)) { this.ModelState.AddModelError(string.Empty, message); }
+            if (!string.IsNullOrEmpty(message))
+            {
+                this.CreateOrganisationMessage = message;
+            }
+
             var res = await invitationService.GetMyInvitations(User);
             if (res.Succeeded)
             {
