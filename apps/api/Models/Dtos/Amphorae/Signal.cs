@@ -18,7 +18,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         }
 
         public string Id { get; set; }
-        [RegularExpression(@"^[a-zA-Z_]{3,20}$", ErrorMessage = "lowercase alpha, 3-20 chars")] // 20 lowercase alpha characters
+        [RegularExpression(@"^[a-z][a-zA-Z_]{3,20}$", ErrorMessage = "lowercase alpha, 3-20 chars")] // 20 lowercase alpha characters
         public string Property { get; set; }
         public string ValueType { get; set; }
         public IDictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
