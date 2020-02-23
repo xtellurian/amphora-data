@@ -1,4 +1,4 @@
-ARG DOTNET_VERSION=3.1
+ARG DOTNET_VERSION=3.1.102
 ARG TreatWarningsAsErrors=false
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_VERSION} AS builder
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
