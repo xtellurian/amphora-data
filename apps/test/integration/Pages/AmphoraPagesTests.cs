@@ -31,12 +31,12 @@ namespace Amphora.Tests.Integration.Pages
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOwner));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
 
             var response = await adminClient.GetAsync($"{path}?id={id}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             await DestroyAmphoraAsync(adminClient, id);
@@ -54,12 +54,12 @@ namespace Amphora.Tests.Integration.Pages
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOther));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
 
             var response = await otherClient.GetAsync($"{path}?id={id}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             await DestroyAmphoraAsync(adminClient, id);
@@ -78,12 +78,12 @@ namespace Amphora.Tests.Integration.Pages
 
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            Assert.True(createResponse.IsSuccessStatusCode);
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
             var id = dto.Id;
             await Task.Delay(500); // wait 0.5 seconds
             var response = await adminClient.GetAsync($"{path}?id={id}");
-            Assert.True(response.IsSuccessStatusCode);
+            await AssertHttpSuccess(response);
             Assert.Contains("image/", response.Content.Headers.ContentType.ToString());
 
             await DestroyAmphoraAsync(adminClient, id);

@@ -26,10 +26,10 @@ namespace Amphora.Tests.Integration.Pages
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
 
             var response = await adminClient.GetAsync($"{path}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             var otherResponse = await otherClient.GetAsync(path);
@@ -50,10 +50,10 @@ namespace Amphora.Tests.Integration.Pages
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
 
             var response = await adminClient.GetAsync($"{path}?id={otherOrg.Id}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             // ensure other can't access it

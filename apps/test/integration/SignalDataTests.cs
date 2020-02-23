@@ -50,7 +50,7 @@ namespace Amphora.Tests.Integration
 
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await adminClient.PostAsync("api/amphorae", requestBody);
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
@@ -65,8 +65,8 @@ namespace Amphora.Tests.Integration
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
 
-            dRes.EnsureSuccessStatusCode();
-            sRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(dRes);
+            await AssertHttpSuccess(sRes);
 
             // act
             var vals = new Dictionary<string, object>
@@ -114,7 +114,7 @@ namespace Amphora.Tests.Integration
 
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await adminClient.PostAsync("api/amphorae", requestBody);
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
@@ -129,8 +129,8 @@ namespace Amphora.Tests.Integration
             var dRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", dSignal);
             var sRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals", sSignal);
             var content = await dRes.Content.ReadAsStringAsync();
-            dRes.EnsureSuccessStatusCode();
-            sRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(dRes);
+            await AssertHttpSuccess(sRes);
 
             // act
 
@@ -141,7 +141,7 @@ namespace Amphora.Tests.Integration
                 };
 
             var valRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/values", vals);
-            valRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(valRes);
 
             var batchVals = new List<Dictionary<string, object>>
             {
@@ -158,7 +158,7 @@ namespace Amphora.Tests.Integration
             };
 
             var batchRes = await adminClient.PostAsJsonAsync($"api/amphorae/{a.Id}/signals/batchvalues", batchVals);
-            batchRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(batchRes);
 
             await DestroyAmphoraAsync(adminClient, a.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);

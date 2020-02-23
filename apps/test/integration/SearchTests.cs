@@ -31,18 +31,14 @@ namespace Amphora.Tests.Integration
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             // Act
             var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             var content = await response.Content.ReadAsStringAsync();
             var amphorae = JsonConvert.DeserializeObject<List<DetailedAmphora>>(content);
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
-                                                //  Assert.Contains(amphorae, b => string.Equals(b.Id, a.Id));
 
             await DestroyAmphoraAsync(adminClient, a.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
@@ -65,10 +61,10 @@ namespace Amphora.Tests.Integration
             var content = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var createResponse = await client.PostAsync("api/amphorae", content);
             a = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             var response = await client.GetAsync($"{url}?lat={lat}&lon={lon}&dist=10");
             var responseContent = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
 
             var responseList = JsonConvert.DeserializeObject<List<DetailedAmphora>>(responseContent);
             // Assert.Contains(responseList, b => string.Equals(b.Id, a.Id)); // how to wait for the indexer to run?
@@ -86,7 +82,7 @@ namespace Amphora.Tests.Integration
 
             var searchRes = await client.GetAsync($"api/search/organisations?term={org.Name}");
             var content = await searchRes.Content.ReadAsStringAsync();
-            Assert.True(searchRes.IsSuccessStatusCode);
+            await AssertHttpSuccess(searchRes);
             var orgs = JsonConvert.DeserializeObject<List<Organisation>>(content);
 
             Assert.NotNull(orgs);

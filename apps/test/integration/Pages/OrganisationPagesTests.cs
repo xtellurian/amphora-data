@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration.Pages
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var qString = $"?id={adminOrg.Id}";
             var response = await adminClient.GetAsync(path + qString);
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             await DestroyOrganisationAsync(adminClient, adminOrg);

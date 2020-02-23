@@ -23,23 +23,23 @@ namespace Amphora.Tests.Integration
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(PurchasingAmphora_DeductsFromBalance));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             var accountContent = await accountResponse.Content.ReadAsStringAsync();
-            accountResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(accountResponse);
             var account1 = JsonConvert.DeserializeObject<Account>(accountContent);
             Assert.NotNull(account1);
 
             var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
             var purhcaseContent = await purchaseRes.Content.ReadAsStringAsync();
-            purchaseRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(purchaseRes);
             // get account again
             accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             accountContent = await accountResponse.Content.ReadAsStringAsync();
-            accountResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(accountResponse);
             var account2 = JsonConvert.DeserializeObject<Account>(accountContent);
             // get balance is deducted
             Assert.Equal(account1.Balance - dto.Price, account2.Balance);
@@ -57,17 +57,17 @@ namespace Amphora.Tests.Integration
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(PurchasingAmphora_DeductsFromBalance));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
             var purchaseContent = await purchaseRes.Content.ReadAsStringAsync();
-            purchaseRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(purchaseRes);
 
             // get the amphora again from the server
             var res = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
-            res.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(res);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await res.Content.ReadAsStringAsync());
 
             Assert.NotNull(dto.PurchaseCount);
@@ -86,13 +86,13 @@ namespace Amphora.Tests.Integration
             var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(PurchasingAmphora_DeductsFromBalance));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             var accountContent = await accountResponse.Content.ReadAsStringAsync();
-            accountResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(accountResponse);
             var account1 = JsonConvert.DeserializeObject<Account>(accountContent);
             Assert.NotNull(account1);
 
@@ -100,7 +100,7 @@ namespace Amphora.Tests.Integration
             var restriction = new Restriction(org.Id, Common.Models.Permissions.RestrictionKind.Deny);
             var restrictRes = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Restrictions", restriction);
             var restrictContent = await restrictRes.Content.ReadAsStringAsync();
-            restrictRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(restrictRes);
 
             // attempt to purchase
             var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
@@ -124,7 +124,7 @@ namespace Amphora.Tests.Integration
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(sellingOrg.Id);
             sellingClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await sellingClient.PostAsJsonAsync("api/amphorae", amphora);
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             // make the buyers
@@ -134,7 +134,7 @@ namespace Amphora.Tests.Integration
             // buyer 1 can purchase
             var purchase1Response = await buyerClient1.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });
             var purchase1Content = await purchase1Response.Content.ReadAsStringAsync();
-            Assert.True(purchase1Response.IsSuccessStatusCode);
+            await AssertHttpSuccess(purchase1Response);
 
             // buyer 2 purchase should fail
             var purchase2Response = await buyerClient2.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });

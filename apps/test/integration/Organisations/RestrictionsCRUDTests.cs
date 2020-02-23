@@ -26,14 +26,14 @@ namespace Amphora.Tests.Integration.Organisations
 
             var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Restrictions", restriction);
             var contents = await result.Content.ReadAsStringAsync();
-            result.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(result);
 
             var dto = JsonConvert.DeserializeObject<Restriction>(contents);
             Assert.Equal(restriction.TargetOrganisationId, dto.TargetOrganisationId);
             Assert.Equal(restriction.Kind, dto.Kind);
 
             var response = await adminClient.DeleteAsync($"api/Organisations/{adminOrg.Id}/Restrictions/{restriction.TargetOrganisationId}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Amphora.Tests.Integration.Organisations
 
             var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/TermsAndConditions", tnc);
             var contents = await result.Content.ReadAsStringAsync();
-            result.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(result);
 
             var dto = JsonConvert.DeserializeObject<TermsAndConditions>(contents);
             Assert.Equal(tnc.Id, dto.Id);
@@ -37,7 +37,7 @@ namespace Amphora.Tests.Integration.Organisations
 
             var response = await adminClient.GetAsync($"api/Organisations/{adminOrg.Id}/TermsAndConditions");
             var contents2 = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             var allTnc = JsonConvert.DeserializeObject<List<TermsAndConditions>>(contents2);
             Assert.Single(allTnc);
             Assert.Equal(dto.Id, allTnc[0].Id);

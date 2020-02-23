@@ -5,13 +5,10 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class IdentityTests
+    public class IdentityTests : IntegrationTestBase
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
-
-        public IdentityTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public IdentityTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-            _factory = factory;
         }
 
         [Theory]
@@ -27,7 +24,7 @@ namespace Amphora.Tests.Integration
             var response = await client.GetAsync(url);
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }

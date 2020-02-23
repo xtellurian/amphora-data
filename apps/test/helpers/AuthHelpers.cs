@@ -6,6 +6,7 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Amphora.Tests.Helpers
 {
@@ -28,7 +29,7 @@ namespace Amphora.Tests.Helpers
             var response = await client.PostAsync(requestPath, content);
             var password = await response.Content.ReadAsStringAsync();
 
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
             await client.GetTokenAsync(user, password);
 
             return (User: user, Password: password);
@@ -40,7 +41,7 @@ namespace Amphora.Tests.Helpers
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var createResponseContent = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
             var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
             return org;
         }
@@ -56,7 +57,7 @@ namespace Amphora.Tests.Helpers
 
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
-            loginResponse.EnsureSuccessStatusCode();
+            Assert.True(loginResponse.IsSuccessStatusCode, "Content: " + await loginResponse.Content.ReadAsStringAsync());
 
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
