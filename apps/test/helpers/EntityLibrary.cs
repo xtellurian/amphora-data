@@ -51,10 +51,19 @@ namespace Amphora.Tests.Helpers
         public static Signal GetSignalDto(string property = null, string valueType = "Numeric")
         {
             property ??= "a" + Guid.NewGuid().ToString().Replace("-", "");
+            var faker = new Faker("en");
+            var meta = new Dictionary<string, string>
+            {
+                { "units", "mm" },
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+            };
+
             return new Signal
             {
                 Property = property,
-                ValueType = valueType
+                ValueType = valueType,
+                Attributes = meta
             };
         }
 
@@ -93,18 +102,6 @@ namespace Amphora.Tests.Helpers
         public static SignalV2 GetV2Signal([CallerMemberName] string testName = "")
         {
             return new SignalV2(testName, SignalV2.Numeric);
-        }
-
-        public static Signal GetSignalDto(string property)
-        {
-            var faker = new Faker("en");
-            var meta = new Dictionary<string, string>
-            {
-                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
-                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
-            };
-
-            return new Signal() { Property = property, ValueType = SignalV2.Numeric, Attributes = meta };
         }
     }
 }
