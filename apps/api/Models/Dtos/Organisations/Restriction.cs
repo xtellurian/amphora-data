@@ -13,7 +13,10 @@ namespace Amphora.Api.Models.Dtos.Organisations
             Kind = kind;
         }
 
+        [Description("The kind of Restriction (Allow [default] or Deny)")]
+        [Display(Name = "Restriction Scope")]
         public RestrictionKind? Kind { get; set; }
+
         [Description("Target Organisation's Id")]
         [Display(Name = "Target's Organisation Id")]
         public string TargetOrganisationId { get; set; }
