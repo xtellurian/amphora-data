@@ -98,7 +98,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     if (result.Succeeded)
                     {
                         var amphora = result.Entity;
-                        var newSignal = new SignalV2(signal.Property, signal.ValueType);
+                        var newSignal = new SignalV2(signal.Property, signal.ValueType, signal.Attributes);
                         string message;
                         if (amphora.TryAddSignal(newSignal, out message))
                         {

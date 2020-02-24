@@ -49,11 +49,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             {
                 if (Amphora != null)
                 {
-                    var signal = new SignalV2(Signal.Property, Signal.ValueType);
-
                     this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
                     var dic = this.Meta?.ToChildDictionary();
-                    signal.Attributes = new Common.Models.Amphorae.AttributeStore(dic);
+                    var signal = new SignalV2(Signal.Property, Signal.ValueType, dic);
                     string message;
                     if (Amphora.TryAddSignal(signal, out message))
                     {
