@@ -27,8 +27,17 @@ namespace Amphora.Api.Stores.EFCore
                 logger.LogInformation($"Creating Database {cosmos.CurrentValue.Database}");
                 using (var cosmosClient = new CosmosClient(cosmos.CurrentValue.Endpoint, cosmos.CurrentValue.PrimaryKey))
                 {
-                    var db = await cosmosClient.CreateDatabaseIfNotExistsAsync(cosmos.CurrentValue.Database, 400);
-                    db.Database.CreateContainerIfNotExistsAsync(containerName, "/__partitionKey").Wait();
+                    try
+                    {
+                        var db = await cosmosClient.CreateDatabaseIfNotExistsAsync(cosmos.CurrentValue.Database, 400);
+                        logger.LogInformation($"Created Cosmos Database Id: {db.Database.Id}");
+                        var c = await db.Database.CreateContainerIfNotExistsAsync(containerName, "/__partitionKey");
+                        logger.LogInformation($"Created Cosmos Container Id: {c.Container.Id}");
+                    }
+                    catch (CosmosException cEx)
+                    {
+                        logger.LogCritical("Error creating Cosmos container", cEx);
+                    }
                 }
             }
             else
