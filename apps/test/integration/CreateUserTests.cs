@@ -75,10 +75,19 @@ namespace Amphora.Tests.Integration
             };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
+            // flaky
             var response = await client.PostAsync("api/users", content);
-            var password = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // wait 0.5 seconds and retry due to flakiness
+                response = await client.PostAsync("api/users", content);
+            }
 
             await AssertHttpSuccess(response);
+
+            var password = await response.Content.ReadAsStringAsync();
+
             var loginRequest = new TokenRequest()
             {
                 Password = password,
