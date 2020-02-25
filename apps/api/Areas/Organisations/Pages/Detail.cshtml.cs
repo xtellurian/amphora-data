@@ -35,6 +35,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public OrganisationModel Organisation { get; set; }
         public bool CanEdit { get; private set; }
+        public bool CanRequestToJoin { get; private set; }
         public bool CanRestrict { get; private set; }
         public bool CanInvite { get; private set; }
         public bool IsInOrg { get; private set; }
@@ -61,6 +62,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
             this.CanRestrict = CanEdit;
             this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
+            this.CanRequestToJoin = user.OrganisationId == null;
             // get pinned
             var query = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == Organisation.Id);
             this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull()

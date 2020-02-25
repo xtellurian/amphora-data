@@ -35,9 +35,12 @@
                         <a class="btn btn-danger btn-block mb-3 mx-auto" asp-route-targetOrganisationId="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Create">
                             Restrict @Model.Organisation.Name 
                         </a>
-                        <a class="btn btn-success btn-block mb-3 mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="RequestToJoin">
-                            Request to Join
-                        </a>
+                        @if(Model.CanRequestToJoin)
+                        {
+                            <a class="btn btn-success btn-block mb-3 mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="RequestToJoin">
+                                Request to Join
+                            </a>
+                        }
                     }
                     <hr>
                     <span style="white-space: pre-line">@Model.Organisation.About</span>
