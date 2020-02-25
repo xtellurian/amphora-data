@@ -17,7 +17,7 @@ namespace Amphora.Tests.Helpers
             var a = new Faker<DetailedAmphora>()
                .StrictMode(false)
                .RuleFor(o => o.OrganisationId, f => orgId)
-               .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(5)))
+               .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(4)))
                .RuleFor(o => o.Name, f => testName ?? f.Random.String2(1, 10))
                .RuleFor(o => o.Description, f => f.Lorem.Sentences())
                .RuleFor(o => o.Price, f => f.Random.Number(0, 99))
