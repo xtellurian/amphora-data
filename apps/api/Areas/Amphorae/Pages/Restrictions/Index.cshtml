@@ -8,11 +8,16 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-8">
-            <h2>@Model.Amphora.Name</h2> <h3>Restrictions</h3>
+            <h2>Restrictions applied to this Amphora</h2>
+            <h4> 
+                <a asp-page="/Detail" asp-area="Amphorae" asp-route-id="@Model.Amphora.Id">
+                    @Model.Amphora.Name 
+                </a>
+            </h4> 
         </div>
         <div class="col-sm-4 text-right">
             <a class="btn btn-primary" asp-page="./Create" asp-route-id="@Model.Amphora.Id">
-                Create Restriction
+                Restrict an Organisation
             </a>
             <a class="btn btn-secondary" asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Amphora.Id">
                 Amphora

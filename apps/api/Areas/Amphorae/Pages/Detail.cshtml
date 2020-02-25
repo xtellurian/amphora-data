@@ -147,7 +147,7 @@
 
                             <span class="dropdown show">
                                 <a class="btn btn-sm btn-link dropdown-toggle" href="#" role="button" id="pinActionLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Options <i class="fas fa-ellipsis-v"></i>
+                                    Options <i class="ml-1 fas fa-ellipsis-v"></i>
                                 </a>
 
                                 <div class="dropdown-menu" aria-labelledby="pinActionLink">
@@ -160,7 +160,7 @@
                                             <i class="fas fa-users"></i> Show has purchased
                                         </button>
                                         <a class="dropdown-item btn btn-link" asp-page="Restrictions/Index" asp-route-id="@Model.Amphora.Id">
-                                            <i class="fas fa-ban"></i> Restrictions
+                                            <i class="fas fa-ban"></i> Restricted Organisations
                                         </a>
                                     }
                                     @if(Model.Result.User?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
