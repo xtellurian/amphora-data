@@ -40,6 +40,7 @@ namespace Amphora.Api.Models
         {
             Entity = entity;
             Succeeded = true;
+            this.Code = 200;
         }
 
         public T Entity { get; }
