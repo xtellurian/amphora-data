@@ -159,6 +159,9 @@
                                         <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
                                             <i class="fas fa-users"></i> Show has purchased
                                         </button>
+                                        <a class="dropdown-item btn btn-link" asp-page="Restrictions/Index" asp-route-id="@Model.Amphora.Id">
+                                            <i class="fas fa-ban"></i> Restrictions
+                                        </a>
                                     }
                                     @if(Model.Result.User?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
                                     {

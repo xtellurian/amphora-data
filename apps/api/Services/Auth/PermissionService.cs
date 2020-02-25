@@ -116,15 +116,18 @@ namespace Amphora.Api.Services.Auth
             if (accessLevel >= AccessLevels.Purchase)
             {
                 var isOrgRestricted = amphora.Organisation.Restrictions != null &&
-                    amphora.Organisation.Restrictions.Any(_ => _.TargetOrganisationId == user.OrganisationId && _.Kind == RestrictionKind.Deny);
+                    amphora.Organisation.Restrictions.Any(_ =>
+                        _.TargetOrganisationId == user.OrganisationId &&
+                        _.Scope == RestrictionScope.Organisation &&
+                        _.Kind == RestrictionKind.Deny);
 
                 var isAmphoraRestricted = !isOrgRestricted &&
                     amphora.Organisation.Restrictions != null &&
                     amphora.Organisation.Restrictions.Any(_ =>
-                    _.TargetOrganisationId == user.OrganisationId &&
-                    _.Kind == RestrictionKind.Deny &&
-                    _.Scope == RestrictionScope.Amphora &&
-                    _.SourceAmphoraId == amphora.Id);
+                        _.TargetOrganisationId == user.OrganisationId &&
+                        _.Kind == RestrictionKind.Deny &&
+                        _.Scope == RestrictionScope.Amphora &&
+                        _.SourceAmphoraId == amphora.Id);
 
                 return isOrgRestricted || isAmphoraRestricted;
             }

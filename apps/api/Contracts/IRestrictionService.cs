@@ -7,6 +7,8 @@ namespace Amphora.Api.Contracts
 {
     public interface IRestrictionService
     {
+        IEntityStore<RestrictionModel> Store { get; }
+
         Task<EntityOperationResult<RestrictionModel>> CreateAsync(ClaimsPrincipal principal, RestrictionModel restriction);
         Task<EntityOperationResult<RestrictionModel>> DeleteAsync(ClaimsPrincipal principal, string restrictionId);
     }

@@ -2,13 +2,13 @@
 @model Amphora.Api.Areas.Organisations.Pages.Restrictions.IndexModel
 
 @{
-    ViewData["Title"] = "Restrictions";
+    ViewData["Title"] = "Organisation Restrictions";
 }
 
 <div class="container">
-    <div class="row">
+    <div class="row mb-2">
         <div class="col">
-            <h2>Restrictions</h2>
+            <h2>Organisational Restrictions</h2>
             <hr/>
             <a class="btn btn-primary float-right" asp-page="./Create" asp-route-id="@Model.Organisation.Id">Create New</a>
             <p>Explicitly deny or allow other organisations permission to buy & access your Amphora.</p>
@@ -16,37 +16,11 @@
     </div>
     <div class="row">
         <div class="col">
-            <table id="entity-table" class="table table-borderless table-striped">
-                <thead>
-                    <tr class="row">
-                        <th class="col-2"></th>
-                        <th class="col-6">Organisation</th>
-                        <th class="d-none d-sm-block col-sm-2 text-right">Restriction</th>
-                        <th class="col-sm-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var entity in Model.Organisation.Restrictions)
-                    {
-                        <tr class="row align-items-center entity-item">
-                            <th class="col-2">
-                                <i class="fas fa-user-friends mr-1">
-                            </th>
-                            <td class="col-6">
-                                <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@entity.TargetOrganisationId">
-                                    @entity.TargetOrganisation.Name 
-                                </a>
-                            </td>
-                            <td class="d-none d-sm-block col-sm-2 text-right">
-                                @entity.Kind 
-                            </td>
-                            <td class="col-sm-2"> 
-                                <a asp-page="./Delete" asp-route-id="@Model.Organisation.Id" asp-route-targetOrganisationId="@entity.TargetOrganisationId" class="btn btn-link text-danger"><i class="fas fa-times-circle"></i></a> 
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            @{var index = 0; }
+            @foreach (var r in Model.Organisation.Restrictions)
+            {
+                @await Component.InvokeAsync("RestrictionRow", new {restriction = r, index = index++})
+            }
         </div>
     </div>
 </div>

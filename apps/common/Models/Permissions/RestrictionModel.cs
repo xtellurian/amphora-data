@@ -14,12 +14,6 @@ namespace Amphora.Common.Models.Permissions
             TargetOrganisation = null!;
         }
 
-        public RestrictionModel(string targetOrganisationId)
-        {
-            TargetOrganisationId = targetOrganisationId;
-            TargetOrganisation = null!;
-        }
-
         public RestrictionModel(OrganisationModel sourceOrganisation, OrganisationModel targetOrganisation, RestrictionKind? kind = RestrictionKind.Deny)
         {
             TargetOrganisationId = targetOrganisation.Id;
@@ -36,15 +30,11 @@ namespace Amphora.Common.Models.Permissions
             TargetOrganisation = targetOrganisation;
             SourceOrganisation = amphoraToRestrict.Organisation;
             SourceOrganisationId = amphoraToRestrict.OrganisationId;
+            SourceAmphora = amphoraToRestrict;
+            SourceAmphoraId = amphoraToRestrict.Id;
             Kind = kind;
             Scope = RestrictionScope.Amphora;
         }
-
-        /// <summary>
-        /// Gets or sets this restriction applies to all organisations.
-        /// TargetOrganisationId is ignored.
-        /// </summary>
-        public bool? AllOrganisations { get; set; }
 
         /// <summary>
         /// Gets or sets the kind of restriction, Allow or Deny

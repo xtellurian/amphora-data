@@ -33,6 +33,31 @@ namespace Amphora.Api.Services.Auth
 
             using (logger.BeginScope(new LoggerScope<PermissionService>(user)))
             {
+                if (restriction.SourceOrganisationId == restriction.TargetOrganisationId)
+                {
+                    return new EntityOperationResult<RestrictionModel>(user, 400, "You cannot restrict your own organisation");
+                }
+
+                // prevent duplication targetting org
+                if (restriction.Scope == RestrictionScope.Organisation)
+                {
+                    if (await Store.CountAsync(_ => _.TargetOrganisationId == restriction.TargetOrganisationId &&
+                        _.Scope == RestrictionScope.Organisation) > 0)
+                    {
+                        return new EntityOperationResult<RestrictionModel>(user, 409, "Restriction already exists");
+                    }
+                }
+                else if (restriction.Scope == RestrictionScope.Amphora)
+                {
+                    // prevent duplication at Amphora level
+                    if (await Store.CountAsync(_ => _.TargetOrganisationId == restriction.TargetOrganisationId &&
+                        _.Scope == RestrictionScope.Amphora &&
+                        _.SourceAmphoraId == restriction.SourceAmphoraId) > 0)
+                    {
+                        return new EntityOperationResult<RestrictionModel>(user, 409, "Restriction already exists");
+                    }
+                }
+
                 if (restriction.SourceAmphoraId != null)
                 {
                     // create restriciton on an Amphora

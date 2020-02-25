@@ -21,6 +21,7 @@ namespace Amphora.Api.Models.Dtos.Permissions
 
         [Description("Target Organisation's Id")]
         [Display(Name = "Target's Organisation Id")]
+        [Required]
         public string TargetOrganisationId { get; set; }
     }
 }
