@@ -8,7 +8,7 @@ namespace Amphora.Tests.Helpers
         private readonly Random _random = new Random();
         private readonly byte[] _seedBuffer;
 
-        public RandomGenerator(int maxBufferSize)
+        public RandomGenerator(int maxBufferSize = 1024)
         {
             _seedBuffer = new byte[maxBufferSize];
 
