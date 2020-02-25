@@ -51,8 +51,7 @@ namespace Amphora.Tests.Unit.Purchasing
                 EmailConfirmed = false
             };
 
-            var amphora = EntityLibrary.GetAmphoraModel(otherOrg);
-            amphora.Id = System.Guid.NewGuid().ToString();
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(otherOrg));
             var mockEmailSender = new Mock<IEmailSender>();
             var logger = CreateMockLogger<PurchaseService>();
 
