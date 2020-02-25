@@ -82,7 +82,7 @@ namespace Amphora.Tests.Helpers
                .StrictMode(false)
                .RuleFor(o => o.Name, f => f.Company.CompanyName())
                .RuleFor(o => o.About, f => testName + f.Lorem.Sentences())
-               .RuleFor(o => o.WebsiteUrl, f => f.Internet.Url().Replace("https://", "https://" + random.RandomString(3)))
+               .RuleFor(o => o.WebsiteUrl, f => $"https://{random.RandomString(12)}.com")
                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
             return org.Generate();
