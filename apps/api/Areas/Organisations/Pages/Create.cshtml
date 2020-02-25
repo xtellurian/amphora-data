@@ -101,12 +101,16 @@
 @section Scripts {
     <partial name="_AutocompleteImportPartial" />
     <script src="~/js/geo.js"></script>
-    <script src="~/js/orgCreateAutocomplete.js"></script>
+    <script src="~/js/organisationsAutocomplete.js"></script>
     <script>
         const url = '/Market/LocationSearch';
         autocompleteGeoSearch(null, url)
     </script>
     <script>
-        orgCreateAutocomplete("orgNameInput", "orgNameInput_results_list", "orgListDestination", "/api/search/organisations")
+        let onSelection =  (feedback) => {
+             const orgId = feedback.selection.value.id;
+             window.location.href = `/Organisations/RequestToJoin?id=${orgId}`
+        }
+        organisationsAutocomplete("orgNameInput", "orgNameInput_results_list", "orgListDestination", "/api/search/organisations", onSelection )
     </script>
 }
