@@ -3,12 +3,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Services.Amphorae;
-using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Amphora.Common.Models.Signals;
-using Amphora.Common.Services.Azure;
 using Moq;
 using Xunit;
 

@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Amphora.Common.Models.Permissions;
 
-namespace Amphora.Api.Models.Dtos.Organisations
+namespace Amphora.Api.Models.Dtos.Permissions
 {
     public class Restriction
     {
@@ -12,6 +12,8 @@ namespace Amphora.Api.Models.Dtos.Organisations
             TargetOrganisationId = targetOrganisationId;
             Kind = kind;
         }
+
+        public string Id { get; set; }
 
         [Description("The kind of Restriction (Allow [default] or Deny)")]
         [Display(Name = "Restriction Scope")]

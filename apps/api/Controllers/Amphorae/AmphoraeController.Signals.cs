@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;

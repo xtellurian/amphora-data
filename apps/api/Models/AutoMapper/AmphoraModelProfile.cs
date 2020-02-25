@@ -27,6 +27,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.OrganisationId, p => p.Ignore())
                 .ForMember(o => o.TermsAndConditions, p => p.Ignore())
                 .ForMember(o => o.FileAttributes, p => p.Ignore())
+                .ForMember(o => o.Restrictions, p => p.Ignore())
                 .ForMember(o => o.V2Signals, p => p.Ignore())
                 .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
                 .ForMember(o => o.Purchases, p => p.Ignore())

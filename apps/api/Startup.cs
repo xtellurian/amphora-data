@@ -4,6 +4,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services;
 using Amphora.Api.Services.Amphorae;
+using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.Events;
@@ -115,6 +116,7 @@ namespace Amphora.Api
             services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
+            services.AddTransient<IRestrictionService, RestrictionService>();
 
             // external services
             services.Configure<GitHub.Configuration>(Configuration.GetSection("GitHubOptions"));

@@ -27,7 +27,7 @@ namespace Amphora.Api.EntityFramework.TypeConfiguration
                 a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);
                 a.HasOne(b => b.TermsAndConditionsOrganisation).WithMany().HasForeignKey(b => b.TermsAndConditionsOrganisationId);
                 a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
-                });
+            });
             // Pinned Amphorae
             builder.OwnsOne(_ => _.PinnedAmphorae, p =>
             {
@@ -38,6 +38,8 @@ namespace Amphora.Api.EntityFramework.TypeConfiguration
                 p.HasOne(_ => _.Amphora5).WithMany().HasForeignKey(_ => _.AmphoraId5);
                 p.HasOne(_ => _.Amphora6).WithMany().HasForeignKey(_ => _.AmphoraId6);
             });
+            // restrictions
+            builder.HasMany(_ => _.Restrictions).WithOne(_ => _.SourceOrganisation).HasForeignKey(_ => _.SourceOrganisationId);
             // configuration
             builder.OwnsOne(_ => _.Configuration, configuration =>
             {

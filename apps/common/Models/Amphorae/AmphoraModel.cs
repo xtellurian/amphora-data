@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Models.Signals;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 
@@ -57,6 +57,7 @@ namespace Amphora.Common.Models.Amphorae
         public string? CreatedById { get; set; }
         public virtual ApplicationUser? CreatedBy { get; set; }
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
+        public virtual ICollection<RestrictionModel> Restrictions { get; set; } = new Collection<RestrictionModel>();
         public string? TermsAndConditionsId { get; set; }
         public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
 

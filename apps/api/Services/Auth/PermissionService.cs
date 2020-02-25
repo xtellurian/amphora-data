@@ -86,7 +86,7 @@ namespace Amphora.Api.Services.Auth
                     return true;
                 }
 
-                if (IsRestricted(user, org, accessLevel))
+                if (IsRestricted(user, entity, accessLevel))
                 {
                     logger.LogInformation($"{user.UserName} is restricted on Amphora {entity.Id}");
                     return false;
@@ -111,11 +111,22 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        private bool IsRestricted(IUser user, OrganisationModel organisation, AccessLevels accessLevel)
+        private bool IsRestricted(IUser user, AmphoraModel amphora, AccessLevels accessLevel)
         {
             if (accessLevel >= AccessLevels.Purchase)
             {
-                return organisation.Restrictions.Any(_ => _.TargetOrganisationId == user.OrganisationId && _.Kind == RestrictionKind.Deny);
+                var isOrgRestricted = amphora.Organisation.Restrictions != null &&
+                    amphora.Organisation.Restrictions.Any(_ => _.TargetOrganisationId == user.OrganisationId && _.Kind == RestrictionKind.Deny);
+
+                var isAmphoraRestricted = !isOrgRestricted &&
+                    amphora.Organisation.Restrictions != null &&
+                    amphora.Organisation.Restrictions.Any(_ =>
+                    _.TargetOrganisationId == user.OrganisationId &&
+                    _.Kind == RestrictionKind.Deny &&
+                    _.Scope == RestrictionScope.Amphora &&
+                    _.SourceAmphoraId == amphora.Id);
+
+                return isOrgRestricted || isAmphoraRestricted;
             }
             else
             {
