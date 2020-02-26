@@ -5,6 +5,7 @@ import { CONSTANTS, IComponentParams } from "../../components";
 import { Monitoring } from "../monitoring/monitoring";
 import { Network } from "../network/network";
 import { State } from "../state/state";
+import { Aks } from "./aks/aks";
 import { AppSvc } from "./appSvc/appSvc";
 import { AzureMaps } from "./maps/azure-maps";
 import { AzureSearch } from "./search/azure-search";
@@ -71,6 +72,7 @@ export class Application extends pulumi.ComponentResource
 
     this.createAzureMaps(rg);
     this.createTsi();
+    this.createAks(rg);
 
     const searchRg = new azure.core.ResourceGroup(searchRgName,
       {
@@ -79,6 +81,17 @@ export class Application extends pulumi.ComponentResource
       }, { parent: this });
 
     this.createSearch(searchRg);
+  }
+
+  private createAks(rg: azure.core.ResourceGroup) {
+    const aks = new Aks("aksComponent", {
+      acr: this.acr,
+      kv: this.state.kv,
+      monitoring: this.monitoring,
+      network: this.network,
+      rg,
+      state: this.state,
+    }, { parent: this });
   }
 
   private createSearch(rg: azure.core.ResourceGroup) {
