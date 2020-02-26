@@ -63,10 +63,11 @@ export class AppSvc extends pulumi.ComponentResource {
         });
     }
 
-    private createPlan(rg: azure.core.ResourceGroup,
-                       kv: azure.keyvault.KeyVault,
-                       acr: azure.containerservice.Registry,
-                       plan: IAppServicePlanConfig) {
+    private createPlan(
+        rg: azure.core.ResourceGroup,
+        kv: azure.keyvault.KeyVault,
+        acr: azure.containerservice.Registry,
+        plan: IAppServicePlanConfig) {
         const appSvcPlan = new azure.appservice.Plan(
             plan.name + "Plan",
             {
@@ -139,8 +140,7 @@ export class AppSvc extends pulumi.ComponentResource {
                 resourceGroupName: rg.name,
                 siteConfig,
                 tags,
-            },
-            {
+            }, {
                 ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
                 parent: rg,
             });
@@ -152,7 +152,7 @@ export class AppSvc extends pulumi.ComponentResource {
         if (appSvcStaging) {
             this.accessPolicyKeyVault(plan.name + "StagingAccess", this.params.state.kv, appSvcStaging);
         }
-        this.apps.push({name: plan.name, appSvc, appSvcStaging});
+        this.apps.push({ name: plan.name, appSvc, appSvcStaging });
     }
 
     private accessPolicyKeyVault(
