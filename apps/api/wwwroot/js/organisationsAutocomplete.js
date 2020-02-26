@@ -1,4 +1,4 @@
-function orgCreateAutocomplete(elementId, resultsId, destinationId, url) {
+function organisationsAutocomplete(elementId, resultsId, destinationId, url, onSelectionCallback) {
     if (!destinationId) {
         destinationId = elementId;
     }
@@ -65,9 +65,10 @@ function orgCreateAutocomplete(elementId, resultsId, destinationId, url) {
             result.innerHTML = "We can't find any existing organisations matching that name.";
             document.querySelector(`#${resultsId}`).appendChild(result);
         },
-        onSelection: function (feedback) {
-            const orgId = feedback.selection.value.id;
-            window.location.href = `/Organisations/RequestToJoin?id=${orgId}`
-        },
+        onSelection: onSelectionCallback,
+        // onSelection: function (feedback) {
+        //     const orgId = feedback.selection.value.id;
+        //     window.location.href = `/Organisations/RequestToJoin?id=${orgId}`
+        // },
     });
 }

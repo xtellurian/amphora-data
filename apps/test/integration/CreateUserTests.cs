@@ -41,7 +41,7 @@ namespace Amphora.Tests.Integration
             var password = await response.Content.ReadAsStringAsync();
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             // can log in
             var loginRequest = new TokenRequest()
             {
@@ -50,13 +50,13 @@ namespace Amphora.Tests.Integration
             };
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
-            loginResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(loginResponse);
 
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             // now delete
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
-            deleteRequest.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(deleteRequest);
         }
 
         [Fact]
@@ -75,10 +75,19 @@ namespace Amphora.Tests.Integration
             };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
+            // flaky
             var response = await client.PostAsync("api/users", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // wait 0.5 seconds and retry due to flakiness
+                response = await client.PostAsync("api/users", content);
+            }
+
+            await AssertHttpSuccess(response);
+
             var password = await response.Content.ReadAsStringAsync();
 
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
             var loginRequest = new TokenRequest()
             {
                 Password = password,
@@ -86,7 +95,7 @@ namespace Amphora.Tests.Integration
             };
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
-            loginResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(loginResponse);
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -100,7 +109,7 @@ namespace Amphora.Tests.Integration
             await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
             // now delete user
             var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
-            deleteRequest.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(deleteRequest);
         }
     }
 }

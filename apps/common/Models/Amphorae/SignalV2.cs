@@ -24,6 +24,12 @@ namespace Amphora.Common.Models.Amphorae
             }
         }
 
+        public SignalV2(string property, string valueType, IDictionary<string, string> attributes) : this(property, valueType)
+        {
+            this.Attributes ??= new AttributeStore();
+            this.Attributes.Attributes = attributes;
+        }
+
         public string? UUID { get; set; } // workaround the fact that entities owned by different parents can have same Id
         public string Id { get; set; }
         public string Property { get; set; }

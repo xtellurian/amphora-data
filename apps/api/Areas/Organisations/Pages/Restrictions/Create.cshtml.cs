@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Permissions;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +13,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
     public class CreateModel : PageModel
     {
         private readonly IOrganisationService organisationService;
+        private readonly IRestrictionService restrictionService;
 
-        public CreateModel(IOrganisationService organisationService)
+        public CreateModel(IOrganisationService organisationService, IRestrictionService restrictionService)
         {
             this.organisationService = organisationService;
+            this.restrictionService = restrictionService;
         }
 
         public SelectList Kinds = Selectlists.EnumSelectlist<RestrictionKind>(true);
@@ -48,35 +50,26 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
             if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
-                if (!await IsTargetReal())
+                var targetOrg = await organisationService.Store.ReadAsync(NewRestriction.TargetOrganisationId);
+                if (targetOrg == null)
                 {
                     ModelState.AddModelError(string.Empty, "Organisation with that Id doesn't exist");
                     return Page();
                 }
 
-                var restriction = new RestrictionModel(NewRestriction.TargetOrganisationId)
-                {
-                    Kind = NewRestriction.Kind,
-                    SourceOrganisationId = Organisation.Id
-                };
-                this.Organisation.Restrictions.Add(restriction);
-                var updateRes = await organisationService.UpdateAsync(User, Organisation);
-                if (updateRes.Succeeded) { return RedirectToPage("./Index", new { Id = Organisation.Id }); }
-                else if (updateRes.WasForbidden) { return StatusCode(403); }
+                var restriction = new RestrictionModel(readRes.Entity, targetOrg, NewRestriction.Kind);
+
+                var createRes = await restrictionService.CreateAsync(User, restriction);
+                if (createRes.Succeeded) { return RedirectToPage("./Index", new { Id = Organisation.Id }); }
+                else if (createRes.WasForbidden) { return StatusCode(403); }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, updateRes.Message);
+                    ModelState.AddModelError(string.Empty, createRes.Message);
                     return Page();
                 }
             }
             else if (readRes.WasForbidden) { return StatusCode(403); }
             else { return RedirectToPage("/Detail", new { Area = "Organisations", Id = id }); }
-        }
-
-        private async Task<bool> IsTargetReal()
-        {
-            var org = await organisationService.Store.ReadAsync(NewRestriction.TargetOrganisationId);
-            return org != null;
         }
     }
 }

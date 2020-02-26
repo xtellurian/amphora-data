@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos;
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Permissions;
 using Amphora.Common.Models.Permissions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 

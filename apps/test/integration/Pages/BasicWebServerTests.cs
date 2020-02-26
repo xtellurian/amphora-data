@@ -35,7 +35,7 @@ namespace Amphora.Tests.Integration.Pages
             var response = await client.GetAsync(url);
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
@@ -63,7 +63,7 @@ namespace Amphora.Tests.Integration.Pages
             var response = await client.GetAsync(url);
 
             // Assert
-            Assert.True(response.IsSuccessStatusCode);
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
@@ -89,10 +89,10 @@ namespace Amphora.Tests.Integration.Pages
             var otherResponse = await otherClient.GetAsync($"{url}?id={org.Id}&tncId={tnc.Id}");
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
-            otherResponse.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(otherResponse);
             Assert.Equal("text/html; charset=utf-8",
                 otherResponse.Content.Headers.ContentType.ToString());
         }

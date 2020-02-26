@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var amphora = EntityLibrary.GetAmphoraDto(adminOrg.Id);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", amphora);
             var createContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
@@ -39,7 +39,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var signalDto = EntityLibrary.GetSignalDto(property);
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{amphora.Id}/signals", signalDto);
             var responseContent = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             var createdSignal = JsonConvert.DeserializeObject<Signal>(responseContent);
             Assert.NotNull(createdSignal);
             Assert.NotNull(createdSignal.Id);
@@ -50,7 +50,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // check we can get the signal from the API
             var signalsResponse = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/signals");
             var listContent = await signalsResponse.Content.ReadAsStringAsync();
-            signalsResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(signalsResponse);
             var signals = JsonConvert.DeserializeObject<List<Signal>>(listContent);
             Assert.NotNull(signals);
             Assert.NotEmpty(signals);
@@ -68,7 +68,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
@@ -91,7 +91,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
@@ -113,7 +113,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // create a signal
@@ -122,7 +122,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var signal = EntityLibrary.GetSignalDto(property.ToLower());
             var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signal);
             var responseContent = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             signal = JsonConvert.DeserializeObject<Signal>(responseContent);
 
             // set some metadata on the updated signal
@@ -134,7 +134,7 @@ namespace Amphora.Tests.Integration.Amphorae
             };
 
             var updateRes = await adminClient.PutAsJsonAsync($"api/amphorae/{dto.Id}/signals/{signal.Id}", new UpdateSignal(updatedMetadata));
-            Assert.True(updateRes.IsSuccessStatusCode);
+            await AssertHttpSuccess(updateRes);
 
             var content = await updateRes.Content.ReadAsStringAsync();
             signal = JsonConvert.DeserializeObject<Signal>(content);

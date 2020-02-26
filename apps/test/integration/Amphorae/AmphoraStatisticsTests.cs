@@ -25,13 +25,13 @@ namespace Amphora.Tests.Integration.Amphorae
             var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             var createContent = await createResponse.Content.ReadAsStringAsync();
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
 
             // Assert
             var otherClient = _factory.CreateClient(); // get a non-auth'd client
             var res = await otherClient.GetAsync("api/amphoraeStats/count");
             var content = await res.Content.ReadAsStringAsync();
-            res.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(res);
             var count = int.Parse(content);
             Assert.True(count >= 1); // there might be other tests running so count >> 1
         }

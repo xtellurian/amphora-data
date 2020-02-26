@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration
                 var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(TopAndSkip));
                 var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", a);
                 var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-                createResponse.EnsureSuccessStatusCode();
+                await AssertHttpSuccess(createResponse);
                 a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
                 amphorae.Add(a);
                 i++;
@@ -46,7 +46,7 @@ namespace Amphora.Tests.Integration
                 indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
             }
 
-            indexRes.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(indexRes);
             // how do we get this to index first?
             var top = 2;
             var k = 0;

@@ -5,13 +5,10 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class SwaggerGenTests
+    public class SwaggerGenTests : IntegrationTestBase
     {
-        private readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
-
-        public SwaggerGenTests(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public SwaggerGenTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
-            _factory = factory;
         }
 
         [Fact]
@@ -24,7 +21,7 @@ namespace Amphora.Tests.Integration
             var response = await client.GetAsync("/swagger/v1/swagger.json");
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }

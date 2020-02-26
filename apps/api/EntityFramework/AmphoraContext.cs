@@ -24,17 +24,6 @@ namespace Amphora.Api.EntityFramework
 
             modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<RestrictionModel>(b =>
-            {
-                b.HasKey(_ => new
-                {
-                    Source = _.SourceOrganisationId,
-                    Target = _.TargetOrganisationId
-                });
-                b.HasOne(_ => _.SourceOrganisation).WithMany(_ => _.Restrictions).HasForeignKey(_ => _.SourceOrganisationId);
-                b.HasOne(_ => _.TargetOrganisation).WithMany().HasForeignKey(_ => _.TargetOrganisationId);
-            });
-
             modelBuilder.Entity<PurchaseModel>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
@@ -64,5 +53,6 @@ namespace Amphora.Api.EntityFramework
         public DbSet<PurchaseModel> Purchases { get; set; }
         public DbSet<CommissionModel> Commissions { get; set; }
         public DbSet<InvitationModel> Invitations { get; set; }
+        public DbSet<RestrictionModel> Restrictions { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace Amphora.Tests.Helpers
             var a = new Faker<DetailedAmphora>()
                .StrictMode(false)
                .RuleFor(o => o.OrganisationId, f => orgId)
-               .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(5)))
+               .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(4)))
                .RuleFor(o => o.Name, f => testName ?? f.Random.String2(1, 10))
                .RuleFor(o => o.Description, f => f.Lorem.Sentences())
                .RuleFor(o => o.Price, f => f.Random.Number(0, 99))
@@ -51,10 +51,19 @@ namespace Amphora.Tests.Helpers
         public static Signal GetSignalDto(string property = null, string valueType = "Numeric")
         {
             property ??= "a" + Guid.NewGuid().ToString().Replace("-", "");
+            var faker = new Faker("en");
+            var meta = new Dictionary<string, string>
+            {
+                { "units", "mm" },
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
+            };
+
             return new Signal
             {
                 Property = property,
-                ValueType = valueType
+                ValueType = valueType,
+                Attributes = meta
             };
         }
 
@@ -68,11 +77,12 @@ namespace Amphora.Tests.Helpers
 
         public static Organisation GetOrganisationDto([CallerMemberName] string testName = "")
         {
+            var random = new RandomGenerator();
             var org = new Faker<Organisation>()
                .StrictMode(false)
                .RuleFor(o => o.Name, f => f.Company.CompanyName())
                .RuleFor(o => o.About, f => testName + f.Lorem.Sentences())
-               .RuleFor(o => o.WebsiteUrl, f => f.Internet.Url())
+               .RuleFor(o => o.WebsiteUrl, f => $"https://{random.RandomString(12)}.com")
                .RuleFor(o => o.Address, f => f.Address.FullAddress());
 
             return org.Generate();
@@ -93,18 +103,6 @@ namespace Amphora.Tests.Helpers
         public static SignalV2 GetV2Signal([CallerMemberName] string testName = "")
         {
             return new SignalV2(testName, SignalV2.Numeric);
-        }
-
-        public static Signal GetSignalDto(string property)
-        {
-            var faker = new Faker("en");
-            var meta = new Dictionary<string, string>
-            {
-                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
-                { Guid.NewGuid().ToString(), faker.Hacker.Phrase() },
-            };
-
-            return new Signal() { Property = property, ValueType = SignalV2.Numeric, Attributes = meta };
         }
     }
 }

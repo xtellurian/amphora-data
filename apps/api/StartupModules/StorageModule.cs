@@ -10,6 +10,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -107,6 +108,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
+            services.AddScoped<IEntityStore<RestrictionModel>, RestrictionsEFStore>();
             // services.AddScoped<IEntityStore<SignalModel>, SignalsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUser>, ApplicationUserStore>();
 

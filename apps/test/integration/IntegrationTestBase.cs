@@ -7,6 +7,7 @@ using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
 
 namespace Amphora.Tests.Integration
 {
@@ -49,6 +50,11 @@ namespace Amphora.Tests.Integration
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
             return (client, user, org);
+        }
+
+        protected async Task AssertHttpSuccess(HttpResponseMessage response)
+        {
+            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
         }
 
         protected async Task DestroyAmphoraAsync(HttpClient client, string id)

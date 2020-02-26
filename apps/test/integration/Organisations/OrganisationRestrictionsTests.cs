@@ -1,6 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Permissions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -8,9 +8,9 @@ using Xunit;
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(IntegrationFixtureCollection))]
-    public class RestrictionsCRUDTests : IntegrationTestBase
+    public class OrganisationRestrictionsTests : IntegrationTestBase
     {
-        public RestrictionsCRUDTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
+        public OrganisationRestrictionsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -26,14 +26,14 @@ namespace Amphora.Tests.Integration.Organisations
 
             var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Restrictions", restriction);
             var contents = await result.Content.ReadAsStringAsync();
-            result.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(result);
 
             var dto = JsonConvert.DeserializeObject<Restriction>(contents);
             Assert.Equal(restriction.TargetOrganisationId, dto.TargetOrganisationId);
             Assert.Equal(restriction.Kind, dto.Kind);
 
             var response = await adminClient.DeleteAsync($"api/Organisations/{adminOrg.Id}/Restrictions/{restriction.TargetOrganisationId}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
         }
     }
 }

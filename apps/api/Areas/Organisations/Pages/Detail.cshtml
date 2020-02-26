@@ -17,29 +17,43 @@
                         <strong>@Model.Organisation.Name</strong>
                     </div>
                     <div class="w-100 mb-1">
+                        <span class="dropdown show float-right">
+                            <a class="text-right btn btn-sm btn-link dropdown-toggle" href="#" role="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Options <i class="ml-1 fas fa-ellipsis-v"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="actionsButton">
+                                <a class="dropdown-item btn btn-light btn-block mr-1 mx-auto" asp-page="./TermsAndConditions/Index" asp-route-id="@Model.Organisation.Id">
+                                    <i class="fas fa-file-contract"></i>
+                                    Terms and Conditions Library
+                                </a>
+                                @if (Model.CanInvite)
+                                {
+                                    <a class="dropdown-item btn btn-light btn-block mx-auto" asp-area="Organisations" asp-page="./Invite">
+                                        <i class="fas fa-user-plus"></i> Invite
+                                    </a>
+                                    <a class="dropdown-item btn btn-light btn-block mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Index"> 
+                                        <i class="fas fa-ban"></i> Restrictions
+                                    </a>
+                                }
+                                else if(! Model.IsInOrg)
+                                {
+                                    <a class="dropdown-item btn btn-danger btn-block mx-auto" asp-route-targetOrganisationId="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Create">
+                                        <i class="fas fa-ban"></i> Restrict @Model.Organisation.Name 
+                                    </a>
+                                }
+                            </div>
+                        </span>
                         <small>@Model.Organisation.Id</small>
                     </div>
-                    <hr>
-
-                    <a class="btn btn-light btn-block mb-3 mx-auto" asp-page="./TermsAndConditions/Index" asp-route-id="@Model.Organisation.Id">
-                        Terms and Conditions Library
-                    </a>
+                    <hr/>
                     
-                    @if (Model.CanInvite)
+                    @if(Model.CanRequestToJoin)
                     {
-                        <a class="btn btn-light btn-block mb-3 mx-auto" asp-area="Organisations" asp-page="./Invite"> Invite</a>
-                        <a class="btn btn-light btn-block mb-3 mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Index"> Restrictions </a>
-                    }
-                    @if(! Model.IsInOrg)
-                    {
-                        <a class="btn btn-danger btn-block mb-3 mx-auto" asp-route-targetOrganisationId="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Create">
-                            Restrict @Model.Organisation.Name 
-                        </a>
                         <a class="btn btn-success btn-block mb-3 mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="RequestToJoin">
                             Request to Join
                         </a>
+                        <hr/>
                     }
-                    <hr>
                     <span style="white-space: pre-line">@Model.Organisation.About</span>
                                      
                 </div>

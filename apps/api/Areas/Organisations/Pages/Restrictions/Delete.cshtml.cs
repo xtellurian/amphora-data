@@ -11,10 +11,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
     public class DeleteModel : PageModel
     {
         private readonly IOrganisationService organisationService;
+        private readonly IRestrictionService restrictionService;
 
-        public DeleteModel(IOrganisationService organisationService)
+        public DeleteModel(IOrganisationService organisationService, IRestrictionService restrictionService)
         {
             this.organisationService = organisationService;
+            this.restrictionService = restrictionService;
         }
 
         public OrganisationModel Organisation { get; private set; }
@@ -34,13 +36,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                 this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
                 if (Target == null)
                 {
-                    return RedirectToDetail(id);
+                    return RedirectToIndex(id);
                 }
 
                 return Page();
             }
             else if (readRes.WasForbidden) { return StatusCode(403); }
-            else { return RedirectToDetail(id); }
+            else { return RedirectToIndex(id); }
         }
 
         public async Task<IActionResult> OnPostAsync(string id, string targetOrganisationId)
@@ -57,23 +59,22 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
                 this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
                 if (Target == null)
                 {
-                    return RedirectToDetail(id);
+                    return RedirectToIndex(id);
                 }
 
-                this.Organisation.Restrictions.Remove(this.Target);
-                var updateRes = await organisationService.UpdateAsync(User, Organisation);
-                if (updateRes.Succeeded) { return RedirectToDetail(id); }
-                else if (updateRes.WasForbidden) { return StatusCode(403); }
-                else { ModelState.AddModelError(string.Empty, updateRes.Message); }
+                var deleteRes = await restrictionService.DeleteAsync(User, Target.Id);
+                if (deleteRes.Succeeded) { return RedirectToIndex(id); }
+                else if (deleteRes.WasForbidden) { return StatusCode(403); }
+                else { ModelState.AddModelError(string.Empty, deleteRes.Message); }
                 return Page();
             }
             else if (readRes.WasForbidden) { return StatusCode(403); }
-            else { return RedirectToDetail(id); }
+            else { return RedirectToIndex(id); }
         }
 
-        private IActionResult RedirectToDetail(string id)
+        private IActionResult RedirectToIndex(string id)
         {
-            return RedirectToPage("/Detail", new { Area = "Organisations", Id = id });
+            return RedirectToPage("/Restrictions/Index", new { Area = "Organisations", Id = id });
         }
     }
 }

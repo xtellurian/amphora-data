@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Api.Pages;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    public abstract class AmphoraPageModel : PageModel
+    public abstract class AmphoraPageModel : PageModelBase
     {
         protected readonly IAmphoraeService amphoraeService;
 

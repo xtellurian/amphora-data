@@ -25,7 +25,7 @@ namespace Amphora.Tests.Integration
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
             var version = ApiVersionIdentifier.FromSemver(content);
             Assert.NotNull(version.ToSemver());
         }
@@ -49,9 +49,9 @@ namespace Amphora.Tests.Integration
                     var prodContent = await prodResponse.Content.ReadAsStringAsync();
 
                     // Assert
-                    response.EnsureSuccessStatusCode();
+                    await AssertHttpSuccess(response);
                     var thisVersion = ApiVersionIdentifier.FromSemver(content);
-                    prodResponse.EnsureSuccessStatusCode();
+                    await AssertHttpSuccess(prodResponse);
                     var prodVersion = ApiVersionIdentifier.FromSemver(prodContent);
 
                     Assert.True(thisVersion.Major >= prodVersion.Major);
@@ -90,7 +90,7 @@ namespace Amphora.Tests.Integration
 
                 // get the changelog for this version
                 var getVersionResponse = await client.GetAsync($"Changelog/Detail?version={version.ToSemver()}");
-                getVersionResponse.EnsureSuccessStatusCode();
+                await AssertHttpSuccess(getVersionResponse);
             }
             else
             {

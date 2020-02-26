@@ -41,7 +41,7 @@ namespace Amphora.Tests.Integration.Organisations
             var responseBody = await response.Content.ReadAsStringAsync();
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration.Organisations
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await client.PostAsync(url, requestBody);
-            createResponse.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(createResponse);
             var responseBody = await createResponse.Content.ReadAsStringAsync();
             a = JsonConvert.DeserializeObject<Organisation>(responseBody);
 
@@ -75,7 +75,7 @@ namespace Amphora.Tests.Integration.Organisations
             a.Name = System.Guid.NewGuid().ToString();
             requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             var updateResponse = await client.PutAsync(url + "/" + a.Id, requestBody);
-            updateResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(updateResponse);
             var b = JsonConvert.DeserializeObject<OrganisationModel>(await updateResponse.Content.ReadAsStringAsync());
 
             // Assert
@@ -100,7 +100,7 @@ namespace Amphora.Tests.Integration.Organisations
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
             var responseBody = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            await AssertHttpSuccess(response);
             Assert.Equal("application/json; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
 
@@ -115,15 +115,15 @@ namespace Amphora.Tests.Integration.Organisations
             var inviteResponse = await client.PostAsJsonAsync($"api/invitations/",
                 new Invitation { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });
             var inviteResponseContent = await inviteResponse.Content.ReadAsStringAsync();
-            inviteResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(inviteResponse);
 
             var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var acceptResponse = await client2.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
-            acceptResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(acceptResponse);
 
             var selfResponse = await client2.GetAsync("api/users/self");
             var selfContent = await selfResponse.Content.ReadAsStringAsync();
-            selfResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(selfResponse);
             var self = JsonConvert.DeserializeObject<AmphoraUser>(selfContent);
             Assert.Equal(org.Id, self.OrganisationId);
 
@@ -135,7 +135,7 @@ namespace Amphora.Tests.Integration.Organisations
         private async Task DeleteOrganisation(Organisation a, HttpClient client)
         {
             var deleteResponse = await client.DeleteAsync($"api/organisations/{a.Id}");
-            deleteResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(deleteResponse);
             var getResponse = await client.GetAsync($"api/organisations/{a.Id}");
             Assert.Equal(System.Net.HttpStatusCode.NotFound, getResponse.StatusCode);
         }

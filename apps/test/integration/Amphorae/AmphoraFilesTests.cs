@@ -29,7 +29,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
@@ -41,10 +41,10 @@ namespace Amphora.Tests.Integration.Amphorae
             // Act
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
-            uploadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(uploadResponse);
 
             var downloadResponse = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
-            downloadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(downloadResponse);
 
             // Assert
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
@@ -66,7 +66,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
@@ -77,13 +77,13 @@ namespace Amphora.Tests.Integration.Amphorae
 
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
-            uploadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(uploadResponse);
 
             // Act and Assert
             // now let's download by someone in the same org - should work
             var (sameOrgClient, sameOrgUser, sameOrgOrg) = await GetNewClientInOrg(adminClient, adminOrg);
             var downloadResponse = await sameOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
-            downloadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(downloadResponse);
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
             // other org user is denied access
@@ -133,7 +133,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
             // create a file for us to work with
@@ -143,7 +143,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var file = Guid.NewGuid().ToString();
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
-            uploadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(uploadResponse);
 
             // Act
             var testMetadata = new Dictionary<string, string>()
@@ -154,10 +154,10 @@ namespace Amphora.Tests.Integration.Amphorae
                 { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() }
             };
             var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/meta", testMetadata);
-            Assert.True(createMetaRes.IsSuccessStatusCode);
+            await AssertHttpSuccess(createMetaRes);
             // get the amphora again
             var readRes = await adminClient.GetAsync($"{url}/{amphora.Id}");
-            Assert.True(readRes.IsSuccessStatusCode);
+            await AssertHttpSuccess(readRes);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await readRes.Content.ReadAsStringAsync());
             Assert.NotNull(amphora.FileAttributes);
             Assert.Equal(testMetadata, amphora.FileAttributes[file].Attributes);
@@ -174,7 +174,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
-            createResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
             // create a file for us to work with
@@ -184,7 +184,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var file = Guid.NewGuid().ToString();
             // upload the first time
             var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
-            uploadResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(uploadResponse);
             // upload the second time
             var uploadResponse2 = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             Assert.False(uploadResponse2.IsSuccessStatusCode);
@@ -195,7 +195,7 @@ namespace Amphora.Tests.Integration.Amphorae
         {
             var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
             var response = await client.GetAsync($"api/amphorae/{id}");
-            deleteResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(deleteResponse);
         }
     }
 }

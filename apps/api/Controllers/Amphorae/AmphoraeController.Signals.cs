@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
@@ -98,7 +97,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     if (result.Succeeded)
                     {
                         var amphora = result.Entity;
-                        var newSignal = new SignalV2(signal.Property, signal.ValueType);
+                        var newSignal = new SignalV2(signal.Property, signal.ValueType, signal.Attributes);
                         string message;
                         if (amphora.TryAddSignal(newSignal, out message))
                         {

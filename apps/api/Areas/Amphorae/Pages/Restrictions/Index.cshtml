@@ -1,0 +1,44 @@
+@page
+@model Restrictions.IndexPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name + " Restrictions";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <h2>Restrictions applied to this Amphora</h2>
+            <h4> 
+                <a asp-page="/Detail" asp-area="Amphorae" asp-route-id="@Model.Amphora.Id">
+                    @Model.Amphora.Name 
+                </a>
+            </h4> 
+        </div>
+        <div class="col-sm-4 text-right">
+            <a class="btn btn-primary" asp-page="./Create" asp-route-id="@Model.Amphora.Id">
+                Restrict an Organisation
+            </a>
+            <a class="btn btn-secondary" asp-area="Amphorae" asp-page="/Detail" asp-route-id="@Model.Amphora.Id">
+                Amphora
+            </a>
+        </div>
+    </div>
+    <hr/>
+    <div clas="row">
+        <div class="col">
+            @foreach (var r in Model.Restrictions)
+            {
+                <p>
+                    @await Component.InvokeAsync("RestrictionRow", new {restriction = r})
+                </p>
+            }
+            @if(Model.Restrictions == null || Model.Restrictions.Count == 0)
+            {
+                <p>
+                    No Restrictions
+                </p>
+            }
+        </div>
+    </div>
+</div>
