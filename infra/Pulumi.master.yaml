@@ -1,7 +1,12 @@
 config:
   acr:sku: Standard
+  aks:nodeCount: "2"
+  aks:nodeSize: Standard_D2_v2
+  aks:spAppId: e69d9fa5-8116-49c9-800b-de239bd64028
   amphora:SendGridApiKey:
     secure: AAABAFEcDbMSEIdmLWezhAXmWkpva0c2GTV0XsGwYF85c73b56WOvrDxGqzShLmCcOzarCJWMB4kmNvb1sr21NuICDeYiU8gclKLrXMM8PPSA1oIQCA6tlddmHc6CfjoxwN9H0g=
+  amphora:aksSpAppPassword:
+    secure: AAABAFYgXtkbUKb4poUf4zhDVOippVKze5GpJYZaOwGzbcYoVnsSD+BfUrPv6Zy5FN7bFQS2j1dI8E6sV4+VRx1WlpQ=
   amphora:gitHubToken:
     secure: AAABAEzpbQ/lOq3o0ZNC5THOWXhl18+hWvWxu1NeBKXz5YcxmTzqwY008jTNeGQvJE7kkM+2p0LyOk9Chg/vBA476uqHBfO6
   amphora:tokenManagement__secret:
