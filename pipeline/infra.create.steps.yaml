@@ -1,5 +1,10 @@
 
 steps:
+- task: HelmInstaller@1
+  displayName: Helm installer
+  inputs: 
+    helmVersionToInstall: 3.1.1
+
 - script: |
     ./infra/setup.sh
     ./infra/pulumi-up.sh
@@ -31,3 +36,16 @@ steps:
   env: 
     workflowTriggerId: $(pulumi.workflowTriggerId)
     appEventGridTopicId: $(pulumi.appEventGridTopicId)
+
+- script: ./scripts/aks_acr.sh -a $acrId -n $k8sName -g $k8sGroup
+  displayName: Give AKS Access to ACR
+  env:
+    acrId: $(pulumi.acrId)
+    k8sGroup: $(pulumi.k8sGroup)
+    k8sName: $(pulumi.k8sName)
+
+- script: ./scripts/set-fqdn.sh -i $k8sIngressIp -n $k8sFqdnName
+  displayName: Give AKS Access to ACR
+  env:
+    k8sIngressIp: $(pulumi.k8sIngressIp)
+    k8sFqdnName: $(pulumi.k8sFqdnName)
