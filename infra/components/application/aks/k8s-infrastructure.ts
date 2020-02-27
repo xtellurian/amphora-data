@@ -153,6 +153,6 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         // }, {
         //     ...opts,
         //     dependsOn: caClusterIssuer,
-        // }); 
+        // });
     }
 }
