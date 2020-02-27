@@ -3,6 +3,7 @@ config:
   aks:nodeCount: "3"
   aks:nodeSize: Standard_D2_v2
   aks:spAppId: 13290c42-27c7-4539-a187-0167062942fe
+  aks:spObjectId: 2977fa6c-94be-4d3a-a85c-70bc1be01623
   amphora:SendGridApiKey:
     secure: AAABAO35hWY/u/Q9LJ9ZrDLLwYdAKUUYt4reXSXl2jE3c/yVSHEk1CUO3Ni0lgcvh4M3lcUMOuNfXfMHhUx6LORJf5ViWgl0NciHnWc7MiwXSK62KcUZeEE3dfkxU0EcMsVdHtQ=
   amphora:aksSpAppPassword:
