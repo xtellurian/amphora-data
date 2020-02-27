@@ -23,20 +23,6 @@ export class Network extends pulumi.ComponentResource {
     this.create();
   }
 
-  public AddCNameRecord(name: string, record: pulumi.Input<string>): azure.dns.CNameRecord {
-    const newRecord = new azure.dns.CNameRecord(name, {
-      name,
-      record,
-      resourceGroupName: this.rg.name,
-      ttl: 300,
-      zoneName: this.zone.name,
-    },
-    {
-      parent: this,
-    });
-    return newRecord;
-  }
-
   private create() {
     const rg = new azure.core.ResourceGroup(
       rgName,
