@@ -124,33 +124,6 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             dependsOn: certManagerCrds,
         });
 
-        // TODO: remove
-        // const helloWorld = new k8s.yaml.ConfigFile(
-        //     "helloWorld", {
-        //     file: "components/application/aks/infrastructure-manifests/hello-world.yml",
-        //     transformations: [
-        //         (obj: any) => {
-        //             if (obj.metadata.name === "hello-world-ingress") {
-        //                 // console.log(obj);
-        //                 for (const tls of obj.spec.tls) {
-        //                     for (let j = 0; j < tls.hosts.length; j++) {
-        //                         tls.hosts[j] = pulumi.interpolate`${pulumi.getStack()}-amphoradata.${this.params.location}.cloudapp.azure.com`;
-        //                     }
-        //                 }
-
-        //                 for (const rule of  obj.spec.rules) {
-        //                     rule.host = pulumi.interpolate`${pulumi.getStack()}-amphoradata.${this.params.location}.cloudapp.azure.com`;
-        //                 }
-        //             }
-        //             // console.log(obj.spec.tls)
-        //             // console.log(obj.spec.rules)
-        //         },
-        //     ],
-        // }, {
-        //     ...opts,
-        //     dependsOn: caClusterIssuer,
-        // });
-
         this.fqdnName = pulumi.interpolate`${pulumi.getStack()}-amphoradata`;
 
         // TODO: Remove
@@ -163,11 +136,13 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         //                 // console.log(obj);
         //                 for (const tls of obj.spec.tls) {
         //                     for (let j = 0; j < tls.hosts.length; j++) {
+        // tslint:disable-next-line: max-line-length
         //                         tls.hosts[j] = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
         //                     }
         //                 }
 
         //                 for (const rule of  obj.spec.rules) {
+        // tslint:disable-next-line: max-line-length
         //                     rule.host = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
         //                 }
         //             }
