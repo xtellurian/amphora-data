@@ -79,7 +79,7 @@ export let k8sGroup = result.then((r) =>
 export let k8sIngressIp = result.then((r) =>
   r.application.aks.k8sInfra.ingressController
     .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
-    .apply((service) => service.status.loadBalancer.ingress[0]),
+    .apply((service) => service.status.loadBalancer.ingress[0].ip),
 );
 export let k8sFqdnName = result.then((r) =>
   r.application.aks.k8sInfra.fqdnName,
