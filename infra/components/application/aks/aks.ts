@@ -1,16 +1,19 @@
 import * as azure from "@pulumi/azure";
-import * as azuread from "@pulumi/azuread";
 import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 import { CONSTANTS } from "../../../components";
 import { Monitoring } from "../../monitoring/monitoring";
 import { Network } from "../../network/network";
 import { State } from "../../state/state";
+import { K8sInfrastructure } from "./k8s-infrastructure";
 
 export interface IAksParams {
     acr: azure.containerservice.Registry;
     rg: azure.core.ResourceGroup;
     kv: azure.keyvault.KeyVault;
+    appSettings: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
     monitoring: Monitoring;
     network: Network;
     state: State;
@@ -43,6 +46,7 @@ export class Aks extends pulumi.ComponentResource {
     public k8sCluster: azure.containerservice.KubernetesCluster;
     public k8sProvider: k8s.Provider;
     public webAppIdentity: azure.authorization.UserAssignedIdentity;
+    public k8sInfra: K8sInfrastructure;
     private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
 
     constructor(
@@ -80,6 +84,9 @@ export class Aks extends pulumi.ComponentResource {
             },
             location,
             resourceGroupName: rg.name,
+            roleBasedAccessControl: {
+                enabled: true,
+            },
             servicePrincipal: {
                 clientId: appId,
                 clientSecret: password,
@@ -98,7 +105,7 @@ export class Aks extends pulumi.ComponentResource {
 
         this.webAppIdentity = new azure.authorization.UserAssignedIdentity("webApp", {
             location: rg.location,
-            resourceGroupName: rg.name,
+            resourceGroupName: this.k8sCluster.nodeResourceGroup,
             tags,
         });
 
@@ -106,6 +113,16 @@ export class Aks extends pulumi.ComponentResource {
 
         // Export the kubeconfig
         // this.kubeconfig = k8sCluster.kubeConfigRaw
+
+        // Step 3: Install dependencies into the cluster
+
+        this.k8sInfra = new K8sInfrastructure("k8sInfra", {
+            appSettings: this.params.appSettings,
+            identity: this.webAppIdentity,
+            location: this.k8sCluster.location,
+            provider: this.k8sProvider,
+        }, { parent: this });
+
     }
 
     private addMsiToKeyVault(

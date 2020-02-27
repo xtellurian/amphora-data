@@ -41,6 +41,9 @@ interface IAppServicePlanConfig {
 export class AppSvc extends pulumi.ComponentResource {
     public imageName: pulumi.Output<string>;
     public apps: IPlanAndSlot[] = [];
+    public appSettings: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
     private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
     constructor(
         name: string,
@@ -89,20 +92,20 @@ export class AppSvc extends pulumi.ComponentResource {
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
         const host = config.get("mainHost") ? config.require("mainHost") : "";
         const appSettings = {
-            APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey,
+            APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey, // important
             DOCKER_REGISTRY_SERVER_PASSWORD: acr.adminPassword,
             DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
                 acr.loginServer
                 }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
-            Host__MainHost: host,
+            Host__MainHost: host, // important
             Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
             STACK: pulumi.getStack(),
             WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
             WEBSITES_PORT: "80",
-            kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName,
-            kvUri: kv.vaultUri,
+            kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName, // important
+            kvUri: kv.vaultUri, // important
         };
         const siteConfig = {
             alwaysOn: true,
@@ -146,8 +149,9 @@ export class AppSvc extends pulumi.ComponentResource {
             });
         }
 
+        this.appSettings = appSettings;
+
         // section--key
-        this.params.network.AddCNameRecord(plan.name, appSvc.defaultSiteHostname);
         this.accessPolicyKeyVault(plan.name + "-access", this.params.state.kv, appSvc);
         if (appSvcStaging) {
             this.accessPolicyKeyVault(plan.name + "StagingAccess", this.params.state.kv, appSvcStaging);

@@ -67,6 +67,23 @@ export let imageName = result.then((r) =>
 export let acrName = result.then((r) =>
   r.application.acr.name,
 );
+export let acrId = result.then((r) =>
+  r.application.acr.id,
+);
+export let k8sName = result.then((r) =>
+  r.application.aks.k8sCluster.name,
+);
+export let k8sGroup = result.then((r) =>
+  r.application.aks.k8sCluster.resourceGroupName,
+);
+export let k8sIngressIp = result.then((r) =>
+  r.application.aks.k8sInfra.ingressController
+    .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
+    .apply((service) => service.status.loadBalancer.ingress[0]),
+);
+export let k8sFqdnName = result.then((r) =>
+  r.application.aks.k8sInfra.fqdnName,
+);
 export let workflowTriggerId = result.then((r) =>
   r.business.workflowTrigger.id,
 );
