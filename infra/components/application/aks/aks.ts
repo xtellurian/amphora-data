@@ -33,6 +33,7 @@ const cfg = new pulumi.Config();
 const config = new pulumi.Config("aks");
 
 const appId = config.require("spAppId");
+const objectId = config.require("spObjectId");
 const password = cfg.requireSecret("aksSpAppPassword");
 
 const sshPublicKey = cfg.requireSecret("sshPublicKey");
@@ -92,6 +93,14 @@ export class Aks extends pulumi.ComponentResource {
                 clientSecret: password,
             },
             tags,
+        }, {
+            parent: this,
+        });
+
+        const roleAssignment = new azure.role.Assignment("acrPullAccess", {
+            principalId: objectId,
+            roleDefinitionName: "AcrPull",
+            scope: this.params.acr.id,
         }, {
             parent: this,
         });

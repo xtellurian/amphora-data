@@ -37,13 +37,6 @@ steps:
     workflowTriggerId: $(pulumi.workflowTriggerId)
     appEventGridTopicId: $(pulumi.appEventGridTopicId)
 
-- script: ./infra/scripts/aks_acr.sh -a $acrId -n $k8sName -g $k8sGroup
-  displayName: Give AKS Access to ACR
-  env:
-    acrId: $(pulumi.acrId)
-    k8sGroup: $(pulumi.k8sGroup)
-    k8sName: $(pulumi.k8sName)
-
 - script: ./infra/scripts/set-fqdn.sh -i $k8sIngressIp -n $k8sFqdnName
   displayName: Set AKS public IP FQDN
   env:
