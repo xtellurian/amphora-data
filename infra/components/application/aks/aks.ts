@@ -141,7 +141,7 @@ export class Aks extends pulumi.ComponentResource {
         const ap = new azure.keyvault.AccessPolicy(
             name,
             {
-                applicationId: identity.clientId,
+                // applicationId: identity.clientId,
                 keyPermissions: ["unwrapKey", "wrapKey"],
                 keyVaultId: kv.id,
                 objectId: identity.principalId,
