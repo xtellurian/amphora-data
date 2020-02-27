@@ -14,6 +14,7 @@ export interface IK8sInfrastructureParams {
 export class K8sInfrastructure extends pulumi.ComponentResource {
     public ingressController: k8s.yaml.ConfigFile;
     public fqdnName: pulumi.Output<string>;
+    public fqdn: pulumi.Output<string>;
     constructor(
         name: string,
         private params: IK8sInfrastructureParams,
@@ -60,7 +61,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
             spec: {
                 AzureIdentity: indentityConfig.metadata.name,
-                Selector: "hello-world",
+                Selector: "amphora-front",
             },
         };
 
@@ -70,6 +71,9 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
 
         const webAppConfigMap = new k8s.core.v1.ConfigMap("webapp-config", {
             data: this.params.appSettings,
+            metadata: {
+                name: "amphora-frontend-config",
+            },
         }, opts);
 
         this.ingressController = new k8s.yaml.ConfigFile(
@@ -101,7 +105,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                 fetchOpts: {
                     repo: "https://charts.jetstack.io",
                 },
-                namespace: "cert-manager",
+                namespace: certManNamespace.metadata.name,
                 values: {},
                 version: "v0.13.1",
             }, opts);
@@ -121,38 +125,10 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             transformations,
         }, {
             ...opts,
-            dependsOn: certManagerCrds,
+            dependsOn: [certManagerCrds, certManagerChart],
         });
 
         this.fqdnName = pulumi.interpolate`${pulumi.getStack()}-amphoradata`;
-
-        // TODO: Remove
-        // const amphoraFrontend = new k8s.yaml.ConfigFile(
-        //     "amphoraFrontend", {
-        //     file: "components/application/aks/infrastructure-manifests/test.yml",
-        //     transformations: [
-        //         (obj: any) => {
-        //             if (obj.metadata.name === "hello-world-ingress") {
-        //                 // console.log(obj);
-        //                 for (const tls of obj.spec.tls) {
-        //                     for (let j = 0; j < tls.hosts.length; j++) {
-        // tslint:disable-next-line: max-line-length
-        //                         tls.hosts[j] = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
-        //                     }
-        //                 }
-
-        //                 for (const rule of  obj.spec.rules) {
-        // tslint:disable-next-line: max-line-length
-        //                     rule.host = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
-        //                 }
-        //             }
-        //             // console.log(obj.spec.tls)
-        //             // console.log(obj.spec.rules)
-        //         },
-        //     ],
-        // }, {
-        //     ...opts,
-        //     dependsOn: caClusterIssuer,
-        // });
+        this.fqdn = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
     }
 }

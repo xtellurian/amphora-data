@@ -84,6 +84,12 @@ export let k8sIngressIp = result.then((r) =>
 export let k8sFqdnName = result.then((r) =>
   r.application.aks.k8sInfra.fqdnName,
 );
+export let k8sFqdn = result.then((r) =>
+  r.application.aks.k8sInfra.fqdn,
+);
+export let kubeConfig = result.then((r) =>
+  r.application.aks.k8sCluster.kubeConfigRaw,
+);
 export let workflowTriggerId = result.then((r) =>
   r.business.workflowTrigger.id,
 );
