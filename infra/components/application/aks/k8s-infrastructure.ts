@@ -31,6 +31,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             provider: this.params.provider,
         };
 
+        // namespaces
         const amphoraNamespace = new k8s.core.v1.Namespace("amphora", {
             metadata: {
                 name: "amphora",
@@ -43,6 +44,17 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
         }, opts);
 
+        const certManNamespace = new k8s.core.v1.Namespace("certManNs", {
+            apiVersion: "v1",
+            metadata: {
+                labels: {
+                    "cert-manager.io/disable-validation": "true",
+                },
+                name: "cert-manager",
+            },
+        }, opts);
+
+        // aad pod identity
         const aadPods = new k8s.yaml.ConfigFile(
             "aadPods", {
             file: "components/application/aks/infrastructure-manifests/aad-pod-identity.yml",
@@ -56,6 +68,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             kind: "AzureIdentity",
             metadata: {
                 name: "web-app-identity",
+                namespace: amphoraNamespace.metadata.name,
             },
             spec: {
                 ClientID: this.params.identity.clientId,
@@ -73,6 +86,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             kind: "AzureIdentityBinding",
             metadata: {
                 name: "demo1-azure-identity-binding",
+                namespace: amphoraNamespace.metadata.name,
             },
             spec: {
                 AzureIdentity: indentityConfig.metadata.name,
@@ -84,14 +98,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             objs: [bindingConfig],
         }, opts);
 
-        const webAppConfigMap = new k8s.core.v1.ConfigMap("webapp-config", {
-            data: this.params.appSettings,
-            metadata: {
-                name: "amphora-frontend-config",
-                namespace: amphoraNamespace.metadata.name,
-            },
-        }, opts);
-
+        // ingress ctrler
         this.ingressController = new k8s.yaml.ConfigFile(
             "ingressCtrl", {
             file: "components/application/aks/infrastructure-manifests/ingress-nginx.yml",
@@ -103,17 +110,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
         }, opts);
 
-        const certManNamespace = new k8s.core.v1.Namespace("certManNs", {
-            apiVersion: "v1",
-            metadata: {
-                labels: {
-                    "cert-manager.io/disable-validation": "true",
-                },
-                name: "cert-manager",
-            },
-        }, opts);
-
-        // helmy thin
+        // let's encrypt
         const certManagerChart = new k8s.helm.v2.Chart(
             "cert-manager",
             {
@@ -126,6 +123,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                 version: "v0.13.1",
             }, opts);
 
+        // make sure we prod in prod
         const transformations = [];
         if (pulumi.getStack() === "prod") {
             transformations.push((obj: any) => {
@@ -136,6 +134,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             });
         }
 
+        // certificate issuer
         const caClusterIssuer = new k8s.yaml.ConfigFile("caClusterIssuer", {
             file: `components/application/aks/infrastructure-manifests/cert-issuer.yml`,
             transformations,
@@ -143,6 +142,15 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             ...opts,
             dependsOn: [certManagerCrds, certManagerChart],
         });
+
+        // amphora frontend config map
+        const webAppConfigMap = new k8s.core.v1.ConfigMap("frondend-config", {
+            data: this.params.appSettings,
+            metadata: {
+                name: "amphora-frontend-config",
+                namespace: amphoraNamespace.metadata.name,
+            },
+        }, opts);
 
         this.fqdnName = pulumi.interpolate`${pulumi.getStack()}-amphoradata`;
         this.fqdn = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
