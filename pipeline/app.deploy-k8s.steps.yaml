@@ -1,0 +1,15 @@
+
+steps:
+  - template: az-login.steps.yaml
+  - template: install.pulumi.steps.yaml
+  - script: |
+      export PATH=$PATH:$HOME/.pulumi/bin
+      pushd k8s
+      pulumi login
+      npm install
+      . ../pulumi-stack-ci.sh
+      pulumi up -y -c image="$IMAGE"
+    displayName: Pulumi Up (k8s)
+    env:
+      PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+      IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.SourceBranchName)-$(Build.BuildNumber)
