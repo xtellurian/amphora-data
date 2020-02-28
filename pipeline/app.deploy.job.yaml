@@ -60,6 +60,7 @@ jobs:
     vmImage: 'Ubuntu-16.04'
 
   variables:
+  - group: Pulumi xtellurian
   - name: staging
     value: ${{ parameters.staging }}
   - name: pulumi.acrName
