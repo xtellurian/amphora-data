@@ -1,5 +1,10 @@
 
 steps:
+- task: HelmInstaller@1
+  displayName: Helm installer
+  inputs: 
+    helmVersionToInstall: 3.1.1
+
 - script: |
     chmod +x ./infra/*.sh
     ./infra/setup.sh
