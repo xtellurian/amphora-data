@@ -3,7 +3,7 @@ steps:
 
 - script: |
     ./infra/pulumi-up.sh
-  displayName: 'Install pulumi & run pulumi up'
+  displayName: Pulumi Up (Infra)
   name: pulumi_up
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
