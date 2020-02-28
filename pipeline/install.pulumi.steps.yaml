@@ -5,11 +5,9 @@ steps:
   inputs: 
     helmVersionToInstall: 3.1.1
 
-- script: |
-    chmod +x ./infra/*.sh
-    ./infra/setup.sh
-  displayName: 'Install pulumi'
-  name: pulumi
+- script: ./infra/install-pulumi.sh
+  displayName: Install Pulumi
+  name: install_pulumi
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
     ARM_CLIENT_ID: $(appId)
