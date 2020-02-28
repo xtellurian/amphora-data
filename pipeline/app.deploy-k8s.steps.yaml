@@ -1,7 +1,6 @@
 
 steps:
   - template: az-login.steps.yaml
-  - template: install.pulumi.steps.yaml
   - script: |
       export PATH=$PATH:$HOME/.pulumi/bin
       pushd k8s

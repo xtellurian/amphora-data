@@ -69,4 +69,5 @@ jobs:
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   
   steps:
+    - template: install.pulumi.steps.yaml
     - template: app.deploy-k8s.steps.yaml
