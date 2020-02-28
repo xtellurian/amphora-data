@@ -31,10 +31,25 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             provider: this.params.provider,
         };
 
+        const amphoraNamespace = new k8s.core.v1.Namespace("amphora", {
+            metadata: {
+                name: "amphora",
+            },
+        }, opts);
+
+        const aadPodIdentityNs = new k8s.core.v1.Namespace("aad-pod-identity", {
+            metadata: {
+                name: "aad-pod-identity",
+            },
+        }, opts);
+
         const aadPods = new k8s.yaml.ConfigFile(
             "aadPods", {
             file: "components/application/aks/infrastructure-manifests/aad-pod-identity.yml",
-        }, opts);
+        }, {
+            ...opts,
+            dependsOn: aadPodIdentityNs,
+        });
 
         const indentityConfig = {
             apiVersion: "aadpodidentity.k8s.io/v1",
@@ -73,6 +88,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             data: this.params.appSettings,
             metadata: {
                 name: "amphora-frontend-config",
+                namespace: amphoraNamespace.metadata.name,
             },
         }, opts);
 
