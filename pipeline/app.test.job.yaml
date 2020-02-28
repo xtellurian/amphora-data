@@ -56,8 +56,9 @@ jobs:
         pushd apps
         az acr login -n $acrName
         docker pull $acrName.azurecr.io/$IMAGE:latest
+        set +e
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
-
+        set -e
         if [ $BUILD_REASON == "PullRequest" ] ; then
           TreatWarningsAsErrors=true
           echo "TreatWarningsAsErrors=true"
