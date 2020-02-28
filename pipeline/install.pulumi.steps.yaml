@@ -5,7 +5,8 @@ steps:
   inputs: 
     helmVersionToInstall: 3.1.1
 
-- script: ./infra/install-pulumi.sh
+- script: |
+    . infra/install-pulumi.sh
   displayName: Install Pulumi
   name: install_pulumi
   env:

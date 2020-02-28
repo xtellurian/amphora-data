@@ -50,6 +50,6 @@ jobs:
         pushd k8s
         . ../pulumi-stack-ci.sh
         pulumi up -y -c image="$IMAGE"
-      displayName: 
+      displayName: Pulumi Up (k8s)
       env:
         IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.SourceBranchName)-$(Build.BuildNumber)
