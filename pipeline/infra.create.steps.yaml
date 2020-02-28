@@ -2,7 +2,6 @@
 steps:
 
 - script: |
-    ./infra/setup.sh
     ./infra/pulumi-up.sh
   displayName: 'Install pulumi & run pulumi up'
   name: pulumi

@@ -16,4 +16,5 @@ jobs:
 
   steps:
   - template: az-login.steps.yaml
+  - template: install.pulumi.steps.yaml
   - template: infra.create.steps.yaml
