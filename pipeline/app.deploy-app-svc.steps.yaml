@@ -2,7 +2,7 @@ steps:
 - template: az-login.steps.yaml
 
 - script: ./infra/deploy-app.sh
-  displayName: Build Container, Push Image, and set App Service
+  displayName: Deploy to Azure App Service
   env:
     ACR_NAME: $(pulumi.acrName)
     IMAGE: $(pulumi.acrName).azurecr.io/webapp
