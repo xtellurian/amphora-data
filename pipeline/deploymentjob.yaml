@@ -28,6 +28,7 @@ jobs:
         - template: install.pulumi.steps.yaml
         - template: infra.create.steps.yaml
         - template: app.deploy-app-svc.steps.yaml
+        - template: app.deploy-k8s.steps.yaml
         - template: tagrepo.steps.yaml
           parameters:
             tag: $(Environment.Name)/$(Build.BuildId)
