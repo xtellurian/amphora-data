@@ -26,7 +26,7 @@ jobs:
           persistCredentials: true
         - template: az-login.steps.yaml
         - template: infra.create.steps.yaml
-        - template: app.deploy.steps.yaml
+        - template: app.deploy-app-svc.steps.yaml
         - template: tagrepo.steps.yaml
           parameters:
             tag: $(Environment.Name)/$(Build.BuildId)
