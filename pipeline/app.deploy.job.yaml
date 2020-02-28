@@ -76,6 +76,8 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd k8s
+        pulumi login
+        npm install
         . ../pulumi-stack-ci.sh
         pulumi up -y -c image="$IMAGE"
       displayName: Pulumi Up (k8s)
