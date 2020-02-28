@@ -33,7 +33,7 @@ jobs:
             set -e
             export PATH=$PATH:$HOME/.pulumi/bin
             pushd infra
-            . pulumi-stack.sh
+            . ../pulumi-stack-ci.sh
             webAppId=$(pulumi stack output webAppResourceId)
             az webapp traffic-routing set --distribution staging=$STAGING_PERCENT --ids $webAppId
             popd

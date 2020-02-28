@@ -1,3 +1,4 @@
+set -e
 
 if [ $BUILD_REASON == "PullRequest" ] ; then
   echo "Source Branch (Pull Request) is $SYSTEM_PULLREQUEST_SOURCEBRANCH"
