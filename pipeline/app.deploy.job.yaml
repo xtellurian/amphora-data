@@ -47,6 +47,7 @@ jobs:
     - template: az-login.steps.yaml
     - template: install.pulumi.steps.yaml
     - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
         pushd k8s
         . ../pulumi-stack-ci.sh
         pulumi up -y -c image="$IMAGE"
