@@ -5,10 +5,7 @@ steps:
   displayName: Build Container, Push Image, and set App Service
   env:
     ACR_NAME: $(pulumi.acrName)
-    CONTEXT: $(Build.SourcesDirectory)/apps
     IMAGE: $(pulumi.acrName).azurecr.io/webapp
-    GITHASH: $(Build.SourceVersion)
     BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
     STAGING: $(staging)
-    CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number

@@ -3,12 +3,37 @@ parameters:
   staging: 'false'
 
 jobs:
+
+- job: deploy_container
+  displayName: Deploy Container Image
+  condition:
+  dependsOn:
+    - infrastructure
+    - apps
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  
+  variables:
+    - name: pulumi.acrName
+      value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+    - name: pulumi.webAppResourceId
+      value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+  steps:
+    - template: az-login.steps.yaml
+    - script: ./infra/deploy-container-image.sh
+      displayName: Deploy Container to ACR
+      env:
+        ACR_NAME: $(pulumi.acrName)
+        CONTEXT: $(Build.SourcesDirectory)/apps
+        IMAGE: $(pulumi.acrName).azurecr.io/webapp
+        BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+        CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
+
 - job: deploy_to_appsvc
   displayName: Deploy to Azure App Svc
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   dependsOn: 
-    - infrastructure
-    - apps
+    - deploy_container
   pool:
     vmImage: 'Ubuntu-16.04'
 
@@ -30,8 +55,7 @@ jobs:
   displayName: Deploy to Kubernetes
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   dependsOn: 
-    - infrastructure
-    - apps
+    - deploy_container
   pool:
     vmImage: 'Ubuntu-16.04'
 
