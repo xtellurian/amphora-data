@@ -4,7 +4,7 @@ steps:
 - script: |
     ./infra/pulumi-up.sh
   displayName: 'Install pulumi & run pulumi up'
-  name: pulumi
+  name: pulumi_up
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
     ARM_CLIENT_ID: $(appId)
