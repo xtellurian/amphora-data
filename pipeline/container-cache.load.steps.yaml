@@ -20,12 +20,16 @@ steps:
     if test -f "$FILE"; then
         echo "$FILE exist"
         docker load -i $FILE
+    else
+        echo "Not Loading WebApp"
     fi
 
     FILE=$ARTIFACT_DIR/builder/image.tar
     if test -f "$FILE"; then
         echo "$FILE exist"
         docker load -i $FILE
+    else
+        echo "Not Loading Builder"
     fi
   displayName: Load Docker Image Artifacts
   env:
