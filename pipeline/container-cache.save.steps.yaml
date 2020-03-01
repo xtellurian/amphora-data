@@ -4,14 +4,16 @@ steps:
     set +e
     IMAGE="$ACR_NAME.azurecr.io/webapp:$BUILD"
     if [[ "$(docker images -q $IMAGE 2> /dev/null)" == "" ]]; then
-      # do something
+      echo $IMAGE exists!
+      mkdir -p $(Build.ArtifactStagingDirectory)/webapp
       docker save $IMAGE -o $(Build.ArtifactStagingDirectory)/webapp/image.tar
       echo "##vso[task.setvariable variable=webappimage]true"
     fi
 
     IMAGE="$ACR_NAME.azurecr.io/builder:latest"
     if [[ "$(docker images -q $IMAGE 2> /dev/null)" == "" ]]; then
-      # do something
+      echo $IMAGE exists!
+      mkdir -p $(Build.ArtifactStagingDirectory)/builder
       docker save $IMAGE -o $(Build.ArtifactStagingDirectory)/builder/image.tar
       echo "##vso[task.setvariable variable=builderimage]true"
     fi
