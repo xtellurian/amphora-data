@@ -25,7 +25,7 @@ jobs:
         ACR_NAME: $(pulumi.acrName)
         CONTEXT: $(Build.SourcesDirectory)/apps
         IMAGE: $(pulumi.acrName).azurecr.io/webapp
-        BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+        BUILD: $(Build.BuildNumber)
         CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
 
 - job: deploy_to_appsvc

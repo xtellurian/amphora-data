@@ -11,5 +11,5 @@ steps:
     displayName: Pulumi Up (k8s)
     env:
       PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-      IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.SourceBranchName)-$(Build.BuildNumber)
+      IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.BuildNumber)
       STACK: $(stack)

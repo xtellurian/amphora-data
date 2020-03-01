@@ -6,6 +6,6 @@ steps:
   env:
     ACR_NAME: $(pulumi.acrName)
     IMAGE: $(pulumi.acrName).azurecr.io/webapp
-    BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+    BUILD: $(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
     STAGING: $(staging)
