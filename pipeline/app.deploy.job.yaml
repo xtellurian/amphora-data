@@ -6,13 +6,12 @@ jobs:
 
 - job: deploy_container
   displayName: Deploy Container Image
-  condition:
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   dependsOn:
     - infrastructure
     - apps
   pool:
     vmImage: 'Ubuntu-16.04'
-  
   variables:
     - name: pulumi.acrName
       value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
@@ -37,7 +36,6 @@ jobs:
     - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
-
   variables:
   - name: staging
     value: ${{ parameters.staging }}
@@ -60,14 +58,12 @@ jobs:
     - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
-
   variables:
   - group: Pulumi xtellurian
   - name: staging
     value: ${{ parameters.staging }}
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
-  
   steps:
     - template: install.pulumi.steps.yaml
     - template: app.deploy-k8s.steps.yaml
