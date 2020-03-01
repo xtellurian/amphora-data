@@ -29,7 +29,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . pulumi-stack.sh
+        . ../pulumi-stack-ci.sh
         export kvUri=$(pulumi stack output kvUri)
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$kvUri"
@@ -50,14 +50,15 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . pulumi-stack.sh
+        . ../pulumi-stack-ci.sh
         export acrName=$(pulumi stack output acrName)
         popd
         pushd apps
         az acr login -n $acrName
+        set +e
         docker pull $acrName.azurecr.io/$IMAGE:latest
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
-
+        set -e
         if [ $BUILD_REASON == "PullRequest" ] ; then
           TreatWarningsAsErrors=true
           echo "TreatWarningsAsErrors=true"
@@ -84,7 +85,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . pulumi-stack.sh
+        . ../pulumi-stack-ci.sh
         export acrName=$(pulumi stack output acrName)
         export kvUri=$(pulumi stack output kvUri)
         popd

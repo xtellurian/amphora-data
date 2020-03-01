@@ -77,7 +77,7 @@ stages:
     - job: init
       steps:
       - script: echo "Swapping Slots in Prod"
-      - script: curl https://beta.amphoradata.com/healthz\?x-ms-routing-name=staging --fail
+      - script: curl https://app.amphoradata.com/healthz\?x-ms-routing-name=staging --fail
         displayName: Check Staging is healthy before swapping
 
     - template: pipeline/app.slotswap.deploymentjob.yaml

@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.EntityFramework;
 using Amphora.Common.Configuration.Options;
+using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -65,6 +68,37 @@ namespace Amphora.Api.Stores.EFCore
                         containerProperties.DefaultTimeToLive = ttl; // never expire by default
                         await container.ReplaceContainerAsync(containerProperties);
                     }
+                }
+            }
+            else
+            {
+                logger.LogWarning("Not using CosmosDB. Connection info not provided.");
+            }
+        }
+
+        public async Task LogInformationAsync()
+        {
+            if (IsUsingCosmos())
+            {
+                logger.LogInformation($"Logging Cosmos Information for database {cosmos.CurrentValue?.Database} and container {containerName}");
+                using (var client = new CosmosClient(cosmos.CurrentValue.Endpoint, cosmos.CurrentValue.PrimaryKey))
+                {
+                    var container = client.GetContainer(cosmos.CurrentValue.Database, containerName);
+
+                    var sqlQueryText = "SELECT * FROM c";
+                    var queryDefinition = new QueryDefinition(sqlQueryText);
+                    var queryResultSetIterator = container.GetItemQueryIterator<dynamic>(queryDefinition);
+
+                    long total = 0;
+                    int times = 0;
+                    while (queryResultSetIterator.HasMoreResults)
+                    {
+                        var res = await queryResultSetIterator.ReadNextAsync();
+                        total += res.Count;
+                        times++;
+                    }
+
+                    logger.LogInformation($"There are {total} Cosmos documents, queried {times} times.");
                 }
             }
             else

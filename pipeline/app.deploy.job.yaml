@@ -1,18 +1,41 @@
 
 parameters:
-  jobName: 'deploy'
   staging: 'false'
 
 jobs:
-- job: ${{ parameters.jobName }}
-  displayName: Deploy App
+
+- job: deploy_container
+  displayName: Deploy Container Image
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  dependsOn: 
+  dependsOn:
     - infrastructure
     - apps
   pool:
     vmImage: 'Ubuntu-16.04'
+  variables:
+    - name: pulumi.acrName
+      value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+    - name: pulumi.webAppResourceId
+      value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+  steps:
+    - template: az-login.steps.yaml
+    - script: ./infra/deploy-container-image.sh
+      displayName: Deploy Container to ACR
+      env:
+        ACR_NAME: $(pulumi.acrName)
+        CONTEXT: $(Build.SourcesDirectory)/apps
+        IMAGE: $(pulumi.acrName).azurecr.io/webapp
+        BUILD: $(Build.SourceBranchName)-$(Build.BuildNumber)
+        CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
 
+- job: deploy_to_appsvc
+  displayName: Deploy to Azure App Svc
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: 
+    - deploy_container
+    - infrastructure
+  pool:
+    vmImage: 'Ubuntu-16.04'
   variables:
   - name: staging
     value: ${{ parameters.staging }}
@@ -25,4 +48,22 @@ jobs:
       echo acrName is $(acrName)
       echo webAppResourceId is $(webAppResourceId)
     displayName: Echo requirement variables.
-  - template: app.deploy.steps.yaml
+  - template: app.deploy-app-svc.steps.yaml
+
+- job: deploy_to_k8s
+  displayName: Deploy to Kubernetes
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: 
+    - deploy_container
+    - infrastructure
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  variables:
+  - group: Pulumi xtellurian
+  - name: staging
+    value: ${{ parameters.staging }}
+  - name: pulumi.acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+  steps:
+    - template: install.pulumi.steps.yaml
+    - template: app.deploy-k8s.steps.yaml

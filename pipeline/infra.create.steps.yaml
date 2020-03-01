@@ -1,9 +1,9 @@
 
 steps:
+
 - script: |
-    ./infra/setup.sh
     ./infra/pulumi-up.sh
-  displayName: 'Install pulumi & run pulumi up'
+  displayName: Pulumi Up (Infra)
   name: pulumi
   env:
     PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
@@ -31,3 +31,9 @@ steps:
   env: 
     workflowTriggerId: $(pulumi.workflowTriggerId)
     appEventGridTopicId: $(pulumi.appEventGridTopicId)
+
+- script: ./infra/scripts/set-fqdn.sh -i $k8sIngressIp -n $k8sFqdnName
+  displayName: Set AKS public IP FQDN
+  env:
+    k8sIngressIp: $(pulumi.k8sIngressIp)
+    k8sFqdnName: $(pulumi.k8sFqdnName)

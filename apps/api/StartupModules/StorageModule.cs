@@ -123,6 +123,7 @@ namespace Amphora.Api.StartupModules
                 var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>();
                 initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+                initialiser.LogInformationAsync().ConfigureAwait(false);
             }
         }
     }

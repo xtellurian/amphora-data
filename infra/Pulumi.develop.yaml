@@ -1,9 +1,17 @@
 config:
   acr:sku: Basic
+  aks:nodeCount: "2"
+  aks:nodeSize: Standard_D2_v2
+  aks:spAppId: cd2af837-c848-491b-acc5-c187b42f4500
+  aks:spObjectId: dbb559ce-417d-4fef-bcb9-f65e059d2932
   amphora:SendGridApiKey:
     secure: AAABAOeeviUNSEtmScuEbitizbMppi3bZ5J9DJJvLw/BMB5AAlysqczTaHTbFOPNaaZeaVsE8LWFMFTzVd4k5E5XIQgMMUkQ1y0deEDmlwRnjYkW9R1RRxl90byaxSTnixj+sbc=
+  amphora:aksSpAppPassword:
+    secure: AAABAGrJCTpnByIoRSt6THGKrP0soiSit1S1lKPigXbx++TGRrcl1zBCnbctsHgyqONZAagiM0TPyp4A0B95aBYeUCM=
   amphora:gitHubToken:
     secure: AAABAIHcJ5TSNojPfTQ6S8HFGmByCdkaZuAGCLOTP7gs37mf9onv2CJ4Pqkg+7orHNjiPVmMlNdB3N9BTwbOmqFLCg4sEcLe
+  amphora:sshPublicKey:
+    secure: AAABADRyfHwanyhScuH6YNKlijc/kEoYMQkzAE969sg/xiBmFFZGLJlA80Jf1F5IfQSNZfvu4TGtlQU8mmHuPvnhORLYzQDiXPLTFlXltbtroVeAWN6RzM22W8OxNQrO+40ROCzXkcGLaUNfIUOhzLsA9sY5dTNXRPO1PKlvIJfZNLEaJHGUFnjiLnbfW2n40qUQnpQTxAM6STsxnwcRtXfnLQEnhjioWTM3efRNgzy6vwK/9ldtZIS8EYOj9CHDcBadKFzTp/ZKjj2WP389cmAH4K9UVrx8hz4nH/T0oz3xrQVeNE/XCRx7rf+VDkv5haYMA6/BSVLYRzHxX02wsJx4MBLy7mMruK89D+bYiZ/gjAGfI7QM+VJ31OKKzRq4LmX6LHhv6tfh9597OIj/1FYBgSXFpFBDxPFNTsVhBrfbCzkn3uIKqN9DQ0MZ4qRmyqbRIps3aS59tTZHciUri8UOSmZyIgX3/eZP3rbDEd8S8t9HIhaYKENbYMao8sW1qysYWRF74C/UxtIv6hG64I/Fv9oAsb9gzG2X3l0N8Qv3Y5eK9UQ8FjI=
   amphora:tokenManagement__secret:
     secure: AAABABnxOK+92zImVWcPhzKGyLnA73xKxu8szUC1MxWs5cZEqHiMxQESPJMobj9yZy3c4g==
   apps:plans:
