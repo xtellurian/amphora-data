@@ -7,7 +7,7 @@ config:
   # I ran > az ad sp create --id ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037
   authentication:keyVaultAppId: ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037
   authentication:keyVaultObjectId: 39ece413-93b4-4bfa-bc5b-72da722cdd23
-  authentication:spAppId: 4a60dad9-8036-4ff5-9653-c38e6e89f303
-  authentication:spObjectId: cd43f2d2-7e12-48fc-a856-713d04ab71ed
+  authentication:spAppId: 1c61bb37-e006-464d-92a4-62faf8bd39df
+  authentication:spObjectId: ac22c7c4-14aa-4b3b-a193-dcb3ebc43b42
   authentication:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   authentication:tenantId: 617bc365-674a-436e-8a27-5bacbe6df190
