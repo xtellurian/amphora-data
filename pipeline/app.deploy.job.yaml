@@ -19,14 +19,7 @@ jobs:
       value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
     - template: az-login.steps.yaml
-    - script: ./infra/deploy-container-image.sh
-      displayName: Deploy Container to ACR
-      env:
-        ACR_NAME: $(pulumi.acrName)
-        CONTEXT: $(Build.SourcesDirectory)/apps
-        IMAGE: $(pulumi.acrName).azurecr.io/webapp
-        BUILD: $(Build.BuildNumber)
-        CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
+    - template: app.deploy-container-image.steps.yaml
 
 - job: deploy_to_appsvc
   displayName: Deploy to Azure App Svc

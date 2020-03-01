@@ -1,0 +1,9 @@
+steps:
+- script: ./infra/deploy-container-image.sh
+  displayName: Deploy Container to ACR
+  env:
+    ACR_NAME: $(pulumi.acrName)
+    CONTEXT: $(Build.SourcesDirectory)/apps
+    IMAGE: $(pulumi.acrName).azurecr.io/webapp
+    BUILD: $(Build.BuildNumber)
+    CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
