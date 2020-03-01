@@ -6,6 +6,7 @@ steps:
       exit 1
     fi
     az login --service-principal -u $NAME -p $PASSWORD --tenant $TENANT
+    echo "Az Login Sucessful with Service Principal $NAME"
     az account set --subscription $SUBSCRIPTION
   displayName: Az Login to Subscription
   env: 
