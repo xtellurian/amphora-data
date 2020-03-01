@@ -16,7 +16,17 @@ steps:
     #patterns: '**' # Optional
 
 - script: |
-    set -e
-    docker load -i $(Pipeline.Workspace)/artifacts/webapp/image.tar
-    docker load -i $(Pipeline.Workspace)/artifacts/builder/image.tar
+    FILE=$ARTIFACT_DIR/webapp/image.tar
+    if test -f "$FILE"; then
+        echo "$FILE exist"
+        docker load -i $FILE
+    fi
+
+    FILE=$ARTIFACT_DIR/builder/image.tar
+    if test -f "$FILE"; then
+        echo "$FILE exist"
+        docker load -i $FILE
+    fi
   displayName: Load Docker Image Artifacts
+  env:
+    ARTIFACT_DIR: $(Pipeline.Workspace)/artifacts
