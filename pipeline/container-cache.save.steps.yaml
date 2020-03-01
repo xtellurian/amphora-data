@@ -1,0 +1,34 @@
+
+steps:
+- script: |
+    set -e
+    docker save $ACR_NAME.azurecr.io/webapp:$BUILD -o $(Build.ArtifactStagingDirectory)/webapp/image.tar
+    docker save $ACR_NAME.azurecr.io/builder:latest -o $(Build.ArtifactStagingDirectory)/builder/image.tar
+  displayName: Save Docker Images to file
+  env:
+    ACR_NAME: $(pulumi.acrName)
+    BUILD: $(Build.BuildNumber)
+
+# Publish build artifacts to Azure Pipelines or a Windows file share
+- task: PublishBuildArtifacts@1
+  displayName: Save WebApp Image
+  inputs:
+    pathtoPublish: $(Build.ArtifactStagingDirectory)/webapp/image.tar
+    artifactName: webapp 
+    #publishLocation: 'Container' # Options: container, filePath
+    #targetPath: # Required when publishLocation == FilePath
+    #parallel: false # Optional
+    #parallelCount: # Optional
+    #fileCopyOptions: #Optional
+
+# Publish build artifacts to Azure Pipelines or a Windows file share
+- task: PublishBuildArtifacts@1
+  displayName: Save Builder Image 
+  inputs:
+    pathtoPublish: $(Build.ArtifactStagingDirectory)/builder/image.tar
+    artifactName: builder 
+    #publishLocation: 'Container' # Options: container, filePath
+    #targetPath: # Required when publishLocation == FilePath
+    #parallel: false # Optional
+    #parallelCount: # Optional
+    #fileCopyOptions: #Optional

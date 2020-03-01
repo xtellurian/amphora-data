@@ -1,4 +1,5 @@
 steps:
+- template: container-cache.load.steps.yaml
 - script: ./infra/deploy-container-image.sh
   displayName: Deploy Container to ACR
   env:
@@ -7,3 +8,4 @@ steps:
     IMAGE: $(pulumi.acrName).azurecr.io/webapp
     BUILD: $(Build.BuildNumber)
     CACHED_IMAGE: $(pulumi.acrName).azurecr.io/builder:latest # will never exit for this build number
+- template: container-cache.save.steps.yaml

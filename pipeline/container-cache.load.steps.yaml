@@ -1,0 +1,22 @@
+steps:
+
+# Download build and pipeline artifacts
+- task: DownloadPipelineArtifact@2
+  displayName: Download Artifacts
+  inputs:
+    source: 'current' # Options: current, specific
+    path: $(Pipeline.Workspace)/artifacts/
+    #project: # Required when source == Specific
+    #pipeline: # Required when source == Specific
+    #preferTriggeringPipeline: false # Optional
+    #runVersion: 'latest' # Required when source == Specific# Options: latest, latestFromBranch, specific
+    #runBranch: 'refs/heads/master' # Required when source == Specific && RunVersion == LatestFromBranch
+    #runId: # Required when source == Specific && RunVersion == Specific
+    #tags: # Optional
+    #patterns: '**' # Optional
+
+- script: |
+    set -e
+    docker load -i $(Pipeline.Workspace)/artifacts/webapp/image.tar
+    docker load -i $(Pipeline.Workspace)/artifacts/builder/image.tar
+  displayName: Load Docker Image Artifacts

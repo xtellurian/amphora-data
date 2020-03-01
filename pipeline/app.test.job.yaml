@@ -45,6 +45,7 @@ jobs:
 
     # required to access KV in testing
     - template: az-login.steps.yaml
+    - template: container-cache.load.steps.yaml
 
     # required to access KV in testing
     - script: |
@@ -79,6 +80,8 @@ jobs:
         BUILD: $(Build.BuildNumber)
         PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
         CONTEXT: $(Build.SourcesDirectory)/apps
+
+    - template: container-cache.save.steps.yaml
 
     - template: az-login.steps.yaml # login again to ensure the tests work
     
