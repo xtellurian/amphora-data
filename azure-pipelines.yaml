@@ -23,6 +23,15 @@ stages:
       value: $(Build.SourceBranchName)
     - group: AzureDeploySP
   jobs:
+  - job: delay_if_pr
+    pool: server
+    displayName: Delay if Pull Request
+    steps:
+      - task: Delay@1
+        displayName: Avoid conflict PRs and Branch Builds
+        condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+        inputs:
+          delayForMinutes: '2'
   - template: pipeline/infra.create.job.yaml
     parameters:
       jobName: infrastructure

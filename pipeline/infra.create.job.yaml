@@ -11,15 +11,12 @@ jobs:
   displayName: infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
+  dependsOn: 
+    - delay_if_pr
   variables:
   - group: Pulumi xtellurian
 
   steps:
-  - task: Delay@1
-    displayName: Avoid conflict PRs and Branch Builds
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
-    inputs:
-      delayForMinutes: '2'
   - template: az-login.steps.yaml
   - template: install.pulumi.steps.yaml
   - template: infra.create.steps.yaml
