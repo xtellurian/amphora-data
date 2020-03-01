@@ -12,3 +12,4 @@ steps:
     env:
       PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
       IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.SourceBranchName)-$(Build.BuildNumber)
+      STACK: $(stack)
