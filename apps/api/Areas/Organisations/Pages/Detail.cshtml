@@ -13,10 +13,9 @@
                         @{var profilePicture = $"/api/Organisations/{Model.Organisation.Id}/profile.jpg" ;}
                         <img src="@profilePicture" class="img-fluid"/>
                     </div>
+
                     <div class="w-100 mb-1">
-                        <strong>@Model.Organisation.Name</strong>
-                    </div>
-                    <div class="w-100 mb-1">
+                        
                         <span class="dropdown show float-right">
                             <a class="text-right btn btn-sm btn-link dropdown-toggle" href="#" role="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Options <i class="ml-1 fas fa-ellipsis-v"></i>
@@ -29,7 +28,7 @@
                                 @if (Model.CanInvite)
                                 {
                                     <a class="dropdown-item btn btn-light btn-block mx-auto" asp-area="Organisations" asp-page="./Invite">
-                                        <i class="fas fa-user-plus"></i> Invite
+                                        <i class="fas fa-user-plus"></i> Invite Team Members
                                     </a>
                                     <a class="dropdown-item btn btn-light btn-block mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Index"> 
                                         <i class="fas fa-ban"></i> Restrictions
@@ -43,17 +42,20 @@
                                 }
                             </div>
                         </span>
-                        <small>@Model.Organisation.Id</small>
+                        <h6>@Model.Organisation.Name</h6>
                     </div>
-                    <hr/>
                     
                     @if(Model.CanRequestToJoin)
                     {
+                        <hr/>
                         <a class="btn btn-success btn-block mb-3 mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="RequestToJoin">
                             Request to Join
                         </a>
-                        <hr/>
                     }
+                    <div class="w-100 text-wrap">
+                        <small>@Model.Organisation.Id</small>
+                    </div>
+                    <hr/>
                     <span style="white-space: pre-line">@Model.Organisation.About</span>
                                      
                 </div>
@@ -78,24 +80,28 @@
                 <div class="card-header mb-2">
                     <div class="float-right">
                         <a asp-area="Organisations" asp-page="./Members" asp-route-id="@Model.Organisation.Id"><i class="fas fa-cog"></i> </a>
-                        <a asp-area="Organisations" asp-page="/Invite"><i class="fas fa-user-plus"></i> </a>
                     </div>
                     Members
                 </div>
                 <div class="card-body">
-
-                    <ul>
+                    @if (Model.CanInvite)
+                    {
+                        <div class="text-left mb-4">
+                            <a class="card-link" asp-area="Organisations" asp-page="/Invite"> <i class="fas fa-user-plus mr-2"></i> Invite Team Members</a>
+                        </div>
+                    }
+                    <ul class="list-group">
                     @foreach (var m in Model.Organisation.Memberships)
                     {
                         @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
                         {
-                            <li> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
+                            <li class="list-group-item"> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
                                 <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
                             </li>
                         }
                         else
                         {
-                            <li> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
+                            <li class="list-group-item"> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
                                 <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
                             </li>
                         }
