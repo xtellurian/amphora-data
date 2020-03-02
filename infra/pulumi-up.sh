@@ -26,6 +26,11 @@ echo build reason is $BUILD_REASON
 
 pulumi up --yes
 
+# stack output as an artifact
+pulumi stack output -j >> $STACK_OUTPUT_DIR/$STACK.output.json
+# due to the way PublishBuildArtifacts works, to make available in this job
+cp $STACK_OUTPUT_DIR/$STACK.output.json $(Pipeline.Workspace)/artifacts/apps 
+
 kvUri=$(pulumi stack output kvUri)
 kvName=$(pulumi stack output kvName)
 acrName=$(pulumi stack output acrName)
