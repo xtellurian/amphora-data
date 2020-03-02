@@ -33,7 +33,7 @@ function organisationsAutocomplete(elementId, resultsId, destinationId, url, onS
                 return query.replace("pizza", "burger");
             }
         },
-        placeHolder: "Org Search",
+        placeHolder: "Organisation Name",
         selector: `#${elementId}`,
         threshold: 3,
         debounce: 250,
