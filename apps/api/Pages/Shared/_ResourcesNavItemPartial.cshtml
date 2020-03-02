@@ -1,0 +1,23 @@
+
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="helpDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Resources
+    </a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item nav-link text-light" target="_blank" href="https://amphoradata.github.io/docs/overview/about">
+            Docs <i class="float-right fas fa-book fa-lg mr-1"></i>
+        </a>
+        <a class="dropdown-item nav-link text-light" asp-area="" target="_blank" asp-page="/Redirection/Chat">
+            Chat <i class="float-right fas fa-comments fa-lg mr-1"></i>
+        </a>
+
+        @{
+            var from = Context.Request.Host + Context.Request.Path;
+        }
+
+        <a class="dropdown-item nav-link text-light" asp-area="" target="_blank" asp-page="/Redirection/Feedback" asp-route-from="@from">
+            Feedback <i class="float-right fas fa-theater-masks fa-lg mr-1"></i>
+        </a>
+    </div>
+</li>
