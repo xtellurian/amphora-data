@@ -17,6 +17,7 @@ export interface IAksParams {
     monitoring: Monitoring;
     network: Network;
     state: State;
+    location: string;
 }
 
 const tags = {
@@ -38,8 +39,6 @@ const password = cfg.requireSecret("aksSpAppPassword");
 
 const sshPublicKey = cfg.requireSecret("sshPublicKey");
 
-const location = CONSTANTS.location.primary;
-const failoverLocation = CONSTANTS.location.secondary;
 const nodeCount = config.getNumber("nodeCount") || 2;
 const nodeSize = config.get("nodeSize") || "Standard_D2_v2";
 
@@ -83,7 +82,7 @@ export class Aks extends pulumi.ComponentResource {
                 adminUsername: "aksuser",
                 sshKey: { keyData: sshPublicKey },
             },
-            location,
+            location: this.params.location,
             resourceGroupName: rg.name,
             roleBasedAccessControl: {
                 enabled: true,

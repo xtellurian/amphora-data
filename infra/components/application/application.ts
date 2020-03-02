@@ -26,9 +26,14 @@ export interface IApplication {
   appSvc: AppSvc;
 }
 
+export interface IAksCollection {
+  primary: Aks;
+  secondary: Aks;
+}
+
 export class Application extends pulumi.ComponentResource
   implements IApplication {
-  public aks: Aks;
+  public aks: IAksCollection;
   public appSvc: AppSvc;
   public acr: azure.containerservice.Registry;
   public tsi: Tsi;
@@ -87,15 +92,32 @@ export class Application extends pulumi.ComponentResource
   }
 
   private createAks(rg: azure.core.ResourceGroup) {
-    this.aks = new Aks("aksComponent", {
+    const primary = new Aks("aksPrimary", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
       kv: this.state.kv,
+      location: CONSTANTS.location.primary,
       monitoring: this.monitoring,
       network: this.network,
       rg,
       state: this.state,
     }, { parent: this });
+
+    const secondary = new Aks("aksSecondary", {
+      acr: this.acr,
+      appSettings: this.appSvc.appSettings,
+      kv: this.state.kv,
+      location: CONSTANTS.location.secondary,
+      monitoring: this.monitoring,
+      network: this.network,
+      rg,
+      state: this.state,
+    }, { parent: this });
+
+    this.aks = {
+      primary,
+      secondary,
+    };
   }
 
   private createSearch(rg: azure.core.ResourceGroup) {

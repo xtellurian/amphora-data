@@ -70,26 +70,6 @@ export let acrName = result.then((r) =>
 export let acrId = result.then((r) =>
   r.application.acr.id,
 );
-export let k8sName = result.then((r) =>
-  r.application.aks.k8sCluster.name,
-);
-export let k8sGroup = result.then((r) =>
-  r.application.aks.k8sCluster.resourceGroupName,
-);
-export let k8sIngressIp = result.then((r) =>
-  r.application.aks.k8sInfra.ingressController
-    .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
-    .apply((service) => service.status.loadBalancer.ingress[0].ip),
-);
-export let k8sFqdnName = result.then((r) =>
-  r.application.aks.k8sInfra.fqdnName,
-);
-export let k8sFqdn = result.then((r) =>
-  r.application.aks.k8sInfra.fqdn,
-);
-export let kubeConfig = result.then((r) =>
-  r.application.aks.k8sCluster.kubeConfigRaw,
-);
 export let workflowTriggerId = result.then((r) =>
   r.business.workflowTrigger.id,
 );
@@ -101,3 +81,30 @@ export let webAppResourceId = result.then((r) => generateIdList(r.application.ap
 export let webAppResourceIds = result.then((r) =>
   r.application.appSvc.apps.map((a) => a.appSvc.id),
 );
+
+// k8s exports
+export let k8sPrimary = result.then((r) => {
+  return {
+    fqdn: r.application.aks.primary.k8sInfra.fqdn,
+    fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
+    group: r.application.aks.primary.k8sCluster.resourceGroupName,
+    ingressIp: r.application.aks.primary.k8sInfra.ingressController
+      .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
+      .apply((service) => service.status.loadBalancer.ingress[0].ip),
+    kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
+    name: r.application.aks.primary.k8sCluster.name,
+  };
+});
+
+export let k8sSecondary = result.then((r) => {
+  return {
+    fqdn: r.application.aks.secondary.k8sInfra.fqdn,
+    fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
+    group: r.application.aks.secondary.k8sCluster.resourceGroupName,
+    ingressIp: r.application.aks.secondary.k8sInfra.ingressController
+      .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
+      .apply((service) => service.status.loadBalancer.ingress[0].ip),
+    kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
+    name: r.application.aks.secondary.k8sCluster.name,
+  };
+});
