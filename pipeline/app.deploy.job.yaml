@@ -18,6 +18,7 @@ jobs:
     - name: pulumi.webAppResourceId
       value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
+    - template: artifacts.download.steps.yaml
     - template: az-login.steps.yaml
     - template: app.deploy-container-image.steps.yaml
 
@@ -37,6 +38,7 @@ jobs:
   - name: pulumi.webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
   steps:
+  - template: artifacts.download.steps.yaml
   - script: |
       echo acrName is $(acrName)
       echo webAppResourceId is $(webAppResourceId)
@@ -58,5 +60,6 @@ jobs:
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   steps:
+    - template: artifacts.download.steps.yaml
     - template: install.pulumi.steps.yaml
     - template: app.deploy-k8s.steps.yaml
