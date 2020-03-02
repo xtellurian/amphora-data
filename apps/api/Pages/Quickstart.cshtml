@@ -1,0 +1,48 @@
+@page
+@model Amphora.Api.Pages.QuickstartPageModel
+
+@{
+    ViewData["Title"] = "Getting Started";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-7 align-self-center text-center">
+           <h1>Getting Started</h1>
+           <hr/>
+        </div>
+    </div>
+
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-8 align-self-center text-center">
+            <div class="card m-2">
+                <div class="card-body">
+                    <a asp-area="Discover" asp-page="/Index" class="btn btn-success btn-lg w-75 m-4">Discover Data</a>
+                    <h6 class="card-subtitle text-muted">Find new insights from across Australia and the US.</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-8 align-self-center text-center">
+            <div class="card m-2">
+                <div class="card-body">
+                    <a  asp-area="Amphorae" asp-page="/Create" class="btn btn-success btn-lg w-75 m-4">Share Data</a>
+                    <h6 class="card-subtitle text-muted">Create an Amphora to share your existing data.</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-8 align-self-center text-center">
+            <div class="card m-2">
+                <div class="card-body">
+                    <a  asp-area="" asp-page="./Tutorial/WhatIsAnAmphora" class="btn btn-success btn-lg w-75 m-4">Read Tutorial</a>
+                    <h6 class="card-subtitle text-muted">Best if this is your first time using Amphora.</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

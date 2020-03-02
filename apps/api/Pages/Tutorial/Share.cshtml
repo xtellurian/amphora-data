@@ -1,0 +1,30 @@
+@page
+@model Amphora.Api.Pages.Tutorial.SharePageModel
+
+@{
+    ViewData["Title"] = "Discover";
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-center">
+        <div class="col-8 align-self-center">
+            <h2>Share Data</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-7 align-self-center">
+           <p>You've seen some of the data already available, now it's time to share your own.</p>
+           <p> 
+                By clicking on the <strong>Share</strong> link in the navigation menu, you can create your own Amphora.
+                Amphora can contain two types of data: <strong>Files</strong> and <strong>Signals</strong>. You can learn more about the differences on the <a href="https://amphoradata.github.io/docs/overview/about" target="_blank">Amphora docs site</a>.
+           </p>
+        </div>
+    </div>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-8 align-self-center">
+            <a class="btn btn-secondary float-left" asp-page="./Discover">Back</a>
+            <a class="btn btn-success float-right" asp-page="./Manage">Next</a>
+        </div>
+    </div>
+</div>

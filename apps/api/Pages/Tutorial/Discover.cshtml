@@ -1,0 +1,31 @@
+@page
+@model Amphora.Api.Pages.Tutorial.DiscoverPageModel
+
+@{
+    ViewData["Title"] = "Discover";
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-center">
+        <div class="col-8 align-self-center">
+            <h2>Discover Data</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-7 align-self-center">
+            <p>
+                There is a great and growing variety on Amphora Data. Under <strong>Discover</strong> you'll find tools to help you find data that's relevent for your situation.
+            </p>
+            <p>
+                If you find an Amphora that contain the data you're looking for, then you can purchase access to the data. You <em>must</em> agree to any Terms and Conditions attached.
+            </p>
+        </div>
+    </div>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-8 align-self-center">
+            <a class="btn btn-secondary float-left" asp-page="./Navigation">Back</a>
+            <a class="btn btn-success float-right" asp-page="./Share">Next</a>
+        </div>
+    </div>
+</div>

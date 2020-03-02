@@ -1,0 +1,41 @@
+@page
+@model Amphora.Api.Pages.Tutorial.WhatIsAnAmphoraPageModel
+
+@{
+    ViewData["Title"] = "What is an Amphora?";
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-center">
+        <div class="col-8 align-self-center">
+            <h2>What is an Amphora?</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-7 align-self-center">
+           <p>
+               Amphora Data is a powerful tool for data collaboration. 
+               An Amphora is an <strong>abstraction</strong> on data that enables the standardisation of access control and discoverability.
+           </p>
+           <p>
+               By storing data in an Amphora you can:
+               <ul>
+                   <li> Access data from anywhere is the world. </li>
+                   <li> Provide data to any other user of Amphora Data. </li>
+                   <li> Control and audit which users & organisation have access to your data. </li>
+                   <li> Enforce custom terms and conditions related to data use. </li>
+                   <li> Charge data users a monthly access fee. </li>
+                   <li> Describe metadata such as geo-location, custom attributes, descriptions, etc. </li>
+                   <li> Discover and consume data sets from other Amphora Data users. </li>
+               </ul>
+           </p>
+        </div>
+    </div>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-8 align-self-center">
+            <a class="btn btn-secondary float-left" asp-page="../Quickstart">Back</a>
+            <a class="btn btn-success float-right" asp-page="./Navigation">Next</a>
+        </div>
+    </div>
+</div>

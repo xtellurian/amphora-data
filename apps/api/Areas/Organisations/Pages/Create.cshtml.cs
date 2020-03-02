@@ -94,7 +94,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
                         }
                     }
 
-                    return RedirectToPage("/Home/Index");
+                    // Happy Path
+                    return RedirectToPage("/Quickstart");
                 }
                 else
                 {

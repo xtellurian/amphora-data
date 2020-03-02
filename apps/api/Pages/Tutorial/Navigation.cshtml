@@ -1,0 +1,34 @@
+@page
+@model Amphora.Api.Pages.Tutorial.NavigationPageModel
+
+@{
+    ViewData["Title"] = "Navigation";
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-center">
+        <div class="col-8 align-self-center">
+            <h2>Navigating Amphora Data</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row mb-2 justify-content-center">
+        <div class="col-7 align-self-center">
+            <p>
+                In the navigation bar, you'll find three main options: <strong>Discover</strong>, <strong>Manage</strong> and <strong>Share</strong>. We'll go over these in the next few pages. 
+            </p>
+            <p>
+                Under <strong>Resources</strong> you'll find useful links, including to Amphora documentation. 
+            </p>
+            <p>
+                Clicking on your <strong>profile picture</strong> (which uses <a href="https://en.gravatar.com/">Gravatar</a>) will display options relevent to your profile and your organisation.
+            </p>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-8 align-self-center">
+             <a class="btn btn-secondary float-left" asp-page="./WhatIsAnAmphora">Back</a>
+            <a class="btn btn-success float-right" asp-page="./Discover">Next</a>
+        </div>
+    </div>
+</div>

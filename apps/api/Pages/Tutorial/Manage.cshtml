@@ -1,0 +1,31 @@
+@page
+@model Amphora.Api.Pages.Tutorial.ManagePageModel
+
+@{
+    ViewData["Title"] = "Manage";
+}
+
+<div class="container">
+    <div class="row mb-2 justify-content-center">
+        <div class="col-8 align-self-center">
+            <h2>Manage Data</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row mb-2 justify-content-center h-75">
+        <div class="col-7 align-self-center">
+           <p>
+               All Amphora Data users are members of <strong>Organisations</strong>. Amphora are owned by Organisations, and managed by the members of that Organisation.
+           </p>
+           <p>
+               By clicking on the <strong>Manage</strong> link in the navigation menu, you'll find all the Amphora created by you and your Organisation.
+           </p>
+        </div>
+    </div>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-8 align-self-center">
+            <a class="btn btn-secondary float-left" asp-page="./Share">Back</a>
+            <a class="btn btn-success float-right" asp-page="./Final">Next</a>
+        </div>
+    </div>
+</div>
