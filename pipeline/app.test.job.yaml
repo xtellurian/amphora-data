@@ -118,9 +118,10 @@ jobs:
         codecoverageTool: cobertura
 
     - task: PublishBuildArtifacts@1
+      displayName: Publish All Build Artifacts
       inputs:
         pathtoPublish: $(Build.ArtifactStagingDirectory)
-        artifactName: 'dgml' 
+        artifactName: ${{ parameters.jobName }}
         publishLocation: 'Container' # Options: container, filePath
 
 # - job: dgml
