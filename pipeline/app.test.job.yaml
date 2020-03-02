@@ -70,7 +70,7 @@ jobs:
 
         if [[ "$(docker images -q $acrName.azurecr.io/$IMAGE:$BUILD 2> /dev/null)" == "" ]]; then
           echo "Building Docker Image"
-          docker build --target builder --cache-from $acrName.azurecr.io/$IMAGE:latest --build-arg TreatWarningsAsErrors=$TreatWarningsAsErrors -t $acrName.azurecr.io/$IMAGE:latest -t $acrName.azurecr.io/$IMAGE:$BUILD -f Dockerfile $CONTEXT
+          docker build --target builder --cache-from $acrName.azurecr.io/$IMAGE:latest --build-arg TreatWarningsAsErrors=$TreatWarningsAsErrors -t $acrName.azurecr.io/$IMAGE:latest -t $acrName.azurecr.io/$IMAGE:$BUILD -t $IMAGE:latest -f Dockerfile $CONTEXT
           docker push $acrName.azurecr.io/$IMAGE:latest
           docker push $acrName.azurecr.io/$IMAGE:$BUILD
         fi

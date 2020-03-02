@@ -26,7 +26,7 @@ docker pull $CACHED_IMAGE || true # don't fail when cached image doesn't exist.
 
 # build
 docker build --target builder --cache-from $CACHED_IMAGE -t $CACHED_IMAGE $CONTEXT # rebuild the cache
-docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD --build-arg gitHash=$GITHASH $CONTEXT
+docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD -t webapp:latest --build-arg gitHash=$GITHASH $CONTEXT
 
 # push
 docker push $CACHED_IMAGE
