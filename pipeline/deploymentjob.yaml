@@ -24,6 +24,7 @@ jobs:
         steps:
         - checkout: self  # deployment job doesn't check it out
           persistCredentials: true
+        - template: artifacts.download.steps.yaml
         - template: az-login.steps.yaml
         - template: install.pulumi.steps.yaml
         - template: infra.create.steps.yaml
