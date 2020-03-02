@@ -1,4 +1,4 @@
-#1/bin/bash
+#!/bin/bash
 # Add the pulumi CLI to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
 
