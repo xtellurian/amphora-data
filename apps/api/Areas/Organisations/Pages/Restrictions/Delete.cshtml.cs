@@ -20,7 +20,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
         }
 
         public OrganisationModel Organisation { get; private set; }
-        public RestrictionModel Target { get; private set; }
+        public RestrictionModel Restriction { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string targetOrganisationId)
         {
@@ -33,8 +33,8 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
             if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
-                this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
-                if (Target == null)
+                this.Restriction = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
+                if (Restriction == null)
                 {
                     return RedirectToIndex(id);
                 }
@@ -56,13 +56,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.Restrictions
             if (readRes.Succeeded)
             {
                 this.Organisation = readRes.Entity;
-                this.Target = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
-                if (Target == null)
+                this.Restriction = this.Organisation.Restrictions.FirstOrDefault(_ => _.TargetOrganisationId == targetOrganisationId);
+                if (Restriction == null)
                 {
                     return RedirectToIndex(id);
                 }
 
-                var deleteRes = await restrictionService.DeleteAsync(User, Target.Id);
+                var deleteRes = await restrictionService.DeleteAsync(User, Restriction.Id);
                 if (deleteRes.Succeeded) { return RedirectToIndex(id); }
                 else if (deleteRes.WasForbidden) { return StatusCode(403); }
                 else { ModelState.AddModelError(string.Empty, deleteRes.Message); }

@@ -34,7 +34,7 @@
         </a>
     </div>
     <div class="col-1 order-12">
-        <a asp-page="./Delete" asp-route-targetOrganisationId="@Model.Restriction.TargetOrganisationId" class="btn btn-link text-danger">
+        <a asp-area="Organisations" asp-page="./Delete" asp-route-id="@Model.Restriction.SourceOrganisationId" asp-route-targetOrganisationId="@Model.Restriction.TargetOrganisationId" class="btn btn-link text-danger">
             <i class="fas fa-times-circle"></i>
         </a> 
     </div>
