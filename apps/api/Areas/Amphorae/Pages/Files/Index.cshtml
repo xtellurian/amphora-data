@@ -39,13 +39,19 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col">
+            @{var index = 0;}
             @foreach (var n in Model.Names)
             {
-                <div class="row m-2">
+                var bg = "";
+                if(index++ %2 == 1)
+                {
+                    bg = "bg-light";
+                }
+                <div class="row m-2 @bg">
                     <div class="col text-wrap">
                         @n
                     </div>
-                    <div class="col-sm-1">
+                    <div class="col-1 text-left">
                         @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
                         {
                             <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
