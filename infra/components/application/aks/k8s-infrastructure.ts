@@ -98,7 +98,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             apiVersion: "aadpodidentity.k8s.io/v1",
             kind: "AzureIdentityBinding",
             metadata: {
-                name: "demo1-azure-identity-binding",
+                name: "frontend-azure-id-binding",
                 namespace: amphoraNamespace.metadata.name,
             },
             spec: {
@@ -110,7 +110,13 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         const binding = new k8s.yaml.ConfigGroup(`${this.name}-idBinding`, {
             objs: [bindingConfig],
             resourcePrefix: this.name,
-        }, opts);
+        }, {
+            ...opts,
+            dependsOn: [
+                identity,
+                aadPods,
+            ],
+        });
 
         // ingress ctrler
         this.ingressController = new k8s.yaml.ConfigFile(
