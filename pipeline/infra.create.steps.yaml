@@ -14,6 +14,7 @@ steps:
     STACK: $(stack) 
     DEPLOYMENT_ENVIRONMENT: $(Environment.Name)
     STACK_OUTPUT_DIR: $(Build.ArtifactStagingDirectory)
+    ARTIFACT_DIR: $(Pipeline.Workspace)/artifacts/apps
 
 - script: |
     echo "$kvUri"
