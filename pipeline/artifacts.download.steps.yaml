@@ -1,4 +1,8 @@
 steps:
+
+- script: mkdir -p $ARTIFACT_DIR
+  env:
+    ARTIFACT_DIR: $(Pipeline.Workspace)/artifacts
 # Download pipeline artifacts
 # Download build and pipeline artifacts
 - task: DownloadPipelineArtifact@2
