@@ -20,3 +20,9 @@ jobs:
   - template: az-login.steps.yaml
   - template: install.pulumi.steps.yaml
   - template: infra.create.steps.yaml
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Build Artifacts
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: infra
+      publishLocation: 'Container' # Options: container, filePath

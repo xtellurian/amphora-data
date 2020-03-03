@@ -14,7 +14,7 @@ steps:
     STACK: $(stack) 
     DEPLOYMENT_ENVIRONMENT: $(Environment.Name)
     STACK_OUTPUT_DIR: $(Build.ArtifactStagingDirectory)
-    ARTIFACT_DIR: $(Pipeline.Workspace)/artifacts/apps
+    ARTIFACT_DIR: $(Pipeline.Workspace)/artifacts/infra
 
 - script: |
     echo "$kvUri"
@@ -37,4 +37,4 @@ steps:
 - script: ./infra/scripts/set-fqdn-multi.sh
   displayName: Set Multi AKS public IP FQDN 
   env:
-    STACK_OUTPUT_PATH: $(Pipeline.Workspace)/artifacts/apps/$(pulumi.stack).output.json
+    STACK_OUTPUT_PATH: $(Pipeline.Workspace)/artifacts/infra/$(pulumi.stack).output.json

@@ -27,6 +27,7 @@ echo build reason is $BUILD_REASON
 pulumi up --yes
 
 # stack output as an artifact
+echo "STACK_OUTPUT_DIR is $STACK_OUTPUT_DIR"
 pulumi stack output -j >> $STACK_OUTPUT_DIR/$STACK.output.json
 # due to the way PublishBuildArtifacts works, to make available in this job
 echo "Artifact Dir is $ARTIFACT_DIR"
