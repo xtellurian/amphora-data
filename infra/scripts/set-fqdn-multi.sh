@@ -6,11 +6,10 @@ set -e -x
 cd $(dirname "$0")
 
 if [ -z "$STACK_OUTPUT_PATH" ]; then
-        echo "Unknown Stack Output Path"
-        exit 1
-    fi
-
-    STACK_OUTPUT_PATH=$(Pipeline.Workspace)/artifacts/apps/$STACK.output.json
+    echo "STACK_OUTPUT_PATH not set"
+    exit 1
+else
+    echo "STACK_OUTPUT_PATH is $STACK_OUTPUT_PATH"
 fi
 
 fqdnName=$( echo jq -r  '.k8sPrimary.fqdnName' <<< "$(cat $STACK_OUTPUT_PATH)" ) 
