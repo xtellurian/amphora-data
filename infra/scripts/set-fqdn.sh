@@ -1,5 +1,4 @@
 #!/bin/bash
-# ./set-fqdn.sh -i $(pulumi stack output k8sIngressIp) -n $(pulumi stack output k8sFqdnName)
 set -e
 while getopts i:n: option
 do
