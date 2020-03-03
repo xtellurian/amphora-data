@@ -41,8 +41,6 @@ workflowTriggerId=$(pulumi stack output workflowTriggerId)
 appEventGridTopicId=$(pulumi stack output appEventGridTopicId)
 
 acrId=$(pulumi stack output acrId)
-k8sName=$(pulumi stack output k8sName)
-k8sGroup=$(pulumi stack output k8sGroup)
 
 
 
@@ -56,11 +54,6 @@ echo "##vso[task.setvariable variable=workflowTriggerId;isOutput=true]$workflowT
 echo "##vso[task.setvariable variable=appEventGridTopicId;isOutput=true]$appEventGridTopicId"
 
 echo "##vso[task.setvariable variable=acrId;isOutput=true]$acrId"
-echo "##vso[task.setvariable variable=k8sGroup;isOutput=true]$k8sGroup"
-echo "##vso[task.setvariable variable=k8sName;isOutput=true]$k8sName"
-
-echo "##vso[task.setvariable variable=k8sFqdnName;isOutput=true]$(pulumi stack output k8sFqdnName)"
-echo "##vso[task.setvariable variable=k8sIngressIp;isOutput=true]$(pulumi stack output k8sIngressIp)"
 
 
 popd
