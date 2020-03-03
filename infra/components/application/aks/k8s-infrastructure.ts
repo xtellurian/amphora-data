@@ -92,7 +92,10 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         const identity = new k8s.yaml.ConfigGroup(`${this.name}-identity`, {
             objs: [indentityConfig],
             resourcePrefix: this.name,
-        }, opts);
+        }, {
+            ...opts,
+            dependsOn: aadPods,
+        });
 
         const bindingConfig = {
             apiVersion: "aadpodidentity.k8s.io/v1",
