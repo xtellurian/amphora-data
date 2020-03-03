@@ -88,9 +88,6 @@ export let k8sPrimary = result.then((r) => {
     fqdn: r.application.aks.primary.k8sInfra.fqdn,
     fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
     group: r.application.aks.primary.k8sCluster.resourceGroupName,
-    // ingressIp: r.application.aks.primary.k8sInfra.ingressController
-    //   .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
-    //   .apply((service) => service.status.loadBalancer.ingress[0].ip),
     ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
     kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
     name: r.application.aks.primary.k8sCluster.name,
@@ -102,9 +99,6 @@ export let k8sSecondary = result.then((r) => {
     fqdn: r.application.aks.secondary.k8sInfra.fqdn,
     fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
     group: r.application.aks.secondary.k8sCluster.resourceGroupName,
-    // ingressIp: r.application.aks.secondary.k8sInfra.ingressController
-    //   .getResource("v1/Service", "ingress-nginx", "ingress-nginx")
-    //   .apply((service) => service.status.loadBalancer.ingress[0].ip),
     ingressIp: r.application.aks.secondary.k8sInfra.ingressIp,
     kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
     name: r.application.aks.secondary.k8sCluster.name,
