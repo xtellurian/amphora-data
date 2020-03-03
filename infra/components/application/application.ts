@@ -12,6 +12,8 @@ import { AzureSearch } from "./search/azure-search";
 import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("acr");
+const aksConfig = new pulumi.Config("aks");
+const objectId = aksConfig.require("spObjectId");
 
 const tags = {
   component: "application",
@@ -80,7 +82,7 @@ export class Application extends pulumi.ComponentResource
     this.createAzureMaps(rg);
     this.createTsi();
     this.createConfigStore(rg);
-    this.createAks(rg);
+    this.createAks(rg, this.acr);
 
     const searchRg = new azure.core.ResourceGroup(searchRgName,
       {
@@ -91,7 +93,17 @@ export class Application extends pulumi.ComponentResource
     this.createSearch(searchRg);
   }
 
-  private createAks(rg: azure.core.ResourceGroup) {
+  private createAks(rg: azure.core.ResourceGroup, acr: azure.containerservice.Registry) {
+
+    const roleAssignment = new azure.role.Assignment("acrPull", {
+      principalId: objectId,
+      roleDefinitionName: "AcrPull",
+      scope: this.acr.id,
+    }, {
+      dependsOn: this.acr,
+      parent: this,
+    });
+
     const primary = new Aks("aksAU1", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
