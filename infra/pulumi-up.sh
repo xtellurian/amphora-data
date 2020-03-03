@@ -30,6 +30,7 @@ pulumi up --yes
 pulumi stack output -j >> $STACK_OUTPUT_DIR/$STACK.output.json
 # due to the way PublishBuildArtifacts works, to make available in this job
 echo "Artifact Dir is $ARTIFACT_DIR"
+mkdir $ARTIFACT_DIR # make artfact dir if not exist
 cp $STACK_OUTPUT_DIR/$STACK.output.json $ARTIFACT_DIR
 
 kvUri=$(pulumi stack output kvUri)
