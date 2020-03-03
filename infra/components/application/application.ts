@@ -104,7 +104,7 @@ export class Application extends pulumi.ComponentResource
       parent: this,
     });
 
-    const primary = new Aks("aksAU1", {
+    const primary = new Aks("aks-au1", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
       kv: this.state.kv,
@@ -115,7 +115,7 @@ export class Application extends pulumi.ComponentResource
       state: this.state,
     }, { parent: this });
 
-    const secondary = new Aks("aksAU2", {
+    const secondary = new Aks("aks-au2", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
       kv: this.state.kv,
