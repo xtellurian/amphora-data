@@ -2,7 +2,7 @@
 # Add the pulumi CLI to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
 
-set -e -x
+set -e
 cd $(dirname "$0")
 
 if [ -z "$STACK_OUTPUT_PATH" ]; then
@@ -12,10 +12,12 @@ else
     echo "STACK_OUTPUT_PATH is $STACK_OUTPUT_PATH"
 fi
 
-fqdnName=$( echo jq -r  '.k8sPrimary.fqdnName' <<< "$(cat $STACK_OUTPUT_PATH)" ) 
-ip=$( echo jq -r  '.k8sPrimary.ingressIp' <<< "$(cat $STACK_OUTPUT_PATH)" ) 
+OUTPUT=$(cat $STACK_OUTPUT_PATH)
+echo $OUTPUT
+fqdnName=$(jq -r  '.k8sPrimary.fqdnName' <<< ${OUTPUT} ) 
+ip=$(jq -r  '.k8sPrimary.ingressIp' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
 
-fqdnName=$( echo jq -r  '.k8sSecondary.fqdnName' <<< "$(cat $STACK_OUTPUT_PATH)" ) 
-ip=$( echo jq -r  '.k8sSecondary.ingressIp' <<< "$(cat $STACK_OUTPUT_PATH)" ) 
+fqdnName=$(jq -r  '.k8sSecondary.fqdnName' <<< ${OUTPUT} ) 
+ip=$(jq -r  '.k8sSecondary.ingressIp' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
