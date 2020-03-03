@@ -50,7 +50,7 @@ export class Aks extends pulumi.ComponentResource {
     private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
 
     constructor(
-        name: string,
+        private name: string,
         private params: IAksParams,
         opts?: pulumi.ComponentResourceOptions,
     ) {
@@ -124,7 +124,7 @@ export class Aks extends pulumi.ComponentResource {
 
         // Step 3: Install dependencies into the cluster
 
-        this.k8sInfra = new K8sInfrastructure("k8sInfra", {
+        this.k8sInfra = new K8sInfrastructure(`${this.name}-infra`, {
             appSettings: this.params.appSettings,
             identity: this.webAppIdentity,
             location: this.k8sCluster.location,
