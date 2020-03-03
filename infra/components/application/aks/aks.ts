@@ -101,6 +101,7 @@ export class Aks extends pulumi.ComponentResource {
             roleDefinitionName: "AcrPull",
             scope: this.params.acr.id,
         }, {
+            dependsOn: this.params.acr,
             parent: this,
         });
 
