@@ -37,51 +37,48 @@
         </div>
     </div>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="row">
-        <div class="col">
-            @{var index = 0;}
-            @foreach (var n in Model.Names)
+    <div class="container">
+        @{var index = 0;}
+        @foreach (var n in Model.Names)
+        {
+            var bg = "";
+            if(index++ %2 == 1)
             {
-                var bg = "";
-                if(index++ %2 == 1)
-                {
-                    bg = "bg-light";
-                }
-                <div class="row m-2 @bg">
-                    <div class="col text-wrap">
-                        @n
-                    </div>
-                    <div class="col-1 text-left">
-                        @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
-                        {
-                            <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
-                        }
-                    </div>
-                    <div class="col-sm-8 text-right">
-                        @if(Model.CanDownloadFiles)
-                        {
-                            <a class="btn btn-primary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
-                                Download
-                            </a>
-                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#@metadataModalIdDic[n]">View Attributes</button>
-                        }
-                        @if(Model.CanUploadFiles)
-                        {
-                            <a class="btn btn-secondary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
-                                Edit Attributes
-                            </a>
-                        }
-                        @if(Model.CanDeleteFiles)
-                        {
-                            <a class="btn btn-danger btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./Delete">
-                                Delete
-                            </a>
-                        }
-                    </div>
-                </div>
+                bg = "bg-light";
             }
-
-        </div>
+            <div class="row m-2 @bg">
+                <div class="col text-wrap">
+                    @n
+                </div>
+                <div class="col-1 text-left">
+                    @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
+                    {
+                        <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
+                    }
+                </div>
+                <div class="col-xl text-right">
+                    @if(Model.CanDownloadFiles)
+                    {
+                        <a class="btn btn-primary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
+                            Download
+                        </a>
+                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#@metadataModalIdDic[n]">View Attributes</button>
+                    }
+                    @if(Model.CanUploadFiles)
+                    {
+                        <a class="btn btn-secondary btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./EditMetadata">
+                            Edit Attributes
+                        </a>
+                    }
+                    @if(Model.CanDeleteFiles)
+                    {
+                        <a class="btn btn-danger btn-sm" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="./Delete">
+                            Delete
+                        </a>
+                    }
+                </div>
+            </div>
+        }
     </div>
     @if(Model.CanUploadFiles)
     {
