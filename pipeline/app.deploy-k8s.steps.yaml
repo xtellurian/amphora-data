@@ -7,6 +7,7 @@ steps:
       pulumi login
       npm install
       . ../pulumi-stack-ci.sh
+      echo "Deploying frontend image $IMAGE"
       pulumi up -y -c image="$IMAGE"
     displayName: Pulumi Up (k8s)
     env:

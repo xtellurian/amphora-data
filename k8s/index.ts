@@ -4,14 +4,23 @@ import { FrontEnd } from "./frontEnd";
 
 const infra = new pulumi.StackReference(`xtellurian/amphora/${pulumi.getStack()}`);
 
-const kubeConfig = infra.getOutput("kubeConfig");
-const fqdn = <pulumi.Output<string>> infra.requireOutput("k8sFqdn");
+// const kubeConfig = infra.requireOutput("kubeConfig");
+const k8sPrimary = infra.requireOutput("k8sPrimary"); // FIXME
+const k8sSecondary = infra.requireOutput("k8sSecondary"); // FIXME
 
-var provider = new k8s.Provider("k8sProvider", {
-    kubeconfig: kubeConfig,
+const primaryProvider = new k8s.Provider("provider1", {
+    kubeconfig: k8sPrimary.apply(k => k.kubeConfig),
+});
+const secondaryProvider = new k8s.Provider("provider2", {
+    kubeconfig: k8sSecondary.apply(k => k.kubeConfig),
 });
 
-var frontEnd = new FrontEnd("frontEnd", {
-    fqdn,
-    provider: provider
-})
+const frontEnd1 = new FrontEnd("frontend1", {
+    fqdn: <pulumi.Output<string>> k8sPrimary.apply(k => k.fqdn),
+    provider: primaryProvider
+});
+
+const frontEnd2 = new FrontEnd("frontend2", {
+    fqdn: <pulumi.Output<string>> k8sSecondary.apply(k => k.fqdn),
+    provider: secondaryProvider
+});

@@ -12,7 +12,7 @@ const image = config.require("image");
 export class FrontEnd extends pulumi.ComponentResource {
 
     constructor(
-        name: string,
+        private name: string,
         private params: IFrontendArgs,
         opts?: pulumi.ComponentResourceOptions,
     ) {
@@ -56,7 +56,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             }],
         });
 
-        const deployment = new kx.Deployment("frontend-deploy", {
+        const deployment = new kx.Deployment(`${this.name}-deploy`, {
             apiVersion: "apps/v1",
             metadata: {
                 name,
@@ -82,7 +82,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             },
         }, opts);
 
-        const service = new kx.Service("frontend-svc", {
+        const service = new kx.Service(`${this.name}-svc`, {
             kind: "Service",
             metadata: {
                 name,
@@ -100,7 +100,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             },
         }, opts);
 
-        const ingress = new k8s.extensions.v1beta1.Ingress("amphora-front-ingress", {
+        const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
             kind: "Ingress",
             metadata: {
                 name: "amphora-front-ingress",
