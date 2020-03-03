@@ -65,7 +65,7 @@ export class Aks extends pulumi.ComponentResource {
         logAnalytics: azure.operationalinsights.AnalyticsWorkspace) {
 
         // Step 2: This step creates an AKS cluster.
-        this.k8sCluster = new azure.containerservice.KubernetesCluster("aksCluster", {
+        this.k8sCluster = new azure.containerservice.KubernetesCluster(`${this.name}-cluster`, {
             addonProfile: {
                 omsAgent: {
                     enabled: true,
@@ -96,7 +96,7 @@ export class Aks extends pulumi.ComponentResource {
             parent: this,
         });
 
-        const roleAssignment = new azure.role.Assignment("acrPullAccess", {
+        const roleAssignment = new azure.role.Assignment(`${this.name}-acrPull`, {
             principalId: objectId,
             roleDefinitionName: "AcrPull",
             scope: this.params.acr.id,
@@ -105,19 +105,19 @@ export class Aks extends pulumi.ComponentResource {
         });
 
         // Expose a k8s provider instance using our custom cluster instance.
-        this.k8sProvider = new k8s.Provider("aksK8s", {
+        this.k8sProvider = new k8s.Provider(`${this.name}-aksK8s`, {
             kubeconfig: this.k8sCluster.kubeConfigRaw,
         }, {
             parent: this,
         });
 
-        this.webAppIdentity = new azure.authorization.UserAssignedIdentity("webApp", {
+        this.webAppIdentity = new azure.authorization.UserAssignedIdentity(`${this.name}-webApp`, {
             location: rg.location,
             resourceGroupName: this.k8sCluster.nodeResourceGroup,
             tags,
         });
 
-        this.addMsiToKeyVault("k8sWebApp", this.params.kv, this.webAppIdentity);
+        this.addMsiToKeyVault(`${this.name}-k8sWebApp`, this.params.kv, this.webAppIdentity);
 
         // Export the kubeconfig
         // this.kubeconfig = k8sCluster.kubeConfigRaw

@@ -15,8 +15,9 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
     public ingressController: k8s.yaml.ConfigFile;
     public fqdnName: pulumi.Output<string>;
     public fqdn: pulumi.Output<string>;
+    public ingressIp: pulumi.Output<string>;
     constructor(
-        name: string,
+        private name: string,
         private params: IK8sInfrastructureParams,
         opts?: pulumi.ComponentResourceOptions,
     ) {
@@ -32,19 +33,19 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         };
 
         // namespaces
-        const amphoraNamespace = new k8s.core.v1.Namespace("amphora", {
+        const amphoraNamespace = new k8s.core.v1.Namespace(`${this.name}-amphora`, {
             metadata: {
                 name: "amphora",
             },
         }, opts);
 
-        const aadPodIdentityNs = new k8s.core.v1.Namespace("aad-pod-identity", {
+        const aadPodIdentityNs = new k8s.core.v1.Namespace(`${this.name}-aad-pod-id`, {
             metadata: {
                 name: "aad-pod-identity",
             },
         }, opts);
 
-        const certManNamespace = new k8s.core.v1.Namespace("certManNs", {
+        const certManNamespace = new k8s.core.v1.Namespace(`${this.name}-certManNs`, {
             apiVersion: "v1",
             metadata: {
                 labels: {
@@ -54,10 +55,21 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
         }, opts);
 
+        const ingressNginxNamespace = new k8s.core.v1.Namespace(`${this.name}-nginx`, {
+            metadata: {
+                labels: {
+                    "app.kubernetes.io/name": "ingress-nginx",
+                    "app.kubernetes.io/part-of": "ingress-nginx",
+                },
+                name: "ingress-nginx",
+            },
+        }, opts);
+
         // aad pod identity
         const aadPods = new k8s.yaml.ConfigFile(
-            "aadPods", {
+            `${this.name}-aadPods`, {
             file: "components/application/aks/infrastructure-manifests/aad-pod-identity.yml",
+            resourcePrefix: this.name,
         }, {
             ...opts,
             dependsOn: aadPodIdentityNs,
@@ -77,8 +89,9 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
         };
 
-        const identity = new k8s.yaml.ConfigGroup("identity", {
+        const identity = new k8s.yaml.ConfigGroup(`${this.name}-identity`, {
             objs: [indentityConfig],
+            resourcePrefix: this.name,
         }, opts);
 
         const bindingConfig = {
@@ -94,25 +107,28 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
         };
 
-        const binding = new k8s.yaml.ConfigGroup("binding", {
+        const binding = new k8s.yaml.ConfigGroup(`${this.name}-idBinding`, {
             objs: [bindingConfig],
+            resourcePrefix: this.name,
         }, opts);
 
         // ingress ctrler
         this.ingressController = new k8s.yaml.ConfigFile(
-            "ingressCtrl", {
+            `${this.name}-ingressCtlr`, {
             file: "components/application/aks/infrastructure-manifests/ingress-nginx.yml",
+            resourcePrefix: this.name,
         }, opts);
 
         // cert manager crds
         const certManagerCrds = new k8s.yaml.ConfigFile(
-            "certManCrds", {
+            `${this.name}-certManCrds`, {
             file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
+            resourcePrefix: this.name,
         }, opts);
 
         // let's encrypt
         const certManagerChart = new k8s.helm.v2.Chart(
-            "cert-manager",
+            `${this.name}-cert-man`,
             {
                 chart: "cert-manager",
                 fetchOpts: {
@@ -135,8 +151,9 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         }
 
         // certificate issuer
-        const caClusterIssuer = new k8s.yaml.ConfigFile("caClusterIssuer", {
+        const caClusterIssuer = new k8s.yaml.ConfigFile(`${this.name}-caClusterIssuer`, {
             file: `components/application/aks/infrastructure-manifests/cert-issuer.yml`,
+            resourcePrefix: this.name,
             transformations,
         }, {
             ...opts,
@@ -144,13 +161,18 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         });
 
         // amphora frontend config map
-        const webAppConfigMap = new k8s.core.v1.ConfigMap("frondend-config", {
+        const webAppConfigMap = new k8s.core.v1.ConfigMap(`${this.name}-front-config`, {
             data: this.params.appSettings,
             metadata: {
                 name: "amphora-frontend-config",
                 namespace: amphoraNamespace.metadata.name,
             },
         }, opts);
+
+        // aksAU1-infra-ingress-nginx/ingress-nginx == with redourcePrefix
+        this.ingressIp = this.ingressController
+            .getResource("v1/Service", `${this.name}-ingress-nginx`, `ingress-nginx`)
+            .apply((service) => service.status.loadBalancer.ingress[0].ip);
 
         this.fqdnName = pulumi.interpolate`${pulumi.getStack()}-amphoradata`;
         this.fqdn = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;

@@ -92,7 +92,7 @@ export class Application extends pulumi.ComponentResource
   }
 
   private createAks(rg: azure.core.ResourceGroup) {
-    const primary = new Aks("aksPrimary", {
+    const primary = new Aks("aksAU1", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
       kv: this.state.kv,
@@ -103,7 +103,7 @@ export class Application extends pulumi.ComponentResource
       state: this.state,
     }, { parent: this });
 
-    const secondary = new Aks("aksSecondary", {
+    const secondary = new Aks("aksAU2", {
       acr: this.acr,
       appSettings: this.appSvc.appSettings,
       kv: this.state.kv,
