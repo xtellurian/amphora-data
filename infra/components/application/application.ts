@@ -180,6 +180,14 @@ export class Application extends pulumi.ComponentResource
     }, {
       parent: this,
     });
+
+    this.state.storeInVault("ConfigReadConnectionString0",
+      "AzureAppConfig--ReadOnly--PrimaryConnectionString",
+      this.appConfiguration.primaryReadKeys[0].connectionString);
+
+    this.state.storeInVault("ConfigReadConnectionString1",
+      "AzureAppConfig--ReadOnly--SecondaryConnectionString",
+      this.appConfiguration.primaryReadKeys[0].connectionString);
   }
 
   private createAzureMaps(rg: azure.core.ResourceGroup) {
