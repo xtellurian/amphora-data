@@ -9,7 +9,7 @@ namespace Amphora.Common.Configuration
     {
         private const string KvUri = "kvUri";
         private const string DisableKv = "disableKv";
-        public static void Configure(IConfigurationBuilder config,
+        public static IConfigurationBuilder Configure(IConfigurationBuilder config,
                                      IConfigurationRoot builtConfig,
                                      string? vaultUri = null,
                                      IKeyVaultSecretManager? manager = null)
@@ -46,6 +46,8 @@ namespace Amphora.Common.Configuration
             {
                 System.Console.WriteLine("No KeyVault as config provider");
             }
+
+            return config;
         }
     }
 }

@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.0" />  <!-- weird bug required downgrade -->
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.3.3" />
     <PackageReference Include="Microsoft.Azure.EventGrid" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.Search" Version="10.0.0" />

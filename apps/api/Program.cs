@@ -18,9 +18,13 @@ namespace Amphora.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
+                    // first we get the KeyVault ID from the local condig
                     config.AddEnvironmentVariables();
-                    var builtConfig = config.Build();
-                    KeyVaultConfigProvider.Configure(config, builtConfig);
+                    var settings = config.Build();
+                    config = KeyVaultConfigProvider.Configure(config, settings);
+                    // then we use the Azure App Config Connection String in the KeyVault to connect
+                    settings = config.Build(); // build again for appsettings
+                    config.AddAzureAppConfiguration(settings["AzureAppConfig:ReadOnly:PrimaryConnectionString"]);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
