@@ -25,7 +25,6 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RegistrationOptions>(configuration.GetSection("Registration"));
             services.AddTransient<IUserService, UserService>();
 
             var key = configuration.GetSection("Cosmos")["PrimaryKey"];
