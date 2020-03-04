@@ -33,7 +33,6 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             IOptionsMonitor<HostOptions> hostOptions,
             ISignInManager signInManager,
             IInvitationService invitationService,
-            IOptionsMonitor<RegistrationOptions> registrationOptions,
             ILogger<RegisterModel> logger,
             IEntityStore<OrganisationModel> orgStore,
             IEmailSender emailSender)
