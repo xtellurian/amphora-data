@@ -24,7 +24,7 @@ namespace Amphora.Api
                     config = KeyVaultConfigProvider.Configure(config, settings);
                     // then we use the Azure App Config Connection String in the KeyVault to connect
                     settings = config.Build(); // build again for appsettings
-                    config.AddAzureAppConfiguration(settings["AzureAppConfig:ReadOnly:PrimaryConnectionString"]);
+                    config = AzureAppConfigurationConfigProvider.Configure(config, settings);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
