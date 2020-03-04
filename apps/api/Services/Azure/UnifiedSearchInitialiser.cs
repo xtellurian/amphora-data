@@ -5,7 +5,8 @@ using Amphora.Api.EntityFramework;
 using Amphora.Api.Models.AzureSearch;
 using Amphora.Api.Options;
 using Amphora.Common.Configuration.Options;
-using Amphora.Common.Models.Organisations;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
@@ -13,23 +14,25 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Services.Azure
 {
-    public class OrganisationSearchInitialiser : SearchInitialiserBase, IAzureSearchInitialiser<OrganisationModel>
+    // should be an singleton that ensure's that an index is built only once, but can block until ready
+    public class UnifiedSearchInitialiser : SearchInitialiserBase, IAzureSearchInitialiser
     {
-        public OrganisationSearchInitialiser(ILogger<OrganisationSearchInitialiser> logger,
-                                            IOptionsMonitor<AzureSearchOptions> options,
-                                            IOptionsMonitor<CosmosOptions> cosmosOptions) : base(logger, options, cosmosOptions)
-        {
-        }
+        public UnifiedSearchInitialiser(
+            ILogger<UnifiedSearchInitialiser> logger,
+            IOptionsMonitor<AzureSearchOptions> options,
+            IOptionsMonitor<CosmosOptions> cosmosOptions) : base(logger, options, cosmosOptions)
+        { }
 
-        protected override string IndexerName => $"{ApiVersion.CurrentVersion.ToSemver('-')}-organisations-indexer";
+        protected override string IndexerName => $"{ApiVersion.CurrentVersion.ToSemver('-')}-indexer";
+        private readonly object initialiseLock = new object();
 
         public override async Task CreateIndexAsync()
         {
             if (isInitialised) { return; }
             var startTime = System.DateTime.Now;
-            if (await serviceClient.Indexes.ExistsAsync(OrganisationSearchIndex.IndexName))
+            if (await serviceClient.Indexes.ExistsAsync(UnifiedSearchIndex.IndexName))
             {
-                logger.LogInformation($"{OrganisationSearchIndex.IndexName} already exists. Waiting 2 seconds");
+                logger.LogInformation($"{UnifiedSearchIndex.IndexName} already exists. Waiting 2 seconds");
                 // might still be creating, wait 5 seconds
                 await Task.Delay(1000 * 2);
                 isInitialised = true;
@@ -39,15 +42,15 @@ namespace Amphora.Api.Services.Azure
             await WaitWhileCreating();
 
             OnStartInitialising();
-            logger.LogWarning("Recreating the Data Request index");
-            await TryNTimes(async () => await CreateSearch());
+            logger.LogWarning("Recreating the Unified index");
+            await TryNTimes(async () => await CreateUnifiedSearch());
 
             var timeTaken = System.DateTime.Now - startTime;
             OnFinishInitialising();
             logger.LogInformation($"{nameof(CreateIndexAsync)} took {timeTaken.TotalSeconds}");
         }
 
-        private async Task CreateSearch()
+        private async Task CreateUnifiedSearch()
         {
             var index = await TryCreateIndex();
             var dataSource = await TryCreateDatasource();
@@ -56,7 +59,7 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<Index> TryCreateIndex()
         {
-            Index index = new OrganisationSearchIndex();
+            Index index = new UnifiedSearchIndex();
             index.Validate();
 
             if (!await serviceClient.Indexes.ExistsAsync(index.Name))
@@ -69,16 +72,16 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<DataSource> TryCreateDatasource()
         {
-            var query = "SELECT * FROM c WHERE c.Discriminator = 'OrganisationModel' AND c._ts > @HighWaterMark ORDER BY c._ts";
+            var query = "SELECT * FROM c WHERE c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
-            var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(OrganisationModel.IsDeleted), "true");
-            var dataSource = DataSource.CosmosDb("cosmos-organisations",
+            var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(EntityBase.IsDeleted), "true");
+            var dataSource = DataSource.CosmosDb("cosmos-unified",
                                                  cosmosDbConnectionString,
                                                  nameof(AmphoraContext),
                                                  query,
                                                  true,
                                                  deletionPolicy,
-                                                 $"Created by C# code {nameof(OrganisationSearchInitialiser)}");
+                                                 $"Created by C# code {nameof(UnifiedSearchInitialiser)}");
             dataSource.Validate();
             dataSource = await serviceClient.DataSources.CreateOrUpdateAsync(dataSource);
             return dataSource;
@@ -98,7 +101,7 @@ namespace Amphora.Api.Services.Azure
                 },
                 FieldMappings = new List<FieldMapping>
                 {
-                    // encodes a field for use as the index key
+                    new FieldMapping(nameof(ISearchable.Name), "PartialName")
                 }
             };
             indexer.Validate();

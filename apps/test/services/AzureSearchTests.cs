@@ -17,11 +17,11 @@ namespace Amphora.Tests.Unit.Services
     public class AzureSearchTests : UnitTestBase
     {
         private readonly ILogger<AzureSearchService> azureSearchLogger;
-        private readonly ILogger<AmphoraSearchInitialiser> initLogger;
+        private readonly ILogger<UnifiedSearchInitialiser> initLogger;
         private CosmosOptions cosmosOptions;
         private AzureSearchOptions searchOptions;
 
-        public AzureSearchTests(ILogger<AzureSearchService> azureSearchLogger, ILogger<AmphoraSearchInitialiser> initLogger)
+        public AzureSearchTests(ILogger<AzureSearchService> azureSearchLogger, ILogger<UnifiedSearchInitialiser> initLogger)
         {
             this.cosmosOptions = new CosmosOptions()
             {
@@ -43,7 +43,7 @@ namespace Amphora.Tests.Unit.Services
         public async Task CreateIndex_Success()
         {
             // Setup
-            var sut = new AmphoraSearchInitialiser(
+            var sut = new UnifiedSearchInitialiser(
                 initLogger,
                 Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
                 Mock.Of<IOptionsMonitor<CosmosOptions>>(_ => _.CurrentValue == cosmosOptions));
@@ -56,9 +56,7 @@ namespace Amphora.Tests.Unit.Services
         {
             var sut = new AzureSearchService(
                Mock.Of<IOptionsMonitor<AzureSearchOptions>>(_ => _.CurrentValue == searchOptions),
-               Mock.Of<IAzureSearchInitialiser<AmphoraModel>>(),
-               Mock.Of<IAzureSearchInitialiser<DataRequestModel>>(),
-               Mock.Of<IAzureSearchInitialiser<OrganisationModel>>(),
+               Mock.Of<IAzureSearchInitialiser>(),
                azureSearchLogger,
                Mapper);
 
