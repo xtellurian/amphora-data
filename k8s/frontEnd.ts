@@ -8,7 +8,9 @@ export interface IFrontendArgs {
 }
 
 const config = new pulumi.Config();
+const frontendConfig = new pulumi.Config("frontend")
 const image = config.require("image");
+const hosts = <Array<string>>frontendConfig.getObject("hosts")
 export class FrontEnd extends pulumi.ComponentResource {
 
     constructor(
@@ -100,6 +102,33 @@ export class FrontEnd extends pulumi.ComponentResource {
             },
         }, opts);
 
+        // http config for each host
+        const http = {
+            paths: [
+                {
+                    backend: {
+                        serviceName: name,
+                        servicePort: 80
+                    },
+                    path: "/(.*)"
+                }
+            ]
+        }
+        // add the rule for each host
+        const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [
+            {
+                host: this.params.fqdn,
+                http
+            }
+        ];
+        hosts.forEach(h => {
+            rules.push({
+                host: h,
+                http
+            });
+        });
+
+
         const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
             kind: "Ingress",
             metadata: {
@@ -118,22 +147,7 @@ export class FrontEnd extends pulumi.ComponentResource {
                         secretName: "tls-secret"
                     }
                 ],
-                rules: [
-                    {
-                        host: this.params.fqdn,
-                        http: {
-                            paths: [
-                                {
-                                    backend: {
-                                        serviceName: name,
-                                        servicePort: 80
-                                    },
-                                    path: "/(.*)"
-                                }
-                            ]
-                        }
-                    }
-                ]
+                rules
             }
         }, opts);
     }
