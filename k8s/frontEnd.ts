@@ -121,12 +121,14 @@ export class FrontEnd extends pulumi.ComponentResource {
                 http
             }
         ];
-        hosts.forEach(h => {
-            rules.push({
-                host: h,
-                http
+        if (hosts) {
+            hosts.forEach(h => {
+                rules.push({
+                    host: h,
+                    http
+                });
             });
-        });
+        }
 
 
         const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
