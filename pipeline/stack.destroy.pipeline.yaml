@@ -21,6 +21,12 @@ steps:
 - template: install.pulumi.steps.yaml
 - script: |
     export PATH=$PATH:$HOME/.pulumi/bin
+    echo "Destroying k8s"
+    pushd k8s
+    pulumi destroy --stack master -y
+    pulumi destroy --stack develop -y
+    popd
+    echo "Destroying infra"
     pushd infra
     pulumi destroy --stack master -y
     pulumi destroy --stack develop -y
