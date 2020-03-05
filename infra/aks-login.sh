@@ -15,7 +15,7 @@ if [ -z "$LOCATION" ]; then
     exit 1
 fi
 
-JSON=$(pulumi stack output $LOCATION)
+JSON=$(pulumi stack output -j $LOCATION)
 name=$( jq -r  '.name' <<< "$(echo $JSON)" ) 
 group=$( jq -r  '.group' <<< "$(echo $JSON)" ) 
 
