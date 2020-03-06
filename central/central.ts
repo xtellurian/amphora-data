@@ -6,6 +6,8 @@ const authConfig = new pulumi.Config("authentication");
 const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
 const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
 const prodBackendCount = 2; // should match the array length from prod stack as above
+const k8sPrimary = prodStack.getOutput("k8sPrimary");
+const k8sSecondary = prodStack.getOutput("k8sSecondary");
 
 const tags = {
     component: "constant",
@@ -283,6 +285,7 @@ backendPools.push(
         name: "squarespaceBackend",
     });
 
+// add app service backends
 const prodBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
 for (let i = 0; i < prodBackendCount; i++) {
     prodBackends.push({
@@ -292,6 +295,20 @@ for (let i = 0; i < prodBackendCount; i++) {
         httpsPort: 443,
     });
 }
+
+// add k8s primary + secondary backend from aks
+prodBackends.push({
+    address: k8sPrimary.apply((k) => k.fqdn),
+    hostHeader: "app.amphoradata.com",
+    httpPort: 80,
+    httpsPort: 443,
+});
+prodBackends.push({
+    address: k8sSecondary.apply((k) => k.fqdn),
+    hostHeader: "app.amphoradata.com",
+    httpPort: 80,
+    httpsPort: 443,
+});
 
 const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
     backends: prodBackends,
