@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { throws } from "assert";
 
 const tags = {
     component: "central-dns-develop",
@@ -20,39 +21,49 @@ export class DnsDevelop extends pulumi.ComponentResource {
         private params: IDnsDevelopParams,
         opts?: pulumi.ComponentResourceOptions,
     ) {
-        super("amphora-k8s:FrontEnd", name, {}, opts);
+        super("amphora:DevDns", name, {}, opts);
         this.create(params.rg, params.zone);
     }
 
     private create(rg: azure.core.ResourceGroup, zone: azure.dns.Zone) {
         // develop dns things
-        const developK8sFqdn = "develop-amphoradata.australiasoutheast.cloudapp.azure.com";
-        const devAppCName = new azure.dns.CNameRecord("devAppCName",
-            {
-                name: "develop.app",
-                record: developK8sFqdn,
-                resourceGroupName: rg.name,
-                tags,
-                ttl: 30,
-                zoneName: zone.name,
-            },
-            {
-                parent: this,
-            },
-        );
+        this.createForEnvironment("develop", rg, zone);
+        this.createForEnvironment("master", rg, zone);
+    }
 
-        const devIdentityCName = new azure.dns.CNameRecord("devIdCName",
-            {
-                name: "develop.identity",
-                record: developK8sFqdn,
-                resourceGroupName: rg.name,
-                tags,
-                ttl: 30,
-                zoneName: zone.name,
-            },
-            {
-                parent: this,
-            },
-        );
+    private createForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone) {
+        if (env === "master" || env === "develop") {
+            // we good
+            const developK8sFqdn = `${env}-amphoradata.australiasoutheast.cloudapp.azure.com`;
+            const devAppCName = new azure.dns.CNameRecord(`${env}AppCName`,
+                {
+                    name: `${env}.app`,
+                    record: developK8sFqdn,
+                    resourceGroupName: rg.name,
+                    tags,
+                    ttl: 30,
+                    zoneName: zone.name,
+                },
+                {
+                    parent: this,
+                },
+            );
+
+            const devIdentityCName = new azure.dns.CNameRecord(`${env}IdCName`,
+                {
+                    name: `${env}.identity`,
+                    record: developK8sFqdn,
+                    resourceGroupName: rg.name,
+                    tags,
+                    ttl: 30,
+                    zoneName: zone.name,
+                },
+                {
+                    parent: this,
+                },
+            );
+        } else {
+            throw new Error("Not master or develop");
+        }
     }
 }
