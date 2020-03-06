@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { DnsDevelop } from "./dns-develop";
 
 export function createDns(rg: azure.core.ResourceGroup) {
 
@@ -22,6 +23,12 @@ export function createDns(rg: azure.core.ResourceGroup) {
         },
         opts,
     );
+
+    // develop dns
+    const devDns = new DnsDevelop("dnsDevelop", {
+        rg,
+        zone: dnsZone,
+    });
 
     const wwwCName = new azure.dns.CNameRecord("wwwCName",
         {
