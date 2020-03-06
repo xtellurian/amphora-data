@@ -55,6 +55,22 @@ export class FrontEnd extends pulumi.ComponentResource {
                         name: "amphora-frontend-config"
                     }
                 }],
+                livenessProbe: {
+                    httpGet: {
+                        path: "/healthz",
+                        port: 80,
+                    },
+                    initialDelaySeconds: 3,
+                    periodSeconds: 10
+                },
+                readinessProbe: {
+                    httpGet: {
+                        path: "/healthz",
+                        port: 80,
+                    },
+                    initialDelaySeconds: 3,
+                    periodSeconds: 3,
+                }
             }],
         });
 
