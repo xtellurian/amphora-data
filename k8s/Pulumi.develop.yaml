@@ -1,0 +1,3 @@
+config:
+  frontend:hosts:
+  - develop.app.amphoradata.com
