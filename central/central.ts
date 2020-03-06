@@ -117,6 +117,18 @@ const appCName = new azure.dns.CNameRecord("appCName",
     opts,
 );
 
+const docsCName = new azure.dns.CNameRecord("docsCName",
+    {
+        name: "docs",
+        record: "amphoradata.github.io",
+        resourceGroupName: rg.name,
+        tags,
+        ttl: 30,
+        zoneName: dnsZone.name,
+    },
+    opts,
+);
+
 // these come from O365
 
 const sipDirCName = new azure.dns.CNameRecord("sipDir",
