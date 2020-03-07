@@ -23,11 +23,13 @@ steps:
     export PATH=$PATH:$HOME/.pulumi/bin
     echo "Destroying k8s"
     pushd k8s
+    npm install
     pulumi destroy --stack master -y
     pulumi destroy --stack develop -y
     popd
     echo "Destroying infra"
     pushd infra
+    npm install
     pulumi destroy --stack master -y
     pulumi destroy --stack develop -y
     popd
