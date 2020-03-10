@@ -4,6 +4,7 @@ import * as random from "@pulumi/random";
 
 import { CONSTANTS } from "../../../components";
 import { State } from "../../state/state";
+import { IAksCollection } from "../application";
 import { AppSvc } from "../appSvc/appSvc";
 import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { environmentTemplate } from "./tsi_environment";
@@ -22,6 +23,7 @@ export interface ITsiParams {
   eh: azure.eventhub.EventHub;
   appSvc: AppSvc;
   state: State;
+  akss: IAksCollection;
 }
 
 export class Tsi extends pulumi.ComponentResource {
@@ -94,8 +96,10 @@ export class Tsi extends pulumi.ComponentResource {
       { parent: rg, dependsOn: env },
     );
 
-    this.params.appSvc.apps.forEach( (app) => {
-      const accessPolicy = new azure.core.TemplateDeployment(
+    const accessPolicies: azure.core.TemplateDeployment[] = [];
+
+    this.params.appSvc.apps.forEach((app) => {
+      accessPolicies.push(new azure.core.TemplateDeployment(
         app.name + "_ap",
         {
           deploymentMode: "Incremental",
@@ -111,10 +115,10 @@ export class Tsi extends pulumi.ComponentResource {
           templateBody: JSON.stringify(accessPolicyTemplate()),
         },
         { parent: rg, dependsOn: eventSource },
-      );
+      ));
       if (app.appSvcStaging) {
         // if the staging env exists, add it to the access policy
-        const accessPolicyStaging = new azure.core.TemplateDeployment(
+        accessPolicies.push(new azure.core.TemplateDeployment(
           app.name + "_apSlot",
           {
             deploymentMode: "Incremental",
@@ -130,9 +134,39 @@ export class Tsi extends pulumi.ComponentResource {
             templateBody: JSON.stringify(accessPolicyTemplate()),
           },
           { parent: rg, dependsOn: eventSource },
-        );
+        ));
       }
     });
+
+    accessPolicies.push(new azure.core.TemplateDeployment(
+      "aksPrimary_ap",
+      {
+        deploymentMode: "Incremental",
+        parameters: {
+          accessPolicyReaderObjectId: this.params.akss.primary.webAppIdentity.principalId,
+          environmentName: this.envName.result,
+          name: this.params.akss.primary.k8sCluster.name,
+        },
+        resourceGroupName: rg.name,
+        templateBody: JSON.stringify(accessPolicyTemplate()),
+      },
+      { parent: rg, dependsOn: eventSource },
+    ));
+
+    accessPolicies.push(new azure.core.TemplateDeployment(
+      "aksSecondary_ap",
+      {
+        deploymentMode: "Incremental",
+        parameters: {
+          accessPolicyReaderObjectId: this.params.akss.secondary.webAppIdentity.principalId,
+          environmentName: this.envName.result,
+          name: this.params.akss.secondary.k8sCluster.name,
+        },
+        resourceGroupName: rg.name,
+        templateBody: JSON.stringify(accessPolicyTemplate()),
+      },
+      { parent: rg, dependsOn: eventSource },
+    ));
 
     this.dataAccessFqdn = env.outputs.dataAccessFqdn;
 

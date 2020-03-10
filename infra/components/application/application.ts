@@ -80,9 +80,9 @@ export class Application extends pulumi.ComponentResource
       });
 
     this.createAzureMaps(rg);
-    this.createTsi();
     this.createConfigStore(rg);
     this.createAks(rg, this.acr);
+    this.createTsi();
 
     const searchRg = new azure.core.ResourceGroup(searchRgName,
       {
@@ -145,6 +145,7 @@ export class Application extends pulumi.ComponentResource
 
   private createTsi() {
     this.tsi = new Tsi("tsi", {
+      akss: this.aks,
       appSvc: this.appSvc,
       eh: this.state.eh,
       eh_namespace: this.state.ehns,
