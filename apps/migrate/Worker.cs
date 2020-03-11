@@ -14,31 +14,35 @@ namespace Amphora.Migrate
     {
         private readonly ILogger<Worker> logger;
         private readonly IOptionsMonitor<CosmosMigrationOptions> options;
-        private readonly CosmosCollectionMigrator cosmosMigrator;
-        private readonly BlobMigrator blobMigrator;
-        private readonly TsiMigrator tsiMigrator;
+        // private readonly CosmosCollectionMigrator? cosmosMigrator;
+        // private readonly CosmosDocumentDeleteMigrator? cosmosDeleter;
+        // private readonly BlobMigrator? blobMigrator;
+        // private readonly TsiMigrator? tsiMigrator;
 
         public Worker(ILogger<Worker> logger,
-                      IOptionsMonitor<CosmosMigrationOptions> options,
-                      CosmosCollectionMigrator cosmosMigrator,
-                      BlobMigrator blobMigrator,
-                      TsiMigrator tsiMigrator)
+                      IOptionsMonitor<CosmosMigrationOptions> options)
+        // CosmosCollectionMigrator cosmosMigrator,
+        // CosmosDocumentDeleteMigrator cosmosDeleter,
+        // BlobMigrator blobMigrator,
+        // TsiMigrator tsiMigrator)
         {
             this.logger = logger;
             this.options = options;
 
-            this.cosmosMigrator = cosmosMigrator ?? throw new ArgumentNullException(nameof(cosmosMigrator));
-            this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));
-            this.tsiMigrator = tsiMigrator ?? throw new ArgumentNullException(nameof(tsiMigrator));
+            // this.cosmosMigrator = cosmosMigrator ?? throw new ArgumentNullException(nameof(cosmosMigrator));
+            // this.cosmosDeleter = cosmosDeleter ?? throw new ArgumentNullException(nameof(cosmosDeleter));
+            // this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));
+            // this.tsiMigrator = tsiMigrator ?? throw new ArgumentNullException(nameof(tsiMigrator));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             var migrations = new List<Task>();
-            migrations.Add(cosmosMigrator.MigrateAsync());
-            migrations.Add(blobMigrator.MigrateAsync());
-            migrations.Add(tsiMigrator.MigrateAsync());
+            // migrations.Add(cosmosMigrator.MigrateAsync());
+            // migrations.Add(blobMigrator.MigrateAsync());
+            // migrations.Add(tsiMigrator.MigrateAsync());
+            // migrations.Add(cosmosDeleter.MigrateAsync());
             try
             {
                 await Task.WhenAll(migrations);

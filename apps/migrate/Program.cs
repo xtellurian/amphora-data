@@ -50,6 +50,8 @@ namespace Amphora.Migrate
                     services.AddSingleton<CosmosCollectionMigrator>();
                     services.Configure<CosmosMigrationOptions>(configuration);
 
+                    services.AddSingleton<CosmosDocumentDeleteMigrator>();
+
                     services.AddTransient<ITsiService, TsiService>();
                     services.AddSingleton<TsiMigrator>();
                     services.AddTransient<EventHubSender>();
