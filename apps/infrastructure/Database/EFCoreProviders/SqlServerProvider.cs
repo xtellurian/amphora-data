@@ -38,6 +38,12 @@ namespace Amphora.Infrastructure.Database.EFCoreProviders
 
             var msg = $"Using Sql Server, Host:{options?.Host ?? DefaultHost} on port: {options?.Port ?? DefaultPort}";
 
+            services.AddDbContext<TContext>(o =>
+            {
+                o.UseSqlServer(connectionString);
+                o.UseLazyLoadingProxies();
+            });
+
             System.Console.WriteLine(msg);
         }
 
