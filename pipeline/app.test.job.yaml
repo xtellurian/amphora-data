@@ -68,12 +68,8 @@ jobs:
         fi
 
         ./build-containers.sh -a $acrName -c $acrName.azurecr.io/$IMAGE:latest -t $BUILD
-
-        if [[ "$(docker images -q $acrName.azurecr.io/$IMAGE:$BUILD 2> /dev/null)" == "" ]]; then
-          echo "Building Docker Image"
-          docker push $acrName.azurecr.io/$IMAGE:latest
-          docker push $acrName.azurecr.io/$IMAGE:$BUILD
-        fi
+        docker push $acrName.azurecr.io/$IMAGE:latest
+        docker push $acrName.azurecr.io/$IMAGE:$BUILD
       displayName: Create Test Candidate Container
       env: 
         IMAGE: $(testImageName)
