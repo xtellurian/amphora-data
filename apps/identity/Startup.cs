@@ -29,6 +29,7 @@ namespace Amphora.Identity
         public IConfiguration Configuration { get; }
 
         private bool IsUsingCosmos() => Environment.IsProduction() || Configuration.IsPersistentStores();
+        private bool IsUsingSql() => Environment.IsProduction() || Configuration["sql"] == "true";
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
@@ -47,12 +48,19 @@ namespace Amphora.Identity
                 services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
                 services.UseCosmos<IdentityContext>(cosmosOptions);
             }
-            else if (Environment.IsDevelopment())
+            else if (IsUsingSql())
             {
-                // services.UseInMemory<IdentityContext>();
                 var sqlOptions = new SqlServerOptions();
                 Configuration.GetSection("SqlServer").Bind(sqlOptions);
                 services.UseSqlServer<IdentityContext>(sqlOptions);
+            }
+            else if (Environment.IsDevelopment())
+            {
+                services.UseInMemory<IdentityContext>();
+            }
+            else
+            {
+                throw new System.ApplicationException("No DB Context Configured");
             }
 
             services.AddDefaultIdentity<ApplicationUser>()
