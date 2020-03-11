@@ -1,15 +1,14 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 {
-    [Authorize]
+    [CommonAuthorize]
     public class CreateModel : PageModel
     {
         private readonly IOrganisationService organisationService;

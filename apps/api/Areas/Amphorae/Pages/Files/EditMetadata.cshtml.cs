@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
-    [Authorize]
+    [CommonAuthorize]
     public class EditMetadataPageModel : AmphoraPageModel
     {
         public EditMetadataPageModel(IAmphoraeService amphoraeService) : base(amphoraeService)

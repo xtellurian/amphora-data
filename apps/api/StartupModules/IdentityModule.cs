@@ -1,14 +1,24 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.EntityFramework;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Auth;
+using Amphora.Api.Services.Platform;
 using Amphora.Api.Services.Wrappers;
-using Amphora.Common.Models.Users;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models.Options;
+using Amphora.Infrastructure.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api.StartupModules
 {
@@ -25,24 +35,80 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IUserService, UserService>();
+            services.Configure<TokenManagementOptions>(configuration.GetSection("tokenManagement"));
+            services.Configure<ExternalServices>(configuration.GetSection("ExternalServices"));
+            var externalServices = new ExternalServices();
+            configuration.GetSection("ExternalServices").Bind(externalServices);
+            var token = configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
 
-            var key = configuration.GetSection("Cosmos")["PrimaryKey"];
-            var endpoint = configuration.GetSection("Cosmos")["Endpoint"];
-            var database = configuration.GetSection("Cosmos")["Database"];
-            services.AddScoped<ISignInManager, SignInManagerWrapper<ApplicationUser>>();
-            services.AddTransient<IUserManager, UserManagerWrapper<ApplicationUser>>();
-
-            services.AddDefaultIdentity<ApplicationUser>(options =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
-                // Default SignIn settings.
-                options.SignIn.RequireConfirmedEmail = bool.Parse(configuration
-                    .GetSection("IdentityConfiguration")
-                    .GetSection("SignIn")["RequireConfirmedEmail"] ?? "false");
-                options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<AmphoraContext>();
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
+
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                    options.DefaultAuthenticateScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                    options.DefaultForbidScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                    options.DefaultSignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                    options.DefaultSignOutScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                    // challenge OIDC
+                    options.DefaultChallengeScheme = CommonAuthorizeAttribute.OidcSchemeName;
+                })
+                .AddCookie(CommonAuthorizeAttribute.CookieSchemeName)
+                .AddOpenIdConnect(CommonAuthorizeAttribute.OidcSchemeName, options =>
+                {
+                    options.SignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
+
+                    options.CorrelationCookie.Path = "/";
+                    options.NonceCookie.Path = "/";
+
+                    options.Authority = externalServices.IdentityBaseUrl;
+                    options.RequireHttpsMetadata = false;
+
+                    options.ClientId = "mvc";
+                    options.SaveTokens = true;
+                    options.Scope.Add("organisation");
+                    options.Scope.Add("email");
+                })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
+                {
+                    x.RequireHttpsMetadata = hostingEnvironment.IsProduction();
+                    x.Authority = externalServices.IdentityBaseUrl;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
+                        ValidIssuer = token.Issuer,
+                        ValidAudience = token.Audience,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
+            services.AddScoped<ISignInManager, IdServerSignInManager>();
+            services.AddTransient<IUserManager, IdServerUserManager>();
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GlobalAdminRequirement.GlobalAdminPolicyName, policy =>
+                    policy.Requirements.Add(new GlobalAdminRequirement()));
+            });
+
+            services.AddScoped<IAuthenticateService, IdentityServerService>();
+            services.AddScoped<IIdentityService, IdentityServerService>();
+
+            services.AddScoped<IAuthorizationHandler, AmphoraAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();
+            services.AddTransient<IPermissionService, PermissionService>();
+            services.AddTransient<IInvitationService, InvitationService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

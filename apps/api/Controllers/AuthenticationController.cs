@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
-using Amphora.Api.Contracts;
-using Amphora.Api.Models;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
-using Amphora.GitHub;
-using Amphora.GitHub.Models;
-using Microsoft.Extensions.Caching.Memory;
+using Amphora.Common.Models.GitHub;
+using Amphora.Infrastructure.Services.GitHub;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Services.GitHub
@@ -17,7 +16,7 @@ namespace Amphora.Api.Services.GitHub
         private readonly ICache cache;
         private AmphoraGitHubClient client;
 
-        public AmphoraGitHubIssueConnectorService(IOptionsMonitor<Amphora.GitHub.Configuration> config,
+        public AmphoraGitHubIssueConnectorService(IOptionsMonitor<GitHubConfiguration> config,
                                                   IDateTimeProvider dtProvider,
                                                   ICache cache = null)
         {

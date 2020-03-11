@@ -1,0 +1,75 @@
+@model HeaderModel
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index" >
+                <img src="~/_content/sharedui/images/Amphora_Data_Logo_white.png" alt="Amphora Data Logo" class="img-responsive" />
+                </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <ul class="navbar-nav flex-grow-1 justify-content-end">
+                    @if (Model.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="Discover" asp-page="/Index">Discover</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="Amphorae" asp-page="/Index">Manage</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="Amphorae" asp-page="/Create">Share</a>
+                        </li>
+                        
+
+                        <partial name="_ResourcesNavItemPartial" />
+                        <li class="nav-item dropdown avatar">
+                            <a href="#" class="nav-link text-light dropdown-toggle p-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <img src="@await Model.ProfileUriAsync(User)" class="rounded-circle z-depth-0 mb-1" alt="avatar image"/>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Invite">
+                                    Invite
+                                    <i class="float-right fas fa-user-plus"></i>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>   
+                                <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
+                                @if(await Model.IsAdminGlobalAsync(User))
+                                {
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item nav-link text-light" asp-area="Admin" asp-page="/Index">Admin</a>
+                                }
+                                <div class="dropdown-divider"></div>
+                                <a class="nav-link text-light" asp-area="Profiles" asp-page="/Account/Logout">Logout</a>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="@Model.RegisterUrl">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-page="/Challenge">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="https://www.amphoradata.com/how-we-help">How We Help</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="https://www.amphoradata.com/pricing">Pricing</a>
+                        </li>
+                        <partial name="_ResourcesNavItemPartial" />
+
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="https://www.amphoradata.com/contact-us">Contact</a>
+                        </li>
+                    }
+                    </ul>
+            </div>
+        </div>
+    </nav>
+</header>

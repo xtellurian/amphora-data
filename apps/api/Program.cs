@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amphora.Common.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,11 @@ namespace Amphora.Api
                     // then we use the Azure App Config Connection String in the KeyVault to connect
                     settings = config.Build(); // build again for appsettings
                     config = AzureAppConfigurationConfigProvider.Configure(config, settings);
+
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            { "Version", Amphora.Api.ApiVersion.CurrentVersion.ToSemver() },
+                        });
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

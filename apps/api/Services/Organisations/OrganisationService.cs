@@ -4,8 +4,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
+using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Events;
+using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Microsoft.Extensions.Logging;
@@ -20,7 +23,6 @@ namespace Amphora.Api.Services.Organisations
         private readonly IPermissionService permissionService;
         private readonly IBlobStore<OrganisationModel> orgBlobStore;
         private readonly IEventPublisher eventPublisher;
-
         public IEntityStore<OrganisationModel> Store { get; }
         private readonly ILogger<OrganisationService> logger;
 
@@ -46,7 +48,7 @@ namespace Amphora.Api.Services.Organisations
         {
             org.WebsiteUrl = org.WebsiteUrl?.ToLower();
             // we do this when a new user signs up without an invite from an existing org
-            var user = await userService.UserManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             if (user == null) { return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login"); }
             using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
             {
@@ -77,7 +79,7 @@ namespace Amphora.Api.Services.Organisations
                         if (string.IsNullOrEmpty(user.OrganisationId))
                         {
                             user.OrganisationId = org.Id; // set home org
-                            var result = await userService.UserManager.UpdateAsync(user);
+                            var result = await userService.UpdateAsync(principal, user);
                         }
 
                         logger.LogInformation($"Assigned user to organisation, Name: {org.Name}, Id: {org.Id}");
@@ -139,19 +141,42 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
+        public async Task<EntityOperationResult<OrganisationModel>> DeleteAsync(ClaimsPrincipal principal, OrganisationModel model)
+        {
+            var userId = principal.GetUserId();
+
+            if (model.IsAdministrator(userId))
+            {
+                await this.DeleteRelated(model);
+                await Store.DeleteAsync(model);
+                return new EntityOperationResult<OrganisationModel>(true);
+            }
+            else
+            {
+                return new EntityOperationResult<OrganisationModel>("Only Administrators can delete.");
+            }
+        }
+
+        private async Task DeleteRelated(OrganisationModel model)
+        {
+            // need to delete all related restrictions
+            model.Restrictions.Clear();
+            model.TargetedByRestrictions.Clear();
+            await Store.UpdateAsync(model);
+        }
+
         public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions)
         {
             var user = await userService.ReadUserModelAsync(principal);
-            if (user.IsAdmin())
-            {
-                if (user.Organisation.TermsAndConditionsAccepted == null)
-                {
-                    user.Organisation.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>();
-                }
+            var org = await this.Store.ReadAsync(user.OrganisationId);
 
-                var model = new TermsAndConditionsAcceptanceModel(user.Organisation, termsAndConditions);
-                user.Organisation.TermsAndConditionsAccepted.Add(model);
-                var o = await Store.UpdateAsync(user.Organisation);
+            if (org != null && org.IsAdministrator(user))
+            {
+                org.TermsAndConditionsAccepted ??= new List<TermsAndConditionsAcceptanceModel>();
+
+                var model = new TermsAndConditionsAcceptanceModel(org, termsAndConditions);
+                org.TermsAndConditionsAccepted.Add(model);
+                var o = await Store.UpdateAsync(org);
                 return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(user, model);
             }
             else
@@ -168,11 +193,6 @@ namespace Amphora.Api.Services.Organisations
         public async Task<byte[]> ReadrofilePictureJpg(OrganisationModel organisation)
         {
             return await orgBlobStore.ReadBytesAsync(organisation, "profile.jpg") ?? new byte[0];
-        }
-
-        public Task<EntityOperationResult<OrganisationModel>> DeleteAsync(ClaimsPrincipal principal, OrganisationModel model)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,3 +1,4 @@
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;

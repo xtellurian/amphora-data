@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Azure.Search.Models;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Areas.Discover.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class IndexPageModel : PageModel
     {
         private readonly IMarketService marketService;

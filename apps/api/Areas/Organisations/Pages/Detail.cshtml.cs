@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Search;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DetailModel : PageModel
     {
         private readonly IEntityStore<OrganisationModel> entityStore;
@@ -45,7 +45,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnGetAsync(string id)
         {
             var user = await userService.ReadUserModelAsync(User);
-            var appUser = await userService.UserManager.FindByIdAsync(user.Id);
+            var appUser = await userService.UserStore.ReadAsync(user.Id);
             if (string.IsNullOrEmpty(id))
             {
                 this.Organisation = await entityStore.ReadAsync(user.OrganisationId);

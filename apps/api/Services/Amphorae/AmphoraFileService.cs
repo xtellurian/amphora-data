@@ -5,6 +5,7 @@ using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Amphorae

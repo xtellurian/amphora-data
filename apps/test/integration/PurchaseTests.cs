@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class PurchaseTests : IntegrationTestBase
     {
         public PurchaseTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
@@ -110,10 +110,10 @@ namespace Amphora.Tests.Integration
 
             await DestroyAmphoraAsync(adminClient, dto.Id);
 
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
             await DestroyOrganisationAsync(client, org);
             await DestroyUserAsync(client, user);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Fact]

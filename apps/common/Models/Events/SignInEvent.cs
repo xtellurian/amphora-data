@@ -1,4 +1,3 @@
-using System;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Models.Events
@@ -8,14 +7,14 @@ namespace Amphora.Common.Models.Events
         public SignInEvent(IUser user, bool? isAcquiringToken = false)
         {
             Data = new SignInEventData(user.OrganisationId, user.UserName, isAcquiringToken);
-            Subject = user.UserName;
+            Subject = user?.UserName;
         }
 
         public string EventType => "AmphoraData.Users.SignIn";
 
         public IEventData Data { get; private set; }
 
-        public string Subject { get; private set; }
+        public string? Subject { get; private set; }
         private class SignInEventData : IEventData
         {
             public SignInEventData(string? organisationId, string? triggeredByUserName, bool? isAcquiringToken)

@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,29 +15,25 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class CreateModel : PageModel
     {
         private readonly IOrganisationService organisationService;
-        private readonly IAuthenticateService authenticateService;
         private readonly IInvitationService invitationService;
         private readonly ISignInManager signInManager;
         private readonly ILogger<CreateModel> logger;
 
         public CreateModel(IOrganisationService organisationService,
-                           IAuthenticateService authenticateService,
                            IInvitationService invitationService,
                            ISignInManager signInManager,
                            ILogger<CreateModel> logger)
         {
             this.organisationService = organisationService;
-            this.authenticateService = authenticateService;
             this.invitationService = invitationService;
             this.signInManager = signInManager;
             this.logger = logger;
         }
 
-        public string Token { get; set; }
         [TempData]
         public string CreateOrganisationMessage { get; set; }
 
@@ -59,16 +55,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 this.Invitation = res.Entity.FirstOrDefault();
             }
 
-            var response = await authenticateService.GetToken(User);
             Organisations = await organisationService.Store.TopAsync();
-            if (response.success)
-            {
-                Token = response.token;
-            }
-            else
-            {
-                logger.LogError("Couldn't get token");
-            }
 
             return Page();
         }

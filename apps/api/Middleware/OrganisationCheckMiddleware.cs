@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -17,28 +22,30 @@ namespace Amphora.Api.Middleware
         }
 
         private const string CreateOrgPath = "/Organisations/Create";
-        private const string JoinOrgPath = "/Organisations/Join";
-        private const string RequestJoinOrgPath = "/Organisations/RequestToJoin";
-        private const string FindOrgPath = "/Organisations";
-        private const string OrgDetailPath = "/Organisations/Detail";
-        private const string ConfirmEmailPath = "/Profiles/Account/ConfirmEmail";
-        private const string LocationSearchPath = "/Market/LocationSearch";
+
+        private static readonly string[] AcceptablePaths =
+        {
+            CreateOrgPath,
+            "/Organisations/Join",
+            "/Organisations/RequestToJoin",
+            "/Organisations/Detail",
+            "/Organisations",
+            "/Profiles/Account/ConfirmEmail",
+            "/Market/LocationSearch",
+            "/Identity"
+        };
+
         private const string QueryString = "?message=You must belong to an Organisation to continue";
         public async Task Invoke(HttpContext httpContext, IUserService userService, IOrganisationService organisationService)
         {
-            var user = await userService.ReadUserModelAsync(httpContext.User);
-            if (user != null // don't redirect if there's no user
-                 && user.OrganisationId == null // only redirect if user doesn't have an org
-                 && !string.Equals(CreateOrgPath, httpContext.Request.Path) // don't redirect if we're there already
-                 && !string.Equals(JoinOrgPath, httpContext.Request.Path) // and don't redirect if we're trying to join
-                 && !string.Equals(RequestJoinOrgPath, httpContext.Request.Path) // and don't redirect if we're trying to join another
-                 && !string.Equals(FindOrgPath, httpContext.Request.Path) // and don't redirect if we're trying to find our org
-                 && !string.Equals(OrgDetailPath, httpContext.Request.Path) // and don't redirect if we're trying to find our org
-                 && !string.Equals(ConfirmEmailPath, httpContext.Request.Path) // and don't redirect if we're trying confirm email
-                 && !string.Equals(LocationSearchPath, httpContext.Request.Path) // and don't redirect the search bar for locations
+            var organisationId = httpContext.User.GetOrganisationId();
+            var name = httpContext.User.GetUserName();
+            if (httpContext.User.Identity?.IsAuthenticated == true // don't redirect if there's no user
+                 && string.IsNullOrEmpty(organisationId) // only redirect if user doesn't have an org
+                 && !AcceptablePaths.Any(_ => string.Equals(httpContext.Request.Path, _, comparisonType: StringComparison.OrdinalIgnoreCase))
                  && !httpContext.Request.Path.StartsWithSegments("/api")) // don't redirect API calls
             {
-                logger.LogInformation($"Redirecting {user.UserName} to {CreateOrgPath}");
+                logger.LogInformation($"Redirecting {name} to {CreateOrgPath}");
                 httpContext.Response.Redirect($"{CreateOrgPath}{QueryString}");
             }
 

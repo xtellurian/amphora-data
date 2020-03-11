@@ -44,9 +44,9 @@ namespace Amphora.Common.Models.Purchases
         // navigation
         public string AmphoraId { get; set; }
         public virtual AmphoraModel Amphora { get; set; } = null!;
-        public string PurchasedByUserId { get; set; }
-        public virtual ApplicationUser PurchasedByUser { get; set; } = null!;
-        public string PurchasedByOrganisationId { get; set; }
-        public virtual OrganisationModel PurchasedByOrganisation { get; set; } = null!;
+        public string? PurchasedByUserId { get; set; }
+        public virtual ApplicationUser? PurchasedByUser { get; set; } = null!;
+        public string? PurchasedByOrganisationId { get; set; }
+        public virtual OrganisationModel? PurchasedByOrganisation { get; set; } = null!;
     }
 }

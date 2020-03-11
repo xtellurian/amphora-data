@@ -4,6 +4,7 @@ using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
 using Amphora.Api.Services.Wrappers;
+using Amphora.Common.Contracts;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;

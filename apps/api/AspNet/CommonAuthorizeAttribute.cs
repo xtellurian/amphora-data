@@ -5,9 +5,13 @@ namespace Amphora.Api.AspNet
 {
     internal class CommonAuthorizeAttribute : AuthorizeAttribute
     {
-        public CommonAuthorizeAttribute()
+        public static string CookieSchemeName => "Cookies";
+        public static string OidcSchemeName => "oidc";
+        public CommonAuthorizeAttribute() : base()
         {
-            AuthenticationSchemes = "Identity.Application" + "," + JwtBearerDefaults.AuthenticationScheme;
+            AuthenticationSchemes ??= "";
+            // the order matters!
+            AuthenticationSchemes += $"{JwtBearerDefaults.AuthenticationScheme},{CookieSchemeName},{OidcSchemeName}";
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
@@ -9,7 +10,6 @@ namespace Amphora.Api.Models.Emails
     {
         public InvoiceNotificationEmail(ApplicationUser user, Invoice invoice)
         {
-            if (!user.IsAdmin()) { throw new ArgumentException("User is not an administrator"); }
             Recipients.Add(new EmailRecipient(user.Email, user.FullName));
             // set user properties for email
             this.Name = user.FullName;

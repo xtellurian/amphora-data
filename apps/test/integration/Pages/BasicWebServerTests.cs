@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Pages
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class BasicWebServer : IntegrationTestBase
     {
         public BasicWebServer(WebApplicationFactory<Startup> factory) : base(factory)
@@ -18,14 +18,6 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/")]
         [InlineData("/Home/Values")]
         [InlineData("/Home/Error")]
-        [InlineData("/Profiles/Account/Detail")]
-        [InlineData("/Profiles/Account/Edit")]
-        [InlineData("/Market")]
-        [InlineData("/Amphorae")]
-        [InlineData("/Amphorae/Create")]
-        [InlineData("/Amphorae/Detail")]
-        [InlineData("/Profiles/Account/Login")]
-        [InlineData("/Profiles/Account/Register")]
         public async Task Get_UnAuthenticated_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange
@@ -48,7 +40,6 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Changelog")]
         [InlineData("/Profiles/Account/Detail")]
         [InlineData("/Profiles/Account/Edit")]
-        [InlineData("/Market")] // TODO: depricate this link
         [InlineData("/Discover")]
         [InlineData("/Discover/DataRequests")]
         [InlineData("/Amphorae")]

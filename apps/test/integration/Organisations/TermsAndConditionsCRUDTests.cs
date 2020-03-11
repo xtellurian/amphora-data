@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Organisations
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class TermsAndConditionsCRUDTests : IntegrationTestBase
     {
         public TermsAndConditionsCRUDTests(WebApplicationFactory<Startup> factory) : base(factory)

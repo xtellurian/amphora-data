@@ -6,6 +6,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;

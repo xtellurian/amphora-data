@@ -6,7 +6,7 @@ namespace Amphora.Common.Extensions
 {
     public static class GravatarExtensions
     {
-        public static string HashEmailForGravatar(string email)
+        public static string HashEmailForGravatar(string? email)
         {
             if (email == null)
             {

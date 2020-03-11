@@ -1,0 +1,30 @@
+@page
+@model Amphora.Identity.Pages.Account.EditModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div id="main" class="container center">
+    <div class="row">
+        <div class="col">
+            <p class="text-danger">@Model.ErrorMessage</p>
+            <form method="post">
+                <div class="form-group">
+                    <label asp-for="FullName" class="control-label"></label>
+                    <input asp-for="FullName" class="form-control" placeholder="Jane Citizen" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                    <small id="fullNameHelp" class="form-text text-muted">Your Full Name</small>
+                </div>
+                <div class="form-group">
+                    <div class="form-group-prepend">
+                        <label asp-for="About" class="control-label"></label>
+                    </div>
+                    <textarea asp-for="About" class="form-control" aria-label="About You"></textarea>
+                    <span asp-validation-for="About" class="text-danger"></span>
+                    <small id="aboutHelp" class="form-text text-muted">A little about yourself</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

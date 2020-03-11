@@ -4,12 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Signals;
-using Amphora.Common.Services.Azure;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
 

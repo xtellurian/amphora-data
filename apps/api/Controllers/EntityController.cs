@@ -1,11 +1,11 @@
-using Amphora.Api.Models;
+using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Controllers
 {
     public abstract class EntityController : Controller
     {
-        protected IActionResult Handle<T>(EntityOperationResult<T> result)
+        protected IActionResult Handle<T>(EntityOperationResult<T> result) where T : class
         {
             if (result.Succeeded)
             {

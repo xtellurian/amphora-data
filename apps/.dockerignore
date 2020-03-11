@@ -4,4 +4,7 @@
 Dockerfile
 azure-pipelines.yaml
 .gitignore
+
+# for fast rebuild after script change
+**/*.sh
 # **/appsettings.Development.json

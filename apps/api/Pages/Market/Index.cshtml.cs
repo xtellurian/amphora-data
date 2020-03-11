@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Authorization;
+using Amphora.Api.AspNet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.Market
 {
-    [Authorize]
+    [CommonAuthorize]
     public class IndexModel : PageModel
     {
         public IndexModel()

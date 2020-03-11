@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class GracefulErrorsTests : IntegrationTestBase
     {
         private int _apiVersion = 0;

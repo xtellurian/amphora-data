@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Emails;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -14,16 +17,19 @@ namespace Amphora.Api.Services.Platform
     public class InvitationService : IInvitationService
     {
         private readonly IEntityStore<InvitationModel> invitationStore;
+        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
         private readonly bool isDevelopment;
 
         public InvitationService(IEntityStore<InvitationModel> invitationStore,
+                                 IEntityStore<OrganisationModel> orgStore,
                                  IUserService userService,
                                  IEmailSender emailSender,
                                  IWebHostEnvironment env)
         {
             this.invitationStore = invitationStore;
+            this.orgStore = orgStore;
             this.userService = userService;
             this.emailSender = emailSender;
             this.isDevelopment = env.IsDevelopment();
@@ -34,12 +40,14 @@ namespace Amphora.Api.Services.Platform
         {
             invitation.TargetEmail = invitation.TargetEmail.ToUpper(); // set uppercase
             var user = await userService.ReadUserModelAsync(principal);
+            var org = await orgStore.ReadAsync(user.OrganisationId);
+
             if (!user.EmailConfirmed && !isDevelopment)
             {
                 return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must confirm email address to invite");
             }
 
-            if (invitation.TargetOrganisationId != null && !user.IsAdmin())
+            if (invitation.TargetOrganisationId != null && !org.IsAdministrator(user))
             {
                 return new EntityOperationResult<InvitationModel>(user, $"{user.Email} must be an administrator to invite to an organisation");
             }
@@ -115,7 +123,7 @@ namespace Amphora.Api.Services.Platform
 
             user.OrganisationId = invitation.TargetOrganisationId;
             user.Organisation.AddOrUpdateMembership(user, Common.Models.Organisations.Roles.User);
-            var res = await userService.UserManager.UpdateAsync(user);
+            var res = await userService.UpdateAsync(principal, user);
             if (res.Succeeded)
             {
                 invitation.IsClaimed = true;
@@ -124,7 +132,7 @@ namespace Amphora.Api.Services.Platform
             }
             else
             {
-                return new EntityOperationResult<InvitationModel>(user, res.Errors?.Select(_ => _.Description));
+                return new EntityOperationResult<InvitationModel>(user, res.Errors);
             }
         }
     }

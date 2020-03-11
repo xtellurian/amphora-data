@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Amphora.Api.AspNet
 {
-    internal class GlobalAdminAuthorizeAttribute : AuthorizeAttribute
+    internal class GlobalAdminAuthorizeAttribute : CommonAuthorizeAttribute
     {
         public GlobalAdminAuthorizeAttribute()
         {

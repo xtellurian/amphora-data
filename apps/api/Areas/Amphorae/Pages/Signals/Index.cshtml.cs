@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
-    [Authorize]
+    [CommonAuthorize]
     public class IndexModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;

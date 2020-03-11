@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.Extensions.Logging;
 

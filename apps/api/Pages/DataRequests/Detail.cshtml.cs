@@ -1,15 +1,13 @@
-using System;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Api.AspNet;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.DataRequests;
-using Amphora.Common.Models.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Pages.DataRequests
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DetailPageModel : PageModel
     {
         private readonly IPermissionedEntityStore<DataRequestModel> store;

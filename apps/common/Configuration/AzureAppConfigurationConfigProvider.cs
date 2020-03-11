@@ -13,7 +13,7 @@ namespace Amphora.Common.Configuration
 
             if (!string.IsNullOrEmpty(connectionString) && string.IsNullOrEmpty(settings[DisableKv]))
             {
-                System.Console.WriteLine($"Using KeyVault {settings[ConnectionStringKey]} as Config Provider");
+                System.Console.WriteLine($"Using Azure App Config {settings[ConnectionStringKey]?.Substring(0, 15)}... as Config Provider");
                 config.AddAzureAppConfiguration(connectionString);
                 System.Console.WriteLine("Connected to Azure App Configuration!");
             }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Amphorae;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
@@ -14,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
-    [Authorize]
+    [CommonAuthorize]
     public class CreateModel : AmphoraPageModel
     {
         private readonly ISignalService signalService;

@@ -1,0 +1,25 @@
+@model FooterModel
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2019 - Amphora Data - 
+        @if(Model.EnableValues){
+            <a asp-page="/Home/Values" >Our Values </a>
+        }
+        <span class="float-right text-muted">
+            @{
+                
+                var identifier = $"{Model.Version} {Model.GitHash?.Substring(0, 7)}";
+            }
+            @Model.Stack
+            @if(Model.EnableChangelog)
+            {
+                <a asp-page="/Changelog/Index"> @identifier </a>
+            }
+            else
+            {
+                @identifier
+            }
+        </span>
+    </div>
+</footer>

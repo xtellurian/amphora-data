@@ -3,10 +3,10 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Options;
+using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NSwag.Annotations;
@@ -80,10 +80,17 @@ namespace Amphora.Api.Controllers
         [CommonAuthorize]
         public async Task<IActionResult> Update(string id, [FromBody]Organisation org)
         {
+            var userId = User.GetUserId();
             if (ModelState.IsValid)
             {
                 var entity = await entityStore.ReadAsync(id);
                 if (entity == null) { return NotFound(); }
+                if (!entity.IsAdministrator(userId))
+                {
+                    // not admin
+                    return Unauthorized("User must be an administrator");
+                }
+
                 entity.Name = org.Name;
                 entity.About = org.About;
                 entity.Address = org.Address;
@@ -129,8 +136,15 @@ namespace Amphora.Api.Controllers
         {
             var org = await entityStore.ReadAsync(id);
             if (org == null) { return NotFound(); }
-            await entityStore.DeleteAsync(org);
-            return Ok("Deleted Organisation");
+            var res = await organisationService.DeleteAsync(User, org);
+            if (res.Succeeded)
+            {
+                return Ok("Deleted Organisation");
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
         }
     }
 }

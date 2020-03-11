@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,16 @@ namespace Amphora.Api.Services.Auth
 
         public async Task<bool> IsAuthorizedAsync(IUser user, AmphoraModel entity, AccessLevels accessLevel)
         {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (entity is null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             using (logger.BeginScope(new LoggerScope<PermissionService>(user)))
             {
                 // check if user is in Admin role

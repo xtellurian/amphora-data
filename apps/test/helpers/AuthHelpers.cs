@@ -3,7 +3,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
+using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 using Xunit;
@@ -17,22 +21,24 @@ namespace Amphora.Tests.Helpers
             string email,
             string fullName)
         {
+            var password = System.Guid.NewGuid().ToString() + "!A1";
             // assumed the user has been invited
-            var user = new AmphoraUser
+            var user = new CreateAmphoraUser
             {
                 UserName = email,
                 Email = email,
                 FullName = fullName,
+                Password = password
             };
             var requestPath = "api/users";
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             var response = await client.PostAsync(requestPath, content);
-            var password = await response.Content.ReadAsStringAsync();
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.True(response.IsSuccessStatusCode, "Content: " + responseContent);
+            var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
+            await client.GetTokenAsync(user.UserName, password);
 
-            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
-            await client.GetTokenAsync(user, password);
-
-            return (User: user, Password: password);
+            return (User: createdUser, Password: password);
         }
 
         public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client, string testName)
@@ -46,13 +52,13 @@ namespace Amphora.Tests.Helpers
             return org;
         }
 
-        public static async Task GetTokenAsync(this HttpClient client, AmphoraUser user, string password)
+        public static async Task GetTokenAsync(this HttpClient client, string userName, string password)
         {
             // can log in
             var loginRequest = new TokenRequest()
             {
                 Password = password,
-                Username = user.UserName
+                Username = userName
             };
 
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");

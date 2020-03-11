@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class IndexModel : PageModel
     {
         private readonly IUserService userService;
@@ -97,7 +98,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task<IActionResult> MyPurchasedAmphorae()
         {
-            var user = await this.userService.UserManager.GetUserAsync(User);
+            var user = await this.userService.ReadUserModelAsync(User);
             if (user == null) { return RedirectToPage("/Account/Login", new { area = "Profiles" }); }
 
             var amphorae = await amphoraeService.AmphoraPurchasedBy(User, user);
@@ -123,7 +124,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task<IActionResult> MyAmphorae()
         {
-            var user = await this.userService.UserManager.GetUserAsync(User);
+            var user = await this.userService.ReadUserModelAsync(User);
             if (user == null)
             {
                 return RedirectToPage("/Account/Login", new { area = "Profiles" });

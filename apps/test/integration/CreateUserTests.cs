@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
+using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,7 +15,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class CreateUserTests : IntegrationTestBase
     {
         private int _apiVersion = 0;
@@ -27,18 +29,19 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
-
+            var password = System.Guid.NewGuid().ToString() + "!A";
             // Act
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var user = new AmphoraUser
+            var user = new CreateAmphoraUser
             {
                 UserName = email,
                 Email = email,
+                Password = password
             };
+
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync("api/users", content);
-            var password = await response.Content.ReadAsStringAsync();
 
             // Assert
             await AssertHttpSuccess(response);
@@ -54,9 +57,6 @@ namespace Amphora.Tests.Integration
 
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            // now delete
-            var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
-            await AssertHttpSuccess(deleteRequest);
         }
 
         [Fact]
@@ -65,13 +65,14 @@ namespace Amphora.Tests.Integration
             // Arrange
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
-
+            var password = System.Guid.NewGuid().ToString() + "1A!";
             // Act
             var email = System.Guid.NewGuid().ToString() + "@example.com";
-            var user = new ApplicationUser
+            var user = new CreateAmphoraUser
             {
                 UserName = email,
                 Email = email,
+                Password = password
             };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
@@ -85,8 +86,6 @@ namespace Amphora.Tests.Integration
             }
 
             await AssertHttpSuccess(response);
-
-            var password = await response.Content.ReadAsStringAsync();
 
             var loginRequest = new TokenRequest()
             {
@@ -103,13 +102,11 @@ namespace Amphora.Tests.Integration
 
             response = await client.PostAsJsonAsync("api/organisations", org);
             var orgCreateContent = await response.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(response);
             var createdOrg = JsonConvert.DeserializeObject<Organisation>(orgCreateContent);
 
             // now delete the org
             await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
-            // now delete user
-            var deleteRequest = await client.DeleteAsync($"api/users/{user.UserName}");
-            await AssertHttpSuccess(deleteRequest);
         }
     }
 }

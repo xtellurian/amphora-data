@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Amphora.GitHub.Models;
+using Amphora.Common.Models.GitHub;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Pages.Shared.Components

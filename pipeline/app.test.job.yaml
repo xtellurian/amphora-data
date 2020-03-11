@@ -67,9 +67,10 @@ jobs:
           echo "TreatWarningsAsErrors=false"
         fi
 
+        ./build-containers.sh -a $acrName -c $acrName.azurecr.io/$IMAGE:latest -t $BUILD
+
         if [[ "$(docker images -q $acrName.azurecr.io/$IMAGE:$BUILD 2> /dev/null)" == "" ]]; then
           echo "Building Docker Image"
-          docker build --target builder --cache-from $acrName.azurecr.io/$IMAGE:latest --build-arg TreatWarningsAsErrors=$TreatWarningsAsErrors -t $acrName.azurecr.io/$IMAGE:latest -t $acrName.azurecr.io/$IMAGE:$BUILD -t $IMAGE:latest -f Dockerfile $CONTEXT
           docker push $acrName.azurecr.io/$IMAGE:latest
           docker push $acrName.azurecr.io/$IMAGE:$BUILD
         fi
@@ -91,7 +92,7 @@ jobs:
         popd
         pushd apps
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
-        docker run -v `pwd`:/output -v ~/.azure/:/.azure/ -e kvUri=$kvUri -e PersistentStores=$PersistentStores -e disableKv=$disableKv -e DGML_PATH=/output/Entities.dgml -e BUILD_REASON=$BUILD_REASON $acrName.azurecr.io/$IMAGE:$BUILD
+        . run-tests.sh
         cp Entities.dgml $(Build.ArtifactStagingDirectory)
       displayName: Run Tests
       env:

@@ -38,6 +38,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
         public virtual ICollection<RestrictionModel> Restrictions { get; set; } = new Collection<RestrictionModel>();
+        public virtual ICollection<RestrictionModel> TargetedByRestrictions { get; set; } = new Collection<RestrictionModel>();
         public virtual PinnedAmphorae? PinnedAmphorae { get; set; } = new PinnedAmphorae();
         // navigation
         public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; } = new Collection<TermsAndConditionsModel>();
@@ -57,6 +58,17 @@ namespace Amphora.Common.Models.Organisations
         public bool IsInOrgansation(IUser user)
         {
             return this.Memberships?.Any(u => string.Equals(u.UserId, user.Id)) ?? false;
+        }
+
+        public bool IsAdministrator(IUser user)
+        {
+            return this.IsAdministrator(user.Id);
+        }
+
+        public bool IsAdministrator(string userId)
+        {
+            var membership = this.Memberships?.FirstOrDefault(m => m.UserId == userId);
+            return membership?.Role == Roles.Administrator;
         }
 
         public bool AddTermsAndConditions(TermsAndConditionsModel model)

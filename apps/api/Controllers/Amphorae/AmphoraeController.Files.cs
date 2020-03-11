@@ -6,6 +6,7 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -93,7 +94,7 @@ namespace Amphora.Api.Controllers.Amphorae
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
-                Models.EntityOperationResult<UploadResponse> fileResult;
+                EntityOperationResult<UploadResponse> fileResult;
                 if (content != null && content.Length > 0)
                 {
                     using (var stream = new MemoryStream())

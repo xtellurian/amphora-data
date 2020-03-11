@@ -75,6 +75,6 @@ namespace Amphora.Common.Models.Permissions
         /// <summary>
         /// Gets or sets the Organisation that is restricted.
         /// </summary>
-        public virtual OrganisationModel TargetOrganisation { get; set; }
+        public virtual OrganisationModel? TargetOrganisation { get; set; }
     }
 }

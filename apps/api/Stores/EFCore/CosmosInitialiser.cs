@@ -109,7 +109,9 @@ namespace Amphora.Api.Stores.EFCore
 
         private bool IsUsingCosmos()
         {
-            return cosmos.CurrentValue?.Endpoint != null && cosmos.CurrentValue?.PrimaryKey != null && cosmos.CurrentValue?.Database != null;
+            return !string.IsNullOrEmpty(cosmos.CurrentValue?.Endpoint)
+                && !string.IsNullOrEmpty(cosmos.CurrentValue?.PrimaryKey)
+                && !string.IsNullOrEmpty(cosmos.CurrentValue?.Database);
         }
     }
 }

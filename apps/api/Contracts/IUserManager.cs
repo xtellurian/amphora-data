@@ -8,7 +8,7 @@ namespace Amphora.Api.Contracts
     public interface IUserManager
     {
         Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword);
-        Task<IdentityResult> CreateAsync(ApplicationUser user, string password);
+        Task<(IdentityResult idResult, string password)> CreateAsync(ApplicationUser user, string password);
         Task<IdentityResult> DeleteAsync(ApplicationUser user);
         Task<ApplicationUser> FindByIdAsync(string userId);
         Task<ApplicationUser> FindByNameAsync(string userName);

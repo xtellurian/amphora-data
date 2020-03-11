@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
     [DisableRequestSizeLimit]
+    [CommonAuthorize]
     public class IndexPageModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;

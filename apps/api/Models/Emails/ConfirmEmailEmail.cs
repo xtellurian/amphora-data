@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
-using Amphora.Api.Models.Host;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models.Host;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 

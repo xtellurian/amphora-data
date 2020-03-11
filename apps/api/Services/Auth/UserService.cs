@@ -2,9 +2,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Events;
+using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
@@ -19,6 +21,7 @@ namespace Amphora.Api.Services.Auth
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
         private readonly IEventPublisher eventPublisher;
+        private readonly IIdentityService identityServerService;
         private readonly ISignInManager signInManager;
 
         public UserService(ILogger<UserService> logger,
@@ -26,6 +29,7 @@ namespace Amphora.Api.Services.Auth
                            IEntityStore<ApplicationUser> userStore,
                            IPermissionService permissionService,
                            IEventPublisher eventPublisher,
+                           IIdentityService identityServerService,
                            IUserManager userManager,
                            ISignInManager signInManager)
         {
@@ -34,6 +38,7 @@ namespace Amphora.Api.Services.Auth
             UserStore = userStore;
             this.permissionService = permissionService;
             this.eventPublisher = eventPublisher;
+            this.identityServerService = identityServerService;
             this.UserManager = userManager;
             this.signInManager = signInManager;
         }
@@ -82,7 +87,7 @@ namespace Amphora.Api.Services.Auth
 
                 user.LastModified = System.DateTime.UtcNow;
                 var result = await UserManager.CreateAsync(user, password);
-                if (result.Succeeded)
+                if (result.idResult.Succeeded)
                 {
                     user = await UserManager.FindByNameAsync(user.UserName);
                     if (user == null) { throw new System.Exception("Unable to retrieve user"); }
@@ -92,7 +97,7 @@ namespace Amphora.Api.Services.Auth
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(user, result.Errors.Select(e => e.Description));
+                    return new EntityOperationResult<ApplicationUser>(user, result.idResult.Errors.Select(e => e.Description));
                 }
             }
         }
@@ -106,15 +111,8 @@ namespace Amphora.Api.Services.Auth
                 {
                     logger.LogWarning("User is deleting self");
                     if (currentUser == null) { return new EntityOperationResult<ApplicationUser>(currentUser, "User does not exist"); }
-                    var result = await UserManager.DeleteAsync(currentUser);
-                    if (result.Succeeded)
-                    {
-                        return new EntityOperationResult<ApplicationUser>(true);
-                    }
-                    else
-                    {
-                        return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(e => e.Description));
-                    }
+                    var result = await identityServerService.DeleteUser(principal, user);
+                    return result;
                 }
                 else
                 {
@@ -128,6 +126,25 @@ namespace Amphora.Api.Services.Auth
         {
             var appUser = await UserManager.GetUserAsync(principal);
             return appUser;
+        }
+
+        public async Task<EntityOperationResult<ApplicationUser>> UpdateAsync(ClaimsPrincipal principal, ApplicationUser user)
+        {
+            var userId = principal.GetUserId();
+            if (user.Id != userId)
+            {
+                return new EntityOperationResult<ApplicationUser>(false);
+            }
+
+            user = await this.UserStore.UpdateAsync(user);
+            if (user != null)
+            {
+                return new EntityOperationResult<ApplicationUser>(user, 200, true);
+            }
+            else
+            {
+                return new EntityOperationResult<ApplicationUser>(false);
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;
-using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
@@ -31,7 +30,11 @@ namespace Amphora.Tests.Integration
             var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
                 new Invitation { TargetEmail = email, TargetOrganisationId = org.Id });
             inviteResponse.EnsureSuccessStatusCode();
-            var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
+            var (createUser, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
+            var user = new AmphoraUser();
+            user.UserName = createUser.UserName;
+            user.Email = createUser.Email;
+            user.Id = createUser.Id;
             var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
@@ -54,25 +57,27 @@ namespace Amphora.Tests.Integration
 
         protected async Task AssertHttpSuccess(HttpResponseMessage response)
         {
-            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
+            Assert.True(response.IsSuccessStatusCode, $"Code: {response.StatusCode}, Content: {await response.Content.ReadAsStringAsync()}");
         }
 
         protected async Task DestroyAmphoraAsync(HttpClient client, string id)
         {
             var deleteResponse = await client.DeleteAsync($"/api/amphorae/{id}");
-            deleteResponse.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(deleteResponse);
         }
 
-        protected async Task DestroyUserAsync(HttpClient client, AmphoraUser user)
+        protected Task DestroyUserAsync(HttpClient client, AmphoraUser user)
         {
-            var response = await client.DeleteAsync($"api/users/{user.UserName}");
-            response.EnsureSuccessStatusCode();
+            // TODO: figure out a way to delete the user
+            return Task.CompletedTask;
+            // var response = await client.DeleteAsync($"api/users/{user.UserName}");
+            // response.EnsureSuccessStatusCode();
         }
 
         protected async Task DestroyOrganisationAsync(HttpClient client, Organisation org)
         {
             var response = await client.DeleteAsync($"api/organisations/{org.Id}");
-            response.EnsureSuccessStatusCode();
+            await AssertHttpSuccess(response);
         }
     }
 }

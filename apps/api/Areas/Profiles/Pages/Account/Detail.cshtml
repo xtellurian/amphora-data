@@ -1,5 +1,8 @@
 @page
 @model DetailModel
+
+@using Amphora.Common.Extensions
+
 @{
     ViewData["Title"] = Model.AppUser.FullName;
 }
@@ -10,7 +13,7 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img class="img-fluid" src="@Model.AppUser.GetProfilePictureUri().ToString()?s=180" />
+                        <img class="img-fluid" src="@User.GetProfilePictureUri()?.ToString()?s=180" />
                     </div>
                     @if(@Model.IsSelf)
                     {
@@ -53,7 +56,7 @@
                             {
                             <tr class="row align-items-center entity-item">
                                 <th class="col-2">
-                                    <img class="img-fluid img-bullet" src="~/images/Amphora_Black.svg">
+                                    <img class="img-fluid img-bullet" src="~/_content/sharedui/images/Amphora_Black.svg">
                                 </th>
                                 <td class="col-6">
                                     @entity.Name 

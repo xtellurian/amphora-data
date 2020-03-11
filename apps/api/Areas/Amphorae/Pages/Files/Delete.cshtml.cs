@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Files
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DeletePageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
@@ -40,7 +41,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("../Index");
             }
 
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
             {
                 return Page();
@@ -60,7 +61,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("../Index");
             }
 
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
             {
                 await blobStore.DeleteAsync(Amphora, name);

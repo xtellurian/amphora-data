@@ -1,0 +1,22 @@
+﻿@page
+@model Amphora.Identity.Pages.Account.ConfirmEmailPageModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div>
+    @if(Model.Succeeded)
+    {
+        <p>
+            Thank you for confirming your email.
+        </p>
+    }
+    else
+    {
+        <p>
+            Something went wrong
+        </p>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    }
+</div>

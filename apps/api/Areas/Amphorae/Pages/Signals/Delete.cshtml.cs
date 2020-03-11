@@ -1,16 +1,16 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
-using Amphora.Common.Models.Signals;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DeleteModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Organisations
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class OrganisationCRUDTests : IntegrationTestBase
     {
         private int _apiVersion = 0;

@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Users;

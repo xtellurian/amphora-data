@@ -1,18 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Extensions;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Signals;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Newtonsoft.Json;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DetailModel : AmphoraPageModel
     {
         private readonly ISignalService signalService;

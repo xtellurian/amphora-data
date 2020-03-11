@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class GeoTests : IntegrationTestBase
     {
         public GeoTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)

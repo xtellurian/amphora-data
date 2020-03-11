@@ -1,12 +1,14 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -68,17 +70,15 @@ namespace Amphora.Api.Controllers
         /// Creates a new User. Returns the password.
         /// </summary>
         /// <param name="user">User parameters.</param>
-        /// <returns> A password string.</returns>
-        [Produces(typeof(string))]
+        /// <returns> The info for the created user.</returns>
+        [Produces(typeof(AmphoraUser))]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AmphoraUser user)
+        public async Task<IActionResult> Create([FromBody] CreateAmphoraUser user)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-
-            string password = System.Guid.NewGuid().ToString() + "!1A";
 
             var applicationUser = new ApplicationUser()
             {
@@ -88,18 +88,19 @@ namespace Amphora.Api.Controllers
 
             var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
 
-            var result = await userService.CreateAsync(applicationUser, invitation, password);
+            var result = await userService.CreateAsync(applicationUser, invitation, user.Password);
 
             if (result.Succeeded)
             {
                 if (IsTestUser(result.Entity))
                 {
-                    logger.LogWarning($"Automatically confirming email for {result.Entity.Email}");
-                    result.Entity.EmailConfirmed = true;
-                    var updateRes = await userService.UserManager.UpdateAsync(result.Entity);
+                    var appUser = await userService.UserStore.ReadAsync(result.Entity.Id);
+                    logger.LogWarning($"Automatically confirming email for {appUser.Email}");
+                    appUser.EmailConfirmed = true;
+                    var updateRes = await userService.UpdateAsync(User, appUser);
                 }
 
-                return Ok(password);
+                return Ok(mapper.Map<AmphoraUser>(result.Entity));
             }
             else
             {
@@ -124,7 +125,8 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Delete(string userName)
         {
             if (userName == null) { return BadRequest("username is required"); }
-            var user = await userService.UserManager.FindByNameAsync(userName);
+            var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
+            var user = users.FirstOrDefault();
             if (user == null) { return NotFound(); }
             var result = await userService.DeleteAsync(User, user);
             if (result.Succeeded)

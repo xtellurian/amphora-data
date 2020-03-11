@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     [Trait("Category", "Versioning")]
     public class VersionTests : IntegrationTestBase
     {

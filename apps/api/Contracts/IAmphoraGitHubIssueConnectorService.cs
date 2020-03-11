@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amphora.GitHub.Models;
+using Amphora.Common.Models.GitHub;
 
 namespace Amphora.Api.Contracts
 {

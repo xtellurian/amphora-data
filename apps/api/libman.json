@@ -3,10 +3,6 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "font-awesome@5.9.0",
-      "destination": "wwwroot/lib/font-awesome"
-    },
-    {
       "library": "color-scheme@1.0.1",
       "destination": "wwwroot/lib/color-scheme"
     },

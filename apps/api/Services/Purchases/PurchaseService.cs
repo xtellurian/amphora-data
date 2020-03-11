@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Events;
+using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
@@ -51,6 +53,7 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
         {
+            if (user == null) { return false; }
             if (user.OrganisationId == amphora.OrganisationId) { return false; }
             var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByOrganisationId, user.OrganisationId)) ?? false;
             return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
@@ -146,7 +149,7 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
-            var user = await userService.UserManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             return await this.PurchaseAmphoraAsync(user, amphora);
         }
     }

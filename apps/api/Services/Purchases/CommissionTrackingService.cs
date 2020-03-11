@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Purchases;
 
@@ -28,7 +29,11 @@ namespace Amphora.Api.Services.Purchases
                 PurchaseModel = purchase
             };
             commission = await store.CreateAsync(commission);
-            await eventPublisher.PublishEventAsync(new CommissionEarnedEvent(commission));
+            if (commissionAmount > 0)
+            {
+                await eventPublisher.PublishEventAsync(new CommissionEarnedEvent(commission));
+            }
+
             return commission;
         }
     }

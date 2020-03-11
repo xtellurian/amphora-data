@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DetailModel : PageModel
     {
         private readonly IUserService userService;
@@ -33,11 +34,12 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
             var currentUser = await userService.ReadUserModelAsync(User);
             if (!string.IsNullOrEmpty(id))
             {
-                AppUser = await userService.UserManager.FindByIdAsync(id);
+                AppUser = await userService.UserStore.ReadAsync(id);
             }
             else if (!string.IsNullOrEmpty(userName))
             {
-                AppUser = await userService.UserManager.FindByNameAsync(userName);
+                var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
+                AppUser = users.FirstOrDefault();
             }
             else
             {

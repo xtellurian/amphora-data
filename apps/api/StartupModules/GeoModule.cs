@@ -1,6 +1,7 @@
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
+using Amphora.Common.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ namespace Amphora.Api.StartupModules
         {
             services.Configure<AzureMapsOptions>(configuration.GetSection("AzureMaps"));
 
-            if (hostingEnvironment.IsProduction() || configuration["PersistentStores"] == "true")
+            if (hostingEnvironment.IsProduction() || configuration.IsPersistentStores())
             {
                 services.AddTransient<IMapService, AzureMapService>();
             }

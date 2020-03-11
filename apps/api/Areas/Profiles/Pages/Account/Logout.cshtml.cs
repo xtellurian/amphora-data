@@ -1,35 +1,39 @@
 ﻿using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Common.Models.Options;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly ISignInManager _signInManager;
+        private readonly IOptionsMonitor<ExternalServices> externalServices;
         private readonly ILogger<LogoutModel> _logger;
 
-        public LogoutModel(ISignInManager signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(IOptionsMonitor<ExternalServices> externalServices, ILogger<LogoutModel> logger)
         {
-            _signInManager = signInManager;
+            this.externalServices = externalServices;
             _logger = logger;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync(string returnUrl)
         {
-        }
-
-        public async Task<IActionResult> OnPost(string returnUrl = null)
-        {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            if (returnUrl != null)
+            if (User.Identity.IsAuthenticated)
             {
-                return LocalRedirect(returnUrl);
+                var uri = $"{externalServices.CurrentValue.IdentityBaseUrl}/Account/Logout";
+                if (returnUrl != null)
+                {
+                    uri += $"?returnUrl={returnUrl}";
+                }
+
+                await HttpContext.SignOutAsync();
+                _logger.LogInformation("User logged out.");
+                return Redirect(uri);
             }
             else
             {

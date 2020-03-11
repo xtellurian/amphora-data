@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
     public class InvoicePageModel : PageModel
     {
         private readonly IUserService userService;
+        private readonly IOrganisationService organisationService;
         private readonly IInvoiceFileService invoiceFileService;
 
-        public InvoicePageModel(IUserService userService, IInvoiceFileService invoiceFileService)
+        public InvoicePageModel(IUserService userService, IOrganisationService organisationService, IInvoiceFileService invoiceFileService)
         {
             this.userService = userService;
+            this.organisationService = organisationService;
             this.invoiceFileService = invoiceFileService;
         }
 
@@ -25,9 +28,10 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
         public async Task<IActionResult> OnGetAsync(string invoiceId)
         {
             var user = await userService.ReadUserModelAsync(User);
-            if (user.IsAdmin())
+            var res = await organisationService.ReadAsync(User, user.OrganisationId);
+            if (res.Succeeded && res.Entity.IsAdministrator(user))
             {
-                this.Organisation = user.Organisation;
+                this.Organisation = res.Entity;
                 this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
                 if (this.Invoice == null)
                 {
@@ -45,9 +49,10 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
         public async Task<IActionResult> OnGetDownloadCsvAsync(string invoiceId)
         {
             var user = await userService.ReadUserModelAsync(User);
-            if (user.IsAdmin())
+            var res = await organisationService.ReadAsync(User, user.OrganisationId);
+            if (res.Succeeded && res.Entity.IsAdministrator(user))
             {
-                this.Organisation = user.Organisation;
+                this.Organisation = res.Entity;
                 this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
                 if (this.Invoice == null)
                 {

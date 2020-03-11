@@ -3,6 +3,8 @@ ARG DOTNET_RUNTIME_VERSION=3.1.2
 ARG TreatWarningsAsErrors=false
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_SDK_VERSION} AS builder
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+RUN apk add icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -12,18 +14,3 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 ENV AZURE_CONFIG_DIR=/.azure/
 
 CMD [ "dotnet", "test", "-l:trx;LogFileName=/output/TestOutput.xml ", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=cobertura", "/p:CoverletOutput=/output/" ]
-
-FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_SDK_VERSION} AS publisher
-WORKDIR /app
-COPY --from=builder /app .
-RUN dotnet publish -c Release -o out api /p:TreatWarningsAsErrors=${TreatWarningsAsErrors}
-
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_RUNTIME_VERSION}-alpine
-ARG gitHash
-RUN echo gitHash arg is ${gitHash}
-ENV ASPNETCORE_SOURCEVERSION ${gitHash}
-RUN echo env var is ${ASPNETCORE_SOURCEVERSION}
-WORKDIR /app
-COPY --from=publisher /app/out .
-ENTRYPOINT ["dotnet", "api.dll"]

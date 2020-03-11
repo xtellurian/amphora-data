@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
     [ValidateAntiForgeryToken]
-    [Authorize]
+    [CommonAuthorize]
     public class CreateModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;

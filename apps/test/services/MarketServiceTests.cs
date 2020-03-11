@@ -7,6 +7,7 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Market;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Microsoft.Extensions.Options;

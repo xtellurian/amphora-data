@@ -25,6 +25,19 @@
             }
         },
         {
+            "name": ".NET Core Launch (identity)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/identity/bin/Debug/netcoreapp3.1/identity.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/identity",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
             "name": ".NET Core Launch (migrate)",
             "type": "coreclr",
             "request": "launch",

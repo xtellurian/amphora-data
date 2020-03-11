@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Pages
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class AmphoraPagesTests : IntegrationTestBase
     {
         public AmphoraPagesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
@@ -33,8 +33,8 @@ namespace Amphora.Tests.Integration.Pages
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
+            Assert.NotNull(dto?.Id);
             var id = dto.Id;
-
             var response = await adminClient.GetAsync($"{path}?id={id}");
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());

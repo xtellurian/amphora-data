@@ -1,0 +1,114 @@
+
+/* BRAND COLOURS */
+
+:root {
+    --amphora-red: #BC312A;
+    --amphora-black: #181717;
+    --amphora-white: #FFFEFD;
+  }
+  
+  /* NAV BAR */
+  
+  a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+  }
+  
+  .navbar { background-color: rgba(0, 0, 0, 0.91) !important; }
+  .navbar .dropdown-menu {background-color: var(--amphora-black); }
+  .navbar #title-amphora { color: var(--amphora-white) ;}
+  .navbar #title-data { color: var(--amphora-red) ;}
+  .navbar .navbar-brand img {
+    max-height:100%; margin-right: 10px;  max-width:220px; 
+  }
+  
+  .navbar .avatar a img {
+    max-height: 35px;
+    vertical-align: center;
+    text-align: center;
+  }
+  
+  .navbar .avatar a {
+    height: 100%;
+  }
+  
+  .navbar .avatar {
+    margin-left: 10px;
+  }
+  
+  /* Sticky footer styles
+  -------------------------------------------------- */
+  html {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  
+  h1, h2, h3, h4, .nav-item {
+    font-family: 'Fjalla One', sans-serif;
+  }
+  
+  .navbar-nav {
+    font-size: large;
+    font-weight: 400;
+  }
+  
+  /* noto-sans-regular - latin */
+  @font-face {
+    font-family: 'Noto Sans Display';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/noto-sans-v9-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local('Noto Sans'), local('NotoSans'),
+         url('../fonts/noto-sans-v9-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('../fonts/noto-sans-v9-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+         url('../fonts/noto-sans-v9-latin-regular.woff') format('woff'), /* Modern Browsers */
+         url('../fonts/noto-sans-v9-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('../fonts/noto-sans-v9-latin-regular.svg#NotoSans') format('svg'); /* Legacy iOS */
+  }
+  
+  .footer {
+    background-color: rgba(0, 0, 0, 0.91) ;
+  }
+  
+  .border-top {
+    border-top: 1px solid var(--amphora-white);
+  }
+  .border-bottom {
+    border-bottom: 1px solid var(--amphora-white);
+  }
+  
+  .box-shadow {
+    box-shadow: 0 .25rem .75rem var(--amphora-black);
+  }
+  
+  button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+  }
+  
+  /* Sticky footer styles
+  -------------------------------------------------- */
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+  
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+  }
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    line-height: 60px; /* Vertically center the text there */
+  }
+  

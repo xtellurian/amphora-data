@@ -6,6 +6,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Search;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
@@ -99,7 +100,8 @@ namespace Amphora.Api.Controllers
             }
             else
             {
-                user = await userService.UserManager.FindByNameAsync(userName);
+                var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
+                user = users.FirstOrDefault();
             }
 
             var response = await searchService.SearchAmphora("", new SearchParameters().ForUserAsCreator(user));

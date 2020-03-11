@@ -1,17 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Services.FeatureFlags;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Amphora.GitHub.Models;
+using Amphora.Common.Models.GitHub;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DetailModel : AmphoraPageModel
     {
         private readonly IBlobStore<AmphoraModel> blobStore;
@@ -97,20 +99,22 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private async Task<IActionResult> UnpinFromOrg()
         {
             var user = Result.User;
-            var org = user.Organisation;
-            if (!user.IsAdmin())
+            var res = await organisationService.ReadAsync(User, user.OrganisationId);
+
+            if (res.Succeeded && !res.Entity.IsAdministrator(user))
             {
                 ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
                 return OnReturnPage();
             }
 
+            var org = res.Entity;
             if (org.PinnedAmphorae.IsPinned(Amphora))
             {
                 org.PinnedAmphorae.Unpin(Amphora);
-                var res = await organisationService.UpdateAsync(User, org);
-                if (!res.Succeeded)
+                var updateRes = await organisationService.UpdateAsync(User, org);
+                if (!updateRes.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, res.Message);
+                    ModelState.AddModelError(string.Empty, updateRes.Message);
                 }
                 else
                 {
@@ -131,7 +135,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (user.PinnedAmphorae.IsPinned(Amphora))
             {
                 user.PinnedAmphorae.Unpin(Amphora);
-                await userService.UserManager.UpdateAsync(user);
+                await userService.UpdateAsync(User, user);
                 return RedirectToPage("./Detail", new { Id = Amphora.Id });
             }
             else
@@ -147,7 +151,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (user.PinnedAmphorae.AreAnyNull())
             {
                 user.PinnedAmphorae.PinToLeastNull(Amphora);
-                await userService.UserManager.UpdateAsync(user);
+                await userService.UpdateAsync(User, user);
                 return RedirectToPage("./Detail", new { Id = Amphora.Id });
             }
             else
@@ -160,20 +164,22 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private async Task<IActionResult> PinToOrg()
         {
             var user = Result.User;
-            var org = user.Organisation;
-            if (!user.IsAdmin())
+            var res = await organisationService.ReadAsync(User, user.OrganisationId);
+
+            if (res.Succeeded && !res.Entity.IsAdministrator(user))
             {
                 ModelState.AddModelError(string.Empty, "User must be an Organisation Admin");
                 return OnReturnPage();
             }
 
+            var org = res.Entity;
             if (org.PinnedAmphorae.AreAnyNull())
             {
                 org.PinnedAmphorae.PinToLeastNull(Amphora);
-                var res = await organisationService.UpdateAsync(User, org);
-                if (!res.Succeeded)
+                var updateRes = await organisationService.UpdateAsync(User, org);
+                if (!updateRes.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, res.Message);
+                    ModelState.AddModelError(string.Empty, updateRes.Message);
                 }
                 else
                 {
@@ -190,7 +196,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task SetPagePropertiesAsync()
         {
-            var user = await userService.UserManager.GetUserAsync(User);
+            var user = await userService.ReadUserModelAsync(User);
             if (Amphora != null)
             {
                 this.Quality = await qualityEstimator.GenerateDataQualitySummaryAsync(Amphora);

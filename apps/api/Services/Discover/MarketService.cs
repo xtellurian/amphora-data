@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Search;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;

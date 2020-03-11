@@ -5,6 +5,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
@@ -102,6 +103,7 @@ namespace Amphora.Tests.Unit.Purchasing
                                               userStore,
                                               permissionService,
                                               CreateMockEventPublisher(),
+                                              Mock.Of<IIdentityService>(),
                                               null,
                                               null);
             var purchaseService = new PurchaseService(purchaseStore,

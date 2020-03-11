@@ -7,6 +7,7 @@ using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
@@ -16,6 +17,8 @@ using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Database.EFCoreProviders;
+using Amphora.Infrastructure.Models.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -35,12 +38,13 @@ namespace Amphora.Api.StartupModules
         public StorageModule(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.HostingEnvironment = env;
-            this.configuration = configuration;
+            this.Configuration = configuration;
         }
 
-        public IWebHostEnvironment HostingEnvironment { get; }
+        private bool IsUsingCosmos() => HostingEnvironment.IsProduction() || Configuration.IsPersistentStores();
 
-        private readonly IConfiguration configuration;
+        public IWebHostEnvironment HostingEnvironment { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -48,8 +52,8 @@ namespace Amphora.Api.StartupModules
             var keyVaultClient = new KeyVaultClient(
                 new KeyVaultClient.AuthenticationCallback(tokenProvider.KeyVaultTokenCallback));
 
-            var connectionString = configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
-            var kvUri = configuration["kvUri"];
+            var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
+            var kvUri = Configuration["kvUri"];
             if (CloudStorageAccount.TryParse(connectionString, out var storageAccount) && !string.IsNullOrEmpty(kvUri))
             {
                 var client = storageAccount.CreateCloudBlobClient();
@@ -68,20 +72,16 @@ namespace Amphora.Api.StartupModules
 
             services.AddScoped<IEventHubSender, EventHubSender>();
 
-            services.Configure<AzureStorageAccountOptions>(configuration.GetSection("Storage"));
-            services.Configure<EventHubOptions>(configuration.GetSection("TsiEventHub"));
-            services.Configure<CosmosOptions>(configuration.GetSection("Cosmos"));
+            services.Configure<AzureStorageAccountOptions>(Configuration.GetSection("Storage"));
+            services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
+            services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
 
-            if (HostingEnvironment.IsProduction() || configuration.IsPersistentStores())
+            if (IsUsingCosmos())
             {
                 var cosmosOptions = new CosmosOptions();
-                configuration.GetSection("Cosmos").Bind(cosmosOptions);
-                services.Configure<CosmosOptions>(configuration.GetSection("Cosmos"));
-                services.AddDbContext<AmphoraContext>(options =>
-                {
-                    options.UseCosmos(cosmosOptions.Endpoint, cosmosOptions.PrimaryKey, cosmosOptions.Database);
-                    options.UseLazyLoadingProxies();
-                });
+                Configuration.GetSection("Cosmos").Bind(cosmosOptions);
+                services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
+                services.UseCosmos<AmphoraContext>(cosmosOptions);
 
                 services.AddSingleton<IBlobStore<AmphoraModel>, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
@@ -89,12 +89,10 @@ namespace Amphora.Api.StartupModules
             }
             else if (HostingEnvironment.IsDevelopment())
             {
-                services.AddDbContext<AmphoraContext>(options =>
-                {
-                    options.UseInMemoryDatabase("Amphora");
-                    options.UseLazyLoadingProxies();
-                });
-
+                // services.UseInMemory<AmphoraContext>();
+                var sqlOptions = new SqlServerOptions();
+                Configuration.GetSection("SqlServer").Bind(sqlOptions);
+                services.UseSqlServer<AmphoraContext>(sqlOptions);
                 services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
                 services.AddSingleton<IBlobCache, InMemoryBlobCache>();
@@ -124,6 +122,11 @@ namespace Amphora.Api.StartupModules
                 initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
                 initialiser.LogInformationAsync().ConfigureAwait(false);
+            }
+
+            if (!IsUsingCosmos())
+            {
+                app.MigrateSql<AmphoraContext>();
             }
         }
     }

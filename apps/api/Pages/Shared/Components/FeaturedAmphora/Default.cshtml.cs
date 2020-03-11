@@ -11,15 +11,12 @@ namespace Amphora.Api.Pages.Shared.Components.FeaturedAmphora
     public class FeaturedAmphoraViewComponent : ViewComponent
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IUserService userService;
         private readonly IOptionsMonitor<AmphoraManagementOptions> options;
 
         public FeaturedAmphoraViewComponent(IAmphoraeService amphoraeService,
-                                            IUserService userService,
                                             IOptionsMonitor<AmphoraManagementOptions> options)
         {
             this.amphoraeService = amphoraeService;
-            this.userService = userService;
             this.options = options;
         }
 

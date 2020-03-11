@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Models;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Permissions;
 
 namespace Amphora.Api.Contracts

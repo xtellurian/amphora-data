@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Amphorae
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class AmphoraRestrictionsTests : IntegrationTestBase
     {
         public AmphoraRestrictionsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)

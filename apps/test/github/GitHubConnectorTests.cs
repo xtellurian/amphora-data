@@ -2,8 +2,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api.Services.GitHub;
-using Amphora.GitHub;
-using Amphora.GitHub.Contracts;
+using Amphora.Common.Contracts;
+using Amphora.Common.Models.GitHub;
+using Amphora.Infrastructure.Services.GitHub;
 using Amphora.Tests.Mocks;
 using Bogus;
 using Microsoft.Extensions.Options;
@@ -23,7 +24,7 @@ namespace Amphora.Tests.GitHub
         [Fact]
         public async Task CanGetNewIssueLink()
         {
-            var configuration = new Configuration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
+            var configuration = new GitHubConfiguration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
             var id = System.Guid.NewGuid().ToString();
             var url = await sut.NewIssueUrlAsync(id, "blah&&&");
@@ -33,7 +34,7 @@ namespace Amphora.Tests.GitHub
         [Fact]
         public async Task CanGetListOfIssues()
         {
-            var configuration = new Configuration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
+            var configuration = new GitHubConfiguration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
 
             var issues = await sut.GetIssuesAsync();
@@ -44,7 +45,7 @@ namespace Amphora.Tests.GitHub
         [Fact]
         public async Task CanFilterListOfIssues()
         {
-            var configuration = new Configuration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
+            var configuration = new GitHubConfiguration(System.Guid.NewGuid().ToString(), token, defaultUser, defaultRepo);
             IAmphoraGitHubClient sut = new AmphoraGitHubClient(configuration);
 
             var id = System.Guid.NewGuid().ToString();
@@ -58,9 +59,9 @@ namespace Amphora.Tests.GitHub
         public async Task CanGetIssueForEmptyGuid()
         {
             var dtProvider = new MockDateTimeProvider();
-            var config = new Configuration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
+            var config = new GitHubConfiguration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
             var client = new AmphoraGitHubClient(config);
-            var options = Mock.Of<IOptionsMonitor<Configuration>>(_ => _.CurrentValue == config);
+            var options = Mock.Of<IOptionsMonitor<GitHubConfiguration>>(_ => _.CurrentValue == config);
             var sut = new AmphoraGitHubIssueConnectorService(options, dtProvider);
             // act
             var id = System.Guid.Empty.ToString();
@@ -75,7 +76,7 @@ namespace Amphora.Tests.GitHub
         [Fact]
         public async Task CanGenerateCreateIssueUrl()
         {
-            var config = new Configuration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
+            var config = new GitHubConfiguration(System.Guid.NewGuid().ToString(), null, "xtellurian", "mynewrepo");
             var client = new AmphoraGitHubClient(config);
             var id = System.Guid.NewGuid().ToString();
             var url = await client.NewIssueUrlAsync(id, faker.Rant.Review("amphora"));

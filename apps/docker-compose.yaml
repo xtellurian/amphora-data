@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+    ports: 
+      - 1433:1433
+    environment: 
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+  identity:
+    image: identity
+    environment: 
+      ASPNETCORE_ENVIRONMENT: Development
+      SqlServer__Host: sql
+      PersistentStores: ${PersistentStores}
+      kvUri: ${kvUri}
+      disableKv: ${disableKv}
+    depends_on: 
+      - sql
+  tester:
+    image: builder
+    volumes: 
+      - ./:/output
+      - ~/.azure/:/.azure/
+    environment: 
+      ASPNETCORE_ENVIRONMENT: Development
+      ExternalServices__IdentityBaseUrl: http://identity
+      SqlServer__Host: sql
+      PersistentStores: ${PersistentStores}
+      kvUri: ${kvUri}
+      disableKv: ${disableKv}
+      DGML_PATH: /output/Entities.dgml
+      BUILD_REASON: ${BUILD_REASON}
+    depends_on: 
+      - sql
+      - identity

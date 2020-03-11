@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 {
-    [Authorize]
+    [CommonAuthorize]
     public class WriteModel : AmphoraPageModel
     {
         private readonly ISignalService signalService;

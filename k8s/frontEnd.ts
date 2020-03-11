@@ -7,9 +7,8 @@ export interface IFrontendArgs {
     provider: k8s.Provider,
 }
 
-const config = new pulumi.Config();
 const frontendConfig = new pulumi.Config("frontend")
-const image = config.require("image");
+const image = frontendConfig.require("image");
 const hosts = <Array<string>>frontendConfig.getObject("hosts")
 export class FrontEnd extends pulumi.ComponentResource {
 

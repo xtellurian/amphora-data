@@ -1,0 +1,32 @@
+@page
+@model Amphora.Identity.Pages.IndexPageModel
+
+@using Amphora.Common.Models.Options
+@using Microsoft.Extensions.Options
+
+@inject IOptionsMonitor<ExternalServices> ExternalServices
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Welcome to the Amphora Data Identity Portal.</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <h3 class="mb-3">
+                Quick Links
+            </h3>
+            <div class="m-2">
+                <a class="btn btn-primary btn-block" asp-page="/Account/Login">Login</a>
+            </div>
+            <div class="m-2">
+                <a class="btn btn-primary btn-block" asp-page="/Account/Logout">Logout</a>
+            </div>
+            <div class="m-2">
+                <a class="btn btn-primary btn-block" href="@ExternalServices.CurrentValue?.WebAppBaseUrl">Amphora Data Web Application</a>
+            </div>
+        </div>
+    </div>
+</div>

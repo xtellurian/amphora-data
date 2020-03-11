@@ -4,20 +4,18 @@ using Xunit;
 
 namespace Amphora.Tests.Integration
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class IdentityTests : IntegrationTestBase
     {
         public IdentityTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
-        [Theory]
-        [InlineData("/Profiles/Account/Login")]
-        [InlineData("/Profiles/Account/Logout")]
-        [InlineData("/Profiles/Account/Register")]
-        public async Task Get_IdentityPage(string url)
+        [Fact]
+        public async Task LogoutPage_ReturnsOK()
         {
             // Arrange
+            var url = "/Profiles/Account/Logout";
             var client = _factory.CreateClient();
 
             // Act

@@ -6,7 +6,7 @@ namespace Amphora.Common.Contracts
         string EventType { get; }
         IEventData Data { get; }
         System.DateTime EventTime { get; }
-        string Subject { get; }
+        string? Subject { get; }
         string DataVersion { get; }
     }
 }

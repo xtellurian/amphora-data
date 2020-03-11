@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Users;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
-    [Authorize]
+    [CommonAuthorize]
     public class DeleteManyPageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;

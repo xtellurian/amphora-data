@@ -1,5 +1,5 @@
 using System;
-using Amphora.GitHub.Models;
+using Amphora.Common.Models.GitHub;
 using Bogus;
 using Xunit;
 

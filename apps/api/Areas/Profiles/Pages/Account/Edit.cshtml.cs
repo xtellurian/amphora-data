@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Api.AspNet;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Profiles.Pages.Account
 {
-    [Authorize]
+    [CommonAuthorize]
     public class EditModel : PageModel
     {
         private readonly IUserService userService;
@@ -50,7 +50,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
 
                 try
                 {
-                    var response = await userService.UserManager.UpdateAsync(AppUser);
+                    var response = await userService.UpdateAsync(User, AppUser);
                     return RedirectToPage("./Detail");
                 }
                 catch (Exception ex)

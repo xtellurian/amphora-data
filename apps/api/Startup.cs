@@ -2,7 +2,6 @@
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
-using Amphora.Api.Services;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Azure;
@@ -14,9 +13,14 @@ using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
+using Amphora.Common.Models.GitHub;
+using Amphora.Common.Models.Options;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Models.Options;
+using Amphora.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,7 +43,6 @@ namespace Amphora.Api
             Configuration = configuration;
             HostingEnvironment = env;
 
-            this.authenticationModule = new AuthModule(configuration, env);
             this.identityModule = new IdentityModule(configuration, env);
             this.storageModule = new StorageModule(configuration, env);
             this.geoModule = new GeoModule(configuration, env);
@@ -49,7 +52,6 @@ namespace Amphora.Api
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment HostingEnvironment { get; }
 
-        private readonly AuthModule authenticationModule;
         private readonly IdentityModule identityModule;
         private readonly StorageModule storageModule;
         private readonly GeoModule geoModule;
@@ -69,12 +71,11 @@ namespace Amphora.Api
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper());
             }
 
-            services.Configure<Amphora.Api.Models.Host.HostOptions>(Configuration.GetSection("Host"));
+            services.Configure<Amphora.Common.Models.Host.HostOptions>(Configuration.GetSection("Host"));
             AmphoraHost.SetHost(Configuration.GetSection("Host")["MainHost"]);
 
             this.storageModule.ConfigureServices(services);
             this.identityModule.ConfigureServices(services);
-            this.authenticationModule.ConfigureServices(services);
             this.geoModule.ConfigureServices(services);
             this.discoverModule.ConfigureServices(services);
 
@@ -96,7 +97,7 @@ namespace Amphora.Api
             services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
-                services.Configure<AzureEventGridTopic>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
+                services.Configure<AzureEventGridTopicOptions>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
                 services.AddTransient<IEventPublisher, EventGridService>();
             }
             else
@@ -119,7 +120,7 @@ namespace Amphora.Api
             services.AddTransient<IRestrictionService, RestrictionService>();
 
             // external services
-            services.Configure<GitHub.Configuration>(Configuration.GetSection("GitHubOptions"));
+            services.Configure<GitHubConfiguration>(Configuration.GetSection("GitHubOptions"));
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
             services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));

@@ -28,6 +28,7 @@
     <PackageReference Include="ErikEJ.EntityFrameworkCore.DgmlBuilder" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.1" />
     <PackageReference Include="moq" Version="4.13.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -39,7 +40,8 @@
   <ItemGroup>
     <ProjectReference Include="..\api\api.csproj" />
     <ProjectReference Include="..\common\common.csproj" />
-    <ProjectReference Include="..\github\github.csproj" />
+    <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+    <ProjectReference Include="..\identity\identity.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Amphora.Tests.Integration.Amphorae
 {
-    [Collection(nameof(IntegrationFixtureCollection))]
+    [Collection(nameof(ApiFixtureCollection))]
     public class AmphoraSignalsTests : IntegrationTestBase
     {
         private const string BadName = "HH78365^@*";
