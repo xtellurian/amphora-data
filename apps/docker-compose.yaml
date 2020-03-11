@@ -9,8 +9,11 @@ services:
       SA_PASSWORD: "YourStrong@Passw0rd"
   identity:
     image: identity
+    ports: 
+      - 6500:80
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
+      sql: "true"
       SqlServer__Host: sql
       PersistentStores: ${PersistentStores}
       kvUri: ${kvUri}
