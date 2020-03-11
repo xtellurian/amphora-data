@@ -2,7 +2,6 @@ using Amphora.Infrastructure.Models.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Amphora.Infrastructure.Database.EFCoreProviders
 {
@@ -37,12 +36,6 @@ namespace Amphora.Infrastructure.Database.EFCoreProviders
                 throw new System.ArgumentException("Connection String could not be constructed");
             }
 
-            services.AddDbContext<TContext>(optionsBuilder =>
-               {
-                   optionsBuilder.UseSqlServer(connectionString);
-                   optionsBuilder.UseLazyLoadingProxies();
-               });
-
             var msg = $"Using Sql Server, Host:{options?.Host ?? DefaultHost} on port: {options?.Port ?? DefaultPort}";
 
             System.Console.WriteLine(msg);
@@ -53,8 +46,11 @@ namespace Amphora.Infrastructure.Database.EFCoreProviders
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<TContext>();
-                context.Database.EnsureCreated();
-                context.Database.Migrate();
+                if (context.Database.IsSqlServer())
+                {
+                    context.Database.EnsureCreated();
+                    context.Database.Migrate();
+                }
             }
         }
     }

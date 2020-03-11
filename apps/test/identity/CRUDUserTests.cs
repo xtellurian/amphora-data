@@ -5,6 +5,7 @@ using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
 using Amphora.Identity;
+using Amphora.Tests.Setup;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -12,11 +13,12 @@ using Xunit;
 namespace Amphora.Tests.Identity.Integration
 {
     [Collection(nameof(IdentityFixtureCollection))]
+    [Trait("Category", "Identity")]
     public class CRUDUserTests
     {
-        private readonly WebApplicationFactory<Amphora.Identity.Startup> factory;
+        private readonly IdentityWebApplicationFactory factory;
 
-        public CRUDUserTests(WebApplicationFactory<Amphora.Identity.Startup> factory)
+        public CRUDUserTests(IdentityWebApplicationFactory factory)
         {
             this.factory = factory;
         }
