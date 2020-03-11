@@ -1,6 +1,10 @@
 @page
 @model IndexPageModel
 
+@using AutoMapper
+
+@inject IMapper mapper
+
 @{
     ViewData["Title"] = "Discover Amphora";
 }
@@ -277,12 +281,13 @@
                     })  
                 });
                 
-                var entities = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Entities));
+                var entities = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(mapper.Map<List<Models.Dtos.Amphorae.DetailedAmphora>>(Model.Entities)));
+                console.log(entities);
                 entities.forEach((e) => {
-                    if(e.GeoLocation)
+                    if(e.Lat && e.Lon)
                     {
-                        let lon = e.GeoLocation.coordinates[0];
-                        let lat = e.GeoLocation.coordinates[1];
+                        let lon = e.Lon;
+                        let lat = e.Lat;
                         let nameLength = Math.min(30, e.Name.length );
                         let descLength = Math.min(50, e.Description.length );
                         let contentString = `
