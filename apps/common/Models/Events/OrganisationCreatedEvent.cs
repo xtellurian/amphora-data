@@ -18,7 +18,7 @@ namespace Amphora.Common.Models.Events
         public string Subject { get; private set; }
         private class OrganisationCreatedEventData : IEventData
         {
-            public OrganisationCreatedEventData(string? organisationId, string name, string about, string address, string website)
+            public OrganisationCreatedEventData(string? organisationId, string name, string about, string? address, string website)
             {
                 OrganisationId = organisationId;
                 Name = name;
@@ -32,7 +32,7 @@ namespace Amphora.Common.Models.Events
             public string? TriggeredByUserName { get; set; }
             public string Name { get; set; }
             public string About { get; set; }
-            public string Address { get; set; }
+            public string? Address { get; set; }
             public string Website { get; set; }
         }
     }

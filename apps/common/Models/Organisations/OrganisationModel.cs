@@ -31,7 +31,7 @@ namespace Amphora.Common.Models.Organisations
         public string Name { get; set; }
         public string About { get; set; }
         public string WebsiteUrl { get; set; }
-        public string Address { get; set; }
+        public string? Address { get; set; }
         // owned
         public virtual Accounts.Account? Account { get; set; } = new Accounts.Account();
         public virtual Configuration? Configuration { get; set; } = new Configuration();
