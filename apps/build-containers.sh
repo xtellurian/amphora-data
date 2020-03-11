@@ -41,8 +41,8 @@ else
     exit 1
 fi
 
-REGISTRY=$ACR_NAME.azurecr.io/
-
+REGISTRY=$ACR_NAME.azurecr.io
+set -e
 echo "<< Building Builder Container >>"
 docker build -t builder -t $REGISTRY/builder:$TAG -t $REGISTRY/builder:$GITHASH -t $REGISTRY/builder:latest --cache-from $CACHED_IMAGE .
 
