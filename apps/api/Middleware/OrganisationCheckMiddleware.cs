@@ -47,7 +47,7 @@ namespace Amphora.Api.Middleware
             {
                 // organisation ID may exist
                 var userDetails = await userService.UserStore.ReadAsync(userId);
-                if (!string.IsNullOrEmpty(userDetails.OrganisationId))
+                if (!string.IsNullOrEmpty(userDetails?.OrganisationId))
                 {
                     organisationId = userDetails.OrganisationId;
                 }
