@@ -87,7 +87,6 @@ jobs:
         export kvUri=$(pulumi stack output kvUri)
         popd
         pushd apps
-        docker pull $acrName.azurecr.io/builder:latest
         . test.sh
         cp Entities.dgml $(Build.ArtifactStagingDirectory)
       displayName: Run Tests
