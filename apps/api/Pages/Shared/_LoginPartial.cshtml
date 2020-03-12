@@ -1,8 +1,6 @@
-@using Microsoft.AspNetCore.Identity
 @using Amphora.Api.Contracts
 
 @inject ISignInManager SignInManager
-@inject IUserManager UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {

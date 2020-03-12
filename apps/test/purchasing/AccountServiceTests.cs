@@ -104,7 +104,6 @@ namespace Amphora.Tests.Unit.Purchasing
                                               permissionService,
                                               CreateMockEventPublisher(),
                                               Mock.Of<IIdentityService>(),
-                                              null,
                                               null);
             var purchaseService = new PurchaseService(purchaseStore,
                                                       orgStore,

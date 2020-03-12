@@ -94,7 +94,7 @@ namespace Amphora.Api.Controllers
             {
                 if (IsTestUser(result.Entity))
                 {
-                    var appUser = await userService.UserStore.ReadAsync(result.Entity.Id);
+                    var appUser = result.Entity;
                     logger.LogWarning($"Automatically confirming email for {appUser.Email}");
                     appUser.EmailConfirmed = true;
                     var updateRes = await userService.UpdateAsync(User, appUser);

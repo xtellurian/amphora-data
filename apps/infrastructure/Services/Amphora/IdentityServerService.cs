@@ -48,7 +48,7 @@ namespace Amphora.Infrastructure.Services
             }
         }
 
-        public async Task<EntityOperationResult<ApplicationUser>> CreateUser(ClaimsPrincipal principal, ApplicationUser user, string password)
+        public async Task<EntityOperationResult<ApplicationUser>> CreateUser(ApplicationUser user, string password)
         {
             var u = new CreateAmphoraUser
             {

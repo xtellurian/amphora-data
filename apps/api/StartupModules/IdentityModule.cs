@@ -93,7 +93,7 @@ namespace Amphora.Api.StartupModules
                 });
 
             services.AddScoped<ISignInManager, IdServerSignInManager>();
-            services.AddTransient<IUserManager, IdServerUserManager>();
+            // services.AddTransient<IUserManager, IdServerUserManager>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddAuthorization(options =>

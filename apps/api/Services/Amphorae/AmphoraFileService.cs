@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Logging;
@@ -13,27 +14,27 @@ namespace Amphora.Api.Services.Amphorae
     public class AmphoraFileService : IAmphoraFileService
     {
         private readonly IPermissionService permissionService;
+        private readonly IUserService userService;
 
         public IBlobStore<AmphoraModel> Store { get; }
 
-        private readonly IUserManager userManager;
         private readonly ILogger<AmphoraFileService> logger;
 
         public AmphoraFileService(
             ILogger<AmphoraFileService> logger,
             IPermissionService permissionService,
             IBlobStore<AmphoraModel> store,
-            IUserManager userManager)
+            IUserService userService)
         {
             this.permissionService = permissionService;
             this.Store = store;
-            this.userManager = userManager;
+            this.userService = userService;
             this.logger = logger;
         }
 
         public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
         {
-            var user = await userManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
             {
                 var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
@@ -56,7 +57,7 @@ namespace Amphora.Api.Services.Amphorae
             AmphoraModel entity,
             string file)
         {
-            var user = await userManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
             {
                 var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);
@@ -86,7 +87,7 @@ namespace Amphora.Api.Services.Amphorae
             byte[] contents,
             string file)
         {
-            var user = await userManager.GetUserAsync(principal);
+            var user = await userService.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
             {
                 var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);

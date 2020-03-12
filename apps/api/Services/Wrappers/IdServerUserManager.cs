@@ -11,6 +11,7 @@ using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -19,14 +20,18 @@ namespace Amphora.Api.Services.Wrappers
     public class IdServerUserManager : IUserManager
     {
         private readonly IEntityStore<ApplicationUser> userStore;
+        private readonly ILogger<IdServerUserManager> logger;
         private readonly HttpClient client;
 
         public IdServerUserManager(IEntityStore<ApplicationUser> userStore,
                                    IHttpClientFactory factory,
+                                   ILogger<IdServerUserManager> logger,
                                    IOptionsMonitor<ExternalServices> services)
         {
             this.userStore = userStore;
+            this.logger = logger;
             this.client = factory.CreateClient("idServer");
+            logger.LogInformation($"Identity Server Base URL is {services.CurrentValue?.IdentityBaseUrl}");
             this.client.BaseAddress = new System.Uri(services.CurrentValue.IdentityBaseUrl);
         }
 
@@ -35,7 +40,7 @@ namespace Amphora.Api.Services.Wrappers
             throw new System.NotImplementedException();
         }
 
-        public async Task<(IdentityResult, string)> CreateAsync(ApplicationUser user, string password)
+        public async Task<(IdentityResult idResult, AmphoraUser user)> CreateAsync(ApplicationUser user, string password)
         {
             var u = new CreateAmphoraUser
             {
@@ -50,11 +55,12 @@ namespace Amphora.Api.Services.Wrappers
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                return (IdentityResult.Success, responseContent);
+                var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
+                return (IdentityResult.Success, createdUser);
             }
             else
             {
-                return (IdentityResult.Failed(new IdentityError { Description = responseContent }), "An Error Occurred");
+                return (IdentityResult.Failed(new IdentityError { Description = responseContent }), null);
             }
         }
 

@@ -11,6 +11,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
@@ -30,7 +31,6 @@ namespace Amphora.Api.Services.Auth
                            IPermissionService permissionService,
                            IEventPublisher eventPublisher,
                            IIdentityService identityServerService,
-                           IUserManager userManager,
                            ISignInManager signInManager)
         {
             this.logger = logger;
@@ -39,12 +39,10 @@ namespace Amphora.Api.Services.Auth
             this.permissionService = permissionService;
             this.eventPublisher = eventPublisher;
             this.identityServerService = identityServerService;
-            this.UserManager = userManager;
             this.signInManager = signInManager;
         }
 
         public IEntityStore<ApplicationUser> UserStore { get; }
-        public IUserManager UserManager { get; protected set; }
 
         public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure, bool isAcquiringToken = false)
         {
@@ -52,9 +50,9 @@ namespace Amphora.Api.Services.Auth
             if (res.Succeeded)
             {
                 // get user and set last signin time
-                var user = await UserManager.FindByNameAsync(userName);
+                var user = await UserStore.Query(_ => _.NormalizedUserName == userName.ToUpper()).FirstOrDefaultAsync();
                 user.LastLoggedIn = System.DateTime.UtcNow;
-                await UserManager.UpdateAsync(user);
+                await UserStore.UpdateAsync(user);
                 if (!isAcquiringToken) // don't publish the token acquisition logins
                 {
                     await eventPublisher.PublishEventAsync(new SignInEvent(user, isAcquiringToken));
@@ -76,7 +74,7 @@ namespace Amphora.Api.Services.Auth
             // invitation model could be null
             using (logger.BeginScope(new LoggerScope<UserService>(user)))
             {
-                var existing = await UserManager.FindByIdAsync(user.Id);
+                var existing = await UserStore.ReadAsync(user.Id);
                 if (existing != null)
                 {
                     logger.LogWarning("Duplicate User Id");
@@ -86,25 +84,24 @@ namespace Amphora.Api.Services.Auth
                 logger.LogInformation("Creating User...");
 
                 user.LastModified = System.DateTime.UtcNow;
-                var result = await UserManager.CreateAsync(user, password);
-                if (result.idResult.Succeeded)
+                var result = await identityServerService.CreateUser(user, password);
+                if (result.Succeeded)
                 {
-                    user = await UserManager.FindByNameAsync(user.UserName);
-                    if (user == null) { throw new System.Exception("Unable to retrieve user"); }
+                    user = result.Entity;
                     await eventPublisher.PublishEventAsync(new UserCreatedEvent(user));
                     // create role here
                     return new EntityOperationResult<ApplicationUser>(user, user);
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(user, result.idResult.Errors.Select(e => e.Description));
+                    return new EntityOperationResult<ApplicationUser>(user, result.Errors);
                 }
             }
         }
 
         public async Task<EntityOperationResult<ApplicationUser>> DeleteAsync(ClaimsPrincipal principal, IUser user)
         {
-            var currentUser = await UserManager.GetUserAsync(principal);
+            var currentUser = await this.ReadUserModelAsync(principal);
             using (logger.BeginScope(new LoggerScope<UserService>(currentUser)))
             {
                 if (currentUser.Id == user.Id)
@@ -124,8 +121,15 @@ namespace Amphora.Api.Services.Auth
 
         public async Task<ApplicationUser> ReadUserModelAsync(ClaimsPrincipal principal)
         {
-            var appUser = await UserManager.GetUserAsync(principal);
-            return appUser;
+            var userId = principal.GetUserId();
+            if (userId == null)
+            {
+                return null;
+            }
+            else
+            {
+                return await UserStore.ReadAsync(userId);
+            }
         }
 
         public async Task<EntityOperationResult<ApplicationUser>> UpdateAsync(ClaimsPrincipal principal, ApplicationUser user)
