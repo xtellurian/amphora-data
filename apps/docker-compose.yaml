@@ -8,11 +8,13 @@ services:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "YourStrong@Passw0rd"
   identity:
-    image: identity
+    image: builder
     volumes: 
-      - ~/.azure/:/.azure/:ro
+      - ~/.azure/:/.azure/
     ports: 
-      - 6500:80
+      - 6500:6500
+      - 6501:6501
+    command: dotnet run --project identity
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
       sql: "true"
@@ -26,7 +28,7 @@ services:
     image: builder
     volumes: 
       - ./:/output
-      - ~/.azure/:/.azure/:ro
+      - ~/.azure/:/.azure/
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
       ExternalServices__IdentityBaseUrl: http://identity
