@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
-using Amphora.Identity;
 using Amphora.Tests.Setup;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
-    [Collection(nameof(IdentityFixtureCollection))]
+    [Collection(nameof(InMemoryIdentityFixtureCollection))]
     [Trait("Category", "Identity")]
     public class CRUDUserTests
     {
-        private readonly IdentityWebApplicationFactory factory;
+        private readonly InMemoryIdentityWebApplicationFactory factory;
 
-        public CRUDUserTests(IdentityWebApplicationFactory factory)
+        public CRUDUserTests(InMemoryIdentityWebApplicationFactory factory)
         {
             this.factory = factory;
         }
@@ -27,6 +25,12 @@ namespace Amphora.Tests.Identity.Integration
         public async Task CanCreateUser_AsAnonymous_AndGetToken_AndDelete()
         {
             var client = factory.CreateClient();
+            await Run_CanCreateUser_AsAnonymous_AndGetToken_AndDelete(client);
+        }
+
+#pragma warning disable xUnit1013 // Public method should be marked as test
+        public static async Task Run_CanCreateUser_AsAnonymous_AndGetToken_AndDelete(HttpClient client)
+        {
             var email = Guid.NewGuid().ToString() + "@amphoradata.com";
             var fullName = Guid.NewGuid().ToString();
             var password = Guid.NewGuid().ToString() + "!A14";
