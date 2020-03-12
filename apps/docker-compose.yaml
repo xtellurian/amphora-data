@@ -9,6 +9,8 @@ services:
       SA_PASSWORD: "YourStrong@Passw0rd"
   identity:
     image: identity
+    volumes: 
+      - ~/.azure/:/.azure/:ro
     ports: 
       - 6500:80
     environment: 
@@ -24,7 +26,7 @@ services:
     image: builder
     volumes: 
       - ./:/output
-      - ~/.azure/:/.azure/
+      - ~/.azure/:/.azure/:ro
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
       ExternalServices__IdentityBaseUrl: http://identity
