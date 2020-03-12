@@ -14,6 +14,7 @@ done
 if [ "$ACR_NAME" != "" ]; then
     echo "ACR_NAME is $ACR_NAME"
 else
+    set -e
     echo "ACR_NAME is empty, building locals"
     docker build -t builder .
     echo "BUILDER DONE"
