@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker-compose run -d identity
+docker-compose run --service-ports -d identity
 sleep 5
 dotnet run --project api
 docker-compose down
