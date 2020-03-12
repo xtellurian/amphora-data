@@ -87,7 +87,7 @@ jobs:
         export kvUri=$(pulumi stack output kvUri)
         popd
         pushd apps
-        . test.sh
+        . run.sh -p test
         cp Entities.dgml $(Build.ArtifactStagingDirectory)
       displayName: Run Tests
       env:
