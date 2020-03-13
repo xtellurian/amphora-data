@@ -31,7 +31,7 @@ services:
       - ~/.azure/:/.azure/
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
-      ExternalServices__IdentityBaseUrl: http://identity
+      ExternalServices__IdentityBaseUrl: http://identity:6500
       SqlServer__Host: sql
       PersistentStores: ${PersistentStores}
       kvUri: ${kvUri}
