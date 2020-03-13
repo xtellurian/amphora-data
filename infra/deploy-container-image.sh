@@ -31,13 +31,10 @@ echo "Pushing to ACR: $ACR_NAMR"
 REPOSITORY=$ACR_NAME.azurecr.io
 
 docker push $REPOSITORY/builder:latest
-docker push $REPOSITORY/builder:$GITHASH
 docker push $REPOSITORY/builder:$BUILD
 
 docker push $REPOSITORY/webapp:latest
-docker push $REPOSITORY/webapp:$GITHASH
 docker push $REPOSITORY/webapp:$BUILD
 
 docker push $REPOSITORY/identity:latest
-docker push $REPOSITORY/identity:$GITHASH
 docker push $REPOSITORY/identity:$BUILD
