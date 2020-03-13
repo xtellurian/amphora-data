@@ -3,10 +3,10 @@
 export PATH=$PATH:$HOME/.pulumi/bin
 
 set -e -x
-cd $(dirname "$0")
 
 if [ -z "$ACR_NAME" ]; then
-    ACR_NAME=$(pulumi stack output acrName)
+    echo "ACR_NAME is required"
+    exit 1
 fi
 if [ -z "$GITHASH" ]; then
     GITHASH=$(git rev-parse HEAD)
@@ -26,7 +26,7 @@ pushd apps
 ./build-containers.sh -a $ACR_NAME -c $CACHED_IMAGE -g $GITHASH -t $BUILD
 # docker build --target builder --cache-from $CACHED_IMAGE -t $CACHED_IMAGE $CONTEXT # rebuild the cache
 # docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD -t webapp:latest --build-arg gitHash=$GITHASH $CONTEXT
-
+echo "Pushing to ACR: $ACR_NAMR"
 # push
 REPOSITORY=$ACR_NAME.azurecr.io/
 
