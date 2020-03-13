@@ -22,7 +22,6 @@ az acr login -n $ACR_NAME
 docker pull $CACHED_IMAGE || true # don't fail when cached image doesn't exist.
 
 # build
-popd
 pushd apps
 ./build-containers.sh -a $ACR_NAME -c $CACHED_IMAGE -g $GITHASH -t $BUILD
 # docker build --target builder --cache-from $CACHED_IMAGE -t $CACHED_IMAGE $CONTEXT # rebuild the cache
