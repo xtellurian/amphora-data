@@ -32,7 +32,7 @@ namespace Amphora.Api.Services.Wrappers
             this.logger = logger;
             this.client = factory.CreateClient("idServer");
             logger.LogInformation($"Identity Server Base URL is {services.CurrentValue?.IdentityBaseUrl}");
-            this.client.BaseAddress = new System.Uri(services.CurrentValue.IdentityBaseUrl);
+            this.client.BaseAddress = services.CurrentValue.IdentityUri();
         }
 
         public Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)

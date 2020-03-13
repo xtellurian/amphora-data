@@ -25,7 +25,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         {
             if (User.Identity.IsAuthenticated)
             {
-                var uri = $"{externalServices.CurrentValue.IdentityBaseUrl}/Account/Logout";
+                var uri = $"{externalServices.CurrentValue.IdentityUri()}/Account/Logout";
                 if (returnUrl != null)
                 {
                     uri += $"?returnUrl={returnUrl}";

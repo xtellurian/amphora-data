@@ -26,7 +26,7 @@ namespace Amphora.Infrastructure.Services
                                      ILogger<IdentityServerService> logger)
         {
             this.client = factory.CreateClient("identityServer");
-            client.BaseAddress = new System.Uri(options.CurrentValue.IdentityBaseUrl);
+            client.BaseAddress = options.CurrentValue.IdentityUri();
             this.options = options;
             this.logger = logger;
         }

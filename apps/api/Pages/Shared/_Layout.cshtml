@@ -14,7 +14,7 @@
     Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = async (p) => (await UserService.ReadUserModelAsync(User))?.IsAdminGlobal() ?? false;
     var protocol = Context.Request.IsHttps ? "https" : "http";
     var returnUrl = $"{protocol}://{Context.Request.Host}/Challenge";
-    string registerUrl = $"{ExternalServices.CurrentValue.IdentityBaseUrl}/Account/Register?returnUrl={returnUrl}";
+    string registerUrl = $"{ExternalServices.CurrentValue.IdentityUri()}/Account/Register?returnUrl={returnUrl}";
     
 }
 <!DOCTYPE html>

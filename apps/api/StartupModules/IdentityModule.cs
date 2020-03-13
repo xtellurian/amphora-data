@@ -68,7 +68,7 @@ namespace Amphora.Api.StartupModules
                     options.CorrelationCookie.Path = "/";
                     options.NonceCookie.Path = "/";
 
-                    options.Authority = externalServices.IdentityBaseUrl;
+                    options.Authority = externalServices.IdentityUri().ToString();
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = "mvc";
@@ -79,7 +79,7 @@ namespace Amphora.Api.StartupModules
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
                 {
                     x.RequireHttpsMetadata = hostingEnvironment.IsProduction();
-                    x.Authority = externalServices.IdentityBaseUrl;
+                    x.Authority = externalServices.IdentityUri().ToString();
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
