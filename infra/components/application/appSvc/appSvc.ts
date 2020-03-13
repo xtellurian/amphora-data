@@ -98,11 +98,6 @@ export class AppSvc extends pulumi.ComponentResource {
             },
         );
 
-        // "ExternalServices": {
-        //     "IdentityBaseUrl": "http://localhost:6500"
-        //     WebAppBaseUrl
-        //   },
-
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
         const host = config.get("mainHost") ? config.require("mainHost") : "";
         const appSettings = {
@@ -110,9 +105,9 @@ export class AppSvc extends pulumi.ComponentResource {
             DOCKER_REGISTRY_SERVER_PASSWORD: acr.adminPassword,
             DOCKER_REGISTRY_SERVER_URL: pulumi.interpolate`https://${
                 acr.loginServer
-                }`,
+            }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
-            // https://develop-amphoradata.australiasoutheast.cloudapp.azure.com/
+            DisableHsts: "",
             ExternalServices__IdentityBaseUrl: externalServices.identityBaseUrl,
             ExternalServices__WebAppBaseUrl: externalServices.webAppBaseUrl,
             Host__MainHost: host, // important
@@ -124,6 +119,11 @@ export class AppSvc extends pulumi.ComponentResource {
             kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName, // important
             kvUri: kv.vaultUri, // important
         };
+
+        if (stack === "develop" || stack === "master") {
+            appSettings.DisableHsts = "true"; // disable enforced hsts on develop and master stacks
+        }
+
         const siteConfig = {
             alwaysOn: true,
             linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}:latest`, // to make the app service = container
