@@ -1,11 +1,11 @@
-import * as azure from "@pulumi/azure";
 import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
+import { IK8sIdentities } from "./aks";
 
 export interface IK8sInfrastructureParams {
     provider: k8s.Provider;
     location: pulumi.Output<string>;
-    identity: azure.authorization.UserAssignedIdentity;
+    identities: IK8sIdentities;
     appSettings: pulumi.Input<{
         [key: string]: pulumi.Input<string>;
     }>;
@@ -75,7 +75,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             dependsOn: aadPodIdentityNs,
         });
 
-        const indentityConfig = {
+        const webAppId = {
             apiVersion: "aadpodidentity.k8s.io/v1",
             kind: "AzureIdentity",
             metadata: {
@@ -83,21 +83,35 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                 namespace: amphoraNamespace.metadata.name,
             },
             spec: {
-                ClientID: this.params.identity.clientId,
-                ResourceID: this.params.identity.id,
+                ClientID: this.params.identities.webApp.clientId,
+                ResourceID: this.params.identities.webApp.id,
                 type: 0, // 0 = MSI, 1 = SP
             },
         };
 
-        const identity = new k8s.yaml.ConfigGroup(`${this.name}-identity`, {
-            objs: [indentityConfig],
+        const idSrvrId = {
+            apiVersion: "aadpodidentity.k8s.io/v1",
+            kind: "AzureIdentity",
+            metadata: {
+                name: "identity-server-identity",
+                namespace: amphoraNamespace.metadata.name,
+            },
+            spec: {
+                ClientID: this.params.identities.identityServer.clientId,
+                ResourceID: this.params.identities.identityServer.id,
+                type: 0, // 0 = MSI, 1 = SP
+            },
+        };
+
+        const identity = new k8s.yaml.ConfigGroup(`${this.name}-identities`, {
+            objs: [webAppId, idSrvrId],
             resourcePrefix: this.name,
         }, {
             ...opts,
             dependsOn: aadPods,
         });
 
-        const bindingConfig = {
+        const webAppBinding = {
             apiVersion: "aadpodidentity.k8s.io/v1",
             kind: "AzureIdentityBinding",
             metadata: {
@@ -105,13 +119,26 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                 namespace: amphoraNamespace.metadata.name,
             },
             spec: {
-                AzureIdentity: indentityConfig.metadata.name,
+                AzureIdentity: webAppId.metadata.name,
                 Selector: "amphora-front",
             },
         };
 
-        const binding = new k8s.yaml.ConfigGroup(`${this.name}-idBinding`, {
-            objs: [bindingConfig],
+        const idSrvrBinding = {
+            apiVersion: "aadpodidentity.k8s.io/v1",
+            kind: "AzureIdentityBinding",
+            metadata: {
+                name: "id-server-azure-id-binding",
+                namespace: amphoraNamespace.metadata.name,
+            },
+            spec: {
+                AzureIdentity: webAppId.metadata.name,
+                Selector: "amphora-identity",
+            },
+        };
+
+        const binding = new k8s.yaml.ConfigGroup(`${this.name}-idBindings`, {
+            objs: [webAppBinding, idSrvrBinding],
             resourcePrefix: this.name,
         }, {
             ...opts,
@@ -174,6 +201,15 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             data: this.params.appSettings,
             metadata: {
                 name: "amphora-frontend-config",
+                namespace: amphoraNamespace.metadata.name,
+            },
+        }, opts);
+
+        // amphora identity config map
+        const identityConfigMap = new k8s.core.v1.ConfigMap(`${this.name}-identity-config`, {
+            data: this.params.appSettings,
+            metadata: {
+                name: "amphora-identity-config",
                 namespace: amphoraNamespace.metadata.name,
             },
         }, opts);

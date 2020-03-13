@@ -143,7 +143,7 @@ export class Tsi extends pulumi.ComponentResource {
       {
         deploymentMode: "Incremental",
         parameters: {
-          accessPolicyReaderObjectId: this.params.akss.primary.webAppIdentity.principalId,
+          accessPolicyReaderObjectId: this.params.akss.primary.identities.webApp.principalId,
           environmentName: this.envName.result,
           name: this.params.akss.primary.k8sCluster.name,
         },
@@ -158,7 +158,7 @@ export class Tsi extends pulumi.ComponentResource {
       {
         deploymentMode: "Incremental",
         parameters: {
-          accessPolicyReaderObjectId: this.params.akss.secondary.webAppIdentity.principalId,
+          accessPolicyReaderObjectId: this.params.akss.secondary.identities.webApp.principalId,
           environmentName: this.envName.result,
           name: this.params.akss.secondary.k8sCluster.name,
         },

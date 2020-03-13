@@ -28,6 +28,11 @@ const tags = {
     subcomponent: "aks",
 };
 
+export interface IK8sIdentities {
+    webApp: azure.authorization.UserAssignedIdentity;
+    identityServer: azure.authorization.UserAssignedIdentity;
+}
+
 // Step 1: Parse and export configuration variables for the AKS stack.
 
 const cfg = new pulumi.Config();
@@ -44,7 +49,8 @@ const nodeSize = config.get("nodeSize") || "Standard_D2_v2";
 export class Aks extends pulumi.ComponentResource {
     public k8sCluster: azure.containerservice.KubernetesCluster;
     public k8sProvider: k8s.Provider;
-    public webAppIdentity: azure.authorization.UserAssignedIdentity;
+    // public webAppIdentity: azure.authorization.UserAssignedIdentity;
+    public identities: IK8sIdentities;
     public k8sInfra: K8sInfrastructure;
     private kvAccessPolicies: azure.keyvault.AccessPolicy[] = [];
 
@@ -102,13 +108,22 @@ export class Aks extends pulumi.ComponentResource {
             parent: this,
         });
 
-        this.webAppIdentity = new azure.authorization.UserAssignedIdentity(`${this.name}-webApp`, {
+        const webApp = new azure.authorization.UserAssignedIdentity(`${this.name}-webApp`, {
             location: rg.location,
             resourceGroupName: this.k8sCluster.nodeResourceGroup,
             tags,
         });
 
-        this.addMsiToKeyVault(`${this.name}-k8sWebApp`, this.params.kv, this.webAppIdentity);
+        const identityServer = new azure.authorization.UserAssignedIdentity(`${this.name}-idServer`, {
+            location: rg.location,
+            resourceGroupName: this.k8sCluster.nodeResourceGroup,
+            tags,
+        });
+
+        this.identities = { webApp, identityServer };
+
+        this.addMsiToKeyVault(`${this.name}-k8sWebApp`, this.params.kv, webApp);
+        this.addMsiToKeyVault(`${this.name}-k8sIdSrv`, this.params.kv, identityServer);
 
         // Export the kubeconfig
         // this.kubeconfig = k8sCluster.kubeConfigRaw
@@ -117,7 +132,7 @@ export class Aks extends pulumi.ComponentResource {
 
         this.k8sInfra = new K8sInfrastructure(`${this.name}-infra`, {
             appSettings: this.params.appSettings,
-            identity: this.webAppIdentity,
+            identities: this.identities,
             location: this.k8sCluster.location,
             provider: this.k8sProvider,
         }, { parent: this });

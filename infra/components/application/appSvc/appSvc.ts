@@ -14,15 +14,24 @@ export interface IAppSvcParams {
     network: Network;
 }
 
+const stack = pulumi.getStack();
+
 const cfg = new pulumi.Config();
 const config = new pulumi.Config("application");
 const appsConfig = new pulumi.Config("apps");
+
+interface IExternalServices {
+    identityBaseUrl: string;
+    webAppBaseUrl: string;
+}
+
+const externalServices = appsConfig.requireObject<IExternalServices>("externalServices");
 
 const tags = {
     component: "application",
     project: pulumi.getProject(),
     source: "pulumi",
-    stack: pulumi.getStack(),
+    stack,
     subcomponent: "appSvc",
 };
 
@@ -89,6 +98,11 @@ export class AppSvc extends pulumi.ComponentResource {
             },
         );
 
+        // "ExternalServices": {
+        //     "IdentityBaseUrl": "http://localhost:6500"
+        //     WebAppBaseUrl
+        //   },
+
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
         const host = config.get("mainHost") ? config.require("mainHost") : "";
         const appSettings = {
@@ -98,6 +112,9 @@ export class AppSvc extends pulumi.ComponentResource {
                 acr.loginServer
                 }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
+            // https://develop-amphoradata.australiasoutheast.cloudapp.azure.com/
+            ExternalServices__IdentityBaseUrl: externalServices.identityBaseUrl,
+            ExternalServices__WebAppBaseUrl: externalServices.webAppBaseUrl,
             Host__MainHost: host, // important
             Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
