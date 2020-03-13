@@ -15,8 +15,7 @@ if [ "$PROJECT" == "test" ]; then
     echo BUILD_REASON: $BUILD_REASON
     echo "Running tester"
     docker-compose run tester
-fi
-if [ "$PROJECT" == "identity" ]; then
+else if [ "$PROJECT" == "identity" ]; then
     echo "Running Identity Project"
     docker-compose run --service-ports identity
 else
