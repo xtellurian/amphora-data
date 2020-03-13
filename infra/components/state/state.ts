@@ -380,6 +380,14 @@ export class State extends pulumi.ComponentResource {
             },
           },
           {
+            category: "CassandraRequests",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
+          {
             category: "QueryRuntimeStatistics",
             enabled: true,
             retentionPolicy: {
@@ -396,7 +404,7 @@ export class State extends pulumi.ComponentResource {
             },
           },
           {
-            category: "PartitionKeyRUConsumption",
+            category: "ControlPlaneRequests",
             enabled: false,
             retentionPolicy: {
               days: 0,
@@ -405,6 +413,14 @@ export class State extends pulumi.ComponentResource {
           },
           {
             category: "MongoRequests",
+            enabled: false,
+            retentionPolicy: {
+              days: 0,
+              enabled: false,
+            },
+          },
+          {
+            category: "PartitionKeyRUConsumption",
             enabled: false,
             retentionPolicy: {
               days: 0,
