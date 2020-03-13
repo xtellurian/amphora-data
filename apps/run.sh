@@ -1,12 +1,20 @@
 #!/bin/bash
 
-while getopts p: option
+while getopts k:p: option
 do
 case "${option}"
 in
+k) KEY_VAULT=${OPTARG};; # Azure Container Registry Name
 p) PROJECT=${OPTARG};; # Azure Container Registry Name
 esac
 done
+
+
+if [ "$KEY_VAULT" != "" ]; then
+    PersistentStores=true
+    kvUri=$KEY_VAULT
+    echo "Using Key Vault"
+fi
 
 if [ "$PROJECT" == "test" ]; then
     echo PersistentStores: ${PersistentStores}
