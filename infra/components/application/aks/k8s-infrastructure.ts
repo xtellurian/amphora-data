@@ -2,6 +2,8 @@ import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 import { IK8sIdentities } from "./aks";
 
+const stack = pulumi.getStack();
+
 export interface IK8sInfrastructureParams {
     provider: k8s.Provider;
     location: pulumi.Output<string>;
@@ -175,16 +177,14 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                 version: "v0.13.1",
             }, opts);
 
-        // make sure we prod in prod
+        // you can disable this for dev if you're debugging, but hsts redirects will fail
         const transformations = [];
-        if (pulumi.getStack() === "prod") {
-            transformations.push((obj: any) => {
-                // transform the issuer into the prod one.
-                if (obj.spec && obj.spec.acme) {
-                    obj.spec.acme.server = "https://acme-v02.api.letsencrypt.org/directory";
-                }
-            });
-        }
+        transformations.push((obj: any) => {
+            // transform the issuer into the prod one.
+            if (obj.spec && obj.spec.acme) {
+                obj.spec.acme.server = "https://acme-v02.api.letsencrypt.org/directory";
+            }
+        });
 
         // certificate issuer
         const caClusterIssuer = new k8s.yaml.ConfigFile(`${this.name}-caClusterIssuer`, {
@@ -219,7 +219,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             .getResource("v1/Service", `${this.name}-ingress-nginx`, `ingress-nginx`)
             .apply((service) => service.status.loadBalancer.ingress[0].ip);
 
-        this.fqdnName = pulumi.interpolate`${pulumi.getStack()}-amphoradata`;
+        this.fqdnName = pulumi.interpolate`${stack}-amphoradata`;
         this.fqdn = pulumi.interpolate`${this.fqdnName}.${this.params.location}.cloudapp.azure.com`;
     }
 }
