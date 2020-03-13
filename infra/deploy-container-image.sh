@@ -28,7 +28,7 @@ pushd apps
 # docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD -t webapp:latest --build-arg gitHash=$GITHASH $CONTEXT
 echo "Pushing to ACR: $ACR_NAMR"
 # push
-REPOSITORY=$ACR_NAME.azurecr.io/
+REPOSITORY=$ACR_NAME.azurecr.io
 
 docker push $REPOSITORY/builder:latest
 docker push $REPOSITORY/builder:$GITHASH
