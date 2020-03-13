@@ -12,7 +12,8 @@ done
 
 if [ -z "$LOCATION" ]; then
     echo "Missing location -l"
-    exit 1
+    LOCATION="k8sPrimary"
+    echo "Using Primary Location"
 fi
 
 JSON=$(pulumi stack output -j $LOCATION)
