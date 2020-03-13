@@ -41,6 +41,10 @@ namespace Amphora.Identity
         {
             System.Console.WriteLine($"Hosting Environment Name is {Environment.EnvironmentName}");
 
+            services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
+            var externalServices = new ExternalServices();
+            Configuration.GetSection("ExternalServices").Bind(externalServices);
+
             if (IsUsingCosmos())
             {
                 var cosmosOptions = new CosmosOptions();
@@ -78,7 +82,7 @@ namespace Amphora.Identity
                 })
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients)
+                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl }))
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 
@@ -105,7 +109,6 @@ namespace Amphora.Identity
             services.AddAuthentication();
 
             services.Configure<Amphora.Common.Models.Host.HostOptions>(Configuration.GetSection("Host"));
-            services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
 
             services.AddMvc(opts =>
             {

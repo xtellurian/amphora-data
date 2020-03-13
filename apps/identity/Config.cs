@@ -29,8 +29,13 @@ namespace Amphora.Identity
                 new ApiResource("api1", "My API #1")
             };
 
-        public static IEnumerable<Client> Clients =>
-            new Client[]
+        public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls)
+        {
+            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s}/signin-oidc"));
+            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s}/signout-oidc"));
+            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s}/signout-callback-oidc"));
+
+            return new Client[]
             {
                 // MVC client using code flow + pkce
                 new Client
@@ -42,15 +47,15 @@ namespace Amphora.Identity
                     RequirePkce = true,
 
                     // ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0") },
 
-                    RedirectUris = { "http://localhost:5000/signin-oidc", "https://localhost:5001/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:5000/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:5000/signout-callback-oidc" },
+                    RedirectUris = redirectUris,
+                    FrontChannelLogoutUri = logoutUris.FirstOrDefault(),
+                    PostLogoutRedirectUris = postLogoutRedirects,
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "email", "api1", "organisation" }
                 }
             };
+        }
     }
 }
