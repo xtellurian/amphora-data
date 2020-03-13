@@ -142,12 +142,11 @@ export class Identity extends pulumi.ComponentResource {
             });
         }
 
-
         if (rules && rules.length > 0) {
             const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
                 kind: "Ingress",
                 metadata: {
-                    name: "amphora-front-ingress",
+                    name: "amphora-identity-ingress",
                     namespace: "amphora",
                     annotations: {
                         "kubernetes.io/ingress.class": "nginx",
@@ -158,13 +157,13 @@ export class Identity extends pulumi.ComponentResource {
                 spec: {
                     tls: [
                         {
-                            hosts: [this.params.fqdn],
-                            secretName: "tls-secret"
+                            hosts: [...hosts, this.params.fqdn],
+                            // secretName: "tls-secret"
                         }
                     ],
                     rules
                 }
-            }, opts);
+            }, {...opts, deleteBeforeReplace: true});
         } else {
             throw new Error("No Igress Rules for Identity")
         }

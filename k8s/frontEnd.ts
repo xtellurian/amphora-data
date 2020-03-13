@@ -145,7 +145,6 @@ export class FrontEnd extends pulumi.ComponentResource {
             });
         }
 
-
         const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
             kind: "Ingress",
             metadata: {
@@ -160,12 +159,12 @@ export class FrontEnd extends pulumi.ComponentResource {
             spec: {
                 tls: [
                     {
-                        hosts: [this.params.fqdn],
-                        secretName: "tls-secret"
+                        hosts: [...hosts, this.params.fqdn],
+                        // secretName: "tls-secret"
                     }
                 ],
                 rules
             }
-        }, opts);
+        }, { ...opts, deleteBeforeReplace: true });
     }
 }
