@@ -23,7 +23,7 @@ namespace Amphora.Identity.Controllers
         {
             return Task<IActionResult>.Factory.StartNew(() =>
             {
-                logger.LogInformation("Healthz ping");
+                logger.LogDebug("Healthz ping");
                 return Ok();
             });
         }
