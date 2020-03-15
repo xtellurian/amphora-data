@@ -160,7 +160,7 @@ export class FrontEnd extends pulumi.ComponentResource {
                 tls: [
                     {
                         hosts: [...hosts, this.params.fqdn],
-                        // secretName: "tls-secret"
+                        secretName: "front-tls-secret"
                     }
                 ],
                 rules
