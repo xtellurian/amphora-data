@@ -23,11 +23,12 @@ namespace Amphora.Api.Middleware
         }
 
         private const string CreateOrgPath = "/Organisations/Create";
+        private const string JoinOrgPath = "/Organisations/Join";
 
         private static readonly string[] AcceptablePaths =
         {
             CreateOrgPath,
-            "/Organisations/Join",
+            JoinOrgPath,
             "/Organisations/RequestToJoin",
             "/Organisations/Detail",
             "/Organisations",
@@ -37,7 +38,10 @@ namespace Amphora.Api.Middleware
         };
 
         private const string QueryString = "?message=You must belong to an Organisation to continue";
-        public async Task Invoke(HttpContext httpContext, IUserService userService, IOrganisationService organisationService)
+        public async Task Invoke(HttpContext httpContext,
+                                 IUserService userService,
+                                 IInvitationService invitationService,
+                                 IOrganisationService organisationService)
         {
             var organisationId = httpContext.User.GetOrganisationId();
             var name = httpContext.User.GetUserName();
@@ -58,8 +62,20 @@ namespace Amphora.Api.Middleware
                  && !AcceptablePaths.Any(_ => string.Equals(httpContext.Request.Path, _, comparisonType: StringComparison.OrdinalIgnoreCase))
                  && !httpContext.Request.Path.StartsWithSegments("/api")) // don't redirect API calls
             {
-                logger.LogInformation($"Redirecting {name} to {CreateOrgPath}");
-                httpContext.Response.Redirect($"{CreateOrgPath}{QueryString}");
+                // check for invitation
+                var inviteRes = await invitationService.GetMyInvitations(httpContext.User);
+                if (inviteRes.Succeeded && inviteRes.Entity != null && inviteRes.Entity.Any())
+                {
+                    var invitation = inviteRes.Entity.FirstOrDefault();
+                    // now navigate to accept that invite.
+                    logger.LogInformation("Found invitation! Redirecting...");
+                    httpContext.Response.Redirect($"{JoinOrgPath}?id={invitation.TargetOrganisationId}");
+                }
+                else
+                {
+                    logger.LogInformation($"No invitation. Redirecting {name} to {CreateOrgPath}");
+                    httpContext.Response.Redirect($"{CreateOrgPath}{QueryString}");
+                }
             }
 
             await _next(httpContext);

@@ -17,7 +17,7 @@
             <h2>Create a new Organisation</h2>
             @if(Model.Invitation != null)
             {
-                <a class="btn btn-success float-right" asp-page="./Join" asp-route-orgId="@Model.Invitation?.TargetOrganisation?.Name">
+                <a class="btn btn-success float-right" asp-page="./Join" asp-route-id="@Model.Invitation?.TargetOrganisation?.Id">
                     Join @Model.Invitation?.TargetOrganisation?.Name
                 </a>
             }

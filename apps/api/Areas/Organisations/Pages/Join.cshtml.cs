@@ -25,9 +25,9 @@ namespace Amphora.Api.Areas.Organisations.Pages
         [Display(Name = "Accept Invitation")]
         public bool AcceptInvitation { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string orgId)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (orgId == null)
+            if (id == null)
             {
                 var res = await invitationService.GetMyInvitations(User);
                 if (res.Succeeded)
@@ -43,7 +43,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
             else
             {
-                var res2 = await invitationService.GetInvitation(User, orgId);
+                var res2 = await invitationService.GetInvitation(User, id);
                 if (res2.Succeeded)
                 {
                     this.Invitation = res2.Entity;
