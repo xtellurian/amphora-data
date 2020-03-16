@@ -24,6 +24,7 @@ using Amphora.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -209,6 +210,12 @@ namespace Amphora.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
+            // // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             this.identityModule.Configure(app, env, mapper);
             this.storageModule.Configure(app, env);
 

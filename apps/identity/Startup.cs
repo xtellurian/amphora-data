@@ -15,6 +15,7 @@ using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -133,6 +134,12 @@ namespace Amphora.Identity
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseStaticFiles();
 
