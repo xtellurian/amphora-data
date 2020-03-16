@@ -69,6 +69,8 @@ export class AppSvc extends pulumi.ComponentResource {
     ) {
         const secretString = cfg.requireSecret("tokenManagement__secret");
         this.params.state.storeInVault("jwtToken", "tokenManagement--secret", secretString);
+        const MvcClientSecret = cfg.requireSecret("mvcClientSecret");
+        this.params.state.storeInVault("MvcClientSecret", "MvcClientSecret", MvcClientSecret);
         const plans = appsConfig.requireObject<IAppServicePlanConfig[]>("plans");
         plans.forEach((p) => {
             this.createPlan(rg, kv, acr, p);

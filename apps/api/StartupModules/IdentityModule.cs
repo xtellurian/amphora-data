@@ -40,6 +40,7 @@ namespace Amphora.Api.StartupModules
             var externalServices = new ExternalServices();
             configuration.GetSection("ExternalServices").Bind(externalServices);
             var token = configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
+            var mvcClientSecret = configuration["MvcClientSecret"];
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -70,7 +71,7 @@ namespace Amphora.Api.StartupModules
 
                     options.Authority = externalServices.IdentityUri().ToString();
                     options.RequireHttpsMetadata = false;
-
+                    options.ClientSecret = mvcClientSecret;
                     options.ClientId = "mvc";
                     options.SaveTokens = true;
                     options.Scope.Add("organisation");

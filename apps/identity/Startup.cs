@@ -45,6 +45,8 @@ namespace Amphora.Identity
             var externalServices = new ExternalServices();
             Configuration.GetSection("ExternalServices").Bind(externalServices);
 
+            var mvcClientSecret = Configuration["MvcClientSecret"];
+
             if (IsUsingCosmos())
             {
                 var cosmosOptions = new CosmosOptions();
@@ -82,7 +84,7 @@ namespace Amphora.Identity
                 })
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl }))
+                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl }, mvcClientSecret))
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 

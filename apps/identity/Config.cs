@@ -29,7 +29,7 @@ namespace Amphora.Identity
                 new ApiResource("api1", "My API #1")
             };
 
-        public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls)
+        public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls, string mvcClientSecret)
         {
             ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s}/signin-oidc"));
             ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s}/signout-oidc"));
@@ -46,7 +46,7 @@ namespace Amphora.Identity
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials.Union(GrantTypes.ResourceOwnerPassword).ToList(),
                     RequirePkce = true,
 
-                    // ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    ClientSecrets = { new Secret(mvcClientSecret) },
 
                     RedirectUris = redirectUris,
                     FrontChannelLogoutUri = logoutUris.FirstOrDefault(),
