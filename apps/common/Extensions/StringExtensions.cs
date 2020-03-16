@@ -4,7 +4,7 @@ namespace Amphora.Common.Extensions
 {
     public static class StringExtensions
     {
-        public static Uri ToUri(this string url)
+        public static Uri ToUri(this string url, bool https = true)
         {
             if (url == null)
             {
@@ -17,9 +17,13 @@ namespace Amphora.Common.Extensions
             {
                 return new Uri(url);
             }
-            else
+            else if (https)
             {
                 return new Uri($"https://{url}");
+            }
+            else
+            {
+                return new Uri($"http://{url}");
             }
         }
     }

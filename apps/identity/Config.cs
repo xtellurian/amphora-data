@@ -32,9 +32,12 @@ namespace Amphora.Identity
 
         public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls, string mvcClientSecret)
         {
-            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signin-oidc"));
-            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signout-oidc"));
-            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signout-callback-oidc"));
+            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signin-oidc"));
+            redirectUris.AddRange(baseUrls.Select(s => $"{s.ToUri(https: false)}signin-oidc")); // allow http redirect
+            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signout-callback-oidc"));
+            postLogoutRedirects.AddRange(baseUrls.Select(s => $"{s.ToUri(https: false)}signout-callback-oidc")); // allow http redirect
+
+            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signout-oidc"));
 
             return new Client[]
             {
