@@ -1,4 +1,5 @@
 using System;
+using Amphora.Common.Extensions;
 
 namespace Amphora.Common.Models.Options
 {
@@ -9,29 +10,22 @@ namespace Amphora.Common.Models.Options
 
         public Uri IdentityUri()
         {
-            return ToUri(IdentityBaseUrl);
+            if (IdentityBaseUrl == null)
+            {
+                throw new NullReferenceException("IdentityBaseUrl cannot be null");
+            }
+
+            return IdentityBaseUrl.ToUri();
         }
 
         public Uri WebAppUri()
         {
-            return ToUri(WebAppBaseUrl);
-        }
-
-        private Uri ToUri(string? url)
-        {
-            if (url == null)
+            if (WebAppBaseUrl == null)
             {
-                throw new NullReferenceException("Identity Base URL is null!");
+                throw new NullReferenceException("WebAppBaseUrl cannot be null");
             }
 
-            if (url.StartsWith("https://") || url.StartsWith("http://"))
-            {
-                return new Uri(url);
-            }
-            else
-            {
-                return new Uri($"https://{url}");
-            }
+            return WebAppBaseUrl.ToUri();
         }
     }
 }

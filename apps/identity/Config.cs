@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Amphora.Common.Extensions;
 using IdentityServer4.Models;
 
 namespace Amphora.Identity
@@ -31,9 +32,9 @@ namespace Amphora.Identity
 
         public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls, string mvcClientSecret)
         {
-            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s}/signin-oidc"));
-            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s}/signout-oidc"));
-            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s}/signout-callback-oidc"));
+            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signin-oidc"));
+            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signout-oidc"));
+            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s.ToUri()}/signout-callback-oidc"));
 
             return new Client[]
             {
