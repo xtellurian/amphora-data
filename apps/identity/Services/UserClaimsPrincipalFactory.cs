@@ -18,7 +18,6 @@ namespace Amphora.Identity.Services
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
         {
             var identity = await base.GenerateClaimsAsync(user);
-            identity.AddClaim(new Claim("organisation_id", user.OrganisationId ?? ""));
             identity.AddClaim(new Claim("email", user.Email ?? ""));
             return identity;
         }

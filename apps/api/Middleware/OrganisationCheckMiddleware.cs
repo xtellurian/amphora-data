@@ -43,19 +43,12 @@ namespace Amphora.Api.Middleware
                                  IInvitationService invitationService,
                                  IOrganisationService organisationService)
         {
-            var organisationId = httpContext.User.GetOrganisationId();
             var name = httpContext.User.GetUserName();
             var userId = httpContext.User.GetUserId();
 
-            if (string.IsNullOrEmpty(organisationId))
-            {
-                // organisation ID may exist
-                var userDetails = await userService.UserStore.ReadAsync(userId);
-                if (!string.IsNullOrEmpty(userDetails?.OrganisationId))
-                {
-                    organisationId = userDetails.OrganisationId;
-                }
-            }
+            // organisation ID may exist
+            var userDetails = await userService.UserStore.ReadAsync(userId);
+            var organisationId = userDetails.OrganisationId;
 
             if (httpContext.User.Identity?.IsAuthenticated == true // don't redirect if there's no user
                  && string.IsNullOrEmpty(organisationId) // only redirect if user doesn't have an org

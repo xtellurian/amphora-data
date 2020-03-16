@@ -25,12 +25,6 @@ namespace Amphora.Common.Extensions
             }
         }
 
-        public static string? GetOrganisationId(this ClaimsPrincipal principal)
-        {
-            var organisationId = principal.Claims.FirstOrDefault(_ => _.Type == "organisation_id")?.Value;
-            return organisationId;
-        }
-
         public static string? GetUserName(this ClaimsPrincipal principal)
         {
             var userName = principal.Claims.FirstOrDefault(_ => _.Type == "name")?.Value;
