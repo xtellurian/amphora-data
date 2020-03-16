@@ -45,6 +45,7 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Amphorae")]
         [InlineData("/Amphorae/Create")]
         [InlineData("/Amphorae/Detail")]
+        [InlineData("/AccessDenied")]
         public async Task Get_Authenticated_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange
