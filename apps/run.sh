@@ -36,3 +36,4 @@ fi
 
 echo "Docker Compose Down"
 docker-compose down
+docker-compose rm
