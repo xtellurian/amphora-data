@@ -9,8 +9,8 @@ namespace Amphora.Api.Models.AutoMapper
         public ApplicationUserDataModelProfile()
         {
             CreateMap<ApplicationUserDataModel, AmphoraUser>()
-                .ForMember(p => p.Email, o => o.Ignore())
-                .ForMember(p => p.FullName, o => o.Ignore());
+                .ForMember(p => p.Email, o => o.MapFrom(src => src.ContactInformation.Email))
+                .ForMember(p => p.FullName, o => o.MapFrom(src => src.ContactInformation.FullName));
         }
     }
 }
