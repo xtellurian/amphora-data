@@ -115,7 +115,7 @@ namespace Amphora.Api.Services.Amphorae
                         return new EntityOperationResult<UploadResponse>(
                             userReadRes.Entity,
                             $"{file} already exists. Delete the file and upload again.")
-                            { Code = 409 };
+                        { Code = 409 };
                     }
 
                     if (contents.Length > 0)
