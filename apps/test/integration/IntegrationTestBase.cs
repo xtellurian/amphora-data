@@ -40,6 +40,9 @@ namespace Amphora.Tests.Integration
             accept.EnsureSuccessStatusCode();
             inviteResponse.EnsureSuccessStatusCode();
             user.OrganisationId = org.Id;
+
+            Assert.NotNull(user.Email);
+            Assert.NotNull(user.Id);
             return (client, user, org);
         }
 

@@ -49,6 +49,13 @@ namespace Amphora.Tests.Identity.Integration
             Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
             var amphoraUser = JsonConvert.DeserializeObject<AmphoraUser>(await response.Content.ReadAsStringAsync());
 
+            Assert.NotNull(amphoraUser.Email);
+            Assert.Equal(user.Email, amphoraUser.Email);
+            Assert.NotNull(amphoraUser.UserName);
+            Assert.Equal(user.UserName, amphoraUser.UserName);
+            Assert.NotNull(amphoraUser.FullName);
+            Assert.Equal(user.FullName, amphoraUser.FullName);
+
             var tokenResponse = await client.PostAsJsonAsync("/api/token", new TokenRequest() { Username = email, Password = password });
             Assert.True(tokenResponse.IsSuccessStatusCode, "Content: " + await tokenResponse.Content.ReadAsStringAsync());
             var token = await tokenResponse.Content.ReadAsStringAsync();

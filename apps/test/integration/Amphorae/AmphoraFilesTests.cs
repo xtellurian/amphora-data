@@ -103,7 +103,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_UploadToAmphora_MissingEntity(string url)
+        public async Task Post_UploadFileToAmphora_MissingEntity(string url)
         {
             // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();

@@ -1,6 +1,5 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Api.Models.Dtos.Amphorae;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
