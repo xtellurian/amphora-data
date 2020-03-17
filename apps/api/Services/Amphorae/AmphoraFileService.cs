@@ -112,7 +112,10 @@ namespace Amphora.Api.Services.Amphorae
                     if (await Store.ExistsAsync(entity, file))
                     {
                         // file already exists. Return error.
-                        return new EntityOperationResult<UploadResponse>(userReadRes.Entity, $"{file} already exists. Delete the file and upload again.");
+                        return new EntityOperationResult<UploadResponse>(
+                            userReadRes.Entity,
+                            $"{file} already exists. Delete the file and upload again.")
+                            { Code = 409 };
                     }
 
                     if (contents.Length > 0)

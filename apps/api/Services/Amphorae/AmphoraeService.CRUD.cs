@@ -121,7 +121,7 @@ namespace Amphora.Api.Services.Amphorae
                 if (entity == null)
                 {
                     logger.LogError($"{id} Not Found");
-                    return new EntityOperationResult<AmphoraModel>(userReadRes.Entity, $"{id} Not Found");
+                    return new EntityOperationResult<AmphoraModel>(userReadRes.Entity, $"{id} Not Found") { Code = 404 };
                 }
 
                 if (entity.Public())
