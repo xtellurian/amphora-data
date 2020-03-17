@@ -19,6 +19,7 @@ using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
+using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -98,7 +99,7 @@ namespace Amphora.Api.StartupModules
                 services.AddSingleton<IBlobCache, InMemoryBlobCache>();
             }
 
-            services.AddTransient<CosmosInitialiser>();
+            services.AddTransient<CosmosInitialiser<AmphoraContext>>();
             // entity stores
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
@@ -117,7 +118,7 @@ namespace Amphora.Api.StartupModules
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser>();
+                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<AmphoraContext>>();
                 initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
                 initialiser.LogInformationAsync().ConfigureAwait(false);

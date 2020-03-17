@@ -1,4 +1,3 @@
-using Amphora.Common.EntityFramework;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;

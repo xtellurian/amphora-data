@@ -11,6 +11,7 @@ using Amphora.Identity.Stores;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
+using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -101,6 +102,8 @@ namespace Amphora.Identity
                 services.AddTransient<IEventPublisher, LoggingEventPublisher>();
             }
 
+            services.AddTransient<CosmosInitialiser<IdentityContext>>();
+
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory>();
             services.AddScoped<IEntityStore<ApplicationUser>, UsersEFStore>();
             services.AddScoped<IIdentityService, IdentityServerService>();
@@ -153,6 +156,19 @@ namespace Amphora.Identity
                 endpoints.MapRazorPages();
                 endpoints.MapDefaultControllerRoute();
             });
+
+            if (!IsUsingCosmos())
+            {
+                app.MigrateSql<IdentityContext>();
+            }
+
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<IdentityContext>>();
+                initialiser.EnsureContainerCreated().ConfigureAwait(false);
+                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+                initialiser.LogInformationAsync().ConfigureAwait(false);
+            }
 
             if (!IsUsingCosmos())
             {

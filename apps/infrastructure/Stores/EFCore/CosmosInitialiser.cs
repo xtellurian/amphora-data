@@ -1,26 +1,23 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.EntityFramework;
 using Amphora.Common.Configuration.Options;
-using Amphora.Common.Models;
 using Microsoft.Azure.Cosmos;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amphora.Api.Stores.EFCore
+namespace Amphora.Infrastructure.Stores.EFCore
 {
-    public class CosmosInitialiser
+    public class CosmosInitialiser<T> where T : DbContext
     {
         private readonly IOptionsMonitor<CosmosOptions> cosmos;
-        private readonly ILogger<CosmosInitialiser> logger;
+        private readonly ILogger<CosmosInitialiser<T>> logger;
         private readonly string containerName;
 
-        public CosmosInitialiser(IOptionsMonitor<CosmosOptions> cosmos, ILogger<CosmosInitialiser> logger)
+        public CosmosInitialiser(IOptionsMonitor<CosmosOptions> cosmos, ILogger<CosmosInitialiser<T>> logger)
         {
             this.cosmos = cosmos;
             this.logger = logger;
-            this.containerName = nameof(AmphoraContext); // can be change by modelBuilder.HasDefaultContainer("Store");
+            this.containerName = nameof(T); // can be change by modelBuilder.HasDefaultContainer("Store");
         }
 
         public async Task EnsureContainerCreated()
@@ -51,11 +48,11 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task EnableCosmosTimeToLive()
         {
-            if (IsUsingCosmos())
+            if (IsUsingCosmos() && cosmos.CurrentValue != null)
             {
                 logger.LogInformation($"Enabling Cosmos TTL on database {cosmos.CurrentValue?.Database} and container {containerName}");
                 var ttl = cosmos.CurrentValue?.DefaultTimeToLive ?? -1;
-                using (var client = new CosmosClient(cosmos.CurrentValue.Endpoint, cosmos.CurrentValue.PrimaryKey))
+                using (var client = new CosmosClient(cosmos.CurrentValue!.Endpoint, cosmos.CurrentValue.PrimaryKey))
                 {
                     var container = client.GetContainer(cosmos.CurrentValue.Database, containerName);
 
@@ -78,10 +75,10 @@ namespace Amphora.Api.Stores.EFCore
 
         public async Task LogInformationAsync()
         {
-            if (IsUsingCosmos())
+            if (IsUsingCosmos() && cosmos.CurrentValue != null)
             {
                 logger.LogInformation($"Logging Cosmos Information for database {cosmos.CurrentValue?.Database} and container {containerName}");
-                using (var client = new CosmosClient(cosmos.CurrentValue.Endpoint, cosmos.CurrentValue.PrimaryKey))
+                using (var client = new CosmosClient(cosmos.CurrentValue!.Endpoint, cosmos.CurrentValue.PrimaryKey))
                 {
                     var container = client.GetContainer(cosmos.CurrentValue.Database, containerName);
 
