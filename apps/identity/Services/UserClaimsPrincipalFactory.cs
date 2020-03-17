@@ -22,7 +22,8 @@ namespace Amphora.Identity.Services
             identity.AddClaim(new Claim("full_name", user.FullName ?? ""));
             identity.AddClaim(new Claim("email", user.Email ?? ""));
             identity.AddClaim(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
-            identity.AddClaim(new Claim("global_admin", (user.EmailConfirmed && string.Equals(user.Email?.ToLower(), "rian@amhoradata.com")).ToString()));
+            identity.AddClaim(new Claim("global_admin",
+                (user.EmailConfirmed && (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false)).ToString()));
             return identity;
         }
     }

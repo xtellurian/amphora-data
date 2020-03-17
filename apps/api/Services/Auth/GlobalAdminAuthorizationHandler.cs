@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
 {
