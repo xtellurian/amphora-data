@@ -34,6 +34,8 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 return RedirectToPage("./UserMissing");
             }
 
+            AppUser = userReadRes.Entity;
+
             About = AppUser.About;
             FullName = AppUser.ContactInformation.FullName;
             return Page();
@@ -48,6 +50,8 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 {
                     return RedirectToPage("./UserMissing");
                 }
+
+                AppUser = userReadRes.Entity;
 
                 AppUser.About = About;
                 AppUser.ContactInformation.FullName = FullName;
