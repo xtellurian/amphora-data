@@ -19,18 +19,18 @@ namespace Amphora.Api.Areas.Organisations.Pages
         private readonly IEntityStore<OrganisationModel> entityStore;
         private readonly IAmphoraeService amphoraeService;
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public DetailModel(
             IEntityStore<OrganisationModel> entityStore,
             IAmphoraeService amphoraeService,
             IPermissionService permissionService,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.entityStore = entityStore;
             this.amphoraeService = amphoraeService;
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public OrganisationModel Organisation { get; set; }
@@ -44,11 +44,16 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var appUser = await userService.UserStore.ReadAsync(user.Id);
+            var userDataRes = await userDataService.ReadAsync(User);
+            if (!userDataRes.Succeeded)
+            {
+                return RedirectToPage("./Index");
+            }
+
+            var userData = userDataRes.Entity;
             if (string.IsNullOrEmpty(id))
             {
-                this.Organisation = await entityStore.ReadAsync(user.OrganisationId);
+                this.Organisation = await entityStore.ReadAsync(userData.OrganisationId);
                 if (this.Organisation == null) { return RedirectToPage("./Create"); }
             }
             else
@@ -57,12 +62,12 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 if (this.Organisation == null) { return RedirectToPage("./Index"); }
             }
 
-            this.IsInOrg = this.Organisation.IsInOrgansation(user);
+            this.IsInOrg = this.Organisation.IsInOrgansation(userData);
             this.CanViewBalance = IsInOrg;
-            this.CanEdit = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Update);
+            this.CanEdit = await permissionService.IsAuthorizedAsync(userData, this.Organisation, ResourcePermissions.Update);
             this.CanRestrict = CanEdit;
-            this.CanInvite = await permissionService.IsAuthorizedAsync(user, this.Organisation, ResourcePermissions.Create);
-            this.CanRequestToJoin = user.OrganisationId == null;
+            this.CanInvite = await permissionService.IsAuthorizedAsync(userData, this.Organisation, ResourcePermissions.Create);
+            this.CanRequestToJoin = userData.OrganisationId == null;
             // get pinned
             var query = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == Organisation.Id);
             this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull()

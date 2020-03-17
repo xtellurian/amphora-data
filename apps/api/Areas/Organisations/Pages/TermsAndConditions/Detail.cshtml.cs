@@ -14,13 +14,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
     public class DetailModel : PageModel
     {
         private readonly IOrganisationService organisationService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly ILogger<DetailModel> logger;
 
-        public DetailModel(IOrganisationService organisationService, IUserService userService, ILogger<DetailModel> logger)
+        public DetailModel(IOrganisationService organisationService, IUserDataService userDataService, ILogger<DetailModel> logger)
         {
             this.organisationService = organisationService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.logger = logger;
         }
 
@@ -81,25 +81,32 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         private async Task SetCanAccept()
         {
             // set TermsAndConditions before calling this method
-            if (this.TermsAndConditions == null) { throw new System.Exception("Terms and Conditions must not be null when calling this method."); }
+            if (this.TermsAndConditions == null) { throw new System.ApplicationException("Terms and Conditions must not be null when calling this method."); }
             try
             {
-                var user = await userService.ReadUserModelAsync(User);
-                if (user.OrganisationId == Organisation.Id)
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (!userReadRes.Succeeded)
+                {
+                    throw new System.ApplicationException("Coudn't read user data");
+                }
+
+                var userData = userReadRes.Entity;
+
+                if (userData.OrganisationId == Organisation.Id)
                 {
                     // user in org can't accept
                     CanAccept = false;
                     return;
                 }
 
-                if (user.Organisation.TermsAndConditionsAccepted == null)
+                if (userData.Organisation.TermsAndConditionsAccepted == null)
                 {
                     // nothing accepted yet, so can accept.
                     CanAccept = true;
                     return;
                 }
 
-                if (user.Organisation.TermsAndConditionsAccepted.Any(t =>
+                if (userData.Organisation.TermsAndConditionsAccepted.Any(t =>
                      t.TermsAndConditionsOrganisationId == Organisation.Id
                      && t.TermsAndConditionsId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
                 {

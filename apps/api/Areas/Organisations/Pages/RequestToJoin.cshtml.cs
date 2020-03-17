@@ -13,11 +13,13 @@ namespace Amphora.Api.Areas.Organisations.Pages
     public class RequestToJoinPageModel : PageModel
     {
         private readonly IOrganisationService orgService;
+        private readonly IUserDataService userDataService;
         private readonly IEmailSender emailSender;
 
-        public RequestToJoinPageModel(IOrganisationService orgService, IEmailSender emailSender)
+        public RequestToJoinPageModel(IOrganisationService orgService, IUserDataService userDataService, IEmailSender emailSender)
         {
             this.orgService = orgService;
+            this.userDataService = userDataService;
             this.emailSender = emailSender;
         }
 
@@ -42,17 +44,27 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnPostAsync(string id)
         {
             var res = await orgService.ReadAsync(User, id);
-            if (res.Succeeded)
+            var userDataReadRes = await userDataService.ReadAsync(User);
+            if (userDataReadRes.Succeeded)
             {
-                this.Organisation = res.Entity;
+                var userData = userDataReadRes.Entity;
+                if (res.Succeeded)
+                {
+                    this.Organisation = res.Entity;
+                }
+                else
+                {
+                    return RedirectToPage("./Index");
+                }
+
+                this.Succeeded = await emailSender.SendEmailAsync(new RequestToJoinEmail(userData, res.Entity));
+                return Page();
             }
             else
             {
-                return RedirectToPage("./Index");
+                this.ModelState.AddModelError(string.Empty, userDataReadRes.Message);
+                return Page();
             }
-
-            this.Succeeded = await emailSender.SendEmailAsync(new RequestToJoinEmail(res.User, res.Entity));
-            return Page();
         }
     }
 }

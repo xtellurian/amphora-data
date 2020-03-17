@@ -48,7 +48,7 @@ namespace Amphora.Infrastructure.Services
             }
         }
 
-        public async Task<EntityOperationResult<ApplicationUser>> CreateUser(ApplicationUser user, string password)
+        public async Task<EntityOperationResult<AmphoraUser>> CreateUser(CreateAmphoraUser user, string password)
         {
             var u = new CreateAmphoraUser
             {
@@ -66,32 +66,31 @@ namespace Amphora.Infrastructure.Services
             {
                 var responseUser = JsonConvert.DeserializeObject<AmphoraUser>(await response.Content.ReadAsStringAsync());
                 // so now query the application user
-                user.Id = responseUser.Id;
-                return new EntityOperationResult<ApplicationUser>(user, user);
+                return new EntityOperationResult<AmphoraUser>(responseUser, responseUser);
             }
             else
             {
-                return new EntityOperationResult<ApplicationUser>(false);
+                return new EntityOperationResult<AmphoraUser>(false);
             }
         }
 
-        public async Task<EntityOperationResult<ApplicationUser>> DeleteUser(ClaimsPrincipal principal, IUser user)
+        public async Task<EntityOperationResult<AmphoraUser>> DeleteUser(ClaimsPrincipal principal, IUser user)
         {
             if (principal.GetUserId() == user.Id)
             {
                 var deleteRes = await client.DeleteAsync($"/api/users?userName={user.UserName}");
                 if (deleteRes.IsSuccessStatusCode)
                 {
-                    return new EntityOperationResult<ApplicationUser>(true);
+                    return new EntityOperationResult<AmphoraUser>(true);
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(await deleteRes.Content.ReadAsStringAsync());
+                    return new EntityOperationResult<AmphoraUser>(await deleteRes.Content.ReadAsStringAsync());
                 }
             }
             else
             {
-                return new EntityOperationResult<ApplicationUser>("Can only delete user yourself");
+                return new EntityOperationResult<AmphoraUser>("Can only delete user yourself");
             }
         }
     }

@@ -10,7 +10,7 @@
     <h2>Resend Confirmation Email?</h2>
     <div class="row">
         <div class="col">
-            <p>You will recieve an email at @Model.AppUser.Email . Be sure to check your Junk folder.</p>
+            <p>You will recieve an email at @(Model.AppUser?.Email ?? "unknown email") . Be sure to check your Junk folder.</p>
             <form method="post">
                 <input class="btn btn-success btn-block" type="submit" value="Resend Email" />
             </form>

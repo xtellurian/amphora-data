@@ -1,16 +1,14 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,21 +24,24 @@ namespace Amphora.Api.Controllers
     [Route("api/users")]
     public class UsersController : Controller
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
+        private readonly IIdentityService identityService;
         private readonly IInvitationService invitationService;
         private readonly IOptionsMonitor<CreateOptions> options;
         private readonly IWebHostEnvironment environment;
         private readonly IMapper mapper;
         private readonly ILogger<UsersController> logger;
 
-        public UsersController(IUserService userService,
+        public UsersController(IUserDataService userDataService,
+                               IIdentityService identityService,
                                IInvitationService invitationService,
                                IOptionsMonitor<CreateOptions> options,
                                IWebHostEnvironment environment,
                                IMapper mapper,
                                ILogger<UsersController> logger)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
+            this.identityService = identityService;
             this.invitationService = invitationService;
             this.options = options;
             this.environment = environment;
@@ -57,13 +58,15 @@ namespace Amphora.Api.Controllers
         [CommonAuthorize]
         public async Task<IActionResult> ReadSelf()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            if (user == null)
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
+            {
+                return Ok(mapper.Map<AmphoraUser>(userReadRes.Entity));
+            }
+            else
             {
                 return NotFound();
             }
-
-            return Ok(mapper.Map<AmphoraUser>(user));
         }
 
         /// <summary>
@@ -80,27 +83,30 @@ namespace Amphora.Api.Controllers
                 return BadRequest();
             }
 
-            var applicationUser = new ApplicationUser()
-            {
-                Email = user.Email,
-                UserName = user.UserName
-            };
-
-            var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
-
-            var result = await userService.CreateAsync(applicationUser, invitation, user.Password);
+            var result = await identityService.CreateUser(user, user.Password);
 
             if (result.Succeeded)
             {
+                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
+
+                var applicationUser = new ApplicationUserDataModel(result.Entity.Id, result.Entity.UserName, result.Entity.About,
+                    new ContactInformation(result.Entity.Email, result.Entity.FullName));
+
                 if (IsTestUser(result.Entity))
                 {
-                    var appUser = result.Entity;
-                    logger.LogWarning($"Automatically confirming email for {appUser.Email}");
-                    appUser.EmailConfirmed = true;
-                    var updateRes = await userService.UpdateAsync(User, appUser);
+                    logger.LogWarning($"Automatically confirming email for {applicationUser.ContactInformation.Email}");
+                    applicationUser.ContactInformation.EmailConfirmed = true;
                 }
 
-                return Ok(mapper.Map<AmphoraUser>(result.Entity));
+                var createRes = await userDataService.CreateAsync(User, applicationUser);
+                if (createRes.Succeeded)
+                {
+                    return Ok(mapper.Map<AmphoraUser>(createRes.Entity));
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             else
             {
@@ -125,10 +131,9 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> Delete(string userName)
         {
             if (userName == null) { return BadRequest("username is required"); }
-            var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
-            var user = users.FirstOrDefault();
+            var user = await userDataService.Query(User, _ => _.UserName == userName).FirstOrDefaultAsync();
             if (user == null) { return NotFound(); }
-            var result = await userService.DeleteAsync(User, user);
+            var result = await identityService.DeleteUser(User, user);
             if (result.Succeeded)
             {
                 return Ok();
@@ -144,7 +149,7 @@ namespace Amphora.Api.Controllers
             }
         }
 
-        private bool IsTestUser(ApplicationUser user)
+        private bool IsTestUser(AmphoraUser user)
         {
             return environment.IsDevelopment() && (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false);
         }

@@ -13,9 +13,12 @@ namespace Amphora.Tests.Unit.Entities
         {
             var context = GetContext();
 
-            var user = new ApplicationUser();
+            var user = new ApplicationUserDataModel
+            {
+                Id = System.Guid.NewGuid().ToString()
+            };
 
-            await context.Users.AddAsync(user);
+            await context.UserData.AddAsync(user);
 
             var amphora1 = new AmphoraModel();
             await context.Amphorae.AddAsync(amphora1);
@@ -29,7 +32,7 @@ namespace Amphora.Tests.Unit.Entities
 
             await context.SaveChangesAsync();
 
-            user = context.Users.FirstOrDefault(); // reload user
+            user = context.UserData.FirstOrDefault(); // reload user
 
             Assert.NotNull(user.PinnedAmphorae);
             Assert.NotNull(user.PinnedAmphorae.Amphora1);

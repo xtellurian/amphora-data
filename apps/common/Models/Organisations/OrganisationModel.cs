@@ -45,9 +45,9 @@ namespace Amphora.Common.Models.Organisations
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; } = new Collection<TermsAndConditionsAcceptanceModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? CreatedById { get; set; }
-        public virtual ApplicationUser? CreatedBy { get; set; }
+        public virtual ApplicationUserDataModel? CreatedBy { get; set; }
 
-        public void AddOrUpdateMembership(ApplicationUser user, Roles role = Roles.User)
+        public void AddOrUpdateMembership(ApplicationUserDataModel user, Roles role = Roles.User)
         {
             if (this.Memberships == null) { this.Memberships = new List<Membership>(); }
             var existing = this.Memberships.FirstOrDefault(m => string.Equals(m.UserId, user.Id));

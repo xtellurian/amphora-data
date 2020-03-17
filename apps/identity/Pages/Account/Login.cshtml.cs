@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Common.Models.Users;
 using Amphora.Identity.Models;
 using Amphora.Identity.Models.ViewModels;
 using IdentityServer4.Quickstart.UI;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Identity.Pages.Account
 {
@@ -34,7 +32,7 @@ namespace Amphora.Identity.Pages.Account
         public IEnumerable<ExternalProvider> VisibleExternalProviders => ExternalProviders.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName));
 
         public bool IsExternalLoginOnly => EnableLocalLogin == false && ExternalProviders?.Count() == 1;
-        public string ExternalLoginScheme => IsExternalLoginOnly ? ExternalProviders?.SingleOrDefault()?.AuthenticationScheme : null;
+        public string? ExternalLoginScheme => IsExternalLoginOnly ? ExternalProviders?.SingleOrDefault()?.AuthenticationScheme : null;
 
         public LoginPageModel(IIdentityServerInteractionService interaction,
                               UserManager<ApplicationUser> userManager,
@@ -52,7 +50,7 @@ namespace Amphora.Identity.Pages.Account
         [BindProperty]
         public LoginInputModel Input { get; set; } = new LoginInputModel();
 
-        public string ReturnUrl { get; private set; }
+        public string? ReturnUrl { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string returnUrl)
         {
@@ -87,7 +85,7 @@ namespace Amphora.Identity.Pages.Account
                         {
                             // if the client is PKCE then we assume it's native, so this change in how to
                             // return the response is for better UX for the end user.
-                            return this.LoadingPage("/Redirect", this.ReturnUrl);
+                            return this.LoadingPage("/Redirect", this.ReturnUrl ?? "~");
                         }
 
                         // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
@@ -132,7 +130,7 @@ namespace Amphora.Identity.Pages.Account
                 this.EnableLocalLogin = local;
                 this.Input.Username = context?.LoginHint ?? this.Input.Username;
 
-                if (!local)
+                if (!local && context?.IdP != null)
                 {
                     this.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
                 }

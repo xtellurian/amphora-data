@@ -20,17 +20,14 @@ namespace Amphora.Api.Areas.Organisations.Pages
     {
         private readonly IOrganisationService organisationService;
         private readonly IInvitationService invitationService;
-        private readonly ISignInManager signInManager;
         private readonly ILogger<CreateModel> logger;
 
         public CreateModel(IOrganisationService organisationService,
                            IInvitationService invitationService,
-                           ISignInManager signInManager,
                            ILogger<CreateModel> logger)
         {
             this.organisationService = organisationService;
             this.invitationService = invitationService;
-            this.signInManager = signInManager;
             this.logger = logger;
         }
 

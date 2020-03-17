@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Contracts;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -61,9 +61,9 @@ namespace Amphora.Identity.Controllers
 
             // var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
 
-            var result = await userService.CreateAsync(applicationUser, null, user.Password); // invitation goes here
+            var result = await userService.CreateAsync(applicationUser, null!, user.Password!); // invitation goes here
 
-            if (result.Succeeded)
+            if (result.Succeeded && result.Entity != null)
             {
                 var dto = new AmphoraUser()
                 {

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Amphora.Api.EntityFramework
 {
     // DbContext is injected with a Scoped lifetime
-    public class AmphoraContext : CommonContext
+    public class AmphoraContext : DbContext
     {
         public AmphoraContext(DbContextOptions<AmphoraContext> options)
             : base(options)
@@ -20,7 +20,16 @@ namespace Amphora.Api.EntityFramework
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Common.EntityFramework.CommonContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Common.EntityFramework.TypeConfiguration.AmphoraModelTypeConfiguration).Assembly);
         }
+
+        public DbSet<AmphoraModel> Amphorae { get; set; } = null!;
+        public DbSet<OrganisationModel> Organisations { get; set; } = null!;
+        public DbSet<DataRequestModel> DataRequests { get; set; } = null!;
+        public DbSet<PurchaseModel> Purchases { get; set; } = null!;
+        public DbSet<CommissionModel> Commissions { get; set; } = null!;
+        public DbSet<InvitationModel> Invitations { get; set; } = null!;
+        public DbSet<RestrictionModel> Restrictions { get; set; } = null!;
+        public DbSet<ApplicationUserDataModel> UserData { get; set; }
     }
 }

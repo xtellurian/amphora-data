@@ -8,6 +8,7 @@ using Amphora.Common.Models.Permissions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
 {
@@ -17,18 +18,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IAmphoraeService amphoraeService;
         private readonly IPermissionService permissionService;
         private readonly IMapper mapper;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public InviteModel(
             IAmphoraeService amphoraeService,
             IPermissionService permissionService,
             IMapper mapper,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.amphoraeService = amphoraeService;
             this.permissionService = permissionService;
             this.mapper = mapper;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public class InputModel
@@ -43,13 +44,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.ReadUserModelAsync(User);
+            var userReadRes = await userDataService.ReadAsync(User);
             var result = await amphoraeService.ReadAsync(User, id);
 
-            if (result.Succeeded)
+            if (result.Succeeded && userReadRes.Succeeded)
             {
                 this.Amphora = result.Entity;
-                var authorized = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Administer);
+                var authorized = await permissionService.IsAuthorizedAsync(userReadRes.Entity, Amphora, AccessLevels.Administer);
                 if (!authorized)
                 {
                     this.ModelState.AddModelError(string.Empty, "Unauthoirized");
@@ -75,14 +76,15 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 return Page();
             }
 
-            var user = await userService.ReadUserModelAsync(User);
+            var userReadRes = await userDataService.ReadAsync(User);
             var result = await amphoraeService.ReadAsync(User, id);
-            var authorized = await permissionService.IsAuthorizedAsync(user, result.Entity, AccessLevels.Administer);
+
+            var authorized = await permissionService.IsAuthorizedAsync(userReadRes.Entity, result.Entity, AccessLevels.Administer);
             if (authorized && result.Succeeded)
             {
                 Amphora = result.Entity;
-                var toInvite = await userService.UserStore.QueryAsync(_ => _.Email == Input.Email);
-                if (toInvite == null)
+                var toInvite = await userDataService.Query(User, _ => _.ContactInformation.Email == Input.Email).ToListAsync();
+                if (toInvite == null || toInvite.Count == 0)
                 {
                     ModelState.AddModelError(string.Empty, $"{Input.Email} is not an Amphora Data user");
                     return Page();

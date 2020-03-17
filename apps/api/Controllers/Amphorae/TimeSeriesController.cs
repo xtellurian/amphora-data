@@ -21,19 +21,19 @@ namespace Amphora.Api.Controllers.Amphorae
         private ITsiService tsiService;
         private readonly IPermissionService permissionService;
         private readonly IAmphoraeService amphoraeService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private ILogger<TimeSeriesController> logger;
 
         public TimeSeriesController(ITsiService tsiService,
                                             IPermissionService permissionService,
                                             IAmphoraeService amphoraeService,
-                                            IUserService userService,
+                                            IUserDataService userDataService,
                                             ILogger<TimeSeriesController> logger)
         {
             this.tsiService = tsiService;
             this.permissionService = permissionService;
             this.amphoraeService = amphoraeService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.logger = logger;
         }
 
@@ -49,7 +49,12 @@ namespace Amphora.Api.Controllers.Amphorae
         [AddJsonContentType]
         public async Task<IActionResult> QueryTimeSeries(QueryRequest query)
         {
-            var user = await userService.ReadUserModelAsync(User);
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
+            {
+                return Unauthorized();
+            }
+
             var ids = new List<string>();
             if (query.AggregateSeries?.TimeSeriesId != null)
             {
@@ -69,7 +74,7 @@ namespace Amphora.Api.Controllers.Amphorae
             foreach (var id in ids)
             {
                 var res = await amphoraeService.ReadAsync(User, id);
-                if (res.Succeeded && await permissionService.IsAuthorizedAsync(user, res.Entity, AccessLevels.ReadContents))
+                if (res.Succeeded && await permissionService.IsAuthorizedAsync(userReadRes.Entity, res.Entity, AccessLevels.ReadContents))
                 {
                     // all good
                 }

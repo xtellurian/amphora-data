@@ -15,18 +15,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
         private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public DownloadPageModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
             IPermissionService permissionService,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.amphoraeService = amphoraeService;
             this.blobStore = blobStore;
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public bool Succeeded { get; private set; }
@@ -40,35 +40,44 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("./Index");
             }
 
-            var user = await userService.ReadUserModelAsync(User);
-            if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                if (!await blobStore.ExistsAsync(entity, name))
+                var user = userReadRes.Entity;
+                if (await permissionService.IsAuthorizedAsync(user, entity, Common.Models.Permissions.AccessLevels.ReadContents))
                 {
-                    // file doesn't exist.
-                    return NotFound();
-                }
-                else if (redirect)
-                {
-                    var url = await blobStore.GetPublicUrl(entity, name);
-                    return Redirect(url);
+                    if (!await blobStore.ExistsAsync(entity, name))
+                    {
+                        // file doesn't exist.
+                        return NotFound();
+                    }
+                    else if (redirect)
+                    {
+                        var url = await blobStore.GetPublicUrl(entity, name);
+                        return Redirect(url);
+                    }
+                    else
+                    {
+                        var file = await blobStore.ReadBytesAsync(entity, name);
+                        if (file == null || file.Length == 0)
+                        {
+                            ModelState.AddModelError(string.Empty, "Uh Oh, this file appears to be empty.");
+                            this.Succeeded = false;
+                            return Page();
+                        }
+
+                        return File(file, ContentTypeRecogniser.GetContentType(name), name);
+                    }
                 }
                 else
                 {
-                    var file = await blobStore.ReadBytesAsync(entity, name);
-                    if (file == null || file.Length == 0)
-                    {
-                        ModelState.AddModelError(string.Empty, "Uh Oh, this file appears to be empty.");
-                        this.Succeeded = false;
-                        return Page();
-                    }
-
-                    return File(file, ContentTypeRecogniser.GetContentType(name), name);
+                    return RedirectToPage("./Forbidden");
                 }
             }
             else
             {
-                return RedirectToPage("./Forbidden");
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
             }
         }
     }

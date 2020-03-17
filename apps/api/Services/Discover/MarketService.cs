@@ -14,7 +14,6 @@ namespace Amphora.Api.Services.Market
     public class MarketService : IMarketService, IDiscoverService<AmphoraModel>
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IUserService userService;
         private readonly ICache cache;
 
         public ISearchService SearchService { get; }
@@ -22,12 +21,10 @@ namespace Amphora.Api.Services.Market
         public MarketService(
             ISearchService searchService,
             IAmphoraeService amphoraeService,
-            IUserService userService,
             ICache cache)
         {
             this.SearchService = searchService;
             this.amphoraeService = amphoraeService;
-            this.userService = userService;
             this.cache = cache;
         }
 

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Amphora.Common.Contracts;
 
-namespace Amphora.Common.Models.Dtos
+namespace Amphora.Common.Models.Dtos.Users
 {
     public class CreateAmphoraUser
     {

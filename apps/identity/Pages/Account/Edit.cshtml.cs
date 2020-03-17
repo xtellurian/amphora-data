@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +13,14 @@ namespace Amphora.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> userManager;
 
-        public ApplicationUser AppUser { get; set; }
+        public ApplicationUser? AppUser { get; set; }
 
         [BindProperty]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
         [BindProperty]
-        public string About { get; set; }
+        public string? About { get; set; }
         [TempData]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
         public EditModel(UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
@@ -36,8 +35,8 @@ namespace Amphora.Identity.Pages.Account
                 return RedirectToPage("./UserMissing");
             }
 
-            About = AppUser.About;
-            FullName = AppUser.FullName;
+            About = AppUser?.About;
+            FullName = AppUser?.FullName;
             return Page();
         }
 

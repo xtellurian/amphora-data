@@ -55,7 +55,7 @@ namespace Amphora.Common.Models.Amphorae
         public string OrganisationId { get; set; }
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public string? CreatedById { get; set; }
-        public virtual ApplicationUser? CreatedBy { get; set; }
+        public virtual ApplicationUserDataModel? CreatedBy { get; set; }
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public virtual ICollection<RestrictionModel> Restrictions { get; set; } = new Collection<RestrictionModel>();
         public string? TermsAndConditionsId { get; set; }

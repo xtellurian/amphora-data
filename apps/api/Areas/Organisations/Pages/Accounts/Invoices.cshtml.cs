@@ -16,12 +16,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
     public class InvoicesPageModel : PageModel
     {
         private readonly IOrganisationService organisationService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
-        public InvoicesPageModel(IOrganisationService organisationService, IUserService userService)
+        public InvoicesPageModel(IOrganisationService organisationService, IUserDataService userDataService)
         {
             this.organisationService = organisationService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public OrganisationModel Organisation { get; private set; }
@@ -32,22 +32,29 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var res = await organisationService.ReadAsync(User, user.OrganisationId);
-            if (res.Succeeded)
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                this.Organisation = res.Entity;
-                this.Invoices = this.Organisation.Account?.Invoices ?? new List<Invoice>();
+                var res = await organisationService.ReadAsync(User, userReadRes.Entity.OrganisationId);
+                if (res.Succeeded)
+                {
+                    this.Organisation = res.Entity;
+                    this.Invoices = this.Organisation.Account?.Invoices ?? new List<Invoice>();
 
-                return Page();
-            }
-            else if (res.WasForbidden)
-            {
-                return StatusCode(403);
+                    return Page();
+                }
+                else if (res.WasForbidden)
+                {
+                    return StatusCode(403);
+                }
+                else
+                {
+                    return BadRequest(res.Message);
+                }
             }
             else
             {
-                return BadRequest(res.Message);
+                return NotFound();
             }
         }
     }

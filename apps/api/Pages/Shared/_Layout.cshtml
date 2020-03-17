@@ -1,17 +1,15 @@
 ﻿@using System.Security.Claims
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
-@using Amphora.Common.Contracts
 @using Amphora.Common.Extensions
 @using Amphora.Common.Models.Options
 
 @inject IConfiguration Configuration
-@inject IUserService UserService
 @inject IOptionsMonitor<ExternalServices> ExternalServices
 
 @{
     Func<ClaimsPrincipal, Task<string>> profileUrl = (p) => Task.FromResult(p.GetProfilePictureUri()?.ToString()+"?s=180");
-    Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = async (p) => (await UserService.ReadUserModelAsync(User))?.IsAdminGlobal() ?? false;
+    Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
     var protocol = Context.Request.IsHttps ? "https" : "http";
     var returnUrl = $"{protocol}://{Context.Request.Host}/Challenge";
     string registerUrl = $"{ExternalServices.CurrentValue.IdentityUri()}/Account/Register?returnUrl={returnUrl}";

@@ -1,11 +1,10 @@
-using Amphora.Common.EntityFramework;
-using Amphora.Common.Models.Users;
-using Microsoft.AspNetCore.Identity;
+using Amphora.Identity.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Identity.EntityFramework
 {
-    public class IdentityContext : CommonContext
+    public class IdentityContext : IdentityDbContext<ApplicationUser>
     {
         public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {
@@ -15,16 +14,7 @@ namespace Amphora.Identity.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
 
-            // this is due to migrating
-            modelBuilder.HasDefaultContainer("AmphoraContext");
-
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Common.EntityFramework.CommonContext).Assembly);
-
-            // modelBuilder.Entity<<IdentityUserClaim<string>>>().ToTable("  ");
-            // modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
-            // modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins");
-            // modelBuilder.Entity<IdentityRole>().ToTable("Roles");
-            // modelBuilder.Entity<ApplicationUser>().ToTable("Users");
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Identity.EntityFramework.IdentityContext).Assembly);
         }
     }
 }

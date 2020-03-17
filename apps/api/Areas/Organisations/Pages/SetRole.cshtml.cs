@@ -12,13 +12,13 @@ namespace Amphora.Api.Areas.Organisations.Pages
     {
         private readonly IOrganisationService organisationService;
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
-        public SetRoleModel(IOrganisationService organisationService, IPermissionService permissionService, IUserService userService)
+        public SetRoleModel(IOrganisationService organisationService, IPermissionService permissionService, IUserDataService userDataService)
         {
             this.organisationService = organisationService;
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public OrganisationModel Organisation { get; private set; }
@@ -33,8 +33,15 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 this.TargetMembership = Organisation.Memberships.FirstOrDefault(m => m.UserId == userId);
                 if (TargetMembership == null) { return RedirectToPage("./Members"); }
                 // this section is a fix for bug 382 >>
-                var user = await userService.ReadUserModelAsync(User);
-                var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, Common.Models.Permissions.AccessLevels.Administer);
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (!userReadRes.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, userReadRes.Message);
+                    return Page();
+                }
+
+                var userData = userReadRes.Entity;
+                var authorized = await permissionService.IsAuthorizedAsync(userData, Organisation, Common.Models.Permissions.AccessLevels.Administer);
                 if (!authorized)
                 {
                     ModelState.AddModelError(string.Empty, "Unauthorised");

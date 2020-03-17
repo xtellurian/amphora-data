@@ -4,7 +4,7 @@
 @using Amphora.Common.Extensions
 
 @{
-    ViewData["Title"] = Model.AppUser.FullName;
+    ViewData["Title"] = Model.AppUser.ContactInformation?.FullName;
 }
 
 <div id="main" class="container">
@@ -19,7 +19,7 @@
                     {
                         <a asp-area="Profiles" asp-page="./Manage/Index" class="float-right"><i class="fas fa-cog"></i></a>
                     }
-                    <div class="w-100"><strong>@Model.AppUser.FullName</strong></div>
+                    <div class="w-100"><strong>@Model.AppUser?.ContactInformation?.FullName</strong></div>
                     <div class="w-100 mb-2"><small>@Model.AppUser.UserName </small></div>
 
                     <span><button style="width: 100%;" class="btn btn-light mb-3 mx-auto">Follow</button></span>

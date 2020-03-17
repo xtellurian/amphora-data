@@ -18,7 +18,7 @@ namespace Amphora.Common.Models.DataRequests
         public string Description { get; set; }
         public GeoLocation? GeoLocation { get; set; }
         public List<string>? UserIdVotes { get; set; } = new List<string>();
-        public virtual ApplicationUser? CreatedBy { get; set; } = null!;
+        public virtual ApplicationUserDataModel? CreatedBy { get; set; } = null!;
         public string? CreatedById { get; set; } = null!;
 
         // methods

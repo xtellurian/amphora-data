@@ -14,18 +14,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
         private readonly IAmphoraeService amphoraeService;
         private readonly IBlobStore<AmphoraModel> blobStore;
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public DeletePageModel(
             IAmphoraeService amphoraeService,
             IBlobStore<AmphoraModel> blobStore,
             IPermissionService permissionService,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.amphoraeService = amphoraeService;
             this.blobStore = blobStore;
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public bool Succeeded { get; private set; }
@@ -41,14 +41,23 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("../Index");
             }
 
-            var user = await userService.ReadUserModelAsync(User);
-            if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                return Page();
+                var user = userReadRes.Entity;
+                if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
+                {
+                    return Page();
+                }
+                else
+                {
+                    return RedirectToPage("../Forbidden");
+                }
             }
             else
             {
-                return RedirectToPage("../Forbidden");
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
             }
         }
 
@@ -61,15 +70,23 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("../Index");
             }
 
-            var user = await userService.ReadUserModelAsync(User);
-            if (await permissionService.IsAuthorizedAsync(user, Amphora, Common.Models.Permissions.AccessLevels.Update))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                await blobStore.DeleteAsync(Amphora, name);
-                return RedirectToPage("./Index", new { id = id });
+                if (await permissionService.IsAuthorizedAsync(userReadRes.Entity, Amphora, Common.Models.Permissions.AccessLevels.Update))
+                {
+                    await blobStore.DeleteAsync(Amphora, name);
+                    return RedirectToPage("./Index", new { id = id });
+                }
+                else
+                {
+                    return RedirectToPage("../Forbidden");
+                }
             }
             else
             {
-                return RedirectToPage("../Forbidden");
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
             }
         }
 

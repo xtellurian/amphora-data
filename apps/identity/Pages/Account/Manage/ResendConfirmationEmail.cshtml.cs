@@ -1,7 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ namespace Amphora.Identity.Pages.Account.Manage
 
         public IWebHostEnvironment WebHost { get; private set; }
         public bool Success { get; private set; }
-        public ApplicationUser AppUser { get; private set; }
+        public ApplicationUser? AppUser { get; private set; }
 
         public async Task<IActionResult> OnGet()
         {
@@ -47,11 +47,21 @@ namespace Amphora.Identity.Pages.Account.Manage
         {
             await LoadProperties();
 
+            if (AppUser == null)
+            {
+                this.Success = false;
+                return Page();
+            }
+
             if (WebHost.IsDevelopment())
             {
                 // just set the email thing to true
                 AppUser.EmailConfirmed = true;
                 var res = await userManager.UpdateAsync(AppUser);
+            }
+            else if (AppUser?.Email == null)
+            {
+                return BadRequest("User has no email");
             }
             else
             {
@@ -59,12 +69,12 @@ namespace Amphora.Identity.Pages.Account.Manage
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { userId = AppUser.Id, code = code },
+                    values: new { userId = AppUser?.Id, code = code },
                     protocol: Request.Scheme);
 
                 // this line is broken
                 // await emailSender.SendEmailAsync(new ConfirmEmailEmail(AppUser, hostOptions.CurrentValue, code));
-                await emailSender.SendEmailAsync(AppUser.Email, "Please confirm your email",
+                await emailSender.SendEmailAsync(AppUser!.Email, "Please confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
             }
 

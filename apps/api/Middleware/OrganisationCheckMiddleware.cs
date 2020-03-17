@@ -39,7 +39,7 @@ namespace Amphora.Api.Middleware
 
         private const string QueryString = "?message=You must belong to an Organisation to continue";
         public async Task Invoke(HttpContext httpContext,
-                                 IUserService userService,
+                                 IUserDataService userDataService,
                                  IInvitationService invitationService,
                                  IOrganisationService organisationService)
         {
@@ -47,8 +47,11 @@ namespace Amphora.Api.Middleware
             var userId = httpContext.User.GetUserId();
 
             // organisation ID may exist
-            var userDetails = await userService.UserStore.ReadAsync(userId);
-            var organisationId = userDetails.OrganisationId;
+            var userDetailsRes = await userDataService.ReadAsync(httpContext.User, userId);
+
+            var userDetails = userDetailsRes.Entity;
+
+            var organisationId = userDetailsRes.Succeeded ? userDetailsRes.Entity?.OrganisationId : null;
 
             if (httpContext.User.Identity?.IsAuthenticated == true // don't redirect if there's no user
                  && string.IsNullOrEmpty(organisationId) // only redirect if user doesn't have an org

@@ -15,35 +15,39 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
     [CommonAuthorize]
     public class DetailModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IAmphoraeService amphoraeService;
 
-        public DetailModel(IUserService userService, IAmphoraeService amphoraeService)
+        public DetailModel(IUserDataService userDataService, IAmphoraeService amphoraeService)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.amphoraeService = amphoraeService;
         }
 
-        public ApplicationUser AppUser { get; set; }
+        public ApplicationUserDataModel AppUser { get; set; }
 
         public bool IsSelf { get; set; }
         public IEnumerable<AmphoraModel> PinnedAmphorae { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string userName)
         {
-            var currentUser = await userService.ReadUserModelAsync(User);
+            var readUserRes = await userDataService.ReadAsync(User);
             if (!string.IsNullOrEmpty(id))
             {
-                AppUser = await userService.UserStore.ReadAsync(id);
+                var readRes = await userDataService.ReadAsync(User, id);
+                if (readRes.Succeeded)
+                {
+                    this.AppUser = readRes.Entity;
+                }
             }
             else if (!string.IsNullOrEmpty(userName))
             {
-                var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
-                AppUser = users.FirstOrDefault();
+                var users = userDataService.Query(User, _ => _.UserName == userName);
+                AppUser = await users.FirstOrDefaultAsync();
             }
             else
             {
-                AppUser = currentUser;
+                AppUser = readUserRes.Entity;
             }
 
             if (AppUser == null)
@@ -51,7 +55,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
                 return RedirectToPage("./UserMissing");
             }
 
-            if (AppUser.Id == currentUser.Id)
+            if (AppUser.Id == readUserRes.Entity.Id)
             {
                 IsSelf = true;
             }

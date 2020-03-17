@@ -34,22 +34,34 @@ namespace Amphora.Tests.Unit.Purchasing
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
             thirdOrg = await orgStore.CreateAsync(thirdOrg);
-            var user_emailconfirmed = new ApplicationUser()
+            var user_emailconfirmed = new ApplicationUserDataModel()
             {
-                Email = "test@amphoradata.com",
-                EmailConfirmed = true,
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "test@amphoradata.com",
+                    EmailConfirmed = true,
+                },
                 OrganisationId = org.Id
             };
-            var user_notconfirmed = new ApplicationUser()
+            var user_notconfirmed = new ApplicationUserDataModel()
             {
-                Email = "other@amphoradata.com",
-                EmailConfirmed = false,
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "other@amphoradata.com",
+                    EmailConfirmed = false,
+                },
                 OrganisationId = thirdOrg.Id
             };
-            var user_noOrg = new ApplicationUser()
+            var user_noOrg = new ApplicationUserDataModel()
             {
-                Email = "no-org@amphoradata.com",
-                EmailConfirmed = false
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "no-org@amphoradata.com",
+                    EmailConfirmed = false
+                },
             };
 
             var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(otherOrg));
@@ -77,9 +89,9 @@ namespace Amphora.Tests.Unit.Purchasing
             Assert.Null(result_noOrg.Entity);
             Assert.False(result_noOrg.Succeeded);
 
-            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_emailconfirmed.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
-            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_notconfirmed.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_noOrg.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_emailconfirmed.ContactInformation.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_notconfirmed.ContactInformation.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.Is<string>(s => s == user_noOrg.ContactInformation.Email), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
 
         [Fact]
@@ -109,10 +121,13 @@ namespace Amphora.Tests.Unit.Purchasing
             };
             usersOrg = await orgStore.CreateAsync(usersOrg);
 
-            var user = new ApplicationUser()
+            var user = new ApplicationUserDataModel()
             {
-                Email = "test@amphoradata.com",
-                EmailConfirmed = true,
+                ContactInformation = new ContactInformation
+                {
+                    Email = "test@amphoradata.com",
+                    EmailConfirmed = true,
+                },
                 Organisation = usersOrg
             };
 
@@ -152,10 +167,14 @@ namespace Amphora.Tests.Unit.Purchasing
             var usersOrg = EntityLibrary.GetOrganisationModel();
             usersOrg = await orgStore.CreateAsync(usersOrg);
 
-            var user = new ApplicationUser()
+            var user = new ApplicationUserDataModel()
             {
-                Email = "test@amphoradata.com",
-                EmailConfirmed = true,
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "test@amphoradata.com",
+                    EmailConfirmed = true,
+                },
                 Organisation = usersOrg
             };
 
@@ -199,10 +218,14 @@ namespace Amphora.Tests.Unit.Purchasing
             amphora.Price = 9;
             amphora = await amphoraStore.CreateAsync(amphora);
 
-            var user = new ApplicationUser()
+            var user = new ApplicationUserDataModel()
             {
-                Email = "test@amphoradata.com",
-                EmailConfirmed = true,
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "test@amphoradata.com",
+                    EmailConfirmed = true,
+                },
                 OrganisationId = org.Id
             };
 

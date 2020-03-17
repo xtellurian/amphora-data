@@ -18,18 +18,18 @@ namespace Amphora.Api.Areas.Organisations.Pages
     public class EditModel : PageModel
     {
         private readonly IOrganisationService organisationService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
 
         [TempData]
         public string ErrorMessage { get; set; }
         public EditModel(
             IOrganisationService organisationService,
-            IUserService userService,
+            IUserDataService userDataService,
             IPermissionService permissionService)
         {
             this.organisationService = organisationService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.permissionService = permissionService;
         }
 
@@ -47,12 +47,20 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            var user = await userService.ReadUserModelAsync(User);
-            if (id == null) { id = user.OrganisationId; }
+            var userReadRes = await userDataService.ReadAsync(User);
             this.OrganisationId = id;
+
+            if (!userReadRes.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
+            }
+
+            var userData = userReadRes.Entity;
+            if (id == null) { id = userData.OrganisationId; }
             var organisation = await organisationService.Store.ReadAsync(id);
 
-            var authorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Update);
+            var authorized = await permissionService.IsAuthorizedAsync(userData, organisation, ResourcePermissions.Update);
             if (authorized)
             {
                 this.Input = new InputModel
@@ -72,11 +80,18 @@ namespace Amphora.Api.Areas.Organisations.Pages
         {
             if (ModelState.IsValid)
             {
-                var user = await userService.ReadUserModelAsync(User);
-                if (id == null) { id = user.OrganisationId; }
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (userReadRes.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, userReadRes.Message);
+                    return Page();
+                }
+
+                var userData = userReadRes.Entity;
+                if (id == null) { id = userData.OrganisationId; }
                 var organisation = await organisationService.Store.ReadAsync(id);
 
-                var authorized = await permissionService.IsAuthorizedAsync(user, organisation, ResourcePermissions.Update);
+                var authorized = await permissionService.IsAuthorizedAsync(userData, organisation, ResourcePermissions.Update);
                 if (authorized)
                 {
                     organisation.Name = Input.Name;

@@ -14,7 +14,7 @@ namespace Amphora.Api.Services.Amphorae
     public class AmphoraFileService : IAmphoraFileService
     {
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public IBlobStore<AmphoraModel> Store { get; }
 
@@ -24,30 +24,35 @@ namespace Amphora.Api.Services.Amphorae
             ILogger<AmphoraFileService> logger,
             IPermissionService permissionService,
             IBlobStore<AmphoraModel> store,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.permissionService = permissionService;
             this.Store = store;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.logger = logger;
         }
 
         public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
             {
-                var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.ReadContents);
+                return new EntityOperationResult<byte[]>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(userReadRes.Entity)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.ReadContents);
 
                 if (granted)
                 {
                     var data = await this.Store.ReadBytesAsync(entity, file);
-                    return new EntityOperationResult<byte[]>(user, data);
+                    return new EntityOperationResult<byte[]>(userReadRes.Entity, data);
                 }
                 else
                 {
-                    logger.LogInformation($"Permission denied to user {user.Id} to read contents of {entity.Id}");
-                    return new EntityOperationResult<byte[]>(user, "Permission Denied") { WasForbidden = true };
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to read contents of {entity.Id}");
+                    return new EntityOperationResult<byte[]>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
                 }
             }
         }
@@ -57,26 +62,31 @@ namespace Amphora.Api.Services.Amphorae
             AmphoraModel entity,
             string file)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
             {
-                var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);
+                return new EntityOperationResult<UploadResponse>(userReadRes.Message);
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(userReadRes.Entity)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.WriteContents);
 
                 if (granted)
                 {
                     if (await Store.ExistsAsync(entity, file))
                     {
                         // file already exists. Return error.
-                        return new EntityOperationResult<UploadResponse>(user, 409, $"{file} already exists. Delete the file and upload again.");
+                        return new EntityOperationResult<UploadResponse>(userReadRes.Entity, $"{file} already exists. Delete the file and upload again.");
                     }
 
                     var url = await this.Store.GetWritableUrl(entity, file);
-                    return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
+                    return new EntityOperationResult<UploadResponse>(userReadRes.Entity, new UploadResponse(url));
                 }
                 else
                 {
-                    logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                    return new EntityOperationResult<UploadResponse>(user, "Permission Denied") { WasForbidden = true };
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
+                    return new EntityOperationResult<UploadResponse>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
                 }
             }
         }
@@ -87,17 +97,22 @@ namespace Amphora.Api.Services.Amphorae
             byte[] contents,
             string file)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
             {
-                var granted = await permissionService.IsAuthorizedAsync(user, entity, ResourcePermissions.WriteContents);
+                return new EntityOperationResult<UploadResponse>(userReadRes.Message);
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(principal)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.WriteContents);
 
                 if (granted)
                 {
                     if (await Store.ExistsAsync(entity, file))
                     {
                         // file already exists. Return error.
-                        return new EntityOperationResult<UploadResponse>(user, 409, $"{file} already exists. Delete the file and upload again.");
+                        return new EntityOperationResult<UploadResponse>(userReadRes.Entity, $"{file} already exists. Delete the file and upload again.");
                     }
 
                     if (contents.Length > 0)
@@ -111,12 +126,12 @@ namespace Amphora.Api.Services.Amphorae
                     }
 
                     var url = await this.Store.GetWritableUrl(entity, file);
-                    return new EntityOperationResult<UploadResponse>(user, new UploadResponse(url));
+                    return new EntityOperationResult<UploadResponse>(userReadRes.Entity, new UploadResponse(url));
                 }
                 else
                 {
-                    logger.LogInformation($"Permission denied to user {user.Id} to write contents of {entity.Id}");
-                    return new EntityOperationResult<UploadResponse>(user, "Permission Denied") { WasForbidden = true };
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
+                    return new EntityOperationResult<UploadResponse>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
                 }
             }
         }

@@ -19,7 +19,7 @@ namespace Amphora.Api.Services.Organisations
     // step 2: create Org and asign user to that org
     public class OrganisationService : IOrganisationService, IPermissionedEntityStore<OrganisationModel>
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
         private readonly IBlobStore<OrganisationModel> orgBlobStore;
         private readonly IEventPublisher eventPublisher;
@@ -27,14 +27,14 @@ namespace Amphora.Api.Services.Organisations
         private readonly ILogger<OrganisationService> logger;
 
         public OrganisationService(
-            IUserService userService,
+            IUserDataService userDataService,
             IPermissionService permissionService,
             IEntityStore<OrganisationModel> orgStore,
             IBlobStore<OrganisationModel> orgBlobStore,
             IEventPublisher eventPublisher,
             ILogger<OrganisationService> logger)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.permissionService = permissionService;
             this.Store = orgStore;
             this.orgBlobStore = orgBlobStore;
@@ -47,26 +47,34 @@ namespace Amphora.Api.Services.Organisations
             OrganisationModel org)
         {
             org.WebsiteUrl = org.WebsiteUrl?.ToLower();
+            var userId = principal.GetUserId();
             // we do this when a new user signs up without an invite from an existing org
-            var user = await userService.ReadUserModelAsync(principal);
-            if (user == null) { return new EntityOperationResult<OrganisationModel>(user, "Cannot find user. Please login"); }
-            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal, userId);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<OrganisationModel>(false);
+            }
+
+            var userData = userReadRes.Entity;
+
+            if (userData == null) { return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login"); }
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(principal)))
             {
                 if (await Store.CountAsync(_ => _.WebsiteUrl == org.WebsiteUrl) > 0)
                 {
                     var existing = (await Store.QueryAsync(_ => _.WebsiteUrl == org.WebsiteUrl)).FirstOrDefault();
                     // an organisation with that website already exists.
-                    return new EntityOperationResult<OrganisationModel>(user, 409,
+                    return new EntityOperationResult<OrganisationModel>(userData,
                         $"An organisation called {existing?.Name} with website {existing?.WebsiteUrl} already exists. You may wish to join that org.");
                 }
 
-                org.CreatedById = user.Id;
-                org.CreatedBy = user;
+                org.CreatedById = userData.Id;
+                org.CreatedBy = userData;
                 org.CreatedDate = DateTime.UtcNow;
                 org.LastModified = DateTime.UtcNow;
 
                 if (!org.IsValid()) { throw new ArgumentException("Organisation is Invalid"); }
-                org.AddOrUpdateMembership(user, Roles.Administrator);
+                org.AddOrUpdateMembership(userData, Roles.Administrator);
                 // we good - create an org
                 org = await Store.CreateAsync(org);
                 await eventPublisher.PublishEventAsync(new OrganisationCreatedEvent(org));
@@ -76,14 +84,14 @@ namespace Amphora.Api.Services.Organisations
                     // update user with org id
                     try
                     {
-                        if (string.IsNullOrEmpty(user.OrganisationId))
+                        if (string.IsNullOrEmpty(userData.OrganisationId))
                         {
-                            user.OrganisationId = org.Id; // set home org
-                            var result = await userService.UpdateAsync(principal, user);
+                            userData.OrganisationId = org.Id; // set home org
+                            var result = await userDataService.UpdateAsync(principal, userData);
                         }
 
                         logger.LogInformation($"Assigned user to organisation, Name: {org.Name}, Id: {org.Id}");
-                        return new EntityOperationResult<OrganisationModel>(user, org);
+                        return new EntityOperationResult<OrganisationModel>(userData, org);
                     }
                     catch (Exception ex)
                     {
@@ -95,43 +103,59 @@ namespace Amphora.Api.Services.Organisations
                 }
                 else
                 {
-                    return new EntityOperationResult<OrganisationModel>(user, "Failed to create organisation");
+                    return new EntityOperationResult<OrganisationModel>(userData, "Failed to create organisation");
                 }
             }
         }
 
         public async Task<EntityOperationResult<OrganisationModel>> ReadAsync(ClaimsPrincipal principal, string id)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            var userId = principal.GetUserId();
+            var userReadRes = await userDataService.ReadAsync(principal, userId);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<OrganisationModel>(false);
+            }
+
+            var userData = userReadRes.Entity;
+
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(principal)))
             {
                 var org = await Store.ReadAsync(id);
-                if (org == null) { return new EntityOperationResult<OrganisationModel>(user, $"{id} not found"); }
-                var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Read);
+                if (org == null) { return new EntityOperationResult<OrganisationModel>(userData, $"{id} not found"); }
+                var authorized = await permissionService.IsAuthorizedAsync(userData, org, AccessLevels.Read);
                 if (authorized)
                 {
-                    logger.LogInformation($"User {user.UserName} reads Organisation {org.Name}");
-                    return new EntityOperationResult<OrganisationModel>(user, org);
+                    logger.LogInformation($"User {principal.GetUserName()} reads Organisation {org.Name}");
+                    return new EntityOperationResult<OrganisationModel>(userData, org);
                 }
                 else
                 {
-                    logger.LogInformation($"User {user.UserName} denied to read Organisation {org.Name}");
-                    return new EntityOperationResult<OrganisationModel>(user, $"User {user.UserName} needs read access to Org {org.Id}");
+                    logger.LogInformation($"User {principal.GetUserName()} denied to read Organisation {org.Name}");
+                    return new EntityOperationResult<OrganisationModel>(userData, $"User {principal.GetUserName()} needs read access to Org {org.Id}");
                 }
             }
         }
 
         public async Task<EntityOperationResult<OrganisationModel>> UpdateAsync(ClaimsPrincipal principal, OrganisationModel org)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<OrganisationService>(user)))
+            var userId = principal.GetUserId();
+            var readUserRes = await userDataService.ReadAsync(principal, userId);
+            if (!readUserRes.Succeeded)
             {
-                var authorized = await permissionService.IsAuthorizedAsync(user, org, AccessLevels.Update);
+                return new EntityOperationResult<OrganisationModel>(false);
+            }
+
+            var userData = readUserRes.Entity;
+
+            using (logger.BeginScope(new LoggerScope<OrganisationService>(principal)))
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(userData, org, AccessLevels.Update);
                 if (authorized)
                 {
                     logger.LogTrace("Updating organisation, Name: {org.Name}, Id: {org.Id}");
                     org = await this.Store.UpdateAsync(org);
-                    return new EntityOperationResult<OrganisationModel>(user, org);
+                    return new EntityOperationResult<OrganisationModel>(userData, org);
                 }
                 else
                 {
@@ -167,21 +191,28 @@ namespace Amphora.Api.Services.Organisations
 
         public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            var org = await this.Store.ReadAsync(user.OrganisationId);
+            var userId = principal.GetUserId();
+            var userReadRes = await userDataService.ReadAsync(principal, userId);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(false);
+            }
 
-            if (org != null && org.IsAdministrator(user))
+            var userData = userReadRes.Entity;
+            var org = await this.Store.ReadAsync(userData.OrganisationId);
+
+            if (org != null && org.IsAdministrator(userData))
             {
                 org.TermsAndConditionsAccepted ??= new List<TermsAndConditionsAcceptanceModel>();
 
                 var model = new TermsAndConditionsAcceptanceModel(org, termsAndConditions);
                 org.TermsAndConditionsAccepted.Add(model);
                 var o = await Store.UpdateAsync(org);
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(user, model);
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(userData, model);
             }
             else
             {
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(user, $"User {user.UserName} must be an administrator");
+                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(userData, $"User {principal.GetUserName()} must be an administrator");
             }
         }
 

@@ -25,16 +25,17 @@ namespace Amphora.Tests.Unit.Services
 
             var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
             var otherOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
-            var user = new ApplicationUser
+            var userData = new ApplicationUserDataModel
             {
+                Id = System.Guid.NewGuid().ToString(),
                 OrganisationId = org.Id
             };
             // make sure the user is a admin
-            org.AddOrUpdateMembership(user, Roles.Administrator);
+            org.AddOrUpdateMembership(userData, Roles.Administrator);
             org = await orgStore.UpdateAsync(org);
 
-            var mockUserService = new Mock<IUserService>();
-            mockUserService.Setup(_ => _.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            var mockUserService = new Mock<IUserDataService>();
+            mockUserService.Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>())).ReturnsAsync(new Common.Models.EntityOperationResult<ApplicationUserDataModel>(userData, userData));
 
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
 
@@ -50,7 +51,7 @@ namespace Amphora.Tests.Unit.Services
             Assert.True(result.Succeeded);
             Assert.Equal(200, result.Code);
             Assert.NotNull(result.Entity?.Id);
-            Assert.Equal(user.OrganisationId, result.Entity.SourceOrganisationId);
+            Assert.Equal(userData.OrganisationId, result.Entity.SourceOrganisationId);
         }
     }
 }

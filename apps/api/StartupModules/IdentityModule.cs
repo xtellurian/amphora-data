@@ -8,6 +8,7 @@ using Amphora.Api.Services.Platform;
 using Amphora.Api.Services.Wrappers;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Options;
+using Amphora.Common.Services.Users;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -93,9 +94,7 @@ namespace Amphora.Api.StartupModules
                     };
                 });
 
-            services.AddScoped<ISignInManager, IdServerSignInManager>();
-            // services.AddTransient<IUserManager, IdServerUserManager>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserDataService, ApplicationUserDataService>();
 
             services.AddAuthorization(options =>
             {

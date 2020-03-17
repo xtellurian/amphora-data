@@ -12,12 +12,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
     [CommonAuthorize]
     public class CreditsModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IOrganisationService organisationService;
 
-        public CreditsModel(IUserService userService, IOrganisationService organisationService)
+        public CreditsModel(IUserDataService userDataService, IOrganisationService organisationService)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.organisationService = organisationService;
         }
 
@@ -26,17 +26,25 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var res = await organisationService.ReadAsync(User, user.OrganisationId);
-            if (res.Succeeded && !res.Entity.IsAdministrator(user))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                // User must be Admin
-                return StatusCode(403);
-            }
+                var user = userReadRes.Entity;
+                var res = await organisationService.ReadAsync(User, user.OrganisationId);
+                if (res.Succeeded && !res.Entity.IsAdministrator(user))
+                {
+                    // User must be Admin
+                    return StatusCode(403);
+                }
 
-            this.Organisation = res.Entity;
-            this.Account = this.Organisation.Account;
-            return Page();
+                this.Organisation = res.Entity;
+                this.Account = this.Organisation.Account;
+                return Page();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

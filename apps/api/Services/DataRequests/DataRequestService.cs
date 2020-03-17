@@ -13,59 +13,75 @@ namespace Amphora.Api.Services.DataRequests
     public class DataRequestService : IPermissionedEntityStore<DataRequestModel>
     {
         private readonly IEntityStore<DataRequestModel> dataRequestStore;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IEventPublisher eventPublisher;
 
-        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserService userService, IEventPublisher eventPublisher)
+        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserDataService userDataService, IEventPublisher eventPublisher)
         {
             this.dataRequestStore = dataRequestStore;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.eventPublisher = eventPublisher;
         }
 
         public async Task<EntityOperationResult<DataRequestModel>> CreateAsync(ClaimsPrincipal principal, DataRequestModel model)
         {
-            var user = await userService.ReadUserModelAsync(principal);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Message);
+            }
 
-            model.CreatedById = user.Id;
-            model.CreatedBy = user;
+            model.CreatedById = userReadRes.Entity.Id;
+            model.CreatedBy = userReadRes.Entity;
 
             model = await dataRequestStore.CreateAsync(model);
             await eventPublisher.PublishEventAsync(new DataRequestCreatedEvent(model));
-            return new EntityOperationResult<DataRequestModel>(user, model);
+            return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, model);
         }
 
         public async Task<EntityOperationResult<DataRequestModel>> ReadAsync(ClaimsPrincipal principal, string id)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            var model = await dataRequestStore.ReadAsync(id);
-            return new EntityOperationResult<DataRequestModel>(user, model);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Succeeded)
+            {
+                var model = await dataRequestStore.ReadAsync(id);
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, model);
+            }
+            else
+            {
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Message);
+            }
         }
 
         public async Task<EntityOperationResult<DataRequestModel>> UpdateAsync(ClaimsPrincipal principal, DataRequestModel model)
         {
             // anyone can update the votes
 
-            var user = await userService.ReadUserModelAsync(principal);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Message);
+            }
+
             var existingModel = await dataRequestStore.ReadAsync(model.Id);
             if (existingModel == null)
             {
-                return new EntityOperationResult<DataRequestModel>(user, "Entity not found");
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, "Entity not found");
             }
 
-            if (CheckPermissionToUpdate(model, user))
+            if (CheckPermissionToUpdate(model, userReadRes.Entity))
             {
                 // only the user who created can delete
                 model = await dataRequestStore.UpdateAsync(model);
-                return new EntityOperationResult<DataRequestModel>(user, model);
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, model);
             }
             else
             {
-                return new EntityOperationResult<DataRequestModel>(user, "You can only update your own requests.") { WasForbidden = true };
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, "You can only update your own requests.") { WasForbidden = true };
             }
         }
 
-        private bool CheckPermissionToUpdate(DataRequestModel model, ApplicationUser user)
+        private bool CheckPermissionToUpdate(DataRequestModel model, IUser user)
         {
             if (user.Id == model.CreatedById)
             {
@@ -88,16 +104,21 @@ namespace Amphora.Api.Services.DataRequests
         public async Task<EntityOperationResult<DataRequestModel>> DeleteAsync(ClaimsPrincipal principal, DataRequestModel model)
         {
             model = await dataRequestStore.ReadAsync(model.Id); // prevents deletion of modified entity
-            var user = await userService.ReadUserModelAsync(principal);
-            if (user.Id == model.CreatedById)
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Message);
+            }
+
+            if (userReadRes.Entity.Id == model.CreatedById)
             {
                 // only the user who created can delete
                 await dataRequestStore.DeleteAsync(model);
-                return new EntityOperationResult<DataRequestModel>(user, 202, true);
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, true);
             }
             else
             {
-                return new EntityOperationResult<DataRequestModel>(user, "You can only delete your own requests.") { WasForbidden = true };
+                return new EntityOperationResult<DataRequestModel>(userReadRes.Entity, "You can only delete your own requests.") { WasForbidden = true };
             }
         }
     }

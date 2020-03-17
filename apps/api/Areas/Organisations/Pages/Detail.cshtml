@@ -96,13 +96,13 @@
                         @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
                         {
                             <li class="list-group-item"> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
-                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
+                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@m.UserId">@m.User?.ContactInformation?.FullName </a>
                             </li>
                         }
                         else
                         {
                             <li class="list-group-item"> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
-                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-userName="@m.User.UserName">@m.User.FullName </a>
+                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@m.UserId">@m.User?.ContactInformation?.FullName </a>
                             </li>
                         }
                     }

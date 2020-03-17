@@ -7,18 +7,18 @@ namespace Amphora.Api.Models.Emails
 {
     public class RequestToJoinEmail : EmailBase, IEmail
     {
-        public RequestToJoinEmail(ApplicationUser requester, OrganisationModel org)
+        public RequestToJoinEmail(ApplicationUserDataModel requester, OrganisationModel org)
         {
             this.OrganisationName = org.Name;
-            this.InviteeEmail = requester.Email;
-            this.InviteeName = requester.FullName;
+            this.InviteeEmail = requester.ContactInformation.Email;
+            this.InviteeName = requester.ContactInformation.FullName;
 
             // send this to the org owner and/or admins
             foreach (var member in org.Memberships)
             {
-                if (member.User?.Email != null && member.Role == Roles.Administrator)
+                if (member.User?.ContactInformation?.Email != null && member.Role == Roles.Administrator)
                 {
-                    Recipients.Add(new EmailRecipient(member.User.Email, member.User?.FullName));
+                    Recipients.Add(new EmailRecipient(member.User?.ContactInformation?.Email, member.User?.ContactInformation?.FullName ?? "Amphora User"));
                 }
             }
         }

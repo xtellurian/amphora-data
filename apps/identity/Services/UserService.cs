@@ -5,9 +5,9 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Logging;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Contracts;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
@@ -68,7 +68,7 @@ namespace Amphora.Identity.Services
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(user, result.Errors.Select(e => e.Description));
+                    return new EntityOperationResult<ApplicationUser>(user, result.Errors.Select(e => e.Description).ToArray());
                 }
             }
         }
@@ -78,10 +78,9 @@ namespace Amphora.Identity.Services
             var currentUser = await userManager.GetUserAsync(principal);
             using (logger.BeginScope(new LoggerScope<UserService>(currentUser)))
             {
-                if (currentUser.Id == user.Id)
+                if (currentUser != null && currentUser.Id == user.Id)
                 {
                     logger.LogWarning("User is deleting self");
-                    if (currentUser == null) { return new EntityOperationResult<ApplicationUser>(currentUser, "User does not exist"); }
                     var result = await userManager.DeleteAsync(currentUser);
                     if (result.Succeeded)
                     {
@@ -89,7 +88,7 @@ namespace Amphora.Identity.Services
                     }
                     else
                     {
-                        return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(e => e.Description));
+                        return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(e => e.Description).ToArray());
                     }
                 }
                 else
@@ -119,12 +118,12 @@ namespace Amphora.Identity.Services
                 }
                 else
                 {
-                    return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(_ => _.Description));
+                    return new EntityOperationResult<ApplicationUser>(currentUser, result.Errors.Select(_ => _.Description).ToArray());
                 }
             }
             else
             {
-                return new EntityOperationResult<ApplicationUser>(currentUser, 403, "Wrong User ID") { WasForbidden = true };
+                return new EntityOperationResult<ApplicationUser>("Wrong User ID") { WasForbidden = true };
             }
         }
     }

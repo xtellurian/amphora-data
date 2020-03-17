@@ -16,19 +16,19 @@ namespace Amphora.Api.Areas.Amphorae.Pages
     [CommonAuthorize]
     public class IndexModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly ISearchService searchService;
         private readonly IAmphoraeService amphoraeService;
         private readonly IMapper mapper;
 
         public IndexModel(
-            IUserService userService,
+            IUserDataService userDataService,
             ISearchService searchService,
             IAmphoraeService amphoraeService,
             IEntityStore<AmphoraModel> entityStore,
             IMapper mapper)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.searchService = searchService;
             this.amphoraeService = amphoraeService;
             this.mapper = mapper;
@@ -98,10 +98,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task<IActionResult> MyPurchasedAmphorae()
         {
-            var user = await this.userService.ReadUserModelAsync(User);
-            if (user == null) { return RedirectToPage("/Account/Login", new { area = "Profiles" }); }
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded) { return RedirectToPage("/Account/Login", new { area = "Profiles" }); }
 
-            var amphorae = await amphoraeService.AmphoraPurchasedBy(User, user);
+            var amphorae = await amphoraeService.AmphoraPurchasedBy(User, userReadRes.Entity);
             Count = await amphorae.CountAsync();
             this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();
@@ -109,14 +109,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task<IActionResult> OrgAmphorae()
         {
-            var user = await this.userService.ReadUserModelAsync(User);
-            if (user == null)
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
             {
                 return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
 
             // get my amphora
-            var amphorae = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == user.OrganisationId);
+            var amphorae = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == userReadRes.Entity.OrganisationId);
             Count = await amphorae.CountAsync();
             this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();
@@ -124,14 +124,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task<IActionResult> MyAmphorae()
         {
-            var user = await this.userService.ReadUserModelAsync(User);
-            if (user == null)
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
             {
                 return RedirectToPage("/Account/Login", new { area = "Profiles" });
             }
 
             // get my amphora
-            var amphorae = amphoraeService.AmphoraStore.Query(a => a.CreatedById == user.Id);
+            var amphorae = amphoraeService.AmphoraStore.Query(a => a.CreatedById == userReadRes.Entity.Id);
             Count = await amphorae.CountAsync();
             this.Amphorae = await amphorae.Skip(TotalSkip).Take(Top ?? 0).ToListAsync();
             return Page();

@@ -12,12 +12,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Components
     public class FilePreviewViewComponent : ViewComponent
     {
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
-        public FilePreviewViewComponent(IPermissionService permissionService, IUserService userService)
+        public FilePreviewViewComponent(IPermissionService permissionService, IUserDataService userDataService)
         {
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public string Id { get; private set; }
@@ -26,7 +26,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Components
         public bool IsAuthorized { get; private set; }
         public string RelPath { get; private set; }
 
-        public async Task<IViewComponentResult> InvokeAsync(string id, AmphoraModel amphora, string name, ApplicationUser user)
+        public async Task<IViewComponentResult> InvokeAsync(string id, AmphoraModel amphora, string name, ApplicationUserDataModel user)
         {
             this.Id = id;
             this.Amphora = amphora;

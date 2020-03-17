@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 
 namespace Amphora.Common.Models.Logging
 {
@@ -14,6 +16,15 @@ namespace Amphora.Common.Models.Logging
         public LoggerScope(IUser user, [CallerMemberName] string method = "") : this()
         {
             if (user?.UserName != null) { this.Add(UserName, user.UserName); }
+            else { this.Add(UserName, "NULL"); }
+            this.Add(Method, method);
+            this.Add(Type, typeof(T));
+        }
+
+        public LoggerScope(ClaimsPrincipal principal, [CallerMemberName] string method = "") : this()
+        {
+            var userName = principal.GetUserName();
+            if (userName != null) { this.Add(UserName, userName); }
             else { this.Add(UserName, "NULL"); }
             this.Add(Method, method);
             this.Add(Type, typeof(T));

@@ -9,7 +9,7 @@ namespace Amphora.Common.Models.Organisations
             UserId = userId;
         }
 
-        public Membership(ApplicationUser user, Roles role)
+        public Membership(ApplicationUserDataModel user, Roles role)
         {
             User = user;
             UserId = user.Id;
@@ -19,6 +19,6 @@ namespace Amphora.Common.Models.Organisations
         public Roles Role { get; set; }
         // Navigation
         public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; } = null!;
+        public virtual ApplicationUserDataModel User { get; set; } = null!;
     }
 }

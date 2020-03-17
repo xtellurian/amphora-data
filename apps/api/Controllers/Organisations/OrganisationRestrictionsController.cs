@@ -45,7 +45,7 @@ namespace Amphora.Api.Controllers
                     return BadRequest("Restriction already exists on that organisation");
                 }
 
-                var entity = new RestrictionModel(readRes.User.Organisation, targetOrg, restriction.Kind);
+                var entity = new RestrictionModel(org, targetOrg, restriction.Kind);
                 org.Restrictions.Add(entity);
                 var updateRes = await organisationService.UpdateAsync(User, org);
 

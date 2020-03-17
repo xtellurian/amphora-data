@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
@@ -18,20 +19,20 @@ namespace Amphora.Api.Areas.Organisations.Pages
         private readonly IMapper mapper;
         private readonly IInvitationService invitationService;
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
         public InvitePageModel(
             IOrganisationService organisationService,
             IMapper mapper,
             IInvitationService invitationService,
             IPermissionService permissionService,
-            IUserService userService)
+            IUserDataService userDataService)
         {
             this.organisationService = organisationService;
             this.mapper = mapper;
             this.invitationService = invitationService;
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         [BindProperty]
@@ -43,8 +44,16 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnGetAsync(string email = null)
         {
-            var user = await userService.ReadUserModelAsync(User);
-            this.Organisation = user.Organisation;
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
+            }
+
+            var userData = userReadRes.Entity;
+
+            this.Organisation = userData.Organisation;
             if (email != null)
             {
                 Input ??= new Invitation();
@@ -52,7 +61,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
 
             if (Organisation == null) { return RedirectToPage("./Detail"); }
-            var authorized = await permissionService.IsAuthorizedAsync(user, Organisation, ResourcePermissions.Create);
+            var authorized = await permissionService.IsAuthorizedAsync(userData, Organisation, ResourcePermissions.Create);
             if (authorized)
             {
                 return Page();
@@ -65,8 +74,14 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            this.Organisation = user.Organisation;
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, userReadRes.Message);
+                return Page();
+            }
+
+            this.Organisation = userReadRes.Entity.Organisation;
 
             if (!ModelState.IsValid)
             {
@@ -74,7 +89,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
 
             // check email confirmed
-            if (!user.EmailConfirmed)
+            if (!User.IsEmailConfirmed())
             {
                 ModelState.AddModelError(string.Empty, "You haven't confirmed your email, so you can't invite anyone");
                 return Page();

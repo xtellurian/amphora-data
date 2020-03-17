@@ -23,13 +23,11 @@ namespace Amphora.Api.Controllers
     {
         private readonly IMapper mapper;
         private readonly ISearchService searchService;
-        private readonly IUserService userService;
 
-        public SearchController(IMapper mapper, ISearchService searchService, IUserService userService)
+        public SearchController(IMapper mapper, ISearchService searchService, IUserDataService userDataService)
         {
             this.mapper = mapper;
             this.searchService = searchService;
-            this.userService = userService;
         }
 
         /// <summary>
@@ -78,33 +76,6 @@ namespace Amphora.Api.Controllers
         {
             if (string.IsNullOrEmpty(orgId)) { return BadRequest("OrgId cannot be null"); }
             var response = await searchService.SearchAmphora("", new SearchParameters().FilterByOrganisation<AmphoraModel>(orgId));
-            var entities = response.Results.Select(a => a.Entity);
-            var dto = mapper.Map<List<BasicAmphora>>(entities);
-            return Ok(dto);
-        }
-
-        /// <summary>
-        /// Searches for Amphorae by creator.
-        /// </summary>
-        /// <param name="userName">User Name of the creator.</param>
-        /// <returns> A collection of Amphora. </returns>
-        [Produces(typeof(List<BasicAmphora>))]
-        [HttpGet("api/search/amphorae/byCreator")]
-        [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphoraeByCreator(string userName)
-        {
-            ApplicationUser user;
-            if (string.IsNullOrEmpty(userName))
-            {
-                user = await userService.ReadUserModelAsync(User);
-            }
-            else
-            {
-                var users = await userService.UserStore.QueryAsync(_ => _.UserName == userName);
-                user = users.FirstOrDefault();
-            }
-
-            var response = await searchService.SearchAmphora("", new SearchParameters().ForUserAsCreator(user));
             var entities = response.Results.Select(a => a.Entity);
             var dto = mapper.Map<List<BasicAmphora>>(entities);
             return Ok(dto);

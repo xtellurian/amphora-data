@@ -2,6 +2,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Stores.EFCore;
 using Amphora.Identity.EntityFramework;
+using Amphora.Identity.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Identity.Stores

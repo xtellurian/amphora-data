@@ -32,8 +32,10 @@ namespace Amphora.Tests.Unit.Services
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var dataRequestStore = new DataRequestsEFStore(context, CreateMockLogger<DataRequestsEFStore>());
                 var organisationStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var mockUserService = new Mock<IUserService>();
-                mockUserService.Setup(o => o.ReadUserModelAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+                var userData = new ApplicationUserDataModel();
+                var mockUserService = new Mock<IUserDataService>();
+                mockUserService.Setup(o => o.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
+                    .ReturnsAsync(new Common.Models.EntityOperationResult<ApplicationUserDataModel>(userData, userData));
 
                 var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
                 var options = Mock.Of<IOptionsMonitor<Api.Options.AmphoraManagementOptions>>(_ => _.CurrentValue == new Api.Options.AmphoraManagementOptions());
@@ -49,7 +51,7 @@ namespace Amphora.Tests.Unit.Services
                 var orgModel = EntityLibrary.GetOrganisationModel();
                 var amphora = EntityLibrary.GetAmphoraModel(orgModel); // dumy org id
                 var entity = await amphoraStore.CreateAsync(amphora);
-                var sut = new MarketService(service, amphoraService, mockUserService.Object, CreateCache()) as IMarketService;
+                var sut = new MarketService(service, amphoraService, CreateCache()) as IMarketService;
 
                 var response = await sut.FindAsync("");
                 Assert.NotNull(response);

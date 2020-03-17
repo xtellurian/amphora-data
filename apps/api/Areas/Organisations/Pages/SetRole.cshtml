@@ -11,7 +11,7 @@
                     <h2>Congratulations</h2>
                 </div>
                 
-                <p>@Model.TargetMembership.User.FullName is now a @Model.TargetMembership.Role.ToString()</p>
+                <p>@Model.TargetMembership.User?.ContactInformation?.FullName is now a @Model.TargetMembership.Role.ToString()</p>
             }
         </div>
     </div>

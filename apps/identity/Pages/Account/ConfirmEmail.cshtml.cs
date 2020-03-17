@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

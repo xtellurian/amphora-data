@@ -63,7 +63,7 @@
                         {
                             <div>
                                 by <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@Model.Amphora.CreatedById">
-                                    @Model.Amphora.CreatedBy?.FullName
+                                    @Model.Amphora.CreatedBy?.ContactInformation?.FullName
                                     </a> from
                                     <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
                                     @Model.Amphora.CreatedBy.Organisation?.Name
@@ -163,7 +163,7 @@
                                             <i class="fas fa-ban"></i> Restricted Organisations
                                         </a>
                                     }
-                                    @if(Model.Result.User?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
+                                    @if(Model.UserData?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
                                     {
                                         <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
                                             <button class="dropdown-item" type="submit">

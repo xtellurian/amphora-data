@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,7 @@ namespace Amphora.Identity.Pages.Account.Manage
             this.userManager = userManager;
         }
 
-        public ApplicationUser AppUser { get; private set; }
+        public ApplicationUser? AppUser { get; private set; }
 
         public async Task<IActionResult> OnGetAsync()
         {

@@ -14,16 +14,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
     public class DeleteModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly ILogger<DeleteModel> logger;
 
         public DeleteModel(IAmphoraeService amphoraeService,
                            IPermissionService permissionService,
-                           IUserService userService,
+                           IUserDataService userDataService,
                            ILogger<DeleteModel> logger) : base(amphoraeService)
         {
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.logger = logger;
         }
 
@@ -42,8 +42,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                     return Page();
                 }
 
-                var user = await userService.ReadUserModelAsync(User);
-                var authorized = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Update);
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (!userReadRes.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, userReadRes.Message);
+                    return Page();
+                }
+
+                var authorized = await permissionService.IsAuthorizedAsync(userReadRes.Entity, Amphora, AccessLevels.Update);
                 if (!authorized)
                 {
                     ModelState.AddModelError(string.Empty, "Delete permission denied");

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -18,7 +19,10 @@ namespace Amphora.Identity.Services
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
         {
             var identity = await base.GenerateClaimsAsync(user);
+            identity.AddClaim(new Claim("full_name", user.FullName ?? ""));
             identity.AddClaim(new Claim("email", user.Email ?? ""));
+            identity.AddClaim(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
+            identity.AddClaim(new Claim("global_admin", (user.EmailConfirmed && string.Equals(user.Email?.ToLower(), "rian@amhoradata.com")).ToString()));
             return identity;
         }
     }

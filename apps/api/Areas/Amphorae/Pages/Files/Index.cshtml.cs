@@ -18,16 +18,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
     public class IndexPageModel : AmphoraPageModel
     {
         private readonly IPermissionService permissionService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IAmphoraFileService amphoraFileService;
 
         public IndexPageModel(IAmphoraeService amphoraeService,
                               IPermissionService permissionService,
-                              IUserService userService,
+                              IUserDataService userDataService,
                               IAmphoraFileService amphoraFileService) : base(amphoraeService)
         {
             this.permissionService = permissionService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.amphoraFileService = amphoraFileService;
         }
 
@@ -103,7 +103,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
         {
             if (Amphora != null)
             {
-                var user = await userService.ReadUserModelAsync(User);
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (!userReadRes.Succeeded)
+                {
+                    throw new System.ApplicationException("Unknown User");
+                }
+
+                var user = userReadRes.Entity;
                 Names = await amphoraFileService.Store.ListBlobsAsync(Amphora);
                 CanDeleteFiles = await permissionService.IsAuthorizedAsync(user, Amphora, AccessLevels.Update);
                 // set the three types of permission for the page

@@ -9,10 +9,10 @@ namespace Amphora.Api.Models.Emails
     public class ConfirmEmailEmail : EmailBase, IEmail
     {
         private string page = "Profiles/Account/ConfirmEmail";
-        public ConfirmEmailEmail(ApplicationUser user, HostOptions options, string code)
+        public ConfirmEmailEmail(ApplicationUserDataModel user, HostOptions options, string code)
         {
-            Recipients.Add(new EmailRecipient(user.Email, user.FullName));
-            this.Name = user.FullName;
+            Recipients.Add(new EmailRecipient(user.ContactInformation.Email, user.ContactInformation.FullName));
+            this.Name = user.ContactInformation.FullName;
             Link = HtmlEncoder.Default.Encode($"{options.GetBaseUrl()}{page}?userId={user.Id}&code={code}");
         }
 

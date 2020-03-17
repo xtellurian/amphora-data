@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Amphora.Api.Contracts;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,7 @@ namespace Amphora.Identity.Pages.Account
             _logger = logger;
         }
 
-        public string ReturnUrl { get; private set; }
+        public string? ReturnUrl { get; private set; }
 
         public IActionResult OnGet(string returnUrl)
         {
@@ -29,7 +28,7 @@ namespace Amphora.Identity.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string returnUrl = null)
+        public async Task<IActionResult> OnPost(string? returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");

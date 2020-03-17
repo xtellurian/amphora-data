@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Users;
 using Moq;
 using Xunit;
 
@@ -20,8 +22,15 @@ namespace Amphora.Tests.Unit.Services
         public async Task UploadStringToNumericSignal_ReturnsError()
         {
             var context = GetContext();
+            var fakeUserData = new ApplicationUserDataModel
+            {
+                Id = System.Guid.NewGuid().ToString()
+            };
             var mockSender = new Mock<IEventHubSender>();
-            var mockUserService = new Mock<IUserService>();
+            var mockUserDataService = new Mock<IUserDataService>();
+            mockUserDataService
+                .Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
+                .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(fakeUserData, fakeUserData));
             var mockPermissionService = new Mock<IPermissionService>();
             mockPermissionService.Setup(_ => _.IsAuthorizedAsync(It.IsAny<IUser>(),
                                                                  It.IsAny<AmphoraModel>(),
@@ -29,7 +38,7 @@ namespace Amphora.Tests.Unit.Services
             var mockTsi = new Mock<ITsiService>();
             var mockPrincipal = new Mock<ClaimsPrincipal>();
             var sut = new SignalsService(mockSender.Object,
-                                         mockUserService.Object,
+                                         mockUserDataService.Object,
                                          mockPermissionService.Object,
                                          mockTsi.Object,
                                          CreateMockLogger<SignalsService>());
@@ -61,8 +70,16 @@ namespace Amphora.Tests.Unit.Services
         public async Task UploadSignalWithIncorrectCase_ReturnsError()
         {
             var context = GetContext();
+            var fakeUserData = new ApplicationUserDataModel
+            {
+                Id = System.Guid.NewGuid().ToString()
+            };
             var mockSender = new Mock<IEventHubSender>();
-            var mockUserService = new Mock<IUserService>();
+            var mockUserDataService = new Mock<IUserDataService>();
+            mockUserDataService
+                .Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
+                .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(fakeUserData, fakeUserData));
+
             var mockPermissionService = new Mock<IPermissionService>();
             mockPermissionService.Setup(_ => _.IsAuthorizedAsync(It.IsAny<IUser>(),
                                                                  It.IsAny<AmphoraModel>(),
@@ -70,7 +87,7 @@ namespace Amphora.Tests.Unit.Services
             var mockTsi = new Mock<ITsiService>();
             var mockPrincipal = new Mock<ClaimsPrincipal>();
             var sut = new SignalsService(mockSender.Object,
-                                         mockUserService.Object,
+                                         mockUserDataService.Object,
                                          mockPermissionService.Object,
                                          mockTsi.Object,
                                          CreateMockLogger<SignalsService>());

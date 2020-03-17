@@ -107,8 +107,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
             services.AddScoped<IEntityStore<RestrictionModel>, RestrictionsEFStore>();
-            // services.AddScoped<IEntityStore<SignalModel>, SignalsEFStore>();
-            services.AddScoped<IEntityStore<ApplicationUser>, ApplicationUserStore>();
+            services.AddScoped<IEntityStore<ApplicationUserDataModel>, ApplicationUserDataEFStore>();
 
             // cache
             services.AddSingleton<ICache, InMemoryCache>();

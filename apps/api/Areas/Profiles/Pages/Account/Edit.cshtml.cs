@@ -11,9 +11,9 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
     [CommonAuthorize]
     public class EditModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
 
-        public ApplicationUser AppUser { get; set; }
+        public ApplicationUserDataModel AppUser { get; set; }
 
         [BindProperty]
         public string FullName { get; set; }
@@ -21,22 +21,21 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         public string About { get; set; }
         [TempData]
         public string ErrorMessage { get; set; }
-        public EditModel(IUserService userService)
+        public EditModel(IUserDataService userDataService)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            AppUser = await userService.ReadUserModelAsync(User);
-
-            if (AppUser == null)
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (!userReadRes.Succeeded)
             {
                 return RedirectToPage("./UserMissing");
             }
 
             About = AppUser.About;
-            FullName = AppUser.FullName;
+            FullName = AppUser.ContactInformation.FullName;
             return Page();
         }
 
@@ -44,13 +43,18 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         {
             if (ModelState.IsValid)
             {
-                AppUser = await userService.ReadUserModelAsync(User);
+                var userReadRes = await userDataService.ReadAsync(User);
+                if (!userReadRes.Succeeded)
+                {
+                    return RedirectToPage("./UserMissing");
+                }
+
                 AppUser.About = About;
-                AppUser.FullName = FullName;
+                AppUser.ContactInformation.FullName = FullName;
 
                 try
                 {
-                    var response = await userService.UpdateAsync(User, AppUser);
+                    var response = await userDataService.UpdateAsync(User, AppUser);
                     return RedirectToPage("./Detail");
                 }
                 catch (Exception ex)

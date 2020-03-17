@@ -8,11 +8,11 @@ namespace Amphora.Api.Models.Emails
 {
     public class InvoiceNotificationEmail : EmailBase, IEmail
     {
-        public InvoiceNotificationEmail(ApplicationUser user, Invoice invoice)
+        public InvoiceNotificationEmail(ApplicationUserDataModel user, Invoice invoice)
         {
-            Recipients.Add(new EmailRecipient(user.Email, user.FullName));
+            Recipients.Add(new EmailRecipient(user.ContactInformation.Email, user.ContactInformation.FullName));
             // set user properties for email
-            this.Name = user.FullName;
+            this.Name = user.ContactInformation.FullName;
             this.Organisation = user.Organisation.Name;
             // set invoice properties for email
             this.CountCredits = invoice.CountCredits ?? 0;

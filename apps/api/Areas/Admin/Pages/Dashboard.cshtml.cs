@@ -22,7 +22,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         private readonly IOrganisationService organisationService;
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<CommissionModel> commissionStore;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly ICache cache;
 
         public StatisticsCollection Stats { get; set; } = new StatisticsCollection();
@@ -31,14 +31,14 @@ namespace Amphora.Api.Areas.Admin.Pages
                                   IOrganisationService organisationService,
                                   IEntityStore<PurchaseModel> purchaseStore,
                                   IEntityStore<CommissionModel> commissionStore,
-                                  IUserService userService,
+                                  IUserDataService userDataService,
                                   ICache cache)
         {
             this.amphoraeService = amphoraeService;
             this.organisationService = organisationService;
             this.purchaseStore = purchaseStore;
             this.commissionStore = commissionStore;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.cache = cache;
         }
 
@@ -69,15 +69,15 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         private async Task LoadUserStats()
         {
-            this.Stats.Users.TotalCount = await userService.UserStore.CountAsync();
-            this.Stats.Users.ActiveCount = await userService.UserStore.CountAsync(Active<ApplicationUser>());
+            this.Stats.Users.TotalCount = await userDataService.Query(User, _ => true).CountAsync();
+            this.Stats.Users.ActiveCount = await userDataService.Query(User, Active<ApplicationUserDataModel>()).CountAsync();
         }
 
         private async Task LoadOrganisationStats()
         {
             this.Stats.Organisations.TotalCount = await organisationService.Store.CountAsync();
-            this.Stats.Organisations.ActiveCount = (await userService.UserStore
-                .Query(Active<ApplicationUser>())
+            this.Stats.Organisations.ActiveCount = (await userDataService
+                .Query(User, Active<ApplicationUserDataModel>())
                 .Select(_ => _.OrganisationId)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Distinct()

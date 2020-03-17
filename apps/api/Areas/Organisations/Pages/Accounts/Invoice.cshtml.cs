@@ -11,13 +11,13 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 {
     public class InvoicePageModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IOrganisationService organisationService;
         private readonly IInvoiceFileService invoiceFileService;
 
-        public InvoicePageModel(IUserService userService, IOrganisationService organisationService, IInvoiceFileService invoiceFileService)
+        public InvoicePageModel(IUserDataService userDataService, IOrganisationService organisationService, IInvoiceFileService invoiceFileService)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.organisationService = organisationService;
             this.invoiceFileService = invoiceFileService;
         }
@@ -27,46 +27,61 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync(string invoiceId)
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var res = await organisationService.ReadAsync(User, user.OrganisationId);
-            if (res.Succeeded && res.Entity.IsAdministrator(user))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                this.Organisation = res.Entity;
-                this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
-                if (this.Invoice == null)
+                var user = userReadRes.Entity;
+                var res = await organisationService.ReadAsync(User, user.OrganisationId);
+                if (res.Succeeded && res.Entity.IsAdministrator(user))
                 {
-                    return NotFound();
-                }
+                    this.Organisation = res.Entity;
+                    this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                    if (this.Invoice == null)
+                    {
+                        return NotFound();
+                    }
 
-                return Page();
+                    return Page();
+                }
+                else
+                {
+                    return StatusCode(403);
+                }
             }
             else
             {
-                return StatusCode(403);
+                return NotFound();
             }
         }
 
         public async Task<IActionResult> OnGetDownloadCsvAsync(string invoiceId)
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var res = await organisationService.ReadAsync(User, user.OrganisationId);
-            if (res.Succeeded && res.Entity.IsAdministrator(user))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                this.Organisation = res.Entity;
-                this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
-                if (this.Invoice == null)
+                var res = await organisationService.ReadAsync(User, userReadRes.Entity.OrganisationId);
+                if (res.Succeeded && res.Entity.IsAdministrator(userReadRes.Entity))
                 {
-                    return NotFound();
+                    this.Organisation = res.Entity;
+                    this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                    if (this.Invoice == null)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(Invoice);
+                        return File(f.Raw, "text/csv", $"invoice-{f.FileName}");
+                    }
                 }
                 else
                 {
-                    var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(Invoice);
-                    return File(f.Raw, "text/csv", $"invoice-{f.FileName}");
+                    return StatusCode(403);
                 }
             }
             else
             {
-                return StatusCode(403);
+                return NotFound();
             }
         }
     }

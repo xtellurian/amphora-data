@@ -18,19 +18,19 @@ namespace Amphora.Api.Services.Amphorae
     public class SignalsService : ISignalService
     {
         private readonly IEventHubSender eventHubSender;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
         private readonly ITsiService tsiService;
         private readonly ILogger<SignalsService> logger;
 
         public SignalsService(IEventHubSender eventHubSender,
-                              IUserService userService,
+                              IUserDataService userDataService,
                               IPermissionService permissionService,
                               ITsiService tsiService,
                               ILogger<SignalsService> logger)
         {
             this.eventHubSender = eventHubSender;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.permissionService = permissionService;
             this.tsiService = tsiService;
             this.logger = logger;
@@ -65,24 +65,29 @@ namespace Amphora.Api.Services.Amphorae
                                                                                               AmphoraModel entity,
                                                                                               Dictionary<string, object> values)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
             {
-                var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
+                return new EntityOperationResult<Dictionary<string, object>>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<SignalsService>(userReadRes.Entity)))
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
                     if (InvalidSignalProperties(entity, values))
                     {
-                        return new EntityOperationResult<Dictionary<string, object>>(user, "Invalid properties");
+                        return new EntityOperationResult<Dictionary<string, object>>(userReadRes.Entity, "Invalid properties");
                     }
 
                     AddDefaultSignalProperties(entity, values);
                     await eventHubSender.SendToEventHubAsync(values);
-                    return new EntityOperationResult<Dictionary<string, object>>(user, values);
+                    return new EntityOperationResult<Dictionary<string, object>>(userReadRes.Entity, values);
                 }
                 else
                 {
-                    return new EntityOperationResult<Dictionary<string, object>>(user, "Write Contents permission is required") { WasForbidden = true };
+                    return new EntityOperationResult<Dictionary<string, object>>(userReadRes.Entity, "Write Contents permission is required") { WasForbidden = true };
                 }
             }
         }
@@ -118,36 +123,46 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
             {
-                var authorized = await permissionService.IsAuthorizedAsync(user, entity, AccessLevels.WriteContents);
+                return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<SignalsService>(userReadRes.Entity)))
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, AccessLevels.WriteContents);
                 if (authorized)
                 {
                     foreach (var value in values)
                     {
                         if (InvalidSignalProperties(entity, value))
                         {
-                            return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Invalid properties");
+                            return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(userReadRes.Entity, "Invalid properties");
                         }
 
                         AddDefaultSignalProperties(entity, value);
                     }
 
                     await eventHubSender.SendToEventHubAsync(values);
-                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, values);
+                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(userReadRes.Entity, values);
                 }
                 else
                 {
-                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(user, "Write Contents permission is required") { WasForbidden = true };
+                    return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(userReadRes.Entity, "Write Contents permission is required") { WasForbidden = true };
                 }
             }
         }
 
         public async Task<QueryResultPage> GetTsiSignalAsync(ClaimsPrincipal principal, AmphoraModel entity, SignalV2 signal, bool includeOtherSignals = false)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                throw new ApplicationException("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<SignalsService>(userReadRes.Entity)))
             {
                 logger.LogInformation($"Getting Signal Property {signal.Property} for Amphora Id {entity.Id}");
                 var variables = new Dictionary<string, Variable>();
@@ -183,9 +198,7 @@ namespace Amphora.Api.Services.Amphorae
 
         public async Task<IDictionary<SignalV2, IEnumerable<string>>> GetUniqueValuesForStringProperties(ClaimsPrincipal principal, AmphoraModel entity)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-
-            using (logger.BeginScope(new LoggerScope<SignalsService>(user)))
+            using (logger.BeginScope(new LoggerScope<SignalsService>(principal)))
             {
                 var start = DateTime.UtcNow.AddDays(-30);
                 var end = DateTime.UtcNow.AddDays(7);

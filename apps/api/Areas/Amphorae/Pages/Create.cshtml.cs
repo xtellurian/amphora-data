@@ -20,18 +20,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages
     public class CreateModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly ILogger<CreateModel> logger;
         private readonly IMapper mapper;
 
         public CreateModel(
             IAmphoraeService amphoraeService,
-            IUserService userService,
+            IUserDataService userDataService,
             ILogger<CreateModel> logger,
             IMapper mapper)
         {
             this.amphoraeService = amphoraeService;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.logger = logger;
             this.mapper = mapper;
         }
@@ -49,9 +49,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         private async Task LoadTermsAndConditions()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var items = user.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
-            this.TermsAndConditions = new List<SelectListItem>(items);
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
+            {
+                var items = userReadRes.Entity.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
+                this.TermsAndConditions = new List<SelectListItem>(items);
+            }
+            else
+            {
+                throw new System.ApplicationException(userReadRes.Message);
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()

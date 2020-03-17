@@ -12,12 +12,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
     [CommonAuthorize]
     public class IndexModel : PageModel
     {
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IOrganisationService organisationService;
 
-        public IndexModel(IUserService userService, IOrganisationService organisationService)
+        public IndexModel(IUserDataService userDataService, IOrganisationService organisationService)
         {
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.organisationService = organisationService;
         }
 
@@ -26,18 +26,25 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await userService.ReadUserModelAsync(User);
-            var res = await organisationService.ReadAsync(User, user.OrganisationId);
-
-            if (res.Succeeded && !res.Entity.IsAdministrator(user))
+            var userReadRes = await userDataService.ReadAsync(User);
+            if (userReadRes.Succeeded)
             {
-                // must be admin
-                return StatusCode(403);
-            }
+                var res = await organisationService.ReadAsync(User, userReadRes.Entity.OrganisationId);
 
-            this.Organisation = res.Entity;
-            this.Account = this.Organisation.Account;
-            return Page();
+                if (res.Succeeded && !res.Entity.IsAdministrator(userReadRes.Entity))
+                {
+                    // must be admin
+                    return StatusCode(403);
+                }
+
+                this.Organisation = res.Entity;
+                this.Account = this.Organisation.Account;
+                return Page();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

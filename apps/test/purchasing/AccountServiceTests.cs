@@ -11,6 +11,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
+using Amphora.Common.Services.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using Moq;
@@ -95,22 +96,17 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(GetContext(), CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(GetContext(), CreateMockLogger<AmphoraeEFStore>());
             var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
-            var userStore = new ApplicationUserStore(GetContext(), CreateMockLogger<ApplicationUserStore>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
             var commissionMock = new Mock<ICommissionTrackingService>();
+            var mockEmailSender = new Mock<IEmailSender>();
             commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
-            var userService = new UserService(CreateMockLogger<UserService>(),
-                                              orgStore,
-                                              userStore,
-                                              permissionService,
-                                              CreateMockEventPublisher(),
-                                              Mock.Of<IIdentityService>(),
-                                              null);
+            var userDataService = new ApplicationUserDataService(userDataStore);
             var purchaseService = new PurchaseService(purchaseStore,
                                                       orgStore,
                                                       permissionService,
                                                       commissionMock.Object,
-                                                      userService,
-                                                      null,
+                                                      userDataService,
+                                                      mockEmailSender.Object,
                                                       CreateMockEventPublisher(),
                                                       dtProvider,
                                                       CreateMockLogger<PurchaseService>());
@@ -119,14 +115,24 @@ namespace Amphora.Tests.Unit.Purchasing
             // Create 2 orgs and some amphora
             var sellerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Seller"));
             var buyerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Buyer"));
-            var buyer = new ApplicationUser() { Organisation = buyerOrg, OrganisationId = buyerOrg.Id };
-
+            var buyer = new ApplicationUserDataModel
+            {
+                ContactInformation = new ContactInformation
+                {
+                    Email = Guid.NewGuid().ToString(),
+                    EmailConfirmed = true
+                },
+                Id = System.Guid.NewGuid().ToString(),
+                Organisation = buyerOrg,
+                OrganisationId = buyerOrg.Id
+            };
+            buyer = await userDataStore.CreateAsync(buyer);
             var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(sellerOrg));
 
             // purchase that amphora
             var purchaseRes = await purchaseService.PurchaseAmphoraAsync(buyer, amphora);
             Assert.True(purchaseRes.Succeeded);
-
+            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
             // check both buyer and seller have debit and credit respectively
             Assert.Single(buyerOrg.Account.Debits);
             var debit = buyerOrg.Account.Debits.FirstOrDefault();

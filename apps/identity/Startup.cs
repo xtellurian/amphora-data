@@ -1,13 +1,11 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-using Amphora.Api.Services.Events;
+﻿using Amphora.Api.Services.Events;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
-using Amphora.Common.Models.Users;
+using Amphora.Identity.Contracts;
 using Amphora.Identity.EntityFramework;
+using Amphora.Identity.Models;
 using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
 using Amphora.Infrastructure.Database.EFCoreProviders;
@@ -85,7 +83,7 @@ namespace Amphora.Identity
                 })
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl }, mvcClientSecret))
+                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl! }, mvcClientSecret))
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 

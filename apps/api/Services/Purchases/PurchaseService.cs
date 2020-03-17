@@ -23,7 +23,7 @@ namespace Amphora.Api.Services.Purchases
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IPermissionService permissionService;
         private readonly ICommissionTrackingService commissionTracker;
-        private readonly IUserService userService;
+        private readonly IUserDataService userDataService;
         private readonly IEmailSender emailSender;
         private readonly IEventPublisher eventPublisher;
         private readonly IDateTimeProvider dateTimeProvider;
@@ -34,7 +34,7 @@ namespace Amphora.Api.Services.Purchases
             IEntityStore<OrganisationModel> orgStore,
             IPermissionService permissionService,
             ICommissionTrackingService commissionTracker,
-            IUserService userService,
+            IUserDataService userDataService,
             IEmailSender emailSender,
             IEventPublisher eventPublisher,
             IDateTimeProvider dateTimeProvider,
@@ -44,14 +44,14 @@ namespace Amphora.Api.Services.Purchases
             this.orgStore = orgStore;
             this.permissionService = permissionService;
             this.commissionTracker = commissionTracker;
-            this.userService = userService;
+            this.userDataService = userDataService;
             this.emailSender = emailSender;
             this.eventPublisher = eventPublisher;
             this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
         }
 
-        public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
+        public async Task<bool> CanPurchaseAmphoraAsync(IUser user, AmphoraModel amphora)
         {
             if (user == null) { return false; }
             if (user.OrganisationId == amphora.OrganisationId) { return false; }
@@ -61,11 +61,18 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<bool> CanPurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            return await this.CanPurchaseAmphoraAsync(user, amphora);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Succeeded)
+            {
+                return await this.CanPurchaseAmphoraAsync(userReadRes.Entity, amphora);
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUser user, AmphoraModel amphora)
+        public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ApplicationUserDataModel user, AmphoraModel amphora)
         {
             if (user.OrganisationId == null) { return new EntityOperationResult<PurchaseModel>(user, "User has no organisation"); }
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
@@ -118,11 +125,18 @@ namespace Amphora.Api.Services.Purchases
 
         public async Task<bool> HasAgreedToTermsAndConditionsAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            return this.HasAgreedToTermsAndConditions(user, amphora);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Succeeded)
+            {
+                return this.HasAgreedToTermsAndConditions(userReadRes.Entity, amphora);
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public bool HasAgreedToTermsAndConditions(ApplicationUser user, AmphoraModel amphora)
+        public bool HasAgreedToTermsAndConditions(ApplicationUserDataModel user, AmphoraModel amphora)
         {
             if (amphora.TermsAndConditionsId == null) { return true; } // no terms and conditions
             if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms and conditions
@@ -135,22 +149,29 @@ namespace Amphora.Api.Services.Purchases
 
         private async Task SendPurchaseConfimationEmail(PurchaseModel purchase)
         {
-            if (purchase.PurchasedByUser.EmailConfirmed)
+            if (purchase.PurchasedByUser?.ContactInformation?.EmailConfirmed == true)
             {
-                await emailSender.SendEmailAsync(purchase.PurchasedByUser.Email,
+                await emailSender.SendEmailAsync(purchase.PurchasedByUser?.ContactInformation?.Email,
                     "You've purchased a new Amphora",
                     $"Your new Amphora ({purchase.Amphora.Name}) is now available at Amphora Data");
             }
             else
             {
-                logger.LogWarning($"Cannot send email to {purchase.PurchasedByUser.Email}. Email unconfirmed");
+                logger.LogInformation($"Refusing to send email to {purchase.PurchasedByUser?.ContactInformation?.Email}. Email was unconfirmed");
             }
         }
 
         public async Task<EntityOperationResult<PurchaseModel>> PurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
-            var user = await userService.ReadUserModelAsync(principal);
-            return await this.PurchaseAmphoraAsync(user, amphora);
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Succeeded)
+            {
+                return await this.PurchaseAmphoraAsync(userReadRes.Entity, amphora);
+            }
+            else
+            {
+                return new EntityOperationResult<PurchaseModel>(false);
+            }
         }
     }
 }
