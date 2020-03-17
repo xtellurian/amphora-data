@@ -50,7 +50,9 @@ namespace Amphora.Identity.Controllers
             var applicationUser = new ApplicationUser()
             {
                 Email = user.Email,
-                UserName = user.UserName
+                UserName = user.UserName,
+                About = user.About,
+                FullName = user.FullName
             };
 
             if (IsTestUser(applicationUser))
@@ -74,6 +76,8 @@ namespace Amphora.Identity.Controllers
                     OrganisationId = result.Entity.OrganisationId,
                     FullName = result.Entity.FullName,
                 };
+
+                logger.LogInformation($"Created user: {JsonConvert.SerializeObject(dto, Formatting.Indented)}");
 
                 return Ok(dto);
             }
