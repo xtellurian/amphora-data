@@ -39,7 +39,6 @@ namespace Amphora.Api.StartupModules
             services.Configure<TokenManagementOptions>(configuration.GetSection("tokenManagement"));
             services.Configure<ExternalServices>(configuration.GetSection("ExternalServices"));
             var externalServices = new ExternalServices();
-            CheckExternalServicesDns(externalServices);
             configuration.GetSection("ExternalServices").Bind(externalServices);
             var token = configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
             var mvcClientSecret = configuration["MvcClientSecret"];
@@ -110,18 +109,6 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
             services.AddTransient<IInvitationService, InvitationService>();
-        }
-
-        private static void CheckExternalServicesDns(ExternalServices externalServices)
-        {
-            try
-            {
-                var entry = System.Net.Dns.GetHostEntry(externalServices.IdentityBaseUrl);
-            }
-            catch (System.Exception ex)
-            {
-                throw new IdentityServerException($"Identity Server Host {externalServices.IdentityBaseUrl} is unreachable", ex);
-            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
