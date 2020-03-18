@@ -8,14 +8,14 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
-    public class CosmosDocumentDeleteMigrator : IMigrator
+    public class CosmosDocumentDeleteMigrator : CosmosMigratorBase, IMigrator
     {
         private readonly string discriminator;
         private readonly CosmosMigrationOptions options;
         private readonly ILogger<CosmosDocumentDeleteMigrator> logger;
 
         public CosmosDocumentDeleteMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
-                                            ILogger<CosmosDocumentDeleteMigrator> logger)
+                                            ILogger<CosmosDocumentDeleteMigrator> logger) : base(options, logger)
         {
             this.discriminator = "AmphoraSignalModel";
             this.options = options.CurrentValue;
@@ -24,13 +24,10 @@ namespace Amphora.Migrate.Migrators
 
         public async Task MigrateAsync()
         {
-            var clientOptions = new CosmosClientOptions() { AllowBulkExecution = false };
-            var sourceClient = new CosmosClient(options.Source?.Cosmos?.GenerateConnectionString(options.GetSink()?.PrimaryKey), clientOptions);
-            var sourceContainer = sourceClient.GetContainer(options.GetSource()?.Database, options.Source?.Cosmos?.Container);
-            var sourceContainerProperties = await sourceContainer.ReadContainerAsync();
+            var sinkContainer = await GetSourceContainerAsync();
 
             var queryDefinition = new QueryDefinition($"SELECT * from c where c.Discriminator = '{this.discriminator}'");
-            var iterator = sourceContainer.GetItemQueryIterator<GenericEntity>(queryDefinition);
+            var iterator = sinkContainer.GetItemQueryIterator<GenericEntity>(queryDefinition);
 
             while (iterator.HasMoreResults)
             {
@@ -39,7 +36,7 @@ namespace Amphora.Migrate.Migrators
                 foreach (var i in item.Resource)
                 {
                     logger.LogInformation($"Migrating Item {i.Id}");
-                    var res = await sourceContainer.DeleteItemAsync<GenericEntity>(i.Id, PartitionKey.None);
+                    var res = await sinkContainer.DeleteItemAsync<GenericEntity>(i.Id, PartitionKey.None);
                     logger.LogInformation($"Deleted Entity {i.Id}, Status Code: {res.StatusCode}");
                 }
             }

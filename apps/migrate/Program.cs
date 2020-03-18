@@ -51,6 +51,8 @@ namespace Amphora.Migrate
                     services.Configure<CosmosMigrationOptions>(configuration);
 
                     services.AddSingleton<CosmosDocumentDeleteMigrator>();
+                    services.AddSingleton<CosmosUpdateIdentityModelMigrator>();
+                    services.AddSingleton<CosmosUserDataModelMigrator>();
 
                     services.AddTransient<ITsiService, TsiService>();
                     services.AddSingleton<TsiMigrator>();

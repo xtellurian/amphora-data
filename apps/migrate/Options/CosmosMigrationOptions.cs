@@ -9,7 +9,7 @@ namespace Amphora.Migrate.Options
         public CosmosOptionsWrapper? Source { get; set; }
         public CosmosOptionsWrapper? Sink { get; set; }
 
-        public bool Upsert { get; set; }
+        public bool? Upsert { get; set; }
     }
 
     public class CosmosOptionsWrapper
