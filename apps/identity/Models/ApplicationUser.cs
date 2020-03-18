@@ -1,12 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Purchases;
 using Microsoft.AspNetCore.Identity;
 
 namespace Amphora.Identity.Models

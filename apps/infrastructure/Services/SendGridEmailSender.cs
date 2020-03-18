@@ -22,6 +22,7 @@ namespace Amphora.Infrastructure.Services
         {
             this.options = options.CurrentValue;
             this.logger = logger;
+            options.CurrentValue?.ThrowIfInvalid();
         }
 
         public async Task<bool> SendEmailAsync(IEmail email)
