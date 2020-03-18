@@ -52,7 +52,7 @@ namespace Amphora.Api.Services.Organisations
             var userReadRes = await userDataService.ReadAsync(principal, userId);
             if (!userReadRes.Succeeded)
             {
-                return new EntityOperationResult<OrganisationModel>(false);
+                return new EntityOperationResult<OrganisationModel>("Unknown User Id");
             }
 
             var userData = userReadRes.Entity;
