@@ -157,7 +157,7 @@ namespace Amphora.Identity
                 endpoints.MapDefaultControllerRoute();
             });
 
-            if (!IsUsingCosmos())
+            if (!IsUsingSql())
             {
                 app.MigrateSql<IdentityContext>();
             }
@@ -168,11 +168,6 @@ namespace Amphora.Identity
                 initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
                 initialiser.LogInformationAsync().ConfigureAwait(false);
-            }
-
-            if (!IsUsingCosmos())
-            {
-                app.MigrateSql<IdentityContext>();
             }
         }
     }
