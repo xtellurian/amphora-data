@@ -15,11 +15,6 @@ namespace Amphora.Infrastructure.Models.Options
             {
                 throw new NullReferenceException($"{nameof(FromEmail)} cannot be null or empty");
             }
-
-            if (string.IsNullOrEmpty(ApiKey))
-            {
-                throw new NullReferenceException($"{nameof(ApiKey)} cannot be null or empty");
-            }
         }
     }
 }
