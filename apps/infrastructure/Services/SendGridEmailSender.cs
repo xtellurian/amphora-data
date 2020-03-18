@@ -57,6 +57,21 @@ namespace Amphora.Infrastructure.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentException("message", nameof(email));
+            }
+
+            if (string.IsNullOrEmpty(subject))
+            {
+                throw new ArgumentException("message", nameof(subject));
+            }
+
+            if (string.IsNullOrEmpty(htmlMessage))
+            {
+                throw new ArgumentException("message", nameof(htmlMessage));
+            }
+
             var msg = new SendGridMessage();
 
             msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
