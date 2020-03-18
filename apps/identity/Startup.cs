@@ -157,7 +157,7 @@ namespace Amphora.Identity
                 endpoints.MapDefaultControllerRoute();
             });
 
-            if (!IsUsingSql())
+            if (IsUsingSql())
             {
                 app.MigrateSql<IdentityContext>();
             }
