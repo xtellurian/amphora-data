@@ -12,9 +12,9 @@
     Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
     var protocol = Context.Request.IsHttps ? "https" : "http";
     var returnUrl = $"{protocol}://{Context.Request.Host}/Challenge";
-    string registerUrl = $"{ExternalServices.CurrentValue.IdentityUri()}/Account/Register?returnUrl={returnUrl}";
-    
+    string registerUrl = $"{ExternalServices.CurrentValue.IdentityUri().ToString().Trim('/')}/Account/Register?returnUrl={returnUrl}";
 }
+
 <!DOCTYPE html>
 <html>
 <head>
