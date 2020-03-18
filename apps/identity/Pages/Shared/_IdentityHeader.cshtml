@@ -16,7 +16,7 @@
                     @if (Model.IsSignedIn(User))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="https://app.amphoradata.com">App</a>
+                            <a class="nav-link text-light" href="@Model.WebAppUri">App</a>
                         </li>
 
                         <partial name="_ResourcesNavItemPartial" />
@@ -25,13 +25,7 @@
                                 <img src="@await Model.ProfileUriAsync(User)" class="rounded-circle z-depth-0 mb-1" alt="avatar image"/>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Invite">
-                                    Invite
-                                    <i class="float-right fas fa-user-plus"></i>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item nav-link text-light" asp-area="Profiles" asp-page="/Account/Detail">My Profile</a>   
-                                <a class="dropdown-item nav-link text-light" asp-area="Organisations" asp-page="/Detail">My Organisation</a>
+                                <a class="dropdown-item nav-link text-light" asp-page="/Account/Index">Account</a>   
                                 @if(await Model.IsAdminGlobalAsync(User))
                                 {
                                     <div class="dropdown-divider"></div>

@@ -1,8 +1,11 @@
 @using System.Security.Claims
 @using Amphora.Common.Extensions
+@using Amphora.Common.Models.Options
 @using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
 @using IdentityServer4.Extensions
 
+@inject IOptionsMonitor<ExternalServices> externalServicesOptions
 @inject IConfiguration Configuration
 
 @{
@@ -45,7 +48,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-     @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(null, null, "/Account/Register" ))
+     @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(profileUrl, isAdminGlobal, "/Account/Register", externalServicesOptions.CurrentValue.WebAppUri() ))
     
     <div class="container">
         <partial name="_CookieConsentPartial" />

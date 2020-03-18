@@ -8,14 +8,19 @@ namespace Amphora.SharedUI.Models
     {
         private readonly Func<ClaimsPrincipal, Task<string>> profileUri;
         private readonly Func<ClaimsPrincipal, Task<bool>> isAdminGlobal;
-
+        private static Uri defaultWebAppUri = new Uri("https://app.amphoradata.com");
         public string RegisterUrl { get; }
+        public Uri WebAppUri { get; }
 
-        public HeaderModel(Func<ClaimsPrincipal, Task<string>> profileUri, Func<ClaimsPrincipal, Task<bool>> isAdminGlobal, string registerUrl)
+        public HeaderModel(Func<ClaimsPrincipal, Task<string>> profileUri,
+                           Func<ClaimsPrincipal, Task<bool>> isAdminGlobal,
+                           string registerUrl,
+                           Uri webAppUri = null)
         {
             this.profileUri = profileUri;
             this.isAdminGlobal = isAdminGlobal;
             RegisterUrl = registerUrl;
+            WebAppUri = webAppUri ?? defaultWebAppUri;
         }
 
         public bool IsSignedIn(ClaimsPrincipal principal)
