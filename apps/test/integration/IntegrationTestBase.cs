@@ -58,9 +58,9 @@ namespace Amphora.Tests.Integration
             return (client, user, org);
         }
 
-        protected async Task AssertHttpSuccess(HttpResponseMessage response)
+        protected async Task AssertHttpSuccess(HttpResponseMessage response, string path = "?")
         {
-            Assert.True(response.IsSuccessStatusCode, $"Code: {response.StatusCode}, Content: {await response.Content.ReadAsStringAsync()}");
+            Assert.True(response.IsSuccessStatusCode, $"Path: {path} , Code: {response.StatusCode}, Content: {await response.Content.ReadAsStringAsync()}");
         }
 
         protected async Task DestroyAmphoraAsync(HttpClient client, string id)

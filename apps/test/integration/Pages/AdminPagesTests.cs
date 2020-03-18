@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,28 +13,35 @@ namespace Amphora.Tests.Integration.Pages
         {
         }
 
-        [Theory]
-        [InlineData("/Admin/Index")]
-        [InlineData("/Admin/Dashboard")]
-        [InlineData("/Admin/Purchases")]
-        [InlineData("/Admin/Accounts/Index")]
-        public async Task CanLoadPage(string path)
+        [Fact]
+        public async Task CanLoadPage()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.com");
 
-            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
-            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
-            await AssertHttpSuccess(createResponse);
+            var pagePaths = new List<string>
+            {
+                "/Admin/Index",
+                "/Admin/Dashboard",
+                "/Admin/Purchases",
+                "/Admin/Accounts/Index"
+            };
 
-            var response = await adminClient.GetAsync($"{path}");
-            await AssertHttpSuccess(response);
-            Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
+            foreach (var path in pagePaths)
+            {
+                var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage));
+                adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+                await AssertHttpSuccess(createResponse);
 
-            var otherResponse = await otherClient.GetAsync(path);
-            Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other will not find the page
+                var response = await adminClient.GetAsync($"{path}");
+                await AssertHttpSuccess(response, path);
+                Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
+
+                var otherResponse = await otherClient.GetAsync(path);
+                Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
+                Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other will not find the page
+            }
 
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
