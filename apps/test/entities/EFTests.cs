@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Api.EntityFramework;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
+using Amphora.Identity.EntityFramework;
 using Amphora.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -49,6 +51,18 @@ namespace Amphora.Tests.Unit
             }
 
             System.IO.File.WriteAllText(path, context.AsDgml(), System.Text.Encoding.UTF8);
+        }
+
+        [Fact]
+        public void AmphoraContext_GetTypeName_IsAmphoraContext()
+        {
+            Assert.Equal(nameof(AmphoraContext), typeof(AmphoraContext).Name);
+        }
+
+        [Fact]
+        public void IdentityContext_GetTypeName_IsIdentityContext()
+        {
+            Assert.Equal(nameof(IdentityContext), typeof(IdentityContext).Name);
         }
     }
 }

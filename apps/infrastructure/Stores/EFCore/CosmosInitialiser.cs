@@ -17,7 +17,7 @@ namespace Amphora.Infrastructure.Stores.EFCore
         {
             this.cosmos = cosmos;
             this.logger = logger;
-            this.containerName = nameof(T); // can be change by modelBuilder.HasDefaultContainer("Store");
+            this.containerName = typeof(T).Name; // can be change by modelBuilder.HasDefaultContainer("Store");
         }
 
         public async Task EnsureContainerCreated()
