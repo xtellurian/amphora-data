@@ -1,5 +1,7 @@
-@using IdentityServer4.Extensions
+@using System.Security.Claims
+@using Amphora.Common.Extensions
 @using Microsoft.Extensions.Configuration
+@using IdentityServer4.Extensions
 
 @inject IConfiguration Configuration
 
@@ -9,7 +11,10 @@
     {
         name = Context.User?.GetDisplayName();
     }
+    Func<ClaimsPrincipal, Task<string>> profileUrl = (p) => Task.FromResult(p.GetProfilePictureUri()?.ToString()+"?s=180");
+    Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
 }
+
 <!DOCTYPE html>
 <html>
 <head>
