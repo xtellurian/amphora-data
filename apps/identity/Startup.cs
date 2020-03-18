@@ -29,7 +29,7 @@ namespace Amphora.Identity
         public IConfiguration Configuration { get; }
 
         private bool IsUsingCosmos() => Environment.IsProduction() || Configuration.IsPersistentStores();
-        private bool IsUsingSql() => Environment.IsProduction() || Configuration["sql"] == "true";
+        private bool IsUsingSql() => !IsUsingCosmos() && Configuration["sql"] == "true";
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
