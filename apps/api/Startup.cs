@@ -256,6 +256,7 @@ namespace Amphora.Api
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<Middleware.OrganisationCheckMiddleware>();
+            app.UseMiddleware<Middleware.UserDataMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

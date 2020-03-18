@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
-using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
