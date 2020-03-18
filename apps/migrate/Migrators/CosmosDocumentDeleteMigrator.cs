@@ -25,7 +25,7 @@ namespace Amphora.Migrate.Migrators
         public async Task MigrateAsync()
         {
             var clientOptions = new CosmosClientOptions() { AllowBulkExecution = false };
-            var sourceClient = new CosmosClient(options.Source?.Cosmos?.GenerateConnectionString(options.GetSource()?.PrimaryKey), clientOptions);
+            var sourceClient = new CosmosClient(options.Source?.Cosmos?.GenerateConnectionString(options.GetSink()?.PrimaryKey), clientOptions);
             var sourceContainer = sourceClient.GetContainer(options.GetSource()?.Database, options.Source?.Cosmos?.Container);
             var sourceContainerProperties = await sourceContainer.ReadContainerAsync();
 
