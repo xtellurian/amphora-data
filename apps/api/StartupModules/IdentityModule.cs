@@ -5,8 +5,8 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Platform;
-using Amphora.Api.Services.Wrappers;
 using Amphora.Common.Contracts;
+using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Services.Users;
 using Amphora.Infrastructure.Services;
@@ -39,6 +39,7 @@ namespace Amphora.Api.StartupModules
             services.Configure<TokenManagementOptions>(configuration.GetSection("tokenManagement"));
             services.Configure<ExternalServices>(configuration.GetSection("ExternalServices"));
             var externalServices = new ExternalServices();
+            CheckExternalServicesDns(externalServices);
             configuration.GetSection("ExternalServices").Bind(externalServices);
             var token = configuration.GetSection("tokenManagement").Get<TokenManagementOptions>();
             var mvcClientSecret = configuration["MvcClientSecret"];
@@ -53,15 +54,15 @@ namespace Amphora.Api.StartupModules
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CommonAuthorizeAttribute.CookieSchemeName;
-                    options.DefaultAuthenticateScheme = CommonAuthorizeAttribute.CookieSchemeName;
-                    options.DefaultForbidScheme = CommonAuthorizeAttribute.CookieSchemeName;
-                    options.DefaultSignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
-                    options.DefaultSignOutScheme = CommonAuthorizeAttribute.CookieSchemeName;
-                    // challenge OIDC
-                    options.DefaultChallengeScheme = CommonAuthorizeAttribute.OidcSchemeName;
-                })
+            {
+                options.DefaultScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                options.DefaultAuthenticateScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                options.DefaultForbidScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                options.DefaultSignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                options.DefaultSignOutScheme = CommonAuthorizeAttribute.CookieSchemeName;
+                // challenge OIDC
+                options.DefaultChallengeScheme = CommonAuthorizeAttribute.OidcSchemeName;
+            })
                 .AddCookie(CommonAuthorizeAttribute.CookieSchemeName)
                 .AddOpenIdConnect(CommonAuthorizeAttribute.OidcSchemeName, options =>
                 {
@@ -109,6 +110,18 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
             services.AddTransient<IInvitationService, InvitationService>();
+        }
+
+        private static void CheckExternalServicesDns(ExternalServices externalServices)
+        {
+            try
+            {
+                var entry = System.Net.Dns.GetHostEntry(externalServices.IdentityBaseUrl);
+            }
+            catch (System.Exception ex)
+            {
+                throw new IdentityServerException($"Identity Server Host {externalServices.IdentityBaseUrl} is unreachable", ex);
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)

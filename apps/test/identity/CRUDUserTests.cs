@@ -22,7 +22,7 @@ namespace Amphora.Tests.Identity.Integration
         }
 
         [Fact]
-        public async Task CanCreateUser_AsAnonymous_AndGetToken_AndDelete()
+        public async Task CanCreateUser_InMemory_AsAnonymous_AndGetToken_AndDelete()
         {
             var client = factory.CreateClient();
             await Run_CanCreateUser_AsAnonymous_AndGetToken_AndDelete(client);

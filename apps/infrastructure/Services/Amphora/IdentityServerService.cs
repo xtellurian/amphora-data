@@ -3,12 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
+using Amphora.Common.Exceptions;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
-using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Options;
-using Amphora.Common.Models.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -60,17 +59,25 @@ namespace Amphora.Infrastructure.Services
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(u), Encoding.UTF8, "application/json");
-            var response = await this.client.PostAsync("/api/users", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var responseUser = JsonConvert.DeserializeObject<AmphoraUser>(await response.Content.ReadAsStringAsync());
-                // so now query the application user
-                return new EntityOperationResult<AmphoraUser>(responseUser, responseUser);
+                var response = await this.client.PostAsync("/api/users", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseUser = JsonConvert.DeserializeObject<AmphoraUser>(await response.Content.ReadAsStringAsync());
+                    // so now query the application user
+                    return new EntityOperationResult<AmphoraUser>(responseUser, responseUser);
+                }
+                else
+                {
+                    return new EntityOperationResult<AmphoraUser>(false);
+                }
             }
-            else
+            catch (HttpRequestException httpRequestException)
             {
-                return new EntityOperationResult<AmphoraUser>(false);
+                logger.LogCritical(httpRequestException.Message);
+                throw new IdentityServerException("The Identity Server did not respond as expected", httpRequestException);
             }
         }
 
