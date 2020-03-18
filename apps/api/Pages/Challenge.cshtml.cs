@@ -7,9 +7,9 @@ namespace Amphora.Api.Pages
     [CommonAuthorize]
     public class ChallengePageModel : PageModel
     {
-        public IActionResult Get()
+        public IActionResult OnGet()
         {
-            return Page();
+            return RedirectToPage("./Index");
         }
     }
 }
