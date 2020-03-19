@@ -39,7 +39,7 @@ namespace Amphora.Api.Services.Azure
             else
             {
                 client.DefaultRequestHeaders.Add("x-ms-client-id", options.CurrentValue.Key);
-                logger.LogInformation("Using Active Directiory based authentication");
+                logger.LogWarning("Using Active Directiory based authentication");
             }
 
             this.tokenProvider = tokenProvider;
