@@ -7,6 +7,18 @@
 }
 
 <div class="container">
+    @if(Model.Success == true)
+    {
+        <div class="alert alert-success" role="alert">
+            Confirmation Email Sent
+        </div>
+    }
+    else if(Model.Success == false)
+    {
+        <div class="alert alert-danger" role="alert">
+            Something went wrong...
+        </div>
+    }
     <h2>Resend Confirmation Email?</h2>
     <div class="row">
         <div class="col">

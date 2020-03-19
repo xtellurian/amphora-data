@@ -29,7 +29,7 @@ namespace Amphora.Identity.Pages.Account.Manage
         }
 
         public IWebHostEnvironment WebHost { get; private set; }
-        public bool Success { get; private set; }
+        public bool? Success { get; private set; } = null;
         public ApplicationUser? AppUser { get; private set; }
 
         public async Task<IActionResult> OnGet()

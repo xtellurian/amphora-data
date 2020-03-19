@@ -1,10 +1,15 @@
 @page
 @model Amphora.Identity.Pages.IndexPageModel
 
+@using Amphora.Common.Extensions
 @using Amphora.Common.Models.Options
 @using Microsoft.Extensions.Options
 
 @inject IOptionsMonitor<ExternalServices> ExternalServices
+
+@{
+    var webAppChallenge = $"{ExternalServices.CurrentValue?.WebAppUri().ToStandardString()}/Challenge";
+}
 
 <div class="container">
     <div class="row">
@@ -35,13 +40,13 @@
                     <a class="btn btn-primary btn-block" asp-page="/Account/Index">My Account</a>
                 </div>
                 <div class="m-2">
-                    <a class="btn btn-primary btn-block" href="@ExternalServices.CurrentValue?.WebAppUri()">Amphora Data Web Application</a>
+                    <a class="btn btn-primary btn-block" href="@webAppChallenge">Amphora Data Web Application</a>
                 </div>
             }
             else
             {
                 <div class="m-2">
-                    <a class="btn btn-primary btn-block" asp-page="/Account/Login">Login</a>
+                    <a class="btn btn-primary btn-block" asp-page="/Account/Login" asp-route-returnUrl="@webAppChallenge">Login</a>
                 </div>
             }
         </div>
