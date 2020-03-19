@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ namespace Amphora.Api.Areas.Profiles.Pages.Account
         {
             if (User.Identity.IsAuthenticated)
             {
-                var uri = $"{externalServices.CurrentValue.IdentityUri().ToString().TrimEnd('/')}/Account/Logout";
+                var uri = $"{externalServices.CurrentValue.IdentityUri().ToStandardString()}/Account/Logout";
                 if (returnUrl != null)
                 {
                     uri += $"?returnUrl={returnUrl}";

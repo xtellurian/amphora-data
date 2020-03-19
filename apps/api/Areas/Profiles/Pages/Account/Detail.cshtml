@@ -2,9 +2,16 @@
 @model DetailModel
 
 @using Amphora.Common.Extensions
+@using Amphora.Common.Models.Options
+@using Microsoft.Extensions.Options
+
+@inject IOptionsMonitor<ExternalServices> externalServices
+
 
 @{
     ViewData["Title"] = Model.AppUser.ContactInformation?.FullName;
+    var editProfileUrl = $"{externalServices.CurrentValue?.IdentityUri().ToStandardString()}/Account/Edit";
+    var manageProfileUrl = $"{externalServices.CurrentValue?.IdentityUri().ToStandardString()}/Account/Manage";
 }
 
 <div id="main" class="container">
@@ -17,7 +24,7 @@
                     </div>
                     @if(@Model.IsSelf)
                     {
-                        <a asp-area="Profiles" asp-page="./Manage/Index" class="float-right"><i class="fas fa-cog"></i></a>
+                        <a href="@manageProfileUrl" class="float-right"><i class="fas fa-cog"></i></a>
                     }
                     <div class="w-100"><strong>@Model.AppUser?.ContactInformation?.FullName</strong></div>
                     <div class="w-100 mb-2"><small>@Model.AppUser.UserName </small></div>
@@ -36,7 +43,7 @@
            <div>
                @if(Model.IsSelf)
                {
-                <a class="float-right" asp-page="./Edit"><i class="fas fa-user-edit"></i></a>
+                <a class="float-right" href="@editProfileUrl"><i class="fas fa-user-edit"></i></a>
                }
                <h4>Overview</h4>
                <p><small>Pinned (Top 6)</small></p>

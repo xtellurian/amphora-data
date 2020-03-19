@@ -16,6 +16,7 @@
     }
     Func<ClaimsPrincipal, Task<string>> profileUrl = (p) => Task.FromResult(p.GetProfilePictureUri()?.ToString()+"?s=180");
     Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
+    var returnUrl = Context.Request.Query["returnUrl"];
 }
 
 <!DOCTYPE html>
@@ -48,7 +49,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-     @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(profileUrl, isAdminGlobal, "/Account/Register", externalServicesOptions.CurrentValue.WebAppUri() ))
+     @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(profileUrl, isAdminGlobal, "/Account/Register", returnUrl: returnUrl, webAppUri: externalServicesOptions.CurrentValue.WebAppUri() ))
     
     <div class="container">
         <partial name="_CookieConsentPartial" />
