@@ -37,7 +37,7 @@ using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api
 {
-    public class Startup
+    public class Startup : Infrastructure.StartupBase
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -59,8 +59,10 @@ namespace Amphora.Api
         private readonly DiscoverModule discoverModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
+            base.ConfigureServices(services);
+
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
             if (HostingEnvironment.IsDevelopment())
             {
@@ -203,14 +205,22 @@ namespace Amphora.Api
                 document.Title = "Amphora Data Api";
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
             });
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
+            base.Configure(app);
+
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
-            // // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

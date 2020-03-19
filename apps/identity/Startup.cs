@@ -24,7 +24,7 @@ using Microsoft.IdentityModel.Logging;
 
 namespace Amphora.Identity
 {
-    public class Startup
+    public class Startup : Infrastructure.StartupBase
     {
         public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
@@ -38,8 +38,10 @@ namespace Amphora.Identity
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
+            base.ConfigureServices(services);
+
             System.Console.WriteLine($"Hosting Environment Name is {Environment.EnvironmentName}");
 
             services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
@@ -129,12 +131,20 @@ namespace Amphora.Identity
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             // temp
             IdentityModelEventSource.ShowPII = true;
         }
 
-        public void Configure(IApplicationBuilder app)
+        public override void Configure(IApplicationBuilder app)
         {
+            base.Configure(app);
+
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
