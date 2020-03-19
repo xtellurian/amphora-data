@@ -52,8 +52,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var userReadRes = await userDataService.ReadAsync(User);
             if (userReadRes.Succeeded)
             {
-                var items = userReadRes.Entity.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
-                this.TermsAndConditions = new List<SelectListItem>(items);
+                var items = userReadRes.Entity.Organisation?.TermsAndConditions?.Select(_ => new SelectListItem(_.Name, _.Id));
+                if (items != null)
+                {
+                    this.TermsAndConditions = new List<SelectListItem>();
+                }
             }
             else
             {
