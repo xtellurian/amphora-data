@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Amphora.Api.StartupModules
@@ -110,6 +111,8 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IAuthorizationHandler, GlobalAdminAuthorizationHandler>();
             services.AddTransient<IPermissionService, PermissionService>();
             services.AddTransient<IInvitationService, InvitationService>();
+
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
