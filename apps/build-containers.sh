@@ -47,7 +47,7 @@ fi
 REGISTRY=$ACR_NAME.azurecr.io
 set -e
 echo "<< Building Builder Container >>"
-docker build -t builder -t $REGISTRY/builder:$TAG -t $REGISTRY/builder:$GITHASH -t $REGISTRY/builder:latest --cache-from $CACHED_IMAGE .
+docker build -t builder -t $REGISTRY/builder:$TAG -t $REGISTRY/builder:$GITHASH -t $REGISTRY/builder:latest --build-arg "TreatWarningsAsErrors=true" --cache-from $CACHED_IMAGE .
 
 echo "<< Building API Container >>"
 docker build -f api/Dockerfile -t api -t $REGISTRY/webapp:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/webapp:latest --build-arg "BASE=builder" .
