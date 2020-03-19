@@ -149,7 +149,7 @@ namespace Amphora.Identity
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
