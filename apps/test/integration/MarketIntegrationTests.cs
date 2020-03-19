@@ -9,7 +9,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class MarketIntegrationTests : IntegrationTestBase
+    public class MarketIntegrationTests : WebAppIntegrationTestBase
     {
         public MarketIntegrationTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

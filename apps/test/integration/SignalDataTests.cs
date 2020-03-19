@@ -11,7 +11,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class SignalDataTests : IntegrationTestBase
+    public class SignalDataTests : WebAppIntegrationTestBase
     {
         public SignalDataTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

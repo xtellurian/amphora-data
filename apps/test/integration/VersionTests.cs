@@ -9,7 +9,7 @@ namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
     [Trait("Category", "Versioning")]
-    public class VersionTests : IntegrationTestBase
+    public class VersionTests : WebAppIntegrationTestBase
     {
         public VersionTests(WebApplicationFactory<Startup> factory) : base(factory)
         {

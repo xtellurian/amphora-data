@@ -8,7 +8,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Pages
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class BasicWebServer : IntegrationTestBase
+    public class BasicWebServer : WebAppIntegrationTestBase
     {
         public BasicWebServer(WebApplicationFactory<Startup> factory) : base(factory)
         {
@@ -39,7 +39,6 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/DataRequests/Create")]
         [InlineData("/Changelog")]
         [InlineData("/Profiles/Account/Detail")]
-        [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Discover")]
         [InlineData("/Discover/DataRequests")]
         [InlineData("/Amphorae")]

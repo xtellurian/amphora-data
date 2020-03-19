@@ -8,7 +8,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Pages
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class AmphoraPagesTests : IntegrationTestBase
+    public class AmphoraPagesTests : WebAppIntegrationTestBase
     {
         public AmphoraPagesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

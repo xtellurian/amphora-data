@@ -5,7 +5,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class IdentityTests : IntegrationTestBase
+    public class IdentityTests : WebAppIntegrationTestBase
     {
         public IdentityTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

@@ -8,7 +8,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class AmphoraStatisticsTests : IntegrationTestBase
+    public class AmphoraStatisticsTests : WebAppIntegrationTestBase
     {
         public AmphoraStatisticsTests(WebApplicationFactory<Startup> factory) : base(factory)
         {

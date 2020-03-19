@@ -5,7 +5,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class SwaggerGenTests : IntegrationTestBase
+    public class SwaggerGenTests : WebAppIntegrationTestBase
     {
         public SwaggerGenTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

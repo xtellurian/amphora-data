@@ -9,7 +9,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class GracefulErrorsTests : IntegrationTestBase
+    public class GracefulErrorsTests : WebAppIntegrationTestBase
     {
         private int _apiVersion = 0;
         public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)

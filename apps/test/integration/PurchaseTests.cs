@@ -10,7 +10,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class PurchaseTests : IntegrationTestBase
+    public class PurchaseTests : WebAppIntegrationTestBase
     {
         public PurchaseTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

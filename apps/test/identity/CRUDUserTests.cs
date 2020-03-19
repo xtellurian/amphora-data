@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
 using Amphora.Tests.Setup;

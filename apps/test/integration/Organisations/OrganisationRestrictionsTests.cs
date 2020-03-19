@@ -8,7 +8,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class OrganisationRestrictionsTests : IntegrationTestBase
+    public class OrganisationRestrictionsTests : WebAppIntegrationTestBase
     {
         public OrganisationRestrictionsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {

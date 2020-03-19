@@ -12,7 +12,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class AmphoraSignalsTests : IntegrationTestBase
+    public class AmphoraSignalsTests : WebAppIntegrationTestBase
     {
         private const string BadName = "HH78365^@*";
         private const string NameWithSpace = "hello world";

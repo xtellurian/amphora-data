@@ -16,7 +16,7 @@ using Xunit;
 namespace Amphora.Tests.Integration
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class CreateUserTests : IntegrationTestBase
+    public class CreateUserTests : WebAppIntegrationTestBase
     {
         private int _apiVersion = 0;
         public CreateUserTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)

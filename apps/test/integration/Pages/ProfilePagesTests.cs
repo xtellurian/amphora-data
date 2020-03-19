@@ -5,7 +5,7 @@ using Xunit;
 namespace Amphora.Tests.Integration.Pages
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class ProfilePagesTests : IntegrationTestBase
+    public class ProfilePagesTests : WebAppIntegrationTestBase
     {
         public ProfilePagesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
@@ -13,7 +13,6 @@ namespace Amphora.Tests.Integration.Pages
 
         [Theory]
         [InlineData("/Profiles/Account/Detail")]
-        [InlineData("/Profiles/Account/Edit")]
         [InlineData("/Profiles/Account/UserMissing")]
         public async Task CanLoadPage(string path)
         {
