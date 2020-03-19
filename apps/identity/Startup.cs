@@ -24,17 +24,14 @@ using Microsoft.IdentityModel.Logging;
 
 namespace Amphora.Identity
 {
-    public class Startup : Infrastructure.StartupBase
+    public class Startup : SharedUI.SharedStartup
     {
-        public IWebHostEnvironment Environment { get; }
-        public IConfiguration Configuration { get; }
-
-        private bool IsUsingCosmos() => Environment.IsProduction() || Configuration.IsPersistentStores();
+        private bool IsUsingCosmos() => HostingEnvironment.IsProduction() || Configuration.IsPersistentStores();
         private bool IsUsingSql() => !IsUsingCosmos() && Configuration["sql"] == "true";
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
-            Environment = environment;
+            HostingEnvironment = environment;
             Configuration = configuration;
         }
 
@@ -42,9 +39,7 @@ namespace Amphora.Identity
         {
             base.ConfigureServices(services);
 
-            services.AddHealthChecks();
-
-            System.Console.WriteLine($"Hosting Environment Name is {Environment.EnvironmentName}");
+            System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
 
             services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
             var externalServices = new ExternalServices();
@@ -65,7 +60,7 @@ namespace Amphora.Identity
                 Configuration.GetSection("SqlServer").Bind(sqlOptions);
                 services.UseSqlServer<IdentityContext>(sqlOptions);
             }
-            else if (Environment.IsDevelopment())
+            else if (HostingEnvironment.IsDevelopment())
             {
                 services.UseInMemory<IdentityContext>();
             }
@@ -97,7 +92,7 @@ namespace Amphora.Identity
             builder.AddDeveloperSigningCredential();
 
             services.AddScoped<IUserService, UserService>();
-            if (Configuration.IsPersistentStores() || Environment.IsProduction())
+            if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
                 services.Configure<AzureEventGridTopicOptions>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
                 services.AddTransient<IEventPublisher, EventGridService>();
@@ -133,12 +128,6 @@ namespace Amphora.Identity
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-
             // temp
             IdentityModelEventSource.ShowPII = true;
         }
@@ -147,17 +136,11 @@ namespace Amphora.Identity
         {
             base.Configure(app);
 
-            if (Environment.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
-
-            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
 
             app.UseStaticFiles();
 
@@ -166,7 +149,7 @@ namespace Amphora.Identity
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-            app.UseHealthChecks("/healthz");
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

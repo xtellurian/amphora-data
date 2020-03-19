@@ -37,7 +37,7 @@ using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api
 {
-    public class Startup : Infrastructure.StartupBase
+    public class Startup : SharedUI.SharedStartup
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -50,9 +50,6 @@ namespace Amphora.Api
             this.discoverModule = new DiscoverModule(configuration, env);
         }
 
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment HostingEnvironment { get; }
-
         private readonly IdentityModule identityModule;
         private readonly StorageModule storageModule;
         private readonly GeoModule geoModule;
@@ -62,8 +59,6 @@ namespace Amphora.Api
         public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
-
-            services.AddHealthChecks();
 
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
             if (HostingEnvironment.IsDevelopment())
@@ -208,25 +203,19 @@ namespace Amphora.Api
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
             });
 
-            services.Configure<ForwardedHeadersOptions>(options =>
+            if (!HostingEnvironment.IsProduction())
             {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
+                services.AddHttpsRedirection(options => options.HttpsPort = 443);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            base.Configure(app);
+            Configure(app);
 
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
-            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
 
             this.identityModule.Configure(app, env, mapper);
             this.storageModule.Configure(app, env);
@@ -254,7 +243,11 @@ namespace Amphora.Api
             }
 
             app.UseRouting();
-            app.UseHttpsRedirection();
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+
             app.UseMarkdown(); // Westwind.AspNetCore.Markdown
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -263,13 +256,11 @@ namespace Amphora.Api
             app.UseSwaggerUi3(settings => { }); // serve Swagger UI
             // app.UseReDoc(); // serve ReDoc UI
 
-            app.UseForwardedHeaders();
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<Middleware.OrganisationCheckMiddleware>();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
-            app.UseHealthChecks("/healthz");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
