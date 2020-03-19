@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Extensions;
+using Amphora.Common.Security;
 using IdentityServer4.Models;
 
 namespace Amphora.Identity
@@ -16,18 +17,21 @@ namespace Amphora.Identity
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
                 new IdentityResources.Email(),
-                new IdentityResource
-                {
-                    Name = "organisation",
-                    Description = "Amphora Organisation",
-                    UserClaims = { "organisation_id" }
-                }
+                new IdentityResource(Scopes.AmphoraScope,
+                    new List<string>
+                    {
+                        Claims.About,
+                        Claims.Email,
+                        Claims.EmailConfirmed,
+                        Claims.FullName,
+                        Claims.GlobalAdmin
+                    })
             };
 
         public static IEnumerable<ApiResource> Apis =>
             new ApiResource[]
             {
-                new ApiResource("api1", "My API #1")
+                new ApiResource(Common.Security.Resources.WebApp, "The Amphora Data WebApp")
             };
 
         public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls, string mvcClientSecret)
@@ -44,7 +48,7 @@ namespace Amphora.Identity
                 // MVC client using code flow + pkce
                 new Client
                 {
-                    ClientId = "mvc",
+                    ClientId = OAuthClients.WebApp,
                     ClientName = "MVC Client",
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials.Union(GrantTypes.ResourceOwnerPassword).ToList(),
@@ -57,7 +61,7 @@ namespace Amphora.Identity
                     PostLogoutRedirectUris = postLogoutRedirects,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "email", "api1", "organisation" }
+                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
                 }
             };
         }

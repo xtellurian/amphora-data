@@ -8,6 +8,7 @@ using Amphora.Api.Services.Platform;
 using Amphora.Common.Contracts;
 using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Options;
+using Amphora.Common.Security;
 using Amphora.Common.Services.Users;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
@@ -73,10 +74,10 @@ namespace Amphora.Api.StartupModules
                     options.Authority = externalServices.IdentityUri().ToString();
                     options.RequireHttpsMetadata = false;
                     options.ClientSecret = mvcClientSecret;
-                    options.ClientId = "mvc";
+                    options.ClientId = OAuthClients.WebApp;
                     options.SaveTokens = true;
-                    options.Scope.Add("organisation");
                     options.Scope.Add("email");
+                    options.Scope.Add(Scopes.AmphoraScope);
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
                 {
