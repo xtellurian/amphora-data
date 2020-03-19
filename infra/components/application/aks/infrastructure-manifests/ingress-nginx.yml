@@ -8,6 +8,8 @@ metadata:
   labels:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
+data:
+  proxy-buffer-size: "16k" # fixes 502 bad gateway with large OIDC response headers
 
 ---
 kind: ConfigMap
