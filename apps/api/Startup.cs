@@ -56,9 +56,9 @@ namespace Amphora.Api
         private readonly DiscoverModule discoverModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public override void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            base.ConfigureServices(services);
+            ConfigureSharedServices(services);
 
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
             if (HostingEnvironment.IsDevelopment())
@@ -213,7 +213,7 @@ namespace Amphora.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            Configure(app);
+            ConfigureSharedPipeline(app);
 
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
 

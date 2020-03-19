@@ -35,9 +35,9 @@ namespace Amphora.Identity
             Configuration = configuration;
         }
 
-        public override void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            base.ConfigureServices(services);
+            ConfigureSharedServices(services);
 
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
 
@@ -132,9 +132,9 @@ namespace Amphora.Identity
             IdentityModelEventSource.ShowPII = true;
         }
 
-        public override void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app)
         {
-            base.Configure(app);
+            ConfigureSharedPipeline(app);
 
             if (HostingEnvironment.IsDevelopment())
             {

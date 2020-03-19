@@ -10,7 +10,7 @@ namespace Amphora.SharedUI
     {
         protected IConfiguration Configuration { get; set; }
         protected IWebHostEnvironment HostingEnvironment { get; set; }
-        public virtual void ConfigureServices(IServiceCollection services)
+        protected void ConfigureSharedServices(IServiceCollection services)
         {
             services.AddHealthChecks();
 
@@ -21,7 +21,7 @@ namespace Amphora.SharedUI
             });
         }
 
-        public virtual void Configure(IApplicationBuilder app)
+        protected void ConfigureSharedPipeline(IApplicationBuilder app)
         {
             app.UseHealthChecks("/healthz");
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
