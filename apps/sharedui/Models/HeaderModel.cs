@@ -17,7 +17,6 @@ namespace Amphora.SharedUI.Models
                            Func<ClaimsPrincipal, Task<bool>> isAdminGlobal,
                            string registerUrl,
                            string returnUrl = null,
-                           
                            Uri webAppUri = null)
         {
             this.profileUri = profileUri;
