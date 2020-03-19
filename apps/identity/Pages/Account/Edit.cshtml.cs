@@ -20,7 +20,9 @@ namespace Amphora.Identity.Pages.Account
         [BindProperty]
         public string? About { get; set; }
         [TempData]
-        public string? ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; } = null;
+        [TempData]
+        public bool? Saved { get; set; } = null;
         public EditModel(UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
@@ -51,7 +53,8 @@ namespace Amphora.Identity.Pages.Account
                 try
                 {
                     var response = await userManager.UpdateAsync(AppUser);
-                    return RedirectToPage("./Detail");
+                    Saved = true;
+                    return Page();
                 }
                 catch (Exception ex)
                 {

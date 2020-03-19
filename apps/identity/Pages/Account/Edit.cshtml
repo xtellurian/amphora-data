@@ -5,6 +5,12 @@
 }
 
 <div id="main" class="container center">
+    @if(Model.Saved == true)
+    {
+        <div class="alert alert-success" role="alert">
+            Profile Saved
+        </div>
+    }
     <div class="row">
         <div class="col">
             <p class="text-danger">@Model.ErrorMessage</p>
@@ -23,8 +29,11 @@
                     <span asp-validation-for="About" class="text-danger"></span>
                     <small id="aboutHelp" class="form-text text-muted">A little about yourself</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary w-25">Save</button>
             </form>
+            <a class="btn btn-secondary w-25 mt-2" asp-page="./Index">
+                Back
+            </a>
         </div>
     </div>
 </div>

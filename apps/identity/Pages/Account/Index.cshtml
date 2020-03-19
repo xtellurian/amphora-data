@@ -5,16 +5,31 @@
     ViewData["Title"] = "Account";
 }
 
-<h1>@ViewData["Title"]</h1>
 
-<div class="row">
-    <div class="col">
-        <h4>Manage your Amphora Data account.</h4>
-        <hr />
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>@ViewData["Title"]</h1>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <a class="btn btn-primary" asp-page="./Manage/Index">Manage Account</a>
+    <div class="row">
+        <div class="col">
+            <h4>Manage your Amphora Data account.</h4>
+            <hr />
+        </div>
+    </div>
+    <div class="row m-2">
+        <div class="col-md-3">
+            <div>
+                <a class="btn btn-primary btn-block" asp-page="./Manage/Index">Manage Account</a>
+            </div>
+        </div>
+    </div>
+    <div class="row m-2">
+        <div class="col-md-3">
+            <div>
+                <a class="btn btn-primary btn-block" asp-page="./Edit">Edit Profile</a>
+            </div>
+        </div>
     </div>
 </div>
