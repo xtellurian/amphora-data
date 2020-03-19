@@ -20,6 +20,7 @@ namespace Amphora.Identity.Services
         {
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim("full_name", user.FullName ?? ""));
+            identity.AddClaim(new Claim("about", user.About ?? ""));
             identity.AddClaim(new Claim("email", user.Email ?? ""));
             identity.AddClaim(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
             identity.AddClaim(new Claim("global_admin",

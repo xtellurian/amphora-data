@@ -49,6 +49,11 @@ namespace Amphora.Common.Extensions
             return normalise ? email?.ToUpper() ?? "" : email ?? "";
         }
 
+        public static string? GetAbout(this ClaimsPrincipal principal, bool normalise = true)
+        {
+            return principal.Claims.FirstOrDefault(_ => _.Type == "about")?.Value;
+        }
+
         public static bool IsEmailConfirmed(this ClaimsPrincipal principal)
         {
             return principal.Claims.FirstOrDefault(_ => _.Type == "email_confirmed")?.Value == true.ToString();

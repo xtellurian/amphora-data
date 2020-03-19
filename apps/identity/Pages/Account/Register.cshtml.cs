@@ -56,6 +56,7 @@ namespace Amphora.Identity.Pages.Account
             public string? FullName { get; set; }
 
             [DataType(DataType.MultilineText)]
+            [MaxLength(255)]
             [Display(Name = "About")]
             public string? About { get; set; }
 
