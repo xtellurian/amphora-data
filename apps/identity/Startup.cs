@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 
 namespace Amphora.Identity
 {
@@ -127,6 +128,9 @@ namespace Amphora.Identity
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            // temp
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public void Configure(IApplicationBuilder app)
