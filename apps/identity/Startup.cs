@@ -42,6 +42,8 @@ namespace Amphora.Identity
         {
             base.ConfigureServices(services);
 
+            services.AddHealthChecks();
+
             System.Console.WriteLine($"Hosting Environment Name is {Environment.EnvironmentName}");
 
             services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
@@ -164,7 +166,7 @@ namespace Amphora.Identity
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-
+            app.UseHealthChecks("/healthz");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

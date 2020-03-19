@@ -63,6 +63,8 @@ namespace Amphora.Api
         {
             base.ConfigureServices(services);
 
+            services.AddHealthChecks();
+
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
             if (HostingEnvironment.IsDevelopment())
             {
@@ -267,6 +269,7 @@ namespace Amphora.Api
             app.UseAuthorization();
             app.UseMiddleware<Middleware.OrganisationCheckMiddleware>();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
+            app.UseHealthChecks("/healthz");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
