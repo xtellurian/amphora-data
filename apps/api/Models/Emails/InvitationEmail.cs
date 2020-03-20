@@ -10,7 +10,14 @@ namespace Amphora.Api.Models.Emails
         {
             this.Recipients.Add(new EmailRecipient(recipient.TargetEmail, ""));
             this.Email = recipient.TargetEmail;
-            if (baseUrl != null) { BaseUrl = baseUrl; }
+            if (!string.IsNullOrEmpty(baseUrl))
+            {
+                BaseUrl = baseUrl;
+            }
+            else
+            {
+                BaseUrl = "https://identity.amphoradata.com"; // invitations are sent by the identity
+            }
         }
 
         [JsonIgnore]
