@@ -42,6 +42,28 @@ namespace Amphora.SharedUI
             {
                 app.UseHttpsRedirection();
             }
+
+            if (HostingEnvironment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseStatusCodePagesWithRedirects("/Home/StatusCode?code={0}");
+                app.UseExceptionHandler("/Home/Error");
+
+                // check if this is set, if yes, then don't disable (i.e. opposite of IfEnabled)
+                if (!string.IsNullOrEmpty(Configuration["DisableHsts"]))
+                {
+                    System.Console.WriteLine("Enabling HSTS");
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    app.UseHsts();
+                }
+                else
+                {
+                    System.Console.WriteLine("HSTS is not enabled");
+                }
+            }
         }
     }
 }

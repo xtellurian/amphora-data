@@ -156,13 +156,10 @@ namespace Amphora.Identity
 
             if (HostingEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
 
             app.UseStaticFiles();
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseIdentityServer();
