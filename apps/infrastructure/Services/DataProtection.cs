@@ -28,6 +28,7 @@ namespace Amphora.Infrastructure.Services
 
             if (CloudStorageAccount.TryParse(azureStorageConnectionString, out var storageAccount) && !string.IsNullOrEmpty(kvUri))
             {
+                System.Console.WriteLine("Enabling KV Backed Blob DataProtection");
                 var client = storageAccount.CreateCloudBlobClient();
                 var container = client.GetContainerReference(containerName);
                 container.CreateIfNotExists();
