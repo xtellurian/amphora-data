@@ -161,6 +161,15 @@ namespace Amphora.Identity
                 app.MigrateSql<IdentityContext>();
             }
 
+            if (HostingEnvironment.IsDevelopment())
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Scheme = "https";
+                    return next();
+                });
+            }
+
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<IdentityContext>>();
