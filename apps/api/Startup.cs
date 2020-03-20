@@ -60,10 +60,15 @@ namespace Amphora.Api
         {
             ConfigureSharedServices(services);
 
-            System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
+            System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
+
+            this.storageModule.ConfigureServices(services);
+            this.identityModule.ConfigureServices(services);
+            this.geoModule.ConfigureServices(services);
+            this.discoverModule.ConfigureServices(services);
+
             if (HostingEnvironment.IsDevelopment())
             {
-                System.Console.WriteLine("Is Development Environment");
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
             }
             else
@@ -73,11 +78,6 @@ namespace Amphora.Api
 
             services.Configure<Amphora.Common.Models.Host.HostOptions>(Configuration.GetSection("Host"));
             AmphoraHost.SetHost(Configuration.GetSection("Host")["MainHost"]);
-
-            this.storageModule.ConfigureServices(services);
-            this.identityModule.ConfigureServices(services);
-            this.geoModule.ConfigureServices(services);
-            this.discoverModule.ConfigureServices(services);
 
             services.Configure<SignalOptions>(Configuration.GetSection("Signals"));
 

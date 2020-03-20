@@ -12,6 +12,8 @@ namespace Amphora.SharedUI
         protected IWebHostEnvironment HostingEnvironment { get; set; }
         protected void ConfigureSharedServices(IServiceCollection services)
         {
+            System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
+
             services.AddHealthChecks();
 
             services.Configure<ForwardedHeadersOptions>(options =>

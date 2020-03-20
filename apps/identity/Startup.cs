@@ -39,7 +39,7 @@ namespace Amphora.Identity
         {
             ConfigureSharedServices(services);
 
-            System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
+            System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
 
             // Data Protection
             var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
