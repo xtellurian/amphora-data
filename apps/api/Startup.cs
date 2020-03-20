@@ -243,7 +243,7 @@ namespace Amphora.Api
             }
 
             app.UseRouting();
-            if (!HostingEnvironment.IsDevelopment())
+            if (HostingEnvironment.IsProduction())
             {
                 app.UseHttpsRedirection();
             }
