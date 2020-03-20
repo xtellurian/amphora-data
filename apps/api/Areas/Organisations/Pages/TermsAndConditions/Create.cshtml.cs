@@ -71,6 +71,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                     Success = false;
                     this.ModelState.AddModelError(string.Empty, updateResult.Message);
                 }
+
                 return Page();
             }
             else
