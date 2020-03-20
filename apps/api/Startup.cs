@@ -202,11 +202,6 @@ namespace Amphora.Api
                 document.Title = "Amphora Data Api";
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
             });
-
-            if (HostingEnvironment.IsProduction())
-            {
-                services.AddHttpsRedirection(options => options.HttpsPort = 443);
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -243,10 +238,6 @@ namespace Amphora.Api
             }
 
             app.UseRouting();
-            if (HostingEnvironment.IsProduction())
-            {
-                app.UseHttpsRedirection();
-            }
 
             app.UseMarkdown(); // Westwind.AspNetCore.Markdown
             app.UseStaticFiles();

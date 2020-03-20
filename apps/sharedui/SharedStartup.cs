@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Amphora.SharedUI
 {
@@ -21,6 +22,11 @@ namespace Amphora.SharedUI
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
+
+            if (HostingEnvironment.IsProduction())
+            {
+                services.AddHttpsRedirection(options => options.HttpsPort = 443);
+            }
         }
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)
@@ -31,6 +37,11 @@ namespace Amphora.SharedUI
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            if (HostingEnvironment.IsProduction())
+            {
+                app.UseHttpsRedirection();
+            }
         }
     }
 }
