@@ -52,7 +52,7 @@ namespace Amphora.Api.StartupModules
 
             var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
             var kvUri = Configuration["kvUri"];
-            if (Configuration.IsPersistentStores())
+            if (HostingEnvironment.IsProduction() || Configuration.IsPersistentStores())
             {
                 services.RegisterKeyVaultWithBlobDataProtection(connectionString, "key-container", "keys.xml", kvUri, "AmphoraData");
             }
