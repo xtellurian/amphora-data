@@ -203,7 +203,7 @@ namespace Amphora.Api
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
             });
 
-            if (!HostingEnvironment.IsProduction())
+            if (HostingEnvironment.IsProduction())
             {
                 services.AddHttpsRedirection(options => options.HttpsPort = 443);
             }
