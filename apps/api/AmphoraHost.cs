@@ -29,6 +29,6 @@ namespace Amphora.Api
             }
         }
 
-        public static string MainHost { get; private set; } = "https://beta.amphoradata.com";
+        public static string MainHost { get; private set; } = "https://app.amphoradata.com";
     }
 }
