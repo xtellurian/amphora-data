@@ -1,4 +1,3 @@
-using System;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
 using Amphora.Api.Services.Wrappers;
@@ -19,14 +18,12 @@ using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
+using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,20 +52,9 @@ namespace Amphora.Api.StartupModules
 
             var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
             var kvUri = Configuration["kvUri"];
-            if (CloudStorageAccount.TryParse(connectionString, out var storageAccount) && !string.IsNullOrEmpty(kvUri))
+            if (Configuration.IsPersistentStores())
             {
-                var client = storageAccount.CreateCloudBlobClient();
-                var container = client.GetContainerReference("key-container");
-                container.CreateIfNotExists();
-                var keyIdentifier = $"{kvUri}keys/dataprotection/";
-                services.AddDataProtection()
-                    .SetApplicationName("AmphoraData")
-                    .PersistKeysToAzureBlobStorage(container, "keys.xml")
-                    .ProtectKeysWithAzureKeyVault(keyVaultClient, keyIdentifier);
-            }
-            else
-            {
-                Console.WriteLine("Not Configuring DataProtection");
+                services.RegisterKeyVaultWithBlobDataProtection(connectionString, "key-container", "keys.xml", kvUri, "AmphoraData");
             }
 
             services.AddScoped<IEventHubSender, EventHubSender>();

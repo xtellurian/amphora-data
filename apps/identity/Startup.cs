@@ -41,6 +41,14 @@ namespace Amphora.Identity
 
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
 
+            // Data Protection
+            var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
+            var kvUri = Configuration["kvUri"];
+            if (Configuration.IsPersistentStores())
+            {
+                services.RegisterKeyVaultWithBlobDataProtection(connectionString, "key-container", "keys.xml", kvUri, "AmphoraIdentity");
+            }
+
             services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
             var externalServices = new ExternalServices();
             Configuration.GetSection("ExternalServices").Bind(externalServices);
