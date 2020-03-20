@@ -161,7 +161,7 @@ namespace Amphora.Identity
                 app.MigrateSql<IdentityContext>();
             }
 
-            if (HostingEnvironment.IsDevelopment())
+            if (HostingEnvironment.IsProduction())
             {
                 app.Use((context, next) =>
                 {
