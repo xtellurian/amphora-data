@@ -134,6 +134,16 @@ namespace Amphora.Identity
 
         public void Configure(IApplicationBuilder app)
         {
+            // should come before other middleware
+            if (HostingEnvironment.IsProduction())
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Scheme = "https";
+                    return next();
+                });
+            }
+
             ConfigureSharedPipeline(app);
 
             if (HostingEnvironment.IsDevelopment())
@@ -159,15 +169,6 @@ namespace Amphora.Identity
             if (IsUsingSql())
             {
                 app.MigrateSql<IdentityContext>();
-            }
-
-            if (HostingEnvironment.IsProduction())
-            {
-                app.Use((context, next) =>
-                {
-                    context.Request.Scheme = "https";
-                    return next();
-                });
             }
 
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
