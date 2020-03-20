@@ -43,7 +43,7 @@ namespace Amphora.Tests.Integration
                 var response = await client.GetAsync("/api/version");
                 var content = await response.Content.ReadAsStringAsync();
 
-                using (var prodClient = new HttpClient() { BaseAddress = new System.Uri("https://beta.amphoradata.com/") })
+                using (var prodClient = new HttpClient() { BaseAddress = new System.Uri("https://app.amphoradata.com/") })
                 {
                     var prodResponse = await prodClient.GetAsync("api/version");
                     var prodContent = await prodResponse.Content.ReadAsStringAsync();
