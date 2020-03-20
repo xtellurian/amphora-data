@@ -6,6 +6,18 @@
 }
 
 <div class="container">
+    @if(Model.Success == true)
+    {
+        <div class="alert alert-success" role="alert">
+            Saved
+        </div>
+    }
+    else if(Model.Success == false)
+    {
+        <div class="alert alert-danger" role="alert">
+            Something went wrong...
+        </div>
+    }
     <div class="row">
         <div class="col">
             <h2>New Terms and Conditions Agreement</h2>

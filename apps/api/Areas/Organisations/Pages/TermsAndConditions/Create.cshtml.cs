@@ -23,6 +23,8 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         [BindProperty]
         public Amphora.Api.Models.Dtos.Organisations.TermsAndConditions TermsAndConditions { get; set; }
         public OrganisationModel Organisation { get; private set; }
+        [TempData]
+        public bool? Success { get; set; } = null;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -54,12 +56,21 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                 {
                     // duplicate id
                     ModelState.AddModelError(string.Empty, $"The Id '{model.Id}' already exists.");
+                    Success = false;
                     return Page();
                 }
 
                 var updateResult = await organisationService.UpdateAsync(User, Organisation);
-                if (updateResult.Succeeded) { return RedirectToPage("./Index", new { Id = Organisation.Id }); }
-                else { this.ModelState.AddModelError(string.Empty, updateResult.Message); }
+                if (updateResult.Succeeded)
+                {
+                    Success = true;
+                    return RedirectToPage("./Index", new { Id = Organisation.Id });
+                }
+                else
+                {
+                    Success = false;
+                    this.ModelState.AddModelError(string.Empty, updateResult.Message);
+                }
                 return Page();
             }
             else
