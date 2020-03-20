@@ -14,26 +14,21 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col-md-6">
                 <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="accept">
-                    <div class="form-group">
-                        <label asp-for="AcceptInvitation" class="control-label"></label>
-                        <input asp-for="AcceptInvitation" class="form-control" />
-                        <span asp-validation-for="AcceptInvitation" class="text-danger"></span>
-                    </div>
                     <div class="form-group">
                         <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
                     </div>
                 </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="reject">
+                <form class="mt-3" method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="reject">
                     <div class="form-group">
                         <input type="submit" value="Reject Invitation to @Model.Invitation.TargetOrganisation.Name" class="btn btn-danger btn-block" />
                     </div>
                 </form>
+            </div>
+
+            <div class="col-md-6">
+                <img class="img-fluid" src="~/images/stock/undraw_remote_team_h93l.svg"/>
             </div>
         </div>
     </div>

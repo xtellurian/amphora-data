@@ -21,10 +21,6 @@ namespace Amphora.Api.Areas.Organisations.Pages
 
         public InvitationModel Invitation { get; private set; }
 
-        [BindProperty]
-        [Display(Name = "Accept Invitation")]
-        public bool AcceptInvitation { get; set; }
-
         public async Task<IActionResult> OnGetAsync(string id)
         {
             if (id == null)
@@ -58,11 +54,6 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public async Task<IActionResult> OnPostAcceptAsync(string invitationId)
         {
             if (invitationId == null) { throw new System.NullReferenceException("invitationId was null"); }
-            if (!AcceptInvitation)
-            {
-                ModelState.AddModelError(string.Empty, "You must accept the invitation to continue.");
-                return Page();
-            }
 
             this.Invitation = await invitationService.Store.ReadAsync(invitationId);
             if (Invitation == null)
