@@ -17,6 +17,9 @@ config:
   amphora:tokenManagement__secret:
     secure: AAABAFYYlpDDdhXr6hDg+Qo9UBjBexy40A0xN63RIK2BnEU4k4KCbnstxJFrnGrAGNXxNQ==
   application:mainHost: app.amphoradata.com
+  apps:externalServices:
+    identityBaseUrl: identity.amphoradata.com
+    webAppBaseUrl: app.amphoradata.com
   apps:plans:
   - location: australiasoutheast
     name: appSvc
