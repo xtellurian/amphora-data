@@ -157,7 +157,7 @@ export class Identity extends pulumi.ComponentResource {
                 spec: {
                     tls: [
                         {
-                            hosts: [...hosts],
+                            hosts: [...hosts, this.params.fqdn],
                             secretName: "identity-tls-secret"
                         }
                     ],
