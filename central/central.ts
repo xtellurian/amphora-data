@@ -78,6 +78,9 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
     opts,
 );
 
+const appHostName = "app.amphoradata.com";
+const identityHostName = "identity.amphoradata.com";
+
 const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
 // add the squarespace backend
 backendPools.push(
@@ -93,39 +96,87 @@ backendPools.push(
         name: "squarespaceBackend",
     });
 
+// APP BACKENDS
 // add app service backends
 const prodBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
 for (let i = 0; i < prodBackendCount; i++) {
     prodBackends.push({
         address: prodHostnames.apply((h) => h[i]),
-        hostHeader: "app.amphoradata.com",
+        hostHeader: appHostName,
         httpPort: 80,
         httpsPort: 443,
     });
 }
 
 // add k8s primary + secondary backend from aks
+
 prodBackends.push({
     address: k8sPrimary.apply((k) => k.fqdn),
-    hostHeader: "app.amphoradata.com",
+    hostHeader: appHostName,
     httpPort: 80,
     httpsPort: 443,
 });
 prodBackends.push({
     address: k8sSecondary.apply((k) => k.fqdn),
-    hostHeader: "app.amphoradata.com",
+    hostHeader: appHostName,
     httpPort: 80,
     httpsPort: 443,
 });
 
+const prodBackendPoolName = "prodBackend";
 const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
     backends: prodBackends,
     healthProbeName: "normal",
     loadBalancingName: "loadBalancingSettings1",
-    name: "prodBackend",
+    name: prodBackendPoolName,
 };
 
 backendPools.push(prodBackendPool);
+
+const appFrontend = {
+    customHttpsConfiguration: {
+        certificateSource: "FrontDoor",
+    },
+    customHttpsProvisioningEnabled: true,
+    hostName: appHostName,
+    name: "appDomain",
+    sessionAffinityEnabled: true,
+};
+
+// IDENTITY BACKENDS
+const identityBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
+identityBackends.push({
+    address: k8sPrimary.apply((k) => k.fqdn),
+    hostHeader: identityHostName,
+    httpPort: 80,
+    httpsPort: 443,
+});
+identityBackends.push({
+    address: k8sSecondary.apply((k) => k.fqdn),
+    hostHeader: identityHostName,
+    httpPort: 80,
+    httpsPort: 443,
+});
+
+const identityBackendPoolName = "identityBackend";
+const identityBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
+    backends: identityBackends,
+    healthProbeName: "normal",
+    loadBalancingName: "loadBalancingSettings1",
+    name: identityBackendPoolName,
+};
+
+backendPools.push(identityBackendPool);
+
+const identityFrontend = {
+    customHttpsConfiguration: {
+        certificateSource: "FrontDoor",
+    },
+    customHttpsProvisioningEnabled: true,
+    hostName: identityHostName,
+    name: "identityFrontend",
+    sessionAffinityEnabled: true,
+};
 
 const frontDoor = new azure.frontdoor.Frontdoor("fd", {
     backendPoolHealthProbes: [{
@@ -173,15 +224,10 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
         hostName: "beta.amphoradata.com",
         name: "betaDomain",
         sessionAffinityEnabled: true,
-    }, {
-        customHttpsConfiguration: {
-            certificateSource: "FrontDoor",
-        },
-        customHttpsProvisioningEnabled: true,
-        hostName: "app.amphoradata.com",
-        name: "appDomain",
-        sessionAffinityEnabled: true,
-    }],
+    },
+        appFrontend,
+        identityFrontend,
+    ],
     location: "global",
     name: "amphora",
     resourceGroupName: rg.name,
@@ -201,17 +247,17 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
             patternsToMatches: ["/*"],
         },
         {
-            // Prod Backend Route
+            // Prod App Backend Route
             acceptedProtocols: [
                 "Https",
             ],
             forwardingConfiguration: {
-                backendPoolName: "prodBackend",
+                backendPoolName: prodBackendPoolName,
                 cacheEnabled: false,
                 cacheQueryParameterStripDirective: "StripNone",
                 forwardingProtocol: "HttpsOnly",
             },
-            frontendEndpoints: ["betaDomain", "appDomain"],
+            frontendEndpoints: ["betaDomain", appFrontend.name],
             name: "routeToProdEnvironment",
             patternsToMatches: ["/*"],
         },
@@ -220,13 +266,35 @@ const frontDoor = new azure.frontdoor.Frontdoor("fd", {
             acceptedProtocols: [
                 "Http",
             ],
-            frontendEndpoints: ["defaultFrontend", "rootDomain", "wwwDomain", "betaDomain", "appDomain"],
+            frontendEndpoints: [
+                "defaultFrontend",
+                "rootDomain",
+                "wwwDomain",
+                "betaDomain",
+                appFrontend.name,
+                identityFrontend.name,
+            ],
             name: "redirectToHttps",
             patternsToMatches: ["/*"],
             redirectConfiguration: {
                 redirectProtocol: "HttpsOnly",
                 redirectType: "Found",
             },
+        },
+        {
+            // Prod Identity Backend Route
+            acceptedProtocols: [
+                "Https",
+            ],
+            forwardingConfiguration: {
+                backendPoolName: identityBackendPoolName,
+                cacheEnabled: false,
+                cacheQueryParameterStripDirective: "StripNone",
+                forwardingProtocol: "HttpsOnly",
+            },
+            frontendEndpoints: [identityFrontend.name],
+            name: "routeToIdentityProdEnvironment",
+            patternsToMatches: ["/*"],
         },
     ],
 });

@@ -66,6 +66,18 @@ export function createDns(rg: azure.core.ResourceGroup) {
         opts,
     );
 
+    const identityCName = new azure.dns.CNameRecord("identityCName",
+        {
+            name: "identity",
+            record: "amphora.azurefd.net",
+            resourceGroupName: rg.name,
+            tags,
+            ttl: 30,
+            zoneName: dnsZone.name,
+        },
+        opts,
+    );
+
     const docsCName = new azure.dns.CNameRecord("docsCName",
         {
             name: "docs",
