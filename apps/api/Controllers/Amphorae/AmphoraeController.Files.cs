@@ -39,7 +39,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> ListFiles(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -58,7 +58,8 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="file">The name of the file.</param>
         /// <returns>The file contents.</returns>
         [HttpGet("{file}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(typeof(FileResult), 200)]
+        [CommonAuthorize]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -86,7 +87,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(UploadResponse))]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [DisableRequestSizeLimit]
         [OpenApiIgnore]
         public async Task<IActionResult> UploadFile(string id, string file, [FromForm] IFormFile content)
@@ -126,7 +127,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>An object with a blob URL.</returns>
         [HttpPost("{file}")]
         [Produces(typeof(UploadResponse))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> CreateFileRequest(string id, string file)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -155,7 +156,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A list of file names.</returns>
         [Produces(typeof(Dictionary<string, string>))]
         [HttpPost("{file}/meta")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> WriteFileMetadata(string id, string file, [FromBody] Dictionary<string, string> metadata)
         {
             var result = await amphoraeService.ReadAsync(User, id);
