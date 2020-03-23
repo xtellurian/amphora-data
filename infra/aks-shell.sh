@@ -21,4 +21,11 @@ name=$( jq -r  '.name' <<< "$(echo $JSON)" )
 group=$( jq -r  '.group' <<< "$(echo $JSON)" ) 
 
 echo "Name: $name, Group: $group"
-az aks get-credentials -n "$name" -g "$group"
+# az aks get-credentials -n "$name" -g "$group"
+
+# docker run -it -e "name=$name" -e "group=$group" mcr.microsoft.com/azure-cli
+
+pushd .aks-shell
+docker-compose build
+docker-compose run -e "name=$name" -e "group=$group" kubecli
+popd
