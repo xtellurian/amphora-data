@@ -22,11 +22,6 @@ namespace Amphora.SharedUI
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
-
-            if (HostingEnvironment.IsProduction())
-            {
-                services.AddHttpsRedirection(options => options.HttpsPort = 443);
-            }
         }
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)
@@ -37,11 +32,6 @@ namespace Amphora.SharedUI
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-
-            if (HostingEnvironment.IsProduction())
-            {
-                app.UseHttpsRedirection();
-            }
 
             if (HostingEnvironment.IsDevelopment())
             {
