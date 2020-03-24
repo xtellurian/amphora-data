@@ -176,7 +176,7 @@ export class Application extends pulumi.ComponentResource
     this.appConfiguration = new azure.appconfiguration.ConfigurationStore("configStore", {
       location: CONSTANTS.location.secondary, // not available in aus SE
       resourceGroupName: rg.name,
-      sku: "standard",
+      sku: "free",
       tags,
     }, {
       parent: this,
