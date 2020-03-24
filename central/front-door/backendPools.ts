@@ -13,13 +13,19 @@ export interface IBackendPoolNames {
     identity: string;
 }
 
+export interface IBackendEnvironments {
+    develop: IBackendPoolNames;
+    master: IBackendPoolNames;
+    prod: IBackendPoolNames;
+}
+
 const locations = {
     mel: "australiasoutheast",
     syd: "australiaeast",
 };
 
-export function getBackendPools({ poolNames, frontendHosts }:
-    { poolNames: IBackendPoolNames; frontendHosts: IFrontendHosts; })
+export function getBackendPools({ backendEnvironments, frontendHosts }:
+    { backendEnvironments: IBackendEnvironments; frontendHosts: IFrontendHosts; })
     : pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> {
 
     const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
@@ -67,7 +73,7 @@ export function getBackendPools({ poolNames, frontendHosts }:
         backends: prodBackends,
         healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
-        name: poolNames.app,
+        name: backendEnvironments.prod.app,
     };
 
     backendPools.push(prodBackendPool);
@@ -91,13 +97,13 @@ export function getBackendPools({ poolNames, frontendHosts }:
         backends: identityBackends,
         healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
-        name: poolNames.identity,
+        name: backendEnvironments.prod.identity,
     };
 
     backendPools.push(identityBackendPool);
 
     // try create develop backend pool
-    const devAppPool = createPool(`dev${poolNames.app}`, "develop", frontendHosts.develop.app);
+    const devAppPool = createPool(`dev${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app);
     // backendPools.push(devAppPool);
 
     return backendPools;

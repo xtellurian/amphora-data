@@ -1,17 +1,27 @@
 import * as azure from "@pulumi/azure";
 
 import { IFrontendHosts } from "../dns/front-door-dns";
-import { getBackendPools, IBackendPoolNames } from "./backendPools";
+import { getBackendPools, IBackendEnvironments } from "./backendPools";
 
-const poolNames: IBackendPoolNames = {
-    app: "prodBackend",
-    identity: "identityBackend",
+const backendEnvironments: IBackendEnvironments = {
+    develop: {
+        app: "devAppBackend",
+        identity: "devIdBackend",
+    },
+    master : {
+        app: "masterAppBackend",
+        identity: "masterIdBackend",
+    },
+    prod: {
+        app: "prodBackend",
+        identity: "identityBackend",
+    },
 };
 
 export function createFrontDoor({ rg, kv, frontendHosts }
         : { rg: azure.core.ResourceGroup; kv: azure.keyvault.KeyVault; frontendHosts: IFrontendHosts; }) {
 
-    const backendPools = getBackendPools({ poolNames, frontendHosts } );
+    const backendPools = getBackendPools({ backendEnvironments, frontendHosts } );
     const appFrontend = {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",
@@ -106,7 +116,7 @@ export function createFrontDoor({ rg, kv, frontendHosts }
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: poolNames.app,
+                    backendPoolName: backendEnvironments.prod.app,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",
@@ -141,7 +151,7 @@ export function createFrontDoor({ rg, kv, frontendHosts }
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: poolNames.identity,
+                    backendPoolName: backendEnvironments.prod.identity,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",
