@@ -24,28 +24,7 @@ export function getRoutingRules(backendEnvironments: IBackendEnvironments, front
             patternsToMatches: ["/*"],
         },
         getRule("routeToProdEnvironment", backendEnvironments.prod.app, frontendHosts.prod.app, ["betaDomain"]),
-        {
-            // Https Redirects Route
-            acceptedProtocols: [
-                "Http",
-            ],
-            frontendEndpoints: [
-                "defaultFrontend",
-                "rootDomain",
-                "wwwDomain",
-                "betaDomain",
-                frontendHosts.prod.app.frontendName,
-                frontendHosts.prod.identity.frontendName,
-                frontendHosts.develop.app.frontendName,
-                frontendHosts.develop.identity.frontendName,
-            ],
-            name: "redirectToHttps",
-            patternsToMatches: ["/*"],
-            redirectConfiguration: {
-                redirectProtocol: "HttpsOnly",
-                redirectType: "Found",
-            },
-        },
+        getHttpRedirectRule(frontendHosts),
         getRule("routeToIdentityProdEnvironment", backendEnvironments.prod.identity, frontendHosts.prod.identity),
     ];
 
@@ -86,4 +65,40 @@ function getRule(name: string, backendPoolName: string, frontend: IUniqueUrl, ad
         name,
         patternsToMatches: ["/*"],
     };
+}
+
+function getHttpRedirectRule(frontendHosts: IFrontendHosts) {
+
+    const frontendEndpoints = [
+        "defaultFrontend",
+        "rootDomain",
+        "wwwDomain",
+        "betaDomain",
+        frontendHosts.prod.app.frontendName,
+        frontendHosts.prod.identity.frontendName,
+    ];
+
+    if (config.requireBoolean("deployDevelop")) {
+        frontendEndpoints.push(frontendHosts.develop.app.frontendName);
+        frontendEndpoints.push(frontendHosts.develop.identity.frontendName);
+    }
+
+    if (config.requireBoolean("deployMaster")) {
+        frontendEndpoints.push(frontendHosts.master.app.frontendName);
+        frontendEndpoints.push(frontendHosts.master.identity.frontendName);
+    }
+    const rule = {
+        // Https Redirects Route
+        acceptedProtocols: [
+            "Http",
+        ],
+        frontendEndpoints,
+        name: "redirectToHttps",
+        patternsToMatches: ["/*"],
+        redirectConfiguration: {
+            redirectProtocol: "HttpsOnly",
+            redirectType: "Found",
+        },
+    };
+    return rule;
 }
