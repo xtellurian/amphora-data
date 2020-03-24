@@ -140,8 +140,8 @@ export class FrontEnd extends pulumi.ComponentResource {
             }
         ];
 
-        const hosts: string[] = [
-            `${env}.${this.params.location}.app.amphoradata.com`
+        const hosts: pulumi.Output<string>[] = [
+            pulumi.interpolate `${env}.${this.params.location}.app.amphoradata.com`
         ]
 
         if (hosts) {
