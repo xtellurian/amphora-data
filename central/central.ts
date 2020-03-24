@@ -2,7 +2,7 @@ import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
 import { createDns } from "./dns";
-import { createFrontDoor } from "./frontDoor";
+import { createFrontDoor } from "./front-door/frontDoor";
 
 const authConfig = new pulumi.Config("authentication");
 

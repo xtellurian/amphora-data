@@ -1,110 +1,42 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
-const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
-const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
-const prodBackendCount = 2; // should match the array length from prod stack as above
-const k8sPrimary = prodStack.getOutput("k8sPrimary");
-const k8sSecondary = prodStack.getOutput("k8sSecondary");
+import { getBackendPools, IBackendPoolNames } from "./backendPools";
+
+export interface IMainHostnames {
+    app: string;
+    identity: string;
+}
+
+const hostnames: IMainHostnames = {
+    app: "app.amphoradata.com",
+    identity: "identity.amphoradata.com",
+};
+
+const backendPoolNames: IBackendPoolNames = {
+    identity: "identityBackend",
+    prod: "prodBackend",
+};
 
 export function createFrontDoor(rg: azure.core.ResourceGroup, kv: azure.keyvault.KeyVault) {
 
-    const appHostName = "app.amphoradata.com";
-    const identityHostName = "identity.amphoradata.com";
-
-    const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
-    // add the squarespace backend
-    backendPools.push(
-        {
-            backends: [{
-                address: "azalea-orca-x567.squarespace.com",
-                hostHeader: "azalea-orca-x567.squarespace.com",
-                httpPort: 80,
-                httpsPort: 443,
-            }],
-            healthProbeName: "normal",
-            loadBalancingName: "loadBalancingSettings1",
-            name: "squarespaceBackend",
-        });
-
-    // APP BACKENDS
-    // add app service backends
-    const prodBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
-    for (let i = 0; i < prodBackendCount; i++) {
-        prodBackends.push({
-            address: prodHostnames.apply((h) => h[i]),
-            hostHeader: appHostName,
-            httpPort: 80,
-            httpsPort: 443,
-        });
-    }
-
-    // add k8s primary + secondary backend from aks
-
-    prodBackends.push({
-        address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: appHostName,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-    prodBackends.push({
-        address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: appHostName,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-
-    const prodBackendPoolName = "prodBackend";
-    const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: prodBackends,
-        healthProbeName: "normal",
-        loadBalancingName: "loadBalancingSettings1",
-        name: prodBackendPoolName,
-    };
-
-    backendPools.push(prodBackendPool);
-
+    const backendPools = getBackendPools(backendPoolNames, hostnames);
     const appFrontend = {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",
         },
         customHttpsProvisioningEnabled: true,
-        hostName: appHostName,
+        hostName: hostnames.app,
         name: "appDomain",
         sessionAffinityEnabled: true,
     };
-
-    // IDENTITY BACKENDS
-    const identityBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
-    identityBackends.push({
-        address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: identityHostName,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-    identityBackends.push({
-        address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: identityHostName,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-
-    const identityBackendPoolName = "identityBackend";
-    const identityBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: identityBackends,
-        healthProbeName: "normal",
-        loadBalancingName: "loadBalancingSettings1",
-        name: identityBackendPoolName,
-    };
-
-    backendPools.push(identityBackendPool);
 
     const identityFrontend = {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",
         },
         customHttpsProvisioningEnabled: true,
-        hostName: identityHostName,
+        hostName: hostnames.identity,
         name: "identityFrontend",
         sessionAffinityEnabled: true,
     };
@@ -183,7 +115,7 @@ export function createFrontDoor(rg: azure.core.ResourceGroup, kv: azure.keyvault
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: prodBackendPoolName,
+                    backendPoolName: backendPoolNames.prod,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",
@@ -218,7 +150,7 @@ export function createFrontDoor(rg: azure.core.ResourceGroup, kv: azure.keyvault
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: identityBackendPoolName,
+                    backendPoolName: backendPoolNames.identity,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",
