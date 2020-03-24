@@ -15,6 +15,7 @@ const tags = {
 };
 export interface IUniqueUrl {
     globalHost: pulumi.Output<string>;
+    frontendName: string; // the name of the frontend pool in azure fd
     appName: string; // must be identity or app
 }
 
@@ -89,10 +90,12 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
         prod: {
             app: {
                 appName: "app",
+                frontendName: "appDomain",
                 globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
             },
             identity: {
                 appName: "identity",
+                frontendName: "identityFrontend",
                 globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
             },
         },
@@ -127,10 +130,12 @@ function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azur
     return {
         app: {
             appName: "app",
+            frontendName: `${env}appfront`,
             globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
         },
         identity: {
             appName: "identity",
+            frontendName: `${env}idfront`,
             globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)),  // remove a trailing period
         },
     };

@@ -1,6 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { IFrontendHosts, IGlobalUrl, IUniqueUrl } from "../dns/front-door-dns";
+import { IFrontendHosts, IUniqueUrl } from "../dns/front-door-dns";
 
 const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
 const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
@@ -103,8 +103,11 @@ export function getBackendPools({ backendEnvironments, frontendHosts }:
     backendPools.push(identityBackendPool);
 
     // try create develop backend pool
-    const devAppPool = createPool(`dev${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app);
+    const devAppPool = createPool(`${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app);
     // backendPools.push(devAppPool);
+    // try create develop backend pool
+    const devIdPool = createPool(`${backendEnvironments.develop.identity}`, "develop", frontendHosts.develop.identity);
+    // backendPools.push(devIdPool);
 
     return backendPools;
 }
