@@ -12,9 +12,6 @@ const env = pulumi.getStack();
 
 const frontendConfig = new pulumi.Config("frontend")
 const image = frontendConfig.require("image");
-const hosts: string[] = [
-    `${env}.${location}.identity.amphoradata.com`
-]
 
 export class FrontEnd extends pulumi.ComponentResource {
 
@@ -142,6 +139,11 @@ export class FrontEnd extends pulumi.ComponentResource {
                 http
             }
         ];
+
+        const hosts: string[] = [
+            `${env}.${this.params.location}.app.amphoradata.com`
+        ]
+
         if (hosts) {
             hosts.forEach(h => {
                 rules.push({

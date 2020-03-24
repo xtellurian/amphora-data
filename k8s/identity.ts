@@ -13,10 +13,6 @@ const env = pulumi.getStack();
 const identityConfig = new pulumi.Config("identity")
 const image = identityConfig.require("image");
 
-const hosts: string[] = [
-    `${env}.${location}.identity.amphoradata.com`
-]
-
 export class Identity extends pulumi.ComponentResource {
 
     constructor(
@@ -136,6 +132,10 @@ export class Identity extends pulumi.ComponentResource {
                 }
             ]
         }
+
+        const hosts: string[] = [
+            `${env}.${location}.identity.amphoradata.com`
+        ]
         // add the rule for each host
         const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [];
 
