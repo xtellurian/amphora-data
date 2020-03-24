@@ -73,4 +73,4 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
     opts,
 );
 
-createFrontDoor({ rg, kv, frontendHosts });
+export const backendEnvironments = createFrontDoor({ rg, kv, frontendHosts });
