@@ -32,6 +32,17 @@ namespace Amphora.SharedUI
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)
         {
+            // should come before other middleware. Because prod is behind a reverse proxy,
+            // this is needed so the redirect_uri in identity server isn't http
+            if (HostingEnvironment.IsProduction())
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Scheme = "https";
+                    return next();
+                });
+            }
+
             app.UseHealthChecks("/healthz");
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
             app.UseForwardedHeaders(new ForwardedHeadersOptions
