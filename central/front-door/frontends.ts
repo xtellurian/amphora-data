@@ -1,6 +1,9 @@
 import * as azure from "@pulumi/azure";
+import * as pulumi from "@pulumi/pulumi";
 import { Input } from "@pulumi/pulumi";
-import { IFrontendHosts } from "../dns/front-door-dns";
+import { IFrontendHosts, IUniqueUrl } from "../dns/front-door-dns";
+
+const config = new pulumi.Config();
 
 export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts: IFrontendHosts)
     : Input<Array<Input<azure.types.input.frontdoor.FrontdoorFrontendEndpoint>>> {
@@ -58,5 +61,27 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
         },
     ];
 
+    if (config.requireBoolean("deployDevelop")) {
+        frontends.push(getFrontend(frontendHosts.develop.identity));
+        frontends.push(getFrontend(frontendHosts.develop.app));
+    }
+
+    if (config.requireBoolean("deployMaster")) {
+        frontends.push(getFrontend(frontendHosts.master.identity));
+        frontends.push(getFrontend(frontendHosts.master.app));
+    }
+
     return frontends;
+}
+
+function getFrontend(frontend: IUniqueUrl): azure.types.input.frontdoor.FrontdoorFrontendEndpoint {
+    return {
+        customHttpsConfiguration: {
+            certificateSource: "FrontDoor",
+        },
+        customHttpsProvisioningEnabled: true,
+        hostName: frontend.globalHost,
+        name: frontend.frontendName,
+        sessionAffinityEnabled: true,
+    };
 }

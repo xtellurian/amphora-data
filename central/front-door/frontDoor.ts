@@ -33,7 +33,13 @@ export function createFrontDoor({ rg, kv, frontendHosts }
             intervalInSeconds: 30,
             name: "normal",
             path: "/",
-            protocol: "Https",
+            protocol: "Http",
+        },
+        {
+            intervalInSeconds: 30,
+            name: "healthz",
+            path: "/healthz",
+            protocol: "Http",
         }],
         backendPoolLoadBalancings: [{
             name: "loadBalancingSettings1",

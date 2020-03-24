@@ -8,6 +8,8 @@ const prodBackendCount = 2; // should match the array length from prod stack as 
 const k8sPrimary = prodStack.getOutput("k8sPrimary");
 const k8sSecondary = prodStack.getOutput("k8sSecondary");
 
+const config = new pulumi.Config();
+
 export interface IBackendPoolNames {
     app: string;
     identity: string;
@@ -102,12 +104,23 @@ export function getBackendPools({ backendEnvironments, frontendHosts }:
 
     backendPools.push(identityBackendPool);
 
-    // try create develop backend pool
+    // create develop pools
     const devAppPool = createPool(`${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app);
-    // backendPools.push(devAppPool);
-    // try create develop backend pool
     const devIdPool = createPool(`${backendEnvironments.develop.identity}`, "develop", frontendHosts.develop.identity);
-    // backendPools.push(devIdPool);
+
+    // create master pools
+    const masterAppPool = createPool(`${backendEnvironments.master.app}`, "master", frontendHosts.master.app);
+    const masterIdPool = createPool(`${backendEnvironments.master.identity}`, "master", frontendHosts.master.identity);
+
+    // add tobackends
+    if (config.requireBoolean("deployDevelop")) {
+        backendPools.push(devAppPool);
+        backendPools.push(devIdPool);
+    }
+    if (config.requireBoolean("deployMaster")) {
+        backendPools.push(masterAppPool);
+        backendPools.push(masterIdPool);
+    }
 
     return backendPools;
 }
@@ -118,23 +131,25 @@ function createPool(poolName: string, envName: string, url: IUniqueUrl)
     : azure.types.input.frontdoor.FrontdoorBackendPool {
     const backends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
     // add sydney
+    const sydHost = `${envName}.${locations.syd}.${url.appName}.${domain}`;
     backends.push({
-        address: `${envName}.${locations.syd}.${url.appName}.${domain}`,
-        hostHeader: url.globalHost,
+        address: sydHost,
+        hostHeader: sydHost,
         httpPort: 80,
         httpsPort: 443,
     });
     // add melbourne
+    const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
     backends.push({
-        address: `${envName}.${locations.mel}.${url.appName}.${domain}`,
-        hostHeader: url.globalHost,
+        address: melHost,
+        hostHeader: melHost,
         httpPort: 80,
         httpsPort: 443,
     });
 
     const backendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends,
-        healthProbeName: "normal",
+        healthProbeName: "healthz",
         loadBalancingName: "loadBalancingSettings1",
         name: poolName,
     };
