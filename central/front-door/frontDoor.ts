@@ -1,6 +1,6 @@
 import * as azure from "@pulumi/azure";
-import * as pulumi from "@pulumi/pulumi";
 
+import { IFrontendFqdns } from "../dns/front-door-dns";
 import { getBackendPools, IBackendPoolNames } from "./backendPools";
 
 export interface IMainHostnames {
@@ -18,9 +18,11 @@ const backendPoolNames: IBackendPoolNames = {
     prod: "prodBackend",
 };
 
-export function createFrontDoor(rg: azure.core.ResourceGroup, kv: azure.keyvault.KeyVault) {
+export function createFrontDoor(rg: azure.core.ResourceGroup,
+                                kv: azure.keyvault.KeyVault,
+                                frontendFqdns: IFrontendFqdns) {
 
-    const backendPools = getBackendPools(backendPoolNames, hostnames);
+    const backendPools = getBackendPools({ backendPoolNames, hostnames, frontendFqdns });
     const appFrontend = {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",

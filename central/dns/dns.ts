@@ -1,9 +1,10 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { frontDoorDns } from "./front-door-dns";
+import { frontDoorDns, IFrontendFqdns } from "./front-door-dns";
 import { K8sDns } from "./k8s-dns";
 
-export function createDns(rg: azure.core.ResourceGroup) {
+// pass through the frontend fqdns
+export function createDns(rg: azure.core.ResourceGroup): IFrontendFqdns {
 
     const tags = {
         component: "central-dns",
@@ -53,8 +54,6 @@ export function createDns(rg: azure.core.ResourceGroup) {
         },
         opts,
     );
-
-    frontDoorDns(rg, dnsZone);
 
     // these come from O365
 
@@ -194,4 +193,6 @@ export function createDns(rg: azure.core.ResourceGroup) {
         },
         opts,
     );
+
+    return frontDoorDns(rg, dnsZone);
 }

@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { IFrontendFqdns } from "../dns/front-door-dns";
 import { IMainHostnames } from "./frontDoor";
 
 const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
@@ -8,12 +9,18 @@ const prodBackendCount = 2; // should match the array length from prod stack as 
 const k8sPrimary = prodStack.getOutput("k8sPrimary");
 const k8sSecondary = prodStack.getOutput("k8sSecondary");
 
+interface IBackendPoolsParams {
+    backendPoolNames: IBackendPoolNames;
+    hostnames: IMainHostnames;
+    frontendFqdns: IFrontendFqdns;
+}
+
 export interface IBackendPoolNames {
     prod: string;
     identity: string;
 }
 
-export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: IMainHostnames)
+export function getBackendPools(params: IBackendPoolsParams)
     : pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> {
 
     const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
@@ -37,7 +44,7 @@ export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: 
     for (let i = 0; i < prodBackendCount; i++) {
         prodBackends.push({
             address: prodHostnames.apply((h) => h[i]),
-            hostHeader: hostnames.app,
+            hostHeader: params.hostnames.app,
             httpPort: 80,
             httpsPort: 443,
         });
@@ -46,13 +53,13 @@ export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: 
     // add k8s primary + secondary backend from aks
     prodBackends.push({
         address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: hostnames.app,
+        hostHeader: params.hostnames.app,
         httpPort: 80,
         httpsPort: 443,
     });
     prodBackends.push({
         address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: hostnames.app,
+        hostHeader: params.hostnames.app,
         httpPort: 80,
         httpsPort: 443,
     });
@@ -61,7 +68,7 @@ export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: 
         backends: prodBackends,
         healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
-        name: backendPoolNames.prod,
+        name: params.backendPoolNames.prod,
     };
 
     backendPools.push(prodBackendPool);
@@ -70,13 +77,13 @@ export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: 
     const identityBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
     identityBackends.push({
         address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: hostnames.identity,
+        hostHeader: params.hostnames.identity,
         httpPort: 80,
         httpsPort: 443,
     });
     identityBackends.push({
         address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: hostnames.identity,
+        hostHeader: params.hostnames.identity,
         httpPort: 80,
         httpsPort: 443,
     });
@@ -85,7 +92,7 @@ export function getBackendPools(backendPoolNames: IBackendPoolNames, hostnames: 
         backends: identityBackends,
         healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
-        name: backendPoolNames.identity,
+        name: params.backendPoolNames.identity,
     };
 
     backendPools.push(identityBackendPool);

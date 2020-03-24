@@ -14,7 +14,18 @@ const tags = {
     stack: pulumi.getStack(),
 };
 
-export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone) {
+interface IEnvironmentFqdns {
+    app: pulumi.Output<string>;
+    identity: pulumi.Output<string>;
+}
+
+export interface IFrontendFqdns {
+    develop: IEnvironmentFqdns;
+    master: IEnvironmentFqdns;
+    prod: IEnvironmentFqdns;
+}
+
+export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IFrontendFqdns {
     // static site
     const wwwCName = new azure.dns.CNameRecord("wwwCName",
         {
@@ -65,11 +76,20 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
         opts,
     );
 
-    addForEnvironment("develop", rg, zone);
-    addForEnvironment("master", rg, zone);
+    const develop = addForEnvironment("develop", rg, zone);
+    const master = addForEnvironment("master", rg, zone);
+
+    return {
+        develop,
+        master,
+        prod: {
+            app: appCName.fqdn,
+            identity: identityCName.fqdn,
+        },
+    };
 }
 
-function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone) {
+function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IEnvironmentFqdns {
     const appCName = new azure.dns.CNameRecord(`${env}-app-CN`,
         {
             name: `${env}.app`,
@@ -93,4 +113,9 @@ function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azur
         },
         opts,
     );
+
+    return {
+        app: appCName.fqdn,
+        identity: identityCName.fqdn,
+    };
 }
