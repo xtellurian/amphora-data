@@ -18,6 +18,7 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/")]
         [InlineData("/Home/Values")]
         [InlineData("/Home/Error")]
+        [InlineData("/Home/StatusCode?code=404")]
         public async Task Get_UnAuthenticated_EndpointsReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange

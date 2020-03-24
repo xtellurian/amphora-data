@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Pages.Home
+namespace Amphora.SharedUI.Pages.Home
 {
     public class ErrorModel : PageModel
     {
