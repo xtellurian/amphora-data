@@ -1,3 +1,4 @@
+using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -11,6 +12,7 @@ namespace Amphora.SharedUI
     {
         protected IConfiguration Configuration { get; set; }
         protected IWebHostEnvironment HostingEnvironment { get; set; }
+        protected EnvironmentInfo EnvironmentInfo { get; set; } = new EnvironmentInfo();
         protected void ConfigureSharedServices(IServiceCollection services)
         {
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
@@ -22,6 +24,9 @@ namespace Amphora.SharedUI
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
+
+            services.Configure<EnvironmentInfo>(Configuration.GetSection("Environment"));
+            Configuration.GetSection("Environment").Bind(EnvironmentInfo);
         }
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)

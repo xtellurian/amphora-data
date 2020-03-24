@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using Amphora.Common.Contracts;
-using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Identity.Contracts;
 using Amphora.Identity.Models;

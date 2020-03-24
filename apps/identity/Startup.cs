@@ -92,7 +92,7 @@ namespace Amphora.Identity
                 })
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients(new string[] { externalServices.WebAppBaseUrl! }, mvcClientSecret))
+                .AddInMemoryClients(Config.Clients(externalServices, EnvironmentInfo, mvcClientSecret))
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 

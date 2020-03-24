@@ -4,8 +4,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Options;
+using Amphora.Common.Models.Platform;
 using Amphora.Common.Security;
 using IdentityServer4.Models;
+using Newtonsoft.Json;
 
 namespace Amphora.Identity
 {
@@ -34,15 +37,8 @@ namespace Amphora.Identity
                 new ApiResource(Common.Security.Resources.WebApp, "The Amphora Data WebApp")
             };
 
-        public static IEnumerable<Client> Clients(IEnumerable<string> baseUrls, string mvcClientSecret)
+        public static IEnumerable<Client> Clients(ExternalServices externalServices, EnvironmentInfo envInfo, string mvcClientSecret)
         {
-            ICollection<string> redirectUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signin-oidc"));
-            redirectUris.AddRange(baseUrls.Select(s => $"{s.ToUri(https: false)}signin-oidc")); // allow http redirect
-            ICollection<string> postLogoutRedirects = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signout-callback-oidc"));
-            postLogoutRedirects.AddRange(baseUrls.Select(s => $"{s.ToUri(https: false)}signout-callback-oidc")); // allow http redirect
-
-            ICollection<string> logoutUris = new List<string>(baseUrls.Select(s => $"{s.ToUri()}signout-oidc"));
-
             return new Client[]
             {
                 // MVC client using code flow + pkce
@@ -56,14 +52,92 @@ namespace Amphora.Identity
 
                     ClientSecrets = { new Secret(mvcClientSecret) },
 
-                    RedirectUris = redirectUris,
-                    FrontChannelLogoutUri = logoutUris.FirstOrDefault(),
-                    PostLogoutRedirectUris = postLogoutRedirects,
+                    RedirectUris = StandardRedirectUrls(externalServices, envInfo),
+                    FrontChannelLogoutUri = StandardLogoutUrl(externalServices, envInfo),
+                    PostLogoutRedirectUris = StandardPostLogoutRedirects(externalServices, envInfo),
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
                 }
             };
+        }
+
+        private const string AppUrl = "app.amphoradata.com";
+        private static ICollection<string> StandardRedirectUrls(ExternalServices externalServices, EnvironmentInfo envInfo)
+        {
+            var urls = new List<string>();
+            if (string.IsNullOrEmpty(envInfo.Stack))
+            {
+                urls.Add("localhost:5001".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signin-oidc");
+            }
+            else
+            {
+                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add(AppUrl.ToUri().ToStandardString() + "/signin-oidc");
+            }
+
+            if (!string.IsNullOrEmpty(envInfo.Stack))
+            {
+                // add something like develop.app.amphoradata.com
+                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+            }
+
+            System.Console.WriteLine($"Redirects: {JsonConvert.SerializeObject(urls, Formatting.Indented)}");
+            return urls;
+        }
+
+        private static ICollection<string> StandardPostLogoutRedirects(ExternalServices externalServices, EnvironmentInfo envInfo)
+        {
+            var urls = new List<string>();
+            if (string.IsNullOrEmpty(envInfo.Stack) && string.IsNullOrEmpty(envInfo.Location))
+            {
+                urls.Add("localhost:5001".ToUri().ToStandardString() + "/signout-callback-oidc");
+                urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signout-callback-oidc");
+            }
+            else
+            {
+                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signout-callback-oidc");
+                urls.Add(AppUrl.ToUri().ToStandardString() + "/signout-callback-oidc");
+            }
+
+            if (!string.IsNullOrEmpty(envInfo.Stack))
+            {
+                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signout-callback-oidc");
+            }
+
+            System.Console.WriteLine($"Post Logout Redirects: {JsonConvert.SerializeObject(urls, Formatting.Indented)}");
+            return urls;
+        }
+
+        private static string StandardLogoutUrl(ExternalServices externalServices, EnvironmentInfo envInfo)
+        {
+            string logoutRedirect;
+
+            if (!string.IsNullOrEmpty(externalServices.WebAppBaseUrl))
+            {
+                logoutRedirect = externalServices.WebAppUri().ToStandardString();
+            }
+            else if (string.IsNullOrEmpty(envInfo.Stack))
+            {
+                logoutRedirect = "localhost:5001".ToUri().ToStandardString() + "/signout-oidc";
+            }
+            else if (envInfo.Stack?.ToLower() == "prod")
+            {
+                logoutRedirect = $"{AppUrl.ToUri().ToStandardString()}/signout-oidc";
+            }
+            else if (!string.IsNullOrEmpty(envInfo.Stack))
+            {
+                logoutRedirect = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signout-callback-oidc";
+            }
+            else
+            {
+                var app = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString();
+                logoutRedirect = $"{app}/signout-oidc";
+            }
+
+            System.Console.WriteLine($"Logout Redirect: {logoutRedirect}");
+            return logoutRedirect;
         }
     }
 }
