@@ -16,6 +16,8 @@ if [ -z "$LOCATION" ]; then
     echo "Using Primary Location"
 fi
 
+pulumi stack ls
+
 JSON=$(pulumi stack output -j $LOCATION)
 name=$( jq -r  '.name' <<< "$(echo $JSON)" ) 
 group=$( jq -r  '.group' <<< "$(echo $JSON)" ) 
