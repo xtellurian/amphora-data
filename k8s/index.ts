@@ -18,21 +18,25 @@ const secondaryProvider = new k8s.Provider("provider2", {
 // Primary
 const frontEnd1 = new FrontEnd("frontend1", {
     fqdn: <pulumi.Output<string>>k8sPrimary.apply(k => k.fqdn),
+    location: <pulumi.Output<string>>k8sPrimary.apply(k => k.location),
     provider: primaryProvider
 });
 
 const identity1 = new Identity("identity1", {
     fqdn: <pulumi.Output<string>>k8sPrimary.apply(k => k.fqdn),
+    location: <pulumi.Output<string>>k8sPrimary.apply(k => k.location),
     provider: primaryProvider
 });
 
 // Secondary
 const frontEnd2 = new FrontEnd("frontend2", {
     fqdn: <pulumi.Output<string>>k8sSecondary.apply(k => k.fqdn),
+    location: <pulumi.Output<string>>k8sSecondary.apply(k => k.location),
     provider: secondaryProvider
 });
 
 const identity2 = new Identity("identity2", {
     fqdn: <pulumi.Output<string>>k8sSecondary.apply(k => k.fqdn),
+    location: <pulumi.Output<string>>k8sSecondary.apply(k => k.location),
     provider: secondaryProvider
 });

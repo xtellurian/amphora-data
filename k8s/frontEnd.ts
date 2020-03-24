@@ -4,12 +4,18 @@ import * as kx from "@pulumi/kubernetesx";
 
 export interface IFrontendArgs {
     fqdn: pulumi.Output<string>,
+    location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
 
+const env = pulumi.getStack();
+
 const frontendConfig = new pulumi.Config("frontend")
 const image = frontendConfig.require("image");
-const hosts = <Array<string>>frontendConfig.getObject("hosts")
+const hosts: string[] = [
+    `${env}.${location}.identity.amphoradata.com`
+]
+
 export class FrontEnd extends pulumi.ComponentResource {
 
     constructor(

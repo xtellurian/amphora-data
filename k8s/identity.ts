@@ -4,12 +4,18 @@ import * as kx from "@pulumi/kubernetesx";
 
 export interface IIdentityArgs {
     fqdn: pulumi.Output<string>,
+    location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
 
+const env = pulumi.getStack();
+
 const identityConfig = new pulumi.Config("identity")
 const image = identityConfig.require("image");
-const hosts = <Array<string>>identityConfig.getObject("hosts")
+
+const hosts: string[] = [
+    `${env}.${location}.identity.amphoradata.com`
+]
 
 export class Identity extends pulumi.ComponentResource {
 

@@ -1,5 +1,0 @@
-config:
-  frontend:hosts:
-  - develop.app.amphoradata.com
-  identity:hosts:
-  - develop.identity.amphoradata.com
