@@ -26,7 +26,7 @@ const rg = new azure.core.ResourceGroup("constant",
     opts,
 );
 
-const frontendFqdns = createDns(rg);
+export const frontendHosts = createDns(rg);
 
 const kv = new azure.keyvault.KeyVault("central-keyVault",
     {
@@ -73,4 +73,4 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
     opts,
 );
 
-createFrontDoor(rg, kv, frontendFqdns);
+createFrontDoor({ rg, kv, frontendHosts });

@@ -1,34 +1,23 @@
 import * as azure from "@pulumi/azure";
 
-import { IFrontendFqdns } from "../dns/front-door-dns";
+import { IFrontendHosts } from "../dns/front-door-dns";
 import { getBackendPools, IBackendPoolNames } from "./backendPools";
 
-export interface IMainHostnames {
-    app: string;
-    identity: string;
-}
-
-const hostnames: IMainHostnames = {
-    app: "app.amphoradata.com",
-    identity: "identity.amphoradata.com",
-};
-
-const backendPoolNames: IBackendPoolNames = {
+const poolNames: IBackendPoolNames = {
+    app: "prodBackend",
     identity: "identityBackend",
-    prod: "prodBackend",
 };
 
-export function createFrontDoor(rg: azure.core.ResourceGroup,
-                                kv: azure.keyvault.KeyVault,
-                                frontendFqdns: IFrontendFqdns) {
+export function createFrontDoor({ rg, kv, frontendHosts }
+        : { rg: azure.core.ResourceGroup; kv: azure.keyvault.KeyVault; frontendHosts: IFrontendHosts; }) {
 
-    const backendPools = getBackendPools({ backendPoolNames, hostnames, frontendFqdns });
+    const backendPools = getBackendPools({ poolNames, frontendHosts } );
     const appFrontend = {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",
         },
         customHttpsProvisioningEnabled: true,
-        hostName: hostnames.app,
+        hostName: frontendHosts.prod.app.globalHost,
         name: "appDomain",
         sessionAffinityEnabled: true,
     };
@@ -38,7 +27,7 @@ export function createFrontDoor(rg: azure.core.ResourceGroup,
             certificateSource: "FrontDoor",
         },
         customHttpsProvisioningEnabled: true,
-        hostName: hostnames.identity,
+        hostName: frontendHosts.prod.identity.globalHost,
         name: "identityFrontend",
         sessionAffinityEnabled: true,
     };
@@ -117,7 +106,7 @@ export function createFrontDoor(rg: azure.core.ResourceGroup,
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: backendPoolNames.prod,
+                    backendPoolName: poolNames.app,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",
@@ -152,7 +141,7 @@ export function createFrontDoor(rg: azure.core.ResourceGroup,
                     "Https",
                 ],
                 forwardingConfiguration: {
-                    backendPoolName: backendPoolNames.identity,
+                    backendPoolName: poolNames.identity,
                     cacheEnabled: false,
                     cacheQueryParameterStripDirective: "StripNone",
                     forwardingProtocol: "HttpsOnly",

@@ -13,19 +13,23 @@ const tags = {
     source: "pulumi",
     stack: pulumi.getStack(),
 };
-
-interface IEnvironmentFqdns {
-    app: pulumi.Output<string>;
-    identity: pulumi.Output<string>;
+export interface IUniqueUrl {
+    globalHost: pulumi.Output<string>;
+    appName: string; // must be identity or app
 }
 
-export interface IFrontendFqdns {
-    develop: IEnvironmentFqdns;
-    master: IEnvironmentFqdns;
-    prod: IEnvironmentFqdns;
+export interface IGlobalUrl {
+    app: IUniqueUrl;
+    identity: IUniqueUrl;
 }
 
-export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IFrontendFqdns {
+export interface IFrontendHosts {
+    develop: IGlobalUrl;
+    master: IGlobalUrl;
+    prod: IGlobalUrl;
+}
+
+export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IFrontendHosts {
     // static site
     const wwwCName = new azure.dns.CNameRecord("wwwCName",
         {
@@ -83,13 +87,19 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
         develop,
         master,
         prod: {
-            app: appCName.fqdn,
-            identity: identityCName.fqdn,
+            app: {
+                appName: "app",
+                globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
+            },
+            identity: {
+                appName: "identity",
+                globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
+            },
         },
     };
 }
 
-function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IEnvironmentFqdns {
+function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IGlobalUrl {
     const appCName = new azure.dns.CNameRecord(`${env}-app-CN`,
         {
             name: `${env}.app`,
@@ -115,7 +125,13 @@ function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azur
     );
 
     return {
-        app: appCName.fqdn,
-        identity: identityCName.fqdn,
+        app: {
+            appName: "app",
+            globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
+        },
+        identity: {
+            appName: "identity",
+            globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)),  // remove a trailing period
+        },
     };
 }

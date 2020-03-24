@@ -1,10 +1,10 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { frontDoorDns, IFrontendFqdns } from "./front-door-dns";
+import { frontDoorDns, IFrontendHosts } from "./front-door-dns";
 import { K8sDns } from "./k8s-dns";
 
 // pass through the frontend fqdns
-export function createDns(rg: azure.core.ResourceGroup): IFrontendFqdns {
+export function createDns(rg: azure.core.ResourceGroup): IFrontendHosts {
 
     const tags = {
         component: "central-dns",
