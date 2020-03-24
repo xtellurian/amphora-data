@@ -16,7 +16,7 @@ config:
     secure: AAABAIa7cLDH+IaXGT/KwAn5t6h8X3KpLTA8+73Pve64pHcHtG5OHDzNL6phPjDd2n5Aaj1ZM4MiV77twu+v+peLgKn0i52dCZ2cOzh6gdQlWNHpE5+JuvN920j5filudAMm14muW0EKWmnLx6rakh1u3ieoMTnI7u5hy45DLz2ahgIucWi7E25bg/KH+O/f3BQsTvLmDEe+wSU6ViAcuBsOrsn+d+ItYgMBC7hBzMvRu/kcmPaqwAQNWzraNUyTsDH2aBpeWqM3Yaag0xo3cO4b0H/2NjL5Tez6gkY5kAOeymuU5VLSruEjGQm9t8oxqcCwqpeTwbbuvjUtTc4tBdRAAU/xS15RPbvNFIzITGh+IzOTd4TjDxuC5UagpOXXQYEZA8oM90AaQEnHy1CmYyIgiAEhjoh9VUCS3YIw5786bqHctSr+Sa6xXo2A7VPVXgzwu9vsov96HNSCdYCjfocf/u6mK5sn5Ny3U/k7Jug+CeaN7l1t5BZr0ohm+YeE8pSG/i9g+nxTCN5Xsoq61PZuL+LRYsUG4ARrp+wWEfqhsNG6RkVhyP0=
   amphora:tokenManagement__secret:
     secure: AAABAFYYlpDDdhXr6hDg+Qo9UBjBexy40A0xN63RIK2BnEU4k4KCbnstxJFrnGrAGNXxNQ==
-  application:mainHost: app.amphoradata.com
+  apps:mainHost: app.amphoradata.com
   apps:externalServices:
     identityBaseUrl: identity.amphoradata.com
     webAppBaseUrl: app.amphoradata.com

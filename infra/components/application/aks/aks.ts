@@ -5,6 +5,7 @@ import { CONSTANTS } from "../../../components";
 import { Monitoring } from "../../monitoring/monitoring";
 import { Network } from "../../network/network";
 import { State } from "../../state/state";
+import { getK8sAppSettings } from "../appSettings";
 import { K8sInfrastructure } from "./k8s-infrastructure";
 
 export interface IAksParams {
@@ -129,9 +130,9 @@ export class Aks extends pulumi.ComponentResource {
         // this.kubeconfig = k8sCluster.kubeConfigRaw
 
         // Step 3: Install dependencies into the cluster
-
+        const appSettings = getK8sAppSettings(kv, this.k8sCluster.location)
         this.k8sInfra = new K8sInfrastructure(`${this.name}-infra`, {
-            appSettings: this.params.appSettings,
+            appSettings,
             identities: this.identities,
             location: this.k8sCluster.location,
             provider: this.k8sProvider,

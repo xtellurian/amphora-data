@@ -17,7 +17,6 @@ export interface IAppSvcParams {
 const stack = pulumi.getStack();
 
 const cfg = new pulumi.Config();
-const config = new pulumi.Config("application");
 const appsConfig = new pulumi.Config("apps");
 
 interface IExternalServices {
@@ -101,7 +100,7 @@ export class AppSvc extends pulumi.ComponentResource {
         );
 
         this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
-        const host = config.get("mainHost") ? config.require("mainHost") : "";
+        const host = appsConfig.get("mainHost") ? appsConfig.require("mainHost") : "";
         const appSettings = {
             APPINSIGHTS_INSTRUMENTATIONKEY: this.params.monitoring.applicationInsights.instrumentationKey, // important
             DOCKER_REGISTRY_SERVER_PASSWORD: acr.adminPassword,
@@ -110,6 +109,8 @@ export class AppSvc extends pulumi.ComponentResource {
             }`,
             DOCKER_REGISTRY_SERVER_USERNAME: acr.adminUsername,
             DisableHsts: "",
+            Environment__Location: "",
+            Environment__Stack: stack,
             ExternalServices__IdentityBaseUrl: externalServices.identityBaseUrl,
             ExternalServices__WebAppBaseUrl: externalServices.webAppBaseUrl,
             Host__MainHost: host, // important
