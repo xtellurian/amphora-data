@@ -130,7 +130,7 @@ export class Aks extends pulumi.ComponentResource {
         // this.kubeconfig = k8sCluster.kubeConfigRaw
 
         // Step 3: Install dependencies into the cluster
-        const appSettings = getK8sAppSettings(kv, this.k8sCluster.location)
+        const appSettings = getK8sAppSettings(kv, this.k8sCluster.location);
         this.k8sInfra = new K8sInfrastructure(`${this.name}-infra`, {
             appSettings,
             identities: this.identities,
