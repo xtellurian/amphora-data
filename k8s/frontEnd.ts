@@ -141,7 +141,8 @@ export class FrontEnd extends pulumi.ComponentResource {
         ];
 
         const hosts: pulumi.Output<string>[] = [
-            pulumi.interpolate `${env}.${this.params.location}.app.amphoradata.com`
+            pulumi.interpolate `${env}.${this.params.location}.app.amphoradata.com`,
+            pulumi.interpolate `${env}.app.amphoradata.com` // the front foor
         ]
 
         if (hosts) {
