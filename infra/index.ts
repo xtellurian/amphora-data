@@ -90,6 +90,7 @@ export let k8sPrimary = result.then((r) => {
     group: r.application.aks.primary.k8sCluster.resourceGroupName,
     ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
     kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
+    location: r.application.aks.primary.k8sCluster.location,
     name: r.application.aks.primary.k8sCluster.name,
   };
 });
@@ -101,6 +102,7 @@ export let k8sSecondary = result.then((r) => {
     group: r.application.aks.secondary.k8sCluster.resourceGroupName,
     ingressIp: r.application.aks.secondary.k8sInfra.ingressIp,
     kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
+    location: r.application.aks.secondary.k8sCluster.location,
     name: r.application.aks.secondary.k8sCluster.name,
   };
 });
