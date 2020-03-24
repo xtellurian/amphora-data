@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { frontDoorDns } from "./dns/front-door-dns";
 import { K8sDns } from "./dns/k8s-dns";
 
 export function createDns(rg: azure.core.ResourceGroup) {
@@ -41,54 +42,6 @@ export function createDns(rg: azure.core.ResourceGroup) {
         zone: dnsZone,
     });
 
-    const wwwCName = new azure.dns.CNameRecord("wwwCName",
-        {
-            name: "www",
-            record: "amphora.azurefd.net",
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: dnsZone.name,
-        },
-        opts,
-    );
-
-    const betaCName = new azure.dns.CNameRecord("betaCName",
-        {
-            name: "beta",
-            record: "amphora.azurefd.net",
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: dnsZone.name,
-        },
-        opts,
-    );
-
-    const appCName = new azure.dns.CNameRecord("appCName",
-        {
-            name: "app",
-            record: "amphora.azurefd.net",
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: dnsZone.name,
-        },
-        opts,
-    );
-
-    const identityCName = new azure.dns.CNameRecord("identityCName",
-        {
-            name: "identity",
-            record: "amphora.azurefd.net",
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: dnsZone.name,
-        },
-        opts,
-    );
-
     const docsCName = new azure.dns.CNameRecord("docsCName",
         {
             name: "docs",
@@ -100,6 +53,8 @@ export function createDns(rg: azure.core.ResourceGroup) {
         },
         opts,
     );
+
+    frontDoorDns(rg, dnsZone);
 
     // these come from O365
 
