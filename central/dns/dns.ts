@@ -1,7 +1,7 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { frontDoorDns } from "./dns/front-door-dns";
-import { K8sDns } from "./dns/k8s-dns";
+import { frontDoorDns } from "./front-door-dns";
+import { K8sDns } from "./k8s-dns";
 
 export function createDns(rg: azure.core.ResourceGroup) {
 
