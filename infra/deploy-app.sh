@@ -26,7 +26,7 @@ if $STAGING = true ; then
     az webapp config container set --docker-custom-image-name $IMAGE:$BUILD --ids $WEBAPPID --slot staging
     #explicit set zero so I can route to it
     az webapp traffic-routing set --distribution staging=0 --ids $WEBAPPID
-    az webapp config appsettings set --ids $WEBAPPID -s staging --slot-settings STACK="$STACK(staging)"
+    az webapp config appsettings set --ids $WEBAPPID -s staging --slot-settings Environment__Stack="$STACK(staging)"
 else
     echo "Deploying to production Slot"
     az webapp config container set --docker-custom-image-name $IMAGE:$BUILD --ids $WEBAPPID

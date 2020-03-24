@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-md-4">
              @{
-                var stack = @Configuration["STACK"];
+                var stack = @Configuration["Environment:Stack"];
                 var routeTo = "?x-ms-routing-name=self";
                 if(! string.IsNullOrEmpty(stack) && !stack.Contains("(staging)"))
                 {

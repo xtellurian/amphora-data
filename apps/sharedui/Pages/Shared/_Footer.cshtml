@@ -9,7 +9,7 @@
         <span class="float-right text-muted">
             @{
                 
-                var identifier = $"{Model.Version} {Model.GitHash?.Substring(0, 7)}";
+                var identifier = $"{Model.Version} {Model.Stack} {Model.Location} {Model.GitHash?.Substring(0, 7)}";
             }
             @Model.Stack
             @if(Model.EnableChangelog)

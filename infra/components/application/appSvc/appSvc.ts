@@ -116,7 +116,6 @@ export class AppSvc extends pulumi.ComponentResource {
             Host__MainHost: host, // important
             Logging__ApplicationInsights__LogLevel__Default: "Warning",
             Registration__Token: "AmphoraData",
-            STACK: pulumi.getStack(),
             WEBSITES_ENABLE_APP_SERVICE_STORAGE: "false",
             WEBSITES_PORT: "80",
             kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName, // important

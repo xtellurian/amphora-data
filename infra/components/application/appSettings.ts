@@ -27,7 +27,6 @@ export function getK8sAppSettings(params: IK8sAppSettingsParams) {
         ExternalServices__WebAppBaseUrl: externalServices.webAppBaseUrl,
         Host__MainHost: host, // important
         Logging__ApplicationInsights__LogLevel__Default: "Warning",
-        STACK: stack,
         WEBSITES_PORT: "80",
         kvStorageCSSecretName: CONSTANTS.AzStorage_KV_CS_SecretName, // important
         kvUri: params.kv.vaultUri, // important
