@@ -152,6 +152,7 @@ export class Aks extends pulumi.ComponentResource {
             name,
             {
                 // applicationId: identity.clientId,
+                certificatePermissions: ["get", "list", "update"],
                 keyPermissions: ["unwrapKey", "wrapKey"],
                 keyVaultId: kv.id,
                 objectId: identity.principalId,

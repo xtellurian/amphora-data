@@ -1,5 +1,4 @@
 import * as azure from "@pulumi/azure";
-import { input } from "@pulumi/azure/types";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
 import { CONSTANTS, IComponentParams } from "../../components";
@@ -7,6 +6,7 @@ import { CONSTANTS, IComponentParams } from "../../components";
 import { AzureId } from "../../models/azure-id";
 import { Monitoring } from "../monitoring/monitoring";
 
+const stack = pulumi.getStack();
 const config = new pulumi.Config();
 const auth = new pulumi.Config("auth");
 
@@ -14,9 +14,9 @@ const tags = {
   component: "state",
   project: pulumi.getProject(),
   source: "pulumi",
-  stack: pulumi.getStack(),
+  stack,
 };
-const rgName = pulumi.getStack() + "-state";
+const rgName = stack + "-state";
 
 export class State extends pulumi.ComponentResource {
   public eh: azure.eventhub.EventHub;
@@ -72,7 +72,7 @@ export class State extends pulumi.ComponentResource {
     const gitHubTokenSecret = this.storeInVault(
       "gitHubToken",
       "GitHubOptions--Token",
-      pulumi.interpolate `${config.getSecret("gitHubToken")}`,
+      pulumi.interpolate`${config.getSecret("gitHubToken")}`,
     );
     const appTopicPrimaryKey = this.storeInVault(
       "appTopicPrimaryKey",
@@ -147,6 +147,7 @@ export class State extends pulumi.ComponentResource {
   }
 
   private keyvault(rg: azure.core.ResourceGroup) {
+    // these are the build identities + Rian
     const identities = auth.requireObject<AzureId[]>("ids");
 
     // don't add access policy directly here, I think it conflicts with those generated independently.
@@ -167,6 +168,7 @@ export class State extends pulumi.ComponentResource {
           element.name + "app",
           {
             applicationId: element.appId,
+            certificatePermissions: ["get", "create", "list", "update", "delete"],
             keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
             keyVaultId: kv.id,
             objectId: element.objectId,
@@ -182,6 +184,7 @@ export class State extends pulumi.ComponentResource {
       this.kvAccessPolicies.push(new azure.keyvault.AccessPolicy(
         element.name + "obj",
         {
+          certificatePermissions: ["get", "create", "list", "update", "delete"],
           keyPermissions: ["create", "get", "list", "delete", "unwrapKey", "wrapKey"],
           keyVaultId: kv.id,
           objectId: element.objectId,
@@ -195,7 +198,7 @@ export class State extends pulumi.ComponentResource {
       ));
     });
 
-    const generated = new azure.keyvault.Key("dataprotectionkey",
+    const dataProtectionKey = new azure.keyvault.Key("dataprotectionkey",
       {
         keyOpts: [
           "decrypt",
@@ -213,6 +216,57 @@ export class State extends pulumi.ComponentResource {
       {
         dependsOn: this.kvAccessPolicies,
       });
+
+    const identitySigningCertificate = new azure.keyvault.Certificate("identityCert",
+      {
+        certificatePolicy: {
+          issuerParameters: {
+            name: "Self",
+          },
+          keyProperties: {
+            exportable: true,
+            keySize: 2048,
+            keyType: "RSA",
+            reuseKey: true,
+          }, lifetimeActions: [
+            {
+              action: {
+                actionType: "AutoRenew",
+              },
+              trigger: {
+                daysBeforeExpiry: 30,
+              },
+            },
+          ],
+          secretProperties: {
+            contentType: "application/x-pkcs12",
+          },
+          x509CertificateProperties: {
+            extendedKeyUsages: ["1.3.6.1.5.5.7.3.1"],
+            keyUsages: [
+              "cRLSign",
+              "dataEncipherment",
+              "digitalSignature",
+              "keyAgreement",
+              "keyCertSign",
+              "keyEncipherment",
+            ],
+            subject: `CN=${stack}-amphoradata`,
+            subjectAlternativeNames: {
+              dnsNames: [
+                "localhost",
+                `${stack}.identity.amphoradata.com`,
+              ],
+            },
+            validityInMonths: 12,
+          },
+        },
+        keyVaultId: kv.id,
+        name: "identityCert",
+      }, {
+      dependsOn: kv,
+      parent: this,
+    });
 
     const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
       "keyVault-Diag",

@@ -5,6 +5,7 @@ using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
 using Amphora.Identity.Contracts;
 using Amphora.Identity.EntityFramework;
+using Amphora.Identity.Extensions;
 using Amphora.Identity.Models;
 using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
@@ -14,7 +15,6 @@ using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -96,8 +96,15 @@ namespace Amphora.Identity
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 
-            // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            if (HostingEnvironment.IsProduction() || Configuration.IsPersistentStores())
+            {
+                builder.AddSigningCredentialFromAzureKeyVault(kvUri, "identityCert", 6);
+            }
+            else
+            {
+                // not recommended for production - you need to store your key material somewhere secure
+                builder.AddDeveloperSigningCredential();
+            }
 
             services.AddScoped<IUserService, UserService>();
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
