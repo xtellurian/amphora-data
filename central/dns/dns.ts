@@ -1,10 +1,13 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { IMultiEnvironmentMultiCluster } from "../contracts";
 import { frontDoorDns, IFrontendHosts } from "./front-door-dns";
 import { K8sDns } from "./k8s-dns";
 
+const config = new pulumi.Config();
+
 // pass through the frontend fqdns
-export function createDns(rg: azure.core.ResourceGroup): IFrontendHosts {
+export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironmentMultiCluster): IFrontendHosts {
 
     const tags = {
         component: "central-dns",
@@ -27,17 +30,25 @@ export function createDns(rg: azure.core.ResourceGroup): IFrontendHosts {
     );
 
     // k8s dns
-    const devDns = new K8sDns("k8dDevelop", {
-        environment: "develop",
-        rg,
-        zone: dnsZone,
-    });
-    const masterDns = new K8sDns("k8dMaster", {
-        environment: "master",
-        rg,
-        zone: dnsZone,
-    });
-    const prodDns = new K8sDns("k8dProd", {
+    if (config.requireBoolean("deployDevelop")) {
+        const devDns = new K8sDns("k8sDevelop", {
+            clusters: clusters.develop,
+            environment: "develop",
+            rg,
+            zone: dnsZone,
+        });
+    }
+    if (config.requireBoolean("deployMaster")) {
+        const masterDns = new K8sDns("k8sMaster", {
+            clusters: clusters.master,
+            environment: "master",
+            rg,
+            zone: dnsZone,
+        });
+    }
+
+    const prodDns = new K8sDns("k8sProd", {
+        clusters: clusters.prod,
         environment: "prod",
         rg,
         zone: dnsZone,

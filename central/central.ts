@@ -1,8 +1,15 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
+import { IMultiEnvironmentMultiCluster } from "./contracts";
 import { createDns } from "./dns/dns";
 import { createFrontDoor } from "./front-door/frontDoor";
+
+const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
+const masterStack = new pulumi.StackReference(`xtellurian/amphora/master`);
+const developStack = new pulumi.StackReference(`xtellurian/amphora/develop`);
+
+const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
 
 const authConfig = new pulumi.Config("authentication");
 
@@ -25,8 +32,42 @@ const rg = new azure.core.ResourceGroup("constant",
     },
     opts,
 );
+const primary = "k8sPrimary";
+const secondary = "k8sSecondary";
+const clusters: IMultiEnvironmentMultiCluster = {
+    develop: {
+        primary: {
+            ingressIp: developStack.getOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+        secondary: {
+            ingressIp: developStack.getOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+    },
+    master: {
+        primary: {
+            ingressIp: masterStack.getOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+        secondary: {
+            ingressIp: masterStack.getOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+    },
+    prod: {
+        primary: {
+            ingressIp: prodStack.requireOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: prodStack.requireOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+        secondary: {
+            ingressIp: prodStack.requireOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
+            location: prodStack.requireOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+        },
+    },
+};
 
-export const frontendHosts = createDns(rg);
+export const frontendHosts = createDns(rg, clusters);
 
 const kv = new azure.keyvault.KeyVault("central-keyVault",
     {
@@ -73,4 +114,4 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
     opts,
 );
 
-export const backendEnvironments = createFrontDoor({ rg, kv, frontendHosts });
+export const backendEnvironments = createFrontDoor({ rg, kv, frontendHosts, prodHostnames });

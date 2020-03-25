@@ -1,12 +1,7 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { IMultiEnvironmentMultiCluster } from "../contracts";
 import { IFrontendHosts, IUniqueUrl } from "../dns/front-door-dns";
-
-const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
-const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
-const prodBackendCount = 2; // should match the array length from prod stack as above
-const k8sPrimary = prodStack.getOutput("k8sPrimary");
-const k8sSecondary = prodStack.getOutput("k8sSecondary");
 
 const config = new pulumi.Config();
 
@@ -26,8 +21,15 @@ const locations = {
     syd: "australiaeast",
 };
 
-export function getBackendPools({ backendEnvironments, frontendHosts }:
-    { backendEnvironments: IBackendEnvironments; frontendHosts: IFrontendHosts; })
+const prodBackendCount = 2;
+
+export function getBackendPools({ backendEnvironments, frontendHosts, prodHostnames }:
+    {
+        // param type definition
+        backendEnvironments: IBackendEnvironments;
+        frontendHosts: IFrontendHosts;
+        prodHostnames: pulumi.Output<any>;
+    })
     : pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> {
 
     const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
@@ -59,50 +61,31 @@ export function getBackendPools({ backendEnvironments, frontendHosts }:
 
     // add k8s primary + secondary backend from aks
     prodBackends.push({
-        address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: frontendHosts.prod.app.globalHost,
+        address: `prod.${locations.syd}.app.${domain}`,
+        hostHeader: `prod.${locations.syd}.app.${domain}`,
         httpPort: 80,
         httpsPort: 443,
     });
     prodBackends.push({
-        address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: frontendHosts.prod.app.globalHost,
+        address: `prod.${locations.mel}.app.${domain}`,
+        hostHeader: `prod.${locations.mel}.app.${domain}`,
         httpPort: 80,
         httpsPort: 443,
     });
 
     const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends: prodBackends,
-        healthProbeName: "normal",
+        healthProbeName: "healthz",
         loadBalancingName: "loadBalancingSettings1",
         name: backendEnvironments.prod.app,
     };
 
     backendPools.push(prodBackendPool);
 
-    // IDENTITY BACKENDS
-    const identityBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
-    identityBackends.push({
-        address: k8sPrimary.apply((k) => k.fqdn),
-        hostHeader: frontendHosts.prod.identity.globalHost,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-    identityBackends.push({
-        address: k8sSecondary.apply((k) => k.fqdn),
-        hostHeader: frontendHosts.prod.identity.globalHost,
-        httpPort: 80,
-        httpsPort: 443,
-    });
+    // Prod ID pool
+    const prodIdPool = createPool(`${backendEnvironments.prod.identity}`, "prod", frontendHosts.prod.identity);
 
-    const identityBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: identityBackends,
-        healthProbeName: "normal",
-        loadBalancingName: "loadBalancingSettings1",
-        name: backendEnvironments.prod.identity,
-    };
-
-    backendPools.push(identityBackendPool);
+    backendPools.push(prodIdPool);
 
     // create develop pools
     const devAppPool = createPool(`${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app);

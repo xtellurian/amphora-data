@@ -1,5 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+import { IKubernetesCluster, IMultiCluster } from "../contracts";
 
 const tags = {
     component: "central-dns-develop",
@@ -9,37 +10,44 @@ const tags = {
 };
 
 export interface IK8sDnsParams {
+    clusters: IMultiCluster;
     rg: azure.core.ResourceGroup;
     zone: azure.dns.Zone;
     environment: string;
 }
 
-const mel = "australiasoutheast";
-const syd = "australiaeast";
-
 export class K8sDns extends pulumi.ComponentResource {
 
     constructor(
         private name: string,
-        private params: IK8sDnsParams,
+        params: IK8sDnsParams,
         opts?: pulumi.ComponentResourceOptions,
     ) {
         super("amphora:K8sDns", name, {}, opts);
-        this.create(params.rg, params.zone, params.environment);
+        this.create(params.rg, params.zone, params.environment, params.clusters);
     }
 
-    private create(rg: azure.core.ResourceGroup, zone: azure.dns.Zone, env: string) {
+    private create(rg: azure.core.ResourceGroup, zone: azure.dns.Zone, env: string, clusters: IMultiCluster) {
         // k8s dns things
-        this.createForLocation(rg, zone, env, syd);
-        this.createForLocation(rg, zone, env, mel);
+        this.createForLocation({ rg, zone, env, cluster: clusters.primary, index: 0});
+        this.createForLocation({ rg, zone, env, cluster: clusters.secondary, index: 1 });
     }
 
-    private createForLocation(rg: azure.core.ResourceGroup, zone: azure.dns.Zone, env: string, loc: string) {
-        const fqdn = `${env}-amphoradata.${loc}.cloudapp.azure.com`;
-        const melAppCName = new azure.dns.CNameRecord(`${env}-${loc}-AppCN`,
+    private createForLocation({ rg, zone, env, cluster, index }
+        : {
+            rg: azure.core.ResourceGroup;
+            zone: azure.dns.Zone;
+            env: string;
+            cluster: IKubernetesCluster
+            index: number;
+        }) {
+
+        const appARecord = new azure.dns.ARecord(`${env}-${this.name}-${index}-AppARec`,
             {
-                name: `${env}.${loc}.app`,
-                record: fqdn,
+                name: pulumi.interpolate `${env}.${cluster.location}.app`,
+                records: [
+                    cluster.ingressIp,
+                ],
                 resourceGroupName: rg.name,
                 tags,
                 ttl: 30,
@@ -50,10 +58,12 @@ export class K8sDns extends pulumi.ComponentResource {
             },
         );
 
-        const melIdentityCName = new azure.dns.CNameRecord(`${env}-${loc}-IdCN`,
+        const identityARecord = new azure.dns.ARecord(`${env}-${this.name}-${index}-IdARec`,
             {
-                name: `${env}.${loc}.identity`,
-                record: fqdn,
+                name: pulumi.interpolate `${env}.${cluster.location}.identity`,
+                records: [
+                    cluster.ingressIp,
+                ],
                 resourceGroupName: rg.name,
                 tags,
                 ttl: 30,

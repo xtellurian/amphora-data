@@ -9,5 +9,5 @@ config:
   azure:environment: public
   azure:location: AustraliaSoutheast
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
-  central:deployDevelop: "true"
-  central:deployMaster: "true"
+  central:deployDevelop: "false"
+  central:deployMaster: "false"
