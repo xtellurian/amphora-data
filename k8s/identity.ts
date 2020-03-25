@@ -135,7 +135,7 @@ export class Identity extends pulumi.ComponentResource {
 
         const hosts: pulumi.Output<string>[] = [
             pulumi.interpolate `${env}.${this.params.location}.identity.amphoradata.com`,
-            pulumi.interpolate `${env}.identity.amphoradata.com` // the front foor
+            // pulumi.interpolate `${env}.identity.amphoradata.com` // the front foor
         ]
         // add the rule for each host
         const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [];
