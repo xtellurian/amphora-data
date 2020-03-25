@@ -98,11 +98,14 @@ namespace Amphora.Identity
 
             if (HostingEnvironment.IsProduction() || Configuration.IsPersistentStores())
             {
-                builder.AddSigningCredentialFromAzureKeyVault(kvUri, "identityCert", 6);
+                var certName = "identityCert";
+                System.Console.WriteLine($"Using certificate {certName} from KeyVault as Signing Credentials");
+                builder.AddSigningCredentialFromAzureKeyVault(kvUri, certName, 6);
             }
             else
             {
                 // not recommended for production - you need to store your key material somewhere secure
+                System.Console.WriteLine("WARNING: Using Developer Signing Credentials");
                 builder.AddDeveloperSigningCredential();
             }
 
