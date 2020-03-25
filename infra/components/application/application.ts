@@ -13,6 +13,8 @@ import { Tsi } from "./tsi/tsi";
 
 const config = new pulumi.Config("acr");
 const aksConfig = new pulumi.Config("aks");
+const appsConfig = new pulumi.Config("apps");
+const appConfiguration = appsConfig.requireObject("configurationStore") as { sku: string };
 const objectId = aksConfig.require("spObjectId");
 
 const tags = {
@@ -176,7 +178,7 @@ export class Application extends pulumi.ComponentResource
     this.appConfiguration = new azure.appconfiguration.ConfigurationStore("configStore", {
       location: CONSTANTS.location.secondary, // not available in aus SE
       resourceGroupName: rg.name,
-      sku: "free",
+      sku: appConfiguration.sku,
       tags,
     }, {
       parent: this,

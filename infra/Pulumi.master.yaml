@@ -16,6 +16,8 @@ config:
     secure: AAABAHk8mV3dqBv90yfwkiSaMbWLZnI4Qz5wpUErJe/J3Rp7bYKJuu1MaOw3DhRxh8zrc3nHJYxjqSfzmY+csKX2Pscl9uw4swSC81V/5/8SNOBn1eO7dBRADIr2+wxGGMKYK+GvNIN1qVToiSaPfK74xRYO93aLJ+yj292fQl6zNtw5MhiJhR8xahcnsu/yrSaiT0TeIdYp+PGET+UA2a6hQiZl1kFKTbEeRkOBF07kmtmK0JdFEhwSSloig30WvtZZqfNUaViEA4zgdT6buQxoY8jNlmdTQXQ1Yidzq8/Hpui8tMsV3Ij5DZoK4SGk0+ajHsThBM9L1nUdwVPj5ayoURysY9D4hRhBWBfq3f2pkDDlBqvcK2eZ001OHFdvhA3MGqoFYaXyhWF/bJZsHgFvnOWL+dUK5QEGjf9xt62zxjQ04nSpmnXg74UZb1grbM+RKFZotRuySTwMzzXpRWH1f048iSQ2yklE193sG8Q3L8JtlUypgFOALMsW+bUmX5H7v9FwCxJaijn50SzGMWmpm3mfSO+VtRvIWVwSOE4ifMzTVrAGSpY=
   amphora:tokenManagement__secret:
     secure: AAABAIMhhPFRlitMsvSNYpEBkGUjMARPHcu0WFItMieKRh7l8xBh0pQ4pDdbZsDXYiNMeA==
+  apps:configurationStore:
+    sku: standard
   apps:externalServices:
     identityBaseUrl: master.identity.amphoradata.com
     webAppBaseUrl: master.app.amphoradata.com
