@@ -6,12 +6,30 @@
     ViewData["Title"] = "Accounts Admin";
 }
 
+@if(Model.Message != null)
+{
+    <div class="alert alert-secondary" role="alert">
+        @Model.Message
+    </div>
+}
+
 <a class="float-right btn btn-primary" asp-page="../Index">Admin</a>
 <h1>
     Accounts
 </h1>
 Total Orgs: @Model.OrgCount
 <div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Operations</h3>
+            <form method="post" asp-page-handler="GenerateTransactions">
+                <div class="form-group">
+                    <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
+                </div>
+            </form>
+            <hr/>
+        </div>
+    </div>
     <div class="row">
         <div class="col">
             <table id="entity-table" class="table table-borderless table-striped">

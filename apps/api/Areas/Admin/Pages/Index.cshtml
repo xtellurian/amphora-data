@@ -6,13 +6,13 @@
 <div class="container">
     <div class="row mb-2">
         <div class="col-md-4">
-            <a asp-area="Admin" asp-page="/Purchases" class="btn btn-primary btn-block">Purchases</a>
-        </div>
-        <div class="col-md-4">
             <a asp-area="Admin" asp-page="/Accounts/Index" class="btn btn-primary btn-block">Accounts</a>
         </div>
         <div class="col-md-4">
             <a asp-area="Admin" asp-page="/Dashboard" class="btn btn-primary btn-block" >Dashboard</a>
+        </div>
+        <div class="col-md-4">
+            <a asp-area="Admin" asp-page="/Operations" class="btn btn-primary btn-block" > Operations</a>
         </div>
     </div>
     <div class="row">
@@ -29,9 +29,6 @@
             <a class="btn btn-primary btn-block" href=@routeTo> 
                 Stack: @stack
             </a>
-        </div>
-        <div class="col-md-4">
-            <a asp-area="Admin" asp-page="/Operations" class="btn btn-primary btn-block" > Operations</a>
         </div>
     </div>
 </div>

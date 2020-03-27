@@ -29,6 +29,8 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
         public int PerPage { get; private set; }
         public int MaxPages { get; private set; }
         public string Name { get; set; }
+        [TempData]
+        public string Message { get; set; } = null;
 
         public async Task<IActionResult> OnGetAsync(int pageNumber = 0, int perPage = 10, string name = null)
         {
@@ -53,6 +55,13 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
                     .ToList();
             }
 
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostGenerateTransactionsAsync()
+        {
+            await accountsService.PopulateDebitsAndCreditsAsync();
+            Message = "Done";
             return Page();
         }
     }
