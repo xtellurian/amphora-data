@@ -215,6 +215,7 @@ export class State extends pulumi.ComponentResource {
       },
       {
         dependsOn: this.kvAccessPolicies,
+        parent: this,
       });
 
     const identitySigningCertificate = new azure.keyvault.Certificate("identityCert",
