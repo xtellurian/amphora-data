@@ -37,22 +37,22 @@ const secondary = "k8sSecondary";
 const clusters: IMultiEnvironmentMultiCluster = {
     develop: {
         primary: {
-            ingressIp: developStack.getOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+            ingressIp: developStack.getOutput(primary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(primary).apply((k) => k?.location) as pulumi.Output<string>,
         },
         secondary: {
-            ingressIp: developStack.getOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+            ingressIp: developStack.getOutput(secondary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(secondary).apply((k) => k?.location) as pulumi.Output<string>,
         },
     },
     master: {
         primary: {
-            ingressIp: masterStack.getOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+            ingressIp: masterStack.getOutput(primary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(primary).apply((k) => k?.location) as pulumi.Output<string>,
         },
         secondary: {
-            ingressIp: masterStack.getOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+            ingressIp: masterStack.getOutput(secondary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(secondary).apply((k) => k?.location) as pulumi.Output<string>,
         },
     },
     prod: {
