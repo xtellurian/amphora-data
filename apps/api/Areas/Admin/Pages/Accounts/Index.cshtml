@@ -22,7 +22,7 @@ Total Orgs: @Model.OrgCount
     <div class="row">
         <div class="col text-right">
             <h4>Operations</h4>
-            <form method="post" asp-page-handler="GenerateTransactions">
+            <form method="post" asp-page-handler="GenerateTransactions" asp-route-name="@Model.Name" asp-route-pageNumber="@Model.PageNumber">
                 <div class="form-group">
                     <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
                 </div>

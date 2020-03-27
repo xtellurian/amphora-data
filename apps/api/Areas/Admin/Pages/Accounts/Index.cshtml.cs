@@ -34,6 +34,12 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync(int pageNumber = 0, int perPage = 10, string name = null)
         {
+            await PropertiesAsync(pageNumber, perPage, name);
+            return Page();
+        }
+
+        private async Task PropertiesAsync(int pageNumber, int perPage, string name)
+        {
             OrgCount = await orgStore.CountAsync();
             this.Name = name;
             this.PageNumber = pageNumber;
@@ -54,12 +60,11 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
                     .Take(perPage)
                     .ToList();
             }
-
-            return Page();
         }
 
-        public async Task<IActionResult> OnPostGenerateTransactionsAsync()
+        public async Task<IActionResult> OnPostGenerateTransactionsAsync(int pageNumber = 0, int perPage = 10, string name = null)
         {
+            await PropertiesAsync(pageNumber, perPage, name);
             await accountsService.PopulateDebitsAndCreditsAsync();
             Message = "Done";
             return Page();
