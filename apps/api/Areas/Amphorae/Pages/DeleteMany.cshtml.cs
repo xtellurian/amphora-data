@@ -16,7 +16,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         private readonly IPermissionService permissionService;
         private IUser appUser;
         [TempData]
-        public string DeleteMessage { get; set; }
+        public string DeleteMessage { get; set; } = null;
 
         public DeleteManyPageModel(IAmphoraeService amphoraeService, IPermissionService permissionService)
         {
@@ -33,7 +33,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 RedirectToPage("./Index");
             }
 
-            DeleteMessage = null;
             await TryLoadAmphora(ids);
 
             return Page();
@@ -68,8 +67,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     }
                 }
 
-                this.Entities.Clear();
                 this.DeleteMessage = $"Successfully deleted {Entities.Count} amphorae";
+                this.Entities.Clear();
             }
 
             return Page();
