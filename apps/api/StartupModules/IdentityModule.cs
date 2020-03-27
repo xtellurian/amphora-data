@@ -64,7 +64,13 @@ namespace Amphora.Api.StartupModules
                 // challenge OIDC
                 options.DefaultChallengeScheme = CommonAuthorizeAttribute.OidcSchemeName;
             })
-                .AddCookie(CommonAuthorizeAttribute.CookieSchemeName)
+                .AddCookie(CommonAuthorizeAttribute.CookieSchemeName, options =>
+                {
+                    // Configure the client application to use sliding sessions
+                    options.SlidingExpiration = true;
+                    // Expire the session of 30 minutes of inactivity
+                    options.ExpireTimeSpan = System.TimeSpan.FromMinutes(30);
+                })
                 .AddOpenIdConnect(CommonAuthorizeAttribute.OidcSchemeName, options =>
                 {
                     options.SignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
@@ -79,6 +85,12 @@ namespace Amphora.Api.StartupModules
                     options.SaveTokens = true;
                     options.Scope.Add("email");
                     options.Scope.Add(Scopes.AmphoraScope);
+
+                    options.Events.OnTicketReceived = (context) =>
+                    {
+                        context.Properties.ExpiresUtc = System.DateTime.UtcNow.AddHours(2);
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    };
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
                 {
