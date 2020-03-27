@@ -23,7 +23,6 @@ namespace Amphora.Tests.Integration.Pages
             {
                 "/Admin/Index",
                 "/Admin/Dashboard",
-                "/Admin/Purchases",
                 "/Admin/Accounts/Index"
             };
 
