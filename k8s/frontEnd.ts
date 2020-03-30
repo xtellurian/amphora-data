@@ -163,6 +163,7 @@ export class FrontEnd extends pulumi.ComponentResource {
                     "kubernetes.io/ingress.class": "nginx",
                     "cert-manager.io/cluster-issuer": "letsencrypt",
                     "nginx.ingress.kubernetes.io/rewrite-target": " /$1",
+                    "nginx.ingress.kubernetes.io/proxy-body-size:": "0" // disable body size checking
                 }
             },
             spec: {
