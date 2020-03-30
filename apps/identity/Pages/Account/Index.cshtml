@@ -1,8 +1,16 @@
 @page
-@model IndexPageModel
+@model Amphora.Identity.Pages.Account.IndexPageModel
+
+@using Amphora.SharedUI.Models;
 
 @{
     ViewData["Title"] = "Account";
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", "Account");
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+            new MasterNavigationPaneViewModel.Page("./Manage/Index", "Manage Account"),
+            new MasterNavigationPaneViewModel.Page("./Edit", "Edit Profile")
+        };
 }
 
 
@@ -12,24 +20,28 @@
             <h1>@ViewData["Title"]</h1>
         </div>
     </div>
+
     <div class="row">
         <div class="col">
             <h4>Manage your Amphora Data account.</h4>
             <hr />
         </div>
     </div>
-    <div class="row m-2">
-        <div class="col-md-3">
-            <div>
-                <a class="btn btn-primary btn-block" asp-page="./Manage/Index">Manage Account</a>
-            </div>
+
+     <div class="row">
+        <div class="col-md-3 master">
+            @await Component.InvokeAsync("MasterNavigationPane", 
+                new MasterNavigationPaneViewModel(indexPage, otherPages))
         </div>
-    </div>
-    <div class="row m-2">
-        <div class="col-md-3">
-            <div>
-                <a class="btn btn-primary btn-block" asp-page="./Edit">Edit Profile</a>
-            </div>
+        <div class="col-md-9 detail">
+            @if(@Model.ApplicationUser != null)
+            {
+                <div>
+                    User Name: @Model.ApplicationUser?.UserName
+                    Email: @Model.ApplicationUser?.Email 
+                    Phone Number: @Model.ApplicationUser?.PhoneNumber
+                </div>
+            }
         </div>
     </div>
 </div>

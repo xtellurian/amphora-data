@@ -4,17 +4,10 @@ namespace Amphora.Common.Models.Events
 {
     public class UserCreatedEvent : EventBase, IEvent
     {
-        public UserCreatedEvent(IUser user)
+        public UserCreatedEvent(string? email, string? phone, string? triggeredByUserName)
         {
-            if (user is null)
-            {
-                throw new System.ArgumentNullException(nameof(user));
-            }
-
-            Subject = user.UserName;
-            Data = new UserCreatedEventData(user.OrganisationId,
-                                            user.Id,
-                                            user.UserName);
+            Subject = triggeredByUserName;
+            Data = new UserCreatedEventData(email, phone, triggeredByUserName);
         }
 
         public string EventType => "AmphoraData.Users.UserCreated";
@@ -25,19 +18,18 @@ namespace Amphora.Common.Models.Events
 
         private class UserCreatedEventData : IEventData
         {
-            public UserCreatedEventData(string? organisationId,
-                                        string? userId,
-                                        string? triggeredByUserName)
+            public UserCreatedEventData(string? email, string? phone, string? triggeredByUserName)
             {
-                OrganisationId = organisationId;
-                UserId = userId;
+                Phone = phone;
+                Email = email;
                 TriggeredByUserName = triggeredByUserName;
             }
 
-            public string? AmphoraId { get; set; }
-            public string? OrganisationId { get; set; }
+            public string? AmphoraId { get; set; } = null;
+            public string? OrganisationId { get; set; } = null;
             public string? TriggeredByUserName { get; set; }
-            public string? UserId { get; set; }
+            public string? Email { get; set; }
+            public string? Phone { get; set; }
         }
     }
 }

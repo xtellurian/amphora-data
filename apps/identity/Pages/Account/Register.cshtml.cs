@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.DataAnnotations;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Host;
 using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -37,40 +37,11 @@ namespace Amphora.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = new InputModel();
+        public CreateAmphoraUser Input { get; set; } = new CreateAmphoraUser();
         [BindProperty]
         [IsTrue(ErrorMessage = "You must accept the service agreement.")]
         public bool AcceptServiceAgreement { get; set; }
         public string? ReturnUrl { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string? Email { get; set; }
-
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "Full Name")]
-            public string? FullName { get; set; }
-
-            [DataType(DataType.MultilineText)]
-            [MaxLength(255)]
-            [Display(Name = "About")]
-            public string? About { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string? Password { get; set; }
-
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string? ConfirmPassword { get; set; }
-        }
 
         public IActionResult OnGet(string? returnUrl = null, string? email = null)
         {
@@ -93,13 +64,11 @@ namespace Amphora.Identity.Pages.Account
                 var user = new ApplicationUser
                 {
                     UserName = Input.Email,
+                    PhoneNumber = Input.PhoneNumber,
                     Email = Input.Email,
                     About = Input.About,
                     FullName = Input.FullName
                 };
-
-                // TODO invitation
-                // var invitation = await invitationService.GetInvitationByEmailAsync(Input.Email);
 
                 var result = await userManager.CreateAsync(user, Input.Password);
 

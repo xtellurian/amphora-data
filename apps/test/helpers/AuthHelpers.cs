@@ -1,14 +1,9 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Organisations;
-using Amphora.Common.Contracts;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
-using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -16,6 +11,7 @@ namespace Amphora.Tests.Helpers
 {
     public static class AuthHelpers
     {
+        private const string PhoneNumber = "0412 345 678";
         public static async Task<(AmphoraUser User, string Password)> CreateUserAsync(
             this HttpClient client,
             string email,
@@ -28,7 +24,9 @@ namespace Amphora.Tests.Helpers
                 UserName = email,
                 Email = email,
                 FullName = fullName,
-                Password = password
+                Password = password,
+                ConfirmPassword = password,
+                PhoneNumber = PhoneNumber
             };
             var requestPath = "api/users";
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");

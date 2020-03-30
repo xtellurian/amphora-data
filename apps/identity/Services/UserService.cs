@@ -50,7 +50,7 @@ namespace Amphora.Identity.Services
                 {
                     user = await userManager.FindByNameAsync(user.UserName);
                     if (user == null) { throw new System.Exception("Unable to retrieve user"); }
-                    await eventPublisher.PublishEventAsync(new UserCreatedEvent(user));
+                    await eventPublisher.PublishEventAsync(new UserCreatedEvent(user.Email, user.PhoneNumber, user.UserName));
                     // create role here
                     return new EntityOperationResult<ApplicationUser>(user, user);
                 }

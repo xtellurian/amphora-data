@@ -36,7 +36,8 @@ namespace Amphora.Tests.Integration
             {
                 UserName = email,
                 Email = email,
-                Password = password
+                Password = password,
+                ConfirmPassword = password
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
@@ -72,7 +73,8 @@ namespace Amphora.Tests.Integration
             {
                 UserName = email,
                 Email = email,
-                Password = password
+                Password = password,
+                ConfirmPassword = password
             };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 

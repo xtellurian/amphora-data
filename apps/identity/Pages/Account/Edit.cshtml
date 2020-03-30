@@ -1,10 +1,32 @@
 @page
 @model Amphora.Identity.Pages.Account.EditModel
+
+@using Amphora.SharedUI.Models;
+
 @{
     ViewData["Title"] = "Edit Profile";
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", "Account");
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+            new MasterNavigationPaneViewModel.Page("./Manage/Index", "Manage Account"),
+            new MasterNavigationPaneViewModel.Page("./Edit", "Edit Profile")
+        };
 }
 
 <div id="main" class="container center">
+    <div class="row">
+        <div class="col">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h4>Edit your Amphora Data profile.</h4>
+            <hr />
+        </div>
+    </div>
+
     @if(Model.Saved == true)
     {
         <div class="alert alert-success" role="alert">
@@ -12,28 +34,35 @@
         </div>
     }
     <div class="row">
-        <div class="col">
+        <div class="col-md-3">
+            @await Component.InvokeAsync("MasterNavigationPane", 
+                new MasterNavigationPaneViewModel(indexPage, otherPages))
+        </div>
+        <div class="col-md-9">
             <p class="text-danger">@Model.ErrorMessage</p>
             <form method="post">
                 <div class="form-group">
-                    <label asp-for="FullName" class="control-label"></label>
-                    <input asp-for="FullName" class="form-control" placeholder="Jane Citizen" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
+                    <label asp-for="Input.FullName" class="control-label"></label>
+                    <input asp-for="Input.FullName" class="form-control" placeholder="Jane Citizen" />
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
                     <small id="fullNameHelp" class="form-text text-muted">Your Full Name</small>
                 </div>
                 <div class="form-group">
+                    <label asp-for="Input.PhoneNumber" class="control-label"></label>
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="0400 000 000" />
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    <small id="phoneNumberHelp" class="form-text text-muted">Your Phone Number</small>
+                </div>
+                <div class="form-group">
                     <div class="form-group-prepend">
-                        <label asp-for="About" class="control-label"></label>
+                        <label asp-for="Input.About" class="control-label"></label>
                     </div>
-                    <textarea asp-for="About" class="form-control" aria-label="About You"></textarea>
-                    <span asp-validation-for="About" class="text-danger"></span>
+                    <textarea asp-for="Input.About" class="form-control" aria-label="About You"></textarea>
+                    <span asp-validation-for="Input.About" class="text-danger"></span>
                     <small id="aboutHelp" class="form-text text-muted">A little about yourself</small>
                 </div>
-                <button type="submit" class="btn btn-primary w-25">Save</button>
+                <button type="submit" class="btn btn-primary w-25 float-right">Save</button>
             </form>
-            <a class="btn btn-secondary w-25 mt-2" asp-page="./Index">
-                Back
-            </a>
         </div>
     </div>
 </div>

@@ -39,7 +39,8 @@ namespace Amphora.Tests.Identity.Integration
                 UserName = email,
                 Email = email,
                 FullName = fullName,
-                Password = password
+                Password = password,
+                ConfirmPassword = password
             };
             var requestPath = "api/users";
 

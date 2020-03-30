@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Amphora.Common.Models.Dtos.Users;
 using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +16,9 @@ namespace Amphora.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> userManager;
 
         public ApplicationUser? AppUser { get; set; }
+        [BindProperty]
+        public UpdateAmphoraUser Input { get; set; } = new UpdateAmphoraUser();
 
-        [BindProperty]
-        public string? FullName { get; set; }
-        [BindProperty]
-        public string? About { get; set; }
         [TempData]
         public string? ErrorMessage { get; set; } = null;
         [TempData]
@@ -37,19 +37,26 @@ namespace Amphora.Identity.Pages.Account
                 return RedirectToPage("./UserMissing");
             }
 
-            About = AppUser?.About;
-            FullName = AppUser?.FullName;
+            SetProperties();
             return Page();
+        }
+
+        private void SetProperties()
+        {
+            Input.About = AppUser?.About;
+            Input.FullName = AppUser?.FullName;
+            Input.PhoneNumber = AppUser?.PhoneNumber;
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (ModelState.IsValid)
-            {
-                AppUser = await userManager.GetUserAsync(User);
-                AppUser.About = About;
-                AppUser.FullName = FullName;
+            AppUser = await userManager.GetUserAsync(User);
 
+            if (ModelState.IsValid && AppUser != null)
+            {
+                AppUser.About = Input.About;
+                AppUser.FullName = Input.FullName;
+                AppUser.PhoneNumber = Input.PhoneNumber;
                 try
                 {
                     var response = await userManager.UpdateAsync(AppUser);

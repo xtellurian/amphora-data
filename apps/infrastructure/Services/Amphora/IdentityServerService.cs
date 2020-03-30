@@ -56,6 +56,7 @@ namespace Amphora.Infrastructure.Services
                 UserName = user.UserName,
                 FullName = user.FullName,
                 Password = password,
+                ConfirmPassword = password
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(u), Encoding.UTF8, "application/json");
