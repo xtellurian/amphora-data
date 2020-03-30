@@ -265,7 +265,7 @@ export class State extends pulumi.ComponentResource {
         keyVaultId: kv.id,
         name: "identityCert",
       }, {
-      dependsOn: kv,
+      dependsOn: this.kvAccessPolicies,
       parent: this,
     });
 
