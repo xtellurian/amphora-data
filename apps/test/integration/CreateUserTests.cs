@@ -34,6 +34,7 @@ namespace Amphora.Tests.Integration
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
             var user = new CreateAmphoraUser
             {
+                FullName = "test name",
                 UserName = email,
                 Email = email,
                 Password = password,
@@ -71,6 +72,7 @@ namespace Amphora.Tests.Integration
             var email = System.Guid.NewGuid().ToString() + "@example.com";
             var user = new CreateAmphoraUser
             {
+                FullName = nameof(CanCreate_FirstOrgansation_AsNewUser),
                 UserName = email,
                 Email = email,
                 Password = password,
