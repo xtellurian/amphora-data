@@ -57,6 +57,10 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
             builder.OwnsOne(_ => _.Account, account =>
             {
                 account.WithOwner(_ => _!.Organisation).HasForeignKey(_ => _!.OrganisationId);
+                account.OwnsOne(_ => _!.Plan, plan =>
+                {
+                    // nothing specific
+                });
                 account.OwnsMany(_ => _!.Credits, credit =>
                 {
                     credit.Property(_ => _.Id).ValueGeneratedOnAdd();

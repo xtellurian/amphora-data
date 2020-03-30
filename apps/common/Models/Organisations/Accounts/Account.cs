@@ -12,6 +12,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public virtual ICollection<AccountDebit> Debits { get; set; } = new Collection<AccountDebit>();
         public virtual ICollection<Invoice> Invoices { get; set; } = new Collection<Invoice>();
         public virtual OrganisationModel Organisation { get; set; } = null!;
+        public virtual Plan? Plan { get; set; } = new Plan();
         public string OrganisationId { get; set; } = null!;
         public double? Balance => GetBalance();
 

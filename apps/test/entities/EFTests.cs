@@ -1,11 +1,8 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.EntityFramework;
 using Amphora.Api.Stores.EFCore;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Signals;
 using Amphora.Identity.EntityFramework;
 using Amphora.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
