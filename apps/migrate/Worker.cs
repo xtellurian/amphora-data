@@ -50,7 +50,7 @@ namespace Amphora.Migrate
             // await RunMigratorsAsync("Move and refactor to IdentityContext", identityModelMigrator); // run this to move ApplicationUsers into IdentityContext
             // await RunMigratorsAsync("Add data models to AmphoraContext", userDataModelMigrator); // run this to add UserDataModels to AmphoraContext
             // await RunMigratorsAsync("Delete Old ApplicationUser documents", cosmosDeleter); // run this to add UserDataModels to AmphoraContext
-            
+
             logger.LogInformation("Stopping");
             await this.StopAsync(stoppingToken);
             Environment.Exit(0);
