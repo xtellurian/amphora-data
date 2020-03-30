@@ -18,7 +18,7 @@ namespace Amphora.Migrate
         private readonly CosmosUpdateIdentityModelMigrator identityModelMigrator;
         private readonly CosmosUserDataModelMigrator userDataModelMigrator;
         private readonly CosmosCollectionMigrator cosmosMigrator;
-        // private readonly CosmosDocumentDeleteMigrator? cosmosDeleter;
+        private readonly CosmosDocumentDeleteMigrator cosmosDeleter;
         // private readonly BlobMigrator? blobMigrator;
         // private readonly TsiMigrator? tsiMigrator;
 
@@ -26,8 +26,8 @@ namespace Amphora.Migrate
                       IOptionsMonitor<CosmosMigrationOptions> options,
                       CosmosUpdateIdentityModelMigrator identityModelMigrator,
                       CosmosUserDataModelMigrator userDataModelMigrator,
-                      CosmosCollectionMigrator cosmosMigrator)
-        // CosmosDocumentDeleteMigrator cosmosDeleter,
+                      CosmosCollectionMigrator cosmosMigrator,
+                      CosmosDocumentDeleteMigrator cosmosDeleter)
         // BlobMigrator blobMigrator,
         // TsiMigrator tsiMigrator)
         {
@@ -36,7 +36,7 @@ namespace Amphora.Migrate
             this.identityModelMigrator = identityModelMigrator ?? throw new ArgumentNullException(nameof(identityModelMigrator));
             this.userDataModelMigrator = userDataModelMigrator ?? throw new ArgumentNullException(nameof(userDataModelMigrator));
             this.cosmosMigrator = cosmosMigrator ?? throw new ArgumentNullException(nameof(cosmosMigrator));
-            // this.cosmosDeleter = cosmosDeleter ?? throw new ArgumentNullException(nameof(cosmosDeleter));
+            this.cosmosDeleter = cosmosDeleter ?? throw new ArgumentNullException(nameof(cosmosDeleter));
             // this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));
             // this.tsiMigrator = tsiMigrator ?? throw new ArgumentNullException(nameof(tsiMigrator));
         }
@@ -48,8 +48,9 @@ namespace Amphora.Migrate
             // run each of these separately
             // await RunMigratorsAsync("Import Cosmos from Prod", cosmosMigrator); // run this to get things into dev env. no need to run targetting prod
             // await RunMigratorsAsync("Move and refactor to IdentityContext", identityModelMigrator); // run this to move ApplicationUsers into IdentityContext
-            await RunMigratorsAsync("Add data models to AmphoraContext", userDataModelMigrator); // run this to add UserDataModels to AmphoraContext
-
+            // await RunMigratorsAsync("Add data models to AmphoraContext", userDataModelMigrator); // run this to add UserDataModels to AmphoraContext
+            // await RunMigratorsAsync("Delete Old ApplicationUser documents", cosmosDeleter); // run this to add UserDataModels to AmphoraContext
+            
             logger.LogInformation("Stopping");
             await this.StopAsync(stoppingToken);
             Environment.Exit(0);

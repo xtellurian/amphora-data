@@ -17,7 +17,7 @@ namespace Amphora.Migrate.Migrators
         public CosmosDocumentDeleteMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
                                             ILogger<CosmosDocumentDeleteMigrator> logger) : base(options, logger)
         {
-            this.discriminator = "AmphoraSignalModel";
+            this.discriminator = "ApplicationUser";
             this.options = options.CurrentValue;
             this.logger = logger;
         }
