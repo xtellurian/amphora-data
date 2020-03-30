@@ -126,6 +126,8 @@ namespace Amphora.Identity
             services.AddScoped<IEntityStore<ApplicationUser>, UsersEFStore>();
             services.AddScoped<IIdentityService, IdentityServerService>();
 
+            services.AddScoped<IdentityServer4.Services.IEventSink, IdentityServerEventConnectorService>();
+
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
 

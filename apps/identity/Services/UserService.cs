@@ -18,26 +18,14 @@ namespace Amphora.Identity.Services
         private readonly ILogger<UserService> logger;
         private readonly IEventPublisher eventPublisher;
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager;
 
         public UserService(ILogger<UserService> logger,
-                           IEntityStore<ApplicationUser> userStore,
                            IEventPublisher eventPublisher,
-                           UserManager<ApplicationUser> userManager,
-                           SignInManager<ApplicationUser> signInManager)
+                           UserManager<ApplicationUser> userManager)
         {
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
-            UserStore = userStore ?? throw new System.ArgumentNullException(nameof(userStore));
             this.eventPublisher = eventPublisher ?? throw new System.ArgumentNullException(nameof(eventPublisher));
             this.userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
-            this.signInManager = signInManager ?? throw new System.ArgumentNullException(nameof(signInManager));
-        }
-
-        public IEntityStore<ApplicationUser> UserStore { get; }
-
-        public bool IsSignedIn(ClaimsPrincipal principal)
-        {
-            return this.signInManager.IsSignedIn(principal);
         }
 
         public async Task<EntityOperationResult<ApplicationUser>> CreateAsync(ApplicationUser user,

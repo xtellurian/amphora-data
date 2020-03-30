@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Contracts
 {
