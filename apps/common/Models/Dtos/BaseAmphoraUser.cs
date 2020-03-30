@@ -6,7 +6,6 @@ namespace Amphora.Common.Models.Dtos
     {
         protected const string PhoneNumberRegex = @"^\+?([0-9 ]){6,24}$";
 
-        [Required]
         [DataType(DataType.PhoneNumber)]
         [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} numbers long.", MinimumLength = 6)]
         [Display(Name = "Phone Number")]
