@@ -14,7 +14,44 @@
             <partial name="_MasterNavPartial" />
         </div>
         <div class="col-md-9 detail">
-            Summary goes here
+            <h5>Summary</h5>
+            <br/>
+            @{var date = "";}
+            @if(Model.Amphora.CreatedBy != null)
+            {
+                <p>
+                    Created by <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@Model.Amphora.CreatedById">
+                        @Model.Amphora.CreatedBy?.ContactInformation?.FullName
+                        </a> from
+                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
+                        @Model.Amphora.CreatedBy.Organisation?.Name
+                        </a>
+                        @if(Model.Amphora.CreatedDate.HasValue)
+                        {
+                            date = $"on {Model.Amphora.CreatedDate.Value.ToString("dd MMM yy")}";
+                        }
+                        @date
+                </p>
+            }
+            else
+            {
+                <div>Created by Unknown user</div>
+            }
+            <p>
+                Price: @Model.Amphora.Price per month
+            </p>
+            <p>
+                Labels: @String.Join(", ", @Model.Amphora.Labels.Select(_ => _.Name))
+            </p>
+            <p>
+                Amphora contains 
+                <a asp-area="Amphorae" asp-page="/Files/Index" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountFiles files </a>
+                and
+                <a asp-area="Amphorae" asp-page="/Signals/Index" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountSignals signals. </a>
+            </p>
+            <p>
+                Terms of Use are <a asp-page="./TermsOfUse" asp-route-id="@Model.Amphora.Id">@Model.Amphora.TermsAndConditions.Name</a>
+            </p>
         </div>
     </div>
 </div>

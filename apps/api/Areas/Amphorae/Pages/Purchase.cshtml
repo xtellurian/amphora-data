@@ -23,7 +23,7 @@
                         You've just purchased an Amphora. 
                     </p>
                     <br/>
-                    <a asp-page="./Detail" asp-route-id="@Model.Id"><button class="w-50 btn btn-success">Take me there</button></a>
+                    <a asp-area="Amphorae" asp-page="/Detail/Index" asp-route-id="@Model.Id"><button class="w-50 btn btn-success">Take me there</button></a>
             }
             else
             {   

@@ -1,4 +1,4 @@
-@model Amphora.Api.Areas.Amphorae.Pages.AmphoraPageModel
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.AmphoraDetailPageModel
 @using Amphora.SharedUI.Models;
 
 @{
@@ -13,11 +13,15 @@
             new MasterNavigationPaneViewModel.Page("./TermsOfUse", "Terms of Use", paramsDict),
             new MasterNavigationPaneViewModel.Page("./Location", "Location", paramsDict),
             new MasterNavigationPaneViewModel.Page("./Issues", "Issues", paramsDict),
-            //new MasterNavigationPaneViewModel.Page("./Quality", "Data Quality", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Quality", "Data Quality", paramsDict),
             //new MasterNavigationPaneViewModel.Page("./Similar", "Similar Amphora", paramsDict),
             //new MasterNavigationPaneViewModel.Page("./Log", "Update Log", paramsDict),
-            new MasterNavigationPaneViewModel.Page("./Options", "Options", paramsDict),
         };
+
+        if(Model.CanUpdate)
+        {
+            otherPages.Add(new MasterNavigationPaneViewModel.Page("./Options", "Options", paramsDict));
+        }
 }
 
 @await Component.InvokeAsync("MasterNavigationPane", new MasterNavigationPaneViewModel(indexPage, otherPages))

@@ -39,7 +39,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 if (Amphora == null)
                 {
-                    return RedirectToPage("/NotFound", new { area = "Amphorae" } );
+                    return RedirectToPage("/NotFound", new { area = "Amphorae" });
                 }
                 else
                 {

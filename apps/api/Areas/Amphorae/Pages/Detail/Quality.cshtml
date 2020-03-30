@@ -1,0 +1,48 @@
+
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.QualityPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name;
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+            <h5>Quality Estimates</h5>
+            <br/>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Metric</th>
+                    <th scope="col">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Number of Files</th>
+                        <td>@Model.Quality.CountFiles</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Files last updated</th>
+                        <td>@Model.Quality.DaysSinceFilesLastUpdated</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Number of Signals</th>
+                        <td>@Model.Quality.CountFiles</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Signals last updated</th>
+                        <td>@Model.Quality.DaysSinceSignalsLastUpdated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

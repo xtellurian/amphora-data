@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Purchases;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
@@ -29,6 +29,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public int SignalCount => this.Quality.CountSignals ?? 0;
 
         public DataQualitySummary Quality { get; private set; }
+        public bool CanUpdate { get; private set; }
         public bool CanEditPermissions { get; private set; }
         public bool CanEditDetails { get; private set; }
         public bool CanUploadFiles { get; private set; }
@@ -41,6 +42,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             if (Amphora != null)
             {
                 this.Quality = await qualityEstimator.GenerateDataQualitySummaryAsync(Amphora);
+                this.CanUpdate = await permissionService.IsAuthorizedAsync(User, this.Amphora, AccessLevels.Update);
                 // Names = await blobStore.ListBlobsAsync(Amphora);
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check

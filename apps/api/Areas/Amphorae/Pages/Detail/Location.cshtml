@@ -14,7 +14,9 @@
         <div class="col-md-3 master">
             <partial name="_MasterNavPartial" />
         </div>
-        <div class="col-md-5 detail text-center">
+        <div class="col-md-5 detail">
+            <h5>Location</h5>
+            <br/>
             <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
             @if(Model.Amphora.GeoLocation != null)
             {

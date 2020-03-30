@@ -62,7 +62,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     var result = await amphoraeService.UpdateAsync(User, a);
                     if (result.Succeeded)
                     {
-                        return RedirectToPage("./Detail", new { id = a.Id });
+                        return RedirectToPage("./Detail/Index", new { id = a.Id });
                     }
                     else if (result.WasForbidden)
                     {
