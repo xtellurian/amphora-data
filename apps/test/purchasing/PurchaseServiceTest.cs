@@ -9,6 +9,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
+using Amphora.Common.Services.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using Moq;
@@ -26,10 +27,12 @@ namespace Amphora.Tests.Unit.Purchasing
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
             var org = EntityLibrary.GetOrganisationModel();
             var otherOrg = EntityLibrary.GetOrganisationModel();
             var thirdOrg = EntityLibrary.GetOrganisationModel();
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
             org = await orgStore.CreateAsync(org);
             otherOrg = await orgStore.CreateAsync(otherOrg);
@@ -102,7 +105,9 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
             var terms = new TermsAndConditionsModel("1", System.Guid.NewGuid().ToString(), "This should be accepted");
 
@@ -152,7 +157,9 @@ namespace Amphora.Tests.Unit.Purchasing
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
             var terms = new TermsAndConditionsModel("2", "FooBar", "TThis shouldn't be accepted");
 
@@ -199,7 +206,9 @@ namespace Amphora.Tests.Unit.Purchasing
             var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
             var org = EntityLibrary.GetOrganisationModel();
             org.Account = new Account()

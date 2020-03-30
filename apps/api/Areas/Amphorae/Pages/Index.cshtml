@@ -57,14 +57,12 @@
         else
         {
             <div class="col">
-                <table id="entity-table" class="table table-borderless table-striped">
-                    <tbody>
-                        @foreach (var entity in Model.Amphorae)
-                        {
-                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true, isSelectable=true})
-                        }
-                    </tbody>
-                </table>
+                @{var index = 0;}
+                @foreach (var entity in Model.Amphorae)
+                {
+                    @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isSelectable=true, index = index++})
+                }
+
                 <form method="post" asp-page-handler="delete">
                     <input hidden id="selectedAmphoraInput" asp-for="JsonSelectedAmphoraIdArray"/>
                      <div class="form-group" id="actionButtonsDiv" style="display: none;">

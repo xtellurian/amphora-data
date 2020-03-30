@@ -1,0 +1,23 @@
+@model Amphora.Api.Areas.Amphorae.Pages.AmphoraPageModel
+@using Amphora.SharedUI.Models;
+
+@{
+    var paramsDict = new Dictionary<string,string>
+        {
+            {"id", Model.Amphora.Id}
+        };
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", "Summary", paramsDict);
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+            new MasterNavigationPaneViewModel.Page("./Description", "Description", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./TermsOfUse", "Terms of Use", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Location", "Location", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Issues", "Issues", paramsDict),
+            //new MasterNavigationPaneViewModel.Page("./Quality", "Data Quality", paramsDict),
+            //new MasterNavigationPaneViewModel.Page("./Similar", "Similar Amphora", paramsDict),
+            //new MasterNavigationPaneViewModel.Page("./Log", "Update Log", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Options", "Options", paramsDict),
+        };
+}
+
+@await Component.InvokeAsync("MasterNavigationPane", new MasterNavigationPaneViewModel(indexPage, otherPages))

@@ -1,0 +1,20 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.DescriptionPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name;
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-lg-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-lg-9 detail">
+            @Model.Amphora.Description
+        </div>
+    </div>
+</div>

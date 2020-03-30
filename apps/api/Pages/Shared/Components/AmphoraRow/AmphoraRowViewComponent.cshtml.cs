@@ -8,13 +8,14 @@ namespace Amphora.Api.Pages.Shared.Components
     {
         public AmphoraModel Amphora { get; private set; }
         public bool IsSelectable { get; private set; }
+        public int Index { get; private set; }
 
-        public IViewComponentResult Invoke(AmphoraModel amphora, bool isTable, bool isSelectable = false)
+        public IViewComponentResult Invoke(AmphoraModel amphora, bool isTable, int index, bool isSelectable = false)
         {
             this.Amphora = amphora;
             this.IsSelectable = isSelectable;
-            if (isTable) { return View("Table", this); }
-            else { return View(this); }
+            this.Index = index;
+            return View(this);
         }
     }
 }

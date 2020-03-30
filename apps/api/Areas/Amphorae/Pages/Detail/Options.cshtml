@@ -1,0 +1,101 @@
+
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.OptionsPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name;
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+           @if(Model.CanEditDetails)
+            {
+                @if(Model.CanEditDetails)
+                {
+                    <a class="dropdown-item" asp-area="Amphorae" asp-page="/Edit" asp-route-id="@Model.Amphora.Id">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                        <i class="fas fa-users"></i> Show has purchased
+                    </button>
+                    <a class="dropdown-item btn btn-link" asp-area="Amphorae" asp-page="/Restrictions/Index" asp-route-id="@Model.Amphora.Id">
+                        <i class="fas fa-ban"></i> Restricted Organisations
+                    </a>
+                }
+                @if(Model.UserData?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
+                {
+                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
+                        <button class="dropdown-item" type="submit">
+                            <i class="fas fa-thumbtack"></i> Unpin from User
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToUser">
+                        <button class="dropdown-item" type="submit">
+                            <i class="fas fa-thumbtack"></i> Pin to User
+                        </button>
+                    </form>
+                }
+                
+                @if(Model.Amphora.Organisation?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
+                {
+                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromOrg">
+                        <button class="dropdown-item" type="submit">
+                            <i class="fas fa-thumbtack"></i> Unpin from Organisation
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToOrg">
+                        <button class="dropdown-item" type="submit">
+                            <i class="fas fa-thumbtack"></i> Pin to Organisation
+                        </button>
+                    </form>
+                }
+                @if(Model.Amphora.GeoLocation != null)
+                {
+                    <a class="dropdown-item" asp-area="Discover" asp-page="/Index" asp-page-handler="MapView" 
+                        asp-route-lat="@Model.Amphora.GeoLocation.Lat()" 
+                        asp-route-lon="@Model.Amphora.GeoLocation.Lon()"
+                        asp-route-dist=50>
+                        <i class="fas fa-arrows-alt"></i> Discover Nearby
+                    </a>
+                }
+            }
+            @if(Model.CanEditPermissions)
+            {
+                <div id="hasPurchasedCollapse" class="card bg-light collapse">
+                    <div class="card-header">
+                        <div>
+                            <a class="float-right" asp-route-id="@Model.Amphora.Id" asp-page="./Invite">
+                                <i class="fas fa-user-plus"></i>
+                            </a>
+                        </div>
+                        <h5 class="card-title">Has Purchased</h5>
+                    </div>
+                    <ul class="list-group">
+                    @foreach (var a in Model.Purchases)
+                    {
+                        var d = new Dictionary<string, string>{ {"id", a.PurchasedByUserId} };
+                        
+                        <li> 
+                            <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="@a.PurchasedByUser.UserName"></i> 
+                            <a asp-area="Profiles" asp-page="/Account/Detail" asp-all-route-data=@d > @a.PurchasedByUser.UserName </a>
+                        </li>
+                    }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>

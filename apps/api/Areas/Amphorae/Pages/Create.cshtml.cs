@@ -85,7 +85,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 var setResult = await amphoraeService.CreateAsync(User, entity);
                 if (setResult.Succeeded)
                 {
-                    return RedirectToPage("./Detail", new { id = setResult.Entity.Id });
+                    return RedirectToPage("./Detail/Index", new { id = setResult.Entity.Id });
                 }
                 else
                 {

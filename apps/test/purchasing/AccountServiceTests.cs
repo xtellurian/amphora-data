@@ -95,12 +95,13 @@ namespace Amphora.Tests.Unit.Purchasing
             var purchaseStore = new PurchaseEFStore(GetContext(), CreateMockLogger<PurchaseEFStore>());
             var orgStore = new OrganisationsEFStore(GetContext(), CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(GetContext(), CreateMockLogger<AmphoraeEFStore>());
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
             var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
             var commissionMock = new Mock<ICommissionTrackingService>();
             var mockEmailSender = new Mock<IEmailSender>();
             commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
-            var userDataService = new ApplicationUserDataService(userDataStore);
             var purchaseService = new PurchaseService(purchaseStore,
                                                       orgStore,
                                                       permissionService,

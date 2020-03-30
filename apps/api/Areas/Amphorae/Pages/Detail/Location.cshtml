@@ -1,0 +1,31 @@
+
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.LocationPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name;
+    string iSrc = $"/Amphorae/StaticMap?id={Model.Amphora.Id}"; //The src path.
+}
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-5 detail text-center">
+            <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
+            @if(Model.Amphora.GeoLocation != null)
+            {
+                <p class="text-center"> Lat: @Model.Amphora.GeoLocation.Lat() Lon: @Model.Amphora.GeoLocation.Lon()</p>
+            }
+        </div>
+        <div class="col-md-3 detail">
+            @if(Model.Amphora.GeoLocation != null)
+            {
+                <p class="text-center"> Lat: @Model.Amphora.GeoLocation.Lat() Lon: @Model.Amphora.GeoLocation.Lon()</p>
+            }
+        </div>
+    </div>
+</div>

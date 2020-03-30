@@ -1,79 +1,47 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Services.FeatureFlags;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
-using Amphora.Common.Models;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.GitHub;
 using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Amphora.Api.Areas.Amphorae.Pages
+namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
-    [CommonAuthorize]
-    public class DetailModel : AmphoraPageModel
+    public class OptionsPageModel : AmphoraDetailPageModel
     {
-        private readonly IBlobStore<AmphoraModel> blobStore;
-        private readonly IUserDataService userDataService;
-        private readonly IPermissionService permissionService;
-        private readonly IPurchaseService purchaseService;
-        private readonly IQualityEstimatorService qualityEstimator;
         private readonly IOrganisationService organisationService;
-        private readonly IAmphoraGitHubIssueConnectorService github;
-        private readonly FeatureFlagService featureFlags;
+        private readonly IUserDataService userDataService;
 
-        public DetailModel(
-            IAmphoraeService amphoraeService,
-            IBlobStore<AmphoraModel> blobStore,
-            IUserDataService userDataService,
-            IPermissionService permissionService,
-            IPurchaseService purchaseService,
-            IQualityEstimatorService qualityEstimator,
-            IOrganisationService organisationService,
-            IAmphoraGitHubIssueConnectorService github,
-            FeatureFlagService featureFlags) : base(amphoraeService)
-        {
-            this.blobStore = blobStore;
-            this.userDataService = userDataService;
-            this.permissionService = permissionService;
-            this.purchaseService = purchaseService;
-            this.qualityEstimator = qualityEstimator;
-            this.organisationService = organisationService;
-            this.github = github;
-            this.featureFlags = featureFlags;
-        }
-
-        public DataQualitySummary Quality { get; private set; }
-        public IEnumerable<string> Names { get; set; }
-
-        public bool CanEditPermissions { get; set; }
-        public bool CanEditDetails { get; private set; }
-        public bool CanUploadFiles { get; private set; }
-        public int FileCount => this.Quality.CountFiles ?? 0;
-        public int SignalCount => this.Quality.CountSignals ?? 0;
-        public ICollection<Common.Models.Purchases.PurchaseModel> Purchases { get; private set; }
-        public bool CanBuy { get; set; }
-        public IReadOnlyList<LinkedGitHubIssue> Issues { get; private set; }
-        public Common.Models.Purchases.PurchaseModel Purchase { get; private set; }
         public ApplicationUserDataModel UserData { get; private set; }
+
+        public OptionsPageModel(IAmphoraeService amphoraeService,
+                                   IQualityEstimatorService qualityEstimator,
+                                   IPurchaseService purchaseService,
+                                   IPermissionService permissionService,
+                                   IOrganisationService organisationService,
+                                   IUserDataService userDataService) : base(amphoraeService,
+                                                                                qualityEstimator,
+                                                                                purchaseService,
+                                                                                permissionService)
+        {
+            this.organisationService = organisationService;
+            this.userDataService = userDataService;
+        }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
+            await LoadUserData();
             TryLoadPurchase();
             return OnReturnPage();
         }
 
-        private void TryLoadPurchase()
+        public async Task LoadUserData()
         {
-            if (this.Amphora != null)
+            var userDataRes = await userDataService.ReadAsync(User);
+            if (userDataRes.Succeeded)
             {
-                this.Purchase = Amphora.Purchases.FirstOrDefault(_ => _.PurchasedByOrganisationId == Result.User.OrganisationId);
+                this.UserData = userDataRes.Entity;
             }
         }
 
@@ -95,7 +63,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     return await UnpinFromOrg();
             }
 
-            return RedirectToPage("./Detail", new { Id = id });
+            return RedirectToPage("./Options", new { Id = id });
         }
 
         private async Task<IActionResult> UnpinFromOrg()
@@ -120,7 +88,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 else
                 {
-                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                    return RedirectToPage("./Options", new { Id = Amphora.Id });
                 }
             }
             else
@@ -141,7 +109,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 {
                     UserData.PinnedAmphorae.Unpin(Amphora);
                     await userDataService.UpdateAsync(User, UserData);
-                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                    return RedirectToPage("./Options", new { Id = Amphora.Id });
                 }
                 else
                 {
@@ -165,8 +133,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 if (UserData.PinnedAmphorae.AreAnyNull())
                 {
                     UserData.PinnedAmphorae.PinToLeastNull(Amphora);
-                    await userDataService.UpdateAsync(User, UserData);
-                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                    var res = await userDataService.UpdateAsync(User, UserData);
+                    return RedirectToPage("./Options", new { Id = Amphora.Id });
                 }
                 else
                 {
@@ -203,7 +171,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 else
                 {
-                    return RedirectToPage("./Detail", new { Id = Amphora.Id });
+                    return RedirectToPage("./Options", new { Id = Amphora.Id });
                 }
             }
             else
@@ -212,24 +180,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
 
             return OnReturnPage();
-        }
-
-        private async Task SetPagePropertiesAsync()
-        {
-            var userReadRes = await userDataService.ReadAsync(User);
-            if (userReadRes.Succeeded && Amphora != null)
-            {
-                var userData = userReadRes.Entity;
-                this.Quality = await qualityEstimator.GenerateDataQualitySummaryAsync(Amphora);
-                Names = await blobStore.ListBlobsAsync(Amphora);
-                CanEditPermissions = await permissionService.IsAuthorizedAsync(userData, this.Amphora, ResourcePermissions.Create);
-                // can edit permissions implies can edit details - else, check
-                CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(userData, this.Amphora, ResourcePermissions.Update);
-                CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(userData, this.Amphora, ResourcePermissions.WriteContents);
-
-                this.Purchases = Amphora.Purchases;
-                this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
-            }
         }
     }
 }

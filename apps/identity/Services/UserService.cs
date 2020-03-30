@@ -19,6 +19,7 @@ namespace Amphora.Identity.Services
         private readonly IEventPublisher eventPublisher;
         private readonly UserManager<ApplicationUser> userManager;
 
+        // don't let permission service in here
         public UserService(ILogger<UserService> logger,
                            IEventPublisher eventPublisher,
                            UserManager<ApplicationUser> userManager)

@@ -42,7 +42,7 @@ namespace Amphora.Tests.Unit.Authorization
                 var a = EntityLibrary.GetAmphoraModel(org, false); // ensure amphora is not public (auto deny access)
                 a = await amphoraStore.CreateAsync(a);
 
-                var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+                var permissionService = new PermissionService(orgStore, amphoraStore, userDataService.Object, CreateMockLogger<PermissionService>());
                 var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userDataService.Object);
 
                 var readReq = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Read } };
@@ -89,7 +89,7 @@ namespace Amphora.Tests.Unit.Authorization
                 var a = EntityLibrary.GetAmphoraModel(org);
                 a = await amphoraStore.CreateAsync(a);
 
-                var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+                var permissionService = new PermissionService(orgStore, amphoraStore, userDataService.Object, CreateMockLogger<PermissionService>());
 
                 var handler = new AmphoraAuthorizationHandler(CreateMockLogger<AmphoraAuthorizationHandler>(), permissionService, userDataService.Object);
                 var requirements = new List<IAuthorizationRequirement> { new AuthorizationRequirement { MinimumLevel = AccessLevels.Read } };

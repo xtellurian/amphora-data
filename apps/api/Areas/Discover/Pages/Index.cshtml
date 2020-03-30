@@ -82,6 +82,7 @@
             }
             else
             {
+                var index = 0;
                 <div>
                     <table id="market-table" class="table table-borderless table-striped">
                         <tbody>
@@ -93,7 +94,7 @@
                         }
                         @foreach (var entity in Model.Entities)
                         {
-                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true})
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true, index = index++})
                         }
                         </tbody>
                     </table>

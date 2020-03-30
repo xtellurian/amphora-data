@@ -37,7 +37,7 @@ namespace Amphora.Tests.Unit.Services
             var mockUserService = new Mock<IUserDataService>();
             mockUserService.Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>())).ReturnsAsync(new Common.Models.EntityOperationResult<ApplicationUserDataModel>(userData, userData));
 
-            var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+            var permissionService = new PermissionService(orgStore, amphoraStore, mockUserService.Object, CreateMockLogger<PermissionService>());
 
             IRestrictionService sut = new RestrictionService(restrictionsStore,
                                                              mockUserService.Object,

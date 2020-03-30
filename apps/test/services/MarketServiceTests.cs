@@ -37,7 +37,7 @@ namespace Amphora.Tests.Unit.Services
                 mockUserService.Setup(o => o.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
                     .ReturnsAsync(new Common.Models.EntityOperationResult<ApplicationUserDataModel>(userData, userData));
 
-                var permissionService = new PermissionService(orgStore, amphoraStore, CreateMockLogger<PermissionService>());
+                var permissionService = new PermissionService(orgStore, amphoraStore, mockUserService.Object, CreateMockLogger<PermissionService>());
                 var options = Mock.Of<IOptionsMonitor<Api.Options.AmphoraManagementOptions>>(_ => _.CurrentValue == new Api.Options.AmphoraManagementOptions());
                 var amphoraService = new AmphoraeService(options,
                                                          amphoraStore,

@@ -30,7 +30,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public IActionResult OnReturnPage()
         {
-            if (Amphora == null) { return RedirectToPage("./Index"); }
+            if (Amphora == null) { return RedirectToPage("/Index", new { area = "Amphorae" }); }
             if (Result.WasForbidden)
             {
                 return RedirectToPage("Amphorae/Forbidden");
@@ -39,7 +39,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             {
                 if (Amphora == null)
                 {
-                    return RedirectToPage("Amphorae/NotFound");
+                    return RedirectToPage("/NotFound", new { area = "Amphorae" } );
                 }
                 else
                 {
@@ -48,7 +48,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else
             {
-                return RedirectToPage("Amphorae/Index");
+                return RedirectToPage("/Index", new { area = "Amphorae" });
             }
         }
     }

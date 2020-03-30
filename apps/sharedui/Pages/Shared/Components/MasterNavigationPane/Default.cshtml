@@ -4,18 +4,39 @@
     string masterActiveClass = Model.Index.IsActive ? "btn-primary" : "btn-secondary";
 }
 
-<div class="card">
+<div class="card d-none d-md-block">
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-        <a class="btn btn-block @masterActiveClass" asp-page="@Model.Index.Path">@Model.Index.Name</a>
+      <a class="btn btn-block btn-sm @masterActiveClass" asp-page="@Model.Index.Path" asp-all-route-data="@Model.Index.Query">@Model.Index.Name</a>
     </li>
     <li class="list-group-item">
-    @foreach(var p in Model.Pages)
-    {
-        string activeClass = p.IsActive ? "btn-primary" : "btn-secondary";
-       
-            <a class="btn btn-block @activeClass" asp-page="@p.Path">@p.Name</a>
-    }
+      @foreach(var p in Model.Pages)
+      {
+          string activeClass = p.IsActive ? "btn-primary" : "btn-secondary";
+          <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
+      }
     </li>
   </ul>
+</div>
+
+<div class="card d-md-none">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      <a class="btn btn-block btn-sm @masterActiveClass" asp-page="@Model.Index.Path" asp-all-route-data="@Model.Index.Query">@Model.Index.Name</a>
+    </li>
+    <li class="list-group-item">
+      <a class="btn btn-secondary btn-block btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        More Options
+      </a>
+    </li>
+
+      <li id="collapseExample" class="collapse list-group-item">
+        @foreach(var p in Model.Pages)
+        {
+            string activeClass = p.IsActive ? "btn-primary" : "btn-secondary";
+            <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
+        }
+      </li>
+    </ul>
+
 </div>

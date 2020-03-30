@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
@@ -16,14 +17,23 @@ namespace Amphora.Api.Services.Auth
         private readonly ILogger<PermissionService> logger;
         private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IEntityStore<AmphoraModel> amphoraeStore;
+        private readonly IUserDataService userDataService;
 
         public PermissionService(IEntityStore<OrganisationModel> orgStore,
                                 IEntityStore<AmphoraModel> amphoraeStore,
+                                IUserDataService userDataService,
                                 ILogger<PermissionService> logger)
         {
             this.logger = logger;
             this.orgStore = orgStore;
             this.amphoraeStore = amphoraeStore;
+            this.userDataService = userDataService;
+        }
+
+        public async Task<bool> IsAuthorizedAsync(ClaimsPrincipal principal, AmphoraModel entity, AccessLevels accessLevel)
+        {
+            var userDataRes = await userDataService.ReadAsync(principal);
+            return userDataRes.Succeeded && await this.IsAuthorizedAsync(userDataRes.Entity, entity, accessLevel);
         }
 
         public async Task<bool> IsAuthorizedAsync(IUser user, OrganisationModel org, AccessLevels accessLevel)

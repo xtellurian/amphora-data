@@ -26,7 +26,7 @@ namespace Amphora.SharedUI.Models
 
         public class Page
         {
-            public Page(string path, string name = null)
+            public Page(string path, string name = null, IDictionary<string, string> query = null)
             {
                 Path = path;
                 if (name == null)
@@ -35,11 +35,16 @@ namespace Amphora.SharedUI.Models
                 }
 
                 Name = name;
+                if (query != null && query.Count > 0)
+                {
+                    Query = query;
+                }
             }
 
             public string Path { get; }
             public string Name { get; }
             public bool IsActive { get; set; } = false;
+            public IDictionary<string, string> Query { get; set; } = new Dictionary<string, string>();
         }
     }
 }

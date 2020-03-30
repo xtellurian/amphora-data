@@ -1,0 +1,33 @@
+
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.TermsOfUsePageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name;
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+            @if(Model.Amphora.TermsAndConditionsId is null)
+            {
+                <p>No Terms of Use have been applied here.</p>
+            }
+            else
+            {
+                <h5>
+                    @Model.Amphora.TermsAndConditions.Name
+                </h5>
+                <p>
+                    @Model.Amphora.TermsAndConditions.Contents
+                </p>
+            }
+        </div>
+    </div>
+</div>
