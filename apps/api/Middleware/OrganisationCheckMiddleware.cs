@@ -22,7 +22,7 @@ namespace Amphora.Api.Middleware
         }
 
         private const string CreateOrgPath = "/Organisations/Create";
-        private const string JoinOrgPath = "/Organisations/Join";
+        private const string JoinOrgPath = "/Organisations/Account/Join";
 
         private static readonly string[] AcceptablePaths =
         {
