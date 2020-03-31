@@ -77,7 +77,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
             }
 
             var currentBalance = Balance;
-            if (Debits == null) { Debits = new List<AccountDebit>(); }
+            Debits ??= new Collection<AccountDebit>();
             if (amphoraId == null) { Debits.Add(new AccountDebit(label, amount, currentBalance, timestamp)); }
             else { Debits.Add(new AccountDebit(label, amount, currentBalance, timestamp, amphoraId)); }
         }
@@ -85,7 +85,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public void DebitAccountFromPurchase(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
             if (purchase.Price == 0) { return; }
-            if (Debits == null) { Debits = new List<AccountDebit>(); }
+            Debits ??= new Collection<AccountDebit>();
             var label = $"Purchase: {purchase.Amphora.Name}";
             var currentBalance = Balance;
             Debits.Add(new AccountDebit(label, purchase.Price, currentBalance, timestamp, purchase.AmphoraId));
@@ -99,7 +99,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
             }
 
             var currentBalance = Balance;
-            if (Credits == null) { Credits = new List<AccountCredit>(); }
+            Credits ??= new List<AccountCredit>();
             if (amphoraId == null) { Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp)); }
             else { Credits.Add(new AccountCredit(label, amount, currentBalance, timestamp, amphoraId)); }
         }
@@ -113,7 +113,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public double? CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
             if (purchase.Price == 0) { return 0; }
-            if (Credits == null) { Credits = new List<AccountCredit>(); }
+            Credits ??= new List<AccountCredit>();
             var currentBalance = Balance;
             var label = $"Sold {purchase.AmphoraId}";
             var rawAmount = purchase.Price * GetCommissionRate();
