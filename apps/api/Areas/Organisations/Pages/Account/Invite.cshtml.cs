@@ -1,18 +1,17 @@
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
+    [CommonAuthorize]
     public class InvitePageModel : OrganisationPageModel
     {
         private readonly IMapper mapper;
@@ -55,7 +54,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
             else
             {
-                return NotFound();
+                return NotFound(Error);
             }
         }
 

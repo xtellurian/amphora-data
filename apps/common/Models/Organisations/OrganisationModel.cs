@@ -66,6 +66,7 @@ namespace Amphora.Common.Models.Organisations
             {
                 return false;
             }
+
             return this.IsAdministrator(user.Id);
         }
 

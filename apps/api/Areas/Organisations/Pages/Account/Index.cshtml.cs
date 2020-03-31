@@ -28,7 +28,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             }
             else
             {
-                return NotFound();
+                return NotFound(Error);
             }
         }
     }

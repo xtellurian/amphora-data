@@ -21,10 +21,9 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("TermsAndConditions/Create")]
         public async Task CanLoadOrganisationsPage(string pageName)
         {
-            var path = $"/Organisatons/{pageName}";
+            var path = $"/Organisations/{pageName}";
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var qString = $"?id={adminOrg.Id}";
-            var response = await adminClient.GetAsync(path + qString);
+            var response = await adminClient.GetAsync(path);
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
@@ -46,7 +45,7 @@ namespace Amphora.Tests.Integration.Pages
             var path = $"/Organisations/Account/{pageName}";
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var response = await adminClient.GetAsync(path);
-            await AssertHttpSuccess(response);
+            await AssertHttpSuccess(response, path);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             await DestroyOrganisationAsync(adminClient, adminOrg);

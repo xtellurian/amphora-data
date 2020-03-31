@@ -1,3 +1,4 @@
+using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
@@ -21,6 +22,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public ApplicationUserDataModel UserData { get; private set; }
         public OrganisationModel Organisation { get; private set; }
         public bool IsAdmin => this.Organisation?.IsAdministrator(this.UserData) ?? false;
+        protected Common.Models.Dtos.Error Error { get; set; } = null;
 
         protected async Task<bool> LoadPropertiesAsync()
         {
@@ -35,7 +37,24 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 }
             }
 
-            return this.UserData != null && this.Organisation != null;
+            if (this.UserData == null || this.Organisation == null)
+            {
+                var m = new StringBuilder();
+                if (UserData is null)
+                {
+                    m.Append("Failed to load User data. ");
+                }
+
+                if (Organisation is null)
+                {
+                    m.Append("Failed to load Organisation. ");
+                }
+
+                this.Error = new Common.Models.Dtos.Error(m.ToString());
+                return false;
+            }
+
+            return true;
         }
     }
 }
