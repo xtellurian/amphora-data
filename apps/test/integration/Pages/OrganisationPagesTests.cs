@@ -45,8 +45,7 @@ namespace Amphora.Tests.Integration.Pages
         {
             var path = $"/Organisations/Account/{pageName}";
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var qString = $"?id={adminOrg.Id}";
-            var response = await adminClient.GetAsync(path + qString);
+            var response = await adminClient.GetAsync(path);
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 

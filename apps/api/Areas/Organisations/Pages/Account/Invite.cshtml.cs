@@ -50,7 +50,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 }
                 else
                 {
-                    return RedirectToPage("/Shared/Unauthorized", new { resourceId = Organisation.Id });
+                    return StatusCode(403);
                 }
             }
             else

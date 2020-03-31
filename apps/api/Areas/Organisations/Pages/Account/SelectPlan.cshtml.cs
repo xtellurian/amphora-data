@@ -19,8 +19,11 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             this.logger = logger;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public bool? FirstTime { get; private set; }
+
+        public async Task<IActionResult> OnGetAsync(bool? firstTime)
         {
+            this.FirstTime = firstTime;
             if (await LoadPropertiesAsync())
             {
                 return Page();
@@ -33,7 +36,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             }
         }
 
-        public async Task<IActionResult> OnPostAsync(string plan)
+        public async Task<IActionResult> OnPostAsync(string plan, bool? firstTime)
         {
             await LoadPropertiesAsync();
 
@@ -67,7 +70,14 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
                 }
             }
 
-            return RedirectToPage("./Plan");
+            if (firstTime == true)
+            {
+                return RedirectToPage("/Quickstart");
+            }
+            else
+            {
+                return RedirectToPage("./Plan");
+            }
         }
     }
 }
