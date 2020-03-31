@@ -41,7 +41,7 @@ namespace Amphora.Api.Services.Purchases
         public async Task PopulateDebitsAndCreditsAsync()
         {
             var startOfMonth = dateTimeProvider.UtcNow.StartOfMonth();
-            var thisMonth = await purchaseStore.QueryAsync(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
+            var thisMonth = purchaseStore.Query(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
 
             foreach (var purchase in thisMonth)
             {
@@ -53,7 +53,14 @@ namespace Amphora.Api.Services.Purchases
                 }
 
                 purchase.LastDebitTime = dateTimeProvider.UtcNow;
-                await purchaseStore.UpdateAsync(purchase);
+                try
+                {
+                    await purchaseStore.UpdateAsync(purchase);
+                }
+                catch (System.Exception ex)
+                {
+                    logger.LogError($"Error updating purchaseId: {purchase.Id}, {ex.Message}");
+                }
             }
         }
 
