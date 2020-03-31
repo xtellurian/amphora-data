@@ -1,7 +1,10 @@
 @model Amphora.SharedUI.Pages.Shared.MasterNavigationPaneViewComponent
 
 @{
-    string masterActiveClass = Model.Index.IsActive ? "btn-primary" : "btn-secondary";
+    string active = "btn-dark";
+    string inactive = "btn-light";
+
+    string masterActiveClass = Model.Index.IsActive ? active : inactive;
 }
 
 <div class="card d-none d-md-block">
@@ -12,7 +15,7 @@
     <li class="list-group-item">
       @foreach(var p in Model.Pages)
       {
-          string activeClass = p.IsActive ? "btn-primary" : "btn-secondary";
+          string activeClass = p.IsActive ? active : inactive;
           <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
       }
     </li>
@@ -25,7 +28,7 @@
       <a class="btn btn-block btn-sm @masterActiveClass" asp-page="@Model.Index.Path" asp-all-route-data="@Model.Index.Query">@Model.Index.Name</a>
     </li>
     <li class="list-group-item">
-      <a class="btn btn-secondary btn-block btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      <a class="btn btn-light btn-block btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
         More Options
       </a>
     </li>
@@ -33,7 +36,7 @@
       <li id="collapseExample" class="collapse list-group-item">
         @foreach(var p in Model.Pages)
         {
-            string activeClass = p.IsActive ? "btn-primary" : "btn-secondary";
+            string activeClass = p.IsActive ? active : inactive;
             <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
         }
       </li>
