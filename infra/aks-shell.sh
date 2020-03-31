@@ -26,5 +26,5 @@ az aks show -n "$name" -g "$group"
 
 pushd .aks-shell
 docker-compose build
-docker-compose run -e "name=$name" -e "group=$group" kubecli
+docker-compose run --rm -e "name=$name" -e "group=$group" kubecli
 popd
