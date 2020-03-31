@@ -45,16 +45,17 @@ namespace Amphora.Api.Services.Purchases
 
             foreach (var purchase in thisMonth)
             {
-                if (purchase.Price.HasValue)
-                {
-                    var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
-                    await DebitPurchasingOrganisation(purchase, name);
-                    await CreditAmphoraOrganisation(purchase, name);
-                }
-
                 purchase.LastDebitTime = dateTimeProvider.UtcNow;
+
                 try
                 {
+                    if (purchase.Price.HasValue)
+                    {
+                        var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
+                        await DebitPurchasingOrganisation(purchase, name);
+                        await CreditAmphoraOrganisation(purchase, name);
+                    }
+
                     await purchaseStore.UpdateAsync(purchase);
                 }
                 catch (System.Exception ex)
