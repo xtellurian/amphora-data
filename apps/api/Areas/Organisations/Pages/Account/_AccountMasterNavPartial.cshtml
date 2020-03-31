@@ -1,0 +1,20 @@
+@model Amphora.Api.Areas.Organisations.Pages.OrganisationPageModel
+@using Amphora.SharedUI.Models;
+
+@{
+    var paramsDict = new Dictionary<string,string>
+        {
+            // {"id", Model.Organisation.Id}
+        };
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", null, "Account", paramsDict);
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+            new MasterNavigationPaneViewModel.Page("./Plan", indexPage, "Plan", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Members", indexPage, "Members", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Credits", indexPage, "Credits", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Debits", indexPage, "Debits", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Invoices", indexPage, "Invoices", paramsDict)
+        };
+}
+
+@await Component.InvokeAsync("MasterNavigationPane", new MasterNavigationPaneViewModel(indexPage, otherPages))

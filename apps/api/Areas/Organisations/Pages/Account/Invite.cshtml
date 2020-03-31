@@ -1,0 +1,37 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.InvitePageModel
+@{
+    ViewData["Title"] = "Invitation";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Invite to @Model.Organisation?.Name</h3>
+            <p>Administrators can invite users to your organisation.</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_AccountMasterNavPartial" />
+        </div>
+
+        <div class="col-md-9 detail">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.TargetEmail"></label>
+                    <input asp-for="Input.TargetEmail" class="form-control" />
+                    <span asp-validation-for="Input.TargetEmail" class="text-danger"></span>
+                </div>
+                <strong>User will join @Model.Organisation.Name </strong>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-25">Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

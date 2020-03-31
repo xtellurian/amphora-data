@@ -27,9 +27,6 @@
                                 </a>
                                 @if (Model.CanInvite)
                                 {
-                                    <a class="dropdown-item btn btn-light btn-block mx-auto" asp-area="Organisations" asp-page="./Invite">
-                                        <i class="fas fa-user-plus"></i> Invite Team Members
-                                    </a>
                                     <a class="dropdown-item btn btn-light btn-block mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Index"> 
                                         <i class="fas fa-ban"></i> Restrictions
                                     </a>
@@ -60,57 +57,6 @@
                                      
                 </div>
             </div>
-            @if(Model.CanViewBalance)
-            {
-            <div class="card mb-3">
-                <div class="card-header">
-                    <a asp-page="./Accounts/Index" >Account</a>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">Balance: @Math.Round(Model.Organisation.Account?.Balance ?? 0, 2)</li>
-                    </ul>
-                </div>
-            </div>
-            }
-            @if(Model.IsInOrg)
-            {
-            <div class="card mb-3">
-                
-                <div class="card-header mb-2">
-                    <div class="float-right">
-                        <a asp-area="Organisations" asp-page="./Members" asp-route-id="@Model.Organisation.Id"><i class="fas fa-cog"></i> </a>
-                    </div>
-                    Members
-                </div>
-                <div class="card-body">
-                    @if (Model.CanInvite)
-                    {
-                        <div class="text-left mb-4">
-                            <a class="card-link" asp-area="Organisations" asp-page="/Invite"> <i class="fas fa-user-plus mr-2"></i> Invite Team Members</a>
-                        </div>
-                    }
-                    <ul class="list-group">
-                    @foreach (var m in Model.Organisation.Memberships)
-                    {
-                        @if(m.Role == Amphora.Common.Models.Organisations.Roles.Administrator)
-                        {
-                            <li class="list-group-item"> <i class="fas fa-user mr-2" data-toggle="tooltip" data-placement="top" title="Administrator"></i> 
-                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@m.UserId">@m.User?.ContactInformation?.FullName </a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="list-group-item"> <i class="far fa-user mr-2" data-toggle="tooltip" data-placement="top" title="User"></i> 
-                                <a asp-area="Profiles" asp-page="/Account/Detail" asp-route-id="@m.UserId">@m.User?.ContactInformation?.FullName </a>
-                            </li>
-                        }
-                    }
-                    </ul>
-                </div>
-                
-            </div>
-            }
         </div>
         <div class="col-md-8">
            <div>
@@ -122,37 +68,19 @@
                <p><small>Pinned (Top 6)</small></p>
                <!-- Grid of pinned Amphora -->
                <div class="container">
-                   <table id="entity-table" class="table table-borderless table-striped">
-                        <thead>
-                            <tr class="row">
-                            <th class="col-2"></th>
-                            <th class="col-6">Name</th>
-                            <th class="d-none d-sm-block col-sm-2 text-right">Price ($)</th>
-                            <th class="col-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var entity in Model.PinnedAmphorae)
-                            {
-                            <tr class="row align-items-center entity-item">
-                                <th class="col-2">
-                                <img class="img-fluid img-bullet" src="~/_content/sharedui/images/Amphora_Black.svg">
-                                </th>
-                                <td class="col-6">
-                                    @entity.Name 
-                                </td>
-                                <td class="d-none d-sm-block col-sm-2 text-right">
-                                    @entity.Price 
-                                </td>
-                                <td class="col-2">
-                                    <a asp-area="Amphorae" asp-page="/Detail" asp-route-id="@entity.Id"> 
-                                        <button class="btn btn-link text-success"><i class="fas fa-info-circle"></i></button> 
-                                    </a>
-                                </td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
+
+                    @if(Model.PinnedAmphorae?.Count() == 0)
+                    {
+                        <p>No Results</p>
+                    }
+                    else
+                    {
+                        var index = 0;
+                        @foreach (var entity in Model.PinnedAmphorae)
+                        {
+                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, index = index++})
+                        }
+                    }
                </div>
            </div>
         </div>

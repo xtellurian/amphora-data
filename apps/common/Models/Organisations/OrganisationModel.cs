@@ -62,6 +62,10 @@ namespace Amphora.Common.Models.Organisations
 
         public bool IsAdministrator(IUser user)
         {
+            if (user == null)
+            {
+                return false;
+            }
             return this.IsAdministrator(user.Id);
         }
 

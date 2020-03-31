@@ -2,39 +2,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Areas.Organisations.Pages.Accounts
+namespace Amphora.Api.Areas.Organisations.Pages.Account
 {
-    public class InvoicePageModel : PageModel
+    public class InvoicePageModel : OrganisationPageModel
     {
-        private readonly IUserDataService userDataService;
-        private readonly IOrganisationService organisationService;
         private readonly IInvoiceFileService invoiceFileService;
 
-        public InvoicePageModel(IUserDataService userDataService, IOrganisationService organisationService, IInvoiceFileService invoiceFileService)
+        public InvoicePageModel(IUserDataService userDataService,
+                                IOrganisationService organisationService,
+                                IInvoiceFileService invoiceFileService) : base(organisationService, userDataService)
         {
-            this.userDataService = userDataService;
-            this.organisationService = organisationService;
             this.invoiceFileService = invoiceFileService;
         }
 
-        public OrganisationModel Organisation { get; private set; }
         public Invoice Invoice { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string invoiceId)
         {
-            var userReadRes = await userDataService.ReadAsync(User);
-            if (userReadRes.Succeeded)
+            if (await LoadPropertiesAsync())
             {
-                var user = userReadRes.Entity;
-                var res = await organisationService.ReadAsync(User, user.OrganisationId);
-                if (res.Succeeded && res.Entity.IsAdministrator(user))
+                if (IsAdmin)
                 {
-                    this.Organisation = res.Entity;
                     this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
                     if (this.Invoice == null)
                     {
@@ -56,13 +47,10 @@ namespace Amphora.Api.Areas.Organisations.Pages.Accounts
 
         public async Task<IActionResult> OnGetDownloadCsvAsync(string invoiceId)
         {
-            var userReadRes = await userDataService.ReadAsync(User);
-            if (userReadRes.Succeeded)
+            if (await LoadPropertiesAsync())
             {
-                var res = await organisationService.ReadAsync(User, userReadRes.Entity.OrganisationId);
-                if (res.Succeeded && res.Entity.IsAdministrator(userReadRes.Entity))
+                if (IsAdmin)
                 {
-                    this.Organisation = res.Entity;
                     this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
                     if (this.Invoice == null)
                     {

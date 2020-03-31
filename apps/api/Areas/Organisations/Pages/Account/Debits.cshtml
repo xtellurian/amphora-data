@@ -1,0 +1,37 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Account.DebitsPageModel
+
+@{
+    ViewData["Title"] = "Org Debits";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Account Debits</h3>
+            <p>These transactions are from buying Amphora.</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+         <div class="col-md-3 master">
+            <partial name="_AccountMasterNavPartial" />
+        </div>
+
+        <div class="col-md-9 detail">
+            @if(Model.Account is null || Model.Account.Credits.Count == 0)
+            {
+                <p>No debits found.</p>
+            }
+            else
+            {
+                foreach(var d in Model.Account.Debits)
+                {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = d, size = "medium" })
+                }
+            }
+        </div>
+    </div>
+</div>

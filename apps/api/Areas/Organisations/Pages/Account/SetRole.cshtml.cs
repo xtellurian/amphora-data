@@ -4,32 +4,28 @@ using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amphora.Api.Areas.Organisations.Pages
 {
-    public class SetRoleModel : PageModel
+    public class SetRolePageModel : OrganisationPageModel
     {
-        private readonly IOrganisationService organisationService;
         private readonly IPermissionService permissionService;
-        private readonly IUserDataService userDataService;
 
-        public SetRoleModel(IOrganisationService organisationService, IPermissionService permissionService, IUserDataService userDataService)
+        public SetRolePageModel(IOrganisationService organisationService,
+                                IPermissionService permissionService,
+                                IUserDataService userDataService) : base(organisationService, userDataService)
         {
-            this.organisationService = organisationService;
             this.permissionService = permissionService;
-            this.userDataService = userDataService;
         }
 
-        public OrganisationModel Organisation { get; private set; }
         public Membership TargetMembership { get; private set; }
         public bool Succeeded { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string id, string userId, string role)
+        public async Task<IActionResult> OnGetAsync(string userId, string role)
         {
+            await LoadPropertiesAsync();
             if (role == "admin")
             {
-                this.Organisation = await organisationService.Store.ReadAsync(id);
                 this.TargetMembership = Organisation.Memberships.FirstOrDefault(m => m.UserId == userId);
                 if (TargetMembership == null) { return RedirectToPage("./Members"); }
                 // this section is a fix for bug 382 >>

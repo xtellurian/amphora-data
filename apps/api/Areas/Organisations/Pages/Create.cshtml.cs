@@ -79,7 +79,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     }
 
                     // Happy Path
-                    return RedirectToPage("/Quickstart");
+                    return RedirectToPage("/Plans/SelectPlan");
                 }
                 else
                 {

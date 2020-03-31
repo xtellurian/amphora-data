@@ -5,11 +5,11 @@
 
 @{
     ViewData["Title"] = "Account";
-    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", "Account");
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", null, "Account");
     var otherPages = new List<MasterNavigationPaneViewModel.Page>
         {
-            new MasterNavigationPaneViewModel.Page("./Manage/Index", "Manage Account"),
-            new MasterNavigationPaneViewModel.Page("./Edit", "Edit Profile")
+            new MasterNavigationPaneViewModel.Page("./Manage/Index",indexPage,  "Manage Account"),
+            new MasterNavigationPaneViewModel.Page("./Edit", indexPage, "Edit Profile")
         };
 }
 

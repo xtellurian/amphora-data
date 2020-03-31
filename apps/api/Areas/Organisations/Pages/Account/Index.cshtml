@@ -1,0 +1,33 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Account.IndexModel
+
+@{
+    ViewData["Title"] = "Org Account";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Your Account</h3>
+            <p>This is the account for the Organisation: @Model.Organisation.Name</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_AccountMasterNavPartial" />
+        </div>
+
+        <div class="col-md-9 detail">
+            <h5>Account Details</h5>
+            <br/>
+            <p>
+                Account Id: @Model.Organisation.Id
+            </p>
+            <p>
+                Balance: $@(Model.Organisation.Account?.Balance ?? 0)
+            </p>
+        </div>
+    </div>
+</div>

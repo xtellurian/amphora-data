@@ -1,10 +1,24 @@
 @page
-@model Amphora.Api.Areas.Organisations.Pages.SetRoleModel
+@model Amphora.Api.Areas.Organisations.Pages.SetRolePageModel
+
+@{
+    ViewData["Title"] = "Set Role";
+}
 
 <div class="container">
     <div class="row">
         <div class="col">
+            <h3>Your Plan</h3>
+            <p>This plan applies to your organisation.</p>
+            <hr/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_AccountMasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
             @if(Model.Succeeded)
             {
                 <div>
@@ -15,5 +29,4 @@
             }
         </div>
     </div>
-
 </div>

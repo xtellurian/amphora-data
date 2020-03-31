@@ -84,20 +84,14 @@
             {
                 var index = 0;
                 <div>
-                    <table id="market-table" class="table table-borderless table-striped">
-                        <tbody>
-                        @if(Model.Entities?.Count() == 0)
-                        {
-                            <td class="text-center">
-                                No Results
-                            </td>
-                        }
-                        @foreach (var entity in Model.Entities)
-                        {
-                            @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, isTable = true, index = index++})
-                        }
-                        </tbody>
-                    </table>
+                    @if(Model.Entities?.Count() == 0)
+                    {
+                        <p>No Results</p>
+                    }
+                    @foreach (var entity in Model.Entities)
+                    {
+                        @await Component.InvokeAsync("AmphoraRow", new {amphora = entity, index = index++})
+                    }
                 </div>
             }
         </div>

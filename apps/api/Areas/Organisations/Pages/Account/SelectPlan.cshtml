@@ -1,0 +1,99 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Account.SelectPlanPageModel
+
+@{
+    ViewData["Title"] = "Select Plan";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Select a Plan</h3>
+            <p>This plan applies to your organisation.</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Free</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">For small teams</h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text text-center">Up to 5 users</p>
+                    <p class="card-text text-center">$0 per month</p>
+                </div>
+                
+                <div class="card-body text-center">
+                    <form method="post" asp-route-plan="free">
+                        <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
+                    </form>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <partial name="_FreePlanFeaturesPartial"/>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="card border-secondary">
+                <div class="card-body">
+                    <h5 class="card-title">Team</h5>
+                    <h6 class="card-subtitle mb-2 text-secondary">Most popular</h6>
+                </div>
+
+                <div class="card-body">
+                    <p class="card-text text-center">Up to 25 users</p>
+                    <p class="card-text text-center">$5 per user per month</p>
+                </div>
+
+                <div class="card-body text-center">
+                        <form method="post" asp-route-plan="team">
+                        <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
+                    </form>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <partial name="_FreePlanFeaturesPartial"/>
+                        <partial name="_TeamPlanFeaturesPartial"/>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Institution</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">For large organisations</h6>
+                </div>
+
+                <div class="card-body">
+                    <p class="card-text text-center">Unlimited users</p>
+                    <p class="card-text text-center">$10 per user per month</p>
+                </div>
+
+                <div class="card-body text-center">
+                        <form method="post" asp-route-plan="institution">
+                        <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
+                    </form>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <partial name="_FreePlanFeaturesPartial"/>
+                        <partial name="_TeamPlanFeaturesPartial"/>
+                        <partial name="_InstitutionPlanFeaturesPartial"/>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-right">
+            <br/>
+            <a href="https://amphoradata.com/pricing" target="_blank">Learn more about our pricing</a>
+        </div>
+    </div>
+</div>

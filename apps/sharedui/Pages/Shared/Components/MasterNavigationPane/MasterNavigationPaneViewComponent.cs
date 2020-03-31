@@ -35,8 +35,9 @@ namespace Amphora.SharedUI.Pages.Shared
 
         private bool IsPageActive(MasterNavigationPaneViewModel.Page page)
         {
+            if (page == null) return false;
             var path = ViewContext.RouteData.Values["page"]?.ToString().TrimStart('.');
-            return path.Contains(page.Path.TrimStart('.'));
+            return path.Contains(page.Path.TrimStart('.')) || IsPageActive(page.Parent);
         }
     }
 }

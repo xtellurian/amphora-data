@@ -1,0 +1,36 @@
+@page
+@model Amphora.Api.Areas.Organisations.Pages.Account.CreditsPageModel
+
+@{
+    ViewData["Title"] = "Org Credits";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Account Credits</h3>
+            <p>These transactions are from account payments or sold Amphora.</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+         <div class="col-md-3 master">
+            <partial name="_AccountMasterNavPartial" />
+        </div>
+
+        <div class="col-md-9 detail">
+            @if(Model.Account is null || Model.Account.Credits.Count == 0)
+            {
+                <p>No credits found.</p>
+            }
+            else
+            {
+                foreach(var c in Model.Account.Credits)
+                {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = c, size = "medium" })
+                }
+            }
+        </div>
+    </div>
+</div>
