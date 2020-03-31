@@ -49,9 +49,12 @@
                 and
                 <a asp-area="Amphorae" asp-page="/Signals/Index" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountSignals signals. </a>
             </p>
-            <p>
-                Terms of Use are <a asp-page="./TermsOfUse" asp-route-id="@Model.Amphora.Id">@Model.Amphora.TermsAndConditions.Name</a>
-            </p>
+            @if(Model.Amphora.TermsAndConditionsId != null && @Model.Amphora.TermsAndConditions != null)
+            {
+                <p>
+                    Terms of Use are <a asp-page="./TermsOfUse" asp-route-id="@Model.Amphora.Id">@Model.Amphora.TermsAndConditions.Name</a>
+                </p>
+            }
         </div>
     </div>
 </div>
