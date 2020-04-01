@@ -54,13 +54,9 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
                     totalSize += await blobStore.GetContainerSizeAsync(a);
                 }
 
-                // now update the org
-                if (totalSize != Org.Cache?.AmphoraeFileSize?.Value)
-                {
-                    Org.Cache ??= new DataCache();
-                    Org.Cache.AmphoraeFileSize = new DataCache.CachedValue<long>(totalSize);
-                    Org = await orgStore.UpdateAsync(Org);
-                }
+                Org.Cache ??= new DataCache();
+                Org.Cache.TotalAmphoraeFileSize = new DataCache.CachedValue<long>(totalSize);
+                Org = await orgStore.UpdateAsync(Org);
 
                 return Page();
             }

@@ -8,9 +8,6 @@ namespace Amphora.Common.Services.Plans
 {
     public class PlanLimitService : IPlanLimitService
     {
-        private const int KB = 1024;
-        private const int MB = 1024 * KB;
-        private const long GB = 1024 * MB;
         public Task<PlanLimits> GetLimits(OrganisationModel organisation)
         {
             if (organisation is null)
@@ -40,19 +37,26 @@ namespace Amphora.Common.Services.Plans
             return memberCount < limits.MaxUsers;
         }
 
+        public async Task<bool> CanAddNewFile(OrganisationModel organisation)
+        {
+            var limits = await GetLimits(organisation);
+            var current = organisation.Cache?.TotalAmphoraeFileSize?.Value ?? 0;
+            return current < limits.MaxStorageInBytes;
+        }
+
         private PlanLimits FreePlanLimits()
         {
-            return new PlanLimits(10 * GB, 5);
+            return new PlanLimits(10 * Units.GB, 5);
         }
 
         private PlanLimits TeamPlanLimits(int nUsers)
         {
-            return new PlanLimits(100 * nUsers * GB, 25);
+            return new PlanLimits(100 * nUsers * Units.GB, 25);
         }
 
         private PlanLimits InstitutionPlanLimits(int nUsers)
         {
-            return new PlanLimits(100 * nUsers * GB, int.MaxValue);
+            return new PlanLimits(100 * nUsers * Units.GB, int.MaxValue);
         }
     }
 }

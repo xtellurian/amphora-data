@@ -6,6 +6,7 @@ namespace Amphora.Common.Contracts
 {
     public interface IPlanLimitService
     {
+        Task<bool> CanAddNewFile(OrganisationModel organisation);
         Task<bool> CanAddUser(OrganisationModel organisation);
         Task<PlanLimits> GetLimits(OrganisationModel organisation);
     }

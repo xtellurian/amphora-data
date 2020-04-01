@@ -37,6 +37,11 @@ namespace Amphora.Tests.Unit
             return Mock.Of<IEventPublisher>();
         }
 
+        protected IPermissionService CreateMockPermissionService()
+        {
+            return Mock.Of<IPermissionService>();
+        }
+
         protected IMemoryCache CreateMemoryCache()
         {
             var services = new ServiceCollection();

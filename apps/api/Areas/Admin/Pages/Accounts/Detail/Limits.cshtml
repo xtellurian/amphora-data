@@ -22,13 +22,19 @@
 
         <div class="col-md-9 detail">
             <div class="row">
-                <div class="col">
-                    <p>
-                        Current File Size: @Model.Org.Cache?.AmphoraeFileSize?.Value
-                    </p>
-                    <p>
-                        Fraction of Limit:  @(Model.Org.Cache?.AmphoraeFileSize?.Value / Model.Limits.MaxStorageInBytes )
-                    </p>
+                <div class="col-3">
+                    <h6>Current File Size</h6>
+                     @Model.Org.Cache?.TotalAmphoraeFileSize?.Value bytes
+                </div>
+                <div class="col-3">
+                    <h6>Fraction of Limit</h6>
+                    @(Model.Org.Cache?.TotalAmphoraeFileSize?.Value / Model.Limits.MaxStorageInBytes )
+                </div>
+                <div class="col-3">
+                    <h6>Calculated on</h6>
+                    @(Model.Org?.Cache?.TotalAmphoraeFileSize?.LastUpdatedNotNull.ToString("d") ?? "never")
+                </div>
+                <div class="col-md-3">
                     <form method="post" asp-page-handler="CalculateFileSize" asp-route-id="@Model.Org.Id">
                         <input type="submit" value="Calculate File Size" class="btn btn-primary" />
                     </form>

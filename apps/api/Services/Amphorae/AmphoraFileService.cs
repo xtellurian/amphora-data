@@ -99,6 +99,12 @@ namespace Amphora.Api.Services.Amphorae
 
             using (logger.BeginScope(new LoggerScope<AmphoraFileService>(userReadRes.Entity)))
             {
+                if (!await planLimitService.CanAddNewFile(userReadRes.Entity.Organisation))
+                {
+                    logger.LogWarning($"User {userReadRes.User.UserName} can't upload due to size limit");
+                    return new EntityOperationResult<UploadResponse>("You have reached the size limit of your plan.");
+                }
+
                 var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.WriteContents);
 
                 if (granted)
