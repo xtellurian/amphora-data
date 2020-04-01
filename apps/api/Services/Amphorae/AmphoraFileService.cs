@@ -36,27 +36,6 @@ namespace Amphora.Api.Services.Amphorae
             this.planLimitService = planLimitService;
         }
 
-        public async Task<EntityOperationResult<AmphoraFileSize>> GetSizeAsync(ClaimsPrincipal principal, IEnumerable<AmphoraModel> entities)
-        {
-            var sizes = new List<AmphoraFileSize>();
-            IUser user = null;
-            foreach (var e in entities)
-            {
-                var res = await GetSizeAsync(principal, e);
-                if (res.Succeeded)
-                {
-                    if (user == null)
-                    {
-                        user = res.User;
-                    }
-
-                    sizes.Add(res.Entity);
-                }
-            }
-
-            return new EntityOperationResult<AmphoraFileSize>(user, new AmphoraFileSize(sizes.Sum(_ => _.SizeInBytes)));
-        }
-
         private async Task<EntityOperationResult<AmphoraFileSize>> GetSizeAsync(ClaimsPrincipal principal, AmphoraModel entity)
         {
             var userReadRes = await userDataService.ReadAsync(principal);

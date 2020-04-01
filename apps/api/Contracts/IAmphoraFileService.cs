@@ -13,7 +13,6 @@ namespace Amphora.Api.Contracts
         IBlobStore<AmphoraModel> Store { get; }
 
         Task<EntityOperationResult<UploadResponse>> CreateFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file);
-        Task<EntityOperationResult<AmphoraFileSize>> GetSizeAsync(ClaimsPrincipal principal, IEnumerable<AmphoraModel> entities);
         Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file);
         Task<EntityOperationResult<UploadResponse>> WriteFileAsync(ClaimsPrincipal principal, AmphoraModel entity, byte[] contents, string file);
     }
