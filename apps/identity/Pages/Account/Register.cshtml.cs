@@ -63,9 +63,9 @@ namespace Amphora.Identity.Pages.Account
             {
                 var user = new ApplicationUser
                 {
-                    UserName = Input.Email,
-                    PhoneNumber = Input.PhoneNumber,
+                    UserName = Input.UserName,
                     Email = Input.Email,
+                    PhoneNumber = Input.PhoneNumber,
                     About = Input.About,
                     FullName = Input.FullName
                 };
