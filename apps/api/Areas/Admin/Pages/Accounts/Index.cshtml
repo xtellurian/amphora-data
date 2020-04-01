@@ -114,7 +114,7 @@
                 {
                     foreach(var log in Model.Report.LogMessages)
                     {
-                        <li class="list-group-item">@log.Timestamp - @log.Message</li>
+                        <li class="list-group-item">@log.Timestamp.ToString("H:mm") - @log.Message</li>
                     }
                 }
                 else
