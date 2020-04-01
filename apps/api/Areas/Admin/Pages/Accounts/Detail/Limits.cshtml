@@ -1,0 +1,39 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.Accounts.Detail.LimitsPageModel
+
+@{
+    ViewData["Title"] = "Account Configuration";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="float-right btn btn-primary" asp-page="../Index">Admin Home</a>
+            <h3>Limits</h3>
+            <p> For @Model.Org?.Name.</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_AdminAccountDetailMasterNavPartial" />
+        </div>
+
+        <div class="col-md-9 detail">
+            <div class="row">
+                <div class="col">
+                    <p>
+                        Current File Size: @Model.Org.Cache?.AmphoraeFileSize?.Value
+                    </p>
+                    <p>
+                        Fraction of Limit:  @(Model.Org.Cache?.AmphoraeFileSize?.Value / Model.Limits.MaxStorageInBytes )
+                    </p>
+                    <form method="post" asp-page-handler="CalculateFileSize" asp-route-id="@Model.Org.Id">
+                        <input type="submit" value="Calculate File Size" class="btn btn-primary" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

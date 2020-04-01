@@ -53,6 +53,9 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
                 // nothing specific
             });
 
+            // cache
+            builder.Property(_ => _.Cache).HasJsonConversion();
+
             // Account
             builder.OwnsOne(_ => _.Account, account =>
             {
