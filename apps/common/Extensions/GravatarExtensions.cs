@@ -32,5 +32,10 @@ namespace Amphora.Common.Extensions
 
             return sBuilder.ToString();  // Return the hexadecimal string.
         }
+
+        public static Uri GetProfilePictureUri(this string? email)
+        {
+            return new Uri($"https://www.gravatar.com/avatar/{GravatarExtensions.HashEmailForGravatar(email)}");
+        }
     }
 }

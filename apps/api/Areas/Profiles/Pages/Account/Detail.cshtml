@@ -20,7 +20,7 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img class="img-fluid" src="@User.GetProfilePictureUri()?.ToString()?s=180" />
+                        <img class="img-fluid" src="@Model.AppUser?.ContactInformation?.Email?.GetProfilePictureUri()?.ToString()?s=180" />
                     </div>
                     @if(@Model.IsSelf)
                     {
