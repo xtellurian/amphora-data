@@ -6,26 +6,22 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Areas.Admin.Pages.Accounts
+namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
 {
     [GlobalAdminAuthorize]
-    public class AddCreditPageModel : PageModel
+    public class AddCreditPageModel : AccountDetailPageModel
     {
-        private readonly IEntityStore<OrganisationModel> orgStore;
         private readonly IAccountsService accountService;
         private readonly IDateTimeProvider dateTimeProvider;
 
         public AddCreditPageModel(IEntityStore<OrganisationModel> orgStore, IAccountsService accountService, IDateTimeProvider dateTimeProvider)
+        : base(orgStore)
         {
-            this.orgStore = orgStore;
             this.accountService = accountService;
             this.dateTimeProvider = dateTimeProvider;
         }
 
-        public string Id { get; private set; }
-        public OrganisationModel Organisation { get; private set; }
         [TempData]
         public string Message { get; set; }
 
@@ -40,30 +36,38 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (id == null) { return RedirectToPage("./Index"); }
-            this.Id = id;
-            this.Organisation = await orgStore.ReadAsync(id);
-            return Page();
+            if (await LoadOrganisationAsync(id))
+            {
+                return Page();
+            }
+            else
+            {
+                return BadRequest(Error);
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            if (id == null) { return RedirectToPage("./Index"); }
-            this.Id = id;
-            this.Organisation = await orgStore.ReadAsync(id);
-            this.Organisation.Account ??= new Account();
-            if (Amount > 0)
+            if (await LoadOrganisationAsync(id))
             {
-                this.Organisation.Account.CreditAccount(Label, Amount, dateTimeProvider.UtcNow);
-                this.Organisation = await orgStore.UpdateAsync(Organisation);
-                Message = $"Organisation {Organisation.Name} was credited {Amount}";
+                Org.Account ??= new Account();
+                if (Amount > 0)
+                {
+                    this.Org.Account.CreditAccount(Label, Amount, dateTimeProvider.UtcNow);
+                    this.Org = await orgStore.UpdateAsync(Org);
+                    Message = $"Organisation {Org.Name} was credited {Amount}";
+                }
+                else
+                {
+                    Message = "Amount was 0. No action taken.";
+                }
+
+                return Page();
             }
             else
             {
-                Message = "Amount was 0. No action taken.";
+                return BadRequest(Error);
             }
-
-            return Page();
         }
     }
 }

@@ -13,62 +13,78 @@
     </div>
 }
 
-<a class="float-right btn btn-primary" asp-page="../Index">Admin</a>
-<h1>
-    Accounts
-</h1>
-Total Orgs: @Model.OrgCount
 <div class="container">
     <div class="row">
-        <div class="col text-right">
-            <h4>Operations</h4>
-            <form method="post" asp-page-handler="GenerateTransactions" asp-route-name="@Model.Name" asp-route-pageNumber="@Model.PageNumber">
-                <div class="form-group">
-                    <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
-                </div>
-            </form>
+        <div class="col">
+            <a class="float-right btn btn-primary" asp-page="../Index">Admin Home</a>
+            <h3>Accounts</h3>
+            <p> These are all the Organisations (@Model.OrgCount) in Amphora Data.</p>
             <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         </div>
     </div>
     <div class="row">
-        <div class="col">
-            <table id="entity-table" class="table table-borderless table-striped">
-                <thead>
-                    <tr>
-                    <th scope="col">Org</th>
-                    <th scope="col">Balance ($)</th>
-                    <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var entity in Model.Orgs)
-                    {
-                     <tr class="entity-item">
-                        <th scope="row"> @entity.Name </th>
-                        <td>
-                            @entity.Account?.Balance
-                        </td>
-                        <td>  
-                            <a asp-area="Admin" asp-page="./Detail" asp-route-id="@entity.Id"> 
-                                <button class="btn btn-link text-info">Detail</button> 
-                            </a>
-                            <a asp-area="Admin" asp-page="./AddCredit" asp-route-id="@entity.Id"> 
-                                <button class="btn btn-link text-success">Add Credit</button> 
-                            </a>
-                            <a asp-area="Admin" asp-page="./Configuration" asp-route-id="@entity.Id"> 
-                                <button class="btn btn-link text-success">Configuration</button> 
-                            </a>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="col-md-3 master">
+            <partial name="_AdminAccountsMasterNavPartial" />
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Max(0, Model.PageNumber - 1)">Prev</a>
-            <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Min(Model.MaxPages, Model.PageNumber + 1)">Next</a>
+
+        <div class="col-md-9 detail">
+            <div class="row">
+                <div class="col text-right">
+                    <h4>Operations</h4>
+                    <form method="post" asp-page-handler="GenerateTransactions" asp-route-name="@Model.Name" asp-route-pageNumber="@Model.PageNumber">
+                        <div class="form-group">
+                            <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
+                        </div>
+                    </form>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table id="entity-table" class="table table-borderless table-striped">
+                        <thead>
+                            <tr>
+                            <th scope="col">Org</th>
+                            <th scope="col">Balance ($)</th>
+                            <th scope="col">Plan</th>
+                            <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entity in Model.Orgs)
+                            {
+                            <tr class="entity-item">
+                                <th scope="row"> @entity.Name </th>
+                                <td>
+                                    @entity.Account?.Balance
+                                </td>
+                                <td>
+                                    @(entity.Account?.Plan?.PlanType?.ToString() ?? "Free" )
+                                </td>
+                                <td>  
+                                    <a asp-area="Admin" asp-page="./Detail/Index" asp-route-id="@entity.Id"> 
+                                        <button class="btn btn-link text-info">Detail</button> 
+                                    </a>
+                                    <a asp-area="Admin" asp-page="./Detail/AddCredit" asp-route-id="@entity.Id"> 
+                                        <button class="btn btn-link text-success">Add Credit</button> 
+                                    </a>
+                                    <a asp-area="Admin" asp-page="./Detail/Configuration" asp-route-id="@entity.Id"> 
+                                        <button class="btn btn-link text-success">Configuration</button> 
+                                    </a>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Max(0, Model.PageNumber - 1)">Prev</a>
+                    <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Min(Model.MaxPages, Model.PageNumber + 1)">Next</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

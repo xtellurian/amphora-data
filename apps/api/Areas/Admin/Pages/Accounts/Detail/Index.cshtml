@@ -1,0 +1,65 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.Accounts.Detail.IndexPageModel
+
+
+@{
+    ViewData["Title"] = "Account Detail";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-secondary float-right" asp-page="../Index">Accounts</a>
+            <h3>Account Detail</h3>
+            <p> For (@Model.Org?.Name).</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+         <div class="col-md-3 master">
+            <partial name="_AdminAccountDetailMasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-primary float-right mb-2" asp-page="./Invoice" asp-route-id="@Model.Org.Id">Generate</a>
+                    <h5>Invoices</h5>
+                    @if(Model.Org?.Account?.Invoices?.Count == 0)
+                    {
+                        <p>No Invoices Yet</p>
+                    }
+                    else
+                    {
+                        @foreach(var i in Model.Org.Account.Invoices)
+                        {
+                            <div class="m-2"> 
+                                <a asp-page="./Invoice" asp-route-id="@Model.Org.Id" asp-route-invoiceId="@i.Id"> 
+                                    @await Component.InvokeAsync("InvoiceRow", new {invoiceId = i.Id, orgId = Model.Org.Id })
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <h6>Debits</h6>
+                    <hr/>
+                    @foreach(var d in Model.Org.Account.Debits)
+                    {
+                    @await Component.InvokeAsync("TransactionRow", new {transaction = d })
+                    }
+                </div>
+                <div class="col-6">
+                    <h6>Credits</h6>
+                    <hr/>
+                    @foreach(var c in Model.Org.Account.Credits)
+                    {
+                        @await Component.InvokeAsync("TransactionRow", new {transaction = c })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

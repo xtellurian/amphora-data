@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Areas.Admin.Pages.Accounts
+namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
 {
     [GlobalAdminAuthorize]
     public class InvoicePageModel : PageModel

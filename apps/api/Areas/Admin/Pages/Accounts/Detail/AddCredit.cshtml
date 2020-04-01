@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Areas.Admin.Pages.Accounts.AddCreditPageModel
+@model Amphora.Api.Areas.Admin.Pages.Accounts.Detail.AddCreditPageModel
 
 @{
     ViewData["Title"] = "Add Credit";
@@ -8,16 +8,26 @@
 <div class="container">
     <div class="row">
         <div class="col">
+            <h3>Add Credit</h3>
+            <p> To (@Model.Org?.Name).</p>
+            <hr/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_AdminAccountDetailMasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
             @if(! string.IsNullOrEmpty(Model.Message))
             {
                 <div class="alert alert-success" role="alert">
                     @Model.Message
                 </div>
             }
-            <h2>Organisation: @Model.Organisation.Name </h2>
-            <h3>Balance: @Model.Organisation.Account?.Balance </h3>
+            <h5>Balance: @Model.Org.Account?.Balance </h5>
             <hr/>
-            <form method="post" asp-route-id="@Model.Id">
+            <form method="post" asp-route-id="@Model.Org.Id">
                 <div class="form-group">
                     <label asp-for="Amount" class="control-label"></label>
                     <input asp-for="Amount" class="form-control" />
@@ -32,7 +42,6 @@
                     <input type="submit" value="Save" class="btn btn-primary" />
                 </div>
             </form>
-            <a asp-page="./Index"><button class="btn btn-secondary">Back</button></a>
         </div>
     </div>
 </div>

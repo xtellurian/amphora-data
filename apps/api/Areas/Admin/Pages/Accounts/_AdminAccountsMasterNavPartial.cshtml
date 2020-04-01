@@ -1,0 +1,13 @@
+@model Amphora.Api.Areas.Admin.Pages.Accounts.IndexPageModel
+@using Amphora.SharedUI.Models;
+
+@{
+    var paramsDict = new Dictionary<string,string>
+        { };
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", null,  "Index");
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+        };
+}
+
+@await Component.InvokeAsync("MasterNavigationPane", new MasterNavigationPaneViewModel(indexPage, otherPages))

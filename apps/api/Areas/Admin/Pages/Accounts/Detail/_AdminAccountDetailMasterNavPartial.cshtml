@@ -1,0 +1,18 @@
+@model Amphora.Api.Areas.Admin.Pages.Accounts.AccountDetailPageModel
+@using Amphora.SharedUI.Models;
+
+@{
+    var paramsDict = new Dictionary<string,string>
+        {
+            {"id", Model.Org?.Id}
+        };
+    var indexPage = new MasterNavigationPaneViewModel.Page("./Index", null,  "Detail", paramsDict);
+    var otherPages = new List<MasterNavigationPaneViewModel.Page>
+        {
+            new MasterNavigationPaneViewModel.Page("./AddCredit", indexPage, "Add Credit", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Configuration", indexPage, "Configuration", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Plan", indexPage, "Plan", paramsDict),
+        };
+}
+
+@await Component.InvokeAsync("MasterNavigationPane", new MasterNavigationPaneViewModel(indexPage, otherPages))
