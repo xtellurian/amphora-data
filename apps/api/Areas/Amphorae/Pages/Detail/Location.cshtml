@@ -18,10 +18,6 @@
             <h5>Location</h5>
             <br/>
             <img src="@Url.Content(iSrc)" class="img-fluid rounded mx-auto">
-            @if(Model.Amphora.GeoLocation != null)
-            {
-                <p class="text-center"> Lat: @Model.Amphora.GeoLocation.Lat() Lon: @Model.Amphora.GeoLocation.Lon()</p>
-            }
         </div>
         <div class="col-md-3 detail">
             @if(Model.Amphora.GeoLocation != null)
