@@ -9,7 +9,6 @@ namespace Amphora.Common.Models.Dtos.Users
         public string Id { get; set; } = "";
         public string? Email { get; set; }
         public string? OrganisationId { get; set; }
-        public string? UserName { get; set; } = "";
         public DateTimeOffset? LastModified { get; set; }
 
         public Uri GetProfilePictureUri()
