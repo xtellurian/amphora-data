@@ -113,5 +113,10 @@ namespace Amphora.Api.Stores
 
             return Task.FromResult(false);
         }
+
+        public Task<long> GetContainerSizeAsync(T entity)
+        {
+            return Task.FromResult<long>(1024);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Configuration.Options;
 using Microsoft.Azure.Storage;
@@ -10,12 +11,12 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores.AzureStorageAccount
 {
-    public abstract class AzBlobBase
+    public abstract class AzBlobBase<T> where T : class
     {
         protected readonly CloudBlobClient cloudBlobClient;
-        protected readonly ILogger<AzBlobBase> logger;
+        protected readonly ILogger<AzBlobBase<T>> logger;
 
-        protected AzBlobBase(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase> logger)
+        protected AzBlobBase(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase<T>> logger)
         {
             this.logger = logger;
             // Check whether the connection string can be parsed.
@@ -31,9 +32,23 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
         }
 
+        protected abstract CloudBlobContainer GetContainerReference(T entity);
         protected async Task<bool> BlobExistsAsync(CloudBlobContainer container, string path)
         {
             return await container.GetBlobReference(path).ExistsAsync();
+        }
+
+        public async Task<long> GetContainerSizeAsync(T entity)
+        {
+            var container = GetContainerReference(entity);
+            if (!await container.ExistsAsync())
+            {
+                return 0; // empty
+            }
+
+            return container.ListBlobs(useFlatBlobListing: true)
+                .OfType<CloudBlockBlob>()
+                .Sum(b => b.Properties.Length);
         }
 
         protected async Task<IList<string>> ListNamesAsync(CloudBlobContainer container)

@@ -10,12 +10,12 @@ using Newtonsoft.Json;
 
 namespace Amphora.Api.Stores.AzureStorageAccount
 {
-    public class PlatformCacheBlobStore : AzBlobBase, IBlobCache
+    public class PlatformCacheBlobStore : AzBlobBase<PlatformCacheBlobStore>, IBlobCache
     {
         private const string ContainerName = "platformcache";
-        public PlatformCacheBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AmphoraBlobStore> logger) : base(options, logger)
-        {
-        }
+        public PlatformCacheBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<PlatformCacheBlobStore> logger)
+        : base(options, logger)
+        { }
 
         private CloudBlobContainer GetContainerReference()
         {
@@ -61,6 +61,12 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             var serialised = JsonConvert.SerializeObject(value);
             var bytes = Encoding.ASCII.GetBytes(serialised);
             await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
+        }
+
+        protected override CloudBlobContainer GetContainerReference(PlatformCacheBlobStore entity)
+        {
+            // kinda dumb workaround
+            throw new System.NotImplementedException();
         }
     }
 }

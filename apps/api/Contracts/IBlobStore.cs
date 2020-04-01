@@ -10,6 +10,7 @@ namespace Amphora.Api.Contracts
     {
         Task<bool> ExistsAsync(T org, string path);
         Task<string> GetPublicUrl(T entity, string path);
+        Task<long> GetContainerSizeAsync(T entity);
         Task<Stream> GetWritableStreamAsync(T entity, string path);
         Task<string> GetWritableUrl(T entity, string fileName);
         Task<DateTimeOffset?> LastModifiedAsync(T entity);

@@ -11,9 +11,10 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores.AzureStorageAccount
 {
-    public class OrganisationBlobStore : AzBlobBase, IBlobStore<OrganisationModel>
+    public class OrganisationBlobStore : AzBlobBase<OrganisationModel>, IBlobStore<OrganisationModel>
     {
-        public OrganisationBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase> logger) : base(options, logger)
+        public OrganisationBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<OrganisationBlobStore> logger)
+         : base(options, logger)
         {
         }
 
@@ -108,7 +109,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return await GetReadonlyUrlWithSasToken(container, path);
         }
 
-        private CloudBlobContainer GetContainerReference(OrganisationModel org)
+        protected override CloudBlobContainer GetContainerReference(OrganisationModel org)
         {
             return cloudBlobClient.GetContainerReference(GetContainerName(org));
         }

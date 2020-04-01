@@ -1,7 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
@@ -19,9 +20,11 @@ namespace Amphora.Api.Services.Amphorae
         public IBlobStore<AmphoraModel> Store { get; }
 
         private readonly ILogger<AmphoraFileService> logger;
+        private readonly IPlanLimitService planLimitService;
 
         public AmphoraFileService(
             ILogger<AmphoraFileService> logger,
+            IPlanLimitService planLimitService,
             IPermissionService permissionService,
             IBlobStore<AmphoraModel> store,
             IUserDataService userDataService)
@@ -30,6 +33,53 @@ namespace Amphora.Api.Services.Amphorae
             this.Store = store;
             this.userDataService = userDataService;
             this.logger = logger;
+            this.planLimitService = planLimitService;
+        }
+
+        public async Task<EntityOperationResult<AmphoraFileSize>> GetSizeAsync(ClaimsPrincipal principal, IEnumerable<AmphoraModel> entities)
+        {
+            var sizes = new List<AmphoraFileSize>();
+            IUser user = null;
+            foreach (var e in entities)
+            {
+                var res = await GetSizeAsync(principal, e);
+                if (res.Succeeded)
+                {
+                    if (user == null)
+                    {
+                        user = res.User;
+                    }
+
+                    sizes.Add(res.Entity);
+                }
+            }
+
+            return new EntityOperationResult<AmphoraFileSize>(user, new AmphoraFileSize(sizes.Sum(_ => _.SizeInBytes)));
+        }
+
+        private async Task<EntityOperationResult<AmphoraFileSize>> GetSizeAsync(ClaimsPrincipal principal, AmphoraModel entity)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<AmphoraFileSize>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(userReadRes.Entity)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.ReadContents);
+
+                if (granted)
+                {
+                    var size = await Store.GetContainerSizeAsync(entity);
+                    return new EntityOperationResult<AmphoraFileSize>(userReadRes.Entity, new AmphoraFileSize(size));
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to read contents of {entity.Id}");
+                    return new EntityOperationResult<AmphoraFileSize>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
+                }
+            }
         }
 
         public async Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
