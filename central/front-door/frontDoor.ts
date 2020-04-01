@@ -23,7 +23,7 @@ const backendEnvironments: IBackendEnvironments = {
 
 export function createFrontDoor({ rg, kv, frontendHosts, prodHostnames }
     // tslint:disable-next-line: max-line-length
-    : { rg: azure.core.ResourceGroup; kv: azure.keyvault.KeyVault; frontendHosts: IFrontendHosts; prodHostnames: pulumi.Output<any>})
+    : { rg: azure.core.ResourceGroup; kv: azure.keyvault.KeyVault; frontendHosts: IFrontendHosts; prodHostnames: pulumi.Output<any> })
     : IBackendEnvironments {
 
     const backendPools = getBackendPools({ backendEnvironments, frontendHosts, prodHostnames });
@@ -31,18 +31,20 @@ export function createFrontDoor({ rg, kv, frontendHosts, prodHostnames }
     const routingRules = getRoutingRules(backendEnvironments, frontendHosts);
 
     const frontDoor = new azure.frontdoor.Frontdoor("fd", {
-        backendPoolHealthProbes: [{
-            intervalInSeconds: 30,
-            name: "normal",
-            path: "/",
-            protocol: "Https",
-        },
-        {
-            intervalInSeconds: 30,
-            name: "healthz",
-            path: "/healthz",
-            protocol: "Https",
-        }],
+        backendPoolHealthProbes: [
+            {
+                intervalInSeconds: 30,
+                name: "healthz",
+                path: "/healthz",
+                protocol: "Https",
+            },
+            {
+                intervalInSeconds: 30,
+                name: "normal",
+                path: "/",
+                protocol: "Https",
+            },
+        ],
         backendPoolLoadBalancings: [{
             name: "loadBalancingSettings1",
             sampleSize: 4,
