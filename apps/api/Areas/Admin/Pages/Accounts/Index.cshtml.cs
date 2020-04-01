@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Admin;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             this.accountsService = accountsService;
         }
 
+        public Report Report { get; private set; }
         [TempData]
         public string Message { get; set; } = null;
 
@@ -29,7 +31,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
         public async Task<IActionResult> OnPostGenerateTransactionsAsync(int pageNumber = 0, int perPage = 10, string name = null)
         {
             await LoadOrgsAsync(pageNumber, perPage, name);
-            await accountsService.PopulateDebitsAndCreditsAsync();
+            this.Report = await accountsService.PopulateDebitsAndCreditsAsync();
             Message = "Done";
             return Page();
         }

@@ -30,14 +30,23 @@
 
         <div class="col-md-9 detail">
             <div class="row">
+                @if(Model.Report != null)
+                {
+                    <div class="col text-right">
+                        <h5>Results</h5>
+                        <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                Show Report
+                            </button>
+                    </div>
+                }
                 <div class="col text-right">
-                    <h4>Operations</h4>
+                    <h5>Operations</h5>
                     <form method="post" asp-page-handler="GenerateTransactions" asp-route-name="@Model.Name" asp-route-pageNumber="@Model.PageNumber">
                         <div class="form-group">
                             <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
                         </div>
                     </form>
-                    <hr/>
                 </div>
             </div>
             <div class="row">
@@ -84,6 +93,38 @@
                     <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Max(0, Model.PageNumber - 1)">Prev</a>
                     <a class="btn btn-secondary" asp-page="./Index" asp-route-name="@Model.Name" asp-route-pageNumber="@Math.Min(Model.MaxPages, Model.PageNumber + 1)">Next</a>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Report</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                @if(Model.Report != null)
+                {
+                    foreach(var log in Model.Report.LogMessages)
+                    {
+                        <li class="list-group-item">@log.Timestamp - @log.Message</li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item">No Report</li>
+                }
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

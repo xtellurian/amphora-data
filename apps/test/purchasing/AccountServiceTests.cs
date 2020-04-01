@@ -6,8 +6,6 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -149,7 +147,11 @@ namespace Amphora.Tests.Unit.Purchasing
             // fast fwd one month, and now we should see the recurring debit and credit
             dtProvider.Now = dtProvider.Now.AddMonths(1);
             // run the account service job
-            await sut.PopulateDebitsAndCreditsAsync();
+            var report = await sut.PopulateDebitsAndCreditsAsync();
+
+            // check the report has messages
+            Assert.NotNull(report);
+            Assert.NotEmpty(report.LogMessages);
 
             Assert.Equal(2, buyerOrg.Account.Debits.Count);
             var debit2 = buyerOrg.Account.Debits.Where(d => d.Timestamp == dtProvider.Now).FirstOrDefault();

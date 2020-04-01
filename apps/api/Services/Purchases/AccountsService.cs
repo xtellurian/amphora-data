@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos.Admin;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations;
@@ -38,8 +39,9 @@ namespace Amphora.Api.Services.Purchases
         /// Takes all the purchases from this month and creates debits in the system.
         /// </summary>
         /// <returns> An awaitable Task. </returns>
-        public async Task PopulateDebitsAndCreditsAsync()
+        public async Task<Report> PopulateDebitsAndCreditsAsync()
         {
+            var report = new Report();
             var startOfMonth = dateTimeProvider.UtcNow.StartOfMonth();
             var thisMonth = purchaseStore.Query(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
 
@@ -57,12 +59,16 @@ namespace Amphora.Api.Services.Purchases
                     }
 
                     await purchaseStore.UpdateAsync(purchase);
+                    report.Log($"Processed purchase {purchase.Id}");
                 }
                 catch (System.Exception ex)
                 {
                     logger.LogError($"Error updating purchaseId: {purchase.Id}, {ex.Message}");
+                    report.Log($"Error processing purchase {purchase.Id}");
                 }
             }
+
+            return report;
         }
 
         private async Task DebitPurchasingOrganisation(PurchaseModel purchase, string name)

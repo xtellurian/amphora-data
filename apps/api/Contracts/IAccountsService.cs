@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.Admin;
 using Amphora.Common.Models.Organisations.Accounts;
 
 namespace Amphora.Api.Contracts
@@ -10,7 +11,7 @@ namespace Amphora.Api.Contracts
                                            string organisationId,
                                            bool isPreview = true,
                                            bool regenerate = false);
-        Task PopulateDebitsAndCreditsAsync();
+        Task<Report> PopulateDebitsAndCreditsAsync();
         Task<Invoice> PublishInvoice(Invoice invoice);
     }
 }
