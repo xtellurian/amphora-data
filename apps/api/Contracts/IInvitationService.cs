@@ -12,7 +12,7 @@ namespace Amphora.Api.Contracts
         IEntityStore<InvitationModel> Store { get; }
 
         Task<EntityOperationResult<InvitationModel>> AcceptInvitationAsync(ClaimsPrincipal principal, Common.Models.Platform.InvitationModel invitation);
-        Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation, bool inviteToOrg = false);
+        Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation);
         Task<EntityOperationResult<InvitationModel>> GetInvitation(ClaimsPrincipal principal, string orgId);
         Task<InvitationModel> GetInvitationByEmailAsync(string email);
         Task<EntityOperationResult<IList<InvitationModel>>> GetMyInvitations(System.Security.Claims.ClaimsPrincipal principal);

@@ -18,25 +18,28 @@ namespace Amphora.Api.Services.Platform
     {
         private readonly IEntityStore<InvitationModel> invitationStore;
         private readonly IEntityStore<OrganisationModel> orgStore;
+        private readonly IPlanLimitService planLimitService;
         private readonly IUserDataService userDataService;
         private readonly IEmailSender emailSender;
         private readonly bool isDevelopment;
 
         public InvitationService(IEntityStore<InvitationModel> invitationStore,
                                  IEntityStore<OrganisationModel> orgStore,
+                                 IPlanLimitService planLimitService,
                                  IUserDataService userDataService,
                                  IEmailSender emailSender,
                                  IWebHostEnvironment env)
         {
             this.invitationStore = invitationStore;
             this.orgStore = orgStore;
+            this.planLimitService = planLimitService;
             this.userDataService = userDataService;
             this.emailSender = emailSender;
             this.isDevelopment = env.IsDevelopment();
         }
 
         public IEntityStore<InvitationModel> Store => invitationStore;
-        public async Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation, bool inviteToOrg = false)
+        public async Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation)
         {
             invitation.TargetEmail = invitation.TargetEmail.ToUpper(); // set uppercase
             var userReadRes = await userDataService.ReadAsync(principal);
@@ -47,6 +50,12 @@ namespace Amphora.Api.Services.Platform
 
             var userData = userReadRes.Entity;
             var org = await orgStore.ReadAsync(userData.OrganisationId);
+
+            // check users within limits
+            if (!await planLimitService.CanAddUser(org))
+            {
+                return new EntityOperationResult<InvitationModel>($"You have reached the user limit of your plan");
+            }
 
             if (!principal.IsEmailConfirmed() && !isDevelopment)
             {
@@ -66,7 +75,7 @@ namespace Amphora.Api.Services.Platform
             }
             else
             {
-                if (inviteToOrg) { invitation.TargetOrganisationId = userData.OrganisationId; }
+                invitation.TargetOrganisationId = userData.OrganisationId;
                 invitation.CreatedDate = System.DateTime.UtcNow;
                 invitation.LastModified = System.DateTime.UtcNow;
                 var created = await invitationStore.CreateAsync(invitation);

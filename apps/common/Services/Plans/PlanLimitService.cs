@@ -33,6 +33,13 @@ namespace Amphora.Common.Services.Plans
             }
         }
 
+        public async Task<bool> CanAddUser(OrganisationModel organisation)
+        {
+            var limits = await GetLimits(organisation);
+            var memberCount = organisation.Memberships?.Count ?? 1;
+            return memberCount < limits.MaxUsers;
+        }
+
         private PlanLimits FreePlanLimits()
         {
             return new PlanLimits(10 * GB, 5);

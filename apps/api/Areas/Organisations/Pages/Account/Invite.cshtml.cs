@@ -80,7 +80,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     var model = mapper.Map<InvitationModel>(Input);
                     model.TargetOrganisationId = this.Organisation.Id;
                     model.TargetOrganisation = this.Organisation;
-                    var op = await invitationService.CreateInvitation(User, model, true);
+                    var op = await invitationService.CreateInvitation(User, model);
                     if (op.Succeeded)
                     {
                         return RedirectToPage("./Detail");

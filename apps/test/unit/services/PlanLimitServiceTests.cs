@@ -52,5 +52,24 @@ namespace Amphora.Tests.Unit.Services
             var limits = await sut.GetLimits(org);
             Assert.True(limits.MaxUsers >= maxUsers);
         }
+
+        [Theory]
+        [InlineData(Plan.PlanTypes.Free)]
+        [InlineData(Plan.PlanTypes.Team)]
+        [InlineData(Plan.PlanTypes.Institution)]
+        public async Task AllPlans_CanAddUpTo5Users(Plan.PlanTypes planType)
+        {
+            var org = new OrganisationModel();
+
+            org.Account.Plan.PlanType = planType;
+
+            var sut = new PlanLimitService();
+
+            for (var i = 0; i < 5; i++)
+            {
+                Assert.True(await sut.CanAddUser(org));
+                org.Memberships.Add(new Membership(System.Guid.NewGuid().ToString()));
+            }
+        }
     }
 }

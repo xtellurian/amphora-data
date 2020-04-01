@@ -19,12 +19,12 @@ using Amphora.Common.Models.GitHub;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,6 +118,7 @@ namespace Amphora.Api
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
             services.AddTransient<IRestrictionService, RestrictionService>();
+            services.AddTransient<IPlanLimitService, PlanLimitService>();
 
             // external services
             services.Configure<GitHubConfiguration>(Configuration.GetSection("GitHubOptions"));
