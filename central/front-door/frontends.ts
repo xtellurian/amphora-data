@@ -12,7 +12,7 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
             customHttpsProvisioningEnabled: false,
             hostName: "amphora.azurefd.net",
             name: "defaultFrontend",
-            sessionAffinityEnabled: true,
+            sessionAffinityEnabled: false,
         }, {
             customHttpsConfiguration: {
                 azureKeyVaultCertificateSecretName: "static-site",
@@ -23,7 +23,7 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
             customHttpsProvisioningEnabled: true,
             hostName: "amphoradata.com",
             name: "rootDomain",
-            sessionAffinityEnabled: true,
+            sessionAffinityEnabled: false,
         }, {
             customHttpsConfiguration: {
                 certificateSource: "FrontDoor",
@@ -31,7 +31,7 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
             customHttpsProvisioningEnabled: true,
             hostName: "www.amphoradata.com",
             name: "wwwDomain",
-            sessionAffinityEnabled: true,
+            sessionAffinityEnabled: false,
         }, {
             customHttpsConfiguration: {
                 certificateSource: "FrontDoor",
@@ -39,27 +39,12 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
             customHttpsProvisioningEnabled: true,
             hostName: "beta.amphoradata.com",
             name: "betaDomain",
-            sessionAffinityEnabled: true,
-        },
-        {
-            customHttpsConfiguration: {
-                certificateSource: "FrontDoor",
-            },
-            customHttpsProvisioningEnabled: true,
-            hostName: frontendHosts.prod.app.globalHost,
-            name: frontendHosts.prod.app.frontendName,
-            sessionAffinityEnabled: true,
-        },
-        {
-            customHttpsConfiguration: {
-                certificateSource: "FrontDoor",
-            },
-            customHttpsProvisioningEnabled: true,
-            hostName: frontendHosts.prod.identity.globalHost,
-            name: frontendHosts.prod.identity.frontendName,
-            sessionAffinityEnabled: true,
+            sessionAffinityEnabled: false,
         },
     ];
+
+    frontends.push(getFrontend(frontendHosts.prod.app));
+    frontends.push(getFrontend(frontendHosts.prod.identity));
 
     if (config.requireBoolean("deployDevelop")) {
         frontends.push(getFrontend(frontendHosts.develop.identity));
@@ -82,6 +67,6 @@ function getFrontend(frontend: IUniqueUrl): azure.types.input.frontdoor.Frontdoo
         customHttpsProvisioningEnabled: true,
         hostName: frontend.globalHost,
         name: frontend.frontendName,
-        sessionAffinityEnabled: true,
+        sessionAffinityEnabled: false,
     };
 }
