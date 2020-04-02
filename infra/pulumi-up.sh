@@ -22,7 +22,7 @@ npm run lint
 
 echo build reason is $BUILD_REASON
 
-. ../pulumi-stack-ci.sh
+. pulumi-stack-ci.sh
 
 pulumi up --yes
 

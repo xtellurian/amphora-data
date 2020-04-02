@@ -29,7 +29,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . ../pulumi-stack-ci.sh
+        . pulumi-stack-ci.sh
         export kvUri=$(pulumi stack output kvUri)
         echo PersistentStores - $(PersistentStores)
         echo kvUri - "$kvUri"
@@ -50,7 +50,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . ../pulumi-stack-ci.sh
+        . pulumi-stack-ci.sh
         export acrName=$(pulumi stack output acrName)
         popd
         pushd apps
@@ -76,7 +76,7 @@ jobs:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
-        . ../pulumi-stack-ci.sh
+        . pulumi-stack-ci.sh
         export acrName=$(pulumi stack output acrName)
         export kvUri=$(pulumi stack output kvUri)
         popd
