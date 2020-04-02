@@ -45,16 +45,7 @@ jobs:
     displayName: Echo requirement variables.
   - template: app.deploy-app-svc.steps.yaml
 
-  # PRIMARY
 - template: k8s.job.yaml
   parameters:
     environment: $(stack)
-    region: Primary
-    dependsOn: deploy_container
-
-    # SECONDARY
-- template: k8s.job.yaml
-  parameters:
-    environment: $(stack)
-    region: Primary
     dependsOn: deploy_container

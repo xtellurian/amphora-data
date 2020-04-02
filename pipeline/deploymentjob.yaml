@@ -38,5 +38,4 @@ jobs:
 - template: k8s.deploymentjob.yaml
   parameters:
     environment: ${{ parameters.environment }}
-    region: Primary
     dependsOn: ${{ parameters.environment }}_infra

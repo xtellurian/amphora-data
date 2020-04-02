@@ -2,23 +2,38 @@
 
 parameters:
   environment: ''
-  region: ''
   dependsOn: ''
 
 jobs:
-- job: ${{ parameters.environment }}_{{ parameters.region }}
-  displayName: Deployment - ${{ parameters.environment }} - {{ parameters.region }}
+- job: ${{ parameters.environment }}_primary
+  displayName: Deployment - ${{ parameters.environment }} - primary
   dependsOn:
     - ${{ parameters.dependsOn }}
   pool:
     vmImage: 'Ubuntu-16.04'
-
   variables:
   - group: Pulumi xtellurian
   - name: stack
     value: ${{ parameters.environment }}
   - name: region
-    value: {{ parameters.region }}
-  
+    value: primary
   steps:
+  - template: install.pulumi.steps.yaml
+  - template: app.deploy-k8s.steps.yaml
+
+# secondary
+- job: ${{ parameters.environment }}_secondary
+  displayName: Deployment - ${{ parameters.environment }} - secondary
+  dependsOn:
+    - ${{ parameters.environment }}_primary
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  variables:
+  - group: Pulumi xtellurian
+  - name: stack
+    value: ${{ parameters.environment }}
+  - name: region
+    value: secondary
+  steps:
+  - template: install.pulumi.steps.yaml
   - template: app.deploy-k8s.steps.yaml

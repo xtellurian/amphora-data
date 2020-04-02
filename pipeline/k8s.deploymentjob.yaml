@@ -1,26 +1,47 @@
 # K8s Deployment
 
 parameters:
-  environment: ''
-  region: ''
-  dependsOn: ''
-
+- name: environment
+  type: string
+  default: develop
+  values:
+  - develop
+  - master
+  - prod
+- name: dependsOn
+  type: string
+  
 jobs:
-- deployment: ${{ parameters.environment }}_{{ parameters.region }}
-  displayName: Deployment - ${{ parameters.environment }} - {{ parameters.region }}
+- deployment: ${{ parameters.environment }}_primary
+  displayName: Deployment - ${{ parameters.environment }} - primary
   environment: ${{ parameters.environment }}
   dependsOn:
     - ${{ parameters.dependsOn }}
   pool:
     vmImage: 'Ubuntu-16.04'
-
   variables:
   - group: Pulumi xtellurian
-  - name: stack
-    value: ${{ parameters.environment }}
   - name: region
-    value: {{ parameters.region }}
+    value: primary
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self  # deployment job doesn't check it out
+          persistCredentials: true
+        - template: artifacts.download.steps.yaml
+        - template: app.deploy-k8s.steps.yaml
 
+- deployment: ${{ parameters.environment }}_secondary
+  displayName: Deployment - ${{ parameters.environment }} - secondary
+  environment: ${{ parameters.environment }}
+  dependsOn: {{ parameters.environment }}_primary
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  variables:
+  - group: Pulumi xtellurian
+  - name: region
+    value: secondary
   strategy:
     runOnce:
       deploy:
