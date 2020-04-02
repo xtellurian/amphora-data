@@ -32,7 +32,7 @@ namespace Amphora.Identity.Controllers
         }
 
         [HttpPost("api/token")]
-        public async Task<IActionResult> RequestToken([FromBody] TokenRequest request)
+        public async Task<IActionResult> RequestToken([FromBody] LoginRequest request)
         {
             var result = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, true);
 

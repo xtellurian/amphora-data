@@ -53,7 +53,7 @@ namespace Amphora.Tests.Helpers
         public static async Task GetTokenAsync(this HttpClient client, string userName, string password)
         {
             // can log in
-            var loginRequest = new TokenRequest()
+            var loginRequest = new LoginRequest()
             {
                 Password = password,
                 Username = userName

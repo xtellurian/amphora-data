@@ -48,7 +48,7 @@ namespace Amphora.Tests.Integration
             // Assert
             await AssertHttpSuccess(response);
             // can log in
-            var loginRequest = new TokenRequest()
+            var loginRequest = new LoginRequest()
             {
                 Password = password,
                 Username = user.UserName
@@ -91,7 +91,7 @@ namespace Amphora.Tests.Integration
 
             await AssertHttpSuccess(response);
 
-            var loginRequest = new TokenRequest()
+            var loginRequest = new LoginRequest()
             {
                 Password = password,
                 Username = user.UserName

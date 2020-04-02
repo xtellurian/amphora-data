@@ -56,7 +56,7 @@ namespace Amphora.Tests.Identity.Integration
             Assert.NotNull(amphoraUser.FullName);
             Assert.Equal(user.FullName, amphoraUser.FullName);
 
-            var tokenResponse = await client.PostAsJsonAsync("/api/token", new TokenRequest() { Username = email, Password = password });
+            var tokenResponse = await client.PostAsJsonAsync("/api/token", new LoginRequest() { Username = email, Password = password });
             Assert.True(tokenResponse.IsSuccessStatusCode, "Content: " + await tokenResponse.Content.ReadAsStringAsync());
             var token = await tokenResponse.Content.ReadAsStringAsync();
             Assert.NotNull(token);

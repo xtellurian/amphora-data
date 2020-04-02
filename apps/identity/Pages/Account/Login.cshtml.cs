@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Common.Models.Platform;
 using Amphora.Identity.Models;
 using Amphora.Identity.Models.ViewModels;
 using IdentityServer4.Quickstart.UI;
@@ -48,7 +49,7 @@ namespace Amphora.Identity.Pages.Account
         }
 
         [BindProperty]
-        public LoginInputModel Input { get; set; } = new LoginInputModel();
+        public LoginRequest Input { get; set; } = new LoginRequest();
 
         public string? ReturnUrl { get; private set; }
 
@@ -73,7 +74,7 @@ namespace Amphora.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var result = await signInManager.PasswordSignInAsync(Input.Username, Input.Password, false, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     var user = await userManager.FindByNameAsync(Input.Username);

@@ -28,7 +28,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(string))]
         [AllowAnonymous]
         [HttpPost("request")]
-        public async Task<IActionResult> RequestToken([FromBody] TokenRequest request)
+        public async Task<IActionResult> RequestToken([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
             {

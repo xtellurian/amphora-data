@@ -8,6 +8,7 @@ using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Options;
+using Amphora.Common.Models.Platform;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -30,7 +31,7 @@ namespace Amphora.Infrastructure.Services
             this.logger = logger;
         }
 
-        public async Task<(bool success, string token)> GetToken(Common.Models.Platform.TokenRequest request)
+        public async Task<(bool success, string token)> GetToken(LoginRequest request)
         {
             logger.LogInformation($"Getting token for {request.Username}");
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
