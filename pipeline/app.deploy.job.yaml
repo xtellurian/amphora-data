@@ -45,21 +45,16 @@ jobs:
     displayName: Echo requirement variables.
   - template: app.deploy-app-svc.steps.yaml
 
-- job: deploy_to_k8s
-  displayName: Deploy to Kubernetes
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  dependsOn: 
-    - deploy_container
-    - infrastructure
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  variables:
-  - group: Pulumi xtellurian
-  - name: staging
-    value: ${{ parameters.staging }}
-  - name: pulumi.acrName
-    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
-  steps:
-    - template: artifacts.download.steps.yaml
-    - template: install.pulumi.steps.yaml
-    - template: app.deploy-k8s.steps.yaml
+  # PRIMARY
+- template: k8s.job.yaml
+  parameters:
+    environment: $(stack)
+    region: Primary
+    dependsOn: deploy_container
+
+    # SECONDARY
+- template: k8s.job.yaml
+  parameters:
+    environment: $(stack)
+    region: Primary
+    dependsOn: deploy_container

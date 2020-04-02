@@ -1,0 +1,24 @@
+# K8s Deployment
+
+parameters:
+  environment: ''
+  region: ''
+  dependsOn: ''
+
+jobs:
+- job: ${{ parameters.environment }}_{{ parameters.region }}
+  displayName: Deployment - ${{ parameters.environment }} - {{ parameters.region }}
+  dependsOn:
+    - ${{ parameters.dependsOn }}
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  variables:
+  - group: Pulumi xtellurian
+  - name: stack
+    value: ${{ parameters.environment }}
+  - name: region
+    value: {{ parameters.region }}
+  
+  steps:
+  - template: app.deploy-k8s.steps.yaml

@@ -1,12 +1,12 @@
 
 parameters:
-  jobName: 'deploy'
   environment: ''
   staging: 'false'
 
 jobs:
-- deployment: ${{ parameters.jobName }}
-  displayName: Deployment - ${{ parameters.jobName }}
+# Infra
+- deployment: ${{ parameters.environment }}_infra
+  displayName: Deployment - ${{ parameters.environment }} - infra
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'
@@ -30,7 +30,13 @@ jobs:
         - template: infra.create.steps.yaml
         - template: app.deploy-container-image.steps.yaml
         - template: app.deploy-app-svc.steps.yaml
-        - template: app.deploy-k8s.steps.yaml
+        # - template: app.deploy-k8s.steps.yaml
         - template: tagrepo.steps.yaml
           parameters:
             tag: $(Environment.Name)/$(Build.BuildId)
+
+- template: k8s.deploymentjob.yaml
+  parameters:
+    environment: ${{ parameters.environment }}
+    region: Primary
+    dependsOn: ${{ parameters.environment }}_infra

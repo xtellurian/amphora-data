@@ -6,7 +6,7 @@ steps:
       pushd k8s
       pulumi login
       npm install
-      . ../pulumi-stack-ci.sh
+      . pulumi-stack-ci.sh 
       echo "Deploying frontend image $WEBAPP_IMAGE"
       echo "Deploying identity image $IDENTITY_IMAGE"
       pulumi up -y -c frontend:image="$WEBAPP_IMAGE" -c identity:image="$IDENTITY_IMAGE"
@@ -16,3 +16,4 @@ steps:
       WEBAPP_IMAGE: $(pulumi.acrName).azurecr.io/webapp:$(Build.BuildNumber)
       IDENTITY_IMAGE: $(pulumi.acrName).azurecr.io/identity:$(Build.BuildNumber)
       STACK: $(stack)
+      REGION: $(region)
