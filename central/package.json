@@ -5,7 +5,7 @@
         "tslint": "^5.20.1"
     },
     "dependencies": {
-        "@pulumi/azure": "^1.13.0",
-        "@pulumi/pulumi": "^1.10.1"
+        "@pulumi/azure": "^1.14.0",
+        "@pulumi/pulumi": "^1.13.1"
     }
 }
