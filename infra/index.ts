@@ -83,7 +83,7 @@ export let webAppResourceIds = result.then((r) =>
 );
 
 // k8s exports
-export let k8sPrimary = result.then((r) => {
+export let primary = result.then((r) => {
   return {
     fqdn: r.application.aks.primary.k8sInfra.fqdn,
     fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
@@ -95,7 +95,7 @@ export let k8sPrimary = result.then((r) => {
   };
 });
 
-export let k8sSecondary = result.then((r) => {
+export let secondary = result.then((r) => {
   return {
     fqdn: r.application.aks.secondary.k8sInfra.fqdn,
     fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
