@@ -35,7 +35,7 @@ jobs:
 - deployment: ${{ parameters.environment }}_secondary
   displayName: Deployment - ${{ parameters.environment }} - secondary
   environment: ${{ parameters.environment }}
-  dependsOn: {{ parameters.environment }}_primary
+  dependsOn: ${{ parameters.environment }}_primary
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
