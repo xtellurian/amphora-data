@@ -12,14 +12,10 @@ if(stackSplit.length != 2) {
     throw new Error("Stack Name does not conform");
 }
 
-interface IK8Output {
-
-}
-
 const environment = stack.split("-")[0];
 const region = stack.split("-")[1];
 
-const infra = new pulumi.StackReference(`xtellurian/amphora/${parent}`);
+const infra = new pulumi.StackReference(`xtellurian/amphora/${environment}`);
 
 const k8sOutputs = infra.requireOutput("k8s");
 const k8sInfo = k8sOutputs.apply(_ => _[region]);
