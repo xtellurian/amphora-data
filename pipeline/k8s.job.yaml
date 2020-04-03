@@ -8,12 +8,15 @@ jobs:
   displayName: Deployment - primary
   dependsOn:
     - ${{ parameters.dependsOn }}
+    - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - name: region
     value: primary
+  - name: pulumi.acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   steps:
   - script: |
       if [ -z "$STACK" ]
@@ -33,12 +36,15 @@ jobs:
   displayName: Deployment - secondary
   dependsOn:
     - primary
+    - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - name: region
     value: secondary
+  - name: pulumi.acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   steps:
   - script: |
       if [ -z "$STACK" ]
