@@ -47,5 +47,4 @@ jobs:
 
 - template: k8s.job.yaml
   parameters:
-    environment: $(stack)
     dependsOn: deploy_container

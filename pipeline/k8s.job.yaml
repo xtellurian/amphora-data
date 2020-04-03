@@ -1,7 +1,6 @@
 # K8s Deployment
 
 parameters:
-  environment: ''
   dependsOn: ''
 
 jobs:
@@ -13,11 +12,19 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
-  - name: stack
-    value: ${{ parameters.environment }}
   - name: region
     value: primary
   steps:
+  - script: |
+      if [ -z "$STACK" ]
+      then
+            echo "\$STACK is empty"
+            exit 1
+      else
+            echo "\$STACK is NOT empty"
+      fi
+    env:
+      STACK: $(stack)
   - template: install.pulumi.steps.yaml
   - template: app.deploy-k8s.steps.yaml
 
@@ -30,10 +37,18 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
-  - name: stack
-    value: ${{ parameters.environment }}
   - name: region
     value: secondary
   steps:
+  - script: |
+      if [ -z "$STACK" ]
+      then
+            echo "\$STACK is empty"
+            exit 1
+      else
+            echo "\$STACK is NOT empty"
+      fi
+    env:
+      STACK: $(stack)
   - template: install.pulumi.steps.yaml
   - template: app.deploy-k8s.steps.yaml
