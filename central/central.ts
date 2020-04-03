@@ -32,37 +32,49 @@ const rg = new azure.core.ResourceGroup("constant",
     },
     opts,
 );
-const primary = "primary";
-const secondary = "secondary";
+const outputName = "k8s";
+
 const clusters: IMultiEnvironmentMultiCluster = {
     develop: {
-        primary: {
-            ingressIp: developStack.getOutput(primary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(primary).apply((k) => k?.location) as pulumi.Output<string>,
+        australiaeast: {
+            ingressIp: developStack.getOutput(outputName)
+                .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(outputName)
+                .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
         },
-        secondary: {
-            ingressIp: developStack.getOutput(secondary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(secondary).apply((k) => k?.location) as pulumi.Output<string>,
+        australiasoutheast: {
+            ingressIp: developStack.getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
+            location: developStack.getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<string>,
         },
     },
     master: {
-        primary: {
-            ingressIp: masterStack.getOutput(primary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(primary).apply((k) => k?.location) as pulumi.Output<string>,
+        australiaeast: {
+            ingressIp: masterStack.getOutput(outputName)
+                .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(outputName)
+                .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
         },
-        secondary: {
-            ingressIp: masterStack.getOutput(secondary).apply((k) => k?.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(secondary).apply((k) => k?.location) as pulumi.Output<string>,
+        australiasoutheast: {
+            ingressIp: masterStack.getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
+            location: masterStack.getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<string>,
         },
     },
     prod: {
-        primary: {
-            ingressIp: prodStack.requireOutput(primary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: prodStack.requireOutput(primary).apply((k) => k.location) as pulumi.Output<string>,
+        australiaeast: {
+            ingressIp: prodStack.requireOutput(outputName)
+                .apply((k) => k.australiaeast.ingressIp) as pulumi.Output<string>,
+            location: prodStack.requireOutput(outputName)
+                .apply((k) => k.australiaeast.location) as pulumi.Output<string>,
         },
-        secondary: {
-            ingressIp: prodStack.requireOutput(secondary).apply((k) => k.ingressIp) as pulumi.Output<string>,
-            location: prodStack.requireOutput(secondary).apply((k) => k.location) as pulumi.Output<string>,
+        australiasoutheast: {
+            ingressIp: prodStack.requireOutput(outputName)
+                .apply((k) => k.australiasoutheast.ingressIp) as pulumi.Output<string>,
+            location: prodStack.requireOutput(outputName)
+                .apply((k) => k.australiasoutheast.location) as pulumi.Output<string>,
         },
     },
 };

@@ -29,8 +29,8 @@ export class K8sDns extends pulumi.ComponentResource {
 
     private create(rg: azure.core.ResourceGroup, zone: azure.dns.Zone, env: string, clusters: IMultiCluster) {
         // k8s dns things
-        this.createForLocation({ rg, zone, env, cluster: clusters.primary, index: 0});
-        this.createForLocation({ rg, zone, env, cluster: clusters.secondary, index: 1 });
+        this.createForLocation({ rg, zone, env, cluster: clusters.australiasoutheast, index: 0});
+        this.createForLocation({ rg, zone, env, cluster: clusters.australiaeast, index: 1 });
     }
 
     private createForLocation({ rg, zone, env, cluster, index }
