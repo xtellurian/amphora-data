@@ -3,12 +3,11 @@ import * as k8s from "@pulumi/kubernetes";
 import * as kx from "@pulumi/kubernetesx";
 
 export interface IIdentityArgs {
+    environment: string,
     fqdn: pulumi.Output<string>,
     location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
-
-const env = pulumi.getStack();
 
 const identityConfig = new pulumi.Config("identity")
 const image = identityConfig.require("image");
@@ -134,7 +133,7 @@ export class Identity extends pulumi.ComponentResource {
         }
 
         const hosts: pulumi.Output<string>[] = [
-            pulumi.interpolate `${env}.${this.params.location}.identity.amphoradata.com`,
+            pulumi.interpolate `${this.params.environment}.${this.params.location}.identity.amphoradata.com`,
             // pulumi.interpolate `${env}.identity.amphoradata.com` // the front foor
         ]
         // add the rule for each host

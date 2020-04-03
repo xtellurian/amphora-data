@@ -4,8 +4,8 @@ parameters:
   dependsOn: ''
 
 jobs:
-- job: primary
-  displayName: Deployment - primary
+- job: australiasoutheast
+  displayName: Deployment - australiasoutheast
   dependsOn:
     - ${{ parameters.dependsOn }}
     - infrastructure
@@ -14,7 +14,7 @@ jobs:
   variables:
   - group: Pulumi xtellurian
   - name: region
-    value: primary
+    value: australiasoutheast
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   steps:
@@ -31,18 +31,17 @@ jobs:
   - template: install.pulumi.steps.yaml
   - template: app.deploy-k8s.steps.yaml
 
-# secondary
-- job: secondary
-  displayName: Deployment - secondary
+- job: australiaeast
+  displayName: Deployment - australiaeast
   dependsOn:
-    - primary
+    - australiasoutheast
     - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - name: region
-    value: secondary
+    value: australiaeast
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   steps:

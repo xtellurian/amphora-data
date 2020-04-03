@@ -8,21 +8,21 @@ parameters:
   - develop
   - master
   - prod
-- name: dependsOn
-  type: string
   
 jobs:
-- deployment: primary
-  displayName: Deployment - primary
+- deployment: australiasoutheast
+  displayName: Deployment - australiasoutheast
   environment: ${{ parameters.environment }}
   dependsOn:
-    - ${{ parameters.dependsOn }}
+    - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - name: region
-    value: primary
+    value: australiasoutheast
+  - name: pulumi.acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   strategy:
     runOnce:
       deploy:
@@ -32,16 +32,20 @@ jobs:
         - template: artifacts.download.steps.yaml
         - template: app.deploy-k8s.steps.yaml
 
-- deployment: secondary
-  displayName: Deployment - secondary
+- deployment: australiaeast
+  displayName: Deployment - australiaeast
   environment: ${{ parameters.environment }}
-  dependsOn: primary
+  dependsOn: 
+    - australiasoutheast
+    - infrastructure
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
   - group: Pulumi xtellurian
   - name: region
-    value: secondary
+    value: australiaeast
+  - name: pulumi.acrName
+    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   strategy:
     runOnce:
       deploy:

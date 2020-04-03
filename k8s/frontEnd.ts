@@ -3,12 +3,11 @@ import * as k8s from "@pulumi/kubernetes";
 import * as kx from "@pulumi/kubernetesx";
 
 export interface IFrontendArgs {
+    environment: string,
     fqdn: pulumi.Output<string>,
     location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
-
-const env = pulumi.getStack();
 
 const frontendConfig = new pulumi.Config("frontend")
 const image = frontendConfig.require("image");
@@ -141,7 +140,7 @@ export class FrontEnd extends pulumi.ComponentResource {
         ];
 
         const hosts: pulumi.Output<string>[] = [
-            pulumi.interpolate `${env}.${this.params.location}.app.amphoradata.com`,
+            pulumi.interpolate `${this.params.environment}.${this.params.location}.app.amphoradata.com`,
             // pulumi.interpolate `${env}.app.amphoradata.com` // the front foor
         ]
 

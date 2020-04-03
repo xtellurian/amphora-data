@@ -82,27 +82,25 @@ export let webAppResourceIds = result.then((r) =>
   r.application.appSvc.apps.map((a) => a.appSvc.id),
 );
 
-// k8s exports
-export let primary = result.then((r) => {
+export let k8s = result.then((r) => {
   return {
-    fqdn: r.application.aks.primary.k8sInfra.fqdn,
-    fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
-    group: r.application.aks.primary.k8sCluster.resourceGroupName,
-    ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
-    kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
-    location: r.application.aks.primary.k8sCluster.location,
-    name: r.application.aks.primary.k8sCluster.name,
-  };
-});
-
-export let secondary = result.then((r) => {
-  return {
-    fqdn: r.application.aks.secondary.k8sInfra.fqdn,
-    fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
-    group: r.application.aks.secondary.k8sCluster.resourceGroupName,
-    ingressIp: r.application.aks.secondary.k8sInfra.ingressIp,
-    kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
-    location: r.application.aks.secondary.k8sCluster.location,
-    name: r.application.aks.secondary.k8sCluster.name,
+    australiaeast: {
+      fqdn: r.application.aks.primary.k8sInfra.fqdn,
+      fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
+      group: r.application.aks.primary.k8sCluster.resourceGroupName,
+      ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
+      kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
+      location: r.application.aks.primary.k8sCluster.location,
+      name: r.application.aks.primary.k8sCluster.name,
+    },
+    australiasoutheast: {
+      fqdn: r.application.aks.secondary.k8sInfra.fqdn,
+      fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
+      group: r.application.aks.secondary.k8sCluster.resourceGroupName,
+      ingressIp: r.application.aks.secondary.k8sInfra.ingressIp,
+      kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
+      location: r.application.aks.secondary.k8sCluster.location,
+      name: r.application.aks.secondary.k8sCluster.name,
+    },
   };
 });

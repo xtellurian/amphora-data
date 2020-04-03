@@ -5,8 +5,8 @@ parameters:
 
 jobs:
 # Infra
-- deployment: ${{ parameters.environment }}_infra
-  displayName: Deployment - ${{ parameters.environment }} - infra
+- deployment: infrastructure
+  displayName: Create Infrastructure
   environment: ${{ parameters.environment }}
   pool:
     vmImage: 'Ubuntu-16.04'
@@ -38,4 +38,3 @@ jobs:
 - template: k8s.deploymentjob.yaml
   parameters:
     environment: ${{ parameters.environment }}
-    dependsOn: ${{ parameters.environment }}_infra
