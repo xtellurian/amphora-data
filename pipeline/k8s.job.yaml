@@ -5,8 +5,8 @@ parameters:
   dependsOn: ''
 
 jobs:
-- job: ${{ parameters.environment }}_primary
-  displayName: Deployment - ${{ parameters.environment }} - primary
+- job: primary
+  displayName: Deployment - primary
   dependsOn:
     - ${{ parameters.dependsOn }}
   pool:
@@ -22,10 +22,10 @@ jobs:
   - template: app.deploy-k8s.steps.yaml
 
 # secondary
-- job: ${{ parameters.environment }}_secondary
-  displayName: Deployment - ${{ parameters.environment }} - secondary
+- job: secondary
+  displayName: Deployment - secondary
   dependsOn:
-    - ${{ parameters.environment }}_primary
+    - primary
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:

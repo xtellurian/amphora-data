@@ -12,8 +12,8 @@ parameters:
   type: string
   
 jobs:
-- deployment: ${{ parameters.environment }}_primary
-  displayName: Deployment - ${{ parameters.environment }} - primary
+- deployment: primary
+  displayName: Deployment - primary
   environment: ${{ parameters.environment }}
   dependsOn:
     - ${{ parameters.dependsOn }}
@@ -32,10 +32,10 @@ jobs:
         - template: artifacts.download.steps.yaml
         - template: app.deploy-k8s.steps.yaml
 
-- deployment: ${{ parameters.environment }}_secondary
-  displayName: Deployment - ${{ parameters.environment }} - secondary
+- deployment: secondary
+  displayName: Deployment - secondary
   environment: ${{ parameters.environment }}
-  dependsOn: ${{ parameters.environment }}_primary
+  dependsOn: primary
   pool:
     vmImage: 'Ubuntu-16.04'
   variables:
