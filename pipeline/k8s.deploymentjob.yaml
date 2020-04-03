@@ -30,6 +30,7 @@ jobs:
         - checkout: self  # deployment job doesn't check it out
           persistCredentials: true
         - template: artifacts.download.steps.yaml
+        - template: install.pulumi.steps.yaml
         - template: app.deploy-k8s.steps.yaml
 
 - deployment: australiaeast
@@ -53,4 +54,5 @@ jobs:
         - checkout: self  # deployment job doesn't check it out
           persistCredentials: true
         - template: artifacts.download.steps.yaml
+        - template: install.pulumi.steps.yaml
         - template: app.deploy-k8s.steps.yaml
