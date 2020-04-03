@@ -12,16 +12,19 @@ done
 
 if [ -z "$LOCATION" ]; then
     echo "Missing location -l"
-    LOCATION="primary"
-    echo "Using Primary Location"
+    LOCATION="australiasoutheast"
 fi
 
 pulumi stack ls
+echo "Using $LOCATION"
 
-JSON=$(pulumi stack output -j $LOCATION)
-name=$( jq -r  '.name' <<< "$(echo $JSON)" ) 
-group=$( jq -r  '.group' <<< "$(echo $JSON)" ) 
+JSON=$(pulumi stack output -j k8s)
+LOC_JSON=$( jq -r ".${LOCATION}" <<< "$(echo $JSON)" ) 
+set -x
+name=$( jq -r '.name' <<< "$(echo $LOC_JSON)" ) 
+group=$( jq -r '.group' <<< "$(echo $LOC_JSON)" ) 
 
+set -e
 az aks show -n "$name" -g "$group"
 
 pushd .aks-shell
