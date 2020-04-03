@@ -8,11 +8,11 @@ l) LOCATION=${OPTARG};; # Public IP address of your ingress controller
 esac
 done
 
-# location could be k8sPrimary or k8sSecondary
+# location could be primaru or secondary
 
 if [ -z "$LOCATION" ]; then
     echo "Missing location -l"
-    LOCATION="k8sPrimary"
+    LOCATION="primary"
     echo "Using Primary Location"
 fi
 

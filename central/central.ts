@@ -32,8 +32,8 @@ const rg = new azure.core.ResourceGroup("constant",
     },
     opts,
 );
-const primary = "k8sPrimary";
-const secondary = "k8sSecondary";
+const primary = "primary";
+const secondary = "secondary";
 const clusters: IMultiEnvironmentMultiCluster = {
     develop: {
         primary: {
