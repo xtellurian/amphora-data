@@ -14,10 +14,10 @@ fi
 
 OUTPUT=$(cat $STACK_OUTPUT_PATH)
 echo $OUTPUT
-fqdnName=$(jq -r  '.k8sPrimary.fqdnName' <<< ${OUTPUT} ) 
-ip=$(jq -r  '.k8sPrimary.ingressIp' <<< ${OUTPUT} )
+fqdnName=$(jq -r  '.primary.fqdnName' <<< ${OUTPUT} ) 
+ip=$(jq -r  '.primary.ingressIp' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
 
-fqdnName=$(jq -r  '.k8sSecondary.fqdnName' <<< ${OUTPUT} ) 
-ip=$(jq -r  '.k8sSecondary.ingressIp' <<< ${OUTPUT} )
+fqdnName=$(jq -r  '.secondary.fqdnName' <<< ${OUTPUT} ) 
+ip=$(jq -r  '.secondary.ingressIp' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
