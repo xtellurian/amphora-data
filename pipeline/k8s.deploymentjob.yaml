@@ -23,6 +23,8 @@ jobs:
     value: australiasoutheast
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+  - name: stack
+    value: ${{ parameters.environment }}
   strategy:
     runOnce:
       deploy:
@@ -47,6 +49,8 @@ jobs:
     value: australiaeast
   - name: pulumi.acrName
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+  - name: stack
+    value: ${{ parameters.environment }}
   strategy:
     runOnce:
       deploy:
