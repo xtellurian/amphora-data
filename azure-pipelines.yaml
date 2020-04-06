@@ -38,10 +38,10 @@ stages:
   - template: pipeline/app.test.job.yaml
     parameters:
       jobName: apps
-  - template: pipeline/app.deploy.job.yaml
-    parameters:
-      dependsOn: apps
-      staging: 'false'
+  # - template: pipeline/app.deploy.job.yaml
+  #   parameters:
+  #     dependsOn: apps
+  #     staging: 'false'
   - job: tagversion
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     steps:
@@ -54,7 +54,7 @@ stages:
 
 - stage: deploy_develop
   displayName: Deploy to Develop Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  condition: and(succeeded('branch'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
   variables:
     - group: AzureDeploySP
   jobs:
@@ -65,7 +65,7 @@ stages:
 
 - stage: deploy_master
   displayName: Deploy to Master Envionment 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded('branch'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     - group: AzureDeploySP
   jobs:
