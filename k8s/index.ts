@@ -8,7 +8,7 @@ import { Identity } from "./identity";
 
 const stack = pulumi.getStack();
 const stackSplit = stack.split("-");
-if(stackSplit.length != 2) {
+if (stackSplit.length != 2) {
     throw new Error("Stack Name does not conform");
 }
 
@@ -37,3 +37,9 @@ const identity = new Identity("identity1", {
     location: <pulumi.Output<string>>k8sInfo.apply(k => k.location),
     provider,
 });
+
+
+export let aks = {
+    name: k8sInfo.apply(k => k.name),
+    group: k8sInfo.apply(k => k.group)
+}
