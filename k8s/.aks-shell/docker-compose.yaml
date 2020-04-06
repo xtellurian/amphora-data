@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  kubecli:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes: 
+      - ~/.azure/:/.azure/
+    environment: 
+      AZURE_CONFIG_DIR: /.azure
+    stdin_open: true
+    tty: true
