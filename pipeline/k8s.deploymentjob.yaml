@@ -22,7 +22,7 @@ jobs:
   - name: region
     value: australiasoutheast
   - name: pulumi.acrName
-    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+    value: $[ dependencies.infrastructure.outputs['infrastructure.pulumi.acrName'] ]
   - name: stack
     value: ${{ parameters.environment }}
   strategy:
@@ -48,7 +48,7 @@ jobs:
   - name: region
     value: australiaeast
   - name: pulumi.acrName
-    value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
+    value: $[ dependencies.infrastructure.outputs['infrastructure.pulumi.acrName'] ]
   - name: stack
     value: ${{ parameters.environment }}
   strategy:
