@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Identity.Controllers
 {
+    [SkipStatusCodePages]
+    [ApiController]
     public class TokenController : Controller
     {
         private readonly IdentityServerTools tools;
