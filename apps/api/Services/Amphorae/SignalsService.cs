@@ -114,14 +114,31 @@ namespace Amphora.Api.Services.Amphorae
             return isInvalid;
         }
 
-        private static void AddDefaultSignalProperties(AmphoraModel entity, Dictionary<string, object> values)
+        private static void AddDefaultSignalProperties(AmphoraModel entity,
+                                                       Dictionary<string, object> values,
+                                                       long? ticks = null,
+                                                       DateTime? utcNow = null)
         {
+            ticks ??= DateTime.UtcNow.Ticks;
+            utcNow ??= DateTime.UtcNow;
             values[SpecialProperties.TimeSeriesId] = entity.Id;
-            if (!values.ContainsKey(SpecialProperties.Timestamp)) { values.Add(SpecialProperties.Timestamp, DateTime.UtcNow); }
-            values[SpecialProperties.WriteTime] = DateTime.UtcNow.Ticks;
+            if (!values.ContainsKey(SpecialProperties.Timestamp)) { values.Add(SpecialProperties.Timestamp, utcNow); }
+            values[SpecialProperties.WriteTime] = ticks;
         }
 
-        public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal, AmphoraModel entity, IEnumerable<Dictionary<string, object>> values)
+        private static void AddDefaultSignalProperties(AmphoraModel entity, IEnumerable<Dictionary<string, object>> dicts)
+        {
+            var ticks = DateTime.UtcNow.Ticks;
+            var utcNow = DateTime.UtcNow;
+            foreach (var values in dicts)
+            {
+                AddDefaultSignalProperties(entity, values, ticks, utcNow);
+            }
+        }
+
+        public async Task<EntityOperationResult<IEnumerable<Dictionary<string, object>>>> WriteSignalBatchAsync(ClaimsPrincipal principal,
+                                                                                                                AmphoraModel entity,
+                                                                                                                IEnumerable<Dictionary<string, object>> values)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
             if (!userReadRes.Succeeded)
@@ -140,9 +157,9 @@ namespace Amphora.Api.Services.Amphorae
                         {
                             return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(userReadRes.Entity, "Invalid properties");
                         }
-
-                        AddDefaultSignalProperties(entity, value);
                     }
+
+                    AddDefaultSignalProperties(entity, values);
 
                     await eventHubSender.SendToEventHubAsync(values);
                     return new EntityOperationResult<IEnumerable<Dictionary<string, object>>>(userReadRes.Entity, values);
