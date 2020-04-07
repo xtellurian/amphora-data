@@ -3,6 +3,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Pages;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages
@@ -16,16 +17,29 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             this.amphoraeService = amphoraeService;
         }
 
+        protected Error Error { get; set; } = null;
+
         // [BindProperty] // this shouldn't be bound, as it messes with model validation, and shouldn't be sent by the client
         public AmphoraModel Amphora { get; set; }
         public EntityOperationResult<AmphoraModel> Result { get; private set; }
 
         public virtual async Task LoadAmphoraAsync(string id)
         {
-            if (id == null) { return; }
+            if (id == null)
+            {
+                Error = new Error("Amphora Id cannot be empty");
+                return;
+            }
+
             this.Result = await amphoraeService.ReadAsync(User, id, true);
-            if (Result.Succeeded) { this.Amphora = Result.Entity; }
-            else { Amphora = null; }
+            if (Result.Succeeded)
+            {
+                this.Amphora = Result.Entity;
+            }
+            else
+            {
+                Error = new Error($"Amphora({id}) not found");
+            }
         }
 
         public IActionResult OnReturnPage()
@@ -33,7 +47,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (Amphora == null) { return RedirectToPage("/Index", new { area = "Amphorae" }); }
             if (Result.WasForbidden)
             {
-                return RedirectToPage("Amphorae/Forbidden");
+                return RedirectToPage("/Amphorae/Forbidden");
             }
             else if (Result.Succeeded)
             {

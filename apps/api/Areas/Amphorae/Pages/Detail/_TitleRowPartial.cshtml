@@ -2,9 +2,6 @@
     <div class="col-9">
         <h4>@Model.Amphora.Name</h4>
         <div>
-            <p class="float-right">
-                $@Model.Amphora.Price per month
-            </p>
             <p>
                 Created by 
                 <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Amphora.CreatedBy.OrganisationId">
@@ -13,24 +10,13 @@
             </p>
         </div>
     </div>
-    <div class="col-3">
-
-        @if(Model.Purchase != null || Model.CanEditDetails)
-        {
-            <div id="alreadyPurchasedActions" class="text-right">
-                <div>
-                    <a class="btn btn-light btn-sm btn-block m-1" asp-area="Amphorae" asp-page="/Signals/Index" asp-route-id="@Model.Amphora.Id">Signals (@Model.SignalCount)</a>
-                    <a class="btn btn-light btn-sm btn-block m-1" asp-area="Amphorae" asp-page="/Files/Index" asp-route-id="@Model.Amphora.Id">Files (@Model.FileCount)</a>
-                </div>
-            </div>
-        }
-        else if(Model.CanBuy)
-        { 
-            <div id="yetToPurchaseActions">
-                <a class="btn btn-success btn-sm btn-block m-1" asp-area="Amphorae" asp-page="/Purchase" asp-route-id="@Model.Amphora.Id">Buy</a>
-            </div>
-        }
-
+    <div class="col-3 text-right">
+        @{string enableBuyClass = Model.CanBuy ? "" : "disabled";}
+        <a class="btn btn-success btn btn-block m-1 @enableBuyClass" asp-area="Amphorae" asp-page="/Purchase" asp-route-id="@Model.Amphora.Id">
+            Buy
+            <span class="badge badge-light ml-2">$@Model.Amphora.Price</span>
+            <span class="sr-only">dollars per month</span>
+        </a>
     </div>
 </div>
 @if(Model.Purchase != null)

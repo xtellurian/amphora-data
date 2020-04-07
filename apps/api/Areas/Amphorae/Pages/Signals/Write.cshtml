@@ -8,6 +8,9 @@
 <div class="container">
     <div class="row">
         <div class="col-8">
+            <a class="btn btn-secondary float-right" asp-page="/Detail/Signals" asp-route-id="@Model.Amphora.Id">
+                Back
+            </a>
             <h2>Enter values</h2>
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -39,7 +42,6 @@
                     <input type="submit" value="Save" class="btn btn-primary" />
                 </div>
             </form>
-            <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-secondary">Cancel</button></a>
         </div>
     </div>
 </div>

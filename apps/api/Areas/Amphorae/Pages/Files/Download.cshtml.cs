@@ -3,7 +3,6 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -33,11 +32,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
 
         public async Task<IActionResult> OnGetAsync(string id, string name, bool redirect = true)
         {
-            if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
+            if (string.IsNullOrEmpty(name)) { return RedirectToPage("/Detail/Index", new { Id = id }); }
             var entity = await amphoraeService.AmphoraStore.ReadAsync(id);
             if (entity == null)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Index");
             }
 
             var userReadRes = await userDataService.ReadAsync(User);
@@ -71,7 +70,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 }
                 else
                 {
-                    return RedirectToPage("./Forbidden");
+                    return RedirectToPage("/Amphorae/Forbidden");
                 }
             }
             else

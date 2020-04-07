@@ -63,7 +63,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 await signalService.WriteSignalAsync(User, this.Amphora, values);
             }
 
-            return RedirectToPage("./Index", new { id = id });
+            return RedirectToPage("/Detail/Signals", new { id = id });
         }
     }
 }

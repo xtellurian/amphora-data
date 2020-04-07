@@ -57,7 +57,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                         var res = await amphoraeService.UpdateAsync(User, Amphora);
                         if (res.Succeeded)
                         {
-                            return RedirectToPage("./Index", new { Id = Amphora.Id });
+                            return RedirectToPage("/Detail/Signals", new { Id = Amphora.Id });
                         }
                         else if (res.WasForbidden)
                         {

@@ -13,7 +13,7 @@
     <div class="row main-header">
         <div class="col">
             <div class="m-2">
-                <a asp-page="./Index" asp-route-id="@Model.Amphora.Id"><button class="btn btn-secondary m-1">All Signals</button></a>
+                <a asp-page="/Detail/Signals" asp-route-id="@Model.Amphora.Id"><button class="btn btn-secondary m-1">All Signals</button></a>
                 <button type="button" class="btn btn-primary m-1" data-toggle="modal" data-target="#@id">View Attributes</button>
                 
                 <h2>@Model.Amphora.Name</h2>

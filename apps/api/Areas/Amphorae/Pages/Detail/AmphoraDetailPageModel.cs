@@ -32,7 +32,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public bool CanUpdate { get; private set; }
         public bool CanEditPermissions { get; private set; }
         public bool CanEditDetails { get; private set; }
-        public bool CanUploadFiles { get; private set; }
+        public bool CanWriteContents { get; private set; }
+        public bool CanReadContents { get; private set; }
+        public bool CanDeleteFiles { get; private set; }
         public ICollection<PurchaseModel> Purchases { get; private set; }
         public bool CanBuy { get; private set; }
         public PurchaseModel Purchase { get; private set; }
@@ -47,7 +49,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
                 CanEditPermissions = await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.Create);
                 // can edit permissions implies can edit details - else, check
                 CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.Update);
-                CanUploadFiles = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.WriteContents);
+                CanWriteContents = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.WriteContents);
+                CanReadContents = CanWriteContents ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.ReadContents);
+                CanDeleteFiles = CanWriteContents;
 
                 this.Purchases = Amphora.Purchases;
                 this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);

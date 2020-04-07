@@ -13,11 +13,13 @@
       <a class="btn btn-block btn-sm @masterActiveClass" asp-page="@Model.Index.Path" asp-all-route-data="@Model.Index.Query">@Model.Index.Name</a>
     </li>
     <li class="list-group-item">
-      @foreach(var p in Model.Pages)
-      {
-          string activeClass = p.IsActive ? active : inactive;
-          <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
-      }
+        @foreach(var p in Model.Pages)
+        {
+            var extraClasses = "";
+            extraClasses += p.IsActive ? active : inactive;
+            extraClasses += p.IsDisabled ? " disabled" : "";
+            <a class="btn btn-block btn-sm @extraClasses" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
+        }
     </li>
   </ul>
 </div>
@@ -36,8 +38,10 @@
       <li id="collapseExample" class="collapse list-group-item">
         @foreach(var p in Model.Pages)
         {
-            string activeClass = p.IsActive ? active : inactive;
-            <a class="btn btn-block btn-sm @activeClass" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
+            var extraClasses = "";
+            extraClasses += p.IsActive ? active : inactive;
+            extraClasses += p.IsDisabled ? " disabled" : "";
+            <a class="btn btn-block btn-sm @extraClasses" asp-page="@p.Path" asp-all-route-data="@p.Query">@p.Name</a>
         }
       </li>
     </ul>

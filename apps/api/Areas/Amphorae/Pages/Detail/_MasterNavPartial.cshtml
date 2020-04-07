@@ -10,6 +10,8 @@
     var otherPages = new List<MasterNavigationPaneViewModel.Page>
         {
             new MasterNavigationPaneViewModel.Page("./Description", indexPage, "Description", paramsDict),
+            new MasterNavigationPaneViewModel.Page("./Files", indexPage, $"Files ({@Model.FileCount})", paramsDict, !Model.CanReadContents),
+            new MasterNavigationPaneViewModel.Page("./Signals", indexPage, $"Signals ({@Model.SignalCount})", paramsDict, !Model.CanReadContents),
             new MasterNavigationPaneViewModel.Page("./TermsOfUse", indexPage, "Terms of Use", paramsDict),
             new MasterNavigationPaneViewModel.Page("./Location", indexPage, "Location", paramsDict),
             new MasterNavigationPaneViewModel.Page("./Issues", indexPage, "Issues", paramsDict),

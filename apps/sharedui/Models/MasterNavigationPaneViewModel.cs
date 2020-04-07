@@ -26,7 +26,7 @@ namespace Amphora.SharedUI.Models
 
         public class Page
         {
-            public Page(string path, Page parent = null, string name = null, IDictionary<string, string> query = null)
+            public Page(string path, Page parent = null, string name = null, IDictionary<string, string> query = null, bool isDisabled = false)
             {
                 Path = path;
                 Parent = parent;
@@ -36,6 +36,7 @@ namespace Amphora.SharedUI.Models
                 }
 
                 Name = name;
+                IsDisabled = isDisabled;
                 if (query != null && query.Count > 0)
                 {
                     Query = query;
@@ -46,6 +47,7 @@ namespace Amphora.SharedUI.Models
             public Page Parent { get; }
             public string Name { get; }
             public bool IsActive { get; set; } = false;
+            public bool IsDisabled { get; set; } = false;
             public IDictionary<string, string> Query { get; set; } = new Dictionary<string, string>();
         }
     }

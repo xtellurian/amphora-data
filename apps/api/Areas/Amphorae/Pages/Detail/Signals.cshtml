@@ -1,0 +1,301 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.SignalsPageModel
+
+@{
+    ViewData["Title"] = Model.Amphora.Name + " Signals";
+    var idDic = new Dictionary<string,string>();
+    var createSignalButtonHidden = Model.CanUpdate ? "" : "disabled";
+}
+
+@foreach(var n in Model.Amphora.V2Signals)
+{
+    idDic[n.UUID] = "A" + n.UUID;
+    @await Component.InvokeAsync("Metadata", new {id = $"A{n.UUID}", title = $"{n.Property} Metadata", meta = n.Attributes});
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+            <div clas="row">
+                <div class="col text-right">
+                    <div class="btn-group" role="group">
+                        @if(Model.CanWriteContents)
+                        {
+                            <a class="btn btn-success" asp-area="Amphorae" asp-page="/Signals/Write" asp-route-id="@Model.Amphora.Id">
+                                New Values
+                            </a>
+                        }
+                        @if(Model.CanUpdate)
+                        {
+                            <a class="btn btn-primary @createSignalButtonHidden" asp-area="Amphorae" asp-page="/Signals/Create" asp-route-id="@Model.Amphora.Id">
+                                New Signal
+                            </a>
+                        }
+                        <div class="dropdown">
+                            <button id='resolutionButton' class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Resolution
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" onClick="setResolution('24h')">One Day</a>
+                                <a class="dropdown-item" onClick="setResolution('12h')">12 Hours</a>
+                                <a class="dropdown-item" onClick="setResolution('2h')">2 Hours</a>
+                                <a class="dropdown-item" onClick="setResolution('30m')">30 Minutes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div id="loader" role="status" style="margin: 0 auto;";>
+                    <div class="spinner-border text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-danger" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-warning" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col"> 
+                    <ul class="list-group" id="filters">
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-5 mt-3" id="chart" style="width: 100%; height: 400px; float: left;"></div>
+            </div>
+            <div class="row">
+                <div id="availability" style="width: 100%; height: 160px; z-index:1;"></div>
+            </div>
+            <div class="row">
+                <div class="col card text-center">
+                    <a class="m-1" data-toggle="collapse" href="#signalTable" 
+                        role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                        <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
+                        Advanced Controls
+                        <i class="fas fa-angle-down" data-toggle="tooltip" data-placement="top" title="Advanced"></i>
+                    </a>
+                </div>
+            </div>
+            <div id="signalTable" class="collapse">
+                <div class="row">
+                    <table id="signal-table" class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Property</th>
+                                <th>Filters</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var n in Model.Amphora.V2Signals)
+                            {
+                            <tr class="signal-item">
+                                <th scope="row">@n.Property</th>
+                                <td>
+                                    <div class="input-group">
+                                        @if(n.IsNumeric)
+                                        {
+                                            <button class="btn btn-light dropdown-toggle m-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Operator
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '>');">Greater than</a>
+                                                <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '<');">Less than</a>
+                                                <a class="dropdown-item" onclick="onSelectOperator('@n.Property-operator', '=');">Equals</a>
+                                            </div>
+                                            <input type="text" id="@n.Property-operator" class="m-1" size="1" disabled value='='>
+                                            <input type="number" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                                data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                                onchange="setFilterValue('@n.Property-input', 'Double');">
+                                            <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                                        } 
+                                        else if(n.IsString) 
+                                        {
+                                            <input type="text" placeholder="..." class="form-control m-1" id="@n.Property-input" 
+                                                data-toggle="tooltip" data-placement="top" title="Match this value" 
+                                                onchange="setFilterValue('@n.Property-input', 'String');">
+                                            <button type="button" class="btn btn-light m-1" onClick="clearFilter('@n.Property')" > Clear </button>
+                                        }
+                                    </div>
+                                    
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary m-1" data-toggle="modal" data-target="#@idDic[n.UUID]">Attributes</button>
+                                    <a class="btn btn-primary m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-area="Amphorae" asp-page="/Signals/Detail">
+                                        View
+                                    </a>
+                                @if(Model.CanUpdate)
+                                {
+                                    <a class="btn btn-danger m-1" asp-route-id="@Model.Amphora.Id" asp-route-signalId="@n.Id" asp-area="Amphorae" asp-page="/Signals/Delete"> Delete</a>
+                                }
+                                </td>
+                            </tr>
+                            }
+                            @if(Model.Amphora.V2Signals?.Count() > 0 ) 
+                            {
+                                <tr class="signal-item">
+                                    <th scope="row">Maximum Write Date</th>
+                                    <td>
+                                        <div class="input-group">
+                                        @{
+                                            var maxWt = DateTime.UtcNow.AddHours(1).Ticks;
+                                            var minWt = DateTime.UtcNow.AddMonths(-2).Ticks;
+                                        }
+                                            <i id="wt-display" class="far fa-2x fa-calendar-times mr-5 ml-5" data-toggle="tooltip" data-placement="bottom"></i>
+                                            <input type="hidden" id="wt-operator" value=">">
+                                            <input type="hidden" id="wt-input" >
+                                            <input class="form-control ml-3" type="date" id="wt-date-input" name="DateTimeValue" onchange="onWtDateChanged()">
+                                            <button type="button" class="btn btn-light m-1" onClick="clearFilter('wt')" > Clear</button>
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/tsi.js"></script>
+
+    <script>
+        function loading(show) {
+            var x = document.getElementById("loader");
+            if (show) {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        } 
+
+        var filters = {};
+        var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Amphora.V2Signals.Where(s => s.IsNumeric)));
+        var id = '@Model.Amphora.Id';
+        var render = null
+        loading(true)
+        tsi(id, cols, filters).then((r) => {
+            console.log('TSI Loaded');
+            render = r;
+            loading(false)
+            })
+        // todo set filters
+
+        function setFilterValue(elementId, type){
+            loading(true)
+            // Selecting the input element and get its value 
+            var filterVal = document.getElementById(elementId).value;
+            if(filterVal && type == "String" && !filterVal.startsWith("'")) {
+                filterVal = `'${filterVal}'`
+            }
+
+            var property = elementId.replace("-input", "");
+            var operatorElement = document.getElementById(`${property}-operator`);
+            var operatorVal = '='; // default to equals
+            if(operatorElement) {
+                operatorVal = operatorElement.value;
+            }
+            if(filterVal) filters[property] = {value: filterVal, operator: operatorVal, type}
+            else delete filters[property]
+
+            renderFilterTable(filters);
+
+            if(filterVal && elementId === "wt-input") {
+                setTooltipWritetime(filterVal);
+            }
+
+            renderGraph()
+        }
+        var resolution = '2h';
+        function renderGraph() {
+            if(render) render(null, null, null, resolution).then(() => loading(false));
+            else console.log("Renderer unavailable.");
+        }
+        function setResolution(value) {
+            resolution = value;
+            document.getElementById('resolutionButton').innerHTML = value;            
+            renderGraph()
+        }
+
+        function renderFilterTable(filters, ) {
+            if (Object.keys(filters).length) document.getElementById('filters').innerHTML = "<h5>Filters</h5>";
+            else document.getElementById('filters').innerHTML = "";
+            Object.keys(filters).forEach(key => { 
+                if(filters[key]) document.getElementById('filters').innerHTML += '<li class=\"list-group-item\" >' + `${key} ${filters[key].operator} ${filters[key].value}` + '</li>';
+                else console.log('oops')
+            });
+        }
+
+        function clearFilter(key) {
+            loading(true);
+            delete filters[key]; 
+            document.getElementById(`${key}-input`).value = null;
+            renderFilterTable(filters);
+            renderGraph();
+        }
+
+        function onSelectOperator(targetElement, sign) {
+            document.getElementById(targetElement).value = `${sign}`
+        }
+
+        function setTooltipWritetime(ticks) {
+            var d = ticksToUTCDate(ticks);
+            var offset = (new Date()).getTimezoneOffset();
+            d.setMinutes(d.getMinutes() - offset); 
+            $("#wt-display").attr('data-original-title', d);
+        }
+
+        function ticksToUTCDate(ticks) {
+            // ticks are UTC ticks
+            //ticks are in nanotime; convert to microtime
+            var ticksToMicrotime = ticks / 10000;
+            //ticks are recorded from 1/1/1; get microtime difference from 1/1/1/ to 1/1/1970
+            var epochMicrotimeDiff = Math.abs(new Date(0, 0, 1).setFullYear(1));
+            //new date is ticks, converted to microtime, minus difference from epoch microtime
+            var tickDate = new Date(ticksToMicrotime - epochMicrotimeDiff);
+            return tickDate;
+        }
+
+        function onWtDateChanged() {
+            var value = document.getElementById("wt-date-input").value;
+            var d = new Date(value)
+            var ticks = dateToTicks(d);
+            document.getElementById("wt-input").value = ticks
+            setFilterValue('wt-input', 'Double')
+        }
+
+        function dateToTicks(yourDate) {
+            // var yourDate = new Date();  // for example
+            // the number of .net ticks at the unix epoch
+            var epochTicks = 621355968000000000;
+            // there are 10000 .net ticks per millisecond
+            var ticksPerMillisecond = 10000;
+            // calculate the total number of .net ticks for your date
+            var yourTicks = epochTicks + (yourDate.getTime() * ticksPerMillisecond);
+            return yourTicks;
+        }
+
+    </script>
+
+     <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+}

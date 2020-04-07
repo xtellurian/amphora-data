@@ -59,7 +59,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
             }
             else
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Index/Signals");
             }
         }
 
@@ -79,7 +79,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 var result = await amphoraeService.UpdateAsync(User, Amphora);
                 if (result.Succeeded)
                 {
-                    return RedirectToPage("./Index", new { Id = Amphora.Id });
+                    return RedirectToPage("/Detail/Signals", new { Id = Amphora.Id });
                 }
                 else if (result.WasForbidden)
                 {
@@ -93,7 +93,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                 }
             }
 
-            return RedirectToPage("./Index", new { Id = Amphora.Id });
+            return RedirectToPage("/Detail/Signals", new { Id = Amphora.Id });
         }
     }
 }

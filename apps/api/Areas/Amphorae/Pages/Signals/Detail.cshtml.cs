@@ -29,7 +29,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
         {
             if (signalId == null)
             {
-                return RedirectToPage("./Index", new { id = id });
+                return RedirectToPage("/Detail/Signals", new { id = id });
             }
 
             await LoadAmphoraAsync(id);

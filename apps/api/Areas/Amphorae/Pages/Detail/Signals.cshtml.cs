@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
     [CommonAuthorize]
-    public class IndexPageModel : AmphoraDetailPageModel
+    public class SignalsPageModel : AmphoraDetailPageModel
     {
-        public IndexPageModel(IAmphoraeService amphoraeService,
+        public SignalsPageModel(IAmphoraeService amphoraeService,
                               IQualityEstimatorService qualityEstimator,
                               IPurchaseService purchaseService,
                               IPermissionService permissionService) : base(amphoraeService, qualityEstimator, purchaseService, permissionService)
@@ -20,7 +20,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
             TryLoadPurchase();
-            return OnReturnPage();
+            if (CanReadContents)
+            {
+                return OnReturnPage();
+            }
+            else
+            {
+                return RedirectToPage("/Detail/Index", new { id = id });
+            }
         }
     }
 }

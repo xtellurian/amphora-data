@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
+    [CommonAuthorize]
     public class LocationPageModel : AmphoraDetailPageModel
     {
         public LocationPageModel(IAmphoraeService amphoraeService,

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Users;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
+    [CommonAuthorize]
     public class OptionsPageModel : AmphoraDetailPageModel
     {
         private readonly IOrganisationService organisationService;

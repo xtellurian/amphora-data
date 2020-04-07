@@ -66,7 +66,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else if (result.WasForbidden)
             {
-                return RedirectToPage("./Forbidden");
+                return RedirectToPage("/Amphorae/Forbidden");
             }
             else
             {

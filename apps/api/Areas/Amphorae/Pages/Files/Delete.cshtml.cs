@@ -34,11 +34,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
 
         public async Task<IActionResult> OnGetAsync(string id, string name)
         {
-            if (string.IsNullOrEmpty(name)) { return RedirectToPage("../Detail", new { Id = id }); }
+            if (string.IsNullOrEmpty(name)) { return RedirectToPage("/Detail/Index", new { Id = id }); }
             await LoadProperties(id, name);
             if (Amphora == null)
             {
-                return RedirectToPage("../Index");
+                return RedirectToPage("/Index");
             }
 
             var userReadRes = await userDataService.ReadAsync(User);
@@ -51,7 +51,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 }
                 else
                 {
-                    return RedirectToPage("../Forbidden");
+                    return RedirectToPage("/Amphorae/Forbidden");
                 }
             }
             else
@@ -63,11 +63,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
 
         public async Task<IActionResult> OnPostAsync(string id, string name)
         {
-            if (string.IsNullOrEmpty(name)) { return RedirectToPage("./Detail", new { Id = id }); }
+            if (string.IsNullOrEmpty(name)) { return RedirectToPage("/Detail/Index", new { Id = id }); }
             await LoadProperties(id, name);
             if (Amphora == null)
             {
-                return RedirectToPage("../Index");
+                return RedirectToPage("/Index");
             }
 
             var userReadRes = await userDataService.ReadAsync(User);
@@ -76,11 +76,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 if (await permissionService.IsAuthorizedAsync(userReadRes.Entity, Amphora, Common.Models.Permissions.AccessLevels.Update))
                 {
                     await blobStore.DeleteAsync(Amphora, name);
-                    return RedirectToPage("./Index", new { id = id });
+                    return RedirectToPage("/Detail/Files", new { id = id });
                 }
                 else
                 {
-                    return RedirectToPage("../Forbidden");
+                    return RedirectToPage("/Amphorae/Forbidden");
                 }
             }
             else
