@@ -11,24 +11,54 @@
 
 <div id="main" class="container">
     <partial name="_TitleRowPartial" />
+    @if(Model.PromptAccept)
+    {
+        <div class="alert alert-warning" role="alert">
+            You must accept the Terms of Use before you can buy this Amphora.
+        </div>
+    }
     <hr/>
     <div class="row">
         <div class="col-md-3 master">
             <partial name="_MasterNavPartial" />
         </div>
         <div class="col-md-9 detail">
-            <h5>Terms of Use</h5>
-            <br/>
             @if(Model.Amphora.TermsAndConditionsId is null)
             {
                 <p>No Terms of Use have been applied here.</p>
             }
             else
-            {
+            {   
                 <h5>
                     @Model.Amphora.TermsAndConditions.Name
+                    @if(Model.HasAgreed)
+                    {
+                        <i class="far fa-check-circle text-success"></i>
+                    }
                 </h5>
+                <hr/>
                 @Markdown.ParseHtmlString(Model.Amphora.TermsAndConditions.Contents)
+            }
+
+            @{
+                string disabledClass = "";
+                if(Model.HasPurchased || !Model.CanBuy)
+                {
+                    disabledClass = "disabled";
+                }
+            }
+            
+            @if(Model.HasAgreed)
+            {
+                <div class="alert alert-light text-center" role="alert">
+                    Your organisation has accepted these terms and conditions.
+                </div>
+            }
+            else
+            {
+                <form method="post" asp-route-id="@Model.Amphora.Id">
+                    <input class="btn btn-primary w-50" type="submit" value="Accept" @disabledClass>
+                </form>
             }
         </div>
     </div>

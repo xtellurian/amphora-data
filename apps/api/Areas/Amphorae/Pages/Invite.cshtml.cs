@@ -64,7 +64,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else
             {
-                return RedirectToPage("/Index", new {area= "Amphorae"});
+                return RedirectToPage("/Index", new { area = "Amphorae" });
             }
         }
 

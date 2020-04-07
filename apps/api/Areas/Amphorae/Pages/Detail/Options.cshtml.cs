@@ -33,12 +33,16 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            await LoadUserData();
-            TryLoadPurchase();
             return OnReturnPage();
         }
 
-        public async Task LoadUserData()
+        protected override async Task SetPagePropertiesAsync()
+        {
+            await base.SetPagePropertiesAsync();
+            await LoadUserData();
+        }
+
+        private async Task LoadUserData()
         {
             var userDataRes = await userDataService.ReadAsync(User);
             if (userDataRes.Succeeded)
@@ -51,7 +55,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            TryLoadPurchase();
 
             switch (target?.ToLower())
             {

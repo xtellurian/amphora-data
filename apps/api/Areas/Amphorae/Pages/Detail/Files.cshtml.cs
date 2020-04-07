@@ -30,8 +30,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            TryLoadPurchase();
-            await LoadNames();
             if (CanReadContents)
             {
                 return OnReturnPage();
@@ -46,8 +44,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            TryLoadPurchase();
-            await LoadNames();
 
             if (Amphora == null)
             {
@@ -85,11 +81,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
                 return Forbid();
             }
 
-            await LoadNames();
+            await SetPagePropertiesAsync();
+
             return Page();
         }
 
-        private async Task LoadNames()
+        protected override async Task SetPagePropertiesAsync()
+        {
+            await base.SetPagePropertiesAsync();
+            await LoadNamesAsync();
+        }
+
+        private async Task LoadNamesAsync()
         {
             if (Amphora != null)
             {

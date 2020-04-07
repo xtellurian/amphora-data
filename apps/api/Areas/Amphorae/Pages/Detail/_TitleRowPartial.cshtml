@@ -11,12 +11,14 @@
         </div>
     </div>
     <div class="col-3 text-right">
-        @{string enableBuyClass = Model.CanBuy ? "" : "disabled";}
-        <a class="btn btn-success btn btn-block m-1 @enableBuyClass" asp-area="Amphorae" asp-page="/Purchase" asp-route-id="@Model.Amphora.Id">
-            Buy
-            <span class="badge badge-light ml-2">$@Model.Amphora.Price</span>
-            <span class="sr-only">dollars per month</span>
-        </a>
+        @{string disabled = Model.CanBuy ? "" : "disabled";}
+        <form method="post" asp-route-id="@Model.Amphora.Id" asp-page-handler="Purchase">
+            <button class="btn btn-success btn btn-block m-1" type="submit" @disabled>
+                Buy
+                <span class="badge badge-light ml-2">$@Model.Amphora.Price</span>
+                <span class="sr-only">dollars per month</span>
+            </button>
+        </form>
     </div>
 </div>
 @if(Model.Purchase != null)

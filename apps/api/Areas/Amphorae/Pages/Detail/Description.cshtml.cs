@@ -22,7 +22,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            TryLoadPurchase();
             return OnReturnPage();
         }
     }

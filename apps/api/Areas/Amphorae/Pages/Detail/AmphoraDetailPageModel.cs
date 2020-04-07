@@ -6,10 +6,11 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Purchases;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 {
-    public class AmphoraDetailPageModel : AmphoraPageModel
+    public abstract class AmphoraDetailPageModel : AmphoraPageModel
     {
         protected readonly IQualityEstimatorService qualityEstimator;
         protected readonly IPurchaseService purchaseService;
@@ -38,8 +39,41 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public ICollection<PurchaseModel> Purchases { get; private set; }
         public bool CanBuy { get; private set; }
         public PurchaseModel Purchase { get; private set; }
+        public bool HasPurchased => Purchase != null;
 
-        protected async Task SetPagePropertiesAsync()
+        public virtual async Task<IActionResult> OnPostPurchaseAsync(string id)
+        {
+            await LoadAmphoraAsync(id);
+            await SetPagePropertiesAsync();
+
+            if (Amphora != null)
+            {
+                var hasAgreed = await purchaseService.HasAgreedToTermsAndConditionsAsync(User, Amphora);
+                var canPurchase = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
+                if (!canPurchase)
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot purchase");
+                    return Page();
+                }
+
+                if (hasAgreed)
+                {
+                    await purchaseService.PurchaseAmphoraAsync(User, Amphora);
+                    await SetPagePropertiesAsync();
+                    return Page();
+                }
+                else
+                {
+                    return RedirectToPage("/Detail/TermsOfUse", new { id = id, promptAccept = true });
+                }
+            }
+            else
+            {
+                return RedirectToPage("/Index");
+            }
+        }
+
+        protected virtual async Task SetPagePropertiesAsync()
         {
             if (Amphora != null)
             {
@@ -55,13 +89,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
                 this.Purchases = Amphora.Purchases;
                 this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
-            }
-        }
-
-        protected void TryLoadPurchase()
-        {
-            if (this.Amphora != null)
-            {
                 this.Purchase = Amphora.Purchases.FirstOrDefault(_ => _.PurchasedByOrganisationId == Result.User.OrganisationId);
             }
         }
