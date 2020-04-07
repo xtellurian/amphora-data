@@ -70,7 +70,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 }
                 else
                 {
-                    return RedirectToPage("/Amphorae/Forbidden");
+                    return RedirectToPage("/Forbidden");
                 }
             }
             else

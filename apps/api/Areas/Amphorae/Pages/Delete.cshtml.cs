@@ -29,7 +29,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 }
                 else if (deleteResult.WasForbidden)
                 {
-                    return RedirectToPage("/Amphorae/Forbidden");
+                    return RedirectToPage("/Forbidden");
                 }
                 else
                 {

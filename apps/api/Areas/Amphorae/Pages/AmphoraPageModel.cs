@@ -47,7 +47,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             if (Amphora == null) { return RedirectToPage("/Index", new { area = "Amphorae" }); }
             if (Result.WasForbidden)
             {
-                return RedirectToPage("/Amphorae/Forbidden");
+                return RedirectToPage("/Forbidden");
             }
             else if (Result.Succeeded)
             {

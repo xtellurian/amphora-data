@@ -66,7 +66,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     }
                     else if (result.WasForbidden)
                     {
-                        return RedirectToPage("/Amphorae/Forbidden");
+                        return RedirectToPage("/Forbidden");
                     }
                     else
                     {
@@ -81,7 +81,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             }
             else if (readResult.WasForbidden)
             {
-                return RedirectToPage("/Amphorae/Forbidden");
+                return RedirectToPage("/Forbidden");
             }
             else
             {
