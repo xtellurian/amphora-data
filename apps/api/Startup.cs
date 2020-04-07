@@ -9,6 +9,7 @@ using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.Events;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.GitHub;
+using Amphora.Api.Services.InMemory;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
@@ -87,7 +88,14 @@ namespace Amphora.Api
 
             services.AddScoped<ISignalService, SignalsService>();
             services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
-            services.AddScoped<ITsiService, TsiService>();
+            if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
+            {
+                services.AddScoped<ITsiService, TsiService>();
+            }
+            else
+            {
+                services.AddScoped<ITsiService, InMemoryTsiService>();
+            }
 
             services.Configure<ChatOptions>(Configuration.GetSection("Chat"));
             services.Configure<FeedbackOptions>(Configuration.GetSection("Feedback"));
