@@ -15,7 +15,7 @@ using Amphora.Tests.Mocks;
 using Moq;
 using Xunit;
 
-namespace Amphora.Tests.Unit.Purchasing
+namespace Amphora.Tests.Unit.Services
 {
     public class PurchaseServiceTests : UnitTestBase
     {
