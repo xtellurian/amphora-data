@@ -27,17 +27,17 @@
                     <div class="btn-group" role="group">
                         @if(Model.CanWriteContents)
                         {
-                            <a class="btn btn-success" asp-area="Amphorae" asp-page="/Signals/Write" asp-route-id="@Model.Amphora.Id">
+                            <a class="btn btn-light" asp-area="Amphorae" asp-page="/Signals/Write" asp-route-id="@Model.Amphora.Id">
                                 New Values
                             </a>
                         }
                         @if(Model.CanUpdate)
                         {
-                            <a class="btn btn-primary @createSignalButtonHidden" asp-area="Amphorae" asp-page="/Signals/Create" asp-route-id="@Model.Amphora.Id">
+                            <a class="btn btn-light @createSignalButtonHidden" asp-area="Amphorae" asp-page="/Signals/Create" asp-route-id="@Model.Amphora.Id">
                                 New Signal
                             </a>
                         }
-                        <div class="dropdown">
+                        <div class="btn-group">
                             <button id='resolutionButton' class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Resolution
                             </button>
