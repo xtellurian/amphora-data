@@ -2,11 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
+using Amphora.Common.Models.Users;
+using Amphora.Common.Services.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using Moq;
@@ -190,6 +194,166 @@ namespace Amphora.Tests.Unit.Services
                 Assert.Null(regenereratedInvoice);
                 commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
+        }
+
+        [Fact]
+        public void AccountWithInvoices_CanGetListOfPaid()
+        {
+            var dtProvider = new MockDateTimeProvider();
+            var sut = new Account();
+            var invoice = new Invoice();
+            invoice.Transactions.Add(new InvoiceTransaction("test1", 5, 10, dtProvider.UtcNow, isCredit: true));
+            invoice.IsPaid = false;
+            invoice.IsPreview = false;
+            sut.Invoices.Add(invoice);
+
+            var unpaid = sut.GetUnpaidInvoices();
+            var paid = sut.GetPaidInvoices();
+
+            Assert.Single(unpaid);
+            Assert.Empty(paid);
+
+            invoice.IsPaid = true;
+
+            unpaid = sut.GetUnpaidInvoices();
+            paid = sut.GetPaidInvoices();
+            // swapped
+            Assert.Single(paid);
+            Assert.Empty(unpaid);
+        }
+
+        [Fact]
+        public async Task AccountWithInvoice_InvoiceBalanceMatchesAccountBalance()
+        {
+            var context = GetContext();
+            var dtProvider = new MockDateTimeProvider();
+            var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+            var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
+
+            // create a test org
+            var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            double creditAmount = rand.NextDouble() * rand.Next(1, 150);
+            double debitAmount = rand.NextDouble() * rand.Next(1, 150);
+
+            org.Account.CreditAccount("test credit", creditAmount, dtProvider.Now);
+            org.Account.CreditAccount("test debit", debitAmount, dtProvider.Now.AddSeconds(5));
+
+            var invoice = await sut.GenerateInvoiceAsync(dtProvider.Now, org.Id);
+
+            Assert.Equal(2, invoice.Transactions.Count);
+            double? balance = 0;
+            foreach (var t in invoice.Transactions)
+            {
+                Assert.NotNull(t.Balance);
+                balance += t.IsCredit == true ? t.Amount : -t.Amount;
+                MathHelpers.AssertCloseEnough(balance, t.Balance);
+            }
+
+            Assert.Equal(balance, org.Account.Balance);
+        }
+
+        [Fact]
+        public async Task WhenPurchasing_InitialDebitIsMatchedByCredit()
+        {
+            var context = GetContext();
+            var dtProvider = new MockDateTimeProvider();
+            var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var userDataStore = new ApplicationUserDataEFStore(context, CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            var mockEmailSender = new Mock<IEmailSender>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+            var purchaseService = new PurchaseService(purchaseStore,
+                                                      orgStore,
+                                                      permissionService,
+                                                      commissionMock.Object,
+                                                      userDataService,
+                                                      mockEmailSender.Object,
+                                                      CreateMockEventPublisher(),
+                                                      dtProvider,
+                                                      CreateMockLogger<PurchaseService>());
+            var sut = new AccountsService(purchaseStore, orgStore, commissionMock.Object, dtProvider, CreateMockLogger<AccountsService>());
+
+            // Create 2 orgs and some amphora
+            var sellerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Seller"));
+            var buyerOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel("Buyer"));
+            var buyer = new ApplicationUserDataModel
+            {
+                ContactInformation = new ContactInformation
+                {
+                    Email = Guid.NewGuid().ToString(),
+                    EmailConfirmed = true
+                },
+                Id = System.Guid.NewGuid().ToString(),
+                Organisation = buyerOrg,
+                OrganisationId = buyerOrg.Id
+            };
+            buyer = await userDataStore.CreateAsync(buyer);
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(sellerOrg));
+            var deleted_amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(sellerOrg));
+
+            // purchase that amphora
+            var purchaseRes = await purchaseService.PurchaseAmphoraAsync(buyer, amphora);
+            Assert.True(purchaseRes.Succeeded);
+            mockEmailSender.Verify(mock => mock.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            // check both buyer and seller have debit and credit respectively
+            Assert.Single(buyerOrg.Account.Debits);
+            var debit = buyerOrg.Account.Debits.FirstOrDefault();
+            Assert.Equal(amphora.Id, debit.AmphoraId);
+
+            MathHelpers.AssertCloseEnough(amphora.Price, debit.Amount);
+
+            Assert.Single(sellerOrg.Account.Credits);
+            var credit = sellerOrg.Account.Credits.FirstOrDefault();
+            Assert.Equal(amphora.Id, credit.AmphoraId);
+            MathHelpers.AssertCloseEnough(amphora.Price * sellerOrg.Account.CommissionRate, credit.Amount);
+
+            // also purchase the amphora that will be deleted, but don't bother with all assertions
+            var purchased_deleted_op = await purchaseService.PurchaseAmphoraAsync(buyer, deleted_amphora);
+            Assert.True(purchased_deleted_op.Succeeded);
+
+            // fast fwd one month, and now we should see the recurring debit and credit
+            dtProvider.Now = dtProvider.Now.AddMonths(1);
+
+            // delete one just before running the thing
+            deleted_amphora.ttl = 3600;
+            deleted_amphora.IsDeleted = true;
+            await amphoraStore.UpdateAsync(deleted_amphora);
+
+            // run the account service job
+            var report = await sut.PopulateDebitsAndCreditsAsync();
+
+            var deleted_purchase = await purchaseStore.ReadAsync(purchased_deleted_op.Entity.Id);
+            Assert.Null(deleted_purchase);
+
+            // check the report has messages
+            Assert.NotNull(report);
+            Assert.NotEmpty(report.LogMessages);
+            Assert.Equal(1, report.LogMessages.LongCount(_ => _.Level == Api.Models.Dtos.Admin.Report.Level.Warning));
+            Assert.Equal(1, report.LogMessages.LongCount(_ => _.Level == Api.Models.Dtos.Admin.Report.Level.Information));
+
+            Assert.Equal(3, buyerOrg.Account.Debits.Count);
+            var debit2 = buyerOrg.Account.Debits.Where(d => d.Timestamp == dtProvider.UtcNow).FirstOrDefault();
+            Assert.NotNull(debit2);
+            Assert.Equal(amphora.Id, debit2.AmphoraId);
+            MathHelpers.AssertCloseEnough(amphora.Price, debit2.Amount);
+
+            Assert.Equal(3, sellerOrg.Account.Credits.Count);
+            var credit2 = sellerOrg.Account.Credits.FirstOrDefault();
+            Assert.NotNull(credit2);
+            Assert.Equal(amphora.Id, credit2.AmphoraId);
+            MathHelpers.AssertCloseEnough(amphora.Price * sellerOrg.Account.CommissionRate, credit2.Amount);
+
+            // check we earned commission
+            commissionMock.Verify(mock => mock.TrackCommissionAsync(purchaseRes.Entity,
+                It.IsInRange<double>(0, purchaseRes.Entity.Price.Value, Moq.Range.Exclusive)), Times.Exactly(2));
         }
     }
 }

@@ -1,6 +1,7 @@
 @page
 @model Amphora.Api.Areas.Admin.Pages.Accounts.IndexPageModel
 
+@using Amphora.Api.Models.Dtos.Admin
 
 @{
     ViewData["Title"] = "Accounts Admin";
@@ -114,7 +115,16 @@
                 {
                     foreach(var log in Model.Report.LogMessages)
                     {
-                        <li class="list-group-item">@log.Timestamp.ToString("H:mm") - @log.Message</li>
+                        var colorClass = "";
+                        if(log.Level == Report.Level.Warning)
+                        {
+                            colorClass = "bg-warning";
+                        }
+                        if(log.Level == Report.Level.Error)
+                        {
+                            colorClass = "bg-danger";
+                        }
+                        <li class="list-group-item @colorClass">@log.Timestamp.ToString("H:mm") - @log.Message</li>
                     }
                 }
                 else

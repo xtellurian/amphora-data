@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Admin;
@@ -51,15 +52,25 @@ namespace Amphora.Api.Services.Purchases
 
                 try
                 {
-                    if (purchase.Price.HasValue)
+                    // check if the Amphora still exists
+                    if (purchase.Amphora != null && purchase.Amphora.IsDeleted != true)
                     {
-                        var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
-                        await DebitPurchasingOrganisation(purchase, name);
-                        await CreditAmphoraOrganisation(purchase, name);
+                        // amphora still exists
+                        if (purchase.Price.HasValue)
+                        {
+                            var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
+                            await DebitPurchasingOrganisation(purchase, name);
+                            await CreditAmphoraOrganisation(purchase, name);
+                            await purchaseStore.UpdateAsync(purchase);
+                            report.Log($"Updated purchase {purchase.Id}");
+                        }
                     }
-
-                    await purchaseStore.UpdateAsync(purchase);
-                    report.Log($"Processed purchase {purchase.Id}");
+                    else
+                    {
+                        // amphora has been deleted
+                        await purchaseStore.DeleteAsync(purchase);
+                        report.Warning($"Amphora {purchase.AmphoraId} has been deleted. Deleted purchase {purchase.Id}.");
+                    }
                 }
                 catch (System.Exception ex)
                 {
