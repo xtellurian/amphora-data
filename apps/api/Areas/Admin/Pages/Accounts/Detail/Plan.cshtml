@@ -20,6 +20,18 @@
         </div>
         <div class="col-md-9 detail">
             This organisation is currently on the @(Model.Org.Account?.Plan?.PlanType?.ToString() ?? "Free" ) plan.
+            <div>
+                <h5>Change the plan</h5>
+                <form method="post" asp-route-id="@Model.Org.Id" asp-page-handler="Free">
+                    <input type="submit" value="Free Plan" class="btn btn-primary" />
+                </form>
+                <form method="post" asp-route-id="@Model.Org.Id" asp-page-handler="Team">
+                    <input type="submit" value="Team" class="btn btn-primary" />
+                </form>
+                <form method="post" asp-route-id="@Model.Org.Id" asp-page-handler="Institution">
+                    <input type="submit" value="Institution" class="btn btn-primary" />
+                </form>
+            </div>
         </div>
     </div>
 </div>
