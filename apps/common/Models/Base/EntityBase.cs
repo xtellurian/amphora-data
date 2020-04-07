@@ -18,7 +18,8 @@ namespace Amphora.Common.Models
         public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets time to Live, in Seconds.
+        /// Gets or sets Time to Live, in seconds.
+        /// Defaults to -1 (doesn't expire)
         /// </summary>
         [JsonProperty(PropertyName = "ttl", NullValueHandling = NullValueHandling.Ignore)]
         public int? ttl { get; set; } = -1; // don't expire
