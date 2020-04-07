@@ -2,6 +2,8 @@
 @page
 @model Amphora.Api.Areas.Amphorae.Pages.Detail.TermsOfUsePageModel
 
+@using Westwind.AspNetCore.Markdown
+
 @{
     ViewData["Title"] = Model.Amphora.Name;
 }
@@ -26,10 +28,21 @@
                 <h5>
                     @Model.Amphora.TermsAndConditions.Name
                 </h5>
-                <p>
-                    @Model.Amphora.TermsAndConditions.Contents
-                </p>
+                @Markdown.ParseHtmlString(Model.Amphora.TermsAndConditions.Contents)
             }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        imgs = document.getElementById("detail").getElementsByTagName('img')
+        for (let i = 0; i < imgs.length; i++) {
+            if(imgs[i].set) {
+                imgs[i].className += " img-fluid"
+            } else {
+                imgs[i].className = " img-fluid"
+            }
+        } 
+    </script>
+}

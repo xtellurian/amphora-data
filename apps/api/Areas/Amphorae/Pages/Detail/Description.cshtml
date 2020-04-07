@@ -1,6 +1,8 @@
 @page
 @model Amphora.Api.Areas.Amphorae.Pages.Detail.DescriptionPageModel
 
+@using Westwind.AspNetCore.Markdown
+
 @{
     ViewData["Title"] = Model.Amphora.Name;
 }
@@ -13,10 +15,21 @@
         <div class="col-lg-3 master">
             <partial name="_MasterNavPartial" />
         </div>
-        <div class="col-lg-9 detail">
-            <h5>Description</h5>
-            <br/>
-            @Model.Amphora.Description
+        <div id="detail" class="col-lg-9 detail">
+            @Markdown.ParseHtmlString(Model.Amphora.Description)
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        imgs = document.getElementById("detail").getElementsByTagName('img')
+        for (let i = 0; i < imgs.length; i++) {
+            if(imgs[i].set) {
+                imgs[i].className += " img-fluid"
+            } else {
+                imgs[i].className = " img-fluid"
+            }
+        } 
+    </script>
+}
