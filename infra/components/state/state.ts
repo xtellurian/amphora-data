@@ -113,36 +113,6 @@ export class State extends pulumi.ComponentResource {
       },
     );
 
-    // code below is hidden behind a feature flag
-    // tslint:disable-next-line: max-line-length
-    // Original Error: autorest/azure: Service returned an error. Status=400 Code="BadRequest" Message="Subscription 'c5760548-23c2-4223-b41e-5d68a8320a0c' is not whitelisted in the private preview of diagnostic log settings for Azure resource type 'microsoft.storage/storageaccounts', feature flag: 'microsoft.insights/diagnosticsettingpreview'."
-    // var storageDiag = new azure.monitoring.DiagnosticSetting(
-    //   "state-diag",
-    //   {
-    //     logAnalyticsWorkspaceId: this.monitoring.logAnalyticsWorkspace.id,
-    //     logs: [
-    //       {
-    //         category: "AuditEvent",
-    //         enabled: true,
-    //         retentionPolicy: {
-    //           enabled: true
-    //         }
-    //       }
-    //     ],
-    //     metrics: [
-    //       {
-    //         category: "AllMetrics",
-    //         retentionPolicy: {
-    //           enabled: true
-    //         }
-    //       }
-    //     ],
-    //     name: "example",
-    //     targetResourceId: storage.id
-    //   },
-    //   { parent: this }
-    // );
-
     return storage;
   }
 
@@ -269,33 +239,33 @@ export class State extends pulumi.ComponentResource {
       parent: this,
     });
 
-    const kvDiagnostics = new azure.monitoring.DiagnosticSetting(
-      "keyVault-Diag",
-      {
-        logAnalyticsWorkspaceId: this.monitoring.logAnalyticsWorkspace.id,
-        logs: [
-          {
-            category: "AuditEvent",
-            enabled: false,
-            retentionPolicy: {
-              enabled: false,
-            },
-          },
-        ],
-        metrics: [
-          {
-            category: "AllMetrics",
-            retentionPolicy: {
-              enabled: false,
-            },
-          },
-        ],
-        name: "example",
-        targetResourceId: kv.id,
-      },
-      { parent: rg },
-    );
+    // this.kvDiagnostics(kv, rg);
     return kv;
+  }
+
+  private kvDiagnostics(kv: azure.keyvault.KeyVault, rg: azure.core.ResourceGroup) {
+    const kvDiagnostics = new azure.monitoring.DiagnosticSetting("keyVault-Diag", {
+      logAnalyticsWorkspaceId: this.monitoring.logAnalyticsWorkspace.id,
+      logs: [
+        {
+          category: "AuditEvent",
+          enabled: false,
+          retentionPolicy: {
+            enabled: false,
+          },
+        },
+      ],
+      metrics: [
+        {
+          category: "AllMetrics",
+          retentionPolicy: {
+            enabled: false,
+          },
+        },
+      ],
+      name: "example",
+      targetResourceId: kv.id,
+    }, { parent: rg });
   }
 
   private createEventHubs(rg: azure.core.ResourceGroup) {
@@ -414,7 +384,7 @@ export class State extends pulumi.ComponentResource {
 
     this.storeInVault("SendGridApiKey", "SendGrid--ApiKey", config.require("SendGridApiKey"));
 
-    this.linkCosmosToLogAnalytics(this.cosmosDb, this.monitoring.logAnalyticsWorkspace);
+    // this.linkCosmosToLogAnalytics(this.cosmosDb, this.monitoring.logAnalyticsWorkspace);
   }
 
   private linkCosmosToLogAnalytics(
