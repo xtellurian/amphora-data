@@ -47,16 +47,6 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             },
         }, opts);
 
-        const certManNamespace = new k8s.core.v1.Namespace(`${this.name}-certManNs`, {
-            apiVersion: "v1",
-            metadata: {
-                labels: {
-                    "cert-manager.io/disable-validation": "true",
-                },
-                name: "cert-manager",
-            },
-        }, opts);
-
         const ingressNginxNamespace = new k8s.core.v1.Namespace(`${this.name}-nginx`, {
             metadata: {
                 labels: {
@@ -156,56 +146,6 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
             file: "components/application/aks/infrastructure-manifests/ingress-nginx.yml",
             resourcePrefix: this.name,
         }, opts);
-
-        // cert manager crds
-        const certManagerVersion = "v0.14.1";
-        const certManagerCrds = new k8s.yaml.ConfigFile(`${this.name}-cert-man-crds`, {
-            file: `https://github.com/jetstack/cert-manager/releases/download/${certManagerVersion}/cert-manager.crds.yaml`,
-            resourcePrefix: this.name,
-        }, opts);
-
-        // const certManagerCrds = new k8s.yaml.ConfigFile(
-        //     `${this.name}-certManCrds`, {
-        //     file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
-        //     resourcePrefix: this.name,
-        // }, opts);
-
-        // let's encrypt
-        const certManagerChart = new k8s.helm.v2.Chart(
-            `${this.name}-cert-man`,
-            {
-                chart: "cert-manager",
-                fetchOpts: {
-                    repo: "https://charts.jetstack.io",
-                },
-                namespace: certManNamespace.metadata.name,
-                resourcePrefix: this.name,
-                values: {},
-                version: certManagerVersion,
-            },
-            {
-                ...opts,
-                dependsOn: certManagerCrds,
-            });
-
-        // you can disable this for dev if you're debugging, but hsts redirects will fail
-        const transformations = [];
-        transformations.push((obj: any) => {
-            // transform the issuer into the prod one.
-            if (obj.spec && obj.spec.acme) {
-                obj.spec.acme.server = "https://acme-v02.api.letsencrypt.org/directory";
-            }
-        });
-
-        // certificate issuer
-        const caClusterIssuer = new k8s.yaml.ConfigFile(`${this.name}-caClusterIssuer`, {
-            file: `components/application/aks/infrastructure-manifests/cert-issuer.yml`,
-            resourcePrefix: this.name,
-            transformations,
-        }, {
-            ...opts,
-            dependsOn: [certManagerCrds, certManagerChart],
-        });
 
         // amphora frontend config map
         const webAppConfigMap = new k8s.core.v1.ConfigMap(`${this.name}-front-config`, {

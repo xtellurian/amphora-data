@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { FrontEnd } from "./frontEnd";
 import { Identity } from "./identity";
+import { Certificates } from "./certificates";
 
 // stack = parent env - child env
 // so stack == develop-primary OR develop-secondary
@@ -22,6 +23,10 @@ const k8sInfo = k8sOutputs.apply(_ => _[region]);
 
 const provider = new k8s.Provider("provider1", {
     kubeconfig: k8sInfo.apply(k => k.kubeConfig),
+});
+
+const certs = new Certificates("certificates", {
+    provider,
 });
 
 const frontEnd = new FrontEnd("frontend1", {
