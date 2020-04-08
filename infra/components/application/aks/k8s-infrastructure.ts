@@ -29,7 +29,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
 
     private create() {
 
-        const opts = {
+        const opts: pulumi.CustomResourceOptions = {
             parent: this,
             provider: this.params.provider,
         };
@@ -158,11 +158,17 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         }, opts);
 
         // cert manager crds
-        const certManagerCrds = new k8s.yaml.ConfigFile(
-            `${this.name}-certManCrds`, {
-            file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
+        const certManagerVersion = "v0.14.1";
+        const certManagerCrds = new k8s.yaml.ConfigFile(`${this.name}-cert-man-crds`, {
+            file: `https://github.com/jetstack/cert-manager/releases/download/${certManagerVersion}/cert-manager.crds.yaml`,
             resourcePrefix: this.name,
         }, opts);
+
+        // const certManagerCrds = new k8s.yaml.ConfigFile(
+        //     `${this.name}-certManCrds`, {
+        //     file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
+        //     resourcePrefix: this.name,
+        // }, opts);
 
         // let's encrypt
         const certManagerChart = new k8s.helm.v2.Chart(
@@ -173,9 +179,14 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
                     repo: "https://charts.jetstack.io",
                 },
                 namespace: certManNamespace.metadata.name,
+                resourcePrefix: this.name,
                 values: {},
-                version: "v0.13.1",
-            }, opts);
+                version: certManagerVersion,
+            },
+            {
+                ...opts,
+                dependsOn: certManagerCrds,
+            });
 
         // you can disable this for dev if you're debugging, but hsts redirects will fail
         const transformations = [];
