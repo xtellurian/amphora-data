@@ -45,7 +45,6 @@ namespace Amphora.Tests.Integration.Pages
         [Theory]
         [InlineData("")]
         [InlineData("Description")]
-        [InlineData("Detail")]
         [InlineData("Files")]
         [InlineData("Signals")]
         [InlineData("TermsOfUse")]
