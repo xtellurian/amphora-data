@@ -17,32 +17,48 @@ variables:
 - group: Pulumi xtellurian
 - group: AzureDeploySP
 
-steps:
-- template: install.pulumi.steps.yaml
-- script: |
-    export PATH=$PATH:$HOME/.pulumi/bin
-    echo "Destroying k8s"
-    pushd k8s
-    npm install
-    pulumi destroy --stack master -y
-    pulumi destroy --stack develop -y
-    popd
-    echo "Destroying infra"
-    pushd infra
-    npm install
-    pulumi destroy --stack master -y
-    pulumi destroy --stack develop -y
-    popd
-  displayName: 'Destroy master and develop stack'
-  name: destroy
-  env:
-    PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-    ARM_CLIENT_ID: $(appId)
-    ARM_CLIENT_SECRET: $(password)
-    ARM_SUBSCRIPTION_ID: $(subscription)
-    ARM_TENANT_ID: $(tenant)
-    STACK: $(stack) 
+jobs:
+  - job: destroy_k8s
+    displayName: Destroy K8s Stacks
+    steps:
+      - template: install.pulumi.steps.yaml
+      - script: |
+          export PATH=$PATH:$HOME/.pulumi/bin
+          pushd k8s
+          npm install
+          set -x
+          pulumi destroy -y -s develop-australiaeast
+          pulumi destroy -y -s develop-australiasoutheast
+          pulumi destroy -y -s master-australiaeast
+          pulumi destroy -y -s master-australiasoutheast
+          set +x
+          popd
+        env:
+          PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+          ARM_CLIENT_ID: $(appId)
+          ARM_CLIENT_SECRET: $(password)
+          ARM_SUBSCRIPTION_ID: $(subscription)
+          ARM_TENANT_ID: $(tenant)
+          STACK: $(stack) 
 
-
-
-
+  - job: destroy_infra
+    displayName: Destroy Infrastructure
+    dependsOn: destroy_k8s
+    steps:
+    - template: install.pulumi.steps.yaml
+    - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
+        pushd infra
+        npm install
+        pulumi destroy --stack master -y
+        pulumi destroy --stack develop -y
+        popd
+      displayName: Destroy Infrastructure
+      name: destroy
+      env:
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        ARM_CLIENT_ID: $(appId)
+        ARM_CLIENT_SECRET: $(password)
+        ARM_SUBSCRIPTION_ID: $(subscription)
+        ARM_TENANT_ID: $(tenant)
+        STACK: $(stack) 
