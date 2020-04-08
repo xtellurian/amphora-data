@@ -85,15 +85,6 @@ export let webAppResourceIds = result.then((r) =>
 export let k8s = result.then((r) => {
   return {
     australiaeast: {
-      fqdn: r.application.aks.primary.k8sInfra.fqdn,
-      fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
-      group: r.application.aks.primary.k8sCluster.resourceGroupName,
-      ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
-      kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
-      location: r.application.aks.primary.k8sCluster.location,
-      name: r.application.aks.primary.k8sCluster.name,
-    },
-    australiasoutheast: {
       fqdn: r.application.aks.secondary.k8sInfra.fqdn,
       fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
       group: r.application.aks.secondary.k8sCluster.resourceGroupName,
@@ -101,6 +92,15 @@ export let k8s = result.then((r) => {
       kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
       location: r.application.aks.secondary.k8sCluster.location,
       name: r.application.aks.secondary.k8sCluster.name,
+    },
+    australiasoutheast: {
+      fqdn: r.application.aks.primary.k8sInfra.fqdn,
+      fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
+      group: r.application.aks.primary.k8sCluster.resourceGroupName,
+      ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
+      kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
+      location: r.application.aks.primary.k8sCluster.location,
+      name: r.application.aks.primary.k8sCluster.name,
     },
   };
 });
