@@ -19,8 +19,6 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("/Amphorae/Delete")]
         [InlineData("/Amphorae/Detail")]
         [InlineData("/Amphorae/Edit")]
-        // [InlineData("/Amphorae/Files/Download")] // TODO: add file and check
-        [InlineData("/Amphorae/Files")]
         [InlineData("/Amphorae/Forbidden")]
         [InlineData("/Amphorae/Index")]
         [InlineData("/Amphorae/Invite")]
@@ -45,29 +43,34 @@ namespace Amphora.Tests.Integration.Pages
         }
 
         [Theory]
-        [InlineData("/Amphorae/Purchase")]
-        public async Task CanLoadPage_AsOther(string path)
+        [InlineData("")]
+        [InlineData("Description")]
+        [InlineData("Detail")]
+        [InlineData("Files")]
+        [InlineData("Signals")]
+        [InlineData("TermsOfUse")]
+        [InlineData("Location")]
+        [InlineData("Issues")]
+        [InlineData("Quality")]
+        [InlineData("Options")]
+        public async Task CanLoadPage_DetailsPages_AsOwner(string page)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOther));
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(CanLoadPage_AsOwner));
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
             await AssertHttpSuccess(createResponse);
             dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
+            Assert.NotNull(dto?.Id);
             var id = dto.Id;
-
-            var response = await otherClient.GetAsync($"{path}?id={id}");
+            var response = await adminClient.GetAsync($"/Amphorae/Detail/{page}?id={id}");
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
             await DestroyAmphoraAsync(adminClient, id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
-
-            await DestroyOrganisationAsync(otherClient, otherOrg);
-            await DestroyUserAsync(otherClient, otherUser);
         }
 
         [Fact]
