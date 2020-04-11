@@ -39,6 +39,8 @@ export class Business extends pulumi.ComponentResource {
         this.appMonitoringWorkflow = new azure.logicapps.Workflow("appMonitor", {
             location: rg.location,
             resourceGroupName: rg.name,
+        }, {
+            ignoreChanges: ["parameters.$connections"], // try to stop logic app failing
         });
 
         this.workflowTrigger = new azure.logicapps.TriggerHttpRequest("workflowTrigger", {
