@@ -75,7 +75,7 @@ export function getBackendPools({ backendEnvironments, frontendHosts, prodHostna
 
     const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends: prodBackends,
-        healthProbeName: "healthz",
+        healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
         name: backendEnvironments.prod.app,
     };
@@ -132,7 +132,7 @@ function createPool(poolName: string, envName: string, url: IUniqueUrl)
 
     const backendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends,
-        healthProbeName: "healthz",
+        healthProbeName: "normal",
         loadBalancingName: "loadBalancingSettings1",
         name: poolName,
     };
