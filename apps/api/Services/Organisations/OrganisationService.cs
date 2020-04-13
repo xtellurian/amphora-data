@@ -60,7 +60,7 @@ namespace Amphora.Api.Services.Organisations
             if (userData == null) { return new EntityOperationResult<OrganisationModel>("Cannot find user. Please login"); }
             using (logger.BeginScope(new LoggerScope<OrganisationService>(principal)))
             {
-                if (await Store.CountAsync(_ => _.WebsiteUrl == org.WebsiteUrl) > 0)
+                if (await Store.CountAsync(_ => _.WebsiteUrl != null && _.WebsiteUrl == org.WebsiteUrl) > 0)
                 {
                     var existing = (await Store.QueryAsync(_ => _.WebsiteUrl == org.WebsiteUrl)).FirstOrDefault();
                     // an organisation with that website already exists.
