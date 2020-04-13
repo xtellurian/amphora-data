@@ -13,6 +13,8 @@ using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Stores.EFCore;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -54,6 +56,14 @@ namespace Amphora.Identity
             Configuration.GetSection("ExternalServices").Bind(externalServices);
 
             var mvcClientSecret = Configuration["MvcClientSecret"];
+
+            // The following will configure the channel to use the given folder to temporarily
+            // store telemetry items during network or Application Insights server issues.
+            // User should ensure that the given folder already exists
+            // and that the application has read/write permissions.
+            services.AddSingleton(typeof(ITelemetryChannel),
+                                    new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsights" });
+            services.AddApplicationInsightsTelemetry();
 
             if (IsUsingCosmos())
             {

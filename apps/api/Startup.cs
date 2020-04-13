@@ -24,6 +24,8 @@ using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.TimeSeriesInsights.Models;
@@ -136,9 +138,16 @@ namespace Amphora.Api
             services.AddSingleton<FeatureFlagService>();
 
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown
-
             services.AddHttpClient();
+
+            // The following will configure the channel to use the given folder to temporarily
+            // store telemetry items during network or Application Insights server issues.
+            // User should ensure that the given folder already exists
+            // and that the application has read/write permissions.
+            services.AddSingleton(typeof(ITelemetryChannel),
+                                    new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsights" });
             services.AddApplicationInsightsTelemetry();
+
             services.AddAutoMapper(typeof(Startup));
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");

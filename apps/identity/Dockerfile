@@ -10,6 +10,7 @@ RUN dotnet publish -c Release -o out identity /p:TreatWarningsAsErrors=${TreatWa
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:${DOTNET_RUNTIME_VERSION}-alpine
+RUN mkdir -p /tmp/appinsights
 RUN apk add icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ARG gitHash

@@ -3,6 +3,7 @@ ARG DOTNET_RUNTIME_VERSION=3.1.2
 ARG TreatWarningsAsErrors=false
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_SDK_VERSION} AS builder
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+RUN mkdir -p /tmp/appinsights
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
