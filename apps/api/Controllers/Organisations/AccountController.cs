@@ -90,21 +90,28 @@ namespace Amphora.Api.Controllers.Organisations
         [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
         [HttpPost("Plan")]
         [CommonAuthorize]
-        public async Task<IActionResult> SetPlan(string id, Plan.PlanTypes planType)
+        [OpenApiIgnore]
+        public async Task<IActionResult> SetPlan(string id, string planType)
         {
+            if (string.IsNullOrEmpty(planType))
+            {
+                return BadRequest("planType cannot be empty");
+            }
+
             var res = await organisationService.ReadAsync(User, id);
+            var plan = System.Enum.Parse(typeof(Plan.PlanTypes), planType) as Plan.PlanTypes? ?? Plan.PlanTypes.Free;
             if (res.Succeeded)
             {
                 var org = res.Entity;
                 org.Account ??= new Account();
                 org.Account.Plan ??= new Plan();
-                org.Account.Plan.PlanType = planType;
+                org.Account.Plan.PlanType = plan;
                 var updateRes = await organisationService.UpdateAsync(User, org);
                 if (updateRes.Succeeded)
                 {
                     var dto = new Models.Dtos.Organisations.PlanInformation()
                     {
-                        PlanType = planType,
+                        PlanType = plan,
                         FriendlyName = planType.ToString()
                     };
                     return Ok(dto);

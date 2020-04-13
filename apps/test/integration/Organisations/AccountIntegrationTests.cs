@@ -41,8 +41,8 @@ namespace Amphora.Tests.Integration.Organisations
             Assert.NotNull(plan);
             Assert.NotNull(plan.FriendlyName);
 
-            var setResult = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Account/Plan",
-                new { planType = Plan.PlanTypes.Team });
+            var setResult = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Account/Plan?planType={Plan.PlanTypes.Team}",
+                new object());
             var setContents = await setResult.Content.ReadAsStringAsync();
             await AssertHttpSuccess(setResult);
             plan = JsonConvert.DeserializeObject<Api.Models.Dtos.Organisations.PlanInformation>(setContents);
