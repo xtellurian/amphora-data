@@ -1,6 +1,8 @@
 @page
 @model Amphora.Api.Areas.Organisations.Pages.Account.SelectPlanPageModel
 
+@using Amphora.Common.Models.Organisations.Accounts
+
 @{
     ViewData["Title"] = "Select Plan";
 }
@@ -10,6 +12,12 @@
         <div class="col">
             <h3>Select a Plan</h3>
             <p>This plan applies to your organisation.</p>
+            @if(Model.Organisation == null)
+            {
+                <form method="post" asp-route-planType="@Plan.PlanTypes.Free.ToString()" asp-route-firstTime="@Model.FirstTime">
+                    <input type="submit" value="Skip This Step" class="btn btn-link" />
+                </form>
+            }
             <hr/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         </div>
@@ -19,15 +27,15 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Free</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">For small teams</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">For individuals</h6>
                 </div>
                 <div class="card-body">
-                    <p class="card-text text-center">Up to 5 users</p>
+                    <p class="card-text text-center">Only 1 user</p>
                     <p class="card-text text-center">$0 per month</p>
                 </div>
                 
                 <div class="card-body text-center">
-                    <form method="post" asp-route-plan="free" asp-route-firstTime="@Model.FirstTime">
+                    <form method="post" asp-route-planType="@Plan.PlanTypes.Free.ToString()" asp-route-firstTime="@Model.FirstTime">
                         <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
                     </form>
                 </div>
@@ -51,7 +59,7 @@
                 </div>
 
                 <div class="card-body text-center">
-                        <form method="post" asp-route-plan="team" asp-route-firstTime="@Model.FirstTime">
+                        <form method="post" asp-route-planType="@Plan.PlanTypes.Team.ToString()" asp-route-firstTime="@Model.FirstTime">
                         <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
                     </form>
                 </div>
@@ -76,7 +84,7 @@
                 </div>
 
                 <div class="card-body text-center">
-                        <form method="post" asp-route-plan="institution" asp-route-firstTime="@Model.FirstTime">
+                        <form method="post" asp-route-planType="@Plan.PlanTypes.Institution.ToString()" asp-route-firstTime="@Model.FirstTime">
                         <input type="submit" value="Choose Plan" class="btn btn-info btn-block" />
                     </form>
                 </div>

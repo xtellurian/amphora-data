@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,9 +40,20 @@ namespace Amphora.Api.Areas.Organisations.Pages
         public Organisation Input { get; set; }
         public IList<OrganisationModel> Organisations { get; set; }
         public InvitationModel Invitation { get; private set; }
+        public Plan.PlanTypes PlanType { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string message)
+        public async Task<IActionResult> OnGetAsync(string message, string planType)
         {
+            Plan.PlanTypes planValue;
+            if (Enum.TryParse(planType, true, out planValue) && Enum.IsDefined(typeof(Plan.PlanTypes), planValue))
+            {
+                PlanType = planValue;
+            }
+            else
+            {
+                PlanType = Plan.PlanTypes.Free;
+            }
+
             if (!string.IsNullOrEmpty(message))
             {
                 this.CreateOrganisationMessage = message;
@@ -57,12 +70,13 @@ namespace Amphora.Api.Areas.Organisations.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(List<IFormFile> files)
+        public async Task<IActionResult> OnPostAsync(List<IFormFile> files, string planType)
         {
             if (ModelState.IsValid)
             {
+                var plan = Enum.Parse(typeof(Plan.PlanTypes), planType) as Plan.PlanTypes? ?? Plan.PlanTypes.Free;
                 var org = new OrganisationModel(Input.Name, Input.About, Input.WebsiteUrl, Input.Address);
-
+                org.Account.Plan.PlanType = plan;
                 var result = await organisationService.CreateAsync(User, org);
                 if (result.Succeeded)
                 {

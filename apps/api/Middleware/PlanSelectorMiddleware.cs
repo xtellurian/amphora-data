@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Middleware
 {
-    public class OrganisationCheckMiddleware
+    public class PlanSelectorMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<OrganisationCheckMiddleware> logger;
+        private readonly ILogger<PlanSelectorMiddleware> logger;
 
-        public OrganisationCheckMiddleware(RequestDelegate next,
-                                           ILogger<OrganisationCheckMiddleware> logger)
+        public PlanSelectorMiddleware(RequestDelegate next,
+                                           ILogger<PlanSelectorMiddleware> logger)
         {
             _next = next;
             this.logger = logger;
@@ -23,20 +23,20 @@ namespace Amphora.Api.Middleware
 
         private const string CreateOrgPath = "/Organisations/Create";
         private const string JoinOrgPath = "/Organisations/Account/Join";
+        private const string SelectPlanPath = "/Organisations/Account/SelectPlan";
 
         private static readonly string[] AcceptablePaths =
         {
             CreateOrgPath,
             JoinOrgPath,
-            "/Organisations/RequestToJoin",
-            "/Organisations/Detail",
+            SelectPlanPath,
             "/Organisations",
+            "/Organisations/Detail",
+            "/Organisations/RequestToJoin",
             "/Profiles/Account/ConfirmEmail",
             "/Market/LocationSearch",
-            "/Identity"
         };
 
-        private const string QueryString = "?message=You must belong to an Organisation to continue";
         public async Task Invoke(HttpContext httpContext,
                                  IUserDataService userDataService,
                                  IInvitationService invitationService,
@@ -59,6 +59,7 @@ namespace Amphora.Api.Middleware
             {
                 // check for invitation
                 var inviteRes = await invitationService.GetMyInvitations(httpContext.User);
+
                 if (inviteRes.Succeeded && inviteRes.Entity != null && inviteRes.Entity.Any())
                 {
                     var invitation = inviteRes.Entity.FirstOrDefault();
@@ -68,8 +69,8 @@ namespace Amphora.Api.Middleware
                 }
                 else
                 {
-                    logger.LogInformation($"No invitation. Redirecting {name} to {CreateOrgPath}");
-                    httpContext.Response.Redirect($"{CreateOrgPath}{QueryString}");
+                    logger.LogInformation($"No invitation. Redirecting {name} to {SelectPlanPath}");
+                    httpContext.Response.Redirect($"{SelectPlanPath}");
                 }
             }
 
