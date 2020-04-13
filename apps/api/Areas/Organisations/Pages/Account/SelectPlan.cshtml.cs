@@ -58,7 +58,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
                 else
                 {
                     // uh ok
-                    logger.LogCritical($"Failed to autogenerate org for user {UserData.UserName}");
+                    logger.LogCritical($"Failed to autogenerate org for user {UserData.UserName}. {createRes.Message}");
                     return RedirectToPage("/Create", new { area = "Organisations", planType = plan.ToString() });
                 }
             }
