@@ -4,6 +4,7 @@ using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
@@ -18,6 +19,10 @@ namespace Amphora.Tests.Integration
         {
             _factory = factory;
         }
+
+        protected Plan.PlanTypes FreePlan => Plan.PlanTypes.Free;
+        protected Plan.PlanTypes TeamPlan => Plan.PlanTypes.Team;
+        protected Plan.PlanTypes InstitutionPlan => Plan.PlanTypes.Institution;
 
         protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> GetNewClientInOrg(
             HttpClient currentClient,
@@ -48,6 +53,7 @@ namespace Amphora.Tests.Integration
 
         protected async Task<(HttpClient client, AmphoraUser user, Organisation org)> NewOrgAuthenticatedClientAsync(
             string domain = "AmphoraData.com",
+            Plan.PlanTypes planType = Plan.PlanTypes.Free,
             int majorVersion = 0)
         {
             var client = _factory.CreateClient();
@@ -55,6 +61,12 @@ namespace Amphora.Tests.Integration
             var email = System.Guid.NewGuid().ToString() + "@" + domain;
             var (user, password) = await client.CreateUserAsync(email, "type: " + this.GetType().ToString());
             var org = await client.CreateOrganisationAsync("Integration: " + this.GetType().ToString());
+            if (planType != Plan.PlanTypes.Free)
+            {
+                // update the plan
+                await client.SetPlan(org.Id, planType);
+            }
+
             return (client, user, org);
         }
 

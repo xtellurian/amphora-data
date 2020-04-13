@@ -129,7 +129,7 @@ namespace Amphora.Tests.Integration
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
 
             // make the buyers
-            var (buyerClient1, buyer1, buyingOrg) = await NewOrgAuthenticatedClientAsync();
+            var (buyerClient1, buyer1, buyingOrg) = await NewOrgAuthenticatedClientAsync(planType: TeamPlan);
             var (buyerClient2, buyer2, buyingOrg2) = await GetNewClientInOrg(buyerClient1, buyingOrg);
 
             // buyer 1 can purchase

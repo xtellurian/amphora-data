@@ -6,6 +6,7 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -88,14 +89,14 @@ namespace Amphora.Tests.Integration.Organisations
         }
 
         [Fact]
-        public async Task CanInviteToOrganisation()
+        public async Task CanInviteToOrganisation_TeamPlan()
         {
             // Arrange
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (user, _) = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation));
-            var org = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanInviteToOrganisation));
+            var (user, _) = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation_TeamPlan));
+            var org = Helpers.EntityLibrary.GetOrganisationDto();
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             var response = await client.PostAsync("api/organisations", requestBody);
@@ -106,11 +107,11 @@ namespace Amphora.Tests.Integration.Organisations
 
             Assert.NotNull(responseBody);
             org = JsonConvert.DeserializeObject<Organisation>(responseBody);
-
+            await client.SetPlan(org.Id, Plan.PlanTypes.Team);
             var client2 = _factory.CreateClient();
             client2.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email2 = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation));
+            var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation_TeamPlan));
 
             var inviteResponse = await client.PostAsJsonAsync($"api/invitations/",
                 new Invitation { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });

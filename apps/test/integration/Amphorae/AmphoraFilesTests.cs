@@ -60,7 +60,7 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task Post_DownloadFiles_AsOtherUsers(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(planType: TeamPlan);
 
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_DownloadFiles_AsOtherUsers));
             // create an amphora for us to work with

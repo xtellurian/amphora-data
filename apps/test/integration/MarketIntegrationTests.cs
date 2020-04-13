@@ -19,7 +19,8 @@ namespace Amphora.Tests.Integration
         public async Task TopAndSkip()
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(
+                planType: Common.Models.Organisations.Accounts.Plan.PlanTypes.Team);
             var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 

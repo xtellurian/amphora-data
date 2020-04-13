@@ -50,6 +50,13 @@ namespace Amphora.Tests.Helpers
             return org;
         }
 
+        public static async Task SetPlan(this HttpClient client, string orgId, Common.Models.Organisations.Accounts.Plan.PlanTypes planType)
+        {
+            var setResult = await client.PostAsJsonAsync($"api/Organisations/{orgId}/Account/Plan",
+                    new { planType = planType });
+            setResult.EnsureSuccessStatusCode();
+        }
+
         public static async Task GetTokenAsync(this HttpClient client, string userName, string password)
         {
             // can log in

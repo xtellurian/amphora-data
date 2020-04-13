@@ -21,10 +21,11 @@ namespace Amphora.Tests.Integration
 
         [Theory]
         [InlineData("api/search/amphorae/byOrganisation")]
-        public async Task SearchAmphorae_ByOrgId_AsUser(string url)
+        public async Task SearchAmphorae_ByOrgIdAsUser_ForTeamPlan(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(
+                planType: Common.Models.Organisations.Accounts.Plan.PlanTypes.Team);
             var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(SearchAmphorae_ByLocation));
             client.DefaultRequestHeaders.Add("Accept", "application/json");
