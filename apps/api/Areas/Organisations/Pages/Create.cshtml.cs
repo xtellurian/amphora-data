@@ -70,7 +70,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(List<IFormFile> files, string planType)
+        public async Task<IActionResult> OnPostAsync(List<IFormFile> files, string planType, bool? firstTime)
         {
             if (ModelState.IsValid)
             {
@@ -92,8 +92,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                         }
                     }
 
-                    // Happy Path
-                    return RedirectToPage("/Account/SelectPlan", new { area = "Organisations", firstTime = true });
+                    return RedirectToPage("/Quickstart");
                 }
                 else
                 {
