@@ -15,9 +15,6 @@ namespace Amphora.Common.Models.Organisations
         public OrganisationModel()
         {
             Name = null!;
-            About = null!;
-            WebsiteUrl = null!;
-            Address = null!;
         }
 
         public OrganisationModel(string name, string about, string websiteUrl, string address)
@@ -29,8 +26,8 @@ namespace Amphora.Common.Models.Organisations
         }
 
         public string Name { get; set; }
-        public string About { get; set; }
-        public string WebsiteUrl { get; set; }
+        public string? About { get; set; }
+        public string? WebsiteUrl { get; set; }
         public string? Address { get; set; }
         // owned
         public virtual Accounts.Account? Account { get; set; } = new Accounts.Account();
