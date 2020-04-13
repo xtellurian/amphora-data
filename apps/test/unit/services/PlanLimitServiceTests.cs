@@ -54,10 +54,9 @@ namespace Amphora.Tests.Unit.Services
         }
 
         [Theory]
-        [InlineData(Plan.PlanTypes.Free)]
         [InlineData(Plan.PlanTypes.Team)]
         [InlineData(Plan.PlanTypes.Institution)]
-        public async Task AllPlans_CanAddUpTo5Users(Plan.PlanTypes planType)
+        public async Task SomePlans_CanAddUpTo5Users(Plan.PlanTypes planType)
         {
             var org = new OrganisationModel();
 
