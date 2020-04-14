@@ -25,7 +25,7 @@
     <script>
         imgs = document.getElementById("detail").getElementsByTagName('img')
         for (let i = 0; i < imgs.length; i++) {
-            if(imgs[i].set) {
+            if(imgs[i].className) {
                 imgs[i].className += " img-fluid"
             } else {
                 imgs[i].className = " img-fluid"
