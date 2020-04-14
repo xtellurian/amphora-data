@@ -45,9 +45,11 @@ export class Certificates extends pulumi.ComponentResource {
         // }, opts);
 
         // let's encrypt
-        const certManagerChart = new k8s.helm.v2.Chart("cert-man",
+        const releaseName = "cert-man";
+        const chartName = "cert-manager";
+        const certManagerChart = new k8s.helm.v2.Chart(releaseName,
             {
-                chart: "cert-manager",
+                chart: chartName,
                 fetchOpts: {
                     repo: "https://charts.jetstack.io",
                 },
@@ -69,13 +71,14 @@ export class Certificates extends pulumi.ComponentResource {
             }
         });
 
+        const webhookDeployment = certManagerChart.getResource("apps/v1/Deployment", `${releaseName}-${chartName}-webhook`);
         // certificate issuer
         const caClusterIssuer = new k8s.yaml.ConfigFile("caClusterIssuer", {
             file: `manifests/cert-issuer.yml`,
             transformations,
         }, {
             ...opts,
-            dependsOn: [certManagerCrds, certManagerChart],
+            dependsOn: [certManagerCrds, certManagerChart, webhookDeployment],
         });
     }
 }
