@@ -20,12 +20,12 @@ namespace Amphora.Tests.Integration.Amphorae
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_UploadDownloadFiles_AsAdmin(string url)
+        public async Task Post_UploadDownloadFilesAsAdmin_ThenDelete(string url)
         {
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
@@ -48,6 +48,14 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // Assert
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
+
+            // now delete the file
+            var deleteRes = await adminClient.DeleteAsync($"{url}/{amphora.Id}/files/{file}");
+            await AssertHttpSuccess(deleteRes);
+
+            // check it's not there
+            var downloadResponse_afterDelete = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            Assert.Equal(HttpStatusCode.BadRequest, downloadResponse_afterDelete.StatusCode);
 
             // cleanup
             await DeleteAmphora(adminClient, amphora.Id);
@@ -129,7 +137,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var url = "api/amphorae";
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
@@ -170,7 +178,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var url = "api/amphorae";
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_UploadDownloadFiles_AsAdmin));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));

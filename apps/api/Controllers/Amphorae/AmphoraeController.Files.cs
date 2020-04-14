@@ -8,8 +8,6 @@ using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -178,6 +176,32 @@ namespace Amphora.Api.Controllers.Amphorae
                     else { return Handle(updateRes); }
                 }
                 else { return NotFound(); }
+            }
+            else { return Handle(result); }
+        }
+
+        /// <summary>
+        /// Get's the contents of a file. Returns application/octet-stream.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <returns>200 if successful.</returns>
+        [HttpDelete("{file}")]
+        [CommonAuthorize]
+        public async Task<IActionResult> DeleteFile(string id, string file)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var deleteRes = await amphoraFileService.DeleteFileAsync(User, result.Entity, file);
+                if (deleteRes.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Handle(deleteRes);
+                }
             }
             else { return Handle(result); }
         }

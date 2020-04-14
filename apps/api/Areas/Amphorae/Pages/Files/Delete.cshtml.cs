@@ -12,18 +12,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
     public class DeletePageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IBlobStore<AmphoraModel> blobStore;
+        private readonly IAmphoraFileService amphoraFileService;
         private readonly IPermissionService permissionService;
         private readonly IUserDataService userDataService;
 
         public DeletePageModel(
             IAmphoraeService amphoraeService,
-            IBlobStore<AmphoraModel> blobStore,
+            IAmphoraFileService amphoraFileService,
             IPermissionService permissionService,
             IUserDataService userDataService)
         {
             this.amphoraeService = amphoraeService;
-            this.blobStore = blobStore;
+            this.amphoraFileService = amphoraFileService;
             this.permissionService = permissionService;
             this.userDataService = userDataService;
         }
@@ -70,23 +70,14 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                 return RedirectToPage("/Index");
             }
 
-            var userReadRes = await userDataService.ReadAsync(User);
-            if (userReadRes.Succeeded)
+            var deleteRes = await amphoraFileService.DeleteFileAsync(User, Amphora, name);
+            if (deleteRes.Succeeded)
             {
-                if (await permissionService.IsAuthorizedAsync(userReadRes.Entity, Amphora, Common.Models.Permissions.AccessLevels.Update))
-                {
-                    await blobStore.DeleteAsync(Amphora, name);
-                    return RedirectToPage("/Detail/Files", new { id = id });
-                }
-                else
-                {
-                    return RedirectToPage("/Forbidden");
-                }
+                return RedirectToPage("/Detail/Files", new { id = id });
             }
             else
             {
-                ModelState.AddModelError(string.Empty, userReadRes.Message);
-                return Page();
+                return RedirectToPage("/Forbidden");
             }
         }
 

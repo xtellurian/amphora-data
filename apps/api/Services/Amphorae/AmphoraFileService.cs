@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -76,7 +74,14 @@ namespace Amphora.Api.Services.Amphorae
                 if (granted)
                 {
                     var data = await this.Store.ReadBytesAsync(entity, file);
-                    return new EntityOperationResult<byte[]>(userReadRes.Entity, data);
+                    if (data != null)
+                    {
+                        return new EntityOperationResult<byte[]>(userReadRes.Entity, data);
+                    }
+                    else
+                    {
+                        return new EntityOperationResult<byte[]>(userReadRes.Entity, $"File {file} does not found");
+                    }
                 }
                 else
                 {
@@ -170,6 +175,31 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
                     return new EntityOperationResult<UploadResponse>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
+                }
+            }
+        }
+
+        public async Task<EntityOperationResult<object>> DeleteFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<object>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(userReadRes.Entity)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.WriteContents);
+
+                if (granted)
+                {
+                    var success = await this.Store.DeleteAsync(entity, file);
+                    return new EntityOperationResult<object>(userReadRes.Entity, success);
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to read contents of {entity.Id}");
+                    return new EntityOperationResult<object>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
                 }
             }
         }
