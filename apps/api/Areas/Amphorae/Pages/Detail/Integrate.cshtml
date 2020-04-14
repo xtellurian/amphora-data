@@ -1,0 +1,53 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.IntegratePageModel
+
+@using Westwind.AspNetCore.Markdown
+
+@{
+    ViewData["Title"] = Model.Amphora.Name + ": Integrate";
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-md-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div class="col-md-9 detail">
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Python 3</a>
+                </li>
+                @* <li class="nav-item">
+                    <a class="nav-link" href="#">Dot Net</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">JavaScript</a>
+                </li> *@
+            </ul>
+            <div class="m-1">
+                @Markdown.ParseHtmlString(Model.Snippets.Python)
+            </div>
+            <div>
+                <a href="https://docs.amphoradata.com/docs/guides/python/python-getting-started" target="_blank">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+    <script>
+        setTimeout(function () {
+            var pres = document.querySelectorAll("pre>code");
+            for (var i = 0; i < pres.length; i++) {
+                hljs.highlightBlock(pres[i]);
+            }
+        });
+
+    </script>
+}
