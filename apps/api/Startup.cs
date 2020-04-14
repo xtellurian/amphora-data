@@ -62,6 +62,7 @@ namespace Amphora.Api
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureSharedServices(services);
+            ApiConfiguration.RegisterOptions(Configuration, services);
 
             System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
 
@@ -79,17 +80,12 @@ namespace Amphora.Api
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper());
             }
 
-            services.Configure<Amphora.Common.Models.Host.HostOptions>(Configuration.GetSection("Host"));
             AmphoraHost.SetHost(Configuration.GetSection("Host")["MainHost"]);
 
-            services.Configure<SignalOptions>(Configuration.GetSection("Signals"));
-
-            services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
             services.AddTransient<IAmphoraeTextAnalysisService, AmphoraeTextAnalysisService>();
-
             services.AddScoped<ISignalService, SignalsService>();
-            services.Configure<TsiOptions>(Configuration.GetSection("Tsi"));
+
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
                 services.AddScoped<ITsiService, TsiService>();
@@ -99,15 +95,8 @@ namespace Amphora.Api
                 services.AddScoped<ITsiService, InMemoryTsiService>();
             }
 
-            services.Configure<ChatOptions>(Configuration.GetSection("Chat"));
-            services.Configure<FeedbackOptions>(Configuration.GetSection("Feedback"));
-
-            services.Configure<CreateOptions>(Configuration.GetSection("Create"));
-
-            services.Configure<AmphoraManagementOptions>(Configuration.GetSection("AmphoraManagement"));
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
-                services.Configure<AzureEventGridTopicOptions>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
                 services.AddTransient<IEventPublisher, EventGridService>();
             }
             else
@@ -130,11 +119,7 @@ namespace Amphora.Api
             services.AddTransient<IRestrictionService, RestrictionService>();
             services.AddTransient<IPlanLimitService, PlanLimitService>();
 
-            // external services
-            services.Configure<GitHubConfiguration>(Configuration.GetSection("GitHubOptions"));
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
-
-            services.Configure<FeatureFlagOptions>(Configuration.GetSection("FeatureFlags"));
             services.AddSingleton<FeatureFlagService>();
 
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown

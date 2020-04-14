@@ -40,7 +40,7 @@ namespace Amphora.Identity
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureSharedServices(services);
-
+            IdentityConfiguration.RegisterOptions(Configuration, services);
             System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
 
             // Data Protection
@@ -51,7 +51,6 @@ namespace Amphora.Identity
                 services.RegisterKeyVaultWithBlobDataProtection(connectionString, "key-container", "keys.xml", kvUri, "AmphoraIdentity");
             }
 
-            services.Configure<ExternalServices>(Configuration.GetSection("ExternalServices"));
             var externalServices = new ExternalServices();
             Configuration.GetSection("ExternalServices").Bind(externalServices);
 
@@ -69,7 +68,6 @@ namespace Amphora.Identity
             {
                 var cosmosOptions = new CosmosOptions();
                 Configuration.GetSection("Cosmos").Bind(cosmosOptions);
-                services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
                 services.UseCosmos<IdentityContext>(cosmosOptions);
             }
             else if (IsUsingSql())
@@ -122,7 +120,6 @@ namespace Amphora.Identity
             services.AddScoped<IUserService, UserService>();
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
             {
-                services.Configure<AzureEventGridTopicOptions>("AppTopic", Configuration.GetSection("EventGrid").GetSection("AppTopic"));
                 services.AddTransient<IEventPublisher, EventGridService>();
             }
             else
@@ -138,12 +135,9 @@ namespace Amphora.Identity
 
             services.AddScoped<IdentityServer4.Services.IEventSink, IdentityServerEventConnectorService>();
 
-            services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, SendGridEmailSender>();
 
             services.AddAuthentication();
-
-            services.Configure<Amphora.Common.Models.Host.HostOptions>(Configuration.GetSection("Host"));
 
             services.AddMvc(opts =>
             {
