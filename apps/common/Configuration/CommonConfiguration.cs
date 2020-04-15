@@ -14,6 +14,7 @@ namespace Amphora.Common.Configuration
             services.Configure<AzureEventGridTopicOptions>("AppTopic", configuration.GetSection("EventGrid").GetSection("AppTopic"));
             services.Configure<HostOptions>(configuration.GetSection("Host"));
             services.Configure<CosmosOptions>(configuration.GetSection("Cosmos"));
+            services.Configure<EventOptions>(configuration.GetSection(nameof(EventOptions)));
         }
     }
 }
