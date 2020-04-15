@@ -25,20 +25,23 @@ namespace Amphora.Api.Pages
         public int MaxWordCount { get; set; } = 0;
         public int MinWordCount { get; set; } = 0;
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet()
         {
-            var cacheEntry = await blobCache.TryGetValue<Dictionary<string, int>>(textAnalysisService.GetCacheKey());
-            if (cacheEntry != null)
-            {
-                Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);
-                if (cacheEntry.Values.Count > 0)
-                {
-                    MaxWordCount = cacheEntry.Values.Max();
-                    MinWordCount = cacheEntry.Values.Min();
-                }
-            }
+            // actually, let's just redirect to Quickstart
+            return RedirectToPage("/Quickstart");
 
-            return Page();
+            // var cacheEntry = await blobCache.TryGetValue<Dictionary<string, int>>(textAnalysisService.GetCacheKey());
+            // if (cacheEntry != null)
+            // {
+            //     Frequencies = textAnalysisService.ToWordSizeList(cacheEntry);
+            //     if (cacheEntry.Values.Count > 0)
+            //     {
+            //         MaxWordCount = cacheEntry.Values.Max();
+            //         MinWordCount = cacheEntry.Values.Min();
+            //     }
+            // }
+
+            // return Page();
         }
     }
 }
