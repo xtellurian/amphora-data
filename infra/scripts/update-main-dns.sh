@@ -46,8 +46,8 @@ if [ "$STACK" = "prod" ]; then
 else
     echo "Setting DNS for stack $STACK."
     az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $APP_NAME #-n develop.australiasoutheast.app
-    az network dns record-set a add-record --yes -g $GROUP -z $ZONE -n $APP_NAME -a $IP
+    az network dns record-set a add-record -g $GROUP -z $ZONE -n $APP_NAME -a $IP
 
     az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $IDENTITY_NAME
-    az network dns record-set a add-record --yes -g $GROUP -z $ZONE -n $IDENTITY_NAME -a $IP
+    az network dns record-set a add-record -g $GROUP -z $ZONE -n $IDENTITY_NAME -a $IP
 fi
