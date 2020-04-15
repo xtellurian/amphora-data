@@ -31,6 +31,7 @@ jobs:
           pulumi destroy -y -s develop-australiasoutheast
           set +x
           popd
+        displayName: Run Pulumi Destroy
         env:
           PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
           ARM_CLIENT_ID: $(appId)
@@ -52,6 +53,7 @@ jobs:
           pulumi destroy -y -s master-australiasoutheast
           set +x
           popd
+        displayName: Run Pulumi Destroy
         env:
           PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
           ARM_CLIENT_ID: $(appId)
