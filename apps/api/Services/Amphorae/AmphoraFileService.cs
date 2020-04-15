@@ -89,7 +89,6 @@ namespace Amphora.Api.Services.Amphorae
                     {
                         return new EntityOperationResult<byte[]>(userReadRes.Entity, "File not found") { Code = 404 };
                     }
-
                 }
                 else
                 {
