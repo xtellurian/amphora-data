@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 
+import { Aks } from "./components/application/aks/aks";
 import { Application } from "./components/application/application";
 import { IPlanAndSlot } from "./components/application/appSvc/appSvc";
 import { Business } from "./components/business/business";
@@ -82,25 +83,22 @@ export let webAppResourceIds = result.then((r) =>
   r.application.appSvc.apps.map((a) => a.appSvc.id),
 );
 
+const asAksOutput = (c: Aks) => {
+  return {
+    aksId: c.k8sCluster.id,
+    fqdn: c.k8sInfra.fqdn,
+    fqdnName: c.k8sInfra.fqdnName,
+    group: c.k8sCluster.resourceGroupName,
+    ingressIp: c.k8sInfra.ingressIp,
+    kubeConfig: c.k8sCluster.kubeConfigRaw,
+    location: c.k8sCluster.location,
+    name: c.k8sCluster.name,
+  };
+};
+
 export let k8s = result.then((r) => {
   return {
-    australiaeast: {
-      fqdn: r.application.aks.secondary.k8sInfra.fqdn,
-      fqdnName: r.application.aks.secondary.k8sInfra.fqdnName,
-      group: r.application.aks.secondary.k8sCluster.resourceGroupName,
-      ingressIp: r.application.aks.secondary.k8sInfra.ingressIp,
-      kubeConfig: r.application.aks.secondary.k8sCluster.kubeConfigRaw,
-      location: r.application.aks.secondary.k8sCluster.location,
-      name: r.application.aks.secondary.k8sCluster.name,
-    },
-    australiasoutheast: {
-      fqdn: r.application.aks.primary.k8sInfra.fqdn,
-      fqdnName: r.application.aks.primary.k8sInfra.fqdnName,
-      group: r.application.aks.primary.k8sCluster.resourceGroupName,
-      ingressIp: r.application.aks.primary.k8sInfra.ingressIp,
-      kubeConfig: r.application.aks.primary.k8sCluster.kubeConfigRaw,
-      location: r.application.aks.primary.k8sCluster.location,
-      name: r.application.aks.primary.k8sCluster.name,
-    },
+    australiaeast: asAksOutput(r.application.aks.secondary),
+    australiasoutheast: asAksOutput(r.application.aks.primary),
   };
 });
