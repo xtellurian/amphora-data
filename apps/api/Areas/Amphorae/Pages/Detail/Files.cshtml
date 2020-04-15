@@ -6,11 +6,11 @@
     ViewData["Title"] = Model.Amphora.Name;
 }
 
-
-
 @{
     var metadataModalIdDic = new Dictionary<string,string>();
     var filePreviewModalIdDic = new Dictionary<string,string>();
+    var previousEnabled = Model.PageNumber > 0 ? "": "disabled";
+    var nextEnabled = Model.PageNumber * Model.PerPage < Model.TotalFiles ? "": "disabled";
 }
 
 @foreach (var n in Model.Names)
@@ -107,6 +107,28 @@
                             </div>
                         </div>
                     }
+                </div>
+            </div>
+            <div class="row mt-2 mb-2">
+                <div class="col">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @previousEnabled">
+                            <a class="page-link" asp-area="Amphorae" asp-page="/Detail/Files" 
+                                asp-route-id="@Model.Amphora.Id"
+                                asp-route-PageNumber="@(Model.PageNumber - 1)"
+                                tabindex="-1">
+                                <
+                            </a>
+                        </li>
+                        <li class="page-item @nextEnabled">
+                            <a class="page-link" asp-area="Amphorae" asp-page="/Detail/Files" 
+                                asp-route-id="@Model.Amphora.Id"
+                                asp-route-PageNumber="@(Model.PageNumber + 1)"
+                                tabindex="-1">
+                                >
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
             @if(Model.CanWriteContents)

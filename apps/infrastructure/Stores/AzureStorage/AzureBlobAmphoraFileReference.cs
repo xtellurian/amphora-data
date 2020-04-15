@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Microsoft.Azure.Storage.Blob;
@@ -20,5 +21,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
         }
 
         public string Name { get; set; }
+
+        public DateTimeOffset? LastModified => blob.Properties.LastModified;
     }
 }

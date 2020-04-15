@@ -7,6 +7,7 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Http;
@@ -35,16 +36,34 @@ namespace Amphora.Api.Controllers.Amphorae
         /// Get's a list of an Amphora's files.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
+        /// <param name="orderBy">Can be alphabetical or lastModified.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
         [HttpGet]
         [CommonAuthorize]
-        public async Task<IActionResult> ListFiles(string id)
+        public async Task<IActionResult> ListFiles(string id, string orderBy = null)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
                 var files = await amphoraFileService.Store.GetFilesAsync(result.Entity);
+                if (orderBy != null)
+                {
+                    if (orderBy != "alphabetical" || orderBy != "lastModified")
+                    {
+                        return BadRequest("orderBy must be alphabetical or lastModified");
+                    }
+                    else if (orderBy == "lastModified")
+                    {
+                        await files.LoadAttributesAsync();
+                        files = files.OrderBy(_ => _.LastModified).ToList();
+                    }
+                    else if (orderBy == "alphabetical")
+                    {
+                        files = files.OrderBy(_ => _.Name).ToList();
+                    }
+                }
+
                 var names = files.Select(_ => _.Name);
                 return Ok(names);
             }

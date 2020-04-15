@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -25,12 +26,19 @@ namespace Amphora.Api.Stores.InMemory
 
         public class InMemoryFileReference : IAmphoraFileReference
         {
+            private Random rand = new Random();
             public InMemoryFileReference(string name)
             {
                 Name = name;
+                LastModified = DateTime.UtcNow.AddHours(-1 * rand.Next(1, 100));
             }
 
             public string Name { get; }
+            public DateTimeOffset? LastModified { get; }
+            public Task LoadAttributesAsync()
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }

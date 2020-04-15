@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Common.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,12 +25,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             this.amphoraFileService = amphoraFileService;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public int? PageNumber { get; set; } = 0;
+        public int PerPage => 2;
+
         public IList<string> Names { get; private set; } = new List<string>();
+        public int TotalFiles { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
+
             if (CanReadContents)
             {
                 return OnReturnPage();
@@ -89,15 +96,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         protected override async Task SetPagePropertiesAsync()
         {
             await base.SetPagePropertiesAsync();
-            await LoadNamesAsync();
-        }
-
-        private async Task LoadNamesAsync()
-        {
             if (Amphora != null)
             {
                 var files = await amphoraFileService.Store.GetFilesAsync(Amphora);
-                Names = files.Select(_ => _.Name).ToList();
+                TotalFiles = files.Count;
+                await files.LoadAttributesAsync();
+                files = files.OrderBy(_ => _.LastModified).ToList();
+                Names = files.Select(_ => _.Name).Skip(PerPage * PageNumber ?? 0).Take(PerPage).ToList();
             }
         }
     }
