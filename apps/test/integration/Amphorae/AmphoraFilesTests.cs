@@ -55,7 +55,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // check it's not there
             var downloadResponse_afterDelete = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
-            Assert.Equal(HttpStatusCode.BadRequest, downloadResponse_afterDelete.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, downloadResponse_afterDelete.StatusCode);
 
             // cleanup
             await DeleteAmphora(adminClient, amphora.Id);

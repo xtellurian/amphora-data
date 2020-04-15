@@ -73,15 +73,23 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (granted)
                 {
-                    var data = await this.Store.ReadBytesAsync(entity, file);
-                    if (data != null)
+                    if (await this.Store.ExistsAsync(entity, file))
                     {
-                        return new EntityOperationResult<byte[]>(userReadRes.Entity, data);
+                        var data = await this.Store.ReadBytesAsync(entity, file);
+                        if (data != null)
+                        {
+                            return new EntityOperationResult<byte[]>(userReadRes.Entity, data);
+                        }
+                        else
+                        {
+                            return new EntityOperationResult<byte[]>(userReadRes.Entity, $"File {file} does not found");
+                        }
                     }
                     else
                     {
-                        return new EntityOperationResult<byte[]>(userReadRes.Entity, $"File {file} does not found");
+                        return new EntityOperationResult<byte[]>(userReadRes.Entity, "File not found") { Code = 404 };
                     }
+
                 }
                 else
                 {

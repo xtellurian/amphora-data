@@ -8,7 +8,7 @@ namespace Amphora.Api.Contracts
 {
     public interface IBlobStore<T> where T : IEntity
     {
-        Task<bool> ExistsAsync(T org, string path);
+        Task<bool> ExistsAsync(T entity, string path);
         Task<string> GetPublicUrl(T entity, string path);
         Task<long> GetContainerSizeAsync(T entity);
         Task<Stream> GetWritableStreamAsync(T entity, string path);
