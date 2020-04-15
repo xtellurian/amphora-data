@@ -24,6 +24,6 @@ location=$(jq -r '.k8s.australiasoutheast.location' <<< ${OUTPUT} )
 # other location
 fqdnName=$(jq -r  '.k8s.australiaeast.fqdnName' <<< ${OUTPUT} ) 
 ip=$(jq -r  '.k8s.australiaeast.ingressIp' <<< ${OUTPUT} )
-location=$(jq -r  '.k8s.australiasoutheast.location' <<< ${OUTPUT} )
+location=$(jq -r  '.k8s.australiaeast.location' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
 ./update-main-dns.sh -i $ip -l $location -s $STACK
