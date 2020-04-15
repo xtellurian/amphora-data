@@ -19,7 +19,7 @@ variables:
 
 jobs:
   - job: destroy_develop_k8s
-    displayName: Destroy K8s Stacks
+    displayName: Destroy Develop K8s
     steps:
       - template: install.pulumi.steps.yaml
       - script: |
@@ -40,7 +40,7 @@ jobs:
           STACK: $(stack) 
 
   - job: destroy_master_k8s
-    displayName: Destroy K8s Stacks
+    displayName: Destroy Master K8s
     steps:
       - template: install.pulumi.steps.yaml
       - script: |
@@ -61,7 +61,7 @@ jobs:
           STACK: $(stack) 
 
   - job: destroy_develop_infra
-    displayName: Destroy Infrastructure
+    displayName: Destroy Develop Infrastructure
     dependsOn: destroy_develop_k8s
     steps:
     - template: install.pulumi.steps.yaml
@@ -90,7 +90,7 @@ jobs:
         STACK: $(stack) 
 
   - job: destroy_master_infra
-    displayName: Destroy Infrastructure
+    displayName: Destroy Master Infrastructure
     dependsOn: destroy_master_k8s
     steps:
     - template: install.pulumi.steps.yaml
