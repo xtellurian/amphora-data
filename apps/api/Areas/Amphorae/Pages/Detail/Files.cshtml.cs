@@ -27,7 +27,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
         [BindProperty(SupportsGet = true)]
         public int? PageNumber { get; set; } = 0;
-        public int PerPage => 2;
+        public int PerPage => 16;
 
         public IList<string> Names { get; private set; } = new List<string>();
         public int TotalFiles { get; private set; }
