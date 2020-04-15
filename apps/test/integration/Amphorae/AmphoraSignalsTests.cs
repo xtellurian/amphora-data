@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
@@ -55,6 +56,19 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.NotNull(signals);
             Assert.NotEmpty(signals);
             Assert.Contains(signals, s => s.Id == createdSignal.Id);
+
+            // check we can get it directly, by name and id
+            var signalResponseByProperty = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/signals/{createdSignal.Property}");
+            await AssertHttpSuccess(signalResponseByProperty);
+            var sig = JsonConvert.DeserializeObject<Signal>(await signalResponseByProperty.Content.ReadAsStringAsync());
+            Assert.Equal(createdSignal.Property, sig.Property);
+            Assert.Equal(createdSignal.Id, sig.Id);
+
+            var signalResponseById = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/signals/{createdSignal.Id}");
+            await AssertHttpSuccess(signalResponseById);
+            sig = JsonConvert.DeserializeObject<Signal>(await signalResponseById.Content.ReadAsStringAsync());
+            Assert.Equal(createdSignal.Property, sig.Property);
+            Assert.Equal(createdSignal.Id, sig.Id);
         }
 
         [Fact]
@@ -140,6 +154,33 @@ namespace Amphora.Tests.Integration.Amphorae
             signal = JsonConvert.DeserializeObject<Signal>(content);
             Assert.NotNull(signal.Attributes);
             Assert.Equal(updatedMetadata, signal.Attributes);
+        }
+
+        [Fact]
+        public async Task MissingSignal_GetReturnsNotFound()
+        {
+            var testName = nameof(CanCreateSignalOnAmphora);
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            // create an amphora
+            var dto = EntityLibrary.GetAmphoraDto(adminOrg.Id, testName);
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", dto);
+            var createContent = await createResponse.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(createResponse);
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
+
+            // create a signal
+            var signalDto = EntityLibrary.GetSignalDto("name");
+            var response = await adminClient.PostAsJsonAsync($"api/amphorae/{dto.Id}/signals", signalDto);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(response);
+
+            // get a different signal
+            var generator = new RandomGenerator();
+            var getResponse = await adminClient.GetAsync($"api/amphorae/{dto.Id}/signals/{generator.RandomString(5).ToLower()}");
+            Assert.False(getResponse.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
     }
 }

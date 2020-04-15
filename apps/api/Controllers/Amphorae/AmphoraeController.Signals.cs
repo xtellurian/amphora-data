@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Models;
@@ -66,6 +65,53 @@ namespace Amphora.Api.Controllers.Amphorae
                         Attributes = s.Attributes?.Attributes
                     });
                 }
+
+                return Ok(res);
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403, result.Message);
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get's the signals associated with an Amphora.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="property">The name or id of the signal property.</param>
+        /// <returns>A collection of signals.</returns>
+        [Produces(typeof(Signal))]
+        [HttpGet("signals/{property}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GetSignal(string id, string property)
+        {
+            var result = await amphoraeService.ReadAsync(User, id, true);
+            if (result.Succeeded)
+            {
+                if (string.IsNullOrEmpty(property))
+                {
+                    return NotFound();
+                }
+
+                var amphora = result.Entity;
+                var signal = amphora.V2Signals.FirstOrDefault(s => s.Property == property || s.Id == property);
+
+                if (signal == null)
+                {
+                    return NotFound();
+                }
+
+                var res = new Signal
+                {
+                    Id = signal.Id,
+                    ValueType = signal.ValueType,
+                    Property = signal.Property,
+                    Attributes = signal.Attributes?.Attributes
+                };
 
                 return Ok(res);
             }
