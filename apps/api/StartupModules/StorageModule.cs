@@ -1,9 +1,9 @@
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
 using Amphora.Api.Services.Wrappers;
-using Amphora.Api.Stores;
 using Amphora.Api.Stores.AzureStorageAccount;
 using Amphora.Api.Stores.EFCore;
+using Amphora.Api.Stores.InMemory;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
@@ -70,7 +70,7 @@ namespace Amphora.Api.StartupModules
                 services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
                 services.UseCosmos<AmphoraContext>(cosmosOptions);
 
-                services.AddSingleton<IBlobStore<AmphoraModel>, AmphoraBlobStore>();
+                services.AddSingleton<IAmphoraBlobStore, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
                 services.AddSingleton<IBlobCache, PlatformCacheBlobStore>();
             }
@@ -80,7 +80,7 @@ namespace Amphora.Api.StartupModules
                 var sqlOptions = new SqlServerOptions();
                 Configuration.GetSection("SqlServer").Bind(sqlOptions);
                 services.UseSqlServer<AmphoraContext>(sqlOptions);
-                services.AddSingleton<IBlobStore<AmphoraModel>, InMemoryBlobStore<AmphoraModel>>();
+                services.AddSingleton<IAmphoraBlobStore, InMemoryAmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
                 services.AddSingleton<IBlobCache, InMemoryBlobCache>();
             }

@@ -14,12 +14,12 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
     {
         private readonly IPlanLimitService planLimitService;
         private readonly IEntityStore<AmphoraModel> amphoraStore;
-        private readonly IBlobStore<AmphoraModel> blobStore;
+        private readonly IAmphoraBlobStore blobStore;
 
         public LimitsPageModel(IEntityStore<OrganisationModel> orgStore,
                                IPlanLimitService planLimitService,
                                IEntityStore<AmphoraModel> amphoraStore,
-                               IBlobStore<AmphoraModel> blobStore) : base(orgStore)
+                               IAmphoraBlobStore blobStore) : base(orgStore)
         {
             this.planLimitService = planLimitService;
             this.amphoraStore = amphoraStore;

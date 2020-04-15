@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 
-namespace Amphora.Api.Stores
+namespace Amphora.Api.Stores.InMemory
 {
     public class InMemoryBlobCache : IBlobCache
     {

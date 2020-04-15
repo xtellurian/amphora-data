@@ -25,7 +25,7 @@ namespace Amphora.Api.Services.Amphorae
             try
             {
                 summary.CountSignals = amphora.V2Signals.Count;
-                summary.CountFiles = (await fileService.Store.ListBlobsAsync(amphora))?.Count ?? 0;
+                summary.CountFiles = (await fileService.Store.GetFilesAsync(amphora))?.Count ?? 0;
                 if (summary.CountFiles > 0)
                 {
                     summary.DaysSinceFilesLastUpdated = DaysSince(await fileService.Store.LastModifiedAsync(amphora));

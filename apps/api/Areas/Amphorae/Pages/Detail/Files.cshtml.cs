@@ -96,7 +96,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             if (Amphora != null)
             {
-                Names = await amphoraFileService.Store.ListBlobsAsync(Amphora);
+                var files = await amphoraFileService.Store.GetFilesAsync(Amphora);
+                Names = files.Select(_ => _.Name).ToList();
             }
         }
     }

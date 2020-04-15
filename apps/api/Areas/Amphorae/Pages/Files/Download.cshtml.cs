@@ -12,13 +12,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
     public class DownloadPageModel : PageModel
     {
         private readonly IAmphoraeService amphoraeService;
-        private readonly IBlobStore<AmphoraModel> blobStore;
+        private readonly IAmphoraBlobStore blobStore;
         private readonly IPermissionService permissionService;
         private readonly IUserDataService userDataService;
 
         public DownloadPageModel(
             IAmphoraeService amphoraeService,
-            IBlobStore<AmphoraModel> blobStore,
+            IAmphoraBlobStore blobStore,
             IPermissionService permissionService,
             IUserDataService userDataService)
         {

@@ -4,14 +4,16 @@ using System.IO;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Configuration.Options;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Infrastructure.Stores.AzureStorage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Stores.AzureStorageAccount
 {
-    public class AmphoraBlobStore : AzBlobBase<AmphoraModel>, IBlobStore<AmphoraModel>
+    public class AmphoraBlobStore : AzBlobBase<AmphoraModel>, IAmphoraBlobStore
     {
         public AmphoraBlobStore(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AmphoraBlobStore> logger) : base(options, logger)
         {
@@ -96,9 +98,31 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return await this.ReadBytesAsync(entity, name);
         }
 
-        public async Task<IEnumerable<string>> ListNamesAsync(AmphoraModel entity)
+        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity)
         {
-            return await this.ListBlobsAsync(entity);
+            var container = GetContainerReference(entity);
+            var files = new List<IAmphoraFileReference>();
+            if (!await container.ExistsAsync())
+            {
+                return files;
+            }
+
+            BlobContinuationToken blobContinuationToken = null;
+            do
+            {
+                var results = await container.ListBlobsSegmentedAsync(null, blobContinuationToken);
+                // Get the value of the continuation token returned by the listing call.
+                blobContinuationToken = results.ContinuationToken;
+                foreach (var item in results.Results)
+                {
+                    var name = Path.GetFileName(item.Uri.LocalPath);
+                    var blob = container.GetBlobReference(name);
+                    files.Add(new AzureBlobAmphoraFileReference(blob, name));
+                }
+            }
+            while (blobContinuationToken != null); // Loop while the continuation token is not null.
+
+            return files;
         }
 
         public async Task<byte[]> SetDataAsync(AmphoraModel entity, byte[] data, string name)

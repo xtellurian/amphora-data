@@ -8,7 +8,7 @@ namespace Amphora.Api.Contracts
 {
     public interface IAmphoraFileService
     {
-        IBlobStore<AmphoraModel> Store { get; }
+        IAmphoraBlobStore Store { get; }
         Task<EntityOperationResult<UploadResponse>> CreateFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file);
         Task<EntityOperationResult<object>> DeleteFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file);
         Task<EntityOperationResult<byte[]>> ReadFileAsync(ClaimsPrincipal principal, AmphoraModel entity, string file);

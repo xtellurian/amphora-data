@@ -15,7 +15,7 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IPermissionService permissionService;
         private readonly IUserDataService userDataService;
 
-        public IBlobStore<AmphoraModel> Store { get; }
+        public IAmphoraBlobStore Store { get; }
 
         private readonly ILogger<AmphoraFileService> logger;
         private readonly IPlanLimitService planLimitService;
@@ -24,7 +24,7 @@ namespace Amphora.Api.Services.Amphorae
             ILogger<AmphoraFileService> logger,
             IPlanLimitService planLimitService,
             IPermissionService permissionService,
-            IBlobStore<AmphoraModel> store,
+            IAmphoraBlobStore store,
             IUserDataService userDataService)
         {
             this.permissionService = permissionService;

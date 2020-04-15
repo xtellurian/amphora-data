@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 
-namespace Amphora.Api.Stores
+namespace Amphora.Api.Stores.InMemory
 {
     public class InMemoryBlobStore<T> : IBlobStore<T> where T : class, IEntity
     {
-        private Dictionary<string, Dictionary<string, byte[]>> store = new Dictionary<string, Dictionary<string, byte[]>>();
+        protected Dictionary<string, Dictionary<string, byte[]>> store = new Dictionary<string, Dictionary<string, byte[]>>();
         public Task<byte[]> ReadBytesAsync(T entity, string path)
         {
             return Task<byte[]>.Factory.StartNew(() =>

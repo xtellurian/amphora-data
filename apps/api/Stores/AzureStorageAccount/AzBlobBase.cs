@@ -65,9 +65,12 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 var results = await container.ListBlobsSegmentedAsync(null, blobContinuationToken);
                 // Get the value of the continuation token returned by the listing call.
                 blobContinuationToken = results.ContinuationToken;
-                foreach (IListBlobItem item in results.Results)
+                foreach (var item in results.Results)
                 {
-                    names.Add(Path.GetFileName(item.Uri.LocalPath));
+                    var name = Path.GetFileName(item.Uri.LocalPath);
+                    var blob = container.GetBlobReference(name);
+                    await blob.FetchAttributesAsync();
+                    names.Add(name);
                 }
             }
             while (blobContinuationToken != null); // Loop while the continuation token is not null.

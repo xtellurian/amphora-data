@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
@@ -43,8 +44,9 @@ namespace Amphora.Api.Controllers.Amphorae
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
             {
-                var blobs = await amphoraFileService.Store.ListBlobsAsync(result.Entity);
-                return Ok(blobs);
+                var files = await amphoraFileService.Store.GetFilesAsync(result.Entity);
+                var names = files.Select(_ => _.Name);
+                return Ok(names);
             }
             else { return Handle(result); }
         }

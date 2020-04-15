@@ -37,7 +37,7 @@ namespace Amphora.Tests.Unit.Services
             };
 
             var planLimitService = new PlanLimitService();
-            var mockBlobStore = new Mock<IBlobStore<AmphoraModel>>();
+            var mockBlobStore = new Mock<IAmphoraBlobStore>();
             var mockUserDataService = new Mock<IUserDataService>();
             mockUserDataService.Setup(_ => _.ReadAsync(principal, null))
                 .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(userData, userData));
