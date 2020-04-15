@@ -15,9 +15,9 @@ fi
 OUTPUT=$(cat $STACK_OUTPUT_PATH)
 echo $OUTPUT
 # main location
-fqdnName=$(jq -r  '.k8s.australiasoutheast.fqdnName' <<< ${OUTPUT} ) 
-ip=$(jq -r  '.k8s.australiasoutheast.ingressIp' <<< ${OUTPUT} )
-location=$(jq -r  '.k8s.australiasoutheast.location' <<< ${OUTPUT} )
+fqdnName=$(jq -r '.k8s.australiasoutheast.fqdnName' <<< ${OUTPUT} ) 
+ip=$(jq -r '.k8s.australiasoutheast.ingressIp' <<< ${OUTPUT} )
+location=$(jq -r '.k8s.australiasoutheast.location' <<< ${OUTPUT} )
 ./set-fqdn.sh -i $ -n $fqdnName -i $ip
 ./update-main-dns.sh -i $ip -l $location -s $STACK
 
