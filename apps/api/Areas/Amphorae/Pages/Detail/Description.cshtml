@@ -12,10 +12,10 @@
     <partial name="_TitleRowPartial" />
     <hr/>
     <div class="row">
-        <div class="col-lg-3 master">
+        <div class="col-md-3 master">
             <partial name="_MasterNavPartial" />
         </div>
-        <div id="detail" class="col-lg-9 detail">
+        <div id="detail" class="col-md-9 detail">
             @Markdown.ParseHtmlString(Model.Amphora.Description)
         </div>
     </div>
