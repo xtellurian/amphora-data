@@ -31,6 +31,7 @@ namespace Amphora.Infrastructure.Services
             {
                 var msg = new SendGridMessage();
                 msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
+                msg.AddBcc(options.BccAddress);
                 foreach (var r in email.Recipients)
                 {
                     if (r.Email != null)
@@ -44,7 +45,6 @@ namespace Amphora.Infrastructure.Services
                 }
 
                 msg.SetTemplateId(email.SendGridTemplateId);
-
                 msg.SetTemplateData(email);
                 await TrySendMessage(msg);
                 return true;
