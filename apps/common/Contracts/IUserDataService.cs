@@ -10,6 +10,7 @@ namespace Amphora.Common.Contracts
 {
     public interface IUserDataService
     {
+        Task<EntityOperationResult<ApplicationUserDataModel>> ReadFromUsernameAsync(ClaimsPrincipal principal, string username);
         IQueryable<ApplicationUserDataModel> Query(ClaimsPrincipal principal, Expression<Func<ApplicationUserDataModel, bool>> where);
         Task<EntityOperationResult<ApplicationUserDataModel>> ReadAsync(ClaimsPrincipal principal, string? userId = null);
         Task<EntityOperationResult<ApplicationUserDataModel>> CreateAsync(ClaimsPrincipal principal, ApplicationUserDataModel userData);

@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Permissions.Rules;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Auth
@@ -107,7 +107,7 @@ namespace Amphora.Api.Services.Auth
                     return true;
                 }
 
-                if (IsRestricted(user, entity, accessLevel))
+                if (IsAccessDenied(user, entity, accessLevel))
                 {
                     logger.LogInformation($"{user.UserName} is restricted on Amphora {entity.Id}");
                     return false;
@@ -132,25 +132,21 @@ namespace Amphora.Api.Services.Auth
             }
         }
 
-        private bool IsRestricted(IUser user, AmphoraModel amphora, AccessLevels accessLevel)
+        private bool IsAccessDenied(IUser user, AmphoraModel amphora, AccessLevels accessLevel)
         {
             if (accessLevel >= AccessLevels.Purchase)
             {
-                var isOrgRestricted = amphora.Organisation.Restrictions != null &&
-                    amphora.Organisation.Restrictions.Any(_ =>
-                        _.TargetOrganisationId == user.OrganisationId &&
-                        _.Scope == RestrictionScope.Organisation &&
-                        _.Kind == RestrictionKind.Deny);
+                if (amphora.AccessControl == null)
+                {
+                    return false;
+                }
 
-                var isAmphoraRestricted = !isOrgRestricted &&
-                    amphora.Organisation.Restrictions != null &&
-                    amphora.Organisation.Restrictions.Any(_ =>
-                        _.TargetOrganisationId == user.OrganisationId &&
-                        _.Kind == RestrictionKind.Deny &&
-                        _.Scope == RestrictionScope.Amphora &&
-                        _.SourceAmphoraId == amphora.Id);
+                var isUserDenied = amphora.AccessControl.UserAccessRules
+                    .Any(_ => _.UserDataId == user.Id && _.Kind == Kind.Deny);
+                var isOrgDenied = amphora.AccessControl.OrganisationAccessRules
+                    .Any(_ => _.OrganisationId == user.OrganisationId && _.Kind == Kind.Deny);
 
-                return isOrgRestricted || isAmphoraRestricted;
+                return isUserDenied || isOrgDenied;
             }
             else
             {

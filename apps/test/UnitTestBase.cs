@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
@@ -35,6 +36,11 @@ namespace Amphora.Tests.Unit
         protected IEventPublisher CreateMockEventPublisher()
         {
             return Mock.Of<IEventPublisher>();
+        }
+
+        protected Mock<ClaimsPrincipal> MockClaimsPrincipal()
+        {
+            return new Mock<ClaimsPrincipal>();
         }
 
         protected IPermissionService CreateMockPermissionService()

@@ -22,13 +22,13 @@ namespace Amphora.Api.EntityFramework
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Common.EntityFramework.TypeConfiguration.AmphoraModelTypeConfiguration).Assembly);
         }
 
+        public DbSet<AmphoraAccessControlModel> AmphoraAccessControls { get; set; }
         public DbSet<AmphoraModel> Amphorae { get; set; } = null!;
         public DbSet<OrganisationModel> Organisations { get; set; } = null!;
         public DbSet<DataRequestModel> DataRequests { get; set; } = null!;
         public DbSet<PurchaseModel> Purchases { get; set; } = null!;
         public DbSet<CommissionModel> Commissions { get; set; } = null!;
         public DbSet<InvitationModel> Invitations { get; set; } = null!;
-        public DbSet<RestrictionModel> Restrictions { get; set; } = null!;
         public DbSet<ApplicationUserDataModel> UserData { get; set; }
     }
 }

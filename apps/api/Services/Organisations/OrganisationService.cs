@@ -171,7 +171,6 @@ namespace Amphora.Api.Services.Organisations
 
             if (model.IsAdministrator(userId))
             {
-                await this.DeleteRelated(model);
                 await Store.DeleteAsync(model);
                 return new EntityOperationResult<OrganisationModel>(true);
             }
@@ -179,14 +178,6 @@ namespace Amphora.Api.Services.Organisations
             {
                 return new EntityOperationResult<OrganisationModel>("Only Administrators can delete.");
             }
-        }
-
-        private async Task DeleteRelated(OrganisationModel model)
-        {
-            // need to delete all related restrictions
-            model.Restrictions.Clear();
-            model.TargetedByRestrictions.Clear();
-            await Store.UpdateAsync(model);
         }
 
         public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions)

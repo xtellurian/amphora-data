@@ -19,6 +19,7 @@ using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.GitHub;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Options;
+using Amphora.Common.Services.Access;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Models.Options;
@@ -116,7 +117,7 @@ namespace Amphora.Api
             services.AddTransient<IInvoiceFileService, InvoiceFileService>();
             services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
-            services.AddTransient<IRestrictionService, RestrictionService>();
+            services.AddTransient<IAccessControlService, AccessControlService>();
             services.AddTransient<IPlanLimitService, PlanLimitService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();

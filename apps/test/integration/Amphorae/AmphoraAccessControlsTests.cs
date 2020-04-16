@@ -1,8 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.AccessControls;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Models.Dtos.Permissions;
-using Amphora.Common.Models.Permissions;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -11,9 +10,9 @@ using Xunit;
 namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class AmphoraRestrictionsTests : WebAppIntegrationTestBase
+    public class AmphoraAccessControlsTests : WebAppIntegrationTestBase
     {
-        public AmphoraRestrictionsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
+        public AmphoraAccessControlsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
 
@@ -32,11 +31,11 @@ namespace Amphora.Tests.Integration.Amphorae
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
 
             // restrict the other org
-            var restriction = new Restriction { TargetOrganisationId = otherOrg.Id, Kind = RestrictionKind.Deny };
-            var restrictionResponse = await adminClient.PostAsJsonAsync($"api/amphorae/{amphora.Id}/Restrictions", restriction);
-            var restrictionResponseContent = await restrictionResponse.Content.ReadAsStringAsync();
-            await AssertHttpSuccess(restrictionResponse);
-            restriction = JsonConvert.DeserializeObject<Restriction>(restrictionResponseContent);
+            var rule = OrganisationAccessRule.Deny(otherOrg.Id);
+            var ruleResponse = await adminClient.PostAsJsonAsync($"api/amphorae/{amphora.Id}/AccessControls/ForOrganisation", rule);
+            var ruleResponseContent = await ruleResponse.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(ruleResponse);
+            rule = JsonConvert.DeserializeObject<OrganisationAccessRule>(ruleResponseContent);
 
             // check the other cannot purchase or access
             var purchaseRes = await otherClient.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });
@@ -44,7 +43,7 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.False(purchaseRes.IsSuccessStatusCode, "Error when purchasing restricted Amphora");
 
             // delete the restriction
-            var deleteRes = await adminClient.DeleteAsync($"api/amphorae/{amphora.Id}/Restrictions/{restriction.Id}");
+            var deleteRes = await adminClient.DeleteAsync($"api/amphorae/{amphora.Id}/AccessControls/{rule.Id}");
             await AssertHttpSuccess(deleteRes);
 
             // now purchase should work

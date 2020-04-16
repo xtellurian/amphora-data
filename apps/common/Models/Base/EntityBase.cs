@@ -32,11 +32,11 @@ namespace Amphora.Common.Models
         /// <summary>
         /// Gets or sets dateTime created in UTC.
         /// </summary>
-        public DateTimeOffset? CreatedDate { get; set; }
+        public DateTimeOffset? CreatedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets dateTime last modified in UTC.
         /// </summary>
-        public DateTimeOffset? LastModified { get; set; }
+        public DateTimeOffset? LastModified { get; set; } = DateTime.UtcNow;
     }
 }

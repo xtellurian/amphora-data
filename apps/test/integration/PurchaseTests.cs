@@ -1,8 +1,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amphora.Api.Models.Dtos.AccessControls;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
-using Amphora.Api.Models.Dtos.Permissions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -98,8 +98,8 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(account1);
 
             // retrict this org
-            var restriction = new Restriction(org.Id, Common.Models.Permissions.RestrictionKind.Deny);
-            var restrictRes = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/Restrictions", restriction);
+            var restriction = OrganisationAccessRule.Deny(org.Id);
+            var restrictRes = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/AccessControls/ForOrganisation", restriction);
             var restrictContent = await restrictRes.Content.ReadAsStringAsync();
             await AssertHttpSuccess(restrictRes);
 

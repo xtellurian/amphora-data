@@ -87,13 +87,13 @@ namespace Amphora.Api.StartupModules
 
             services.AddTransient<CosmosInitialiser<AmphoraContext>>();
             // entity stores
+            services.AddScoped<IEntityStore<AmphoraAccessControlModel>, AmphoraAccessControlsEFStore>();
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
             services.AddScoped<IEntityStore<DataRequestModel>, DataRequestsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
-            services.AddScoped<IEntityStore<RestrictionModel>, RestrictionsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUserDataModel>, ApplicationUserDataEFStore>();
 
             // cache
