@@ -52,6 +52,7 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("Issues")]
         [InlineData("Quality")]
         [InlineData("Options")]
+        [InlineData("Access")]
         public async Task CanLoadPage_DetailsPages_AsOwner(string page)
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
