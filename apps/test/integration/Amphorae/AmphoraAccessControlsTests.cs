@@ -42,7 +42,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var purhcaseContent = await purchaseRes.Content.ReadAsStringAsync();
             Assert.False(purchaseRes.IsSuccessStatusCode, "Error when purchasing restricted Amphora");
 
-            // delete the restriction
+            // delete the access control rule
             var deleteRes = await adminClient.DeleteAsync($"api/amphorae/{amphora.Id}/AccessControls/{rule.Id}");
             await AssertHttpSuccess(deleteRes);
 

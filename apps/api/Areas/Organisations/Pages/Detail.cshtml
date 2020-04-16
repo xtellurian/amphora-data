@@ -25,18 +25,6 @@
                                     <i class="fas fa-file-contract"></i>
                                     Terms and Conditions Library
                                 </a>
-                                @if (Model.CanInvite)
-                                {
-                                    <a class="dropdown-item btn btn-light btn-block mx-auto" asp-route-id="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Index"> 
-                                        <i class="fas fa-ban"></i> Restrictions
-                                    </a>
-                                }
-                                else if(! Model.IsInOrg)
-                                {
-                                    <a class="dropdown-item btn btn-danger btn-block mx-auto" asp-route-targetOrganisationId="@Model.Organisation.Id" asp-area="Organisations" asp-page="Restrictions/Create">
-                                        <i class="fas fa-ban"></i> Restrict @Model.Organisation.Name 
-                                    </a>
-                                }
                             </div>
                         </span>
                         <h6>@Model.Organisation.Name</h6>

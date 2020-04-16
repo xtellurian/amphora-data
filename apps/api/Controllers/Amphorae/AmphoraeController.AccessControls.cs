@@ -38,11 +38,11 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Creates a restriction on this Amphora.
+        /// Creates an Access Control rule on this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="rule">The rule to create.</param>
-        /// <returns>The same restriction.</returns>
+        /// <returns>The rule.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.UserAccessRule))]
         [HttpPost("ForUser")]
         [CommonAuthorize]
@@ -80,11 +80,11 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Creates a restriction on this Amphora.
+        /// Creates an Access Control Rule on this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="rule">The rule to create.</param>
-        /// <returns>The same restriction.</returns>
+        /// <returns>The same rule.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.UserAccessRule))]
         [HttpPost("ForOrganisation")]
         [CommonAuthorize]
@@ -122,7 +122,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Deletes a restriction on this Amphora.
+        /// Deletes an Access Control on this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="ruleId">The Id of the rule to delete.</param>
