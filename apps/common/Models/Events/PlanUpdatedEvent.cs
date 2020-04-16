@@ -7,10 +7,11 @@ namespace Amphora.Common.Models.Events
     {
         public PlanUpdatedEvent(string triggeredByUserName, Account account)
         {
-            Subject = $"organisation|{account.OrganisationId}";
+            Subject = $"/amphora/api/organisations/{account.OrganisationId}/account";
             Data = new PlanUpdatedData
             {
-                OrganisationId = account.OrganisationId,
+                FriendlyName = $"Plan updated for Organsation({account.OrganisationId}) to {account?.Plan?.PlanType} Plan",
+                OrganisationId = account?.OrganisationId,
                 TriggeredByUserName = triggeredByUserName,
                 NewPlanName = account?.Plan?.PlanType.ToString()
             };
@@ -20,10 +21,11 @@ namespace Amphora.Common.Models.Events
 
         public IEventData Data { get; }
 
-        public string? Subject { get; }
+        public override string Subject { get; set; }
 
         private class PlanUpdatedData : IEventData
         {
+            public string? FriendlyName { get; set; }
             public string? AmphoraId { get; set; }
             public string? OrganisationId { get; set; }
             public string? TriggeredByUserName { get; set; }
