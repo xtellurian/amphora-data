@@ -10,7 +10,7 @@
     var metadataModalIdDic = new Dictionary<string,string>();
     var filePreviewModalIdDic = new Dictionary<string,string>();
     var previousEnabled = Model.PageNumber > 0 ? "": "disabled";
-    var nextEnabled = Model.PageNumber * Model.PerPage < Model.TotalFiles ? "": "disabled";
+    var nextEnabled = (Model.PageNumber + 1) * Model.PerPage < Model.TotalFiles ? "": "disabled";
 }
 
 @foreach (var n in Model.Names)
@@ -95,11 +95,11 @@
                                         </div>
                                         
                                     </div>
-                                    <div class="btn-group" role="group">
+                                    <div class="btn-group pull-right" role="group">
                                         @if(Model.CanDeleteFiles)
                                         {
                                             <a class="btn" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="/Files/Delete">
-                                                <i class="text-danger fas fa-lg fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i>
+                                                <i class="text-danger fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i>
                                             </a>
                                         }
                                     </div>
