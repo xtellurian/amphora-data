@@ -1,5 +1,5 @@
 @model Amphora.Api.Pages.Shared.Components.AccessRuleRowViewComponent
-
+@using Amphora.Common.Models.Permissions.Rules;
 @{
     var bgClass = "";
     if(Model.Index > 0 && Model.Index%2 == 1)
@@ -8,16 +8,29 @@
     }
 }
 <div class="row align-middle @bgClass">
-    <div class="col-1 text-danger">
-        <i class="fas fa-ban"></i>
-    </div>
+    @if(Model.Rule.Kind == Kind.Deny)
+    {
+        <div class="col-1 text-danger">
+            <i class="fas fa-ban"></i>
+        </div>
+    }
+    else
+    {
+        <div class="col-1 text-success">
+            <i class="fas fa-check"></i>
+        </div>
+    }
     <div class="col-2">
        @Model.Rule.Priority
     </div>
     <div class="col">
        @Model.Rule.Name()
     </div>
-    <div class="col-4">
-        something
+    <div class="col-1 text-right">
+        <form method="post" asp-page-handler="DeleteRule" asp-route-id="@Model.Amphora.Id" asp-route-ruleId="@Model.Rule.Id">
+            <button type="submit" class="btn btn-link">
+                <i class="far fa-trash-alt text-danger"></i>
+            </button>
+        </form>
     </div>
 </div>

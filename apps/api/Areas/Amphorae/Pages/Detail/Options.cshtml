@@ -17,17 +17,16 @@
         <div class="col-md-9 detail">
             <h5>Options</h5>
             <br/>
-            @if(Model.CanEditDetails)
+            @if(Model.CanUpdate)
             {
-                @if(Model.CanEditDetails)
-                {
-                    <a class="dropdown-item" asp-area="Amphorae" asp-page="/Edit" asp-route-id="@Model.Amphora.Id">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
-                        <i class="fas fa-users"></i> Show has purchased
-                    </button>
-                }
+                
+                <a class="dropdown-item" asp-area="Amphorae" asp-page="/Edit" asp-route-id="@Model.Amphora.Id">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
+                    <i class="fas fa-users"></i> Show has purchased
+                </button>
+                
                 @if(Model.UserData?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
                 {
                     <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
@@ -71,7 +70,7 @@
                     </a>
                 }
             }
-            @if(Model.CanEditPermissions)
+            @if(Model.CanUpdate)
             {
                 <div id="hasPurchasedCollapse" class="card bg-light collapse">
                     <div class="card-header">

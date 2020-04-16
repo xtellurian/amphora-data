@@ -31,9 +31,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public int SignalCount => this.Quality.CountSignals ?? 0;
 
         public DataQualitySummary Quality { get; private set; }
+        public bool CanAdminister { get; private set; }
         public bool CanUpdate { get; private set; }
-        public bool CanEditPermissions { get; private set; }
-        public bool CanEditDetails { get; private set; }
         public bool CanWriteContents { get; private set; }
         public bool CanReadContents { get; private set; }
         public bool CanDeleteFiles { get; private set; }
@@ -79,12 +78,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             if (Amphora != null)
             {
                 this.Quality = await qualityEstimator.GenerateDataQualitySummaryAsync(Amphora);
-                this.CanUpdate = await permissionService.IsAuthorizedAsync(User, this.Amphora, AccessLevels.Update);
-                // Names = await blobStore.ListBlobsAsync(Amphora);
-                CanEditPermissions = await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.Create);
-                // can edit permissions implies can edit details - else, check
-                CanEditDetails = CanEditPermissions ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.Update);
-                CanWriteContents = CanEditDetails ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.WriteContents);
+                CanAdminister = await permissionService.IsAuthorizedAsync(User, Amphora, AccessLevels.Administer);
+                CanUpdate = CanAdminister ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, AccessLevels.Update);
+                CanWriteContents = CanUpdate ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.WriteContents);
                 CanReadContents = CanWriteContents ? true : await permissionService.IsAuthorizedAsync(User, this.Amphora, ResourcePermissions.ReadContents);
                 CanDeleteFiles = CanWriteContents;
 

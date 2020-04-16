@@ -23,6 +23,11 @@
 
         if(Model.CanUpdate)
         {
+            otherPages.Add(new MasterNavigationPaneViewModel.Page("./Access", indexPage, "Access Controls", paramsDict, !Model.CanAdminister));
+        }
+
+        if(Model.CanUpdate)
+        {
             otherPages.Add(new MasterNavigationPaneViewModel.Page("./Options", indexPage, "Options", paramsDict));
         }
 }

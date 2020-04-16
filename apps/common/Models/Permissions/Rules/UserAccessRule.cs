@@ -15,7 +15,7 @@ namespace Amphora.Common.Models.Permissions.Rules
         }
 
         public string? UserDataId { get; set; }
-        public ApplicationUserDataModel? UserData { get; set; }
+        public virtual ApplicationUserDataModel? UserData { get; set; }
 
         public override string Name()
         {

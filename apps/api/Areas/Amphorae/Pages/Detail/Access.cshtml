@@ -1,0 +1,64 @@
+@page
+@model Amphora.Api.Areas.Amphorae.Pages.Detail.AccessPageModel
+
+@using Westwind.AspNetCore.Markdown
+
+@{
+    ViewData["Title"] = Model.Amphora.Name + " Access";
+}
+
+
+<div id="main" class="container">
+    <partial name="_TitleRowPartial" />
+    <hr/>
+    <div class="row">
+        <div class="col-lg-3 master">
+            <partial name="_MasterNavPartial" />
+        </div>
+        <div id="detail" class="col-lg-9 detail">
+            <div class="row">
+                <div class="col">
+                    <form method="post" asp-route-id="@Model.Amphora.Id" asp-page-handler="CreateRule">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-row align-items-end">
+                            <div class="form-group col">
+                                <label asp-for="Rule.AllowOrDeny" class="control-label"></label>
+                                <select class="custom-select" asp-for="Rule.AllowOrDeny" asp-items="Model.AllowOrDenySelectList"></select> 
+                            </div>
+                            <div class="form-group col-6">
+                                <label asp-for="Rule.Username" class="control-label"></label>
+                                <span asp-validation-for="Rule.Username" class="text-danger"></span>
+                                <input asp-for="Rule.Username" class="form-control" placeholder="Username, email, or Organisation Id" />
+                            </div>
+                            <div class="form-group col">
+                                <label asp-for="Rule.Priority" class="control-label"></label>
+                                <span asp-validation-for="Rule.Priority" class="text-danger"></span>
+                                <input asp-for="Rule.Priority" class="form-control" placeholder="Priority" />
+                            </div>
+                            <div class="form-group col-2 align-content-end">
+                                <input class="btn btn-primary btn-block align-bottom" type="submit" value="Create" />
+                            </div>
+                        </div>
+                    </form>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @{var i = 0;}
+                    @if(Model.Amphora?.AccessControl?.Rules().Count > 0)
+                    {
+                        foreach(var r in Model.Amphora.AccessControl.Rules())
+                        {
+                            @await Component.InvokeAsync("AccessRuleRow", new {rule = r, amphora=Model.Amphora, index = i++})
+                        }
+                    }
+                    else
+                    {
+                        <p>No Rules Applied.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

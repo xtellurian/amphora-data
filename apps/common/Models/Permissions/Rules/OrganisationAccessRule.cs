@@ -15,7 +15,7 @@ namespace Amphora.Common.Models.Permissions.Rules
         }
 
         public string? OrganisationId { get; set; }
-        public OrganisationModel? Organisation { get; set; }
+        public virtual OrganisationModel? Organisation { get; set; }
 
         public override string Name()
         {

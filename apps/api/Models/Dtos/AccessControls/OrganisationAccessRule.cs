@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Amphora.Api.Models.Dtos.AccessControls
 {
     public class OrganisationAccessRule : AccessRuleDtoBase
@@ -16,6 +18,7 @@ namespace Amphora.Api.Models.Dtos.AccessControls
             return rule;
         }
 
+        [Required]
         public string OrganisationId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -107,6 +108,13 @@ namespace Amphora.Api.Services.Auth
                     return true;
                 }
 
+                if (AccessModelApplies(user, entity, accessLevel))
+                {
+                    // then we must ruturn here one way or the other
+                    logger.LogInformation($"{user.UserName} is accessing via Access Controls Amphora({entity.Id})");
+                    return IsAllowed(user, entity, accessLevel);
+                }
+
                 if (IsAccessDenied(user, entity, accessLevel))
                 {
                     logger.LogInformation($"{user.UserName} is restricted on Amphora {entity.Id}");
@@ -130,6 +138,59 @@ namespace Amphora.Api.Services.Auth
                     return false;
                 }
             }
+        }
+
+        private bool IsAllowed(IUser user, AmphoraModel amphora, AccessLevels accessLevel)
+        {
+            // get all the rules that apply to the user
+            var rules = amphora.AccessControl?.Rules();
+            if (accessLevel > AccessLevels.ReadContents)
+            {
+                logger.LogInformation($"User({user.UserName}) was denied access to Amphora({amphora.Id}) because the access level was too high");
+                return false;
+            }
+
+            if (rules != null && rules.Any())
+            {
+                var userRules = amphora.AccessControl.UserAccessRules.Where(_ => _.UserDataId == user.Id);
+                var orgRules = amphora.AccessControl.OrganisationAccessRules.Where(_ => _.OrganisationId == user.OrganisationId);
+                var allRules = new List<AccessRule>();
+                allRules.AddRange(orgRules);
+                allRules.AddRange(userRules);
+                var maxPriority = allRules.Max(_ => _.Priority);
+                var ruleToApply = allRules.FirstOrDefault(_ => _.Priority == maxPriority);
+                var allowed = ruleToApply.Kind == Kind.Allow;
+                logger.LogInformation($"User({user.UserName}) access granted: {allowed}");
+                return allowed;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool AccessModelApplies(IUser user, AmphoraModel amphora, AccessLevels accessLevel)
+        {
+            if (accessLevel <= AccessLevels.Read || accessLevel > AccessLevels.ReadContents)
+            {
+                // access model only applied to reading the contents
+                return false;
+            }
+
+            var rules = amphora.AccessControl?.Rules();
+            if (rules != null && rules.Any())
+            {
+                if (amphora.AccessControl.UserAccessRules.Any(_ => _.UserDataId == user.Id))
+                {
+                    return true;
+                }
+                else if (amphora.AccessControl.OrganisationAccessRules.Any(_ => _.OrganisationId == user.OrganisationId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool IsAccessDenied(IUser user, AmphoraModel amphora, AccessLevels accessLevel)

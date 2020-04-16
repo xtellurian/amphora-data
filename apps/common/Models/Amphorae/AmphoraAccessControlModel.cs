@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Amphora.Common.Models.Permissions.Rules;
 
 namespace Amphora.Common.Models.Amphorae
@@ -16,15 +17,15 @@ namespace Amphora.Common.Models.Amphorae
         }
 
         public string AmphoraId { get; set; } = null!;
-        public AmphoraModel Amphora { get; set; } = null!;
-        public ICollection<UserAccessRule> UserAccessRules { get; set; } = new Collection<UserAccessRule>();
-        public ICollection<OrganisationAccessRule> OrganisationAccessRules { get; set; } = new Collection<OrganisationAccessRule>();
+        public virtual AmphoraModel Amphora { get; set; } = null!;
+        public virtual ICollection<UserAccessRule> UserAccessRules { get; set; } = new Collection<UserAccessRule>();
+        public virtual ICollection<OrganisationAccessRule> OrganisationAccessRules { get; set; } = new Collection<OrganisationAccessRule>();
         public ICollection<AccessRule> Rules()
         {
             var all = new List<AccessRule>();
             all.AddRange(UserAccessRules);
             all.AddRange(OrganisationAccessRules);
-            return all;
+            return all.OrderByDescending(_ => _.Priority).ToList();
         }
     }
 }

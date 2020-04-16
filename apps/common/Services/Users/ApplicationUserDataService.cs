@@ -52,6 +52,20 @@ namespace Amphora.Common.Services.Users
             }
         }
 
+        public async Task<EntityOperationResult<ApplicationUserDataModel>> ReadFromEmailAsync(ClaimsPrincipal principal, string email)
+        {
+            var res = await store.QueryAsync(_ => _.ContactInformation!.Email == email);
+            var user = res.FirstOrDefault();
+            if (user != null)
+            {
+                return new EntityOperationResult<ApplicationUserDataModel>(user, user);
+            }
+            else
+            {
+                return new EntityOperationResult<ApplicationUserDataModel>(false);
+            }
+        }
+
         public async Task<EntityOperationResult<ApplicationUserDataModel>> ReadFromUsernameAsync(ClaimsPrincipal principal, string username)
         {
             var res = await store.QueryAsync(_ => _.UserName == username);
