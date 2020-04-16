@@ -98,8 +98,8 @@ namespace Amphora.Tests.Integration
             Assert.NotNull(account1);
 
             // retrict this org
-            var restriction = OrganisationAccessRule.Deny(org.Id);
-            var restrictRes = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/AccessControls/ForOrganisation", restriction);
+            var denyRule = OrganisationAccessRule.Deny(org.Id);
+            var restrictRes = await adminClient.PostAsJsonAsync($"api/Amphorae/{dto.Id}/AccessControls/ForOrganisation", denyRule);
             var restrictContent = await restrictRes.Content.ReadAsStringAsync();
             await AssertHttpSuccess(restrictRes);
 
