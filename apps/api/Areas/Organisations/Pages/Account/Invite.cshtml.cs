@@ -83,7 +83,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     var op = await invitationService.CreateInvitation(User, model);
                     if (op.Succeeded)
                     {
-                        return RedirectToPage("./Detail");
+                        return RedirectToPage("./Index");
                     }
                     else
                     {

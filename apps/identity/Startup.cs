@@ -40,7 +40,7 @@ namespace Amphora.Identity
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureSharedServices(services);
-            IdentityConfiguration.RegisterOptions(Configuration, services);
+            IdentityConfiguration.RegisterOptions(Configuration, services, HostingEnvironment.IsDevelopment());
             System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
 
             // Data Protection

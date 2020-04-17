@@ -3,13 +3,11 @@ using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.DataAnnotations;
 using Amphora.Common.Models.Dtos.Users;
-using Amphora.Common.Models.Host;
 using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Amphora.Identity.Pages.Account
 {
@@ -17,20 +15,17 @@ namespace Amphora.Identity.Pages.Account
     public class RegisterModel : PageModelBase
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly IOptionsMonitor<HostOptions> hostOptions;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ILogger<RegisterModel> logger;
         private readonly IEmailSender emailSender;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
-            IOptionsMonitor<HostOptions> hostOptions,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             this.userManager = userManager;
-            this.hostOptions = hostOptions;
             this.signInManager = signInManager;
             this.logger = logger;
             this.emailSender = emailSender;

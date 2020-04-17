@@ -58,7 +58,7 @@ namespace Amphora.Api
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureSharedServices(services);
-            ApiConfiguration.RegisterOptions(Configuration, services);
+            ApiConfiguration.RegisterOptions(Configuration, services, HostingEnvironment.IsDevelopment());
 
             System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
 
@@ -75,8 +75,6 @@ namespace Amphora.Api
             {
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper());
             }
-
-            AmphoraHost.SetHost(Configuration.GetSection("Host")["MainHost"]);
 
             services.AddTransient<IEmailSender, SendGridEmailSender>();
             services.AddTransient<IAmphoraeTextAnalysisService, AmphoraeTextAnalysisService>();

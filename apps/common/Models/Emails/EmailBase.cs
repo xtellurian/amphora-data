@@ -12,6 +12,6 @@ namespace Amphora.Common.Models.Emails
         public abstract string SendGridTemplateId { get; }
 
         [JsonProperty("baseUrl")]
-        public string BaseUrl { get; set; } = AmphoraHost.MainHost;
+        public string BaseUrl { get; set; } = AmphoraHost.GetHost();
     }
 }

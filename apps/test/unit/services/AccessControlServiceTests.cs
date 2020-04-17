@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Emails;
-using Amphora.Common.Models.Host;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Permissions.Rules;
 using Amphora.Common.Models.Users;
@@ -41,7 +40,6 @@ namespace Amphora.Tests.Unit.Services
             var sut = new AccessControlService(ruleStore,
                                                mockUserDataService.Object,
                                                mockPermissionService.Object,
-                                               MockOptions(new HostOptions("https://localhost:5001")),
                                                mockEmailSender.Object);
 
             var newRule = new UserAccessRule(Kind.Deny, 100, userToDeny);
@@ -82,7 +80,6 @@ namespace Amphora.Tests.Unit.Services
             var sut = new AccessControlService(ruleStore,
                                                mockUserDataService.Object,
                                                mockPermissionService.Object,
-                                               MockOptions(new HostOptions("https://localhost:5001")),
                                                mockEmailSender.Object);
 
             var newRule = new UserAccessRule(Kind.Allow, 100, userToGiveAccessTo);

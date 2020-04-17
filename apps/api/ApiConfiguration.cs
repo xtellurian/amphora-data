@@ -10,9 +10,9 @@ namespace Amphora.Api
 {
     public static class ApiConfiguration
     {
-        public static void RegisterOptions(IConfiguration configuration, IServiceCollection services)
+        public static void RegisterOptions(IConfiguration configuration, IServiceCollection services, bool isDevelopment)
         {
-            CommonConfiguration.RegisterOptions(configuration, services);
+            CommonConfiguration.RegisterOptions(configuration, services, isDevelopment);
 
             services.Configure<SignalOptions>(configuration.GetSection("Signals"));
             services.Configure<SendGridOptions>(configuration.GetSection("SendGrid"));

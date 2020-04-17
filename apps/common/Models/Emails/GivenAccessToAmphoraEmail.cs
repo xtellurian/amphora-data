@@ -1,7 +1,6 @@
 using System.Text.Encodings.Web;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Amphora.Common.Models.Host;
 using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Emails

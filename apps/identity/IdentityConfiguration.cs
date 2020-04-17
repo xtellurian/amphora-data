@@ -7,9 +7,10 @@ namespace Amphora.Identity
 {
     public static class IdentityConfiguration
     {
-        public static void RegisterOptions(IConfiguration configuration, IServiceCollection services)
+        public static void RegisterOptions(IConfiguration configuration, IServiceCollection services, bool isDevelopment)
         {
-            CommonConfiguration.RegisterOptions(configuration, services);
+            CommonConfiguration.RegisterOptions(configuration, services, isDevelopment);
+            Amphora.Common.AmphoraHost.SetAppName("identity");
             services.Configure<SendGridOptions>(configuration.GetSection("SendGrid"));
         }
     }

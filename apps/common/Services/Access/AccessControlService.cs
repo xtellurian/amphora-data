@@ -5,10 +5,8 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Emails;
-using Amphora.Common.Models.Host;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Permissions.Rules;
-using Microsoft.Extensions.Options;
 
 namespace Amphora.Common.Services.Access
 {
@@ -18,19 +16,16 @@ namespace Amphora.Common.Services.Access
         private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
         private readonly IEmailSender emailSender;
-        private readonly IOptionsMonitor<HostOptions> hostOptions;
 
         public AccessControlService(IEntityStore<AmphoraAccessControlModel> store,
                                     IUserDataService userDataService,
                                     IPermissionService permissionService,
-                                    IOptionsMonitor<HostOptions> hostOptions,
                                     IEmailSender emailSender)
         {
             this.store = store;
             this.userDataService = userDataService;
             this.permissionService = permissionService;
             this.emailSender = emailSender;
-            this.hostOptions = hostOptions;
         }
 
         public async Task<EntityOperationResult<AccessRule>> CreateAsync(ClaimsPrincipal principal, AmphoraModel amphora, AccessRule rule)
