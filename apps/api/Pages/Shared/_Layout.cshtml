@@ -65,7 +65,7 @@
         var envInfo = new Amphora.Common.Models.Platform.EnvironmentInfo();
         Configuration.GetSection("Environment").Bind(envInfo);
     }
-    @await Html.PartialAsync("_Footer", new Amphora.SharedUI.Models.FooterModel(envInfo, Configuration["Version"], Configuration["SOURCEVERSION"]));
+    @await Html.PartialAsync("_Footer", new Amphora.SharedUI.Models.FooterModel(envInfo, Configuration["Version"], Configuration["SOURCEVERSION"]))
 
     <environment include="Development">
         <script src="~/_content/sharedui/lib/jquery/dist/jquery.js"></script>
