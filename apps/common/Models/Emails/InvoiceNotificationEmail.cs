@@ -10,10 +10,15 @@ namespace Amphora.Common.Models.Emails
     {
         public InvoiceNotificationEmail(ApplicationUserDataModel user, Invoice invoice)
         {
-            Recipients.Add(new EmailRecipient(user.ContactInformation.Email, user.ContactInformation.FullName));
+            if (user?.ContactInformation?.Email == null)
+            {
+                throw new ArgumentException($"{nameof(user)} email cannot be null");
+            }
+
+            Recipients.Add(new EmailRecipient(user?.ContactInformation?.Email!, user?.ContactInformation?.FullName!));
             // set user properties for email
-            this.Name = user.ContactInformation.FullName;
-            this.Organisation = user.Organisation.Name;
+            this.Name = user?.ContactInformation?.FullName ?? "User";
+            this.Organisation = user?.Organisation?.Name ?? "Organisation";
             // set invoice properties for email
             this.CountCredits = invoice.CountCredits ?? 0;
             this.CountDebits = invoice.CountDebits ?? 0;
@@ -25,7 +30,7 @@ namespace Amphora.Common.Models.Emails
         public override string SendGridTemplateId => "d-39a5a2ad988c4dc48371dd14c97dcc45";
 
         [JsonProperty("Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [JsonProperty("Organisation")]
         public string Organisation { get; set; }
         [JsonProperty("CountDebits")]

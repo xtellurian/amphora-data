@@ -30,7 +30,7 @@ namespace Amphora.Common.Services.Access
             this.userDataService = userDataService;
             this.permissionService = permissionService;
             this.emailSender = emailSender;
-            this.hostOptions = hostOptions; ;
+            this.hostOptions = hostOptions;
         }
 
         public async Task<EntityOperationResult<AccessRule>> CreateAsync(ClaimsPrincipal principal, AmphoraModel amphora, AccessRule rule)

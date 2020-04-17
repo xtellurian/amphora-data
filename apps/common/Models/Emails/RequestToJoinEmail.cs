@@ -1,3 +1,4 @@
+using System;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
@@ -9,16 +10,22 @@ namespace Amphora.Common.Models.Emails
     {
         public RequestToJoinEmail(ApplicationUserDataModel requester, OrganisationModel org)
         {
+            if (requester?.ContactInformation?.Email == null)
+            {
+                throw new ArgumentException($"{nameof(requester)} email cannot be null");
+            }
+
             this.OrganisationName = org.Name;
             this.InviteeEmail = requester.ContactInformation.Email;
-            this.InviteeName = requester.ContactInformation.FullName;
+            this.InviteeName = requester.ContactInformation?.FullName ?? "User";
 
             // send this to the org owner and/or admins
             foreach (var member in org.Memberships)
             {
                 if (member.User?.ContactInformation?.Email != null && member.Role == Roles.Administrator)
                 {
-                    Recipients.Add(new EmailRecipient(member.User?.ContactInformation?.Email, member.User?.ContactInformation?.FullName ?? "Amphora User"));
+                    Recipients.Add(new EmailRecipient(member.User.ContactInformation.Email,
+                        member.User?.ContactInformation?.FullName ?? "Amphora User"));
                 }
             }
         }

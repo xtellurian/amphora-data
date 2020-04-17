@@ -14,7 +14,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 {
     public abstract class AmphoraeIndexPageModel : PageModelBase
     {
-
         protected const int DefaultTop = 8;
         protected readonly IAmphoraeService amphoraeService;
         private readonly IUserDataService userDataService;
