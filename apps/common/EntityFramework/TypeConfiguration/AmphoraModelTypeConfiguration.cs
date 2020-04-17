@@ -25,7 +25,11 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
             });
 
             builder.HasOne(p => p.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-            builder.HasOne(_ => _.AccessControl).WithOne(_ => _.Amphora).HasForeignKey<AmphoraAccessControlModel>(_ => _.AmphoraId);
+
+            builder.HasOne(_ => _.AccessControl)
+                .WithOne(_ => _.Amphora)
+                .HasForeignKey<AmphoraAccessControlModel>(_ => _.AmphoraId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
