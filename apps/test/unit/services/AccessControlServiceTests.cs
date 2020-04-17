@@ -55,6 +55,9 @@ namespace Amphora.Tests.Unit.Services
         [Fact]
         public async Task GiveUserAccess_SendsAnEmail()
         {
+            Common.AmphoraHost.IsDevelopment = true;
+            Common.AmphoraHost.SetAppName("app");
+            Common.AmphoraHost.SetEnvironmentName("develop");
             var mockPrincipal = MockClaimsPrincipal();
             var context = GetContext();
             var ruleStore = new AmphoraAccessControlsEFStore(context, CreateMockLogger<AmphoraAccessControlsEFStore>());
