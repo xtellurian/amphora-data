@@ -4,6 +4,19 @@
     ViewData["Title"] = "Amphorae";
 }
 
+@{
+    var thisUrl = Url.Content("~");
+    var mineUrl = $"{thisUrl}?handler=mine";
+    var orgUrl = $"{thisUrl}?handler=org";
+    var purchasedUrl = $"{thisUrl}?handler=purchased";
+    string mine = string.Empty;
+    string org = string.Empty;
+    string pur = string.Empty;
+    if (string.Equals(Model.Handler, "mine" )) {mine = "active";}
+    if( string.Equals(Model.Handler, "org" )) {org = "active";}
+    if( string.Equals(Model.Handler, "purchased" )){ pur = "active";}
+}
+
 <div id="main" class="container">
     <div class="row main-header">
         <div class="col">
@@ -13,37 +26,25 @@
                 </a>
                 <h2>Manage Amphora</h2>
             </span>
+            <hr/>
         </div>
     </div>
     <div class="row">
         <div class="col-md-3">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="card-title">View Options</h5>
-                </div>
-                <div class="card-body">
-                    @{
-                        var thisUrl = Url.Content("~");
-                        var mineUrl = $"{thisUrl}?handler=mine";
-                        var orgUrl = $"{thisUrl}?handler=org";
-                        var purchasedUrl = $"{thisUrl}?handler=purchased";
-                        string mine = string.Empty;
-                        string org = string.Empty;
-                        string pur = string.Empty;
-                        if (string.Equals(Model.Handler, "mine" )) {mine = "active";}
-                        if( string.Equals(Model.Handler, "org" )) {org = "active";}
-                        if( string.Equals(Model.Handler, "purchased" )){ pur = "active";}
-                    }
-                    <a href="@mineUrl">
-                        <button type="button" class="m-1 btn btn-light btn-block @mine">Mine</button>
-                    </a>                              
-                    <a href="@orgUrl">
-                        <button type="button" class="m-1 btn btn-light btn-block @org">My Org</button>
-                    </a>
-                    <a href="@purchasedUrl">
-                        <button type="button" class="m-1 btn btn-light btn-block @pur">Purchased</button>
-                    </a>
-                </div>
+            <div class="card d-none d-md-block">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a class="m-1 btn btn-light btn-block @mine" href="@mineUrl">
+                            Mine
+                        </a>        
+                        <a class="m-1 btn btn-light btn-block @org" href="@orgUrl">
+                            My Organisation
+                        </a>        
+                        <a class="m-1 btn btn-light btn-block @pur" href="@purchasedUrl">
+                            Purchased
+                        </a>        
+                    </li>
+                </ul>
             </div>
         </div>
         @if(Model.Amphorae?.Count() == 0)

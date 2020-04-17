@@ -10,7 +10,8 @@
 }
 
 <div class="container">
-    <h2 class="display-4">Discover</h2>
+    <h2>Discover</h2>
+    <hr/>
     <div class="row">
         <div class="col-6">
             <nav class="nav nav-pills nav-justified">
@@ -49,11 +50,7 @@
             }
         </div>
     </div>
-    <div class="row">
-       <div class="col">
-           <hr/>
-       </div>
-    </div>
+
     <div class="row align-items-center">
         <div class="col-11 text-center">
             @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
