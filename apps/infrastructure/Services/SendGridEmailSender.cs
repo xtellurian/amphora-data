@@ -31,7 +31,6 @@ namespace Amphora.Infrastructure.Services
             {
                 var msg = new SendGridMessage();
                 msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
-                msg.AddBcc(options.BccAddress);
                 foreach (var r in email.Recipients)
                 {
                     if (r.Email != null)
@@ -91,15 +90,20 @@ namespace Amphora.Infrastructure.Services
 
         private async Task TrySendMessage(SendGridMessage msg)
         {
-            if (string.IsNullOrEmpty(options.ApiKey))
+            if (!string.IsNullOrEmpty(options?.BccAddress))
+            {
+                msg.AddBcc(options?.BccAddress);
+            }
+
+            if (string.IsNullOrEmpty(options?.ApiKey))
             {
                 logger.LogError($"Send Grid API Key not provided. Email not sent.");
-                if (options.Suppress == false)
+                if (options?.Suppress == false)
                 {
                     throw new System.ArgumentNullException($"Send Grid API Key not provided. Email not sent.");
                 }
             }
-            else if (options.Suppress == true)
+            else if (options?.Suppress == true)
             {
                 logger.LogWarning($"Email suppressed via configuration.");
                 logger.LogTrace(JsonConvert.SerializeObject(msg));
@@ -107,7 +111,7 @@ namespace Amphora.Infrastructure.Services
             else
             {
                 logger.LogInformation($"Sending email from {msg.From}");
-                var client = new SendGridClient(options.ApiKey);
+                var client = new SendGridClient(options?.ApiKey);
                 var response = await client.SendEmailAsync(msg);
                 var body = await response.Body.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
