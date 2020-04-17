@@ -66,14 +66,22 @@ namespace Amphora.Identity
         private static ICollection<string> StandardRedirectUrls(ExternalServices externalServices, EnvironmentInfo envInfo)
         {
             var urls = new List<string>();
-            if (string.IsNullOrEmpty(envInfo.Stack))
+            if (envInfo.IsDevelopment)
             {
                 urls.Add("localhost:5001".ToUri().ToStandardString() + "/signin-oidc");
                 urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signin-oidc");
             }
             else
             {
-                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                if (string.IsNullOrEmpty(envInfo.Location))
+                {
+                    urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                }
+                else
+                {
+                    urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                }
+
                 urls.Add(AppUrl.ToUri().ToStandardString() + "/signin-oidc");
             }
 
@@ -90,7 +98,7 @@ namespace Amphora.Identity
         private static ICollection<string> StandardPostLogoutRedirects(ExternalServices externalServices, EnvironmentInfo envInfo)
         {
             var urls = new List<string>();
-            if (string.IsNullOrEmpty(envInfo.Stack) && string.IsNullOrEmpty(envInfo.Location))
+            if (envInfo.IsDevelopment)
             {
                 urls.Add("localhost:5001".ToUri().ToStandardString() + "/signout-callback-oidc");
                 urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signout-callback-oidc");
@@ -118,7 +126,7 @@ namespace Amphora.Identity
             {
                 logoutRedirect = externalServices.WebAppUri().ToStandardString();
             }
-            else if (string.IsNullOrEmpty(envInfo.Stack))
+            else if (envInfo.IsDevelopment)
             {
                 logoutRedirect = "localhost:5001".ToUri().ToStandardString() + "/signout-oidc";
             }

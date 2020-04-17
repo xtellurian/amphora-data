@@ -28,6 +28,7 @@ namespace Amphora.SharedUI
 
             services.Configure<EnvironmentInfo>(Configuration.GetSection("Environment"));
             Configuration.GetSection("Environment").Bind(EnvironmentInfo);
+            EnvironmentInfo.IsDevelopment = HostingEnvironment.IsDevelopment();
         }
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)

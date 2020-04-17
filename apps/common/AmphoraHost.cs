@@ -67,13 +67,21 @@ namespace Amphora.Common
             }
             else
             {
-                if (environmentName == "prod")
+                try
                 {
-                    return new Uri($"https://{appName}.amphoradata.com");
+                    if (environmentName == "prod")
+                    {
+                        return new Uri($"https://{appName}.amphoradata.com");
+                    }
+                    else
+                    {
+                        return new Uri($"https://{environmentName}.{appName}.amphoradata.com");
+                    }
                 }
-                else
+                catch (System.UriFormatException)
                 {
-                    return new Uri($"https://{environmentName}.{appName}.amphoradata.com");
+                    Console.WriteLine($"Bad Format for env {environmentName}, appName: {appName}");
+                    throw;
                 }
             }
         }
