@@ -4,7 +4,7 @@ using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Models.Emails
+namespace Amphora.Common.Models.Emails
 {
     public class InvoiceNotificationEmail : EmailBase, IEmail
     {

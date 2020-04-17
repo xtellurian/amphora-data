@@ -3,7 +3,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Models.Emails
+namespace Amphora.Common.Models.Emails
 {
     public class RequestToJoinEmail : EmailBase, IEmail
     {

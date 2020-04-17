@@ -1,8 +1,8 @@
-namespace Amphora.Api
+namespace Amphora.Common
 {
     public static class AmphoraHost
     {
-        internal static void SetHost(string host)
+        public static void SetHost(string host)
         {
             if (host == null)
             {
@@ -14,10 +14,7 @@ namespace Amphora.Api
                 throw new System.ArgumentException("MainHost should not start with unencryped http://");
             }
 
-            if (!host.EndsWith('/'))
-            {
-                host += "/";
-            }
+            host = host.TrimEnd('/');
 
             if (!host.StartsWith("https://"))
             {

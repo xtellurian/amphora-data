@@ -2,12 +2,17 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Models.Emails
+namespace Amphora.Common.Models.Emails
 {
     public class InvitationEmail : EmailBase, IEmail
     {
-        public InvitationEmail(InvitationModel recipient, string baseUrl = null)
+        public InvitationEmail(InvitationModel recipient, string? baseUrl = null)
         {
+            if (recipient is null || recipient.TargetEmail is null)
+            {
+                throw new System.ArgumentNullException(nameof(recipient) + " or recipient.TargetEmail");
+            }
+
             this.Recipients.Add(new EmailRecipient(recipient.TargetEmail, ""));
             this.Email = recipient.TargetEmail;
             if (!string.IsNullOrEmpty(baseUrl))

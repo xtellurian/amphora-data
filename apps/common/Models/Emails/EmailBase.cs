@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Amphora.Common.Contracts;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Models.Emails
+namespace Amphora.Common.Models.Emails
 {
     public abstract class EmailBase : IEmail
     {

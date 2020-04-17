@@ -1,6 +1,6 @@
 using Amphora.Common.Contracts;
 
-namespace Amphora.Api.Models.Emails
+namespace Amphora.Common.Models.Emails
 {
     public class EmailRecipient : IEmailRecipient
     {

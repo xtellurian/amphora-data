@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Amphora.Tests.Unit
@@ -46,6 +47,11 @@ namespace Amphora.Tests.Unit
         protected IPermissionService CreateMockPermissionService()
         {
             return Mock.Of<IPermissionService>();
+        }
+
+        protected IOptionsMonitor<T> MockOptions<T>(T o) where T : class
+        {
+            return Mock.Of<IOptionsMonitor<T>>(_ => _.CurrentValue == o);
         }
 
         protected IMemoryCache CreateMemoryCache()

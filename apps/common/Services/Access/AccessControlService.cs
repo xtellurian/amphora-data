@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Emails;
+using Amphora.Common.Models.Host;
 using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Permissions.Rules;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Common.Services.Access
 {
@@ -14,14 +17,20 @@ namespace Amphora.Common.Services.Access
         private readonly IEntityStore<AmphoraAccessControlModel> store;
         private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
+        private readonly IEmailSender emailSender;
+        private readonly IOptionsMonitor<HostOptions> hostOptions;
 
         public AccessControlService(IEntityStore<AmphoraAccessControlModel> store,
                                     IUserDataService userDataService,
-                                    IPermissionService permissionService)
+                                    IPermissionService permissionService,
+                                    IOptionsMonitor<HostOptions> hostOptions,
+                                    IEmailSender emailSender)
         {
             this.store = store;
             this.userDataService = userDataService;
             this.permissionService = permissionService;
+            this.emailSender = emailSender;
+            this.hostOptions = hostOptions; ;
         }
 
         public async Task<EntityOperationResult<AccessRule>> CreateAsync(ClaimsPrincipal principal, AmphoraModel amphora, AccessRule rule)
@@ -53,6 +62,11 @@ namespace Amphora.Common.Services.Access
                     }
 
                     var res = await store.UpdateAsync(amphora.AccessControl);
+                    if (rule is UserAccessRule r && r.Kind == Kind.Allow)
+                    {
+                        await emailSender.SendEmailAsync(new GivenAccessToAmphoraEmail(amphora, r.UserData?.ContactInformation?.Email!, r.UserData?.ContactInformation?.FullName));
+                    }
+
                     return new EntityOperationResult<AccessRule>(userDataRes.Entity!, rule);
                 }
                 else
