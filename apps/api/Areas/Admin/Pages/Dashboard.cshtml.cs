@@ -70,18 +70,11 @@ namespace Amphora.Api.Areas.Admin.Pages
         private async Task LoadUserStats()
         {
             this.Stats.Users.TotalCount = await userDataService.Query(User, _ => true).CountAsync();
-            this.Stats.Users.ActiveCount = await userDataService.Query(User, Active<ApplicationUserDataModel>()).CountAsync();
         }
 
         private async Task LoadOrganisationStats()
         {
             this.Stats.Organisations.TotalCount = await organisationService.Store.CountAsync();
-            this.Stats.Organisations.ActiveCount = (await userDataService
-                .Query(User, Active<ApplicationUserDataModel>())
-                .Select(_ => _.OrganisationId)
-                .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
-                .Distinct()
-                .Count();
 
             this.Stats.Organisations.MeanBalance = (await organisationService.Store
                 .Query(_ => true)
@@ -152,22 +145,26 @@ namespace Amphora.Api.Areas.Admin.Pages
     {
         public DateTimeOffset? GeneratedTime { get; set; }
         public StatisticsGroup Amphorae { get; set; } = new StatisticsGroup();
-        public StatisticsGroup Users { get; set; } = new StatisticsGroup();
+        public CountableGroup Users { get; set; } = new CountableGroup();
         public OrgStatsGroup Organisations { get; set; } = new OrgStatsGroup();
         public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
         public StatisticsGroup Purchases { get; set; } = new StatisticsGroup();
         public StatisticsGroup Commissions { get; set; } = new StatisticsGroup();
     }
 
-    public class OrgStatsGroup : StatisticsGroup
+    public class CountableGroup
+    {
+        public int? TotalCount { get; set; }
+    }
+
+    public class OrgStatsGroup : CountableGroup
     {
         public double? AggregateBalance { get; set; }
         public double? MeanBalance { get; set; }
     }
 
-    public class StatisticsGroup
+    public class StatisticsGroup : CountableGroup
     {
-        public int? TotalCount { get; set; }
         public int? ActiveCount { get; set; }
         public double? MeanActivePrice { get; set; }
     }
