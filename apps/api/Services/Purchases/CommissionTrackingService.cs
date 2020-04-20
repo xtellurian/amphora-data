@@ -9,9 +9,9 @@ namespace Amphora.Api.Services.Purchases
     public class CommissionTrackingService : ICommissionTrackingService
     {
         private readonly IEntityStore<CommissionModel> store;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
 
-        public CommissionTrackingService(IEntityStore<CommissionModel> store, IEventPublisher eventPublisher)
+        public CommissionTrackingService(IEntityStore<CommissionModel> store, IEventRoot eventPublisher)
         {
             this.store = store;
             this.eventPublisher = eventPublisher;

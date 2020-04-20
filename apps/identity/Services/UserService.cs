@@ -16,12 +16,12 @@ namespace Amphora.Identity.Services
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> logger;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
         private readonly UserManager<ApplicationUser> userManager;
 
         // don't let permission service in here
         public UserService(ILogger<UserService> logger,
-                           IEventPublisher eventPublisher,
+                           IEventRoot eventPublisher,
                            UserManager<ApplicationUser> userManager)
         {
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));

@@ -10,10 +10,10 @@ namespace Amphora.Identity.Services
 {
     public class IdentityServerEventConnectorService : IEventSink
     {
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
         private readonly EventOptions options;
 
-        public IdentityServerEventConnectorService(IOptionsMonitor<EventOptions> options, IEventPublisher eventPublisher)
+        public IdentityServerEventConnectorService(IOptionsMonitor<EventOptions> options, IEventRoot eventPublisher)
         {
             this.eventPublisher = eventPublisher;
             this.options = options.CurrentValue;

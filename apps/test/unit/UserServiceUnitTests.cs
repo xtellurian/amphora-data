@@ -26,7 +26,7 @@ namespace Amphora.Tests.Unit
             var mockUserManager = MockUserManager<ApplicationUser>(new List<ApplicationUser> { });
             mockUserManager.Setup(u => u.FindByNameAsync(appUser.UserName)).ReturnsAsync(appUser);
 
-            var mock = new Mock<IEventPublisher>();
+            var mock = new Mock<IEventRoot>();
             mock.Setup(p => p.PublishEventAsync(It.IsAny<SignInEvent>())).Returns(Task.CompletedTask);
 
             var sut = new UserService(CreateMockLogger<UserService>(), mock.Object, mockUserManager.Object);

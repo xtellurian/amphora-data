@@ -14,9 +14,9 @@ namespace Amphora.Api.Services.DataRequests
     {
         private readonly IEntityStore<DataRequestModel> dataRequestStore;
         private readonly IUserDataService userDataService;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
 
-        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserDataService userDataService, IEventPublisher eventPublisher)
+        public DataRequestService(IEntityStore<DataRequestModel> dataRequestStore, IUserDataService userDataService, IEventRoot eventPublisher)
         {
             this.dataRequestStore = dataRequestStore;
             this.userDataService = userDataService;

@@ -25,7 +25,7 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IEntityStore<OrganisationModel> organisationStore;
         private readonly IPermissionService permissionService;
         private readonly IUserDataService userDataService;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
         private readonly ILogger<AmphoraeService> logger;
 
         public AmphoraeService(IOptionsMonitor<AmphoraManagementOptions> options,
@@ -34,7 +34,7 @@ namespace Amphora.Api.Services.Amphorae
                                IEntityStore<OrganisationModel> organisationStore,
                                IPermissionService permissionService,
                                IUserDataService userDataService,
-                               IEventPublisher eventPublisher,
+                               IEventRoot eventPublisher,
                                ILogger<AmphoraeService> logger)
         {
             this.options = options;

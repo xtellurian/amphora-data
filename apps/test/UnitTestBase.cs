@@ -34,9 +34,9 @@ namespace Amphora.Tests.Unit
             return logger;
         }
 
-        protected IEventPublisher CreateMockEventPublisher()
+        protected IEventRoot CreateMockEventPublisher()
         {
-            return Mock.Of<IEventPublisher>();
+            return Mock.Of<IEventRoot>();
         }
 
         protected Mock<ClaimsPrincipal> MockClaimsPrincipal()

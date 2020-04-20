@@ -25,7 +25,7 @@ namespace Amphora.Api.Services.Purchases
         private readonly ICommissionTrackingService commissionTracker;
         private readonly IUserDataService userDataService;
         private readonly IEmailSender emailSender;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<PurchaseService> logger;
 
@@ -36,7 +36,7 @@ namespace Amphora.Api.Services.Purchases
             ICommissionTrackingService commissionTracker,
             IUserDataService userDataService,
             IEmailSender emailSender,
-            IEventPublisher eventPublisher,
+            IEventRoot eventPublisher,
             IDateTimeProvider dateTimeProvider,
             ILogger<PurchaseService> logger)
         {

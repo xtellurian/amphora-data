@@ -22,7 +22,7 @@ namespace Amphora.Api.Services.Organisations
         private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
         private readonly IBlobStore<OrganisationModel> orgBlobStore;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IEventRoot eventPublisher;
         public IEntityStore<OrganisationModel> Store { get; }
         private readonly ILogger<OrganisationService> logger;
 
@@ -31,7 +31,7 @@ namespace Amphora.Api.Services.Organisations
             IPermissionService permissionService,
             IEntityStore<OrganisationModel> orgStore,
             IBlobStore<OrganisationModel> orgBlobStore,
-            IEventPublisher eventPublisher,
+            IEventRoot eventPublisher,
             ILogger<OrganisationService> logger)
         {
             this.userDataService = userDataService;
