@@ -60,6 +60,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadOrganisationStats();
                 await LoadDebitStats();
                 await LoadPurchaseStats();
+                await LoadSignalsStats();
                 TrackMetrics(this.Stats);
                 this.Stats.GeneratedTime = DateTime.Now;
 
