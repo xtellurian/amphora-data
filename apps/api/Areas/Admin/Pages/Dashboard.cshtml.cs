@@ -22,6 +22,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<CommissionModel> commissionStore;
         private readonly IUserDataService userDataService;
+        private readonly ITelemetry telemetry;
         private readonly ICache cache;
 
         public StatisticsCollection Stats { get; set; } = new StatisticsCollection();
@@ -31,6 +32,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                                   IEntityStore<PurchaseModel> purchaseStore,
                                   IEntityStore<CommissionModel> commissionStore,
                                   IUserDataService userDataService,
+                                  ITelemetry telemetry,
                                   ICache cache)
         {
             this.amphoraeService = amphoraeService;
@@ -38,6 +40,7 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.purchaseStore = purchaseStore;
             this.commissionStore = commissionStore;
             this.userDataService = userDataService;
+            this.telemetry = telemetry;
             this.cache = cache;
         }
 
@@ -57,6 +60,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadOrganisationStats();
                 await LoadDebitStats();
                 await LoadPurchaseStats();
+                TrackMetrics(this.Stats);
                 this.Stats.GeneratedTime = DateTime.Now;
 
                 cache.Compact();
@@ -79,7 +83,6 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Query(_ => true)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Average(_ => _.Account.Balance);
-
             this.Stats.Organisations.AggregateBalance = (await organisationService.Store
                 .Query(_ => true)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
@@ -162,17 +165,46 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.Stats.Signals.TotalUniqueCount = uniqueCount.Keys.Count;
             return Task.CompletedTask;
         }
+
+        private void TrackMetrics(StatisticsCollection collection)
+        {
+            TrackMetric("Amphorae", collection.Amphorae);
+            TrackMetric("Commissions", collection.Commissions);
+            TrackMetric("Debits", collection.Debits);
+            TrackMetric("Organisations", collection.Organisations);
+            TrackMetric("Purchases", collection.Purchases);
+            TrackMetric("Signals", collection.Signals);
+            TrackMetric("Users", collection.Users);
+        }
+
+        private void TrackMetric(string name, PricedGroup group)
+        {
+            telemetry.TrackMetricValue($"{name}.ActiveCount", group.ActiveCount);
+            telemetry.TrackMetricValue($"{name}.MeanActivePrice", group.MeanActivePrice);
+            TrackMetric(name, (CountableGroup)group);
+        }
+
+        private void TrackMetric(string name, UniqueCountableGroup group)
+        {
+            telemetry.TrackMetricValue($"{name}.TotalUniqueCount", group.TotalUniqueCount);
+            TrackMetric(name, (CountableGroup)group);
+        }
+
+        private void TrackMetric(string name, CountableGroup group)
+        {
+            telemetry.TrackMetricValue($"{name}.TotalCount", group.TotalCount);
+        }
     }
 
     public class StatisticsCollection
     {
         public DateTimeOffset? GeneratedTime { get; set; }
-        public StatisticsGroup Amphorae { get; set; } = new StatisticsGroup();
+        public PricedGroup Amphorae { get; set; } = new PricedGroup();
         public CountableGroup Users { get; set; } = new CountableGroup();
         public OrgStatsGroup Organisations { get; set; } = new OrgStatsGroup();
-        public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
-        public StatisticsGroup Purchases { get; set; } = new StatisticsGroup();
-        public StatisticsGroup Commissions { get; set; } = new StatisticsGroup();
+        public PricedGroup Debits { get; set; } = new PricedGroup();
+        public PricedGroup Purchases { get; set; } = new PricedGroup();
+        public PricedGroup Commissions { get; set; } = new PricedGroup();
         public UniqueCountableGroup Signals { get; set; } = new UniqueCountableGroup();
     }
 
@@ -192,7 +224,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         public double? MeanBalance { get; set; }
     }
 
-    public class StatisticsGroup : CountableGroup
+    public class PricedGroup : CountableGroup
     {
         public int? ActiveCount { get; set; }
         public double? MeanActivePrice { get; set; }

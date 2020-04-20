@@ -22,5 +22,10 @@ namespace Amphora.Infrastructure.Services.Events
 
             return Task.CompletedTask;
         }
+
+        public void TrackMetricValue(string metric, double? value)
+        {
+            client.GetMetric(metric).TrackValue(value);
+        }
     }
 }
