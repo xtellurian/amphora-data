@@ -179,20 +179,20 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         private void TrackMetric(string name, PricedGroup group)
         {
-            telemetry.TrackMetricValue($"{name}.ActiveCount", group.ActiveCount);
-            telemetry.TrackMetricValue($"{name}.MeanActivePrice", group.MeanActivePrice);
+            telemetry.TrackMetricValue($"AmphoraData.{name}.ActiveCount", group.ActiveCount);
+            telemetry.TrackMetricValue($"AmphoraData.{name}.MeanActivePrice", group.MeanActivePrice);
             TrackMetric(name, (CountableGroup)group);
         }
 
         private void TrackMetric(string name, UniqueCountableGroup group)
         {
-            telemetry.TrackMetricValue($"{name}.TotalUniqueCount", group.TotalUniqueCount);
+            telemetry.TrackMetricValue($"AmphoraData.{name}.TotalUniqueCount", group.TotalUniqueCount);
             TrackMetric(name, (CountableGroup)group);
         }
 
         private void TrackMetric(string name, CountableGroup group)
         {
-            telemetry.TrackMetricValue($"{name}.TotalCount", group.TotalCount);
+            telemetry.TrackMetricValue($"AmphoraData.{name}.TotalCount", group.TotalCount);
         }
     }
 
