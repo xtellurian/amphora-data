@@ -8,7 +8,14 @@ namespace Amphora.Common.Models.Events
         public OrganisationCreatedEvent(OrganisationModel org)
         {
             Subject = $"/amphora/api/organisations/{org.Id}";
-            Data = new OrganisationCreatedEventData(org.Id, org.Name, org?.About, org?.Address, org?.WebsiteUrl);
+            var data = new EventDataDictionary($"Organisation({org.Id}) was created");
+            data.SetOrganisationId(org.Id);
+            data.SetTriggeredByUsername(org.CreatedBy?.UserName);
+            data.Set("Name", org.Name);
+            data.Set("About", org.About);
+            data.Set("Website", org.WebsiteUrl);
+            data.Set("Address", org.Address);
+            this.Data = data;
         }
 
         public string EventType => "AmphoraData.Organisations.OrganisationCreated";
@@ -16,26 +23,5 @@ namespace Amphora.Common.Models.Events
         public IEventData Data { get; private set; }
 
         public override string Subject { get; set; }
-        private class OrganisationCreatedEventData : IEventData
-        {
-            public OrganisationCreatedEventData(string? organisationId, string name, string? about, string? address, string? website)
-            {
-                FriendlyName = $"Organisation({organisationId}) was created";
-                OrganisationId = organisationId;
-                Name = name;
-                About = about;
-                Address = address;
-                Website = website;
-            }
-
-            public string? FriendlyName { get; set; }
-            public string? AmphoraId { get; set; }
-            public string? OrganisationId { get; set; }
-            public string? TriggeredByUserName { get; set; }
-            public string Name { get; set; }
-            public string? About { get; set; }
-            public string? Address { get; set; }
-            public string? Website { get; set; }
-        }
     }
 }

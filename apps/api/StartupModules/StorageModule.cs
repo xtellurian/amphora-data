@@ -10,7 +10,6 @@ using Amphora.Common.Extensions;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -58,9 +57,9 @@ namespace Amphora.Api.StartupModules
             }
 
             services.AddScoped<IEventHubSender, EventHubSender>();
+            services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
 
             services.Configure<AzureStorageAccountOptions>(Configuration.GetSection("Storage"));
-            services.Configure<EventHubOptions>(Configuration.GetSection("TsiEventHub"));
             services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
 
             if (IsUsingCosmos())

@@ -1,13 +1,12 @@
+using System.Collections.Generic;
+
 namespace Amphora.Common.Contracts
 {
-    public interface IEventData
+    public interface IEventData : IDictionary<string, string>
     {
         /// <summary>
         /// The user friendly name of the event.
         /// </summary>
-        string? FriendlyName { get; set; }
-        string? AmphoraId { get; set; }
-        string? OrganisationId { get; set; }
-        string? TriggeredByUserName { get; set; }
+        string FriendlyName { get; set; }
     }
 }

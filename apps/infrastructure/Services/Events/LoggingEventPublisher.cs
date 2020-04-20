@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Services.Events
+namespace Amphora.Infrastructure.Services.Events
 {
     public class LoggingEventPublisher : IEventPublisher
     {

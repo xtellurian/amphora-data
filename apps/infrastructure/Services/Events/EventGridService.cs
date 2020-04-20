@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Services.Events
+namespace Amphora.Infrastructure.Services.Events
 {
     public class EventGridService : IEventPublisher
     {

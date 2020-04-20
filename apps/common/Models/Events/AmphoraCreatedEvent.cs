@@ -7,12 +7,13 @@ namespace Amphora.Common.Models.Events
     {
         public AmphoraCreatedEvent(AmphoraModel amphora)
         {
-            this.Data = new AmphoraCreatedEventData(amphora.Id,
-                                                    amphora.OrganisationId,
-                                                    amphora.Price,
-                                                    amphora.CreatedBy?.UserName);
-
-            this.Subject = $"/amphora/api/amphorae/{amphora.Id}";
+            var data = new EventDataDictionary($"Amphora({amphora.Id}) created by {amphora.CreatedBy?.UserName}");
+            data.Set("AmphoraId", amphora.Id);
+            data.Set("OrganisationId", amphora.OrganisationId);
+            data.Set("Price", amphora.Price?.ToString() ?? "0");
+            data.SetTriggeredByUsername(amphora?.CreatedBy?.UserName);
+            this.Data = data;
+            this.Subject = $"/amphora/api/amphorae/{amphora?.Id}";
         }
 
         public string EventType => "AmphoraData.Amphorae.NewAmphora";
@@ -20,26 +21,5 @@ namespace Amphora.Common.Models.Events
         public IEventData Data { get; private set; }
 
         public override string Subject { get; set; }
-
-        private class AmphoraCreatedEventData : IEventData
-        {
-            public AmphoraCreatedEventData(string amphoraId,
-                                           string? organisationId,
-                                           double? price,
-                                           string? triggeredByUserName)
-            {
-                FriendlyName = $"Amphora({amphoraId}) created by {triggeredByUserName}";
-                AmphoraId = amphoraId;
-                OrganisationId = organisationId;
-                Price = price;
-                TriggeredByUserName = triggeredByUserName;
-            }
-
-            public string? FriendlyName { get; set; }
-            public string? AmphoraId { get; set; }
-            public string? OrganisationId { get; set; }
-            public string? TriggeredByUserName { get; set; }
-            public double? Price { get; set; }
-        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Common.Models.Events
@@ -6,29 +7,16 @@ namespace Amphora.Common.Models.Events
     {
         public SignInEvent(IUser user, bool? isAcquiringToken = false)
         {
-            Data = new SignInEventData(user.OrganisationId, user.UserName, isAcquiringToken);
+            var d = new EventDataDictionary($"{user.UserName} signed in");
+            d.SetOrganisationId(user.OrganisationId);
+            d.SetTriggeredByUsername(user.UserName);
+            d.Set("IsAcquiringToken", isAcquiringToken.ToString());
+            this.Data = d;
             Subject = $"/amphora/app/users/{user?.UserName}";
         }
 
         public string EventType => "AmphoraData.Users.SignIn";
-
         public IEventData Data { get; private set; }
         public override string Subject { get; set; }
-        private class SignInEventData : IEventData
-        {
-            public SignInEventData(string? organisationId, string? triggeredByUserName, bool? isAcquiringToken)
-            {
-                FriendlyName = $"{triggeredByUserName} signed in";
-                OrganisationId = organisationId;
-                TriggeredByUserName = triggeredByUserName;
-                IsAcquiringToken = isAcquiringToken;
-            }
-
-            public string? FriendlyName { get; set; }
-            public string? AmphoraId { get; set; } = null;
-            public string? OrganisationId { get; set; }
-            public string? TriggeredByUserName { get; set; }
-            public bool? IsAcquiringToken { get; set; }
-        }
     }
 }

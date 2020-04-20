@@ -1,5 +1,4 @@
-﻿using Amphora.Api.Services.Events;
-using Amphora.Common.Configuration.Options;
+﻿using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
@@ -11,6 +10,7 @@ using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
+using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.ApplicationInsights.Channel;
@@ -42,6 +42,8 @@ namespace Amphora.Identity
             ConfigureSharedServices(services);
             IdentityConfiguration.RegisterOptions(Configuration, services, HostingEnvironment.IsDevelopment());
             System.Console.WriteLine($"Persistent Stores: {Configuration.IsPersistentStores()}");
+
+            services.RegisterEventsModule(Configuration, HostingEnvironment.IsProduction());
 
             // Data Protection
             var connectionString = Configuration.GetSection("Storage")[nameof(AzureStorageAccountOptions.StorageConnectionString)];
@@ -118,14 +120,6 @@ namespace Amphora.Identity
             }
 
             services.AddScoped<IUserService, UserService>();
-            if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
-            {
-                services.AddTransient<IEventPublisher, EventGridService>();
-            }
-            else
-            {
-                services.AddTransient<IEventPublisher, LoggingEventPublisher>();
-            }
 
             services.AddTransient<CosmosInitialiser<IdentityContext>>();
 

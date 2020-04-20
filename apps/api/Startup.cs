@@ -4,20 +4,19 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
-using Amphora.Api.Services.Events;
 using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.InMemory;
 using Amphora.Api.Services.Organisations;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
-using Amphora.Common;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
+using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
@@ -66,6 +65,7 @@ namespace Amphora.Api
             this.identityModule.ConfigureServices(services);
             this.geoModule.ConfigureServices(services);
             this.discoverModule.ConfigureServices(services);
+            services.RegisterEventsModule(Configuration, HostingEnvironment.IsProduction());
 
             if (HostingEnvironment.IsDevelopment())
             {
@@ -87,15 +87,6 @@ namespace Amphora.Api
             else
             {
                 services.AddScoped<ITsiService, InMemoryTsiService>();
-            }
-
-            if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
-            {
-                services.AddTransient<IEventPublisher, EventGridService>();
-            }
-            else
-            {
-                services.AddTransient<IEventPublisher, LoggingEventPublisher>();
             }
 
             // permissioned stores
