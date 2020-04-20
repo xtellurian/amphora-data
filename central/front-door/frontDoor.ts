@@ -38,6 +38,12 @@ export function createFrontDoor({ rg, kv, frontendHosts, prodHostnames }
                 path: "/",
                 protocol: "Https",
             },
+            {
+                intervalInSeconds: 30,
+                name: "quickstart",
+                path: "/quickstart",
+                protocol: "Https",
+            },
         ],
         backendPoolLoadBalancings: [{
             name: "loadBalancingSettings1",
