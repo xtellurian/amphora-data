@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -7,11 +8,9 @@ using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Purchases;
-using Amphora.Common.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Amphora.Api.Areas.Admin.Pages
 {
@@ -139,6 +138,30 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.Stats.Amphorae.TotalCount = await this.amphoraeService.AmphoraStore.CountAsync();
             this.Stats.Amphorae.ActiveCount = await this.amphoraeService.AmphoraStore.CountAsync(Active<AmphoraModel>());
         }
+
+        private Task LoadSignalsStats()
+        {
+            long total = 0;
+            var uniqueCount = new Dictionary<string, long>();
+            foreach (var a in amphoraeService.AmphoraStore.Query(_ => true))
+            {
+                // go through every amphora
+                total += a.V2Signals.Count;
+                foreach (var s in a.V2Signals)
+                {
+                    if (!uniqueCount.ContainsKey(s.Property))
+                    {
+                        uniqueCount[s.Property] = 0; // initialise entry
+                    }
+
+                    uniqueCount[s.Property] += 1;
+                }
+            }
+
+            this.Stats.Signals.TotalCount = total;
+            this.Stats.Signals.TotalUniqueCount = uniqueCount.Keys.Count;
+            return Task.CompletedTask;
+        }
     }
 
     public class StatisticsCollection
@@ -150,11 +173,17 @@ namespace Amphora.Api.Areas.Admin.Pages
         public StatisticsGroup Debits { get; set; } = new StatisticsGroup();
         public StatisticsGroup Purchases { get; set; } = new StatisticsGroup();
         public StatisticsGroup Commissions { get; set; } = new StatisticsGroup();
+        public UniqueCountableGroup Signals { get; set; } = new UniqueCountableGroup();
     }
 
     public class CountableGroup
     {
-        public int? TotalCount { get; set; }
+        public long? TotalCount { get; set; }
+    }
+
+    public class UniqueCountableGroup : CountableGroup
+    {
+        public long? TotalUniqueCount { get; set; }
     }
 
     public class OrgStatsGroup : CountableGroup

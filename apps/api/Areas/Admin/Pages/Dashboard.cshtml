@@ -18,34 +18,25 @@
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">Amphorae</h5>
+                    <h5 class="card-title">Users</h5>
                 </div>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-3">                                     
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Total</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Count</h6>
-                    <p class="card-text">@Model.Stats.Amphorae.TotalCount</p>
+                    <p class="card-text">@Model.Stats.Users.TotalCount</p>
                 </div>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-3">                                     
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Count</h6>
-                    <p class="card-text">@Model.Stats.Amphorae.ActiveCount</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Mean Price of Active</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
-                    <p class="card-text">@Model.Stats.Amphorae.MeanActivePrice</p>
+                    <p class="card-text">N/A</p>
                 </div>
             </div>
         </div>
@@ -101,25 +92,62 @@
         <div class="col-sm-3">
             <div class="card bg-light" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">Users</h5>
+                    <h5 class="card-title">Amphorae</h5>
                 </div>
             </div>
         </div>
-        <div class="col-3">                                     
+        <div class="col-3">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Total</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Count</h6>
-                    <p class="card-text">@Model.Stats.Users.TotalCount</p>
+                    <p class="card-text">@Model.Stats.Amphorae.TotalCount</p>
                 </div>
             </div>
         </div>
-        <div class="col-3">                                     
+        <div class="col-3">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Count</h6>
-                    <p class="card-text">N/A</p>
+                    <p class="card-text">@Model.Stats.Amphorae.ActiveCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Price of Active</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
+                    <p class="card-text">@Model.Stats.Amphorae.MeanActivePrice</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-1">
+        <div class="col-sm-3">
+            <div class="card bg-light" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Signals</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Signals.TotalCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Unique</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Count</h6>
+                    <p class="card-text">@Model.Stats.Signals.TotalUniqueCount</p>
                 </div>
             </div>
         </div>
