@@ -1,9 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
-using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Permissions.Rules;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +34,74 @@ namespace Amphora.Api.Controllers.Amphorae
             this.organisationService = organisationService;
             this.userDataService = userDataService;
             this.mapper = mapper;
+        }
+
+        /// <summary>
+        /// Get's the list of access rules applied to users.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A list of rules.</returns>
+        [Produces(typeof(IEnumerable<Models.Dtos.AccessControls.UserAccessRule>))]
+        [HttpGet("ForUser")]
+        [CommonAuthorize]
+        public async Task<IActionResult> GetUserRules(string id)
+        {
+            var readRes = await amphoraeService.ReadAsync(User, id);
+            if (readRes.Succeeded)
+            {
+                var amphora = readRes.Entity;
+                var res = new List<Models.Dtos.AccessControls.UserAccessRule>();
+                foreach (var r in amphora.AccessControl.UserAccessRules)
+                {
+                    res.Add(new Models.Dtos.AccessControls.UserAccessRule
+                    {
+                        Priority = r.Priority ?? -1,
+                        AllowOrDeny = r.Kind == Kind.Allow ? "Allow" : "Deny",
+                        Id = r.Id,
+                        Username = r.UserData.UserName
+                    });
+                }
+
+                return Ok(res);
+            }
+            else
+            {
+                return Handle(readRes);
+            }
+        }
+
+        /// <summary>
+        /// Get's the list of access rules applied to organisations.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A list of rules.</returns>
+        [Produces(typeof(IEnumerable<Models.Dtos.AccessControls.OrganisationAccessRule>))]
+        [HttpGet("ForOrganisation")]
+        [CommonAuthorize]
+        public async Task<IActionResult> GetOrganisationRules(string id)
+        {
+            var readRes = await amphoraeService.ReadAsync(User, id);
+            if (readRes.Succeeded)
+            {
+                var amphora = readRes.Entity;
+                var res = new List<Models.Dtos.AccessControls.OrganisationAccessRule>();
+                foreach (var r in amphora.AccessControl.OrganisationAccessRules)
+                {
+                    res.Add(new Models.Dtos.AccessControls.OrganisationAccessRule
+                    {
+                        Priority = r.Priority ?? -1,
+                        AllowOrDeny = r.Kind == Kind.Allow ? "Allow" : "Deny",
+                        Id = r.Id,
+                        OrganisationId = r.OrganisationId
+                    });
+                }
+
+                return Ok(res);
+            }
+            else
+            {
+                return Handle(readRes);
+            }
         }
 
         /// <summary>
