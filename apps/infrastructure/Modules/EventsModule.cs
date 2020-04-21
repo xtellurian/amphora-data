@@ -17,10 +17,12 @@ namespace Amphora.Infrastructure.Modules
         {
             if (configuration.IsPersistentStores() || isProduction)
             {
+                System.Console.WriteLine($"Using {typeof(EventGridService)} as ${typeof(IEventPublisher)}");
                 services.AddTransient<IEventPublisher, EventGridService>();
             }
             else
             {
+                System.Console.WriteLine($"Using {typeof(LoggingEventPublisher)} as ${typeof(IEventPublisher)}");
                 services.AddTransient<IEventPublisher, LoggingEventPublisher>();
             }
 
