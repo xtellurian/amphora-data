@@ -34,14 +34,14 @@ export function createFrontDoor({ rg, kv, frontendHosts, prodHostnames }
         backendPoolHealthProbes: [
             {
                 intervalInSeconds: 30,
-                name: "normal",
-                path: "/",
+                name: "quickstart",
+                path: "/quickstart",
                 protocol: "Https",
             },
             {
                 intervalInSeconds: 30,
-                name: "quickstart",
-                path: "/quickstart",
+                name: "normal",
+                path: "/",
                 protocol: "Https",
             },
         ],
