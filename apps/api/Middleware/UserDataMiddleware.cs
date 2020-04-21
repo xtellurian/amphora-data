@@ -27,6 +27,7 @@ namespace Amphora.Api.Middleware
             {
                 var id = httpContext.User.GetUserId();
                 var email = httpContext.User.GetEmail();
+                var emailConfirmed = httpContext.User.IsEmailConfirmed();
                 var name = httpContext.User.GetUserName();
                 var fullName = httpContext.User.GetFullName();
                 var about = httpContext.User.GetAbout();
@@ -52,6 +53,7 @@ namespace Amphora.Api.Middleware
                 else if (readRes.Succeeded)
                 {
                     var userData = readRes.Entity;
+                    userData.ContactInformation ??= new ContactInformation();
                     var needsUpdate = false;
                     // check whether we need to make updates to Full Name or About
                     if (!string.Equals(userData.About, about))
@@ -60,9 +62,11 @@ namespace Amphora.Api.Middleware
                         needsUpdate = true;
                     }
 
-                    if (!string.Equals(userData.ContactInformation.FullName, fullName))
+                    if (!string.Equals(userData.ContactInformation?.FullName, fullName))
                     {
                         userData.ContactInformation.FullName = fullName;
+                        userData.ContactInformation.Email = email;
+                        userData.ContactInformation.EmailConfirmed = emailConfirmed;
                         needsUpdate = true;
                     }
 
