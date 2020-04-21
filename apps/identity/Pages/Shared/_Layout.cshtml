@@ -18,6 +18,7 @@
     Func<ClaimsPrincipal, Task<string>> profileUrl = (p) => Task.FromResult(p.GetProfilePictureUri()?.ToString()+"?s=180");
     Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
     var returnUrl = Context.Request.Query["returnUrl"];
+    var googleTrackingId = Configuration.GetSection("GoogleAnalytics")["TrackingId"];
 }
 
 <!DOCTYPE html>
@@ -42,6 +43,8 @@
             asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
             crossorigin="anonymous"
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"/>
+
+        @await Html.PartialAsync("_GoogleAnalyticsPartial", new Amphora.SharedUI.Models.GoogleAnalyticsModel(googleTrackingId))
     </environment>
 
 
