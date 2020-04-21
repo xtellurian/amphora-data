@@ -12,6 +12,7 @@
     ViewData["Title"] = Model.AppUser.ContactInformation?.FullName;
     var editProfileUrl = $"{externalServices.CurrentValue?.IdentityUri().ToStandardString()}/Account/Edit";
     var manageProfileUrl = $"{externalServices.CurrentValue?.IdentityUri().ToStandardString()}/Account/Manage";
+    var profileImgSrc = @Model.AppUser?.ContactInformation?.Email?.GetProfilePictureUri()?.ToString();
 }
 
 <div id="main" class="container">
@@ -20,7 +21,14 @@
             <div id="user-info-card" class="card mb-3">
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img class="img-fluid" src="@Model.AppUser?.ContactInformation?.Email?.GetProfilePictureUri()?.ToString()?s=180" />
+                        @if(profileImgSrc != null)
+                        {
+                            <img class="img-fluid" src="@Model.AppUser?.ContactInformation?.Email?.GetProfilePictureUri()?.ToString()?s=180" />
+                        }
+                        else
+                        {
+                            <i class="far fa-user fa-10x"></i>
+                        }
                     </div>
                     @if(@Model.IsSelf)
                     {
