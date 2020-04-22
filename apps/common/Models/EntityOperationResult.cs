@@ -16,7 +16,7 @@ namespace Amphora.Common.Models
             this.Errors.Add(message);
         }
 
-        public EntityOperationResult(IUser user, bool succeeded = false) : this(succeeded)
+        public EntityOperationResult(IUser user, bool succeeded) : this(succeeded)
         {
             this.User = user;
         }
@@ -33,10 +33,9 @@ namespace Amphora.Common.Models
             this.Errors.AddRange(messages);
         }
 
-        public EntityOperationResult(IUser user, T entity) : this(user)
+        public EntityOperationResult(IUser user, T entity) : this(user, true)
         {
             Entity = entity;
-            Succeeded = true;
             this.Code = 200;
         }
 
