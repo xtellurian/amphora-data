@@ -19,9 +19,11 @@ namespace Amphora.Tests.Unit.Services
         {
             var mockPrincipal = MockClaimsPrincipal();
             var context = GetContext();
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var ruleStore = new AmphoraAccessControlsEFStore(context, CreateMockLogger<AmphoraAccessControlsEFStore>());
-            var org = EntityLibrary.GetOrganisationModel();
-            var amphora = EntityLibrary.GetAmphoraModel(org);
+            var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(org));
             var thisUser = new ApplicationUserDataModel("thisUser", "thisUser", null, null);
             var userToDeny = new ApplicationUserDataModel("otherUser", "otherUser", null, null);
             var mockUserDataService = new Mock<IUserDataService>();
@@ -60,9 +62,11 @@ namespace Amphora.Tests.Unit.Services
             Common.AmphoraHost.SetEnvironmentName("develop");
             var mockPrincipal = MockClaimsPrincipal();
             var context = GetContext();
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var ruleStore = new AmphoraAccessControlsEFStore(context, CreateMockLogger<AmphoraAccessControlsEFStore>());
-            var org = EntityLibrary.GetOrganisationModel();
-            var amphora = EntityLibrary.GetAmphoraModel(org);
+            var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(org));
             var thisUser = new ApplicationUserDataModel("thisUser", "thisUser", null, null);
             var contactEmail = $"{System.Guid.NewGuid().ToString()}@amphoradata.com";
             var userToGiveAccessTo = new ApplicationUserDataModel("otherUser", "otherUser", null,
