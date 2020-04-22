@@ -170,7 +170,7 @@ namespace Amphora.Api.Services.Platform
             }
             else
             {
-                return new EntityOperationResult<InvitationModel>(userData, res.Errors);
+                return new EntityOperationResult<InvitationModel>(userData, res.Message);
             }
         }
     }

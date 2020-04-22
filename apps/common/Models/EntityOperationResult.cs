@@ -33,12 +33,6 @@ namespace Amphora.Common.Models
             this.Errors.AddRange(messages);
         }
 
-        public EntityOperationResult(IUser user, IEnumerable<string> messages) : this(false)
-        {
-            this.User = user;
-            this.Errors.AddRange(messages);
-        }
-
         public EntityOperationResult(IUser user, T entity) : this(user)
         {
             Entity = entity;
