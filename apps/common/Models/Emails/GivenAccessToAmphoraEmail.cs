@@ -7,10 +7,13 @@ namespace Amphora.Common.Models.Emails
 {
     public class GivenAccessToAmphoraEmail : EmailBase, IEmail
     {
-        public GivenAccessToAmphoraEmail(AmphoraModel amphora, string targetEmail, string? fullName = null)
+        public GivenAccessToAmphoraEmail(AmphoraModel amphora, string? targetEmail, string? fullName = null)
         {
             AmphoraUrl = HtmlEncoder.Default.Encode($"{BaseUrl}/Amphorae/Detail?id={amphora.Id}");
-            this.Recipients.Add(new EmailRecipient(targetEmail, fullName ?? ""));
+            if (!string.IsNullOrEmpty(targetEmail))
+            {
+                this.Recipients.Add(new EmailRecipient(targetEmail, fullName ?? ""));
+            }
         }
 
         public override string SendGridTemplateId => " d-07e70362967f4436958b24e876f3bb87";

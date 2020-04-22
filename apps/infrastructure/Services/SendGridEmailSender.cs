@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Infrastructure.Models.Options;
@@ -29,6 +30,12 @@ namespace Amphora.Infrastructure.Services
         {
             try
             {
+                if (email.Recipients == null || email.Recipients.Where(_ => _.Email != null).Count() == 0)
+                {
+                    logger.LogWarning($"Refusing to send {email?.GetType()} email with no valid recipients.");
+                    return false;
+                }
+
                 var msg = new SendGridMessage();
                 msg.SetFrom(new EmailAddress(options.FromEmail, options.FromName));
                 foreach (var r in email.Recipients)

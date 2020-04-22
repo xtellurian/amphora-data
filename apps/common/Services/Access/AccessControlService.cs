@@ -31,9 +31,10 @@ namespace Amphora.Common.Services.Access
         public async Task<EntityOperationResult<AccessRule>> CreateAsync(ClaimsPrincipal principal, AmphoraModel amphora, AccessRule rule)
         {
             var userDataRes = await userDataService.ReadAsync(principal);
-            if (userDataRes.Succeeded)
+            if (userDataRes.Succeeded && userDataRes.Entity != null)
             {
-                var authorized = await permissionService.IsAuthorizedAsync(userDataRes.Entity!, amphora, AccessLevels.Administer);
+                var userData = userDataRes.Entity;
+                var authorized = await permissionService.IsAuthorizedAsync(userData, amphora, AccessLevels.Administer);
                 if (authorized)
                 {
                     if (amphora.AccessControl == null)
@@ -57,12 +58,17 @@ namespace Amphora.Common.Services.Access
                     }
 
                     var res = await store.UpdateAsync(amphora.AccessControl);
-                    if (rule is UserAccessRule r && r.Kind == Kind.Allow)
+                    if (res == null)
                     {
-                        await emailSender.SendEmailAsync(new GivenAccessToAmphoraEmail(amphora, r.UserData?.ContactInformation?.Email!, r.UserData?.ContactInformation?.FullName));
+                        return new EntityOperationResult<AccessRule>("An error occured when writing to the database.");
                     }
 
-                    return new EntityOperationResult<AccessRule>(userDataRes.Entity!, rule);
+                    if (rule is UserAccessRule r && r?.Kind == Kind.Allow)
+                    {
+                        await emailSender.SendEmailAsync(new GivenAccessToAmphoraEmail(amphora, r.UserData?.ContactInformation?.Email, r.UserData?.ContactInformation?.FullName));
+                    }
+
+                    return new EntityOperationResult<AccessRule>(userData, rule);
                 }
                 else
                 {
