@@ -21,8 +21,6 @@ namespace Amphora.Api.Areas.Organisations.Pages
         private readonly IUserDataService userDataService;
         private readonly IPermissionService permissionService;
 
-        [TempData]
-        public string ErrorMessage { get; set; }
         public EditModel(
             IOrganisationService organisationService,
             IUserDataService userDataService,
@@ -115,7 +113,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             }
             else
             {
-                ErrorMessage = "Invalid User Details";
+                ModelState.AddModelError(string.Empty, "Invalid User Model");
                 return Page();
             }
         }

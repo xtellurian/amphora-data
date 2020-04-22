@@ -7,7 +7,7 @@
 <div id="main" class="container center">
     <div class="row">
         <div class="col">
-            <p class="text-danger">@Model.ErrorMessage</p>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <form method="post" asp-route-id="@Model.OrganisationId" enctype="multipart/form-data">
                 <div class="form-group">
                     <label asp-for="Input.Name" class="control-label"></label>
