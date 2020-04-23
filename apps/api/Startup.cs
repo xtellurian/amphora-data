@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
@@ -223,10 +224,20 @@ namespace Amphora.Api
             app.UseMiddleware<Middleware.UserDataMiddleware>();
             app.UseMiddleware<Middleware.PlanSelectorMiddleware>();
 
-            app.UseEndpoints(endpoints =>
+            app.UseForFeature(nameof(ApiFeatureFlags.RazorPages), appBuilder =>
             {
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                appBuilder.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapRazorPages();
+                });
+            });
+
+            app.UseForFeature(nameof(ApiFeatureFlags.WebApi), appBuilder =>
+            {
+                appBuilder.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
             });
         }
     }
