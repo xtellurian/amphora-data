@@ -55,15 +55,11 @@ namespace Amphora.Api.Services.Purchases
                     // check if the Amphora still exists
                     if (purchase.Amphora != null && purchase.Amphora.IsDeleted != true)
                     {
-                        // amphora still exists
-                        if (purchase.Price.HasValue)
-                        {
-                            var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
-                            await DebitPurchasingOrganisation(purchase, name);
-                            await CreditAmphoraOrganisation(purchase, name);
-                            await purchaseStore.UpdateAsync(purchase);
-                            report.Log($"Updated purchase {purchase.Id}");
-                        }
+                        var name = $"Subscription Fee: {purchase.Amphora.Name} ({startOfMonth.ToString("MM/yy")})";
+                        await DebitPurchasingOrganisation(purchase, name);
+                        await CreditAmphoraOrganisation(purchase, name);
+                        await purchaseStore.UpdateAsync(purchase);
+                        report.Log($"Updated purchase {purchase.Id}");
                     }
                     else
                     {

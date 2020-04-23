@@ -86,30 +86,25 @@ namespace Amphora.Api.Services.Purchases
                 }
                 else
                 {
-                    logger.LogTrace("Purchasing Amphora");
+                    logger.LogInformation($"Purchasing Amphora({amphora.Id})");
                     var purchase = new PurchaseModel(user, amphora);
                     purchase = await purchaseStore.CreateAsync(purchase);
                     await SendPurchaseConfimationEmail(purchase);
-                    if (purchase.Price.HasValue)
-                    {
-                        // debit the account initially
-                        logger.LogInformation($"Debiting account {purchase.Price.Value}");
-                        var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
-                        if (org.Account == null) { org.Account = new Account(); }
-                        org.Account.DebitAccountFromPurchase(purchase, dateTimeProvider.UtcNow);
-                        org = await orgStore.UpdateAsync(org);
+                    purchase.Price ??= 0; // set 0 if
 
-                        // credit the selling account
-                        var sellerOrg = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
-                        if (sellerOrg.Account == null) { sellerOrg.Account = new Account(); }
-                        var commission = sellerOrg.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
-                        sellerOrg = await orgStore.UpdateAsync(sellerOrg);
-                        await commissionTracker.TrackCommissionAsync(purchase, commission);
-                    }
-                    else
-                    {
-                        logger.LogWarning($"Amphora {amphora.Id} has no Price.");
-                    }
+                    // debit the account initially
+                    logger.LogInformation($"Debiting account {purchase.Price.Value}");
+                    var org = await orgStore.ReadAsync(purchase.PurchasedByOrganisationId);
+                    org.Account ??= new Account();
+                    org.Account.DebitAccountFromPurchase(purchase, dateTimeProvider.UtcNow);
+                    org = await orgStore.UpdateAsync(org);
+
+                    // credit the selling account
+                    var sellerOrg = await orgStore.ReadAsync(purchase.Amphora.OrganisationId);
+                    sellerOrg.Account ??= new Account();
+                    var commission = sellerOrg.Account.CreditAccountFromSale(purchase, dateTimeProvider.UtcNow);
+                    sellerOrg = await orgStore.UpdateAsync(sellerOrg);
+                    await commissionTracker.TrackCommissionAsync(purchase, commission);
 
                     // update the purchase and the amphora
                     amphora.PurchaseCount ??= 0;

@@ -249,5 +249,48 @@ namespace Amphora.Tests.Unit.Services
             org = await orgStore.ReadAsync(org.Id); // reload, just in case
             Assert.Equal(91, org.Account.Balance);
         }
+
+        [Fact]
+        public async Task PurchaseZeroDollarAmphora_ShowsAsDebit()
+        {
+            var dtProvider = new MockDateTimeProvider();
+            var context = GetContext();
+            var store = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var userDataStore = new ApplicationUserDataEFStore(GetContext(), CreateMockLogger<ApplicationUserDataEFStore>());
+            var userDataService = new ApplicationUserDataService(userDataStore);
+            var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
+
+            var org = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            var otherOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+
+            var amphora = EntityLibrary.GetAmphoraModel(otherOrg, true);
+            amphora.Price = 0;
+            amphora = await amphoraStore.CreateAsync(amphora);
+
+            var user = new ApplicationUserDataModel()
+            {
+                Id = System.Guid.NewGuid().ToString(),
+                ContactInformation = new ContactInformation
+                {
+                    Email = "test@amphoradata.com",
+                    EmailConfirmed = true,
+                },
+                OrganisationId = org.Id
+            };
+
+            var mockEmailSender = new Mock<IEmailSender>();
+            mockEmailSender.Setup(_ => _.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+            var commissionMock = new Mock<ICommissionTrackingService>();
+            commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
+
+            var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, mockEmailSender.Object, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
+            var purchase = await sut.PurchaseAmphoraAsync(user, amphora);
+            Assert.True(purchase.Succeeded);
+            org = await orgStore.ReadAsync(org.Id); // reload, just in case
+            Assert.Equal(0, org.Account.Balance);
+            Assert.Equal(1, org.Account.Debits.Count);
+        }
     }
 }

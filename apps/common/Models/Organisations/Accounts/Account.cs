@@ -84,7 +84,6 @@ namespace Amphora.Common.Models.Organisations.Accounts
 
         public void DebitAccountFromPurchase(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
-            if (purchase.Price == 0) { return; }
             Debits ??= new Collection<AccountDebit>();
             var label = $"Purchase: {purchase.Amphora.Name}";
             var currentBalance = Balance;
@@ -112,7 +111,6 @@ namespace Amphora.Common.Models.Organisations.Accounts
         /// </returns>
         public double? CreditAccountFromSale(PurchaseModel purchase, System.DateTimeOffset? timestamp)
         {
-            if (purchase.Price == 0) { return 0; }
             Credits ??= new List<AccountCredit>();
             var currentBalance = Balance;
             var label = $"Sold {purchase.AmphoraId}";
