@@ -35,7 +35,7 @@ namespace Amphora.Common.Models.Purchases
             this.PurchasedByOrganisationId = user.OrganisationId;
             this.CreatedDate = System.DateTime.UtcNow;
             this.LastModified = System.DateTime.UtcNow;
-            this.Price = amphora.Price.HasValue ? amphora.Price.Value : 0;
+            this.Price = amphora.Price ?? 0;
         }
 
         public double? Price { get; set; }
