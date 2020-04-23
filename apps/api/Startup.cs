@@ -23,6 +23,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -153,11 +154,49 @@ namespace Amphora.Api
                 options.AccessDeniedPath = $"/Profiles/Account/AccessDenied"; // TODO: create access denided oasge
             });
 
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
+        {
+            app.UseForFeature(nameof(ApiFeatureFlags.Razor), appBuilder =>
+            {
+                CommonPipeline(appBuilder, env, mapper);
+                appBuilder.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
+            });
+
+            app.UseForFeature(nameof(ApiFeatureFlags.Spa), appBuilder =>
+            {
+                CommonPipeline(appBuilder, env, mapper);
+                appBuilder.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
+                appBuilder.UseSpaStaticFiles();
+                appBuilder.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp";
+
+                    if (env.IsDevelopment())
+                    {
+                        spa.UseReactDevelopmentServer(npmScript: "start");
+                    }
+                });
+            });
+        }
+
+        private void CommonPipeline(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);
 
@@ -178,24 +217,6 @@ namespace Amphora.Api
             app.UseAuthorization();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
             app.UseMiddleware<Middleware.PlanSelectorMiddleware>();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
-
-            // app.UseForFeature(nameof(ApiFeatureFlags.RazorPages), appBuilder =>
-            // {
-
-            // });
-
-            app.UseForFeature(nameof(ApiFeatureFlags.WebApi), appBuilder =>
-            {
-                // appBuilder.UseEndpoints(endpoints =>
-                // {
-
-                // });
-            });
         }
     }
 }

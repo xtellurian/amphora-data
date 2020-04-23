@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure", "infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sharedui", "sharedui\sharedui.csproj", "{D3157AA2-2AFE-4969-B43E-0BA6DEC4C693}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app", "app\app.csproj", "{4E64CFE7-16AD-4AD1-A21E-041976116429}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,17 +138,5 @@ Global
 		{D3157AA2-2AFE-4969-B43E-0BA6DEC4C693}.Release|x64.Build.0 = Release|Any CPU
 		{D3157AA2-2AFE-4969-B43E-0BA6DEC4C693}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3157AA2-2AFE-4969-B43E-0BA6DEC4C693}.Release|x86.Build.0 = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|x64.Build.0 = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Debug|x86.Build.0 = Debug|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|x64.ActiveCfg = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|x64.Build.0 = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|x86.ActiveCfg = Release|Any CPU
-		{4E64CFE7-16AD-4AD1-A21E-041976116429}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
