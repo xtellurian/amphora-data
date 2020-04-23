@@ -11,7 +11,7 @@ namespace Amphora.Common.Models.Events
             var data = new EventDataDictionary($"Commission Earned from Amphora({model.PurchaseModel?.AmphoraId})");
             data.SetAmphoraId(model.PurchaseModel?.AmphoraId);
             data.SetOrganisationId(model.FromOrganisationId);
-            data.SetTriggeredByUsername(model.FromOrganisationId);
+            data.SetTriggeredByUsername(model.PurchaseModel?.PurchasedByUser?.UserName);
             this.Data = data;
 
             Subject = $"/amphora/api/admin/amphorae/{model.PurchaseModel?.AmphoraId}";
