@@ -23,7 +23,6 @@ namespace Amphora.Api
             services.Configure<AmphoraManagementOptions>(configuration.GetSection("AmphoraManagement"));
 
             services.Configure<GitHubConfiguration>(configuration.GetSection("GitHubOptions"));
-            services.Configure<FeatureFlagOptions>(configuration.GetSection("FeatureFlags"));
         }
     }
 }

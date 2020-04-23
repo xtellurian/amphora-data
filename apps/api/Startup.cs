@@ -4,7 +4,6 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
-using Amphora.Api.Services.FeatureFlags;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.InMemory;
 using Amphora.Api.Services.Organisations;
@@ -27,6 +26,8 @@ using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.FeatureFilters;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json.Serialization;
 using NSwag;
@@ -67,6 +68,9 @@ namespace Amphora.Api
             this.discoverModule.ConfigureServices(services);
             services.RegisterEventsModule(Configuration, HostingEnvironment.IsProduction());
 
+            // feature management
+            services.AddFeatureManagement().AddFeatureFilter<PercentageFilter>();
+
             if (HostingEnvironment.IsDevelopment())
             {
                 services.AddSingleton<IAzureServiceTokenProvider>(new AzureServiceTokenProviderWrapper("RunAs=Developer; DeveloperTool=AzureCli"));
@@ -105,7 +109,6 @@ namespace Amphora.Api
             services.AddTransient<IPlanLimitService, PlanLimitService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
-            services.AddSingleton<FeatureFlagService>();
 
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown
             services.AddHttpClient();
@@ -197,6 +200,8 @@ namespace Amphora.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);
+
+            app.UseAzureAppConfiguration();
 
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
