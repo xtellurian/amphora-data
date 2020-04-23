@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-md-9 detail">
-            @if(Model.Account is null || Model.Account.Credits.Count == 0)
+            @if(Model.Account is null || Model.Account.Debits.Count == 0)
             {
                 <p>No debits found.</p>
             }
