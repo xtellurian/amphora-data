@@ -34,7 +34,8 @@ namespace Amphora.Identity
         public static IEnumerable<ApiResource> Apis =>
             new ApiResource[]
             {
-                new ApiResource(Common.Security.Resources.WebApp, "The Amphora Data WebApp")
+                new ApiResource(Common.Security.Resources.WebApp, "The Amphora Data WebApp"),
+                new ApiResource(Common.Security.Resources.WebApi, "The Amphora Data API")
             };
 
         public static IEnumerable<Client> Clients(ExternalServices externalServices, EnvironmentInfo envInfo, string mvcClientSecret)
@@ -58,6 +59,25 @@ namespace Amphora.Identity
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
+                },
+                // SPA client.
+                new Client
+                {
+                    ClientId = OAuthClients.SPA,
+                    ClientName = "SPA Client",
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowOfflineAccess = true,
+                    RequireConsent = false,
+                    RequirePkce = true,
+
+                    ClientSecrets = { new Secret(mvcClientSecret) },
+
+                    RedirectUris = StandardRedirectUrls(externalServices, envInfo),
+                    FrontChannelLogoutUri = StandardLogoutUrl(externalServices, envInfo),
+                    PostLogoutRedirectUris = StandardPostLogoutRedirects(externalServices, envInfo),
+
+                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApi, Scopes.AmphoraScope }
                 }
             };
         }
@@ -69,6 +89,7 @@ namespace Amphora.Identity
             if (envInfo.IsDevelopment)
             {
                 urls.Add("localhost:5001".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add("localhost:5001".ToUri().ToStandardString() + "/#/callback");
                 urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signin-oidc");
             }
             else
@@ -76,19 +97,23 @@ namespace Amphora.Identity
                 if (string.IsNullOrEmpty(envInfo.Location))
                 {
                     urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                    urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
                 }
                 else
                 {
                     urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                    urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
                 }
 
                 urls.Add(AppUrl.ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add(AppUrl.ToUri().ToStandardString() + "/#/callback");
             }
 
             if (!string.IsNullOrEmpty(envInfo.Stack))
             {
                 // add something like develop.app.amphoradata.com
                 urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
             }
 
             System.Console.WriteLine($"Redirects: {JsonConvert.SerializeObject(urls, Formatting.Indented)}");

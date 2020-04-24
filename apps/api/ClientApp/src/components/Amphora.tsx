@@ -3,16 +3,16 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ApplicationState } from '../store';
-import * as WeatherForecastsStore from '../store/WeatherForecasts';
+import * as AmphoraStore from '../store/AmphoraStore';
 
 // At runtime, Redux will merge together...
-type WeatherForecastProps =
-  WeatherForecastsStore.WeatherForecastsState // ... state we've requested from the Redux store
-  & typeof WeatherForecastsStore.actionCreators // ... plus action creators we've requested
+type AmphoraeProps =
+AmphoraStore.AmphoraState // ... state we've requested from the Redux store
+  & typeof AmphoraStore.actionCreators // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 
-class FetchData extends React.PureComponent<WeatherForecastProps> {
+class FetchData extends React.PureComponent<AmphoraeProps> {
   // This method is called when the component is first added to the document
   public componentDidMount() {
     this.ensureDataFetched();
@@ -27,7 +27,7 @@ class FetchData extends React.PureComponent<WeatherForecastProps> {
     return (
       <React.Fragment>
         <h1 id="tabelLabel">Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
+        <p>This component demonstrates fetching amphora from the server and working with URL parameters.</p>
         {this.renderForecastsTable()}
         {this.renderPagination()}
       </React.Fragment>
@@ -36,7 +36,7 @@ class FetchData extends React.PureComponent<WeatherForecastProps> {
 
   private ensureDataFetched() {
     const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0;
-    this.props.requestWeatherForecasts(startDateIndex);
+    this.props.requestAllAmphora(startDateIndex);
   }
 
   private renderForecastsTable() {
@@ -44,19 +44,17 @@ class FetchData extends React.PureComponent<WeatherForecastProps> {
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
           </tr>
         </thead>
         <tbody>
-          {this.props.forecasts.map((forecast: WeatherForecastsStore.WeatherForecast) =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
+          {this.props.amphoras.map((amphora: AmphoraStore.AmphoraModel) =>
+            <tr key={amphora.id}>
+              <td>{amphora.name}</td>
+              <td>{amphora.description}</td>
+              <td>{amphora.price}</td>
             </tr>
           )}
         </tbody>
@@ -79,6 +77,6 @@ class FetchData extends React.PureComponent<WeatherForecastProps> {
 }
 
 export default connect(
-  (state: ApplicationState) => state.weatherForecasts, // Selects which state properties are merged into the component's props
-  WeatherForecastsStore.actionCreators // Selects which action creators are merged into the component's props
+  (state: ApplicationState) => state.amphoras, // Selects which state properties are merged into the component's props
+  AmphoraStore.actionCreators // Selects which action creators are merged into the component's props
 )(FetchData as any);

@@ -2,7 +2,9 @@ import { User } from 'oidc-client';
 import { reducer as oidcReducer } from 'redux-oidc';
 import { RouterState } from 'connected-react-router';
 import * as WeatherForecasts from './WeatherForecasts';
+import * as Amphora from './AmphoraStore';
 import * as Counter from './Counter';
+import { AmphoraState } from './AmphoraStore';
 interface OidcState {
     isLoadingUser: boolean;
     user: User;
@@ -12,6 +14,7 @@ interface OidcState {
 export interface ApplicationState {
     counter: Counter.CounterState | undefined;
     weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
+    amphoras: AmphoraState | undefined;
     oidc: OidcState;
     router: RouterState;
 }
@@ -22,7 +25,8 @@ export interface ApplicationState {
 export const reducers = {
     counter: Counter.reducer,
     oidc: oidcReducer,
-    weatherForecasts: WeatherForecasts.reducer
+    weatherForecasts: WeatherForecasts.reducer,
+    amphoras: Amphora.reducer,
 };
 
 
