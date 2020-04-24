@@ -9,4 +9,6 @@ azure-pipelines.yaml
 build-containers.sh 
 run.sh
 sqlServer.sh
+**/node_modules/**
+
 # **/appsettings.Development.json

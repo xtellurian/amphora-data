@@ -196,6 +196,7 @@ namespace Amphora.Api
             });
         }
 
+        // The shared config pipeline across both SPA and Raor
         private void CommonPipeline(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);

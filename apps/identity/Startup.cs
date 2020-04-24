@@ -14,6 +14,7 @@ using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Stores.EFCore;
+using IdentityServer4.Services;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
@@ -23,7 +24,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Identity
 {
@@ -157,8 +158,7 @@ namespace Amphora.Identity
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            // temp
-            IdentityModelEventSource.ShowPII = true;
+            services.AddSingleton<ICorsPolicyService, CorsPolicyService>();
         }
 
         public void Configure(IApplicationBuilder app)
