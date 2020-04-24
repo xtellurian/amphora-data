@@ -223,21 +223,23 @@ namespace Amphora.Api
             app.UseAuthorization();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
             app.UseMiddleware<Middleware.PlanSelectorMiddleware>();
-
-            app.UseForFeature(nameof(ApiFeatureFlags.RazorPages), appBuilder =>
+            app.UseEndpoints(endpoints =>
             {
-                appBuilder.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapRazorPages();
-                });
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // app.UseForFeature(nameof(ApiFeatureFlags.RazorPages), appBuilder =>
+            // {
+
+            // });
 
             app.UseForFeature(nameof(ApiFeatureFlags.WebApi), appBuilder =>
             {
-                appBuilder.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                });
+                // appBuilder.UseEndpoints(endpoints =>
+                // {
+
+                // });
             });
         }
     }

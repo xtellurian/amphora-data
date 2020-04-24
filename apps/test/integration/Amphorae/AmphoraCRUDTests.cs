@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,15 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(a.Price, b.Price);
             Assert.Equal(a.Name, b.Name);
             Assert.Equal(a.Labels, b.Labels);
+
+            // check it's in the list
+            var listRes = await adminClient.GetAsync("/api/amphorae?accessType=created&scope=self");
+            await AssertHttpSuccess(listRes);
+            var listContent = await listRes.Content.ReadAsStringAsync();
+            var selfCreatedAmphora = JsonConvert.DeserializeObject<List<DetailedAmphora>>(listContent);
+            Assert.NotNull(selfCreatedAmphora);
+            Assert.NotEmpty(selfCreatedAmphora);
+            Assert.Single(selfCreatedAmphora);
 
             await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);

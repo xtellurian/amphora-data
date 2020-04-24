@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -99,6 +100,62 @@ namespace Amphora.Api.Services.Amphorae
                     return new EntityOperationResult<AmphoraModel>(userReadRes.Entity, "Unauthorized", $"Create permission required on {organisation.Id}")
                     { WasForbidden = true };
                 }
+            }
+        }
+
+        public async Task<EntityOperationResult<IEnumerable<AmphoraModel>>> ListForSelfAsync(ClaimsPrincipal principal,
+                                                                                          bool owned = true,
+                                                                                          bool purchased = false)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<IEnumerable<AmphoraModel>>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraeService>(principal)))
+            {
+                var res = new List<AmphoraModel>();
+                if (owned)
+                {
+                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.CreatedById == userReadRes.Entity.Id));
+                }
+
+                if (purchased)
+                {
+                    var purchases = purchaseStore.Query(_ => _.PurchasedByUserId == userReadRes.Entity.Id);
+                    res.AddRange(purchases.Select(_ => _.Amphora));
+                }
+
+                return new EntityOperationResult<IEnumerable<AmphoraModel>>(userReadRes.Entity, res);
+            }
+        }
+
+        public async Task<EntityOperationResult<IEnumerable<AmphoraModel>>> ListForOrganisationAsync(ClaimsPrincipal principal,
+                                                                                                  bool created = true,
+                                                                                                  bool purchased = false)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<IEnumerable<AmphoraModel>>("Unknown User");
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraeService>(principal)))
+            {
+                var res = new List<AmphoraModel>();
+                if (created)
+                {
+                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.CreatedBy.OrganisationId == userReadRes.Entity.OrganisationId));
+                }
+
+                if (purchased)
+                {
+                    var purchases = purchaseStore.Query(_ => _.PurchasedByOrganisationId == userReadRes.Entity.OrganisationId);
+                    res.AddRange(purchases.Select(_ => _.Amphora));
+                }
+
+                return new EntityOperationResult<IEnumerable<AmphoraModel>>(userReadRes.Entity, res);
             }
         }
 

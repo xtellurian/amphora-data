@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,7 +69,44 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's details of an Amphora by Id.
+        /// Gets a list of Amphora for yourself or your org, created or purchased by you (or organisation).
+        /// </summary>
+        /// <param name="scope">'self' or 'organisation'. Defaults to self.</param>
+        /// <param name="accessType">'created' or 'purchased'. Defaults to created.</param>
+        /// <returns>A list of Amphora.</returns>
+        [Produces(typeof(IEnumerable<DetailedAmphora>))]
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> List(string scope = "self", string accessType = "created")
+        {
+            if (!string.Equals(scope, "self") && !string.Equals(scope, "organisation"))
+            {
+                return BadRequest($"Parameter 'scope' must be 'self' or 'organisation', got {scope}");
+            }
+
+            if (!string.Equals(accessType, "created") && !string.Equals(accessType, "purchased"))
+            {
+                return BadRequest($"Parameter 'accessType' must be 'created' or 'purchased', got {accessType}");
+            }
+
+            var o = $"{scope?.ToLower()}.{accessType?.ToLower()}";
+            switch (o)
+            {
+                case "self.created":
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, created: true, purchased: false));
+                case "self.purchased":
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, created: false, purchased: true));
+                case "organisation.created":
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, created: true, purchased: false));
+                case "organisation.purchased":
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, created: false, purchased: true));
+                default:
+                    return BadRequest("Unknown Type of Get");
+            }
+        }
+
+        /// <summary>
+        /// Gets details of an Amphora by Id.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>The Amphora details.</returns>
@@ -145,6 +184,22 @@ namespace Amphora.Api.Controllers.Amphorae
             else
             {
                 return BadRequest(result.Errors);
+            }
+        }
+
+        private IActionResult Handle<T>(EntityOperationResult<IEnumerable<T>> result) where T : class
+        {
+            if (result.Succeeded)
+            {
+                return Ok(mapper.Map<List<DetailedAmphora>>(result.Entity));
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return NotFound(result.Errors);
             }
         }
     }
