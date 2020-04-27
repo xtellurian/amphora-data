@@ -48,12 +48,35 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
+        private (bool isValid, string message) ArePropertiesValid(AmphoraModel model)
+        {
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return (false, "Name is null or empty");
+            }
+            else if (model.Name?.Length > 120)
+            {
+                return (false, "Name is longer than 120 chars");
+            }
+            else
+            {
+                // true unless false;
+                return (true, null);
+            }
+        }
+
         public async Task<EntityOperationResult<AmphoraModel>> CreateAsync(ClaimsPrincipal principal, AmphoraModel model)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
             if (!userReadRes.Succeeded)
             {
                 return new EntityOperationResult<AmphoraModel>("Unknown User");
+            }
+
+            (var isValid, var message) = ArePropertiesValid(model);
+            if (!isValid)
+            {
+                return new EntityOperationResult<AmphoraModel>(userReadRes.Entity, message);
             }
 
             using (logger.BeginScope(new LoggerScope<AmphoraeService>(principal)))

@@ -8,6 +8,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     public class BasicAmphora : Entity
     {
         [Required]
+        [StringLength(120)]
         public string Name { get; set; }
         [Required]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "2 decimal places")]

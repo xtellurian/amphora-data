@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -228,6 +229,30 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task AmphoraWithLongName_CannotBeCreated()
+        {
+            var gen = new Helpers.RandomGenerator();
+            var url = "/api/amphorae";
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
+            a.Name = gen.RandomString(200);
+            var s = JsonConvert.SerializeObject(a);
+            var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
+
+            // Act
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await adminClient.PostAsync(url, requestBody);
+
+            Assert.False(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(responseBody);
+            Assert.NotEmpty(responseBody);
         }
     }
 }
