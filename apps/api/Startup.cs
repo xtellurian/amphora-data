@@ -181,6 +181,7 @@ namespace Amphora.Api
                 CommonPipeline(appBuilder, env, mapper);
                 appBuilder.UseEndpoints(endpoints =>
                 {
+                    endpoints.MapRazorPages();
                     endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 });
                 appBuilder.UseSpaStaticFiles();
