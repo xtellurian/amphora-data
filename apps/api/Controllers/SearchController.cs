@@ -38,6 +38,7 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(List<BasicAmphora>))]
         [HttpPost("api/search/amphorae")]
         [CommonAuthorize]
+        [OpenApiIgnore]
         public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
         {
             var response = await searchService.SearchAmphora("", parameters);
