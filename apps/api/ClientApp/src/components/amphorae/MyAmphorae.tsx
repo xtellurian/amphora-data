@@ -20,7 +20,7 @@ class MyAmphorae extends React.PureComponent<AmphoraeProps> {
   }
 
   // This method is called when the route parameters change
-  public componentDidUpdate() {
+  public componentDidUpdate(prevProps: AmphoraeProps) {
     // this.ensureDataFetched();
   }
 
