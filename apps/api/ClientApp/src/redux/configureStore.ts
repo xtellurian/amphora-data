@@ -2,16 +2,19 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import { History } from 'history';
-import { ApplicationState, reducers } from './';
+import { ApplicationState } from './store';
+import { reducers } from './reducers';
 import createOidcMiddleware from 'redux-oidc';
 import userManager from '../userManager';
+import allMiddleware from './middleware';
 
 export default function configureStore(history: History, initialState?: ApplicationState) {
     const oidcMiddleware = createOidcMiddleware(userManager);
     const middleware = [
         thunk,
         oidcMiddleware,
-        routerMiddleware(history)
+        routerMiddleware(history),
+        ...allMiddleware
     ];
 
     const rootReducer = combineReducers({
@@ -24,7 +27,7 @@ export default function configureStore(history: History, initialState?: Applicat
     if (windowIfDefined && windowIfDefined.__REDUX_DEVTOOLS_EXTENSION__) {
         enhancers.push(windowIfDefined.__REDUX_DEVTOOLS_EXTENSION__());
     }
-
+    console.log(reducers)
     return createStore(
         rootReducer,
         initialState,

@@ -2,17 +2,18 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
-import { ApplicationState } from '../store';
-import * as AmphoraStore from '../store/AmphoraStore';
+import { ApplicationState } from '../../redux/store';
+import * as AmphoraStore from '../../redux/AmphoraState';
+import { actionCreators } from '../../redux/actions/amphorae';
 
 // At runtime, Redux will merge together...
 type AmphoraeProps =
-AmphoraStore.AmphoraState // ... state we've requested from the Redux store
-  & typeof AmphoraStore.actionCreators // ... plus action creators we've requested
+  AmphoraStore.AmphoraState // ... state we've requested from the Redux store
+  & typeof actionCreators  // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 
-class FetchData extends React.PureComponent<AmphoraeProps> {
+class MyAmphorae extends React.PureComponent<AmphoraeProps> {
   // This method is called when the component is first added to the document
   public componentDidMount() {
     this.ensureDataFetched();
@@ -20,7 +21,7 @@ class FetchData extends React.PureComponent<AmphoraeProps> {
 
   // This method is called when the route parameters change
   public componentDidUpdate() {
-    this.ensureDataFetched();
+    // this.ensureDataFetched();
   }
 
   public render() {
@@ -28,6 +29,7 @@ class FetchData extends React.PureComponent<AmphoraeProps> {
       <React.Fragment>
         <h1 id="tabelLabel">Weather forecast</h1>
         <p>This component demonstrates fetching amphora from the server and working with URL parameters.</p>
+        <p>There are {this.props.amphoras.length} amphoras </p>
         {this.renderForecastsTable()}
         {this.renderPagination()}
       </React.Fragment>
@@ -36,7 +38,9 @@ class FetchData extends React.PureComponent<AmphoraeProps> {
 
   private ensureDataFetched() {
     const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0;
-    this.props.requestAllAmphora(startDateIndex);
+
+    this.props.getMyCreatedAmphorae(startDateIndex);
+
   }
 
   private renderForecastsTable() {
@@ -76,7 +80,11 @@ class FetchData extends React.PureComponent<AmphoraeProps> {
   }
 }
 
+const mapStateToProps = (state: ApplicationState) => ({
+  amphoras: state.amphoras
+});
+
 export default connect(
-  (state: ApplicationState) => state.amphoras, // Selects which state properties are merged into the component's props
-  AmphoraStore.actionCreators // Selects which action creators are merged into the component's props
-)(FetchData as any);
+  mapStateToProps, // Selects which state properties are merged into the component's props
+  actionCreators // Selects which action creators are merged into the component's props
+)(MyAmphorae as any);

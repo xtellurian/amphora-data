@@ -6,13 +6,13 @@ import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import CallbackPage from './components/CallbackPage';
-import { ApplicationState } from './store';
+import { ApplicationState } from './redux/store';
 
 import userManager from './userManager';
 import { User } from 'oidc-client';
 import axios from 'axios';
 import UserInfo from './components/UserInfo';
-import Amphora from './components/Amphora';
+import Amphora from './components/amphorae/MyAmphorae';
 import { Dispatch } from 'redux';
 
 interface RoutesModuleProps {
@@ -46,7 +46,6 @@ const Routes = (props: RoutesModuleProps) => {
     });
 
     const isConnected: boolean = !!props.user;
-    console.log(isConnected)
     return (
         <React.Fragment>
             <Switch>

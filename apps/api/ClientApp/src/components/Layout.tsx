@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import {connect} from 'react-redux';
 import { Container } from 'reactstrap';
 import NavMenu from './NavMenu';
-import { ApplicationState } from '../store';
+import { ApplicationState } from '../redux/store';
 
 interface LayoutProps {
     user: User;
