@@ -1,4 +1,7 @@
-﻿using Amphora.Api.Contracts;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Amphora.Api.AspNet;
+using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.DataRequests;
@@ -23,6 +26,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Configuration;
@@ -171,8 +175,13 @@ namespace Amphora.Api
                 CommonPipeline(appBuilder, env, mapper);
                 appBuilder.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapRazorPages();
-                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                    MapCommonEndpoints(endpoints);
+                    endpoints.MapGet("/", context =>
+                    {
+                        // Rediect to quickstart when NOT using SPA.
+                        context.Response.Redirect("/Quickstart");
+                        return Task.CompletedTask;
+                    });
                 });
             });
 
@@ -181,9 +190,9 @@ namespace Amphora.Api
                 CommonPipeline(appBuilder, env, mapper);
                 appBuilder.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapRazorPages();
-                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                    MapCommonEndpoints(endpoints);
                 });
+                // specific to SPA.
                 appBuilder.UseSpaStaticFiles();
                 appBuilder.UseSpa(spa =>
                 {
@@ -195,6 +204,12 @@ namespace Amphora.Api
                     }
                 });
             });
+        }
+
+        private static void MapCommonEndpoints(IEndpointRouteBuilder endpoints)
+        {
+            endpoints.MapRazorPages();
+            endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
         }
 
         // The shared config pipeline across both SPA and Raor
