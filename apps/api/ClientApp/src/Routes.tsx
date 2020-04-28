@@ -41,7 +41,7 @@ const Routes = (props: RoutesModuleProps) => {
     userManager.getUser().then(user => {
         if (user && !user.expired) {
             // Set the authorization header for axios
-            axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.access_token;
+            // axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.access_token;
         }
     });
 
