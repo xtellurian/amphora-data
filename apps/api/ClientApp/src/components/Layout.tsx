@@ -3,7 +3,8 @@ import { User } from 'oidc-client';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
-import NavMenu from './navigation/NavMenu';
+import AppNavMenu from './navigation/AppNavMenu';
+import PublicNavMenu from './navigation/PublicNavMenu';
 import HamburgerMenu from './navigation/HamburgerMenu';
 import { ApplicationState } from '../redux/state';
 
@@ -21,7 +22,7 @@ const Layout = (props: LayoutProps) => {
     return (
       <React.Fragment>
         <HamburgerMenu isConnected={isConnected} path={props.location.pathname} />
-        <NavMenu isConnected={isConnected} path={props.location.pathname} />
+        <AppNavMenu isConnected={isConnected} path={props.location.pathname} />
         <Container>
           {props.children}
         </Container>
@@ -30,7 +31,7 @@ const Layout = (props: LayoutProps) => {
   } else {
     return (
       <React.Fragment>
-        <NavMenu isConnected={isConnected} path={props.location.pathname} />
+        <PublicNavMenu isConnected={isConnected} path={props.location.pathname} />
         <Container>
           {props.children}
         </Container>

@@ -14,6 +14,8 @@ import UserInfo from './components/UserInfo';
 import Amphora from './components/amphorae/MyAmphorae';
 import { Dispatch } from 'redux';
 
+import Main from './components/public/MainPage';
+
 interface RoutesModuleProps {
     user: User;
     isLoadingUser: boolean;
@@ -31,7 +33,7 @@ const Routes = (props: RoutesModuleProps) => {
     // if location is callback page, return only CallbackPage route to allow signin process
     // IdentityServer 'bug' with hash history: if callback page contains a '#' params are appended with no delimiter
     // eg. /callbacktoken_id=...
-    if (props.location.hash.substring(0,10) === "#/callback") {
+    if (props.location.hash.substring(0, 10) === "#/callback") {
         const rest = props.location.hash.substring(10);
         return <CallbackPage {...props} signInParams={`${rest}`} />;
     }
@@ -44,17 +46,28 @@ const Routes = (props: RoutesModuleProps) => {
         }
     });
 
-    // const isConnected: boolean = !!props.user;
-    return (
-        <React.Fragment>
-            <Switch>
-                <Route exact path='/' component={Home} />
-                <Route path='/counter' component={Counter} />
-                <Route path="/user" component={UserInfo} />
-                <Route path="/amphora" component={Amphora} />
-            </Switch>
-        </React.Fragment>
-    );
+    const isConnected: boolean = !!props.user;
+    console.log('IsConnected: ', isConnected);
+    if (isConnected) {
+        return (
+            <React.Fragment>
+                <Switch>
+                    <Route exact path='/' component={Home} />
+                    <Route path='/counter' component={Counter} />
+                    <Route path="/user" component={UserInfo} />
+                    <Route path="/amphora" component={Amphora} />
+                </Switch>
+            </React.Fragment>
+        );
+    } else {
+        return (
+            <React.Fragment>
+                <Switch>
+                    <Route exact path='/' component={Main} />
+                </Switch>
+            </React.Fragment>
+        );
+    }
 };
 
 function mapStateToProps(state: ApplicationState) {

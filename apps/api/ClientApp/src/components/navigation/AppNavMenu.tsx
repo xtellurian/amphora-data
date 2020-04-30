@@ -1,11 +1,11 @@
 import * as React from 'react';
 import userManager from '../../userManager';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { Container, Navbar, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import Avatar from './Avatar';
 
-export default class NavMenu extends React.Component<{ path: string, isConnected: boolean }, { isOpen: boolean }> {
+export default class AppNavMenu extends React.Component<{ path: string, isConnected: boolean }, { isOpen: boolean }> {
     public state = {
         isOpen: false
     };
