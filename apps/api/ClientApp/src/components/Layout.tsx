@@ -3,8 +3,9 @@ import { User } from 'oidc-client';
 import { Dispatch } from 'redux';
 import {connect} from 'react-redux';
 import { Container } from 'reactstrap';
-import NavMenu from './NavMenu';
-import { ApplicationState } from '../redux/store';
+import NavMenu from './navigation/NavMenu';
+import HamburgerMenu from './navigation/HamburgerMenu';
+import { ApplicationState } from '../redux/state';
 
 interface LayoutProps {
     user: User;
@@ -18,6 +19,7 @@ const Layout = (props: LayoutProps) => {
     const isConnected: boolean = !!props.user;
     return (
         <React.Fragment>
+            <HamburgerMenu isConnected={isConnected} path={props.location.pathname} />
             <NavMenu isConnected={isConnected} path={props.location.pathname} />
             <Container>
                 {props.children}
@@ -43,4 +45,4 @@ function mapStateToProps(state: ApplicationState) {
   export default connect(
     mapStateToProps,
     mapDispatchToProps
-  )(Layout);
+  )(Layout as any);

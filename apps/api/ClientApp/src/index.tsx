@@ -14,6 +14,26 @@ const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as
 const history = createBrowserHistory({ basename: baseUrl });
 
 // Get the application-wide store instance, prepopulating with state from the server where available.
+// const initialState: ApplicationState = {
+//     amphorae: {
+//         isLoading: true,
+//         list: []
+//     },
+//     burgerMenu: {
+//         isOpen: false
+//     },
+//     counter: {
+//         count: 0
+//     },
+//     modal: {
+//         current: undefined,
+//         isAmphoraDetailOpen: false
+//     },
+//     oidc: {
+//         isLoadingUser: false
+//     }
+// }
+
 const store = configureStore(history);
 
 ReactDOM.render(

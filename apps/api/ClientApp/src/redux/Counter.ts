@@ -1,11 +1,7 @@
 import { Action, Reducer } from 'redux';
+import { CounterState } from './state/counter';
 
-// -----------------
-// STATE - This defines the type of data maintained in the Redux store.
 
-export interface CounterState {
-    count: number;
-}
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.

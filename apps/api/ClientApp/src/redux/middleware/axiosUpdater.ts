@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { IAction } from "../actions/action"
+import { Action } from 'redux';
 
-interface IUserFoundAction extends IAction {
+interface IUserFoundAction extends Action {
     payload: {access_token: string}
 }
 

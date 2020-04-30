@@ -1,30 +1,19 @@
-import { GET_MY_CREATED_AMPHORAE, GET_MY_CREATED_AMPHORAE_SUCCESS, GET_MY_CREATED_AMPHORAE_ERROR, actionCreators } from "../actions/amphorae";
-import { apiRequest } from "../actions/api";
-import { IAction } from "../actions/action";
+import { Action } from "redux";
+import * as listActions from "../actions/amphora/list";
 
-const baseUrl = "/api/amphorae";
+import * as amphoradata from 'amphoradata';
 
-// this middleware only care about the getBooks action
-const getAmphoraFlow = (store: any) => (next: any) => (action: IAction) => {
+const configuration = new amphoradata.Configuration({ basePath: "." });
+const amphoraApiClient = new amphoradata.AmphoraeApi(configuration);
+
+const listAmphora = (store: any) => (next: any) => (action: Action) => {
   next(action);
-
-  if (action.type === GET_MY_CREATED_AMPHORAE) {
-    store.dispatch(apiRequest('GET', baseUrl, null, GET_MY_CREATED_AMPHORAE_SUCCESS, GET_MY_CREATED_AMPHORAE_ERROR));
-    //   dispatch(showSpinner());
-  }
-
-};
-
-// on successful GET, process the amphorae data
-const processAmphoraeCollection = (store: any) => (next: any) => (action: IAction) => {
-  next(action);
-
-  if (action.type === GET_MY_CREATED_AMPHORAE_SUCCESS) {
-    console.log("thingy")
-    store.dispatch(actionCreators.updateAmphoraeList(action.payload));
-    //   dispatch(hideSpinner())
+  if (action.type === listActions.LIST_MY_CREATED_AMPHORAE) {
+    amphoraApiClient.amphoraeList("self", "created")
+      .then(r => store.dispatch(listActions.actionCreators.recieve(r.data)))
+      .catch(e => store.dispatch(listActions.actionCreators.error(e)))
   }
 };
 
 
-export { processAmphoraeCollection, getAmphoraFlow }
+export { listAmphora }

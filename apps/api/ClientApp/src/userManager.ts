@@ -9,7 +9,7 @@ const userManagerConfig: UserManagerSettings = {
   scope:"openid profile web_api",
   authority: 'http://localhost:6500',
   silent_redirect_uri: 'http://localhost:5100/silentRenew.html',
-  automaticSilentRenew: true,
+  automaticSilentRenew: false,
   filterProtocolClaims: true,
   loadUserInfo: true,
   monitorSession: true

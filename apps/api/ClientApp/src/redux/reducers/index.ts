@@ -1,12 +1,20 @@
 
-import { amphoraeReducer } from "./amphorae";
-import { counterReducer } from "./counter";
-import { reducer as weatherReducer } from './weatherForcast'
-import { reducer as oidcReducer } from 'redux-oidc';
+import { reducer as oidc } from 'redux-oidc';
+import { reducer as burgerMenu } from 'redux-burger-menu';
+import { reducer as amphora } from "./amphora";
+import { reducer as ui } from "./ui";
 
-export const reducers = {
-    counter: counterReducer,
-    oidc: oidcReducer,
-    weatherForecasts: weatherReducer,
-    amphoras: amphoraeReducer,
+export interface IReducers {
+    amphora: any;
+    burgerMenu: any
+    oidc: any;
+    ui: any,
+}
+
+// make sure these match the names of state!
+export const reducers: IReducers = {
+    amphora,
+    burgerMenu,
+    oidc,
+    ui,
 };

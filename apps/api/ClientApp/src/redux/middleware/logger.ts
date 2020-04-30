@@ -1,14 +1,14 @@
-import { IAction } from "../actions/action"
+import { Action } from 'redux';
 
-export const logger = (store: any) => (next: any) => (action: IAction) => {
+export const logger = (store: any) => (next: any) => (action: Action) => {
     console.log('dispatching', action)
-    console.log('store', store)
+    console.log(`state before action ${action.type}`, store.getState())
     let result = next(action)
-    console.log('next state', store.getState())
+    console.log(`state after ${action.type}`, store.getState())
     return result
 }
 
-export const crashReporter = (store: any) => (next: any) => (action: IAction) => {
+export const crashReporter = (store: any) => (next: any) => (action: Action) => {
     try {
         return next(action)
     } catch (err) {

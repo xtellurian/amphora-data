@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { ApplicationState } from '../redux/store';
-import * as CounterStore from '../redux/Counter';
+import { ApplicationState} from '../redux/state';
+import { CounterState} from '../redux/state/counter';
+import * as CounterStore from '../redux/counter';
 
 type CounterProps =
-    CounterStore.CounterState &
+    CounterState &
     typeof CounterStore.actionCreators &
     RouteComponentProps<{}>;
 

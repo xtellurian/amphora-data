@@ -6,11 +6,10 @@ import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
 import CallbackPage from './components/CallbackPage';
-import { ApplicationState } from './redux/store';
+import { ApplicationState } from './redux/state';
 
 import userManager from './userManager';
 import { User } from 'oidc-client';
-import axios from 'axios';
 import UserInfo from './components/UserInfo';
 import Amphora from './components/amphorae/MyAmphorae';
 import { Dispatch } from 'redux';
@@ -45,7 +44,7 @@ const Routes = (props: RoutesModuleProps) => {
         }
     });
 
-    const isConnected: boolean = !!props.user;
+    // const isConnected: boolean = !!props.user;
     return (
         <React.Fragment>
             <Switch>
@@ -75,4 +74,4 @@ function mapDispatchToProps(dispatch: Dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Routes);
+)(Routes as any);

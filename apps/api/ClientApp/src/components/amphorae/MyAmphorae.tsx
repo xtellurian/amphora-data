@@ -1,90 +1,91 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { Link } from 'react-router-dom';
-import { ApplicationState } from '../../redux/store';
-import * as AmphoraStore from '../../redux/AmphoraState';
-import { actionCreators } from '../../redux/actions/amphorae';
+import { Button, Spinner } from 'reactstrap';
+import { ApplicationState } from '../../redux/state';
+import { AmphoraState } from '../../redux/state/amphora';
+// import { actionCreators } from '../../redux/actions/amphorae';
+import { actionCreators as listActions } from "../../redux/actions/amphora/list";
+import { actionCreators as modalActions } from "../../redux/actions/ui";
+import { AmphoraListItem } from './AmphoraListItem';
 
 // At runtime, Redux will merge together...
-type AmphoraeProps =
-  AmphoraStore.AmphoraState // ... state we've requested from the Redux store
-  & typeof actionCreators  // ... plus action creators we've requested
+type MyAmphoraeProps =
+  AmphoraState // ... state we've requested from the Redux store
+  & (typeof listActions & typeof modalActions)  // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 
-class MyAmphorae extends React.PureComponent<AmphoraeProps> {
+class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
+
   // This method is called when the component is first added to the document
   public componentDidMount() {
-    this.ensureDataFetched();
+    this.setMyView();
   }
 
   // This method is called when the route parameters change
-  public componentDidUpdate(prevProps: AmphoraeProps) {
+  public componentDidUpdate(prevProps: MyAmphoraeProps) {
     // this.ensureDataFetched();
+  }
+
+  private countAmphora(): number {
+    if (this.props.list) {
+      return this.props.list.length;
+    } else { }
+    return 0;
   }
 
   public render() {
     return (
       <React.Fragment>
-        <h1 id="tabelLabel">Weather forecast</h1>
-        <p>This component demonstrates fetching amphora from the server and working with URL parameters.</p>
-        <p>There are {this.props.amphoras.length} amphoras </p>
-        {this.renderForecastsTable()}
-        {this.renderPagination()}
+        <h1 id="tabelLabel">My Amphora</h1>
+        <Button color="primary" onClick={() => this.setMyView()}>My List</Button>
+        <Button color="secondary" onClick={() => this.setOrganisationView()}>My Organisation</Button>
+        {this.renderList()}
       </React.Fragment>
     );
   }
 
-  private ensureDataFetched() {
-    const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0;
-
-    this.props.getMyCreatedAmphorae(startDateIndex);
-
-  }
-
-  private renderForecastsTable() {
-    return (
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.props.amphoras.map((amphora: AmphoraStore.AmphoraModel) =>
-            <tr key={amphora.id}>
-              <td>{amphora.name}</td>
-              <td>{amphora.description}</td>
-              <td>{amphora.price}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    );
-  }
-
-  private renderPagination() {
-    const prevStartDateIndex = (this.props.startDateIndex || 0) - 5;
-    const nextStartDateIndex = (this.props.startDateIndex || 0) + 5;
+  private renderList() {
+    if (this.props.isLoading) {
+      return (
+        <Spinner color="light" />
+      )
+    }
 
     return (
-      <div className="d-flex justify-content-between">
-        <Link className='btn btn-outline-secondary btn-sm' to={`/fetch-data/${prevStartDateIndex}`}>Previous</Link>
-        {this.props.isLoading && <span>Loading...</span>}
-        <Link className='btn btn-outline-secondary btn-sm' to={`/fetch-data/${nextStartDateIndex}`}>Next</Link>
+      <div>
+        <p>There are {this.countAmphora()} amphoras </p>
+        {
+          this.props.list.map(a => (
+            <AmphoraListItem openModal={() => this.props.open(a)} amphora={a} key={a.id || ""} />
+          ))
+        }
       </div>
-    );
+    )
+  }
+
+  private setMyView(): void {
+    this.props.listMyCreatedAmphora();
+  }
+
+  private setOrganisationView(): void {
+    this.props.listOrganisationCreatedAmphora();
   }
 }
 
-const mapStateToProps = (state: ApplicationState) => ({
-  amphoras: state.amphoras
-});
+function mapStateToProps(state: ApplicationState): AmphoraState {
+  if (state.amphora) {
+    return state.amphora;
+  } else {
+    return {
+      isLoading: true,
+      list: []
+    }
+  }
+}
 
 export default connect(
   mapStateToProps, // Selects which state properties are merged into the component's props
-  actionCreators // Selects which action creators are merged into the component's props
+  { ...listActions, ...modalActions } // Selects which action creators are merged into the component's props
 )(MyAmphorae as any);
