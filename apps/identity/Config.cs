@@ -90,7 +90,10 @@ namespace Amphora.Identity
             {
                 urls.Add("localhost:5001".ToUri().ToStandardString() + "/signin-oidc");
                 urls.Add("localhost:5001".ToUri().ToStandardString() + "/#/callback");
+                urls.Add("localhost:5001".ToUri().ToStandardString() + "/silentRenew.html");
                 urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/#/callback");
+                urls.Add(externalServices.WebAppBaseUrl?.ToUri().ToStandardString() + "/silentRenew.html");
             }
             else
             {
@@ -98,15 +101,18 @@ namespace Amphora.Identity
                 {
                     urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
                     urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
+                    urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/silentRenew.html");
                 }
                 else
                 {
                     urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
                     urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
+                    urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/silentRenew.html");
                 }
 
                 urls.Add(AppUrl.ToUri().ToStandardString() + "/signin-oidc");
                 urls.Add(AppUrl.ToUri().ToStandardString() + "/#/callback");
+                urls.Add(AppUrl.ToUri().ToStandardString() + "/silentRenew.html");
             }
 
             if (!string.IsNullOrEmpty(envInfo.Stack))
@@ -114,6 +120,7 @@ namespace Amphora.Identity
                 // add something like develop.app.amphoradata.com
                 urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
                 urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/#/callback");
+                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/silentRenew.html");
             }
 
             System.Console.WriteLine($"Redirects: {JsonConvert.SerializeObject(urls, Formatting.Indented)}");
