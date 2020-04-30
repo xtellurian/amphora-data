@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState} from '../redux/state';
 import { CounterState} from '../redux/state/counter';
-import * as CounterStore from '../redux/counter';
+import * as CounterStore from '../redux/counterThing';
 
 type CounterProps =
     CounterState &
