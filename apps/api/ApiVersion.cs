@@ -11,7 +11,7 @@ namespace Amphora.Api
             {
                 Major = 0,
                 Minor = 9,
-                Patch = 8
+                Patch = 9
             };
     }
 
