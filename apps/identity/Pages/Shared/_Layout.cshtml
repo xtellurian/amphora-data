@@ -17,7 +17,8 @@
     }
     Func<ClaimsPrincipal, Task<string>> profileUrl = (p) => Task.FromResult(p.GetProfilePictureUri()?.ToString()+"?s=180");
     Func<ClaimsPrincipal, Task<bool>> isAdminGlobal = (p) => (Task.FromResult(p.IsGlobalAdmin()));
-    var returnUrl = Context.Request.Query["returnUrl"];
+    var returnUrl = Context.Request.Query["returnUrl"].FirstOrDefault()?.ToString() 
+        ?? externalServicesOptions.CurrentValue.WebAppUri().ToStandardString() + "/Challenge";
     var googleTrackingId = Configuration.GetSection("GoogleAnalytics")["TrackingId"];
 }
 
