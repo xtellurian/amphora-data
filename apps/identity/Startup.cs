@@ -5,6 +5,7 @@ using Amphora.Common.Models.Options;
 using Amphora.Identity.Contracts;
 using Amphora.Identity.EntityFramework;
 using Amphora.Identity.Extensions;
+using Amphora.Identity.IdentityConfig;
 using Amphora.Identity.Models;
 using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
@@ -91,6 +92,16 @@ namespace Amphora.Identity
                 .AddEntityFrameworkStores<IdentityContext>()
                 .AddDefaultTokenProviders();
 
+            IIdentityServerConfig config;
+            if (HostingEnvironment.IsDevelopment())
+            {
+                config = new DevelopmentConfig(mvcClientSecret);
+            }
+            else
+            {
+                config = new ProductionConfig(externalServices, EnvironmentInfo, mvcClientSecret);
+            }
+
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
@@ -100,9 +111,9 @@ namespace Amphora.Identity
                     options.UserInteraction.LoginUrl = "/Account/Login";
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
                 })
-                .AddInMemoryIdentityResources(Config.Ids)
-                .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients(externalServices, EnvironmentInfo, mvcClientSecret))
+                .AddInMemoryIdentityResources(config.IdentityResources())
+                .AddInMemoryApiResources(config.Apis())
+                .AddInMemoryClients(config.Clients())
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 
