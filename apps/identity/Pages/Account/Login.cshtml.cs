@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Models.Platform;
 using Amphora.Identity.Models;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Identity.Pages.Account
@@ -27,6 +30,7 @@ namespace Amphora.Identity.Pages.Account
         private readonly IClientStore clientStore;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IAuthenticationSchemeProvider schemeProvider;
+        private readonly ILogger<LoginPageModel> logger;
         private readonly ExternalServices options;
 
         public bool AllowRememberLogin { get; set; } = true;
@@ -43,13 +47,17 @@ namespace Amphora.Identity.Pages.Account
                               SignInManager<ApplicationUser> signInManager,
                               IClientStore clientStore,
                               IOptionsMonitor<ExternalServices> externalOptions,
-                              IAuthenticationSchemeProvider schemeProvider)
+                              IAuthenticationSchemeProvider schemeProvider,
+                              ILogger<LoginPageModel> logger,
+                              IEventRoot eventService)
         {
             this.interaction = interaction;
             this.userManager = userManager;
             this.clientStore = clientStore;
             this.signInManager = signInManager;
             this.schemeProvider = schemeProvider;
+            this.logger = logger;
+            EventService = eventService;
             this.options = externalOptions.CurrentValue;
         }
 
@@ -57,9 +65,11 @@ namespace Amphora.Identity.Pages.Account
         public LoginRequest Input { get; set; } = new LoginRequest();
 
         public string? ReturnUrl { get; private set; }
+        public IEventRoot EventService { get; }
 
         public async Task<IActionResult> OnGetAsync(string? returnUrl)
         {
+            returnUrl ??= options.WebAppUri().ToStandardString() + "/Challenge";
             await BuildModel(returnUrl);
 
             if (IsExternalLoginOnly)
@@ -73,6 +83,7 @@ namespace Amphora.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostLoginAsync(string? returnUrl)
         {
+            returnUrl ??= options.WebAppUri().ToStandardString() + "/Challenge";
             await BuildModel(returnUrl);
             // check if we are in the context of an authorization request
             var context = await interaction.GetAuthorizationContextAsync(this.ReturnUrl);
@@ -99,7 +110,7 @@ namespace Amphora.Identity.Pages.Account
                     }
 
                     // request for a local page
-                    if (Url.IsLocalUrl(returnUrl))
+                    if (Url.IsLocalUrl(returnUrl) || returnUrl?.StartsWith(options.WebAppUri().ToString()) == true)
                     {
                         return Redirect(returnUrl);
                     }
@@ -110,7 +121,9 @@ namespace Amphora.Identity.Pages.Account
                     else
                     {
                         // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
+                        logger.LogError($"Invalid Return Url: {this.ReturnUrl}");
+                        ModelState.AddModelError(string.Empty, $"Failed to redirect. The redirect URL {this.ReturnUrl} was invalid.");
+                        return Page();
                     }
                 }
 
@@ -124,9 +137,9 @@ namespace Amphora.Identity.Pages.Account
             }
         }
 
-        private async Task BuildModel(string? returnUrl)
+        private async Task BuildModel(string returnUrl)
         {
-            this.ReturnUrl = returnUrl ?? options.WebAppUri().ToString();
+            this.ReturnUrl = returnUrl;
             var context = await interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null && await schemeProvider.GetSchemeAsync(context.IdP) != null)
             {
