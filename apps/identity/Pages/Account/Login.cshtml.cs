@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amphora.Common.Models.Options;
 using Amphora.Common.Models.Platform;
 using Amphora.Identity.Models;
 using Amphora.Identity.Models.ViewModels;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Amphora.Identity.Pages.Account
 {
@@ -25,6 +27,7 @@ namespace Amphora.Identity.Pages.Account
         private readonly IClientStore clientStore;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IAuthenticationSchemeProvider schemeProvider;
+        private readonly ExternalServices options;
 
         public bool AllowRememberLogin { get; set; } = true;
         public bool EnableLocalLogin { get; set; } = true;
@@ -39,6 +42,7 @@ namespace Amphora.Identity.Pages.Account
                               UserManager<ApplicationUser> userManager,
                               SignInManager<ApplicationUser> signInManager,
                               IClientStore clientStore,
+                              IOptionsMonitor<ExternalServices> externalOptions,
                               IAuthenticationSchemeProvider schemeProvider)
         {
             this.interaction = interaction;
@@ -46,6 +50,7 @@ namespace Amphora.Identity.Pages.Account
             this.clientStore = clientStore;
             this.signInManager = signInManager;
             this.schemeProvider = schemeProvider;
+            this.options = externalOptions.CurrentValue;
         }
 
         [BindProperty]
@@ -53,7 +58,7 @@ namespace Amphora.Identity.Pages.Account
 
         public string? ReturnUrl { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string returnUrl)
+        public async Task<IActionResult> OnGetAsync(string? returnUrl)
         {
             await BuildModel(returnUrl);
 
@@ -66,7 +71,7 @@ namespace Amphora.Identity.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPostLoginAsync(string returnUrl)
+        public async Task<IActionResult> OnPostLoginAsync(string? returnUrl)
         {
             await BuildModel(returnUrl);
             // check if we are in the context of an authorization request
@@ -119,9 +124,9 @@ namespace Amphora.Identity.Pages.Account
             }
         }
 
-        private async Task BuildModel(string returnUrl)
+        private async Task BuildModel(string? returnUrl)
         {
-            this.ReturnUrl = returnUrl;
+            this.ReturnUrl = returnUrl ?? options.WebAppUri().ToString();
             var context = await interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null && await schemeProvider.GetSchemeAsync(context.IdP) != null)
             {
