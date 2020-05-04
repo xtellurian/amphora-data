@@ -105,6 +105,41 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
+        /// Get's the 'for all' rule, if it exists, else an empty 200.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <returns>A rule, if it exists.</returns>
+        [Produces(typeof(Models.Dtos.AccessControls.AllAccessRule))]
+        [HttpGet("ForAll")]
+        [CommonAuthorize]
+        public async Task<IActionResult> GetForAllRule(string id)
+        {
+            var readRes = await amphoraeService.ReadAsync(User, id);
+            if (readRes.Succeeded)
+            {
+                var amphora = readRes.Entity;
+                var res = new List<Models.Dtos.AccessControls.AllAccessRule>();
+                if (amphora.AccessControl.AllRule == null)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Ok(new Models.Dtos.AccessControls.AllAccessRule
+                    {
+                        Id = amphora.AccessControl.AllRule.Id,
+                        Priority = amphora.AccessControl.AllRule.Priority ?? 0,
+                        AllowOrDeny = amphora.AccessControl.AllRule.Kind == Kind.Allow ? "Allow" : "Deny"
+                    });
+                }
+            }
+            else
+            {
+                return Handle(readRes);
+            }
+        }
+
+        /// <summary>
         /// Creates an Access Control rule on this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
@@ -180,6 +215,39 @@ namespace Amphora.Api.Controllers.Amphorae
                 else
                 {
                     return Handle(orgToMakeRuleFor);
+                }
+            }
+            else
+            {
+                return Handle(readRes);
+            }
+        }
+
+        /// <summary>
+        /// Creates an Access Control Rule for all on this Amphora.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="rule">The rule to create.</param>
+        /// <returns>The same rule.</returns>
+        [Produces(typeof(Models.Dtos.AccessControls.AllAccessRule))]
+        [HttpPost("ForAll")]
+        [CommonAuthorize]
+        public async Task<IActionResult> CreateForAll(string id, [FromBody] Models.Dtos.AccessControls.AllAccessRule rule)
+        {
+            var readRes = await amphoraeService.ReadAsync(User, id);
+            if (readRes.Succeeded)
+            {
+                var newRule = new AllRule(rule.GetKind(), rule.Priority);
+                var result = await accessControlService.CreateAsync(User, readRes.Entity, newRule);
+
+                if (result.Succeeded)
+                {
+                    rule.Id = result.Entity.Id;
+                    return Ok(rule);
+                }
+                else
+                {
+                    return Handle(result);
                 }
             }
             else

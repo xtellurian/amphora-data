@@ -152,14 +152,20 @@ namespace Amphora.Api.Services.Auth
 
             if (rules != null && rules.Any())
             {
+                var applicableRules = new List<AccessRule>();
+                if (amphora.AccessControl.AllRule != null)
+                {
+                    // always add the all rule if it exists.
+                    applicableRules.Add(amphora.AccessControl.AllRule);
+                }
+
                 var userRules = amphora.AccessControl.UserAccessRules.Where(_ => _.UserDataId == user.Id);
                 var orgRules = amphora.AccessControl.OrganisationAccessRules.Where(_ => _.OrganisationId == user.OrganisationId);
-                var allRules = new List<AccessRule>();
-                allRules.AddRange(orgRules);
-                allRules.AddRange(userRules);
-                var maxPriority = allRules.Max(_ => _.Priority);
-                var ruleToApply = allRules.FirstOrDefault(_ => _.Priority == maxPriority);
-                var allowed = ruleToApply.Kind == Kind.Allow;
+                applicableRules.AddRange(orgRules);
+                applicableRules.AddRange(userRules);
+                var maxPriority = applicableRules.Max(_ => _.Priority);
+                var ruleToApply = applicableRules.FirstOrDefault(_ => _.Priority == maxPriority);
+                var allowed = ruleToApply?.Kind == Kind.Allow;
                 logger.LogInformation($"User({user.UserName}) access granted: {allowed}");
                 return allowed;
             }
@@ -175,6 +181,11 @@ namespace Amphora.Api.Services.Auth
             {
                 // access model only applied to reading the contents
                 return false;
+            }
+
+            if (amphora?.AccessControl?.AllRule != null)
+            {
+                return true;
             }
 
             var rules = amphora.AccessControl?.Rules();

@@ -179,5 +179,64 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyOrganisationAsync(otherClient, otherOrg);
             await DestroyUserAsync(otherClient, otherUser);
         }
+
+        [Fact]
+        public async Task AccessControls_AllowAll_DataCanBeAccessedByAnyone()
+        {
+            // Arrange
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+
+            // create an amphora
+            var amphora = EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", amphora);
+            var createContent = await createResponse.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(createResponse);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createContent);
+
+            // and add a file to the amphora
+            var file = System.Guid.NewGuid().ToString();
+            var generator = new Helpers.RandomGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var uploadResponse = await adminClient.PutAsync($"api/amphorae/{amphora.Id}/files/{file}", requestBody);
+            await AssertHttpSuccess(uploadResponse);
+
+            // allow all to access
+            var rule = AllAccessRule.Allow();
+            var ruleResponse = await adminClient.PostAsJsonAsync($"api/amphorae/{amphora.Id}/AccessControls/ForAll", rule);
+            var ruleResponseContent = await ruleResponse.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(ruleResponse);
+            rule = JsonConvert.DeserializeObject<AllAccessRule>(ruleResponseContent);
+            Assert.NotNull(rule.Id);
+
+            // get the rule
+            var rulesResponse = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/AccessControls/ForAll");
+            await AssertHttpSuccess(rulesResponse);
+            var res = JsonConvert.DeserializeObject<AllAccessRule>(await rulesResponse.Content.ReadAsStringAsync());
+            Assert.Equal(rule.Id, res.Id);
+            Assert.Equal(rule.AllowOrDeny, res.AllowOrDeny);
+            Assert.Equal(rule.Priority, res.Priority);
+
+            // check other can access data
+            var getFileResponse = await otherClient.GetAsync($"api/amphorae/{amphora.Id}/files/{file}");
+            await AssertHttpSuccess(getFileResponse);
+
+            // delete the rule
+            // delete the access control rule
+            var deleteRes = await adminClient.DeleteAsync($"api/amphorae/{amphora.Id}/AccessControls/{rule.Id}");
+            await AssertHttpSuccess(deleteRes);
+
+            // check other now CANT access data
+            getFileResponse = await otherClient.GetAsync($"api/amphorae/{amphora.Id}/files/{file}");
+            Assert.False(getFileResponse.IsSuccessStatusCode);
+
+            await DestroyAmphoraAsync(adminClient, amphora.Id);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+            await DestroyOrganisationAsync(otherClient, otherOrg);
+            await DestroyUserAsync(otherClient, otherUser);
+        }
     }
 }

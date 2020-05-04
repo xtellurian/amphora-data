@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Amphora.Common.DataAnnotations;
 using Amphora.Common.Models.Permissions.Rules;
 
 namespace Amphora.Api.Models.Dtos.AccessControls
@@ -19,6 +20,7 @@ namespace Amphora.Api.Models.Dtos.AccessControls
 
         public string Id { get; set; }
         [Display(Name = "Allow or Deny")]
+        [OneOf("Allow", "Deny")]
         public string AllowOrDeny { get; set; }
         public int Priority { get; set; } = 100;
 

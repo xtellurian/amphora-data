@@ -25,6 +25,8 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
                     .WithMany()
                     .HasForeignKey(r => r.UserDataId);
             });
+
+            builder.HasOne(_ => _.AllRule);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Amphora.Common.Models.Permissions.Rules
         protected AccessRule()
         { }
 
-        public string Id { get; set; } = System.Guid.NewGuid().ToString();
+        public string Id { get; set; } = null!;
         public Kind? Kind { get; set; }
         public int? Priority { get; set; }
         public abstract string Name();

@@ -52,6 +52,10 @@ namespace Amphora.Common.Services.Access
                     {
                         amphora.AccessControl.OrganisationAccessRules.Add(orgRule);
                     }
+                    else if (rule is AllRule allRule)
+                    {
+                        amphora.AccessControl.AllRule = allRule;
+                    }
                     else
                     {
                         return new EntityOperationResult<AccessRule>("Unknown rule type");
@@ -89,6 +93,12 @@ namespace Amphora.Common.Services.Access
                 var authorized = await permissionService.IsAuthorizedAsync(userDataRes.Entity!, amphora, AccessLevels.Administer);
                 if (authorized)
                 {
+                    if (amphora.AccessControl == null)
+                    {
+                        // there's nothing to delete
+                        return new EntityOperationResult<AccessRule>(true);
+                    }
+
                     var rule = amphora.AccessControl?.Rules()?.FirstOrDefault(_ => _.Id == ruleId);
                     if (rule is null)
                     {
@@ -104,6 +114,10 @@ namespace Amphora.Common.Services.Access
                         else if (rule is OrganisationAccessRule orgRule)
                         {
                             amphora.AccessControl!.OrganisationAccessRules.Remove(orgRule);
+                        }
+                        else if (rule is AllRule allRule)
+                        {
+                            amphora.AccessControl!.AllRule = null;
                         }
                         else
                         {

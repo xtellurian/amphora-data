@@ -58,8 +58,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         {
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
-            EntityOperationResult<ApplicationUserDataModel> userReadRes;
-            if (IsValidEmail(Rule.Username))
+            EntityOperationResult<ApplicationUserDataModel> userReadRes = null;
+            if (Rule.Username == "*")
+            {
+                // then it's not a user
+                logger.LogInformation("Creating an All Rule");
+            }
+            else if (IsValidEmail(Rule.Username))
             {
                 userReadRes = await userDataService.ReadFromEmailAsync(User, Rule.Username);
             }
@@ -68,7 +73,17 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
                 userReadRes = await userDataService.ReadFromUsernameAsync(User, Rule.Username);
             }
 
-            if (userReadRes.Succeeded)
+            if (Rule.Username?.Trim() == "*")
+            {
+                var rule = new AllRule(Rule.GetKind(), Rule.Priority);
+                var createRes = await accessControlService.CreateAsync(User, Amphora, rule);
+                if (createRes.Succeeded)
+                {
+                    await LoadAmphoraAsync(id);
+                    await SetPagePropertiesAsync();
+                }
+            }
+            else if (userReadRes != null && userReadRes.Succeeded)
             {
                 var rule = new UserAccessRule(Rule.GetKind(), Rule.Priority, userReadRes.Entity);
                 var createRes = await accessControlService.CreateAsync(User, Amphora, rule);
