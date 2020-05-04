@@ -19,7 +19,7 @@ namespace Amphora.Api.Extensions
         public static AmphoraModel UpdateProperties(this AmphoraModel entity, DetailedAmphora dto)
         {
             UpdateProperties(entity, dto as BasicAmphora);
-            entity.TermsAndConditionsId = dto.TermsAndConditionsId;
+            entity.TermsOfUseId = dto.TermsOfUseId;
             entity.Description = dto.Description;
             if (dto.Lat.HasValue && dto.Lon.HasValue)
             {

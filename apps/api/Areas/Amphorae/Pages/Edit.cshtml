@@ -30,12 +30,12 @@
                     <input asp-for="AmphoraDto.Labels" class="form-control" />
                     <span asp-validation-for="AmphoraDto.Labels" class="text-danger"></span>
                 </div>
-                @if(@Model.TermsAndConditions.Any())
+                @if(@Model.TermsOfUses.Any())
                 {
                 <div class="form-group">
-                    <label asp-for="AmphoraDto.TermsAndConditionsId"></label>
-                    <select class="custom-select" asp-for="AmphoraDto.TermsAndConditionsId" asp-items="Model.TermsAndConditions"></select> 
-                    <span asp-validation-for="AmphoraDto.TermsAndConditionsId" class="text-danger"></span>
+                    <label asp-for="AmphoraDto.TermsOfUseId"></label>
+                    <select class="custom-select" asp-for="AmphoraDto.TermsOfUseId" asp-items="Model.TermsOfUses"></select> 
+                    <span asp-validation-for="AmphoraDto.TermsOfUseId" class="text-danger"></span>
                 </div>
                 }
                 <div class="form-group">

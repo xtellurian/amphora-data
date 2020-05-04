@@ -38,7 +38,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
         public virtual PinnedAmphorae? PinnedAmphorae { get; set; } = new PinnedAmphorae();
         // navigation
-        public virtual ICollection<TermsAndConditionsModel> TermsAndConditions { get; set; } = new Collection<TermsAndConditionsModel>();
+        public virtual ICollection<TermsOfUseModel> TermsOfUses { get; set; } = new Collection<TermsOfUseModel>();
         public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; } = new Collection<TermsAndConditionsAcceptanceModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? CreatedById { get; set; }
@@ -71,18 +71,6 @@ namespace Amphora.Common.Models.Organisations
         {
             var membership = this.Memberships?.FirstOrDefault(m => m.UserId == userId);
             return membership?.Role == Roles.Administrator;
-        }
-
-        public bool AddTermsAndConditions(TermsAndConditionsModel model)
-        {
-            if (this.TermsAndConditions == null) { this.TermsAndConditions = new List<TermsAndConditionsModel>(); }
-            if (this.TermsAndConditions.Any(t => t.Id == model.Id))
-            {
-                return false;
-            }
-
-            this.TermsAndConditions.Add(model);
-            return true;
         }
 
         public bool IsValid()

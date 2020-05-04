@@ -21,11 +21,11 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
                 membership.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
             });
             builder.HasOne(_ => _.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);
-            builder.OwnsMany(_ => _.TermsAndConditions, termsAndConditions =>
-            {
-                termsAndConditions.WithOwner(_ => _.Organisation).HasForeignKey(_ => _.OrganisationId);
-                termsAndConditions.HasKey(_ => _.Id);
-            });
+            // refactored, was an owned entity before
+            builder.HasMany(_ => _.TermsOfUses)
+                .WithOne(_ => _.Organisation!)
+                .HasForeignKey(_ => _.OrganisationId);
+
             builder.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
             {
                 a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);

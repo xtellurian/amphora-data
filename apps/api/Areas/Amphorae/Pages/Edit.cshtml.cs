@@ -21,12 +21,12 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         [BindProperty]
         public EditAmphora AmphoraDto { get; set; }
-        public List<SelectListItem> TermsAndConditions { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> TermsOfUses { get; set; } = new List<SelectListItem>();
 
         private void LoadTnC()
         {
-            var items = Amphora.Organisation.TermsAndConditions.Select(_ => new SelectListItem(_.Name, _.Id));
-            this.TermsAndConditions = new List<SelectListItem>(items);
+            var items = Amphora.Organisation.TermsOfUses.Select(_ => new SelectListItem(_.Name, _.Id));
+            this.TermsOfUses = new List<SelectListItem>(items);
         }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -54,7 +54,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     a.Name = AmphoraDto.Name;
                     a.Description = AmphoraDto.Description;
                     a.Price = AmphoraDto.Price;
-                    a.TermsAndConditionsId = AmphoraDto.TermsAndConditionsId;
+                    a.TermsOfUseId = AmphoraDto.TermsOfUseId;
                     a.GeoLocation = (AmphoraDto.Lon.HasValue && AmphoraDto.Lat.HasValue)
                         ? new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value)
                         : null;

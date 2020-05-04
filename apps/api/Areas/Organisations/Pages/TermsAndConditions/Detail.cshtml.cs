@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,7 +27,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 
         public string ReturnUrl { get; set; }
         public OrganisationModel Organisation { get; private set; }
-        public TermsAndConditionsModel TermsAndConditions { get; private set; }
+        public TermsOfUseModel TermsAndConditions { get; private set; }
         public bool CanAccept { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string tncId, string returnUrl = null)
@@ -34,10 +35,10 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             this.ReturnUrl = returnUrl ?? Url.Content("~/");
 
             var result = await this.organisationService.ReadAsync(User, id);
-            if (result.Succeeded && result.Entity.TermsAndConditions.Any(t => t.Id == tncId))
+            if (result.Succeeded && result.Entity.TermsOfUses.Any(t => t.Id == tncId))
             {
                 this.Organisation = result.Entity;
-                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Id == tncId);
+                this.TermsAndConditions = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
                 await SetCanAccept();
                 return Page();
             }
@@ -59,7 +60,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             if (result.Succeeded)
             {
                 this.Organisation = result.Entity;
-                this.TermsAndConditions = result.Entity.TermsAndConditions.FirstOrDefault(t => t.Id == tncId);
+                this.TermsAndConditions = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
                 await SetCanAccept(); // set TermsAndConditions before calling this method
                 var res = await organisationService.AgreeToTermsAndConditions(User, TermsAndConditions);
                 if (res.Succeeded)

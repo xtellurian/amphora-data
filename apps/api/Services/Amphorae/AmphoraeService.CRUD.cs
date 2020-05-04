@@ -24,6 +24,7 @@ namespace Amphora.Api.Services.Amphorae
         private readonly IOptionsMonitor<AmphoraManagementOptions> options;
         private readonly IEntityStore<PurchaseModel> purchaseStore;
         private readonly IEntityStore<OrganisationModel> organisationStore;
+        private readonly ITermsOfUseService termsOfUseService;
         private readonly IPermissionService permissionService;
         private readonly IUserDataService userDataService;
         private readonly IEventRoot eventPublisher;
@@ -33,6 +34,7 @@ namespace Amphora.Api.Services.Amphorae
                                IEntityStore<AmphoraModel> amphoraStore,
                                IEntityStore<PurchaseModel> purchaseStore,
                                IEntityStore<OrganisationModel> organisationStore,
+                               ITermsOfUseService termsOfUseService,
                                IPermissionService permissionService,
                                IUserDataService userDataService,
                                IEventRoot eventPublisher,
@@ -42,6 +44,7 @@ namespace Amphora.Api.Services.Amphorae
             AmphoraStore = amphoraStore;
             this.purchaseStore = purchaseStore;
             this.organisationStore = organisationStore;
+            this.termsOfUseService = termsOfUseService;
             this.permissionService = permissionService;
             this.userDataService = userDataService;
             this.eventPublisher = eventPublisher;
@@ -90,21 +93,18 @@ namespace Amphora.Api.Services.Amphorae
 
                 var organisation = await organisationStore.ReadAsync(model.OrganisationId);
 
-                if (string.IsNullOrEmpty(model.TermsAndConditionsId))
+                if (string.IsNullOrEmpty(model.TermsOfUseId))
                 {
-                    var tnc = organisation.TermsAndConditions?.FirstOrDefault();
-                    logger.LogInformation($"Using default terms and conditions: {tnc?.Id}");
-                    model.TermsAndConditionsId = tnc?.Id;
+                    logger.LogInformation($"Using no terms and conditions.");
+                    model.TermsOfUseId = null;
                 }
                 else
                 {
                     // check tnc's exist
-                    var tnc = organisation.TermsAndConditions.FirstOrDefault(_ => _.Id == model.TermsAndConditionsId);
-                    if (tnc == null)
+                    var touReadRes = await termsOfUseService.ReadAsync(principal, model.TermsOfUseId);
+                    if (!touReadRes.Succeeded)
                     {
-                        logger.LogInformation($"CreateAsync failed with invalid TermsAndConditionsId: {model.TermsAndConditionsId}");
-                        var allTermsAndConditions = string.Join(',', organisation.TermsAndConditions.Select(_ => _.Id));
-                        return new EntityOperationResult<AmphoraModel>(userReadRes.Entity, $"Invalid TermsAndConditionsId. Use one of {allTermsAndConditions}");
+                        return new EntityOperationResult<AmphoraModel>("Unknown terms of use");
                     }
                 }
 

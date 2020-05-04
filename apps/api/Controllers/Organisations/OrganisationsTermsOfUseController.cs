@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
-using Amphora.Common.Models.Organisations;
+using Amphora.Common.Models.Amphorae;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -17,13 +15,13 @@ namespace Amphora.Api.Controllers.Organisations
     [ApiController]
     [SkipStatusCodePages]
     [OpenApiTag("Organisations")]
-    [Route("api/Organisations/{id}/TermsAndConditions")]
-    public class TermsAndConditionsController : Controller
+    [Route("api/Organisations/{id}/TermsOfUse")]
+    public class OrganisationsTermsOfUseController : Controller
     {
         private readonly IOrganisationService organisationService;
         private readonly IMapper mapper;
 
-        public TermsAndConditionsController(IOrganisationService organisationService, IMapper mapper)
+        public OrganisationsTermsOfUseController(IOrganisationService organisationService, IMapper mapper)
         {
             this.organisationService = organisationService;
             this.mapper = mapper;
@@ -33,33 +31,24 @@ namespace Amphora.Api.Controllers.Organisations
         /// Adds new Terms and Conditions to your Organisations T/C Library.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
-        /// <param name="tnc">The new Terms and Conditions.</param>
+        /// <param name="tou">The new Terms of Use.</param>
         /// <returns> The organisation metadaa. </returns>
         /// <returns> The Terms and Conditions. </returns>
-        [Produces(typeof(TermsAndConditions))]
+        [Produces(typeof(TermsOfUse))]
         [ProducesResponseType(400)]
         [CommonAuthorize]
         [HttpPost]
-        public async Task<IActionResult> Create(string id, [FromBody] TermsAndConditions tnc)
+        public async Task<IActionResult> Create(string id, [FromBody] CreateTermsOfUse tou)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            if (org.TermsAndConditions?.Any(t => t.Id == tnc.Id) ?? false)
-            {
-                return BadRequest($"{tnc.Id} already exists");
-            }
 
-            var model = mapper.Map<TermsAndConditionsModel>(tnc);
-
-            if (!org.AddTermsAndConditions(model))
-            {
-                return BadRequest($"{model.Id} already exists");
-            }
+            var model = mapper.Map<TermsOfUseModel>(tou);
 
             var result = await organisationService.UpdateAsync(User, org);
             if (result.Succeeded)
             {
-                tnc = mapper.Map<TermsAndConditions>(model);
-                return Ok(tnc);
+                tou = mapper.Map<TermsOfUse>(model);
+                return Ok(tou);
             }
             else if (result.WasForbidden)
             {
@@ -76,13 +65,13 @@ namespace Amphora.Api.Controllers.Organisations
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
         /// <returns> The Terms and Conditions. </returns>
-        [Produces(typeof(IEnumerable<TermsAndConditions>))]
+        [Produces(typeof(IEnumerable<TermsOfUse>))]
         [CommonAuthorize]
         [HttpGet]
         public async Task<IActionResult> Read(string id)
         {
             var org = await organisationService.Store.ReadAsync(id);
-            return Ok(mapper.Map<List<TermsAndConditions>>(org.TermsAndConditions));
+            return Ok(mapper.Map<List<TermsOfUse>>(org.TermsOfUses));
         }
     }
 }

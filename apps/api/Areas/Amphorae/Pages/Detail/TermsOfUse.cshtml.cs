@@ -41,10 +41,18 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
             if (!HasAgreed)
             {
-                var acceptRes = await organisationService.AgreeToTermsAndConditions(User, Amphora.TermsAndConditions);
-                if (acceptRes.Succeeded)
+                var tnc = Amphora.TermsOfUse;
+                if (tnc != null)
                 {
-                    await SetPagePropertiesAsync();
+                    var acceptRes = await organisationService.AgreeToTermsAndConditions(User, tnc);
+                    if (acceptRes.Succeeded)
+                    {
+                        await SetPagePropertiesAsync();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Error Accepting those Terms");
                 }
             }
 

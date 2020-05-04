@@ -44,6 +44,7 @@ namespace Amphora.Common.Models
         public List<string> Errors { get; } = new List<string>();
         public int? Code { get; set; }
         public bool Succeeded { get; }
+        public bool Failed => !Succeeded;
         public bool WasForbidden { get; set; }
         public string Message => string.Join(';', this.Errors ?? new List<string> { "An Unknown Error Occurred" });
     }

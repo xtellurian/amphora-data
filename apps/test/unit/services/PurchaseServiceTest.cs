@@ -5,6 +5,7 @@ using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
@@ -109,11 +110,12 @@ namespace Amphora.Tests.Unit.Services
             var userDataService = new ApplicationUserDataService(userDataStore);
             var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
-            var terms = new TermsAndConditionsModel("1", System.Guid.NewGuid().ToString(), "This should be accepted");
+            var terms = new TermsOfUseModel(System.Guid.NewGuid().ToString(), "This should be accepted");
+            terms.Id = System.Guid.NewGuid().ToString();
 
             var othersOrg = EntityLibrary.GetOrganisationModel();
 
-            othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
+            othersOrg.TermsOfUses = new List<TermsOfUseModel>
                 {
                     terms
                 };
@@ -137,7 +139,7 @@ namespace Amphora.Tests.Unit.Services
             };
 
             var amphora = EntityLibrary.GetAmphoraModel(othersOrg);
-            amphora.TermsAndConditionsId = terms.Id;
+            amphora.TermsOfUseId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
             var commissionMock = new Mock<ICommissionTrackingService>();
@@ -161,11 +163,14 @@ namespace Amphora.Tests.Unit.Services
             var userDataService = new ApplicationUserDataService(userDataStore);
             var permissionService = new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
 
-            var terms = new TermsAndConditionsModel("2", "FooBar", "TThis shouldn't be accepted");
+            var terms = new TermsOfUseModel("FooBar", "TThis shouldn't be accepted")
+            {
+                Id = System.Guid.NewGuid().ToString()
+            };
 
             var othersOrg = EntityLibrary.GetOrganisationModel();
 
-            othersOrg.TermsAndConditions = new List<TermsAndConditionsModel>
+            othersOrg.TermsOfUses = new List<TermsOfUseModel>
                 {
                     terms
                 };
@@ -186,7 +191,7 @@ namespace Amphora.Tests.Unit.Services
             };
 
             var amphora = EntityLibrary.GetAmphoraModel(othersOrg);
-            amphora.TermsAndConditionsId = terms.Id;
+            amphora.TermsOfUseId = terms.Id;
 
             amphora = await amphoraStore.CreateAsync(amphora);
             var commissionMock = new Mock<ICommissionTrackingService>();

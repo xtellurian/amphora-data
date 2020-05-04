@@ -1,3 +1,5 @@
+using Amphora.Common.Models.Amphorae;
+
 namespace Amphora.Common.Models.Organisations
 {
     public class TermsAndConditionsAcceptanceModel
@@ -9,7 +11,7 @@ namespace Amphora.Common.Models.Organisations
             TermsAndConditionsOrganisationId = termsAndConditionsOrganisationId;
         }
 
-        public TermsAndConditionsAcceptanceModel(OrganisationModel acceptedByOrg, TermsAndConditionsModel termsToAccept)
+        public TermsAndConditionsAcceptanceModel(OrganisationModel acceptedByOrg, TermsOfUseModel termsToAccept)
         {
             this.AcceptedByOrganisationId = acceptedByOrg.Id;
             this.AcceptedByOrganisation = acceptedByOrg;
@@ -26,7 +28,7 @@ namespace Amphora.Common.Models.Organisations
         // Navigation
         public string AcceptedByOrganisationId { get; set; } // the org that owns this
         public virtual OrganisationModel AcceptedByOrganisation { get; set; } = null!;
-        public string TermsAndConditionsOrganisationId { get; set; } // the other org
-        public virtual OrganisationModel TermsAndConditionsOrganisation { get; set; } = null!;
+        public string? TermsAndConditionsOrganisationId { get; set; } // the other org
+        public virtual OrganisationModel? TermsAndConditionsOrganisation { get; set; } = null!;
     }
 }

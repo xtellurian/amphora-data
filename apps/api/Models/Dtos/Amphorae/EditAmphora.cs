@@ -14,8 +14,8 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [Display(Name = "Longitude")]
         public double? Lon { get; set; }
 
-        [Display(Name = "Terms and Conditions")]
-        public string TermsAndConditionsId { get; set; }
+        [Display(Name = "Terms of Use Id")]
+        public string TermsOfUseId { get; set; }
         [Display(Name = "Files MetaData")]
         public Dictionary<string, AttributeStore> FileAttributes { get; set; } = new Dictionary<string, AttributeStore>();
     }

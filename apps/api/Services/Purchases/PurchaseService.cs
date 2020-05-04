@@ -133,13 +133,11 @@ namespace Amphora.Api.Services.Purchases
 
         public bool HasAgreedToTermsAndConditions(ApplicationUserDataModel user, AmphoraModel amphora)
         {
-            if (amphora.TermsAndConditionsId == null) { return true; } // no terms and conditions
+            if (amphora.TermsOfUseId == null) { return true; } // no terms and conditions
             if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms and conditions
             if (user?.Organisation?.TermsAndConditionsAccepted == null) { return false; }
 
-            return user.Organisation.TermsAndConditionsAccepted.Any(t =>
-                t.TermsAndConditionsOrganisationId == amphora.OrganisationId
-                && t.TermsAndConditionsId == amphora.TermsAndConditionsId);
+            return user.Organisation.TermsAndConditionsAccepted.Any(t => t.TermsAndConditionsId == amphora.TermsOfUseId);
         }
 
         private async Task SendPurchaseConfimationEmail(PurchaseModel purchase)

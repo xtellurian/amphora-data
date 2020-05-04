@@ -34,10 +34,10 @@ namespace Amphora.Common.Models.Amphorae
             double? price,
             string organisationId,
             string? createdById = null,
-            string? termsAndConditionsId = null) : this(name, description, price, organisationId)
+            string? termsOfUseId = null) : this(name, description, price, organisationId)
         {
             CreatedById = createdById;
-            TermsAndConditionsId = termsAndConditionsId;
+            TermsOfUseId = termsOfUseId;
         }
 
         public string Name { get; set; }
@@ -57,8 +57,8 @@ namespace Amphora.Common.Models.Amphorae
         public virtual ApplicationUserDataModel? CreatedBy { get; set; }
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public virtual AmphoraAccessControlModel AccessControl { get; set; } = new AmphoraAccessControlModel();
-        public string? TermsAndConditionsId { get; set; }
-        public TermsAndConditionsModel? TermsAndConditions => this.Organisation?.TermsAndConditions?.FirstOrDefault(o => o.Id == TermsAndConditionsId);
+        public string? TermsOfUseId { get; set; }
+        public virtual TermsOfUseModel? TermsOfUse { get; set; }
 
         // methods
 

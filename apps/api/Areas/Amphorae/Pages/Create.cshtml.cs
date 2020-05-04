@@ -38,7 +38,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         [BindProperty]
         public CreateAmphora AmphoraDto { get; set; }
-        public List<SelectListItem> TermsAndConditions { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> TermsOfUses { get; set; } = new List<SelectListItem>();
         public string Token { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
@@ -52,10 +52,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages
             var userReadRes = await userDataService.ReadAsync(User);
             if (userReadRes.Succeeded)
             {
-                var items = userReadRes.Entity.Organisation?.TermsAndConditions?.Select(_ => new SelectListItem(_.Name, _.Id));
+                var items = userReadRes.Entity.Organisation?.TermsOfUses?.Select(_ => new SelectListItem(_.Name, _.Id));
                 if (items != null)
                 {
-                    this.TermsAndConditions = new List<SelectListItem>();
+                    this.TermsOfUses = new List<SelectListItem>();
                 }
             }
             else
@@ -75,7 +75,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                     location = new GeoLocation(AmphoraDto.Lon.Value, AmphoraDto.Lat.Value);
                 }
 
-                var entity = new AmphoraModel(AmphoraDto.Name, AmphoraDto.Description, AmphoraDto.Price, null, null, AmphoraDto.TermsAndConditionsId)
+                var entity = new AmphoraModel(AmphoraDto.Name, AmphoraDto.Description, AmphoraDto.Price, null, null, AmphoraDto.TermsOfUseId)
                 {
                     GeoLocation = location,
                     IsPublic = true,

@@ -22,23 +22,24 @@ namespace Amphora.Tests.Integration.Organisations
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var tnc = new TermsAndConditions();
-            tnc.Id = System.Guid.NewGuid().ToString();
-            tnc.Name = System.Guid.NewGuid().ToString();
-            tnc.Contents = System.Guid.NewGuid().ToString();
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
 
-            var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/TermsAndConditions", tnc);
+            var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/TermsOfUse", tou);
             var contents = await result.Content.ReadAsStringAsync();
             await AssertHttpSuccess(result);
 
-            var dto = JsonConvert.DeserializeObject<TermsAndConditions>(contents);
-            Assert.Equal(tnc.Id, dto.Id);
-            Assert.Equal(tnc.Contents, dto.Contents);
+            var dto = JsonConvert.DeserializeObject<TermsOfUse>(contents);
+            Assert.Equal(tou.Id, dto.Id);
+            Assert.Equal(tou.Contents, dto.Contents);
 
-            var response = await adminClient.GetAsync($"api/Organisations/{adminOrg.Id}/TermsAndConditions");
+            var response = await adminClient.GetAsync($"api/Organisations/{adminOrg.Id}/TermsOfUse");
             var contents2 = await response.Content.ReadAsStringAsync();
             await AssertHttpSuccess(response);
-            var allTnc = JsonConvert.DeserializeObject<List<TermsAndConditions>>(contents2);
+            var allTnc = JsonConvert.DeserializeObject<List<TermsOfUse>>(contents2);
             Assert.Single(allTnc);
             Assert.Equal(dto.Id, allTnc[0].Id);
             Assert.Equal(dto.Contents, allTnc[0].Contents);

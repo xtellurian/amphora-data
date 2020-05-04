@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +13,18 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
     public class CreateModel : PageModel
     {
         private readonly IOrganisationService organisationService;
+        private readonly ITermsOfUseService termsOfUseService;
         private readonly IMapper mapper;
 
-        public CreateModel(IOrganisationService organisationService, IMapper mapper)
+        public CreateModel(IOrganisationService organisationService, ITermsOfUseService termsOfUseService, IMapper mapper)
         {
             this.organisationService = organisationService;
+            this.termsOfUseService = termsOfUseService;
             this.mapper = mapper;
         }
 
         [BindProperty]
-        public Amphora.Api.Models.Dtos.Organisations.TermsAndConditions TermsAndConditions { get; set; }
+        public Amphora.Api.Models.Dtos.Organisations.TermsOfUse TermsOfUse { get; set; }
         public OrganisationModel Organisation { get; private set; }
         [TempData]
         public bool? Success { get; set; } = null;
@@ -51,11 +54,12 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                     return Page();
                 }
 
-                var model = mapper.Map<TermsAndConditionsModel>(this.TermsAndConditions);
-                if (!this.Organisation.AddTermsAndConditions(model))
+                var model = mapper.Map<TermsOfUseModel>(this.TermsOfUse);
+                var createResult = await termsOfUseService.CreateAsync(User, model);
+                if (createResult.Failed)
                 {
                     // duplicate id
-                    ModelState.AddModelError(string.Empty, $"The Id '{model.Id}' already exists.");
+                    ModelState.AddModelError(string.Empty, createResult.Message);
                     Success = false;
                     return Page();
                 }

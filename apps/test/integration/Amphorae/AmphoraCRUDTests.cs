@@ -165,7 +165,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
-            a.TermsAndConditionsId = System.Guid.NewGuid().ToString();
+            a.TermsOfUseId = System.Guid.NewGuid().ToString();
             var s = JsonConvert.SerializeObject(a);
             var requestBody = new StringContent(s, Encoding.UTF8, "application/json");
 

@@ -7,6 +7,7 @@ using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
+using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Events;
 using Amphora.Common.Models.Logging;
 using Amphora.Common.Models.Organisations;
@@ -180,7 +181,8 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsAndConditionsModel termsAndConditions)
+        public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal,
+                                                                                                              TermsOfUseModel termsAndConditions)
         {
             var userId = principal.GetUserId();
             var userReadRes = await userDataService.ReadAsync(principal, userId);

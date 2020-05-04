@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models.Dtos.Organisations;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration.Pages
@@ -69,16 +70,16 @@ namespace Amphora.Tests.Integration.Pages
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var tnc = new TermsAndConditions();
-            tnc.Id = System.Guid.NewGuid().ToString();
-            tnc.Name = System.Guid.NewGuid().ToString();
-            tnc.Contents = System.Guid.NewGuid().ToString();
+            var tou = new TermsOfUse();
+            tou.Name = System.Guid.NewGuid().ToString();
+            tou.Contents = System.Guid.NewGuid().ToString();
 
-            var result = await client.PostAsJsonAsync($"api/Organisations/{org.Id}/TermsAndConditions", tnc);
+            var result = await client.PostAsJsonAsync($"api/Organisations/{org.Id}/TermsOfUse", tou);
+            tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
 
             // Act
-            var response = await client.GetAsync($"{url}?id={org.Id}&tncId={tnc.Id}");
-            var otherResponse = await otherClient.GetAsync($"{url}?id={org.Id}&tncId={tnc.Id}");
+            var response = await client.GetAsync($"{url}?id={org.Id}&tncId={tou.Id}");
+            var otherResponse = await otherClient.GetAsync($"{url}?id={org.Id}&tncId={tou.Id}");
 
             // Assert
             await AssertHttpSuccess(response);

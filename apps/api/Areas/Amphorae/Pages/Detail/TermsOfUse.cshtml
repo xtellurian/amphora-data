@@ -23,21 +23,21 @@
             <partial name="_MasterNavPartial" />
         </div>
         <div class="col-md-9 detail">
-            @if(Model.Amphora.TermsAndConditionsId is null)
+            @if(Model.Amphora.TermsOfUseId is null)
             {
                 <p>No Terms of Use have been applied here.</p>
             }
             else
             {   
                 <h5>
-                    @Model.Amphora.TermsAndConditions.Name
+                    @Model.Amphora.TermsOfUse.Name
                     @if(Model.HasAgreed)
                     {
                         <i class="far fa-check-circle text-success"></i>
                     }
                 </h5>
                 <hr/>
-                @Markdown.ParseHtmlString(Model.Amphora.TermsAndConditions.Contents)
+                @Markdown.ParseHtmlString(Model.Amphora.TermsOfUse.Contents)
             }
 
             @{
