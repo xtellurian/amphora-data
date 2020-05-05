@@ -38,7 +38,8 @@ namespace Amphora.Api.Controllers
             var res = await termsOfUseService.ListAsync(User);
             if (res.Succeeded)
             {
-                return Ok(res.Entity);
+                var dto = mapper.Map<List<TermsOfUse>>(res.Entity);
+                return Ok(dto);
             }
             else if (res.WasForbidden) { return StatusCode(403); }
             else { return BadRequest(res.Message); }
