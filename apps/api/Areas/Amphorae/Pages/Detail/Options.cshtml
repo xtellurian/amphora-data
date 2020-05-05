@@ -26,40 +26,7 @@
                 <button class="dropdown-item" data-toggle="collapse" href="#hasPurchasedCollapse" role="button" aria-expanded="false" aria-controls="collapseAdvanced">
                     <i class="fas fa-users"></i> Show has purchased
                 </button>
-                
-                @if(Model.UserData?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
-                {
-                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromUser">
-                        <button class="dropdown-item" type="submit">
-                            <i class="fas fa-thumbtack"></i> Unpin from User
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToUser">
-                        <button class="dropdown-item" type="submit">
-                            <i class="fas fa-thumbtack"></i> Pin to User
-                        </button>
-                    </form>
-                }
-                
-                @if(Model.Amphora.Organisation?.PinnedAmphorae.IsPinned(Model.Amphora) ?? false)
-                {
-                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="UnpinFromOrg">
-                        <button class="dropdown-item" type="submit">
-                            <i class="fas fa-thumbtack"></i> Unpin from Organisation
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form method="post" asp-page-handler="pin" asp-route-id="@Model.Amphora.Id" asp-route-target="PinToOrg">
-                        <button class="dropdown-item" type="submit">
-                            <i class="fas fa-thumbtack"></i> Pin to Organisation
-                        </button>
-                    </form>
-                }
+
                 @if(Model.Amphora.GeoLocation != null)
                 {
                     <a class="dropdown-item" asp-area="Discover" asp-page="/Index" asp-page-handler="MapView" 
