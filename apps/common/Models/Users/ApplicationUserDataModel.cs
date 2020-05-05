@@ -30,6 +30,5 @@ namespace Amphora.Common.Models.Users
         public virtual OrganisationModel? Organisation { get; set; }
 
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
-        public virtual PinnedAmphorae PinnedAmphorae { get; set; } = new PinnedAmphorae();
     }
 }

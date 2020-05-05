@@ -36,7 +36,6 @@ namespace Amphora.Common.Models.Organisations
         public virtual DataCache? Cache { get; set; } = new DataCache();
         public virtual ICollection<InvitationModel> GlobalInvitations { get; set; } = new Collection<InvitationModel>();
         public virtual ICollection<Membership> Memberships { get; set; } = new Collection<Membership>();
-        public virtual PinnedAmphorae? PinnedAmphorae { get; set; } = new PinnedAmphorae();
         // navigation
         public virtual ICollection<TermsOfUseModel> TermsOfUses { get; set; } = new Collection<TermsOfUseModel>();
         public virtual ICollection<TermsOfUseAcceptanceModel> TermsOfUsesAccepted { get; set; } = new Collection<TermsOfUseAcceptanceModel>();

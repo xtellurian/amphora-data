@@ -70,9 +70,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             this.CanRequestToJoin = userData.OrganisationId == null;
             // get pinned
             var query = amphoraeService.AmphoraStore.Query(a => a.OrganisationId == Organisation.Id);
-            this.PinnedAmphorae = Organisation.PinnedAmphorae.AreAllNull()
-                ? await query.Take(6).ToListAsync()
-                : Organisation.PinnedAmphorae as IEnumerable<AmphoraModel>;
+            this.PinnedAmphorae = await query.Take(6).ToListAsync();
             return Page();
         }
     }
