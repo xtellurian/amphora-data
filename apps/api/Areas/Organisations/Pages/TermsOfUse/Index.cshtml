@@ -8,8 +8,9 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <div class="float-right">
-                <a asp-page="./Create" asp-route-id="@Model.Organisation.Id"><button class="btn btn-primary">Create</button></a>
+            <div class="btn-group float-right">
+                <a class="btn btn-secondary" asp-area="Amphorae" asp-page="/Index">Manage Amphora</a>
+                <a class="btn btn-primary" asp-page="./Create" asp-route-id="@Model.Organisation.Id">New Terms</a>
             </div>
             <div>
                 <h2>Terms of Use Library</h2>
