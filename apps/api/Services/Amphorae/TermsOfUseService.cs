@@ -152,7 +152,7 @@ namespace Amphora.Api.Services.Amphorae
             }
 
             var authorized = await permissionService.IsAuthorizedAsync(userDataRes.Entity,
-                                                                      model.Organisation,
+                                                                      userDataRes.Entity.Organisation, // applies on users own
                                                                       AccessLevels.Update);
 
             if (authorized)
