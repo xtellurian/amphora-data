@@ -89,6 +89,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<AmphoraAccessControlModel>, AmphoraAccessControlsEFStore>();
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
+            services.AddScoped<IEntityStore<TermsOfUseModel>, TermsOfUseEFStore>();
             services.AddScoped<IEntityStore<DataRequestModel>, DataRequestsEFStore>();
             services.AddScoped<IEntityStore<PurchaseModel>, PurchaseEFStore>();
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();

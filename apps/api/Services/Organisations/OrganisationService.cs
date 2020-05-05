@@ -181,14 +181,14 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal,
+        public async Task<EntityOperationResult<TermsOfUseAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal,
                                                                                                               TermsOfUseModel termsAndConditions)
         {
             var userId = principal.GetUserId();
             var userReadRes = await userDataService.ReadAsync(principal, userId);
             if (!userReadRes.Succeeded)
             {
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(false);
+                return new EntityOperationResult<TermsOfUseAcceptanceModel>(false);
             }
 
             var userData = userReadRes.Entity;
@@ -196,16 +196,16 @@ namespace Amphora.Api.Services.Organisations
 
             if (org != null && org.IsAdministrator(userData))
             {
-                org.TermsAndConditionsAccepted ??= new List<TermsAndConditionsAcceptanceModel>();
+                org.TermsOfUsesAccepted ??= new List<TermsOfUseAcceptanceModel>();
 
-                var model = new TermsAndConditionsAcceptanceModel(org, termsAndConditions);
-                org.TermsAndConditionsAccepted.Add(model);
+                var model = new TermsOfUseAcceptanceModel(org, termsAndConditions);
+                org.TermsOfUsesAccepted.Add(model);
                 var o = await Store.UpdateAsync(org);
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(userData, model);
+                return new EntityOperationResult<TermsOfUseAcceptanceModel>(userData, model);
             }
             else
             {
-                return new EntityOperationResult<TermsAndConditionsAcceptanceModel>(userData, $"User {principal.GetUserName()} must be an administrator");
+                return new EntityOperationResult<TermsOfUseAcceptanceModel>(userData, $"User {principal.GetUserName()} must be an administrator");
             }
         }
 

@@ -4,8 +4,12 @@ using System.Security.Claims;
 using Amphora.Api;
 using Amphora.Api.Contracts;
 using Amphora.Api.EntityFramework;
+using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Wrappers;
+using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
+using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +56,34 @@ namespace Amphora.Tests.Unit
         protected IOptionsMonitor<T> MockOptions<T>(T o) where T : class
         {
             return Mock.Of<IOptionsMonitor<T>>(_ => _.CurrentValue == o);
+        }
+
+        protected Mock<IUserDataService> CreateMockUserDataService(ApplicationUserDataModel fakeUserData)
+        {
+            var md = new Mock<IUserDataService>();
+            md
+                .Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
+                .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(fakeUserData, fakeUserData));
+
+            return md;
+        }
+
+        private Mock<IUserDataService> mockUserDataService = new Mock<IUserDataService>();
+
+        protected Mock<IUserDataService> MockUser(ClaimsPrincipal principal, ApplicationUserDataModel userData)
+        {
+            mockUserDataService
+                .Setup(_ => _.ReadAsync(It.Is<ClaimsPrincipal>(_ => _ == principal), It.IsAny<string>()))
+                .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(userData, userData));
+
+            return mockUserDataService;
+        }
+
+        protected IPermissionService GetPermissionService(AmphoraContext context, IUserDataService userDataService)
+        {
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            return new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
         }
 
         protected IMemoryCache CreateMemoryCache()

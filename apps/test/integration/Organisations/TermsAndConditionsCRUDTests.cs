@@ -11,9 +11,9 @@ using Xunit;
 namespace Amphora.Tests.Integration.Organisations
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class TermsAndConditionsCRUDTests : WebAppIntegrationTestBase
+    public class TermsOfUseCRUDTests : WebAppIntegrationTestBase
     {
-        public TermsAndConditionsCRUDTests(WebApplicationFactory<Startup> factory) : base(factory)
+        public TermsOfUseCRUDTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
 

@@ -51,12 +51,19 @@ namespace Amphora.Api.Services.Purchases
             this.logger = logger;
         }
 
-        public async Task<bool> CanPurchaseAmphoraAsync(IUser user, AmphoraModel amphora)
+        public async Task<bool> CanPurchaseAmphoraAsync(ApplicationUserDataModel user, AmphoraModel amphora)
         {
             if (user == null) { return false; }
             if (user.OrganisationId == amphora.OrganisationId) { return false; }
-            var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByOrganisationId, user.OrganisationId)) ?? false;
-            return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
+            if (HasAgreedToTermsAndConditions(user, amphora))
+            {
+                var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByOrganisationId, user.OrganisationId)) ?? false;
+                return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<bool> CanPurchaseAmphoraAsync(ClaimsPrincipal principal, AmphoraModel amphora)
@@ -135,9 +142,9 @@ namespace Amphora.Api.Services.Purchases
         {
             if (amphora.TermsOfUseId == null) { return true; } // no terms and conditions
             if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms and conditions
-            if (user?.Organisation?.TermsAndConditionsAccepted == null) { return false; }
+            if (user?.Organisation?.TermsOfUsesAccepted == null) { return false; }
 
-            return user.Organisation.TermsAndConditionsAccepted.Any(t => t.TermsAndConditionsId == amphora.TermsOfUseId);
+            return user.Organisation.TermsOfUsesAccepted.Any(t => t.TermsOfUseId == amphora.TermsOfUseId);
         }
 
         private async Task SendPurchaseConfimationEmail(PurchaseModel purchase)

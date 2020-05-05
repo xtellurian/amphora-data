@@ -122,9 +122,9 @@ namespace Amphora.Tests.Unit.Services
 
             othersOrg = await orgStore.CreateAsync(othersOrg);
             var usersOrg = EntityLibrary.GetOrganisationModel();
-            usersOrg.TermsAndConditionsAccepted = new List<TermsAndConditionsAcceptanceModel>
+            usersOrg.TermsOfUsesAccepted = new List<TermsOfUseAcceptanceModel>
             {
-                new TermsAndConditionsAcceptanceModel(usersOrg, terms)
+                new TermsOfUseAcceptanceModel(usersOrg, terms)
             };
             usersOrg = await orgStore.CreateAsync(usersOrg);
 

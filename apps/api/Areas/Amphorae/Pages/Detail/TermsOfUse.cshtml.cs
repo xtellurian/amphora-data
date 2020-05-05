@@ -9,17 +9,20 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
     [CommonAuthorize]
     public class TermsOfUsePageModel : AmphoraDetailPageModel
     {
+        private readonly ITermsOfUseService termsOfUseService;
         private readonly IOrganisationService organisationService;
 
         public TermsOfUsePageModel(IAmphoraeService amphoraeService,
                                    IQualityEstimatorService qualityEstimator,
                                    IPurchaseService purchaseService,
                                    IPermissionService permissionService,
+                                   ITermsOfUseService termsOfUseService,
                                    IOrganisationService organisationService) : base(amphoraeService,
                                                                                 qualityEstimator,
                                                                                 purchaseService,
                                                                                 permissionService)
         {
+            this.termsOfUseService = termsOfUseService;
             this.organisationService = organisationService;
         }
 
@@ -41,10 +44,10 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
             if (!HasAgreed)
             {
-                var tnc = Amphora.TermsOfUse;
-                if (tnc != null)
+                var tou = Amphora.TermsOfUse;
+                if (tou != null)
                 {
-                    var acceptRes = await organisationService.AgreeToTermsAndConditions(User, tnc);
+                    var acceptRes = await termsOfUseService.AcceptAsync(User, tou);
                     if (acceptRes.Succeeded)
                     {
                         await SetPagePropertiesAsync();

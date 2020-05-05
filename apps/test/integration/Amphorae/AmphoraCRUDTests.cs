@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Organisations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -95,13 +96,13 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-        public async Task Get_PublicAmphora_AllowAccessToAny()
+        public async Task Get_PublicAmphora_MetadataIsAvailable()
         {
             var url = "/api/amphorae";
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
-            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Get_PublicAmphora_AllowAccessToAny));
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             var requestBody = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
             adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
             var createResponse = await adminClient.PostAsync(url, requestBody);
@@ -159,7 +160,64 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-        public async Task CreateAmphora_MissingTermsAndConditions_ShouldError()
+        public async Task Amphora_WithTermsOfUse_MustAcceptToPurchase()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+
+            // create some terms of use
+            var tou = new TermsOfUse
+            {
+                Contents = "Some TOU contents",
+                Name = System.Guid.NewGuid().ToString()
+            };
+
+            var touRes = await adminClient.PostAsJsonAsync($"/api/TermsOfUse", tou);
+            await AssertHttpSuccess(touRes);
+            tou = JsonConvert.DeserializeObject<TermsOfUse>(await touRes.Content.ReadAsStringAsync());
+            Assert.NotNull(tou);
+            Assert.NotNull(tou.Id);
+
+            var dto = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            dto.TermsOfUseId = tou.Id;
+            var requestBody = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
+            await AssertHttpSuccess(createResponse);
+            dto = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
+
+            // purchase it, should fail with need to accept TOU
+            var purchaseResponse = await otherClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
+            Assert.False(purchaseResponse.IsSuccessStatusCode);
+
+            // Accept the terms
+            var acceptResponse = await otherClient.PostAsync($"api/TermsOfUse/{dto.TermsOfUseId}/Accepts", null);
+            await AssertHttpSuccess(acceptResponse);
+
+            // purchase it successfully
+            purchaseResponse = await otherClient.PostAsync($"api/Amphorae/{dto.Id}/Purchases", null);
+            await AssertHttpSuccess(purchaseResponse);
+
+            var readResponse = await adminClient.GetAsync($"api/amphorae/{dto.Id}");
+            var content = await readResponse.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(readResponse);
+
+            var b = JsonConvert.DeserializeObject<DetailedAmphora>(content);
+            Assert.Equal(dto.Description, b.Description);
+            Assert.True(b.Lat.HasValue);
+            Assert.True(b.Lon.HasValue);
+            Assert.Equal(dto.Lat, b.Lat);
+            Assert.Equal(dto.Lon, b.Lon);
+
+            await DestroyAmphoraAsync(adminClient, dto.Id);
+            await DestroyOrganisationAsync(otherClient, otherOrg);
+            await DestroyUserAsync(otherClient, otherUser);
+            await DestroyOrganisationAsync(adminClient, adminOrg);
+            await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task CreateAmphora_MissingTermsOfUse_ShouldError()
         {
             var url = "/api/amphorae";
             // Arrange

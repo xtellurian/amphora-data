@@ -32,13 +32,14 @@ namespace Amphora.Tests.Unit.Services
                 var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
                 var dataRequestStore = new DataRequestsEFStore(context, CreateMockLogger<DataRequestsEFStore>());
                 var organisationStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
-                var termsOfUseService = new TermsOfUseService();
+                var touStore = new TermsOfUseEFStore(context, CreateMockLogger<TermsOfUseEFStore>());
                 var userData = new ApplicationUserDataModel();
                 var mockUserService = new Mock<IUserDataService>();
                 mockUserService.Setup(o => o.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
                     .ReturnsAsync(new Common.Models.EntityOperationResult<ApplicationUserDataModel>(userData, userData));
 
                 var permissionService = new PermissionService(orgStore, amphoraStore, mockUserService.Object, CreateMockLogger<PermissionService>());
+                var termsOfUseService = new TermsOfUseService(touStore, mockUserService.Object, permissionService, CreateMockLogger<TermsOfUseService>());
                 var options = Mock.Of<IOptionsMonitor<Api.Options.AmphoraManagementOptions>>(_ => _.CurrentValue == new Api.Options.AmphoraManagementOptions());
                 var amphoraService = new AmphoraeService(options,
                                                          amphoraStore,

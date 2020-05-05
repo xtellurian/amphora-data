@@ -39,7 +39,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual PinnedAmphorae? PinnedAmphorae { get; set; } = new PinnedAmphorae();
         // navigation
         public virtual ICollection<TermsOfUseModel> TermsOfUses { get; set; } = new Collection<TermsOfUseModel>();
-        public virtual ICollection<TermsAndConditionsAcceptanceModel> TermsAndConditionsAccepted { get; set; } = new Collection<TermsAndConditionsAcceptanceModel>();
+        public virtual ICollection<TermsOfUseAcceptanceModel> TermsOfUsesAccepted { get; set; } = new Collection<TermsOfUseAcceptanceModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
         public string? CreatedById { get; set; }
         public virtual ApplicationUserDataModel? CreatedBy { get; set; }

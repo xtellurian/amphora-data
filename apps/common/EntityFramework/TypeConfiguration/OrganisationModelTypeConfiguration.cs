@@ -26,15 +26,17 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
                 .WithOne(_ => _.Organisation!)
                 .HasForeignKey(_ => _.OrganisationId);
 
-            builder.OwnsMany(p => p.TermsAndConditionsAccepted, a =>
+            builder.OwnsMany(p => p.TermsOfUsesAccepted, a =>
             {
-                a.WithOwner(b => b.AcceptedByOrganisation).HasForeignKey(_ => _.AcceptedByOrganisationId);
-                a.HasOne(b => b.TermsAndConditionsOrganisation)
-                    .WithMany()
-                    .HasForeignKey(b => b.TermsAndConditionsOrganisationId)
-                    .OnDelete(DeleteBehavior.NoAction);
+                a.Property(_ => _.Id).ValueGeneratedOnAdd();
+                a.WithOwner(b => b.AcceptedByOrganisation)
+                    .HasForeignKey(_ => _.AcceptedByOrganisationId);
 
-                a.HasKey(_ => new { _.TermsAndConditionsId, _.TermsAndConditionsOrganisationId }); // dual key
+                a.HasOne(b => b.TermsOfUseOrganisation)
+                    .WithMany()
+                    .HasForeignKey(b => b.TermsOfUseOrganisationId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
             // Pinned Amphorae
             builder.OwnsOne(_ => _.PinnedAmphorae, p =>

@@ -47,7 +47,7 @@ namespace Amphora.Api.Controllers.Organisations
             var result = await organisationService.UpdateAsync(User, org);
             if (result.Succeeded)
             {
-                tou = mapper.Map<TermsOfUse>(model);
+                tou = mapper.Map<TermsOfUse>(result.Entity);
                 return Ok(tou);
             }
             else if (result.WasForbidden)

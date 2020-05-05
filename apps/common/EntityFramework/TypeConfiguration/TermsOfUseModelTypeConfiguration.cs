@@ -13,7 +13,8 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
             builder.HasOne(_ => _.Organisation)
                 .WithMany(_ => _!.TermsOfUses)
                 .HasForeignKey(_ => _.OrganisationId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

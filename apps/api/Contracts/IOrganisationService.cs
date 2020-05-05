@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
@@ -10,7 +11,8 @@ namespace Amphora.Api.Contracts
     public interface IOrganisationService
     {
         IEntityStore<OrganisationModel> Store { get; }
-        Task<EntityOperationResult<TermsAndConditionsAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsOfUseModel termsAndConditions);
+        [Obsolete]
+        Task<EntityOperationResult<TermsOfUseAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsOfUseModel termsAndConditions);
         Task<EntityOperationResult<OrganisationModel>> CreateAsync(ClaimsPrincipal principal, OrganisationModel org);
         Task<EntityOperationResult<OrganisationModel>> DeleteAsync(ClaimsPrincipal principal, OrganisationModel model);
         Task<EntityOperationResult<OrganisationModel>> ReadAsync(ClaimsPrincipal principal, string id);

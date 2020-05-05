@@ -16,12 +16,17 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
     {
         private readonly IOrganisationService organisationService;
         private readonly IUserDataService userDataService;
+        private readonly ITermsOfUseService termsOfUseService;
         private readonly ILogger<DetailModel> logger;
 
-        public DetailModel(IOrganisationService organisationService, IUserDataService userDataService, ILogger<DetailModel> logger)
+        public DetailModel(IOrganisationService organisationService,
+                           IUserDataService userDataService,
+                           ITermsOfUseService termsOfUseService,
+                           ILogger<DetailModel> logger)
         {
             this.organisationService = organisationService;
             this.userDataService = userDataService;
+            this.termsOfUseService = termsOfUseService;
             this.logger = logger;
         }
 
@@ -62,7 +67,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                 this.Organisation = result.Entity;
                 this.TermsAndConditions = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
                 await SetCanAccept(); // set TermsAndConditions before calling this method
-                var res = await organisationService.AgreeToTermsAndConditions(User, TermsAndConditions);
+                var res = await termsOfUseService.AcceptAsync(User, TermsAndConditions);
                 if (res.Succeeded)
                 {
                     return LocalRedirect(ReturnUrl);
@@ -100,16 +105,16 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
                     return;
                 }
 
-                if (userData.Organisation.TermsAndConditionsAccepted == null)
+                if (userData.Organisation.TermsOfUsesAccepted == null)
                 {
                     // nothing accepted yet, so can accept.
                     CanAccept = true;
                     return;
                 }
 
-                if (userData.Organisation.TermsAndConditionsAccepted.Any(t =>
-                     t.TermsAndConditionsOrganisationId == Organisation.Id
-                     && t.TermsAndConditionsId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
+                if (userData.Organisation.TermsOfUsesAccepted.Any(t =>
+                     t.TermsOfUseOrganisationId == Organisation.Id
+                     && t.TermsOfUseId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
                 {
                     // org has already accepted
                     CanAccept = false;
