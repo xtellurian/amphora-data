@@ -12,16 +12,22 @@ namespace Amphora.Api.Services.Amphorae
         private readonly ISignalService signalService;
         private readonly ILogger<QualityEstimatorService> logger;
 
-        public QualityEstimatorService(IAmphoraFileService fileService, ISignalService signalService, ILogger<QualityEstimatorService> logger)
+        public QualityEstimatorService(IAmphoraFileService fileService,
+                                       ISignalService signalService,
+                                       ILogger<QualityEstimatorService> logger)
         {
             this.fileService = fileService;
             this.signalService = signalService;
             this.logger = logger;
         }
 
-        public async Task<DataQualitySummary> GenerateDataQualitySummaryAsync(AmphoraModel amphora)
+        public async Task<EnrichedDataQuality> GenerateDataQualitySummaryAsync(AmphoraModel amphora)
         {
-            var summary = new DataQualitySummary();
+            var summary = new EnrichedDataQuality();
+            summary.Accuracy = amphora?.Quality.Accuracy;
+            summary.Completeness = amphora?.Quality.Completeness;
+            summary.Granulatity = amphora?.Quality.Granulatity;
+            summary.Reliability = amphora?.Quality.Reliability;
             try
             {
                 summary.CountSignals = amphora.V2Signals.Count;

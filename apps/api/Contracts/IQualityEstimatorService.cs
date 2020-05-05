@@ -5,6 +5,6 @@ namespace Amphora.Api.Contracts
 {
     public interface IQualityEstimatorService
     {
-        Task<DataQualitySummary> GenerateDataQualitySummaryAsync(AmphoraModel amphora);
+        Task<EnrichedDataQuality> GenerateDataQualitySummaryAsync(AmphoraModel amphora);
     }
 }

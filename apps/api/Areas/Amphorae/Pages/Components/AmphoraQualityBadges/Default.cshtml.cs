@@ -6,9 +6,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Components
     [ViewComponent(Name = "AmphoraQualityBadges")]
     public class AmphoraQualityBadgesViewComponent : ViewComponent
     {
-        public DataQualitySummary Quality { get; private set; }
+        public EnrichedDataQuality Quality { get; private set; }
 
-        public IViewComponentResult Invoke(DataQualitySummary qualitySummary)
+        public IViewComponentResult Invoke(EnrichedDataQuality qualitySummary)
         {
             this.Quality = qualitySummary;
             return View(this);

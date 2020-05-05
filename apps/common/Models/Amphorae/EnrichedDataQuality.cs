@@ -1,6 +1,6 @@
 namespace Amphora.Common.Models.Amphorae
 {
-    public class DataQualitySummary
+    public class EnrichedDataQuality : DataQuality
     {
         public int? CountFiles { get; set; }
         public int? CountSignals { get; set; }

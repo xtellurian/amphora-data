@@ -30,7 +30,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public int FileCount => this.Quality.CountFiles ?? 0;
         public int SignalCount => this.Quality.CountSignals ?? 0;
 
-        public DataQualitySummary Quality { get; private set; }
+        public EnrichedDataQuality Quality { get; private set; }
         public bool CanAdminister { get; private set; }
         public bool CanUpdate { get; private set; }
         public bool CanWriteContents { get; private set; }
