@@ -95,7 +95,7 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (string.IsNullOrEmpty(model.TermsOfUseId))
                 {
-                    logger.LogInformation($"Using no terms and conditions.");
+                    logger.LogInformation($"Using no terms of use.");
                     model.TermsOfUseId = null;
                 }
                 else

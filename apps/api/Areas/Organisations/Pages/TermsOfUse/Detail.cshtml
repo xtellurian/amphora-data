@@ -1,8 +1,8 @@
 @page
-@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.DetailModel
+@model Amphora.Api.Areas.Organisations.Pages.TermsOfUse.DetailModel
 
 @{
-    ViewData["Title"] = $"T&C: {Model.TermsAndConditions.Name}";
+    ViewData["Title"] = $"T&C: {Model.TermsOfUse.Name}";
 }
 
 <div class="container">
@@ -12,29 +12,29 @@
                 <div class="card-header">
                     <div>
 
-                    @Model.TermsAndConditions.Name <small class="float-right"> by 
+                    @Model.TermsOfUse.Name <small class="float-right"> by 
                         <a asp-page="../Detail" asp-route-id="@Model.Organisation.Id">@Model.Organisation.Name</a>
                         </small>
                     </div>
                     <small>
-                        Id: @Model.TermsAndConditions.Id
+                        Id: @Model.TermsOfUse.Id
                     </small>
                 </div>
                 <div class="card-body">
-                    <span style="white-space: pre-line">@Model.TermsAndConditions.Contents</span>
+                    <span style="white-space: pre-line">@Model.TermsOfUse.Contents</span>
                 </div>
             </div>
             @if(Model.CanAccept)
             {
             <form method="post" asp-route-returnUrl="@Model.ReturnUrl" 
                                 asp-route-id="@Model.Organisation.Id" 
-                                asp-route-tncId="@Model.TermsAndConditions.Id">
+                                asp-route-tncId="@Model.TermsOfUse.Id">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <button class="btn btn-success btn-block">Accept</button>
             </form>
             }
-            <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.Organisation.Id">
-                <button class="mt-1 btn btn-secondary btn-block">Back to Organisation</button>
+            <a asp-area="Organisations" asp-page="/TermsOfUse/Index" asp-route-id="@Model.Organisation.Id">
+                <button class="mt-1 btn btn-secondary btn-block">View All</button>
             </a>
         </div>
     </div>

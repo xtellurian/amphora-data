@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
+namespace Amphora.Api.Areas.Organisations.Pages.TermsOfUse
 {
     [CommonAuthorize]
     public class DetailModel : PageModel
@@ -32,7 +32,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 
         public string ReturnUrl { get; set; }
         public OrganisationModel Organisation { get; private set; }
-        public TermsOfUseModel TermsAndConditions { get; private set; }
+        public TermsOfUseModel TermsOfUse { get; private set; }
         public bool CanAccept { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string tncId, string returnUrl = null)
@@ -43,7 +43,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             if (result.Succeeded && result.Entity.TermsOfUses.Any(t => t.Id == tncId))
             {
                 this.Organisation = result.Entity;
-                this.TermsAndConditions = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
+                this.TermsOfUse = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
                 await SetCanAccept();
                 return Page();
             }
@@ -65,9 +65,9 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
             if (result.Succeeded)
             {
                 this.Organisation = result.Entity;
-                this.TermsAndConditions = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
-                await SetCanAccept(); // set TermsAndConditions before calling this method
-                var res = await termsOfUseService.AcceptAsync(User, TermsAndConditions);
+                this.TermsOfUse = result.Entity.TermsOfUses.FirstOrDefault(t => t.Id == tncId);
+                await SetCanAccept(); // set Terms before calling this method
+                var res = await termsOfUseService.AcceptAsync(User, TermsOfUse);
                 if (res.Succeeded)
                 {
                     return LocalRedirect(ReturnUrl);
@@ -86,8 +86,8 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 
         private async Task SetCanAccept()
         {
-            // set TermsAndConditions before calling this method
-            if (this.TermsAndConditions == null) { throw new System.ApplicationException("Terms and Conditions must not be null when calling this method."); }
+            // set TermsOfUse before calling this method
+            if (this.TermsOfUse == null) { throw new System.ApplicationException("Terms must not be null when calling this method."); }
             try
             {
                 var userReadRes = await userDataService.ReadAsync(User);
@@ -114,7 +114,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
 
                 if (userData.Organisation.TermsOfUsesAccepted.Any(t =>
                      t.TermsOfUseOrganisationId == Organisation.Id
-                     && t.TermsOfUseId == this.TermsAndConditions.Id)) // here is why TermsAndConditions must not be null
+                     && t.TermsOfUseId == this.TermsOfUse.Id)) // here is why Terms must not be null
                 {
                     // org has already accepted
                     CanAccept = false;

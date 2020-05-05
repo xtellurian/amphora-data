@@ -65,7 +65,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         protected override async Task SetPagePropertiesAsync()
         {
             await base.SetPagePropertiesAsync();
-            this.HasAgreed = await purchaseService.HasAgreedToTermsAndConditionsAsync(User, Amphora);
+            this.HasAgreed = await purchaseService.HasAgreedToTermsAsync(User, Amphora);
         }
     }
 }

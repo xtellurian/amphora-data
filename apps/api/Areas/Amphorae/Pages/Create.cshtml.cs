@@ -43,11 +43,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            await LoadTermsAndConditions();
+            await LoadTerms();
             return Page();
         }
 
-        private async Task LoadTermsAndConditions()
+        private async Task LoadTerms()
         {
             var userReadRes = await userDataService.ReadAsync(User);
             if (userReadRes.Succeeded)
@@ -55,7 +55,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
                 var items = userReadRes.Entity.Organisation?.TermsOfUses?.Select(_ => new SelectListItem(_.Name, _.Id));
                 if (items != null)
                 {
-                    this.TermsOfUses = new List<SelectListItem>();
+                    this.TermsOfUses = new List<SelectListItem>(items);
                 }
             }
             else
@@ -66,7 +66,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await LoadTermsAndConditions();
+            await LoadTerms();
             if (ModelState.IsValid)
             {
                 GeoLocation location = null;

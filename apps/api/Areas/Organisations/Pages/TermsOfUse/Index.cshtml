@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.IndexModel
+@model Amphora.Api.Areas.Organisations.Pages.TermsOfUse.IndexModel
 
 @{
     ViewData["Title"] = $"{Model.Organisation.Name}: T&C";
@@ -9,17 +9,16 @@
     <div class="row">
         <div class="col">
             <div class="float-right">
-                <a asp-page="../Detail" asp-route-id="@Model.Organisation.Id"><button class="btn btn-secondary">Back to Organisation</button></a>
                 <a asp-page="./Create" asp-route-id="@Model.Organisation.Id"><button class="btn btn-primary">Create</button></a>
             </div>
             <div>
-                <h2>Terms and Conditions Library</h2>
+                <h2>Terms of Use Library</h2>
             </div>
         </div>
     </div>
     <hr/>
-    <div class="row mt-2">
-        <div class="col">
+    <div class="row mt-2 justify-content-center">
+        <div class="col-10">
             @if(Model.Organisation.TermsOfUses != null)
             {
                 @foreach (var tnc in Model.Organisation.TermsOfUses)

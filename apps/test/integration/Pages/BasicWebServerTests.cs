@@ -61,8 +61,8 @@ namespace Amphora.Tests.Integration.Pages
                 response.Content.Headers.ContentType.ToString());
         }
 
-        [InlineData("Organisations/TermsAndConditions")]
-        [InlineData("Organisations/TermsAndConditions/Detail")]
+        [InlineData("Organisations/TermsOfUse")]
+        [InlineData("Organisations/TermsOfUse/Detail")]
         [Theory]
         public async Task Get_Authenticated_TnCPages(string url)
         {

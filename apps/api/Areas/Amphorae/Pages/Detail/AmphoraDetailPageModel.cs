@@ -48,7 +48,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
             if (Amphora != null)
             {
-                var hasAgreed = await purchaseService.HasAgreedToTermsAndConditionsAsync(User, Amphora);
+                var hasAgreed = await purchaseService.HasAgreedToTermsAsync(User, Amphora);
                 var canPurchase = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
                 if (!canPurchase)
                 {

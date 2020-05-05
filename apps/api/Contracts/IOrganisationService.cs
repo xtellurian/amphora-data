@@ -11,8 +11,6 @@ namespace Amphora.Api.Contracts
     public interface IOrganisationService
     {
         IEntityStore<OrganisationModel> Store { get; }
-        [Obsolete]
-        Task<EntityOperationResult<TermsOfUseAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal, TermsOfUseModel termsAndConditions);
         Task<EntityOperationResult<OrganisationModel>> CreateAsync(ClaimsPrincipal principal, OrganisationModel org);
         Task<EntityOperationResult<OrganisationModel>> DeleteAsync(ClaimsPrincipal principal, OrganisationModel model);
         Task<EntityOperationResult<OrganisationModel>> ReadAsync(ClaimsPrincipal principal, string id);

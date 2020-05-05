@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Areas.Organisations.Pages.TermsAndConditions.CreateModel
+@model Amphora.Api.Areas.Organisations.Pages.TermsOfUse.CreateModel
 
 @{
     ViewData["Title"] = Model.Organisation.Name + " Create T&C";
@@ -20,18 +20,11 @@
     }
     <div class="row">
         <div class="col">
-            <h2>New Terms and Conditions Agreement</h2>
+            <h2>New Terms of Use</h2>
             <small>Data users must agree to these terms when they are applied to their Amphora</small>
             <form method="post" asp-route-id="@Model.Organisation.Id">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label asp-for="TermsOfUse.Id" class="control-label"></label>
-                            <input asp-for="TermsOfUse.Id" class="form-control" />
-                            <span asp-validation-for="TermsOfUse.Id" class="text-danger"></span>
-                        </div>
-                    </div>
                     <div class="col">
                         <div class="form-group">
                             <label asp-for="TermsOfUse.Name" class="control-label"></label>

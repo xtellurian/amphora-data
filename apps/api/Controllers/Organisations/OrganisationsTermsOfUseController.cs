@@ -28,12 +28,12 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Adds new Terms and Conditions to your Organisations T/C Library.
+        /// Adds new Terms of Use to your Organisations T/C Library.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
         /// <param name="tou">The new Terms of Use.</param>
         /// <returns> The organisation metadaa. </returns>
-        /// <returns> The Terms and Conditions. </returns>
+        /// <returns> The Terms. </returns>
         [Produces(typeof(TermsOfUse))]
         [ProducesResponseType(400)]
         [CommonAuthorize]
@@ -61,10 +61,10 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Get's a list of an Organisation's Terms and Conditions.
+        /// Get's a list of an Organisation's Terms of Use.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
-        /// <returns> The Terms and Conditions. </returns>
+        /// <returns> The Terms. </returns>
         [Produces(typeof(IEnumerable<TermsOfUse>))]
         [CommonAuthorize]
         [HttpGet]

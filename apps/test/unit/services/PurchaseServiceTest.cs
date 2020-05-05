@@ -99,7 +99,7 @@ namespace Amphora.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task AcceptedTermsAndConditions_EvaluatesTrue()
+        public async Task AcceptedTerms_EvaluatesTrue()
         {
             var dtProvider = new MockDateTimeProvider();
             var context = GetContext();
@@ -146,13 +146,13 @@ namespace Amphora.Tests.Unit.Services
             commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
             var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
-            var result = sut.HasAgreedToTermsAndConditions(user, amphora);
+            var result = sut.HasAgreedToTerms(user, amphora);
 
             Assert.True(result);
         }
 
         [Fact]
-        public async Task NotAcceptedTermsAndConditions_EvaluatesFalse()
+        public async Task NotAcceptedTerms_EvaluatesFalse()
         {
             var context = GetContext();
             var dtProvider = new MockDateTimeProvider();
@@ -198,7 +198,7 @@ namespace Amphora.Tests.Unit.Services
             commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
 
             var sut = new PurchaseService(store, orgStore, permissionService, commissionMock.Object, null, null, CreateMockEventPublisher(), dtProvider, CreateMockLogger<PurchaseService>());
-            var result = sut.HasAgreedToTermsAndConditions(user, amphora);
+            var result = sut.HasAgreedToTerms(user, amphora);
 
             Assert.False(result);
         }

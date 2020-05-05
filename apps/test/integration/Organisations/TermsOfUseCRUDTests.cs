@@ -18,7 +18,7 @@ namespace Amphora.Tests.Integration.Organisations
         }
 
         [Fact]
-        public async Task CanCreateTermsAndConditions()
+        public async Task CanCreateTerms()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 

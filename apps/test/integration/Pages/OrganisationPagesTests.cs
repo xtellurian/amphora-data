@@ -17,8 +17,8 @@ namespace Amphora.Tests.Integration.Pages
         [InlineData("Create")]
         [InlineData("Detail")]
         [InlineData("Edit")]
-        [InlineData("TermsAndConditions")]
-        [InlineData("TermsAndConditions/Create")]
+        [InlineData("TermsOfUse")]
+        [InlineData("TermsOfUse/Create")]
         public async Task CanLoadOrganisationsPage(string pageName)
         {
             var path = $"/Organisations/{pageName}";

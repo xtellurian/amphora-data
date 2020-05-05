@@ -55,7 +55,7 @@ namespace Amphora.Api.Services.Purchases
         {
             if (user == null) { return false; }
             if (user.OrganisationId == amphora.OrganisationId) { return false; }
-            if (HasAgreedToTermsAndConditions(user, amphora))
+            if (HasAgreedToTerms(user, amphora))
             {
                 var alreadyPurchased = amphora.Purchases?.Any(u => string.Equals(u.PurchasedByOrganisationId, user.OrganisationId)) ?? false;
                 return !alreadyPurchased && await permissionService.IsAuthorizedAsync(user, amphora, Common.Models.Permissions.AccessLevels.Purchase);
@@ -125,12 +125,12 @@ namespace Amphora.Api.Services.Purchases
             }
         }
 
-        public async Task<bool> HasAgreedToTermsAndConditionsAsync(ClaimsPrincipal principal, AmphoraModel amphora)
+        public async Task<bool> HasAgreedToTermsAsync(ClaimsPrincipal principal, AmphoraModel amphora)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
             if (userReadRes.Succeeded)
             {
-                return this.HasAgreedToTermsAndConditions(userReadRes.Entity, amphora);
+                return this.HasAgreedToTerms(userReadRes.Entity, amphora);
             }
             else
             {
@@ -138,10 +138,10 @@ namespace Amphora.Api.Services.Purchases
             }
         }
 
-        public bool HasAgreedToTermsAndConditions(ApplicationUserDataModel user, AmphoraModel amphora)
+        public bool HasAgreedToTerms(ApplicationUserDataModel user, AmphoraModel amphora)
         {
-            if (amphora.TermsOfUseId == null) { return true; } // no terms and conditions
-            if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms and conditions
+            if (amphora.TermsOfUseId == null) { return true; } // no terms
+            if (user.OrganisationId == amphora.OrganisationId) { return true; } // no need to accept your own terms
             if (user?.Organisation?.TermsOfUsesAccepted == null) { return false; }
 
             return user.Organisation.TermsOfUsesAccepted.Any(t => t.TermsOfUseId == amphora.TermsOfUseId);

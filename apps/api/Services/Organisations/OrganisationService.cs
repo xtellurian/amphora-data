@@ -181,34 +181,6 @@ namespace Amphora.Api.Services.Organisations
             }
         }
 
-        public async Task<EntityOperationResult<TermsOfUseAcceptanceModel>> AgreeToTermsAndConditions(ClaimsPrincipal principal,
-                                                                                                              TermsOfUseModel termsAndConditions)
-        {
-            var userId = principal.GetUserId();
-            var userReadRes = await userDataService.ReadAsync(principal, userId);
-            if (!userReadRes.Succeeded)
-            {
-                return new EntityOperationResult<TermsOfUseAcceptanceModel>(false);
-            }
-
-            var userData = userReadRes.Entity;
-            var org = await this.Store.ReadAsync(userData.OrganisationId);
-
-            if (org != null && org.IsAdministrator(userData))
-            {
-                org.TermsOfUsesAccepted ??= new List<TermsOfUseAcceptanceModel>();
-
-                var model = new TermsOfUseAcceptanceModel(org, termsAndConditions);
-                org.TermsOfUsesAccepted.Add(model);
-                var o = await Store.UpdateAsync(org);
-                return new EntityOperationResult<TermsOfUseAcceptanceModel>(userData, model);
-            }
-            else
-            {
-                return new EntityOperationResult<TermsOfUseAcceptanceModel>(userData, $"User {principal.GetUserName()} must be an administrator");
-            }
-        }
-
         public async Task WriteProfilePictureJpg(OrganisationModel organisation, byte[] bytes)
         {
             await orgBlobStore.WriteBytesAsync(organisation, "profile.jpg", bytes);

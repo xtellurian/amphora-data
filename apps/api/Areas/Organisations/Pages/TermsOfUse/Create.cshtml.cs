@@ -7,7 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
+namespace Amphora.Api.Areas.Organisations.Pages.TermsOfUse
 {
     [CommonAuthorize]
     public class CreateModel : PageModel
@@ -24,7 +24,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsAndConditions
         }
 
         [BindProperty]
-        public Amphora.Api.Models.Dtos.Organisations.TermsOfUse TermsOfUse { get; set; }
+        public Amphora.Api.Models.Dtos.Organisations.CreateTermsOfUse TermsOfUse { get; set; }
         public OrganisationModel Organisation { get; private set; }
         [TempData]
         public bool? Success { get; set; } = null;
