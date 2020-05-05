@@ -74,7 +74,7 @@ namespace Amphora.Tests.Integration.Pages
             tou.Name = System.Guid.NewGuid().ToString();
             tou.Contents = System.Guid.NewGuid().ToString();
 
-            var result = await client.PostAsJsonAsync($"api/Organisations/{org.Id}/TermsOfUse", tou);
+            var result = await client.PostAsJsonAsync($"api/TermsOfUse", tou);
             tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
 
             // Act
