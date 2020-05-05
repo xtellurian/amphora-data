@@ -28,39 +28,6 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Adds new Terms of Use to your Organisations T/C Library.
-        /// </summary>
-        /// <param name="id">The Id of the Organisation.</param>
-        /// <param name="tou">The new Terms of Use.</param>
-        /// <returns> The organisation metadaa. </returns>
-        /// <returns> The Terms. </returns>
-        [Produces(typeof(TermsOfUse))]
-        [ProducesResponseType(400)]
-        [CommonAuthorize]
-        [HttpPost]
-        public async Task<IActionResult> Create(string id, [FromBody] CreateTermsOfUse tou)
-        {
-            var org = await organisationService.Store.ReadAsync(id);
-
-            var model = mapper.Map<TermsOfUseModel>(tou);
-
-            var result = await organisationService.UpdateAsync(User, org);
-            if (result.Succeeded)
-            {
-                tou = mapper.Map<TermsOfUse>(result.Entity);
-                return Ok(tou);
-            }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
-            else
-            {
-                return BadRequest(result.Message);
-            }
-        }
-
-        /// <summary>
         /// Get's a list of an Organisation's Terms of Use.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
