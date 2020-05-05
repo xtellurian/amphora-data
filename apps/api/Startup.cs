@@ -108,6 +108,7 @@ namespace Amphora.Api
             services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
             services.AddTransient<IAccessControlService, AccessControlService>();
             services.AddTransient<IPlanLimitService, PlanLimitService>();
+            services.AddTransient<ITermsOfUseService, TermsOfUseService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
