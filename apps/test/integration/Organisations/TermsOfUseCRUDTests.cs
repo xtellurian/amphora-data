@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration.Organisations
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await adminClient.PostAsJsonAsync($"api/Organisations/{adminOrg.Id}/TermsOfUse", tou);
+            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
             var contents = await result.Content.ReadAsStringAsync();
             await AssertHttpSuccess(result);
 
@@ -36,7 +36,7 @@ namespace Amphora.Tests.Integration.Organisations
             Assert.Equal(tou.Id, dto.Id);
             Assert.Equal(tou.Contents, dto.Contents);
 
-            var response = await adminClient.GetAsync($"api/Organisations/{adminOrg.Id}/TermsOfUse");
+            var response = await adminClient.GetAsync($"api/TermsOfUse");
             var contents2 = await response.Content.ReadAsStringAsync();
             await AssertHttpSuccess(response);
             var allTnc = JsonConvert.DeserializeObject<List<TermsOfUse>>(contents2);
