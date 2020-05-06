@@ -61,10 +61,8 @@ namespace Amphora.Tests.Integration.Pages
                 response.Content.Headers.ContentType.ToString());
         }
 
-        [InlineData("Organisations/TermsOfUse")]
-        [InlineData("Organisations/TermsOfUse/Detail")]
-        [Theory]
-        public async Task Get_Authenticated_TnCPages(string url)
+        [Fact]
+        public async Task Get_Authenticated_TnCPages()
         {
             // Arrange
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
@@ -76,18 +74,12 @@ namespace Amphora.Tests.Integration.Pages
 
             var result = await client.PostAsJsonAsync($"api/TermsOfUse", tou);
             tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
-
+            Assert.NotNull(tou.Id);
             // Act
-            var response = await client.GetAsync($"{url}?id={org.Id}&tncId={tou.Id}");
-            var otherResponse = await otherClient.GetAsync($"{url}?id={org.Id}&tncId={tou.Id}");
-
-            // Assert
+            var response = await client.GetAsync($"Amphorae/TermsOfUse/Detail?id={tou.Id}");
             await AssertHttpSuccess(response);
-            Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+            var otherResponse = await otherClient.GetAsync($"Amphorae/TermsOfUse/Detail?id={tou.Id}");
             await AssertHttpSuccess(otherResponse);
-            Assert.Equal("text/html; charset=utf-8",
-                otherResponse.Content.Headers.ContentType.ToString());
         }
 
         [Fact]
