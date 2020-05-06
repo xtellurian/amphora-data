@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -58,6 +60,61 @@ namespace Amphora.Tests.Integration.Amphorae
             // now try get, and it's not there
             var getAgainRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
             Assert.False(getAgainRes.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task OtherUse_CantDeleteTermsOfUse()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
+
+            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
+            var contents = await result.Content.ReadAsStringAsync();
+            await AssertHttpSuccess(result);
+
+            var dto = JsonConvert.DeserializeObject<TermsOfUse>(contents);
+            Assert.NotNull(dto.Id);
+
+            // now delete
+            var deleteRes = await otherClient.DeleteAsync($"api/TermsOfUse/{dto.Id}");
+            Assert.False(deleteRes.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, deleteRes.StatusCode);
+        }
+
+        [Fact]
+        public async Task Creator_CantDelete_IfAmphoraReferToTou()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
+
+            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
+            await AssertHttpSuccess(result);
+            tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
+            Assert.NotNull(tou.Id);
+
+            // create the amphora
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            amphora.TermsOfUseId = tou.Id;
+            var createRes = await adminClient.PostAsJsonAsync("api/amphorae", amphora);
+            await AssertHttpSuccess(createRes);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createRes.Content.ReadAsStringAsync());
+
+            // now try delete
+            var deleteRes = await adminClient.DeleteAsync($"api/TermsOfUse/{tou.Id}");
+            Assert.False(deleteRes.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, deleteRes.StatusCode);
+            Assert.NotEmpty(await deleteRes.Content.ReadAsStringAsync());
         }
     }
 }
