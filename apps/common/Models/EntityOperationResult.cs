@@ -33,10 +33,10 @@ namespace Amphora.Common.Models
             this.Errors.AddRange(messages);
         }
 
-        public EntityOperationResult(IUser user, T entity) : this(user, true)
+        public EntityOperationResult(IUser user, T entity) : this(user, entity != null)
         {
             Entity = entity;
-            this.Code = 200;
+            this.Code = entity != null ? 200 : 404;
         }
 
         public T? Entity { get; }
