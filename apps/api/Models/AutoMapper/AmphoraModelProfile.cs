@@ -1,3 +1,4 @@
+using System;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
@@ -26,6 +27,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.Labels, p => p.MapFrom(src => src.GetLabels()))
                 .ForMember(o => o.OrganisationId, p => p.Ignore())
                 .ForMember(o => o.TermsOfUse, p => p.Ignore())
+                .ForMember(o => o.Quality, p => p.Ignore())
                 .ForMember(o => o.FileAttributes, p => p.Ignore())
                 .ForMember(o => o.AccessControl, p => p.Ignore())
                 .ForMember(o => o.V2Signals, p => p.Ignore())
@@ -42,9 +44,17 @@ namespace Amphora.Api.Models.AutoMapper
                     src.Lat.HasValue && src.Lon.HasValue ? new GeoLocation(src.Lon.Value, src.Lat.Value) : null));
 
             CreateMap<AmphoraModel, DetailedAmphora>()
-            .IncludeBase<AmphoraModel, BasicAmphora>()
-            .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
-            .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
+                .IncludeBase<AmphoraModel, BasicAmphora>()
+                .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
+                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
+
+            CreateMap<DataQuality, Quality>()
+                .ForMember(d => d.Accuracy, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Accuracy)))
+                .ForMember(d => d.Completeness, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Completeness)))
+                .ForMember(d => d.Granularity, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Granularity)))
+                .ForMember(d => d.Reliability, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Reliability)));
+
+            CreateMap<Quality, DataQuality>();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
             builder.HasOne(p => p.Organisation).WithMany().HasForeignKey(p => p.OrganisationId);
             builder.Property(e => e.GeoLocation).HasJsonConversion();
             builder.Property(e => e.FileAttributes).HasJsonConversion();
+            builder.Property(e => e.Quality).HasJsonConversion();
             builder.OwnsMany(e => e.V2Signals, _ =>
             {
                 _.Property(s => s.UUID).ValueGeneratedOnAdd();

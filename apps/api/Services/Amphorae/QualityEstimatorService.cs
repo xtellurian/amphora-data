@@ -26,7 +26,7 @@ namespace Amphora.Api.Services.Amphorae
             var summary = new EnrichedDataQuality();
             summary.Accuracy = amphora?.Quality.Accuracy;
             summary.Completeness = amphora?.Quality.Completeness;
-            summary.Granulatity = amphora?.Quality.Granulatity;
+            summary.Granularity = amphora?.Quality.Granularity;
             summary.Reliability = amphora?.Quality.Reliability;
             try
             {

@@ -49,6 +49,7 @@ namespace Amphora.Common.Models.Amphorae
         public Dictionary<string, AttributeStore>? FileAttributes { get; set; } = new Dictionary<string, AttributeStore>();
         public virtual ICollection<SignalV2>? V2Signals { get; set; } = new Collection<SignalV2>();
         public virtual ICollection<Label>? Labels { get; set; } = new Collection<Label>();
+        public virtual DataQuality? Quality { get; set; }
 
         // navigation
         public string OrganisationId { get; set; }

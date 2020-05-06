@@ -26,6 +26,22 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <th scope="row">Completeness</th>
+                        <td>@(Model.Quality?.Description(Model.Quality?.Completeness) ?? "Not Set")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Accuracy</th>
+                        <td>@(Model.Quality?.Description(Model.Quality?.Accuracy) ?? "Not Set")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Reliability</th>
+                        <td>@(Model.Quality?.Description(Model.Quality?.Reliability) ?? "Not Set")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Granularity</th>
+                        <td>@(Model.Quality?.Description(Model.Quality?.Granularity) ?? "Not Set")</td>
+                    </tr>
+                    <tr>
                         <th scope="row">Number of Files</th>
                         <td>@Model.Quality.CountFiles</td>
                     </tr>
