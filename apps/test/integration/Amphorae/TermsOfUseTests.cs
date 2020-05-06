@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ using Xunit;
 namespace Amphora.Tests.Integration.Amphorae
 {
     [Collection(nameof(ApiFixtureCollection))]
-    public class TermsOfUseCRUDTests : WebAppIntegrationTestBase
+    public class TermsOfUseTests : WebAppIntegrationTestBase
     {
-        public TermsOfUseCRUDTests(WebApplicationFactory<Startup> factory) : base(factory)
+        public TermsOfUseTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
         }
 
@@ -41,9 +42,8 @@ namespace Amphora.Tests.Integration.Amphorae
             var response = await adminClient.GetAsync("api/TermsOfUse");
             await AssertHttpSuccess(response);
             var allTnc = JsonConvert.DeserializeObject<List<TermsOfUse>>(await response.Content.ReadAsStringAsync());
-            Assert.Single(allTnc);
-            Assert.Equal(dto.Id, allTnc[0].Id);
-            Assert.Equal(dto.Contents, allTnc[0].Contents);
+            Assert.NotEmpty(allTnc);
+            Assert.Contains(allTnc, _ => _.Id == dto.Id);
 
             // get specific one
             var getRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
@@ -63,7 +63,7 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-        public async Task OtherUse_CantDeleteTermsOfUse()
+        public async Task OtherUser_CantDeleteTermsOfUse()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
@@ -115,6 +115,59 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.False(deleteRes.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, deleteRes.StatusCode);
             Assert.NotEmpty(await deleteRes.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task GlobalTerms_CanBeReferencedByAnothersAmphora()
+        {
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.com");
+
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
+
+            var result = await adminClient.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
+            await AssertHttpSuccess(result);
+            tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
+            Assert.NotNull(tou.Id);
+
+            // other lists available terms, and it's there
+            var listRes = await otherClient.GetAsync("api/TermsOfUse");
+            await AssertHttpSuccess(listRes);
+            var allTou = JsonConvert.DeserializeObject<List<TermsOfUse>>(await listRes.Content.ReadAsStringAsync());
+            Assert.NotNull(allTou);
+            Assert.NotEmpty(allTou);
+            Assert.Contains(allTou, _ => _.Id == tou.Id);
+
+            // create the amphora
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            amphora.TermsOfUseId = tou.Id;
+            var createRes = await otherClient.PostAsJsonAsync("api/amphorae", amphora);
+            await AssertHttpSuccess(createRes);
+            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createRes.Content.ReadAsStringAsync());
+
+            // now delete
+            var deleteRes = await otherClient.DeleteAsync($"api/amphorae/{amphora.Id}");
+            await AssertHttpSuccess(deleteRes);
+        }
+
+        [Fact]
+        public async Task NormalUser_CantCreateGlobal()
+        {
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.com");
+
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
+
+            var result = await otherClient.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
+            Assert.False(result.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
     }
 }

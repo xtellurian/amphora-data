@@ -6,6 +6,7 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
@@ -19,11 +20,15 @@ namespace Amphora.Api.Controllers
     {
         private readonly ITermsOfUseService termsOfUseService;
         private readonly IMapper mapper;
+        private readonly ILogger<TermsOfUseController> logger;
 
-        public TermsOfUseController(ITermsOfUseService termsOfUseService, IMapper mapper)
+        public TermsOfUseController(ITermsOfUseService termsOfUseService,
+                                    IMapper mapper,
+                                    ILogger<TermsOfUseController> logger)
         {
             this.termsOfUseService = termsOfUseService;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -84,6 +89,38 @@ namespace Amphora.Api.Controllers
             else
             {
                 return Handle(createRes);
+            }
+        }
+
+        /// <summary>
+        /// Creates a Global Terms of Use object.
+        /// </summary>
+        /// <param name="tou">The terms of use to create.</param>
+        /// <returns> The terms of use object. </returns>
+        [HttpPost("/api/GlobalTermsOfUse")]
+        [Produces(typeof(TermsOfUse))]
+        [CommonAuthorize]
+        [OpenApiIgnore]
+        public async Task<IActionResult> CreateGlobal([FromBody] CreateTermsOfUse tou)
+        {
+            var model = mapper.Map<TermsOfUseModel>(tou);
+            try
+            {
+                var createRes = await termsOfUseService.CreateGlobalAsync(User, model);
+                if (createRes.Succeeded)
+                {
+                    var dto = mapper.Map<TermsOfUse>(createRes.Entity);
+                    return Ok(dto);
+                }
+                else
+                {
+                    return Handle(createRes);
+                }
+            }
+            catch (Common.Exceptions.PermissionDeniedException permEx)
+            {
+                logger.LogWarning($"User tried to create Global Terms of Use", permEx);
+                return Forbid();
             }
         }
 

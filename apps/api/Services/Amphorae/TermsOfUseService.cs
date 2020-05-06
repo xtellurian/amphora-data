@@ -5,6 +5,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
+using Amphora.Common.Exceptions;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
@@ -53,6 +55,42 @@ namespace Amphora.Api.Services.Amphorae
 
             model.OrganisationId = userDataRes.Entity.OrganisationId;
             model.Organisation = userDataRes.Entity.Organisation;
+
+            try
+            {
+                model = await store.CreateAsync(model);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError("Failed to create Terms of Use Model", ex);
+                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, "Failed to create");
+            }
+
+            if (model != null)
+            {
+                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, model);
+            }
+            else
+            {
+                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, "Something went wrong when creating model");
+            }
+        }
+
+        public async Task<EntityOperationResult<TermsOfUseModel>> CreateGlobalAsync(ClaimsPrincipal principal, TermsOfUseModel model)
+        {
+            var userDataRes = await userDataService.ReadAsync(principal);
+            if (userDataRes.Failed)
+            {
+                return new EntityOperationResult<TermsOfUseModel>("Unknown User");
+            }
+
+            if (!principal.IsGlobalAdmin())
+            {
+                throw new PermissionDeniedException("Administrator rights are not granted.");
+            }
+
+            model.OrganisationId = null;
+            model.Organisation = null;
 
             try
             {

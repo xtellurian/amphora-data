@@ -11,6 +11,7 @@ namespace Amphora.Api.Contracts
     {
         Task<EntityOperationResult<TermsOfUseAcceptanceModel>> AcceptAsync(ClaimsPrincipal principal, TermsOfUseModel model);
         Task<EntityOperationResult<TermsOfUseModel>> CreateAsync(ClaimsPrincipal principal, TermsOfUseModel model);
+        Task<EntityOperationResult<TermsOfUseModel>> CreateGlobalAsync(ClaimsPrincipal principal, TermsOfUseModel model);
         Task<EntityOperationResult<TermsOfUseModel>> DeleteAsync(ClaimsPrincipal principal, TermsOfUseModel model);
         Task<EntityOperationResult<IEnumerable<TermsOfUseModel>>> ListAsync(ClaimsPrincipal principal);
         Task<EntityOperationResult<TermsOfUseModel>> ReadAsync(ClaimsPrincipal principal, string touId);
