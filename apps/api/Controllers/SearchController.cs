@@ -12,6 +12,7 @@ using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
@@ -23,28 +24,60 @@ namespace Amphora.Api.Controllers
     {
         private readonly IMapper mapper;
         private readonly ISearchService searchService;
+        private readonly ILogger<SearchController> logger;
 
-        public SearchController(IMapper mapper, ISearchService searchService, IUserDataService userDataService)
+        public SearchController(IMapper mapper,
+                                ISearchService searchService,
+                                IUserDataService userDataService,
+                                ILogger<SearchController> logger)
         {
             this.mapper = mapper;
             this.searchService = searchService;
+            this.logger = logger;
         }
 
         /// <summary>
         /// Searches for Amphorae.
         /// </summary>
-        /// <param name="parameters">Search parameters.</param>
+        /// <param name="term">General search term for text comparison.</param>
+        /// <param name="labels">Comma separated labels that must be included in results.</param>
+        /// <param name="lat">Latitude (center of search area).</param>
+        /// <param name="lon">Longitude (center of search area).</param>
+        /// <param name="dist">Distance from center of search area (describing a circle).</param>
         /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<BasicAmphora>))]
         [HttpPost("api/search/amphorae")]
         [CommonAuthorize]
-        [OpenApiIgnore]
-        public async Task<IActionResult> SearchAmphorae([FromBody] SearchParameters parameters)
+        public async Task<IActionResult> SearchAmphorae(string term,
+                                                        string labels,
+                                                        double? lat,
+                                                        double? lon,
+                                                        double? dist)
         {
-            var response = await searchService.SearchAmphora("", parameters);
-            var entities = response.Results.Select(a => a.Entity);
-            var dto = mapper.Map<List<BasicAmphora>>(entities);
-            return Ok(dto);
+            var parameters = new SearchParameters();
+            var labelsArray = labels?.Split(',')?.ToList();
+            if (labelsArray != null && labelsArray.Count > 0)
+            {
+                parameters = parameters.FilterByLabel<AmphoraModel>(new List<Label>(labelsArray.Select(_ => new Label(_))));
+            }
+
+            if (lat != null && lon != null)
+            {
+                parameters.WithGeoSearch<AmphoraModel>(lat.Value, lon.Value, dist ?? 50);
+            }
+
+            try
+            {
+                var response = await searchService.SearchAmphora(term ?? "", parameters);
+                var entities = response.Results.Select(a => a.Entity);
+                var dto = mapper.Map<List<BasicAmphora>>(entities);
+                return Ok(dto);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError("Search API failed", ex);
+                return BadRequest("Something went wrong with the search.");
+            }
         }
 
         /// <summary>
