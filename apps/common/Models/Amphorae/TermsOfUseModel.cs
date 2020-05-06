@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Common.Models.Amphorae
@@ -18,5 +20,6 @@ namespace Amphora.Common.Models.Amphorae
         // Navigation
         public string? OrganisationId { get; set; }
         public virtual OrganisationModel? Organisation { get; set; }
+        public virtual ICollection<AmphoraModel> AppliedToAmphoras { get; set; } = new Collection<AmphoraModel>();
     }
 }
