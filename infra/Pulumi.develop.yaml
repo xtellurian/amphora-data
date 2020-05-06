@@ -38,4 +38,4 @@ config:
     objectId: ac22c7c4-14aa-4b3b-a193-dcb3ebc43b42
   azure:environment: public
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
-  azuresearch:sku: basic
+  azuresearch:sku: free
