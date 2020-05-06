@@ -94,7 +94,7 @@ namespace Amphora.Api.Controllers
         /// <returns> 200 if successful. </returns>
         [HttpDelete("{id}")]
         [CommonAuthorize]
-        public async Task<IActionResult> Create(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var readRes = await termsOfUseService.ReadAsync(User, id);
             if (readRes.Succeeded)
