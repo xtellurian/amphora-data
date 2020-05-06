@@ -123,8 +123,23 @@ namespace Amphora.Api.Services.Amphorae
 
             if (authorized)
             {
-                await store.DeleteAsync(model);
-                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, true);
+                // check if there are any amphora referencing that.
+                if (model.AppliedToAmphoras?.Count > 0)
+                {
+                    return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity,
+                        $"You cannot delete this TOU because there are {model.AppliedToAmphoras?.Count} Amphora referencing these terms.");
+                }
+
+                try
+                {
+                    await store.DeleteAsync(model);
+                    return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, true);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Failed to delete.", ex);
+                    return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, "A database error occurred");
+                }
             }
             else
             {
