@@ -6,7 +6,6 @@ using Amphora.Api.Options;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Services.Platform;
 using Amphora.Common.Contracts;
-using Amphora.Common.Exceptions;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Security;
 using Amphora.Common.Services.Users;

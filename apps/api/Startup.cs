@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Amphora.Api.AspNet;
-using Amphora.Api.Contracts;
+﻿using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
 using Amphora.Api.Services.Azure;
@@ -31,8 +29,6 @@ using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.FeatureFilters;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json.Serialization;
-using NSwag;
-using NSwag.Generation.Processors.Security;
 using Westwind.AspNetCore.Markdown;
 
 namespace Amphora.Api
@@ -48,12 +44,14 @@ namespace Amphora.Api
             this.storageModule = new StorageModule(configuration, env);
             this.geoModule = new GeoModule(configuration, env);
             this.discoverModule = new DiscoverModule(configuration, env);
+            this.openApiModule = new OpenApiModule(configuration, env);
         }
 
         private readonly IdentityModule identityModule;
         private readonly StorageModule storageModule;
         private readonly GeoModule geoModule;
         private readonly DiscoverModule discoverModule;
+        private readonly OpenApiModule openApiModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -67,6 +65,7 @@ namespace Amphora.Api
             this.identityModule.ConfigureServices(services);
             this.geoModule.ConfigureServices(services);
             this.discoverModule.ConfigureServices(services);
+            this.openApiModule.ConfigureServices(services);
             services.RegisterEventsModule(Configuration, HostingEnvironment.IsProduction());
 
             // feature management
@@ -151,54 +150,9 @@ namespace Amphora.Api
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
-            services.AddOpenApiDocument(document => // add OpenAPI v3 document
-            {
-                document.DocumentName = "v1";
-                document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-                {
-                    Type = OpenApiSecuritySchemeType.ApiKey,
-                    Name = "Authorization",
-                    In = OpenApiSecurityApiKeyLocation.Header,
-                    Description = "Bearer {your JWT token}."
-                });
-
-                document.OperationProcessors.Add(
-                    new AmphoraDataApiVersionOperationProcessor());
-
-                document.OperationProcessors.Add(
-                    new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
-
-                document.Description = "API for interacting with the Amphora Data platform.";
-                document.Title = "Amphora Data Api";
-                document.Version = ApiVersion.CurrentVersion.ToSemver();
-            });
-
-            services.AddSwaggerDocument(document => // add a Swagger (OpenAPI v2) doc
-            {
-                document.DocumentName = "v2";
-                document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-                {
-                    Type = OpenApiSecuritySchemeType.ApiKey,
-                    Name = "Authorization",
-                    In = OpenApiSecurityApiKeyLocation.Header,
-                    Description = "Bearer {your JWT token}."
-                });
-
-                document.OperationProcessors.Add(
-                    new AmphoraDataApiVersionOperationProcessor());
-
-                document.OperationProcessors.Add(
-                    new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
-
-                document.Description = "API for interacting with the Amphora Data platform.";
-                document.Title = "Amphora Data Api";
-                document.Version = ApiVersion.CurrentVersion.ToSemver();
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);
@@ -209,16 +163,12 @@ namespace Amphora.Api
 
             this.identityModule.Configure(app, env, mapper);
             this.storageModule.Configure(app, env);
-
+            this.openApiModule.Configure(app);
             app.UseRouting();
 
             app.UseMarkdown(); // Westwind.AspNetCore.Markdown
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
-            app.UseOpenApi(); // serve OpenAPI/Swagger documents
-            app.UseSwaggerUi3(settings => { }); // serve Swagger UI
-            // app.UseReDoc(); // serve ReDoc UI
 
             app.UseAuthentication();
             app.UseAuthorization();
