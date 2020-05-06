@@ -24,10 +24,10 @@ namespace Amphora.Api.Services.Amphorae
         public async Task<EnrichedDataQuality> GenerateDataQualitySummaryAsync(AmphoraModel amphora)
         {
             var summary = new EnrichedDataQuality();
-            summary.Accuracy = amphora?.Quality.Accuracy;
-            summary.Completeness = amphora?.Quality.Completeness;
-            summary.Granularity = amphora?.Quality.Granularity;
-            summary.Reliability = amphora?.Quality.Reliability;
+            summary.Accuracy = amphora?.Quality?.Accuracy;
+            summary.Completeness = amphora?.Quality?.Completeness;
+            summary.Granularity = amphora?.Quality?.Granularity;
+            summary.Reliability = amphora?.Quality?.Reliability;
             try
             {
                 summary.CountSignals = amphora.V2Signals.Count;
