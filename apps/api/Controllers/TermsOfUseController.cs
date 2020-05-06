@@ -46,6 +46,25 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
+        /// Returns all Terms of Use.
+        /// </summary>
+        /// <returns> A collection of Terms of Use.</returns>
+        [HttpGet("{id}")]
+        [Produces(typeof(Models.Dtos.Organisations.TermsOfUse))]
+        [CommonAuthorize]
+        public async Task<IActionResult> Read(string id)
+        {
+            var res = await termsOfUseService.ReadAsync(User, id);
+            if (res.Succeeded)
+            {
+                var dto = mapper.Map<TermsOfUse>(res.Entity);
+                return Ok(dto);
+            }
+            else if (res.WasForbidden) { return StatusCode(403); }
+            else { return BadRequest(res.Message); }
+        }
+
+        /// <summary>
         /// Creates a Terms of Use object.
         /// </summary>
         /// <param name="tou">The terms of use to create.</param>
@@ -65,6 +84,34 @@ namespace Amphora.Api.Controllers
             else
             {
                 return Handle(createRes);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a Terms of Use object.
+        /// </summary>
+        /// <param name="id">The terms of use id to delete.</param>
+        /// <returns> 200 if successful. </returns>
+        [HttpDelete("{id}")]
+        [CommonAuthorize]
+        public async Task<IActionResult> Create(string id)
+        {
+            var readRes = await termsOfUseService.ReadAsync(User, id);
+            if (readRes.Succeeded)
+            {
+                var deleteRes = await termsOfUseService.DeleteAsync(User, readRes.Entity);
+                if (deleteRes.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Handle(deleteRes);
+                }
+            }
+            else
+            {
+                return Handle(readRes);
             }
         }
 

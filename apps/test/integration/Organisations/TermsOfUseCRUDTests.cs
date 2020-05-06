@@ -17,7 +17,7 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-        public async Task CanCreateTerms()
+        public async Task Creator_CanCreateThenDelete()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
 
@@ -36,12 +36,28 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(tou.Name, dto.Name);
             Assert.Equal(tou.Contents, dto.Contents);
 
-            var response = await adminClient.GetAsync($"api/TermsOfUse");
+            var response = await adminClient.GetAsync("api/TermsOfUse");
             await AssertHttpSuccess(response);
             var allTnc = JsonConvert.DeserializeObject<List<TermsOfUse>>(await response.Content.ReadAsStringAsync());
             Assert.Single(allTnc);
             Assert.Equal(dto.Id, allTnc[0].Id);
             Assert.Equal(dto.Contents, allTnc[0].Contents);
+
+            // get specific one
+            var getRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
+            await AssertHttpSuccess(getRes);
+            var getTou = JsonConvert.DeserializeObject<TermsOfUse>(await getRes.Content.ReadAsStringAsync());
+            Assert.Equal(dto.Id, getTou.Id);
+            Assert.Equal(dto.Name, getTou.Name);
+            Assert.Equal(dto.Contents, getTou.Contents);
+
+            // now delete
+            var deleteRes = await adminClient.DeleteAsync($"api/TermsOfUse/{dto.Id}");
+            await AssertHttpSuccess(deleteRes);
+
+            // now try get, and it's not there
+            var getAgainRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
+            Assert.False(getAgainRes.IsSuccessStatusCode);
         }
     }
 }
