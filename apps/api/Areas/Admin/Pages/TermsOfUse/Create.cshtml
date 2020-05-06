@@ -1,0 +1,41 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.TermsOfUse.CreatePageModel
+
+
+@{
+    ViewData["Title"] = "Create Global Terms";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Create new global terms of use.</h3>
+            <p>Can be used by any organisation.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+              <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label asp-for="NewTerms.Name" class="control-label"></label>
+                            <input asp-for="NewTerms.Name" class="form-control" />
+                            <span asp-validation-for="NewTerms.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="NewTerms.Contents" class="control-label"></label>
+                    <textarea asp-for="NewTerms.Contents" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="NewTerms.Contents" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

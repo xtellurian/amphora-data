@@ -27,7 +27,7 @@
                     <div class="row">
                         <div class="col">
                             <i class="fas fa-file-contract mr-2"></i>
-                            <a asp-page="./Detail" asp-route-id="@Model.Organisation.Id" asp-route-tncId="@tnc.Id">@tnc.Name</a>
+                            <a asp-area="Amphorae" asp-page="/TermsOfUse/Detail" asp-route-id="@tnc.Id">@tnc.Name</a>
                         </div>
                         <div class="col">
                             Id = @tnc.Id

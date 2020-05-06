@@ -1,5 +1,5 @@
 @page
-@model Amphora.Api.Areas.Organisations.Pages.TermsOfUse.DetailModel
+@model Amphora.Api.Areas.Amphorae.Pages.TermsOfUse.DetailModel
 
 @{
     ViewData["Title"] = $"T&C: {Model.TermsOfUse.Name}";
@@ -8,12 +8,18 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-8">
+            @if(Model.AlreadyAccepted)
+            {
+                <div class="alert alert-success" role="alert">
+                    Terms have been accepted.
+                </div>
+            }
+
             <div class="m-3 card">
                 <div class="card-header">
                     <div>
-
-                    @Model.TermsOfUse.Name <small class="float-right"> by 
-                        <a asp-page="../Detail" asp-route-id="@Model.Organisation.Id">@Model.Organisation.Name</a>
+                        @Model.TermsOfUse.Name <small class="float-right"> by 
+                        <a asp-area="Organisations" asp-page="/Detail" asp-route-id="@Model.TermsOfUse.OrganisationId">@Model.TermsOfUse.Organisation?.Name</a>
                         </small>
                     </div>
                     <small>
@@ -27,13 +33,12 @@
             @if(Model.CanAccept)
             {
             <form method="post" asp-route-returnUrl="@Model.ReturnUrl" 
-                                asp-route-id="@Model.Organisation.Id" 
-                                asp-route-tncId="@Model.TermsOfUse.Id">
+                                asp-route-id="@Model.TermsOfUse.Id" >
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <button class="btn btn-success btn-block">Accept</button>
             </form>
             }
-            <a asp-area="Organisations" asp-page="/TermsOfUse/Index" asp-route-id="@Model.Organisation.Id">
+            <a asp-area="Organisations" asp-page="/TermsOfUse/Index">
                 <button class="mt-1 btn btn-secondary btn-block">View All</button>
             </a>
         </div>

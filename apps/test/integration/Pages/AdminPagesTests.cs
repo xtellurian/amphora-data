@@ -23,7 +23,9 @@ namespace Amphora.Tests.Integration.Pages
             {
                 "/Admin/Index",
                 "/Admin/Dashboard",
-                "/Admin/Accounts/Index"
+                "/Admin/Accounts/Index",
+                "/Admin/TermsOfUse",
+                "/Admin/TermsOfUse/Create",
             };
 
             foreach (var path in pagePaths)

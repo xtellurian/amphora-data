@@ -1,0 +1,72 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.TermsOfUse.IndexPageModel
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+@{
+    ViewData["Title"] = "Global Terms";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <div class="col">
+            <a class="btn btn-primary float-right" asp-page="./Create">New Global Terms</a>
+            <h3>Terms of Use</h3>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            @if(Model.Terms?.Count() == 0)
+            {
+                <div>
+                    There are no terms.
+                </div>
+            }
+            @{
+                var i = 0;
+                var bgColour = "bg-light";
+            }
+            @foreach(var t in Model.Terms)
+            {
+                @if(i++ % 2 == 1)
+                {
+                    bgColour = "bg-light";
+                }
+                else
+                {
+                    bgColour = "";
+                }
+                <div class="row @bgColour">
+                    <div class="col-4 text-truncate">
+                        @t.Name
+                    </div>
+                    <div class="col-6">
+                        @if(t.OrganisationId == null)
+                        {
+                            <div>
+                                Created by Administrators
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                Created By: 
+                                <a asp-area="Admin" asp-page="/Accounts/Detail/Index" asp-route-id="@t.OrganisationId">
+                                    @t.Organisation?.Name
+                                </a>
+                            </div>
+                        }
+                        
+                    </div>
+                    <div class="col-2">
+                        <a asp-area="Amphorae" asp-route-id="@t.Id" asp-page="/TermsOfUse/Detail">
+                            View
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

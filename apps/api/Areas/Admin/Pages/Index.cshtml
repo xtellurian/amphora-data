@@ -3,6 +3,11 @@
 @inject IConfiguration Configuration
 @model Amphora.Api.Areas.Admin.Pages.IndexModel
 
+
+@{
+    ViewData["Title"] = "Global Admin";
+}
+
 <div class="container">
     <div class="row mb-2">
         <div class="col-md-4">
@@ -16,6 +21,9 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-4">
+            <a asp-area="Admin" asp-page="/TermsOfUse/Index" class="btn btn-primary btn-block" > Terms of Use</a>
+        </div>
         <div class="col-md-4">
              @{
                 var stack = @Configuration["Environment:Stack"];
