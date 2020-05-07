@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // Arrange
             var client = await GetUserAsync(Users.Standard);
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id, nameof(Post_DownloadFiles_AsOtherUsers));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
             // create an amphora for us to work with
             var createResponse = await client.Http.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));

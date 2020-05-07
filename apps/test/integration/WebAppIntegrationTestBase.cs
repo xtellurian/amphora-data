@@ -21,7 +21,7 @@ namespace Amphora.Tests.Integration
             public const string StandardTwo = nameof(StandardTwo) + "@example.org";
             public const string AmphoraAdmin = nameof(AmphoraAdmin) + "@amphoradata.com";
             public const string Attacker = nameof(Attacker) + "@badactor.net";
-            public const string Other = nameof(Other) + "other.com";
+            public const string Other = nameof(Other) + "@other.com";
         }
 
         private const string Password = "sjdbgBBHbdvklv984yt$$";
