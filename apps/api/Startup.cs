@@ -14,6 +14,7 @@ using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
+using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
 using AutoMapper;
@@ -112,7 +113,8 @@ namespace Amphora.Api
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown
-            services.AddHttpClient();
+            services.AddAzureMapsHttpClient();
+            services.AddIdentityServerHttpClient();
 
             // The following will configure the channel to use the given folder to temporarily
             // store telemetry items during network or Application Insights server issues.

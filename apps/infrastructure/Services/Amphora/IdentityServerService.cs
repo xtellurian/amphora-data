@@ -9,6 +9,7 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Options;
 using Amphora.Common.Models.Platform;
+using Amphora.Infrastructure.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ namespace Amphora.Infrastructure.Services
                                      IOptionsMonitor<ExternalServices> options,
                                      ILogger<IdentityServerService> logger)
         {
-            this.client = factory.CreateClient("identityServer");
+            this.client = factory.CreateClient(HttpClientNames.IdentityServerClient);
             client.BaseAddress = options.CurrentValue.IdentityUri();
             this.options = options;
             this.logger = logger;

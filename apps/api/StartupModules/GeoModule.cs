@@ -1,7 +1,7 @@
-using Amphora.Api.Contracts;
-using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
+using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
+using Amphora.Infrastructure.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

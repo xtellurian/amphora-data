@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.AzureMaps;
 

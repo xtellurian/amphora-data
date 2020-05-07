@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.AzureMaps;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;

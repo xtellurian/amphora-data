@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
-using Amphora.Api.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.AzureMaps;
+using Amphora.Infrastructure.Models;
+using Amphora.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace Amphora.Api.Services.Azure
         private readonly HttpClient client;
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<AzureMapService> logger;
-        private readonly string subscriptionKey;
+        private readonly string? subscriptionKey;
         private const string ApiVersion = "1.0";
         private const string CountrySet = "AU,US";
         private string QueryString() => $"subscription-key={subscriptionKey}&api-version={ApiVersion}&countrySet={CountrySet}";
@@ -28,7 +28,7 @@ namespace Amphora.Api.Services.Azure
             IOptionsMonitor<AzureMapsOptions> options,
             ILogger<AzureMapService> logger)
         {
-            this.client = factory.CreateClient("azure-maps");
+            this.client = factory.CreateClient(HttpClientNames.AzureMaps);
             client.BaseAddress = new System.Uri("https://atlas.microsoft.com");
             if (options.CurrentValue.Key != null)
             {
@@ -80,14 +80,14 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<byte[]> GetStaticMapImageAsync(GeoLocation location, int height = 512, int width = 512)
         {
-            if (!location.Lat().HasValue || !location.Lon().HasValue)
+            if (location.Lat() == null || location.Lon() == null)
             {
                 throw new ArgumentException("Geolocation has null lon lat");
             }
 
             await InitAsync();
-            var lon = location.Lon().Value;
-            var lat = location.Lat().Value;
+            var lon = location.Lon();
+            var lat = location.Lat();
             var queryString = QueryString();
             queryString += $"&zoom=6";
             queryString += $"&height={height}&width={width}";
@@ -104,7 +104,7 @@ namespace Amphora.Api.Services.Azure
             catch (Exception ex)
             {
                 logger.LogError("Failed to get Static Map Image", ex);
-                return null;
+                return new byte[0];
             }
         }
     }

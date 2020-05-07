@@ -7,6 +7,7 @@ using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Infrastructure.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Azure.Search.Models;

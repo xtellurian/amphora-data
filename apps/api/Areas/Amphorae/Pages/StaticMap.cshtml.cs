@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
-using Microsoft.AspNetCore.Authorization;
+using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amphora.Api.Areas.Amphorae.Pages

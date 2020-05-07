@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
-using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
