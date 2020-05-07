@@ -5,6 +5,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using Amphora.Migrate.Migrators;
+using Amphora.Migrate.Migrators.Cosmos;
 using Amphora.Migrate.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +54,7 @@ namespace Amphora.Migrate
                     services.AddSingleton<CosmosDocumentDeleteMigrator>();
                     services.AddSingleton<CosmosUpdateIdentityModelMigrator>();
                     services.AddSingleton<CosmosUserDataModelMigrator>();
+                    services.AddSingleton<Version_0_10_0>();
 
                     services.AddTransient<ITsiService, TsiService>();
                     services.AddSingleton<TsiMigrator>();

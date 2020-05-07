@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amphora.Migrate.Contracts;
 using Amphora.Migrate.Migrators;
+using Amphora.Migrate.Migrators.Cosmos;
 using Amphora.Migrate.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,30 +16,15 @@ namespace Amphora.Migrate
     {
         private readonly ILogger<Worker> logger;
         private readonly IOptionsMonitor<CosmosMigrationOptions> options;
-        private readonly CosmosUpdateIdentityModelMigrator identityModelMigrator;
-        private readonly CosmosUserDataModelMigrator userDataModelMigrator;
-        private readonly CosmosCollectionMigrator cosmosMigrator;
-        private readonly CosmosDocumentDeleteMigrator cosmosDeleter;
-        // private readonly BlobMigrator? blobMigrator;
-        // private readonly TsiMigrator? tsiMigrator;
+        private Version_0_10_0 V0_10 { get; }
 
         public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<CosmosMigrationOptions> options,
-                      CosmosUpdateIdentityModelMigrator identityModelMigrator,
-                      CosmosUserDataModelMigrator userDataModelMigrator,
-                      CosmosCollectionMigrator cosmosMigrator,
-                      CosmosDocumentDeleteMigrator cosmosDeleter)
-        // BlobMigrator blobMigrator,
-        // TsiMigrator tsiMigrator)
+                      Version_0_10_0 v0_10)
         {
             this.logger = logger;
             this.options = options;
-            this.identityModelMigrator = identityModelMigrator ?? throw new ArgumentNullException(nameof(identityModelMigrator));
-            this.userDataModelMigrator = userDataModelMigrator ?? throw new ArgumentNullException(nameof(userDataModelMigrator));
-            this.cosmosMigrator = cosmosMigrator ?? throw new ArgumentNullException(nameof(cosmosMigrator));
-            this.cosmosDeleter = cosmosDeleter ?? throw new ArgumentNullException(nameof(cosmosDeleter));
-            // this.blobMigrator = blobMigrator ?? throw new ArgumentNullException(nameof(blobMigrator));
-            // this.tsiMigrator = tsiMigrator ?? throw new ArgumentNullException(nameof(tsiMigrator));
+            this.V0_10 = v0_10;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,7 +36,7 @@ namespace Amphora.Migrate
             // await RunMigratorsAsync("Move and refactor to IdentityContext", identityModelMigrator); // run this to move ApplicationUsers into IdentityContext
             // await RunMigratorsAsync("Add data models to AmphoraContext", userDataModelMigrator); // run this to add UserDataModels to AmphoraContext
             // await RunMigratorsAsync("Delete Old ApplicationUser documents", cosmosDeleter); // run this to add UserDataModels to AmphoraContext
-
+            await RunMigratorsAsync("Update to V 0.10", V0_10);
             logger.LogInformation("Stopping");
             await this.StopAsync(stoppingToken);
             Environment.Exit(0);
