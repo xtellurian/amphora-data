@@ -63,8 +63,9 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
-        public async Task OtherUser_CantDeleteTermsOfUse()
+        public async Task Other_CantDeleteTermsOfUse()
         {
+            await Task.Delay(50); // try something cos this is failing weirdly.
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.org");
 
