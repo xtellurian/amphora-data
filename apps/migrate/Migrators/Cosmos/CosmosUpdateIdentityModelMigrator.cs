@@ -9,18 +9,16 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
-    public class CosmosUserDataModelMigrator : CosmosMigratorBase, IMigrator
+    public class CosmosUpdateIdentityModelMigrator : CosmosMigratorBase, IMigrator
     {
         private readonly string discriminator;
         private readonly CosmosMigrationOptions options;
-        private readonly ILogger<CosmosUserDataModelMigrator> logger;
 
-        public CosmosUserDataModelMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
-                                            ILogger<CosmosUserDataModelMigrator> logger) : base(options, logger)
+        public CosmosUpdateIdentityModelMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
+                                            ILogger<CosmosUpdateIdentityModelMigrator> logger) : base(options, logger)
         {
             this.discriminator = "ApplicationUser";
             this.options = options.CurrentValue;
-            this.logger = logger;
         }
 
         public async Task MigrateAsync()
@@ -30,6 +28,11 @@ namespace Amphora.Migrate.Migrators
 
             var queryDefinition = new QueryDefinition($"SELECT * from c where c.Discriminator = '{this.discriminator}'");
             var iterator = sourceContainer.GetItemQueryIterator<dynamic>(queryDefinition);
+
+            // load from Source
+            // change Discriminator
+            // change (small) id
+            // save to Sisk
 
             while (iterator.HasMoreResults)
             {
@@ -41,8 +44,8 @@ namespace Amphora.Migrate.Migrators
                     logger.LogInformation($"Migrating Item {i.id}");
 
                     // updating the existing docs for User Data
-                    i.Discriminator = nameof(ApplicationUserDataModel);
-                    i.id = $"{nameof(ApplicationUserDataModel)}|{i.Id}";
+                    // i.Discriminator = nameof(ApplicationUserDataModel);
+                    // i.id = $"{nameof(ApplicationUserDataModel)}|{i.Id}";
                     if (options.Upsert == true)
                     {
                         var res = await sinkContainer.UpsertItemAsync(i); // FIXME: partition key null

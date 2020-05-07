@@ -8,18 +8,19 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
+    /// <summary>
+    /// Deletes cosmos documents matching a discriminator.
+    /// </summary>
     public class CosmosDocumentDeleteMigrator : CosmosMigratorBase, IMigrator
     {
         private readonly string discriminator;
         private readonly CosmosMigrationOptions options;
-        private readonly ILogger<CosmosDocumentDeleteMigrator> logger;
 
         public CosmosDocumentDeleteMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
                                             ILogger<CosmosDocumentDeleteMigrator> logger) : base(options, logger)
         {
             this.discriminator = "ApplicationUser";
             this.options = options.CurrentValue;
-            this.logger = logger;
         }
 
         public async Task MigrateAsync()

@@ -9,6 +9,7 @@ namespace Amphora.Migrate.Migrators
     public abstract class CosmosMigratorBase
     {
         private readonly CosmosMigrationOptions options;
+        protected readonly ILogger<CosmosMigratorBase> logger;
         protected ContainerResponse? sinkContainerProperties;
         protected ContainerResponse? sourceContainerProperties;
         protected Database? sinkDatabase;
@@ -17,6 +18,7 @@ namespace Amphora.Migrate.Migrators
                                             ILogger<CosmosMigratorBase> logger)
         {
             this.options = options.CurrentValue;
+            this.logger = logger;
         }
 
         public async Task<Container> GetSourceContainerAsync()

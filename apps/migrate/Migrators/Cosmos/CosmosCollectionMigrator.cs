@@ -1,7 +1,6 @@
+using System;
 using System.Threading.Tasks;
-using Amphora.Common.Models.Users;
 using Amphora.Migrate.Contracts;
-using Amphora.Migrate.Models;
 using Amphora.Migrate.Options;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
@@ -9,18 +8,17 @@ using Microsoft.Extensions.Options;
 
 namespace Amphora.Migrate.Migrators
 {
-    public class CosmosUpdateIdentityModelMigrator : CosmosMigratorBase, IMigrator
+    /// <summary>
+    /// Takes documents from one cosmos db and moves them to another.
+    /// </summary>
+    public class CosmosCollectionMigrator : CosmosMigratorBase, IMigrator
     {
-        private readonly string discriminator;
         private readonly CosmosMigrationOptions options;
-        private readonly ILogger<CosmosUpdateIdentityModelMigrator> logger;
 
-        public CosmosUpdateIdentityModelMigrator(IOptionsMonitor<CosmosMigrationOptions> options,
-                                            ILogger<CosmosUpdateIdentityModelMigrator> logger) : base(options, logger)
+        public CosmosCollectionMigrator(IOptionsMonitor<CosmosMigrationOptions> options, ILogger<CosmosCollectionMigrator> logger)
+        : base(options, logger)
         {
-            this.discriminator = "ApplicationUser";
             this.options = options.CurrentValue;
-            this.logger = logger;
         }
 
         public async Task MigrateAsync()
@@ -28,26 +26,25 @@ namespace Amphora.Migrate.Migrators
             var sourceContainer = await GetSourceContainerAsync();
             var sinkContainer = await GetSinkContainerAsync();
 
-            var queryDefinition = new QueryDefinition($"SELECT * from c where c.Discriminator = '{this.discriminator}'");
-            var iterator = sourceContainer.GetItemQueryIterator<dynamic>(queryDefinition);
+            // create with same partition key path
+            if (sinkDatabase != null)
+            {
+                await sinkDatabase.CreateContainerIfNotExistsAsync(options.GetSink()?.Container, sourceContainerProperties?.Resource.PartitionKeyPath);
+            }
 
-            // load from Source
-            // change Discriminator
-            // change (small) id
-            // save to Sisk
+            var queryDefinition = new QueryDefinition("SELECT * from c");
+            var iterator = sourceContainer.GetItemQueryIterator<dynamic>(queryDefinition);
 
             while (iterator.HasMoreResults)
             {
                 var item = await iterator.ReadNextAsync();
                 logger.LogInformation($"StatusCode: {item.StatusCode}");
-                // create the users in the new Identity Collection
+
                 foreach (var i in item.Resource)
                 {
                     logger.LogInformation($"Migrating Item {i.id}");
-
-                    // updating the existing docs for User Data
-                    // i.Discriminator = nameof(ApplicationUserDataModel);
-                    // i.id = $"{nameof(ApplicationUserDataModel)}|{i.Id}";
+                    i.IsMigrated = true;
+                    i.DateTimeMigrated = DateTime.Now;
                     if (options.Upsert == true)
                     {
                         var res = await sinkContainer.UpsertItemAsync(i); // FIXME: partition key null
@@ -58,6 +55,8 @@ namespace Amphora.Migrate.Migrators
                     }
                 }
             }
+
+            logger.LogInformation("Done Migrating");
         }
     }
 }
