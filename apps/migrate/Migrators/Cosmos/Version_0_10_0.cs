@@ -71,6 +71,12 @@ namespace Amphora.Migrate.Migrators.Cosmos
 
                     foreach (var tnc in i.TermsAndConditions)
                     {
+                        if (tnc == null)
+                        {
+                            logger.LogWarning("TNC is null");
+                            throw new NullReferenceException("TNC was null :( ");
+                        }
+
                         tnc.id = $"TermsOfUseModel|{tnc.Id}";
                         tnc.Discriminator = "TermsOfUseModel";
                         tnc.CreatedDate = DateTime.UtcNow;
@@ -82,7 +88,6 @@ namespace Amphora.Migrate.Migrators.Cosmos
                         logger.LogInformation($"Creating Item {idToCreate}");
                         var res = await container.CreateItemAsync(tnc, PartitionKey.None);
                     }
-
                 }
             }
         }
