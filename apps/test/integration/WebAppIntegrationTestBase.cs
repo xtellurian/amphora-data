@@ -83,7 +83,7 @@ namespace Amphora.Tests.Integration
                 var (c, u, o) = await GetNewClientInOrg(client.Http, client.Organisation, email, httpClient);
                 this.usersCache[email] = new UserCache(email, c, u, o);
             }
-            else if(email == Users.Standard)
+            else if (email == Users.Standard)
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
                 this.usersCache[email] = new UserCache(email, c, u, o);
