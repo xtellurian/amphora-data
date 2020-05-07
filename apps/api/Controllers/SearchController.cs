@@ -46,7 +46,7 @@ namespace Amphora.Api.Controllers
         /// <param name="dist">Distance from center of search area (describing a circle).</param>
         /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<BasicAmphora>))]
-        [HttpPost("api/search/amphorae")]
+        [HttpGet("api/search/amphorae")]
         [CommonAuthorize]
         public async Task<IActionResult> SearchAmphorae(string term,
                                                         string labels,
