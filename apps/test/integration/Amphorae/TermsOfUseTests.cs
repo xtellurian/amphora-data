@@ -66,7 +66,7 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task OtherUser_CantDeleteTermsOfUse()
         {
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
+            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.org");
 
             var tou = new TermsOfUse
             {
