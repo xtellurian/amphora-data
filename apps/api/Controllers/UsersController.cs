@@ -151,7 +151,10 @@ namespace Amphora.Api.Controllers
 
         private bool IsTestUser(AmphoraUser user)
         {
-            return environment.IsDevelopment() && (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false);
+            return environment.IsDevelopment() &&
+            (
+                (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false)
+                || (user.Email?.ToLower().EndsWith("@example.org") ?? false));
         }
     }
 }

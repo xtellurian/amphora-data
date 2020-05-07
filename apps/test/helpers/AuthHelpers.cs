@@ -12,12 +12,13 @@ namespace Amphora.Tests.Helpers
     public static class AuthHelpers
     {
         private const string PhoneNumber = "0412 345 678";
-        public static async Task<(AmphoraUser User, string Password)> CreateUserAsync(
+        public static async Task<AmphoraUser> CreateUserAsync(
             this HttpClient client,
             string email,
-            string fullName)
+            string fullName,
+            string password = null)
         {
-            var password = System.Guid.NewGuid().ToString() + "!A1";
+            password ??= System.Guid.NewGuid().ToString() + "!A1";
             // assumed the user has been invited
             var user = new CreateAmphoraUser
             {
@@ -36,7 +37,20 @@ namespace Amphora.Tests.Helpers
             var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
             await client.GetTokenAsync(user.UserName, password);
 
-            return (User: createdUser, Password: password);
+            return createdUser;
+        }
+
+        public static async Task<AmphoraUser> GetUserAsync(this HttpClient client)
+        {
+            var res = await client.GetAsync("api/users/self");
+            if (res.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<AmphoraUser>(await res.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                throw new System.Exception("Failed to get user info");
+            }
         }
 
         public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client, string testName)
@@ -48,6 +62,19 @@ namespace Amphora.Tests.Helpers
             Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
             var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
             return org;
+        }
+
+        public static async Task<Organisation> GetOrganisationAsync(this HttpClient client, string organisationId)
+        {
+            var res = await client.GetAsync($"api/Organisations/{organisationId}");
+            if (res.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<Organisation>(await res.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                throw new System.Exception("Failed to get organisation info");
+            }
         }
 
         public static async Task SetPlan(this HttpClient client, string orgId, Common.Models.Organisations.Accounts.Plan.PlanTypes planType)

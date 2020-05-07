@@ -114,7 +114,10 @@ namespace Amphora.Identity.Controllers
 
         private bool IsTestUser(ApplicationUser user)
         {
-            return environment.IsDevelopment() && (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false);
+            return environment.IsDevelopment() &&
+            (
+                (user.Email?.ToLower().EndsWith("@amphoradata.com") ?? false)
+                || (user.Email?.ToLower().EndsWith("@example.org") ?? false));
         }
     }
 }

@@ -19,17 +19,14 @@ namespace Amphora.Tests.Integration
         public async Task TopAndSkip()
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(
-                planType: Common.Models.Organisations.Accounts.Plan.PlanTypes.Team);
-            var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var client = await GetUserAsync();
 
             var amphorae = new List<DetailedAmphora>();
             int i = 0;
             while (i < 10)
             {
-                var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(TopAndSkip));
-                var createResponse = await adminClient.PostAsJsonAsync("api/amphorae", a);
+                var a = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id, nameof(TopAndSkip));
+                var createResponse = await client.Http.PostAsJsonAsync("api/amphorae", a);
                 var createResponseContent = await createResponse.Content.ReadAsStringAsync();
                 await AssertHttpSuccess(createResponse);
                 a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
@@ -38,31 +35,22 @@ namespace Amphora.Tests.Integration
             }
 
             // try reindex
-            var indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
+            var indexRes = await client.Http.PostAsJsonAsync("api/search/indexers", new object());
             if (indexRes.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 // wait 180 seconds and try again
                 System.Console.WriteLine("Indexer failed. Waiting 180 seconds...");
                 await Task.Delay(180 * 1000);
-                indexRes = await adminClient.PostAsJsonAsync("api/search/indexers", new object());
+                indexRes = await client.Http.PostAsJsonAsync("api/search/indexers", new object());
             }
 
             await AssertHttpSuccess(indexRes);
             // how do we get this to index first?
             var top = 2;
             var k = 0;
-            var res = await adminClient.GetAsync($"api/market/search?query=&top={top}&skip={k}");
+            var res = await client.Http.GetAsync($"api/market/search?query=&top={top}&skip={k}");
             var content = await res.Content.ReadAsStringAsync();
             var list = JsonConvert.DeserializeObject<List<BasicAmphora>>(content);
-            // Assert.Equal(top, list.Count); // FIXME
-
-            foreach (var x in amphorae)
-            {
-                await DestroyAmphoraAsync(adminClient, x.Id);
-            }
-
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
         }
     }
 }

@@ -23,11 +23,11 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task Post_UploadDownloadFilesAsAdmin_ThenDelete(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var client = await GetUserAsync();
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
             // create an amphora for us to work with
-            var createResponse = await adminClient.PostAsync(url,
+            var createResponse = await client.Http.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
@@ -39,28 +39,25 @@ namespace Amphora.Tests.Integration.Amphorae
             var file = Guid.NewGuid().ToString();
 
             // Act
-            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            var uploadResponse = await client.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             await AssertHttpSuccess(uploadResponse);
 
-            var downloadResponse = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            var downloadResponse = await client.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(downloadResponse);
 
             // Assert
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
             // now delete the file
-            var deleteRes = await adminClient.DeleteAsync($"{url}/{amphora.Id}/files/{file}");
+            var deleteRes = await client.Http.DeleteAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(deleteRes);
 
             // check it's not there
-            var downloadResponse_afterDelete = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            var downloadResponse_afterDelete = await client.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             Assert.Equal(HttpStatusCode.NotFound, downloadResponse_afterDelete.StatusCode);
 
             // cleanup
-            await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
+            await DeleteAmphora(client.Http, amphora.Id);
         }
 
         [Theory]
@@ -68,11 +65,11 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task Post_DownloadFiles_AsOtherUsers(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(planType: TeamPlan);
+            var client = await GetUserAsync(Users.Standard);
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_DownloadFiles_AsOtherUsers));
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id, nameof(Post_DownloadFiles_AsOtherUsers));
             // create an amphora for us to work with
-            var createResponse = await adminClient.PostAsync(url,
+            var createResponse = await client.Http.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
@@ -83,30 +80,26 @@ namespace Amphora.Tests.Integration.Amphorae
             var requestBody = new ByteArrayContent(content);
             var file = Guid.NewGuid().ToString();
 
-            adminClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            client.Http.DefaultRequestHeaders.Add("Accept", "application/json");
+            var uploadResponse = await client.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             await AssertHttpSuccess(uploadResponse);
 
             // Act and Assert
             // now let's download by someone in the same org - should work
-            var (sameOrgClient, sameOrgUser, sameOrgOrg) = await GetNewClientInOrg(adminClient, adminOrg);
-            var downloadResponse = await sameOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            var sameOrgClient = await GetUserAsync(Users.StandardTwo);
+            var downloadResponse = await sameOrgClient.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(downloadResponse);
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
             // other org user is denied access
-            var (otherOrgClient, otherOrgUser, otherOrg) = await NewOrgAuthenticatedClientAsync();
-            downloadResponse = await otherOrgClient.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            var other = await GetUserAsync(Users.Other);
+            downloadResponse = await other.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             Assert.Equal(HttpStatusCode.Forbidden, downloadResponse.StatusCode);
 
             // cleanup
-            await DeleteAmphora(adminClient, amphora.Id);
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
-            await DestroyUserAsync(sameOrgClient, sameOrgUser);
-
-            await DestroyOrganisationAsync(otherOrgClient, otherOrg);
-            await DestroyUserAsync(otherOrgClient, otherOrgUser);
+            await DeleteAmphora(client.Http, amphora.Id);
+            await DestroyAsync(client);
+            await DestroyAsync(other);
         }
 
         [Theory]

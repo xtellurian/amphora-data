@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration.Organisations
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (user, _) = await client.CreateUserAsync(email, nameof(CanCreateOrganisation));
+            var user = await client.CreateUserAsync(email, nameof(CanCreateOrganisation));
 
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanCreateOrganisation));
 
@@ -63,7 +63,7 @@ namespace Amphora.Tests.Integration.Organisations
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (user, _) = await client.CreateUserAsync(email, nameof(CanUpdateOrganisation));
+            var user = await client.CreateUserAsync(email, nameof(CanUpdateOrganisation));
             var a = Helpers.EntityLibrary.GetOrganisationDto(nameof(CanUpdateOrganisation));
             var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -95,7 +95,7 @@ namespace Amphora.Tests.Integration.Organisations
             var client = _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (user, _) = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation_TeamPlan));
+            var user = await client.CreateUserAsync(email, nameof(CanInviteToOrganisation_TeamPlan));
             var org = Helpers.EntityLibrary.GetOrganisationDto();
             var requestBody = new StringContent(JsonConvert.SerializeObject(org), Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -111,7 +111,7 @@ namespace Amphora.Tests.Integration.Organisations
             var client2 = _factory.CreateClient();
             client2.DefaultRequestHeaders.Add(ApiVersion.HeaderName, _apiVersion.ToString());
             var email2 = System.Guid.NewGuid().ToString() + "@amphoradata.com";
-            var (otherUser, _) = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation_TeamPlan));
+            var otherUser = await client2.CreateUserAsync(email2, nameof(CanInviteToOrganisation_TeamPlan));
 
             var inviteResponse = await client.PostAsJsonAsync($"api/invitations/",
                 new Invitation { TargetEmail = otherUser.Email, TargetOrganisationId = org.Id });

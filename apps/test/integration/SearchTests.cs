@@ -24,26 +24,19 @@ namespace Amphora.Tests.Integration
         public async Task SearchAmphorae_ByOrgIdAsUser_ForTeamPlan(string url)
         {
             // Arrange
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync(
-                planType: Common.Models.Organisations.Accounts.Plan.PlanTypes.Team);
-            var (client, user, org) = await GetNewClientInOrg(adminClient, adminOrg);
-            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(SearchAmphorae_ByLocation));
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            var createResponse = await adminClient.PostAsync("api/amphorae", requestBody);
+            var client = await GetUserAsync();
+            var otherClient = await GetUserAsync(Users.StandardTwo);
+            var a = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
+            var createResponse = await client.Http.PostAsJsonAsync("api/amphorae", a);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             await AssertHttpSuccess(createResponse);
             a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
             // Act
-            var response = await client.GetAsync($"{url}?orgId={user.OrganisationId}");
+            var response = await otherClient.Http.GetAsync($"{url}?orgId={client.Organisation.Id}");
             await AssertHttpSuccess(response);
             var content = await response.Content.ReadAsStringAsync();
             var amphorae = JsonConvert.DeserializeObject<List<DetailedAmphora>>(content);
-
-            await DestroyAmphoraAsync(adminClient, a.Id);
-            await DestroyOrganisationAsync(adminClient, adminOrg);
-            await DestroyUserAsync(adminClient, adminUser);
         }
 
         [Theory]
@@ -68,11 +61,6 @@ namespace Amphora.Tests.Integration
             await AssertHttpSuccess(response);
 
             var responseList = JsonConvert.DeserializeObject<List<DetailedAmphora>>(responseContent);
-            // Assert.Contains(responseList, b => string.Equals(b.Id, a.Id)); // how to wait for the indexer to run?
-
-            await DestroyAmphoraAsync(client, a.Id);
-            await DestroyOrganisationAsync(client, org);
-            await DestroyUserAsync(client, user);
         }
 
         [Fact]
@@ -87,11 +75,6 @@ namespace Amphora.Tests.Integration
             var orgs = JsonConvert.DeserializeObject<List<Organisation>>(content);
 
             Assert.NotNull(orgs);
-            // Assert.NotEmpty(orgs);
-            // Assert.Contains(orgs, _ => _.Id == org.Id);
-
-            await DestroyOrganisationAsync(client, org);
-            await DestroyUserAsync(client, user);
         }
     }
 }
