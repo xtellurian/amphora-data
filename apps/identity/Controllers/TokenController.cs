@@ -36,12 +36,12 @@ namespace Amphora.Identity.Controllers
         [HttpPost("api/token")]
         public async Task<IActionResult> RequestToken([FromBody] LoginRequest request)
         {
+            logger.LogInformation($"{request.Username} is requesting a token");
             var result = await signInManager.PasswordSignInAsync(request.Username, request.Password, false, true);
-
             if (result.Succeeded)
             {
+                logger.LogInformation($"{request.Username} signed in for a token.");
                 var user = await userManager.FindByNameAsync(request.Username);
-                logger.LogInformation($"Issuing Token for {request.Username}");
                 var claimsPrincipal = await claimsPrincipalFactory.CreateAsync(user);
                 var message = new StringBuilder();
                 foreach (var c in claimsPrincipal.Claims)
@@ -57,6 +57,7 @@ namespace Amphora.Identity.Controllers
             }
             else
             {
+                logger.LogWarning($"{request.Username} signed in failed.");
                 return BadRequest();
             }
         }
