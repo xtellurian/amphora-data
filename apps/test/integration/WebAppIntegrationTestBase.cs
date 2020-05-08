@@ -189,12 +189,5 @@ namespace Amphora.Tests.Integration
             var response = await client.DeleteAsync($"api/organisations/{org.Id}");
             await AssertHttpSuccess(response);
         }
-
-        protected async Task DestroyAsync(Persona client)
-        {
-            await DestroyOrganisationAsync(client.Http, client.Organisation);
-            await DestroyUserAsync(client.Http, client.User);
-            personaCache.Remove(client.Name);
-        }
     }
 }
