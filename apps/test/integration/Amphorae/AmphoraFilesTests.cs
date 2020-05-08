@@ -98,8 +98,6 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // cleanup
             await DeleteAmphora(client.Http, amphora.Id);
-            await DestroyAsync(client);
-            await DestroyAsync(other);
         }
 
         [Theory]
