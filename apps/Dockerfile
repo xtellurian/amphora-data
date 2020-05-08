@@ -12,4 +12,5 @@ RUN dotnet build /p:TreatWarningsAsErrors=${TreatWarningsAsErrors}
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV AZURE_CONFIG_DIR=/.azure/
 
-CMD [ "dotnet", "test", "-l:trx;LogFileName=/output/TestOutput.xml ", "/p:CollectCoverage=true", "/p:CoverletOutputFormat=cobertura", "/p:CoverletOutput=/output/" ]
+RUN chmod +x ./test-ci.sh
+CMD ./test-ci.sh
