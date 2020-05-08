@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
@@ -9,6 +10,7 @@ using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration
@@ -108,12 +110,21 @@ namespace Amphora.Tests.Integration
         {
             client ??= _factory.CreateClient();
             client.DefaultRequestHeaders.Add(ApiVersion.HeaderName, majorVersion.ToString());
-            var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
-                new Invitation { TargetEmail = email, TargetOrganisationId = org.Id });
-            if (!inviteResponse.IsSuccessStatusCode)
+
+            // check if already invited.
+            var getInvitesRes = await currentClient.GetAsync($"api/Organisations/{org.Id}/Invitations");
+            await AssertHttpSuccess(getInvitesRes);
+            var invitations = JsonConvert.DeserializeObject<List<Invitation>>(await getInvitesRes.Content.ReadAsStringAsync());
+            if (!invitations.Any(_ => _.TargetEmail?.ToLower() == email.ToLower()))
             {
-                var message = await inviteResponse.Content.ReadAsStringAsync();
-                throw new Exception(message);
+                // then invite needs to be created
+                var inviteResponse = await currentClient.PostAsJsonAsync($"api/invitations/",
+                    new Invitation { TargetEmail = email, TargetOrganisationId = org.Id });
+                if (!inviteResponse.IsSuccessStatusCode)
+                {
+                    var message = await inviteResponse.Content.ReadAsStringAsync();
+                    throw new Exception(message);
+                }
             }
 
             var createUser = await client.CreateUserAsync(email, "type: " + this.GetType().ToString(), Password);
@@ -124,7 +135,6 @@ namespace Amphora.Tests.Integration
             var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
-            inviteResponse.EnsureSuccessStatusCode();
             user.OrganisationId = org.Id;
 
             Assert.NotNull(user.Email);
