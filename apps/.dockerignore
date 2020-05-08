@@ -4,7 +4,9 @@
 Dockerfile
 azure-pipelines.yaml
 .gitignore
+**/TestOutput.xml
 
-# for fast rebuild after script change
-**/*.sh
+build-containers.sh 
+run.sh
+sqlServer.sh
 # **/appsettings.Development.json
