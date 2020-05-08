@@ -26,7 +26,7 @@ namespace Amphora.Tests.Integration
 
         private const string Password = "sjdbgBBHbdvklv984yt$$";
 
-        protected Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
+        private Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
         public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
