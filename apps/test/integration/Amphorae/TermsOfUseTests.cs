@@ -22,7 +22,7 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task Creator_CanCreateThenDelete()
         {
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var persona = await GetPersonaAsync();
 
             var tou = new TermsOfUse
             {
@@ -30,7 +30,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
+            var result = await persona.Http.PostAsJsonAsync($"api/TermsOfUse", tou);
             var contents = await result.Content.ReadAsStringAsync();
             await AssertHttpSuccess(result);
 
@@ -39,14 +39,14 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(tou.Name, dto.Name);
             Assert.Equal(tou.Contents, dto.Contents);
 
-            var response = await adminClient.GetAsync("api/TermsOfUse");
+            var response = await persona.Http.GetAsync("api/TermsOfUse");
             await AssertHttpSuccess(response);
             var allTnc = JsonConvert.DeserializeObject<List<TermsOfUse>>(await response.Content.ReadAsStringAsync());
             Assert.NotEmpty(allTnc);
             Assert.Contains(allTnc, _ => _.Id == dto.Id);
 
             // get specific one
-            var getRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
+            var getRes = await persona.Http.GetAsync($"api/TermsOfUse/{dto.Id}");
             await AssertHttpSuccess(getRes);
             var getTou = JsonConvert.DeserializeObject<TermsOfUse>(await getRes.Content.ReadAsStringAsync());
             Assert.Equal(dto.Id, getTou.Id);
@@ -54,11 +54,11 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(dto.Contents, getTou.Contents);
 
             // now delete
-            var deleteRes = await adminClient.DeleteAsync($"api/TermsOfUse/{dto.Id}");
+            var deleteRes = await persona.Http.DeleteAsync($"api/TermsOfUse/{dto.Id}");
             await AssertHttpSuccess(deleteRes);
 
             // now try get, and it's not there
-            var getAgainRes = await adminClient.GetAsync($"api/TermsOfUse/{dto.Id}");
+            var getAgainRes = await persona.Http.GetAsync($"api/TermsOfUse/{dto.Id}");
             Assert.False(getAgainRes.IsSuccessStatusCode);
         }
 
@@ -66,8 +66,8 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task Other_CantDeleteTermsOfUse()
         {
             await Task.Delay(50); // try something cos this is failing weirdly.
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.org");
+            var persona = await GetPersonaAsync();
+            var other = await GetPersonaAsync(Users.Other);
 
             var tou = new TermsOfUse
             {
@@ -75,7 +75,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
+            var result = await persona.Http.PostAsJsonAsync($"api/TermsOfUse", tou);
             var contents = await result.Content.ReadAsStringAsync();
             await AssertHttpSuccess(result);
 
@@ -83,7 +83,7 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.NotNull(dto.Id);
 
             // now delete
-            var deleteRes = await otherClient.DeleteAsync($"api/TermsOfUse/{dto.Id}");
+            var deleteRes = await other.Http.DeleteAsync($"api/TermsOfUse/{dto.Id}");
             Assert.False(deleteRes.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.Forbidden, deleteRes.StatusCode);
         }
@@ -91,7 +91,7 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task Creator_CantDelete_IfAmphoraReferToTou()
         {
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var persona = await GetPersonaAsync();
 
             var tou = new TermsOfUse
             {
@@ -99,20 +99,20 @@ namespace Amphora.Tests.Integration.Amphorae
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await adminClient.PostAsJsonAsync($"api/TermsOfUse", tou);
+            var result = await persona.Http.PostAsJsonAsync($"api/TermsOfUse", tou);
             await AssertHttpSuccess(result);
             tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
             Assert.NotNull(tou.Id);
 
             // create the amphora
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
             amphora.TermsOfUseId = tou.Id;
-            var createRes = await adminClient.PostAsJsonAsync("api/amphorae", amphora);
+            var createRes = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
             await AssertHttpSuccess(createRes);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createRes.Content.ReadAsStringAsync());
 
             // now try delete
-            var deleteRes = await adminClient.DeleteAsync($"api/TermsOfUse/{tou.Id}");
+            var deleteRes = await persona.Http.DeleteAsync($"api/TermsOfUse/{tou.Id}");
             Assert.False(deleteRes.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, deleteRes.StatusCode);
             Assert.NotEmpty(await deleteRes.Content.ReadAsStringAsync());
@@ -121,8 +121,8 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task GlobalTerms_CanBeReferencedByAnothersAmphora()
         {
-            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.com");
+            var persona = await GetPersonaAsync();
+            var other = await GetPersonaAsync(Users.Other);
 
             var tou = new TermsOfUse
             {
@@ -130,13 +130,13 @@ namespace Amphora.Tests.Integration.Amphorae
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await adminClient.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
+            var result = await persona.Http.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
             await AssertHttpSuccess(result);
             tou = JsonConvert.DeserializeObject<TermsOfUse>(await result.Content.ReadAsStringAsync());
             Assert.NotNull(tou.Id);
 
             // other lists available terms, and it's there
-            var listRes = await otherClient.GetAsync("api/TermsOfUse");
+            var listRes = await persona.Http.GetAsync("api/TermsOfUse");
             await AssertHttpSuccess(listRes);
             var allTou = JsonConvert.DeserializeObject<List<TermsOfUse>>(await listRes.Content.ReadAsStringAsync());
             Assert.NotNull(allTou);
@@ -144,21 +144,21 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Contains(allTou, _ => _.Id == tou.Id);
 
             // create the amphora
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(other.Organisation.Id);
             amphora.TermsOfUseId = tou.Id;
-            var createRes = await otherClient.PostAsJsonAsync("api/amphorae", amphora);
+            var createRes = await other.Http.PostAsJsonAsync("api/amphorae", amphora);
             await AssertHttpSuccess(createRes);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await createRes.Content.ReadAsStringAsync());
 
             // now delete
-            var deleteRes = await otherClient.DeleteAsync($"api/amphorae/{amphora.Id}");
+            var deleteRes = await other.Http.DeleteAsync($"api/amphorae/{amphora.Id}");
             await AssertHttpSuccess(deleteRes);
         }
 
         [Fact]
         public async Task NormalUser_CantCreateGlobal()
         {
-            var (otherClient, otherUser, otherOrg) = await NewOrgAuthenticatedClientAsync("example.com");
+            var other = await GetPersonaAsync(Users.Other);
 
             var tou = new TermsOfUse
             {
@@ -166,7 +166,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 Contents = System.Guid.NewGuid().ToString()
             };
 
-            var result = await otherClient.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
+            var result = await other.Http.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
             Assert.False(result.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
