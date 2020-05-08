@@ -143,7 +143,7 @@ namespace Amphora.Api.Services.Amphorae
             }
             else
             {
-                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, false) { WasForbidden = true };
+                return new EntityOperationResult<TermsOfUseModel>(userDataRes.Entity, "Unauthorized") { WasForbidden = true };
             }
         }
 
