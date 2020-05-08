@@ -105,7 +105,7 @@ namespace Amphora.Api.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(createRes.Message);
                 }
             }
             else
@@ -115,9 +115,9 @@ namespace Amphora.Api.Controllers
                 {
                     logger.LogError(e);
                 }
-            }
 
-            return BadRequest(JsonConvert.SerializeObject(result.Errors));
+                return BadRequest(result.Message);
+            }
         }
 
         /// <summary>

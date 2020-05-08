@@ -74,7 +74,7 @@ namespace Amphora.Infrastructure.Services
                 }
                 else
                 {
-                    return new EntityOperationResult<AmphoraUser>(false);
+                    return new EntityOperationResult<AmphoraUser>($"Identity Server responsed with: {responseContent}");
                 }
             }
             catch (HttpRequestException httpRequestException)
