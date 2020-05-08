@@ -22,7 +22,7 @@ services:
       PersistentStores: ${PersistentStores}
       kvUri: ${kvUri}
       disableKv: ${disableKv}
-    depends_on: 
+    depends_on:
       - sql
   tester:
     image: builder
@@ -38,6 +38,7 @@ services:
       disableKv: ${disableKv}
       DGML_PATH: /output/Entities.dgml
       BUILD_REASON: ${BUILD_REASON}
+      CoverletOutput: /output
     depends_on: 
       - sql
       - identity
