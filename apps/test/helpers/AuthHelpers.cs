@@ -40,7 +40,7 @@ namespace Amphora.Tests.Helpers
             return createdUser;
         }
 
-        public static async Task<AmphoraUser> GetPersonaAsync(this HttpClient client)
+        public static async Task<AmphoraUser> LoadUserInfoAsync(this HttpClient client)
         {
             var res = await client.GetAsync("api/users/self");
             if (res.IsSuccessStatusCode)

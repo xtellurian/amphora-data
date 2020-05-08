@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration
 
         private const string Password = "sjdbgBBHbdvklv984yt$$";
 
-        private Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
+        private static Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
         public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
@@ -62,7 +62,7 @@ namespace Amphora.Tests.Integration
             try
             {
                 await httpClient.GetTokenAsync(name, Password);
-                var userInfo = await httpClient.GetPersonaAsync();
+                var userInfo = await httpClient.LoadUserInfoAsync();
                 var org = await httpClient.GetOrganisationAsync(userInfo.OrganisationId);
                 personaCache[name] = new Persona(name, httpClient, userInfo, org);
                 return true;
@@ -83,17 +83,17 @@ namespace Amphora.Tests.Integration
                 // login with 1
                 var client = personaCache[Users.Standard];
                 var (c, u, o) = await GetNewClientInOrg(client.Http, client.Organisation, email, httpClient);
-                this.personaCache[email] = new Persona(email, c, u, o);
+                personaCache[email] = new Persona(email, c, u, o);
             }
             else if (email == Users.Standard)
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
-                this.personaCache[email] = new Persona(email, c, u, o);
+                personaCache[email] = new Persona(email, c, u, o);
             }
             else
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, FreePlan);
-                this.personaCache[email] = new Persona(email, c, u, o);
+                personaCache[email] = new Persona(email, c, u, o);
             }
         }
 
