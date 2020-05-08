@@ -17,6 +17,8 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(p => p.IsDeleted, o => o.Ignore())
                 .ForMember(p => p.LastModified, o => o.Ignore())
                 .ForMember(p => p.CreatedDate, o => o.Ignore());
+
+            CreateMap<InvitationModel, InvitationModel>();
         }
     }
 }
