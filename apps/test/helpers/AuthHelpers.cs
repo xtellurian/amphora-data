@@ -29,9 +29,9 @@ namespace Amphora.Tests.Helpers
                 ConfirmPassword = password,
                 PhoneNumber = PhoneNumber
             };
-            var requestPath = "api/users";
+
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(requestPath, content);
+            var response = await client.PostAsync("api/users", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.True(response.IsSuccessStatusCode, $"[{email}] [{response.StatusCode}] Content:  + {responseContent}");
             var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
