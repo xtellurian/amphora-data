@@ -22,7 +22,7 @@ namespace Amphora.Infrastructure.Extensions
         {
             services.AddHttpClient(HttpClientNames.IdentityServerClient, client =>
             {
-                client.Timeout = TimeSpan.FromSeconds(15); // fail faster
+                client.Timeout = TimeSpan.FromSeconds(30); // fail faster
             })
            .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
            {
