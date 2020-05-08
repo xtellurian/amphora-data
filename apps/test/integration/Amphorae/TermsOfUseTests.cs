@@ -168,7 +168,7 @@ namespace Amphora.Tests.Integration.Amphorae
 
             var result = await other.Http.PostAsJsonAsync($"api/GlobalTermsOfUse", tou);
             Assert.False(result.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
     }
 }
