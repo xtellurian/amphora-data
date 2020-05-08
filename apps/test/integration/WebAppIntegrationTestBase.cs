@@ -59,18 +59,24 @@ namespace Amphora.Tests.Integration
 
         private async Task<bool> TryLoginAndAddToCache(HttpClient httpClient, string name)
         {
-            try
+            if (await httpClient.GetTokenAsync(name, Password))
             {
-                await httpClient.GetTokenAsync(name, Password);
-                var userInfo = await httpClient.LoadUserInfoAsync();
-                var org = await httpClient.GetOrganisationAsync(userInfo.OrganisationId);
-                personaCache[name] = new Persona(name, httpClient, userInfo, org);
-                return true;
+                try
+                {
+                    var userInfo = await httpClient.LoadUserInfoAsync();
+                    var org = await httpClient.GetOrganisationAsync(userInfo.OrganisationId);
+                    personaCache[name] = new Persona(name, httpClient, userInfo, org);
+                    return true;
+                }
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"{name} failed to login, ${ex}");
+                    await Task.Delay(100);
+                    return false;
+                }
             }
-            catch (HttpRequestException ex)
+            else
             {
-                Console.WriteLine($"{name} failed to login, ${ex}");
-                await Task.Delay(100);
                 return false;
             }
         }

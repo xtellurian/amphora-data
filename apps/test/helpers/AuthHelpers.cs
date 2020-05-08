@@ -35,9 +35,14 @@ namespace Amphora.Tests.Helpers
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.True(response.IsSuccessStatusCode, $"[{email}] [{response.StatusCode}] Content:  + {responseContent}");
             var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
-            await client.GetTokenAsync(user.UserName, password);
-
-            return createdUser;
+            if (await client.GetTokenAsync(user.UserName, password))
+            {
+                return createdUser;
+            }
+            else
+            {
+                throw new System.InvalidOperationException("Failed to login");
+            }
         }
 
         public static async Task<AmphoraUser> LoadUserInfoAsync(this HttpClient client)
@@ -84,7 +89,10 @@ namespace Amphora.Tests.Helpers
             setResult.EnsureSuccessStatusCode();
         }
 
-        public static async Task GetTokenAsync(this HttpClient client, string userName, string password)
+        /// <summary>
+        /// Trys to get a token. Returns whether successful.
+        /// </summary>
+        public static async Task<bool> GetTokenAsync(this HttpClient client, string userName, string password)
         {
             // can log in
             var loginRequest = new LoginRequest()
@@ -95,10 +103,16 @@ namespace Amphora.Tests.Helpers
 
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
-            Assert.True(loginResponse.IsSuccessStatusCode, "Content: " + await loginResponse.Content.ReadAsStringAsync());
-
-            var token = await loginResponse.Content.ReadAsStringAsync();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            if (loginResponse.IsSuccessStatusCode)
+            {
+                var token = await loginResponse.Content.ReadAsStringAsync();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
