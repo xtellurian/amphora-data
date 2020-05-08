@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration
                 personaCache[name] = new Persona(name, httpClient, userInfo, org);
                 return true;
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
                 Console.WriteLine($"{name} failed to login, ${ex}");
                 await Task.Delay(100);
