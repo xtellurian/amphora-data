@@ -1,2 +1,4 @@
 .DS_Store
 apps/Entities.dgml
+**/cobertura.xml
+apps/test/TestResults/**.trx
