@@ -121,7 +121,7 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task GlobalTerms_CanBeReferencedByAnothersAmphora()
         {
-            var persona = await GetPersonaAsync();
+            var persona = await GetPersonaAsync(Users.AmphoraAdmin);
             var other = await GetPersonaAsync(Users.Other);
 
             var tou = new TermsOfUse

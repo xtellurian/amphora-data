@@ -120,7 +120,7 @@ namespace Amphora.Api.Controllers
             catch (Common.Exceptions.PermissionDeniedException permEx)
             {
                 logger.LogWarning($"User tried to create Global Terms of Use", permEx);
-                return Forbid();
+                return BadRequest("You do not have the right permissions.");
             }
         }
 
