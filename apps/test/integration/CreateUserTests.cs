@@ -112,5 +112,24 @@ namespace Amphora.Tests.Integration
             // now delete the org
             await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
         }
+
+        [Trait("Phase", "One")]
+        [Fact]
+        public async Task TestPersonas_EnsureAreCreated()
+        {
+            await CheckPersonaAsync(await GetPersonaAsync(Users.AmphoraAdmin));
+            await CheckPersonaAsync(await GetPersonaAsync(Users.Attacker));
+            await CheckPersonaAsync(await GetPersonaAsync(Users.Other));
+            await CheckPersonaAsync(await GetPersonaAsync(Users.Standard));
+            await CheckPersonaAsync(await GetPersonaAsync(Users.StandardTwo));
+        }
+
+        private static async Task CheckPersonaAsync(Persona admin)
+        {
+            Assert.NotNull(admin.Organisation);
+            Assert.NotNull(admin.User);
+            var getSelfRes = await admin.Http.GetAsync("api/users/self");
+            getSelfRes.EnsureSuccessStatusCode();
+        }
     }
 }

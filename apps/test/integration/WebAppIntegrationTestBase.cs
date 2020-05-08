@@ -26,7 +26,7 @@ namespace Amphora.Tests.Integration
 
         private const string Password = "sjdbgBBHbdvklv984yt$$";
 
-        protected Dictionary<string, UserCache> usersCache = new Dictionary<string, UserCache>();
+        protected Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
         public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
@@ -34,14 +34,14 @@ namespace Amphora.Tests.Integration
             _factory = factory;
         }
 
-        protected async Task<UserCache> GetUserAsync(string name = Users.Standard)
+        protected async Task<Persona> GetPersonaAsync(string name = Users.Standard)
         {
-            if (!usersCache.ContainsKey(name))
+            if (!personaCache.ContainsKey(name))
             {
                 await AddToCache(name);
             }
 
-            return usersCache[name];
+            return personaCache[name];
         }
 
         private async Task AddToCache(string name)
@@ -60,9 +60,9 @@ namespace Amphora.Tests.Integration
             try
             {
                 await httpClient.GetTokenAsync(name, Password);
-                var userInfo = await httpClient.GetUserAsync();
+                var userInfo = await httpClient.GetPersonaAsync();
                 var org = await httpClient.GetOrganisationAsync(userInfo.OrganisationId);
-                usersCache[name] = new UserCache(name, httpClient, userInfo, org);
+                personaCache[name] = new Persona(name, httpClient, userInfo, org);
                 return true;
             }
             catch (Exception)
@@ -79,19 +79,19 @@ namespace Amphora.Tests.Integration
             if (email == Users.StandardTwo)
             {
                 // login with 1
-                var client = usersCache[Users.Standard];
+                var client = personaCache[Users.Standard];
                 var (c, u, o) = await GetNewClientInOrg(client.Http, client.Organisation, email, httpClient);
-                this.usersCache[email] = new UserCache(email, c, u, o);
+                this.personaCache[email] = new Persona(email, c, u, o);
             }
             else if (email == Users.Standard)
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
-                this.usersCache[email] = new UserCache(email, c, u, o);
+                this.personaCache[email] = new Persona(email, c, u, o);
             }
             else
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, FreePlan);
-                this.usersCache[email] = new UserCache(email, c, u, o);
+                this.personaCache[email] = new Persona(email, c, u, o);
             }
         }
 
@@ -190,11 +190,11 @@ namespace Amphora.Tests.Integration
             await AssertHttpSuccess(response);
         }
 
-        protected async Task DestroyAsync(UserCache client)
+        protected async Task DestroyAsync(Persona client)
         {
             await DestroyOrganisationAsync(client.Http, client.Organisation);
             await DestroyUserAsync(client.Http, client.User);
-            usersCache.Remove(client.Name);
+            personaCache.Remove(client.Name);
         }
     }
 }

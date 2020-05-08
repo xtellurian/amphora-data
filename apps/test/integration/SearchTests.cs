@@ -24,8 +24,8 @@ namespace Amphora.Tests.Integration
         public async Task SearchAmphorae_ByOrgIdAsUser_ForTeamPlan(string url)
         {
             // Arrange
-            var client = await GetUserAsync();
-            var otherClient = await GetUserAsync(Users.StandardTwo);
+            var client = await GetPersonaAsync();
+            var otherClient = await GetPersonaAsync(Users.StandardTwo);
             var a = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
             var createResponse = await client.Http.PostAsJsonAsync("api/amphorae", a);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();

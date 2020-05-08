@@ -4,9 +4,9 @@ using Amphora.Common.Models.Dtos.Users;
 
 namespace Amphora.Tests.Helpers
 {
-    public class UserCache
+    public class Persona
     {
-        public UserCache(string name, HttpClient http, AmphoraUser user, Organisation organisation)
+        public Persona(string name, HttpClient http, AmphoraUser user, Organisation organisation)
         {
             Name = name ?? throw new System.ArgumentNullException(nameof(name));
             Http = http ?? throw new System.ArgumentNullException(nameof(http));
