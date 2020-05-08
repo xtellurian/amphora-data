@@ -114,20 +114,24 @@ namespace Amphora.Tests.Integration
         }
 
         [Trait("Phase", "One")]
-        [Fact]
-        public async Task TestPersonas_EnsureAreCreated()
+        [Theory]
+        [InlineData(Users.AmphoraAdmin)]
+        [InlineData(Users.Attacker)]
+        [InlineData(Users.Standard, Users.StandardTwo)]
+        [InlineData(Users.Other)]
+        public async Task TestPersonas_EnsureIsCreated(string persona, string second = null)
         {
-            await CheckPersonaAsync(await GetPersonaAsync(Users.AmphoraAdmin));
-            await CheckPersonaAsync(await GetPersonaAsync(Users.Attacker));
-            await CheckPersonaAsync(await GetPersonaAsync(Users.Other));
-            await CheckPersonaAsync(await GetPersonaAsync(Users.Standard));
-            await CheckPersonaAsync(await GetPersonaAsync(Users.StandardTwo));
+            await CheckPersonaAsync(await GetPersonaAsync(persona));
+            if (second != null)
+            {
+                await CheckPersonaAsync(await GetPersonaAsync(second));
+            }
         }
 
         private static async Task CheckPersonaAsync(Persona admin)
         {
-            Assert.NotNull(admin.Organisation);
-            Assert.NotNull(admin.User);
+            Assert.NotNull(admin.Organisation?.Id);
+            Assert.NotNull(admin.User?.Id);
             var getSelfRes = await admin.Http.GetAsync("api/users/self");
             getSelfRes.EnsureSuccessStatusCode();
         }
