@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 
 namespace Amphora.Api.Services.InMemory

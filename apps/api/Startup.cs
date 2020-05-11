@@ -1,7 +1,6 @@
 ﻿using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
-using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.InMemory;
@@ -12,6 +11,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
+using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;

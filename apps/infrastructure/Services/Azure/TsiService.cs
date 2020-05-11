@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Options;
 using Amphora.Infrastructure.Models;

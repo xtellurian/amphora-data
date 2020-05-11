@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 
-namespace Amphora.Api.Contracts
+namespace Amphora.Common.Contracts
 {
     public interface ITsiService
     {

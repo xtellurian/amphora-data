@@ -1,4 +1,3 @@
-using Amphora.Api.Contracts;
 using Amphora.Api.Services.Azure;
 using Amphora.Common.Configuration;
 using Amphora.Common.Contracts;
