@@ -4,6 +4,7 @@ using Amphora.Common.Configuration;
 using Amphora.Common.Contracts;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Services.Azure;
 using Amphora.Migrate.Migrators;
 using Amphora.Migrate.Migrators.Cosmos;
 using Amphora.Migrate.Options;

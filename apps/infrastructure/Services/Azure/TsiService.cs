@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Options;
+using Amphora.Infrastructure.Models;
 using Microsoft.Azure.TimeSeriesInsights;
 using Microsoft.Azure.TimeSeriesInsights.Models;
 using Microsoft.Extensions.Logging;
@@ -11,7 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Rest;
 using DateTimeRange = Microsoft.Azure.TimeSeriesInsights.Models.DateTimeRange;
 
-namespace Amphora.Common.Services.Azure
+namespace Amphora.Infrastructure.Services.Azure
 {
     public class TsiService : ITsiService
     {
@@ -19,13 +21,18 @@ namespace Amphora.Common.Services.Azure
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<TsiService> logger;
+        private readonly HttpClient httpClient;
         private ITimeSeriesInsightsClient? client;
 
-        public TsiService(IOptionsMonitor<TsiOptions> options, IAzureServiceTokenProvider tokenProvider, ILogger<TsiService> logger)
+        public TsiService(IOptionsMonitor<TsiOptions> options,
+                          IHttpClientFactory factory,
+                          IAzureServiceTokenProvider tokenProvider,
+                          ILogger<TsiService> logger)
         {
             this.options = options;
             this.tokenProvider = tokenProvider;
             this.logger = logger;
+            this.httpClient = factory.CreateClient(HttpClientNames.TimeSeriesInsights);
         }
 
         public async Task InitAsync()
@@ -146,7 +153,7 @@ namespace Amphora.Common.Services.Azure
             var token = await tokenProvider.GetAccessTokenAsync(Resource);
             var serviceClientCredentials = new TokenCredentials(token);
 
-            var timeSeriesInsightsClient = new Microsoft.Azure.TimeSeriesInsights.TimeSeriesInsightsClient(credentials: serviceClientCredentials)
+            var timeSeriesInsightsClient = new TimeSeriesInsightsClient(serviceClientCredentials, this.httpClient, false)
             {
                 EnvironmentFqdn = options.CurrentValue.DataAccessFqdn
             };

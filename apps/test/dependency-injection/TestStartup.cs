@@ -2,7 +2,7 @@ using System.Net.Http;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Options;
-using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Services.Azure;
 using Amphora.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

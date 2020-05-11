@@ -12,11 +12,11 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
-using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
+using Amphora.Infrastructure.Services.Azure;
 using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
@@ -113,8 +113,7 @@ namespace Amphora.Api
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown
-            services.AddAzureMapsHttpClient();
-            services.AddIdentityServerHttpClient();
+            services.AddAllPollyHttpClients();
 
             // The following will configure the channel to use the given folder to temporarily
             // store telemetry items during network or Application Insights server issues.
