@@ -40,6 +40,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         public bool CanBuy { get; private set; }
         public PurchaseModel Purchase { get; private set; }
         public bool HasPurchased => Purchase != null;
+        public bool HasAgreed { get; private set; }
 
         public virtual async Task<IActionResult> OnPostPurchaseAsync(string id)
         {
@@ -86,6 +87,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
                 this.Purchases = Amphora.Purchases;
                 this.CanBuy = await purchaseService.CanPurchaseAmphoraAsync(User, Amphora);
+                this.HasAgreed = await purchaseService.HasAgreedToTermsAsync(User, Amphora);
                 this.Purchase = Amphora.Purchases.FirstOrDefault(_ => _.PurchasedByOrganisationId == Result.User.OrganisationId);
             }
         }

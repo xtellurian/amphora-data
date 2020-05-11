@@ -19,6 +19,12 @@
                 <span class="sr-only">dollars per month</span>
             </button>
         </form>
+        @if(!Model.HasAgreed && Model.Amphora.TermsOfUseId != null)
+        {
+            <p class="text-warning text-center">
+                The <a asp-page="./TermsOfUse" asp-route-id="@Model.Amphora.Id">Terms</a> must be accepted.
+            </p>
+        }
     </div>
 </div>
 @if(Model.Purchase != null)

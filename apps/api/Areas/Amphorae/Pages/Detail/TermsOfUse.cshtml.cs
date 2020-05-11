@@ -27,7 +27,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         }
 
         public bool PromptAccept { get; private set; }
-        public bool HasAgreed { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, bool promptAccept)
         {
@@ -65,7 +64,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         protected override async Task SetPagePropertiesAsync()
         {
             await base.SetPagePropertiesAsync();
-            this.HasAgreed = await purchaseService.HasAgreedToTermsAsync(User, Amphora);
         }
     }
 }
