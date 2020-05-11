@@ -25,11 +25,11 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Creates an Access Control rule on this Amphora.
+        /// Sets the data quality metrics for this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="quality">The data quality metrics.</param>
-        /// <returns>The rule.</returns>
+        /// <returns>The quality metrics.</returns>
         [Produces(typeof(Quality))]
         [HttpPost]
         [CommonAuthorize]
@@ -63,10 +63,10 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Creates an Access Control rule on this Amphora.
+        /// Gets the data quality metrics for this Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
-        /// <returns>The rule.</returns>
+        /// <returns>The quality metrics.</returns>
         [Produces(typeof(Quality))]
         [HttpGet]
         [CommonAuthorize]
