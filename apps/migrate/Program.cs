@@ -3,6 +3,7 @@ using Amphora.Common.Configuration;
 using Amphora.Common.Contracts;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Services.Azure;
 using Amphora.Migrate.Migrators;
 using Amphora.Migrate.Migrators.Cosmos;
@@ -47,6 +48,8 @@ namespace Amphora.Migrate
 
                     services.AddSingleton<BlobMigrator>();
                     services.Configure<StorageMigrationOptions>(configuration);
+
+                    services.AddTsiHttpClient();
 
                     services.AddSingleton<CosmosCollectionMigrator>();
                     services.Configure<CosmosMigrationOptions>(configuration);
