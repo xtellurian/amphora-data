@@ -48,12 +48,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
                 .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
 
-            CreateMap<DataQuality, Quality>()
-                .ForMember(d => d.Accuracy, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Accuracy)))
-                .ForMember(d => d.Completeness, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Completeness)))
-                .ForMember(d => d.Granularity, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Granularity)))
-                .ForMember(d => d.Reliability, opt => opt.MapFrom(s => Enum.GetName(typeof(QualityLevels), s.Reliability)));
-
+            CreateMap<DataQuality, Quality>();
             CreateMap<Quality, DataQuality>();
         }
     }

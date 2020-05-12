@@ -5,6 +5,9 @@ using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
+    /// <summary>
+    /// The basic metadata of an Amphora. 
+    /// </summary>
     public class BasicAmphora : Entity
     {
         [Required]

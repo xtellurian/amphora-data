@@ -27,7 +27,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
 
-            var quality = new Quality(QualityLevels.Low, QualityLevels.Medium, QualityLevels.High, QualityLevels.Perfect);
+            var quality = new Quality(1, 2);
             var setQualityRes = await adminClient.PostAsJsonAsync($"/api/amphorae/{amphora.Id}/Quality", quality);
             await AssertHttpSuccess(setQualityRes);
 
