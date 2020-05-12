@@ -9,7 +9,10 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
         public void Configure(EntityTypeBuilder<InvitationModel> builder)
         {
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
-            builder.HasOne(_ => _.TargetOrganisation).WithMany(_ => _!.GlobalInvitations).HasForeignKey(_ => _.TargetOrganisationId);
+            builder
+                .HasOne(_ => _.TargetOrganisation)
+                .WithMany(_ => _!.GlobalInvitations)
+                .HasForeignKey(_ => _.TargetOrganisationId);
         }
     }
 }
