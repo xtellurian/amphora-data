@@ -4,7 +4,7 @@ namespace Amphora.Common.Models
 {
     public static class ResourcePermissions
     {
-        public static AccessLevels Create => AccessLevels.CreateAmphora;
+        public static AccessLevels Create => AccessLevels.CreateEntities;
         public static AccessLevels Read => AccessLevels.Read;
         public static AccessLevels Update => AccessLevels.Update;
         public static AccessLevels Delete => AccessLevels.Administer;

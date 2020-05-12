@@ -7,6 +7,7 @@ using Amphora.Api.Stores.InMemory;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Activities;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
@@ -88,6 +89,7 @@ namespace Amphora.Api.StartupModules
             // entity stores
             services.AddScoped<IEntityStore<AmphoraAccessControlModel>, AmphoraAccessControlsEFStore>();
             services.AddScoped<IEntityStore<AmphoraModel>, AmphoraeEFStore>();
+            services.AddScoped<IEntityStore<ActivityModel>, ActivitiesEFStore>();
             services.AddScoped<IEntityStore<OrganisationModel>, OrganisationsEFStore>();
             services.AddScoped<IEntityStore<TermsOfUseModel>, TermsOfUseEFStore>();
             services.AddScoped<IEntityStore<DataRequestModel>, DataRequestsEFStore>();

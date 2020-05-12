@@ -52,7 +52,7 @@ namespace Amphora.Common.Stores.EFCore
             return addTask.Entity;
         }
 
-        public virtual async Task<T> ReadAsync(string id)
+        public virtual async Task<T?> ReadAsync(string id)
         {
             var result = await Set.SingleOrDefaultAsync(a => a.Id == id);
             return result;

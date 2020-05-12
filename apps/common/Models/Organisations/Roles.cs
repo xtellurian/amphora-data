@@ -21,7 +21,7 @@ namespace Amphora.Common.Models.Organisations
                     level = AccessLevels.Administer;
                     break;
                 case Roles.User:
-                    level = AccessLevels.ReadContents;
+                    level = AccessLevels.CreateEntities;
                     break;
             }
 

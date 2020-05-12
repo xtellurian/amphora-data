@@ -89,7 +89,7 @@ namespace Amphora.Api.Services.Auth
                 }
 
                 if (user.OrganisationId == entity.OrganisationId
-                    && accessLevel <= AccessLevels.CreateAmphora)
+                    && accessLevel <= AccessLevels.CreateEntities)
                 {
                     // everyone in an org should be able to create an Amphora
                     return true;

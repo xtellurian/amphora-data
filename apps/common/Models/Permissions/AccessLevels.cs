@@ -6,7 +6,7 @@ namespace Amphora.Common.Models.Permissions
         Read = 16,
         Purchase = 24,
         ReadContents = 32,
-        CreateAmphora = 48,
+        CreateEntities = 48,
         WriteContents = 64,
         Update = 128,
         Administer = 256

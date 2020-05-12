@@ -1,7 +1,7 @@
+using Amphora.Common.Models.Activities;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Permissions;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -24,6 +24,7 @@ namespace Amphora.Api.EntityFramework
 
         public DbSet<AmphoraAccessControlModel> AmphoraAccessControls { get; set; }
         public DbSet<AmphoraModel> Amphorae { get; set; } = null!;
+        public DbSet<ActivityModel> Activities { get; set; } = null!;
         public DbSet<OrganisationModel> Organisations { get; set; } = null!;
         public DbSet<TermsOfUseModel> TermsOfUse { get; set; }
         public DbSet<DataRequestModel> DataRequests { get; set; } = null!;
