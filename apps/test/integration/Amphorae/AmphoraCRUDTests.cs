@@ -222,7 +222,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var url = "/api/amphorae";
             // Arrange
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
-            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id, nameof(Post_CreatesAmphora_AsAdmin));
+            var a = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
             a.TermsOfUseId = System.Guid.NewGuid().ToString();
             var s = JsonConvert.SerializeObject(a);
             var requestBody = new StringContent(s, Encoding.UTF8, "application/json");

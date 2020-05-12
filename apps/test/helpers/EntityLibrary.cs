@@ -20,7 +20,7 @@ namespace Amphora.Tests.Helpers
                .RuleFor(o => o.Labels, f => string.Join(',', f.Lorem.Words(4)))
                .RuleFor(o => o.Name, f => testName ?? f.Random.String2(1, 10))
                .RuleFor(o => o.Description, f => f.Lorem.Sentences())
-               .RuleFor(o => o.Price, f => f.Random.Number(0, 99))
+               .RuleFor(o => o.Price, f => double.Parse(f.Random.Float(0, 9999).ToString("F2")))
                .RuleFor(o => o.Lat, f => f.Random.Number(0, 89))
                .RuleFor(o => o.Lon, f => f.Random.Number(0, 89));
 
