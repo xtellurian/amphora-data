@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Amphora.Api.Models.Dtos.Amphorae
 {
     /// <summary>
-    /// Quality metrics for an Amphora, between 1 and 4. 
+    /// Quality metrics for an Amphora, between 1 and 4.
     /// </summary>
     public class Quality
     {
