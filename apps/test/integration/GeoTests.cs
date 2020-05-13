@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Amphora.Api;
 using Amphora.Common.Models.AzureMaps;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
