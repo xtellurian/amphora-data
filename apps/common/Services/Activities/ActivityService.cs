@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Common.Services.Activities
 {
-    public class ActivityService
+    public class ActivityService : IActivityService
     {
         private readonly IEntityStore<ActivityModel> store;
         private readonly IUserDataService userDataService;
@@ -36,9 +36,22 @@ namespace Amphora.Common.Services.Activities
             }
 
             var user = userDataReadRes.Entity;
+
+            if (activity.Name == null || string.IsNullOrEmpty(activity.Name))
+            {
+                return new EntityOperationResult<ActivityModel>(user, "Activity name cannot be empty");
+            }
+
             // now make sure to set the organisation to this users org.
             activity.OrganisationId = user.OrganisationId;
             activity.Organisation = user.Organisation;
+
+            // check for duplicate name in org
+            var existing = await this.ReadAsync(principal, activity.Name);
+            if (existing.Succeeded && existing.Entity != null)
+            {
+                return new EntityOperationResult<ActivityModel>(user, $"Conflict with Activity({existing.Entity.Id}.");
+            }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, user.Organisation, AccessLevels.CreateEntities);
             if (!authorized)
@@ -75,7 +88,7 @@ namespace Amphora.Common.Services.Activities
             // create the activity in the database.
             var activity = await store.ReadAsync(idOrName);
             // try by name, if activity is null
-            activity ??= (await store.QueryAsync(_ => _.Name == idOrName))?.FirstOrDefault();
+            activity ??= (await store.QueryAsync(_ => _.Name == idOrName && _.OrganisationId == user.OrganisationId))?.FirstOrDefault();
             // if still null, return not found
             if (activity == null)
             {
@@ -86,6 +99,47 @@ namespace Amphora.Common.Services.Activities
                 var authorized = await permissionService.IsAuthorizedAsync(user, user.Organisation, AccessLevels.CreateEntities);
                 if (authorized)
                 {
+                    return new EntityOperationResult<ActivityModel>(user, activity);
+                }
+                else
+                {
+                    return new EntityOperationResult<ActivityModel>(
+                        user, $"Permission denied. Create Entities is required on Org({user.OrganisationId}).")
+                    { WasForbidden = true, Code = 403 };
+                }
+            }
+        }
+
+        public async Task<EntityOperationResult<ActivityModel>> UpdateNameAsync(ClaimsPrincipal principal, string id, string name)
+        {
+            var userDataReadRes = await userDataService.ReadAsync(principal);
+            if (userDataReadRes.Failed || userDataReadRes.Entity == null)
+            {
+                return new EntityOperationResult<ActivityModel>("Unknown user");
+            }
+
+            var user = userDataReadRes.Entity;
+
+            // check the name
+            if (string.IsNullOrEmpty(name))
+            {
+                return new EntityOperationResult<ActivityModel>(user, "Activity name cannot be empty.");
+            }
+
+            logger.LogInformation($"User({user.UserName}) is reading Activity({id}).");
+            // create the activity in the database.
+            var activity = await store.ReadAsync(id);
+            if (activity == null)
+            {
+                return new EntityOperationResult<ActivityModel>(user, $"Activity({id}) not found");
+            }
+            else
+            {
+                var authorized = await permissionService.IsAuthorizedAsync(user, user.Organisation, AccessLevels.CreateEntities);
+                if (authorized)
+                {
+                    activity.Name = name;
+                    activity = await store.UpdateAsync(activity);
                     return new EntityOperationResult<ActivityModel>(user, activity);
                 }
                 else

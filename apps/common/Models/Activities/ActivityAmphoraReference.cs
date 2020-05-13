@@ -13,13 +13,16 @@ namespace Amphora.Common.Models.Activities
             int? signalsProduced = null)
         {
             AmphoraId = amphora.Id;
+            Amphora = amphora;
             FilesConsumed = filesConsumed;
             FilesProduced = filesProduced;
             SignalsConsumed = signalsConsumed;
             SignalsProduced = signalsProduced;
         }
 
+        public string? Id { get; set; }
         public string? AmphoraId { get; set; }
+        public virtual AmphoraModel? Amphora { get; set; }
         public int? FilesConsumed { get; set; }
         public int? FilesProduced { get; set; }
         public int? SignalsConsumed { get; set; }

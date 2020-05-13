@@ -11,6 +11,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
+using Amphora.Common.Services.Activities;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Extensions;
@@ -109,6 +110,8 @@ namespace Amphora.Api
             services.AddTransient<IAccessControlService, AccessControlService>();
             services.AddTransient<IPlanLimitService, PlanLimitService>();
             services.AddTransient<ITermsOfUseService, TermsOfUseService>();
+            services.AddTransient<IActivityService, ActivityService>();
+            services.AddTransient<IActivityRunService, ActivityRunService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 

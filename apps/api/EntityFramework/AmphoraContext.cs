@@ -25,6 +25,7 @@ namespace Amphora.Api.EntityFramework
         public DbSet<AmphoraAccessControlModel> AmphoraAccessControls { get; set; }
         public DbSet<AmphoraModel> Amphorae { get; set; } = null!;
         public DbSet<ActivityModel> Activities { get; set; } = null!;
+        public DbSet<ActivityRunModel> ActivityRuns { get; set; } = null!;
         public DbSet<OrganisationModel> Organisations { get; set; } = null!;
         public DbSet<TermsOfUseModel> TermsOfUse { get; set; }
         public DbSet<DataRequestModel> DataRequests { get; set; } = null!;

@@ -50,7 +50,7 @@ namespace Amphora.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task CanCreateActivity_AsNonOrgAdmin()
+        public async Task CanCreateActivity_AndUpdateName_AsNonOrgAdmin()
         {
             // setup
             var context = GetContext();
@@ -72,14 +72,61 @@ namespace Amphora.Tests.Unit.Services
             var sut = new ActivityService(activityStore, userDataSvc.Object, permissionService, CreateMockLogger<ActivityService>());
 
             // act
-            var model = new ActivityModel();
+            var name = System.Guid.NewGuid().ToString();
+            var model = new ActivityModel
+            {
+                Name = name
+            };
             var createRes = await sut.CreateAsync(creatorPrincipal, model);
 
             // assert
-            Assert.True(createRes.Succeeded);
-            Assert.NotNull(createRes.Entity);
-            Assert.NotNull(createRes.Entity.Id);
-            Assert.Empty(createRes.Entity.Runs);
+            createRes.Succeeded.Should().BeTrue();
+            createRes.Entity.Should().NotBeNull();
+            createRes.Entity.Id.Should().NotBeNull();
+            createRes.Entity.Name.Should().Be(name, "because we set that name eariler");
+            createRes.Entity.Runs.Should().NotBeNull().And.BeEmpty();
+
+            // update the name
+            var newName = Guid.NewGuid().ToString();
+            var updateRes = await sut.UpdateNameAsync(creatorPrincipal, model.Id, newName);
+
+            updateRes.Succeeded.Should().BeTrue();
+            updateRes.Entity.Id.Should().Be(createRes.Entity.Id, "because the Id should not change");
+            updateRes.Entity.Name.Should().Be(newName, "because the name should change");
+        }
+
+        [Fact]
+        public async Task CreateActivity_DuplicateName_ShouldFail()
+        {
+            // setup
+            var context = GetContext();
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var activityStore = new ActivitiesEFStore(context, CreateMockLogger<ActivitiesEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var creatorOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            var creatorPrincipal = new TestPrincipal();
+            var creatorUserData = new ApplicationUserDataModel
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrganisationId = creatorOrg.Id,
+                Organisation = creatorOrg
+            };
+            creatorOrg.Memberships.Add(new Membership(creatorUserData, Roles.User)); // not an admin
+            creatorOrg = await orgStore.UpdateAsync(creatorOrg);
+            var userDataSvc = MockUser(creatorPrincipal, creatorUserData);
+            var permissionService = new PermissionService(orgStore, null, userDataSvc.Object, CreateMockLogger<PermissionService>());
+            var sut = new ActivityService(activityStore, userDataSvc.Object, permissionService, CreateMockLogger<ActivityService>());
+
+            // act
+            var name = System.Guid.NewGuid().ToString();
+            var model = NewActivityModel(creatorOrg, name);
+            var model_duplicate = NewActivityModel(creatorOrg, name);
+            var firstCreate = await sut.CreateAsync(creatorPrincipal, model);
+            firstCreate.Succeeded.Should().BeTrue();
+
+            var second_create = await sut.CreateAsync(creatorPrincipal, model_duplicate);
+            // assert
+            second_create.Succeeded.Should().BeFalse("because the name was a duplicate");
         }
 
         [Fact]
@@ -113,15 +160,16 @@ namespace Amphora.Tests.Unit.Services
             Assert.Null(deleteRes.Entity);
         }
 
-        private ActivityModel NewActivityModel(OrganisationModel org)
+        private ActivityModel NewActivityModel(OrganisationModel org, string name = null)
         {
             return new ActivityModel
             {
+                Name = name ?? Guid.NewGuid().ToString(),
                 OrganisationId = org.Id,
                 Organisation = org,
-                Runs = new List<ActivityRun>
+                Runs = new List<ActivityRunModel>
                 {
-                    new ActivityRun
+                    new ActivityRunModel
                     {
                         StartTime = dtProvider.UtcNow
                     }

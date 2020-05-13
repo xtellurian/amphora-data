@@ -122,5 +122,53 @@ namespace Amphora.Tests.Unit.Services
             run.AmphoraReferences.Should().Contain(reference, "because we referenced that amphora");
             run.AmphoraReferences.Should().HaveCount(1, "because we references only 1 Amphora");
         }
+
+        [Fact]
+        public async Task ReferenceUnknownAmphora_ReturnsAnError_AsTheRunCreator()
+        {
+            // setup
+            var context = GetContext();
+            var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+            var activityStore = new ActivitiesEFStore(context, CreateMockLogger<ActivitiesEFStore>());
+            var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+            var creatorOrg = await orgStore.CreateAsync(EntityLibrary.GetOrganisationModel());
+            var creatorPrincipal = new TestPrincipal();
+            var creatorUserData = new ApplicationUserDataModel
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrganisationId = creatorOrg.Id,
+                Organisation = creatorOrg
+            };
+            creatorOrg.Memberships.Add(new Membership(creatorUserData, Roles.User)); // not an admin
+            creatorOrg = await orgStore.UpdateAsync(creatorOrg);
+            var userDataSvc = MockUser(creatorPrincipal, creatorUserData);
+            var permissionService = new PermissionService(orgStore, null, userDataSvc.Object, CreateMockLogger<PermissionService>());
+            var amphora = await amphoraStore.CreateAsync(EntityLibrary.GetAmphoraModel(creatorOrg));
+            var sut = new ActivityRunService(activityStore, amphoraStore, userDataSvc.Object, permissionService, dtProvider, CreateMockLogger<ActivityRunService>());
+
+            var activity = await activityStore.CreateAsync(new ActivityModel
+            {
+                Organisation = creatorOrg,
+                OrganisationId = creatorOrg.Id
+            });
+
+            var createRunRes = await sut.StartRunAsync(creatorPrincipal, activity);
+            Assert.True(createRunRes.Succeeded);
+
+            // act
+            var runRes = await sut.StartRunAsync(creatorPrincipal, activity);
+            Assert.True(runRes.Succeeded);
+            var run = runRes.Entity;
+            // create the reference object
+            var unknownReference = new ActivityAmphoraReference
+            {
+                AmphoraId = Guid.NewGuid().ToString()
+            };
+            // reference an Amphora
+            var referenceRes = await sut.ReferenceAmphoraAsync(creatorPrincipal, activity, run, unknownReference);
+
+            // assert
+            Assert.True(referenceRes.Failed);
+        }
     }
 }

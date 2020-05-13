@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Amphora.Common.Services.Activities
 {
-    public class ActivityRunService
+    public class ActivityRunService : IActivityRunService
     {
         private readonly IEntityStore<ActivityModel> store;
         private readonly IEntityStore<AmphoraModel> amphoraStore;
@@ -35,12 +35,12 @@ namespace Amphora.Common.Services.Activities
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<ActivityRun>> StartRunAsync(ClaimsPrincipal principal, ActivityModel activity)
+        public async Task<EntityOperationResult<ActivityRunModel>> StartRunAsync(ClaimsPrincipal principal, ActivityModel activity)
         {
             var userDataReadRes = await userDataService.ReadAsync(principal);
             if (userDataReadRes.Failed || userDataReadRes.Entity == null)
             {
-                return new EntityOperationResult<ActivityRun>("Unknown user");
+                return new EntityOperationResult<ActivityRunModel>("Unknown user");
             }
 
             var user = userDataReadRes.Entity;
@@ -49,37 +49,39 @@ namespace Amphora.Common.Services.Activities
             if (authorized)
             {
                 // add a new run.
-                var run = activity.NewRun(dtProvider.UtcNow, user);
+                var run = new ActivityRunModel(activity, user, dtProvider.UtcNow);
+                activity.Runs ??= new List<ActivityRunModel>(); // ensure not null
+                activity.Runs.Add(run);
                 activity = await store.UpdateAsync(activity);
-                return new EntityOperationResult<ActivityRun>(user, run);
+                return new EntityOperationResult<ActivityRunModel>(user, run);
             }
             else
             {
-                return new EntityOperationResult<ActivityRun>(user, $"User needs write contents on Org({activity.OrganisationId})");
+                return new EntityOperationResult<ActivityRunModel>(user, $"User needs write contents on Org({activity.OrganisationId})");
             }
         }
 
-        public async Task<EntityOperationResult<ActivityRun>> ReferenceAmphoraAsync(ClaimsPrincipal principal,
+        public async Task<EntityOperationResult<ActivityRunModel>> ReferenceAmphoraAsync(ClaimsPrincipal principal,
                                                                                     ActivityModel activity,
-                                                                                    ActivityRun run,
+                                                                                    ActivityRunModel run,
                                                                                     ActivityAmphoraReference amphoraRef)
         {
             var userDataReadRes = await userDataService.ReadAsync(principal);
             if (userDataReadRes.Failed || userDataReadRes.Entity == null)
             {
-                return new EntityOperationResult<ActivityRun>("Unknown user");
+                return new EntityOperationResult<ActivityRunModel>("Unknown user");
             }
 
             var user = userDataReadRes.Entity;
             if (amphoraRef.AmphoraId == null)
             {
-                return new EntityOperationResult<ActivityRun>(user, "Amphora Id cannot be empty in reference");
+                return new EntityOperationResult<ActivityRunModel>(user, "Amphora Id cannot be empty in reference");
             }
 
             if (activity.Runs == null || !activity.Runs.Any(_ => _.Id == run.Id))
             {
                 // run doesn't exist.
-                return new EntityOperationResult<ActivityRun>(user, $"Run({run.Id}) does not exist in Activity({activity.Id})");
+                return new EntityOperationResult<ActivityRunModel>(user, $"Run({run.Id}) does not exist in Activity({activity.Id})");
             }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, user.Organisation, AccessLevels.CreateEntities);
@@ -90,40 +92,40 @@ namespace Amphora.Common.Services.Activities
                 var amphora = await amphoraStore.ReadAsync(amphoraRef.AmphoraId);
                 if (amphora == null)
                 {
-                    return new EntityOperationResult<ActivityRun>(user, $"Referenced Amphora({amphoraRef.AmphoraId}) does not exist");
+                    return new EntityOperationResult<ActivityRunModel>(user, $"Referenced Amphora({amphoraRef.AmphoraId}) does not exist");
                 }
                 else if (run.AmphoraReferences.Any(_ => _.AmphoraId == amphora.Id))
                 {
-                    return new EntityOperationResult<ActivityRun>(user, $"Run already references Amphora({amphora.Id})");
+                    return new EntityOperationResult<ActivityRunModel>(user, $"Run already references Amphora({amphora.Id})");
                 }
                 else
                 {
                     // alls good, so let's add the reference and save the activity.
                     run.AmphoraReferences.Add(amphoraRef);
                     activity = await store.UpdateAsync(activity);
-                    return new EntityOperationResult<ActivityRun>(user, run);
+                    return new EntityOperationResult<ActivityRunModel>(user, run);
                 }
             }
             else
             {
-                return new EntityOperationResult<ActivityRun>(user, $"Permision denied")
+                return new EntityOperationResult<ActivityRunModel>(user, $"Permision denied")
                 { WasForbidden = true, Code = 403 };
             }
         }
 
-        public async Task<EntityOperationResult<ActivityRun>> FinishRunAsync(ClaimsPrincipal principal, ActivityModel activity, ActivityRun run, bool success = true)
+        public async Task<EntityOperationResult<ActivityRunModel>> FinishRunAsync(ClaimsPrincipal principal, ActivityModel activity, ActivityRunModel run, bool success = true)
         {
             var userDataReadRes = await userDataService.ReadAsync(principal);
             if (userDataReadRes.Failed || userDataReadRes.Entity == null)
             {
-                return new EntityOperationResult<ActivityRun>("Unknown user");
+                return new EntityOperationResult<ActivityRunModel>("Unknown user");
             }
 
             var user = userDataReadRes.Entity;
             if (!activity.Runs.Any(_ => _.Id == run.Id))
             {
                 // run doesn't exist.
-                return new EntityOperationResult<ActivityRun>(user, $"Run({run.Id}) does not exist in Activity({activity.Id})");
+                return new EntityOperationResult<ActivityRunModel>(user, $"Run({run.Id}) does not exist in Activity({activity.Id})");
             }
 
             var authorized = await permissionService.IsAuthorizedAsync(user, user.Organisation, AccessLevels.CreateEntities);
@@ -134,11 +136,11 @@ namespace Amphora.Common.Services.Activities
                 run.Success = success;
                 await store.UpdateAsync(activity);
                 run = activity.Runs.FirstOrDefault(_ => _.Id == run.Id);
-                return new EntityOperationResult<ActivityRun>(user, run);
+                return new EntityOperationResult<ActivityRunModel>(user, run);
             }
             else
             {
-                return new EntityOperationResult<ActivityRun>(user, $"User needs permissions on Run({run.Id})");
+                return new EntityOperationResult<ActivityRunModel>(user, $"User needs permissions on Run({run.Id})");
             }
         }
     }
