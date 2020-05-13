@@ -12,17 +12,17 @@ using Microsoft.Extensions.Logging;
 namespace Amphora.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class RegisterModel : PageModelBase
+    public class RegisterPageModel : PageModelBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly ILogger<RegisterModel> logger;
+        private readonly ILogger<RegisterPageModel> logger;
         private readonly IEmailSender emailSender;
 
-        public RegisterModel(
+        public RegisterPageModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger,
+            ILogger<RegisterPageModel> logger,
             IEmailSender emailSender)
         {
             this.userManager = userManager;
