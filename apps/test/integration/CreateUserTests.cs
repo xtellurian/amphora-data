@@ -112,10 +112,10 @@ namespace Amphora.Tests.Integration
 
         [Trait("Phase", "One")]
         [Theory]
-        [InlineData(Users.AmphoraAdmin)]
-        [InlineData(Users.Attacker)]
-        [InlineData(Users.Standard, Users.StandardTwo)]
-        [InlineData(Users.Other)]
+        [InlineData(Personas.AmphoraAdmin)]
+        [InlineData(Personas.Attacker)]
+        [InlineData(Personas.Standard, Personas.StandardTwo)]
+        [InlineData(Personas.Other)]
         public async Task TestPersonas_EnsureIsCreated(string persona, string second = null)
         {
             await CheckPersonaAsync(await GetPersonaAsync(persona));

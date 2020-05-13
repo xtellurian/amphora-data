@@ -65,7 +65,7 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task Post_DownloadFiles_AsOtherUsers(string url)
         {
             // Arrange
-            var client = await GetPersonaAsync(Users.Standard);
+            var client = await GetPersonaAsync(Personas.Standard);
 
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
             // create an amphora for us to work with
@@ -86,13 +86,13 @@ namespace Amphora.Tests.Integration.Amphorae
 
             // Act and Assert
             // now let's download by someone in the same org - should work
-            var sameOrgClient = await GetPersonaAsync(Users.StandardTwo);
+            var sameOrgClient = await GetPersonaAsync(Personas.StandardTwo);
             var downloadResponse = await sameOrgClient.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(downloadResponse);
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
             // other org user is denied access
-            var other = await GetPersonaAsync(Users.Other);
+            var other = await GetPersonaAsync(Personas.Other);
             downloadResponse = await other.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             Assert.Equal(HttpStatusCode.Forbidden, downloadResponse.StatusCode);
 

@@ -113,10 +113,10 @@ namespace Amphora.Tests.Integration
         public async Task MultipleUsersInSameOrg_CantPurchaseTwice()
         {
             // going to need 3 users in 2 orgs
-            var seller = await GetPersonaAsync(Users.AmphoraAdmin);
+            var seller = await GetPersonaAsync(Personas.AmphoraAdmin);
             // make the buyers
-            var buyer = await GetPersonaAsync(Users.Standard);
-            var buyer2 = await GetPersonaAsync(Users.StandardTwo);
+            var buyer = await GetPersonaAsync(Personas.Standard);
+            var buyer2 = await GetPersonaAsync(Personas.StandardTwo);
 
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(seller.Organisation.Id);
             var createResponse = await seller.Http.PostAsJsonAsync("api/amphorae", amphora);

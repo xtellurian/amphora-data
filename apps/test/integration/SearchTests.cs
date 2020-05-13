@@ -25,7 +25,7 @@ namespace Amphora.Tests.Integration
         {
             // Arrange
             var client = await GetPersonaAsync();
-            var otherClient = await GetPersonaAsync(Users.StandardTwo);
+            var otherClient = await GetPersonaAsync(Personas.StandardTwo);
             var a = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
             var createResponse = await client.Http.PostAsJsonAsync("api/amphorae", a);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();

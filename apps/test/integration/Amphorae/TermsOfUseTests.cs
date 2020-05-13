@@ -67,7 +67,7 @@ namespace Amphora.Tests.Integration.Amphorae
         {
             await Task.Delay(50); // try something cos this is failing weirdly.
             var persona = await GetPersonaAsync();
-            var other = await GetPersonaAsync(Users.Other);
+            var other = await GetPersonaAsync(Personas.Other);
 
             var tou = new TermsOfUse
             {
@@ -121,8 +121,8 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task GlobalTerms_CanBeReferencedByAnothersAmphora()
         {
-            var persona = await GetPersonaAsync(Users.AmphoraAdmin);
-            var other = await GetPersonaAsync(Users.Other);
+            var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
+            var other = await GetPersonaAsync(Personas.Other);
 
             var tou = new TermsOfUse
             {
@@ -158,7 +158,7 @@ namespace Amphora.Tests.Integration.Amphorae
         [Fact]
         public async Task NormalUser_CantCreateGlobal()
         {
-            var other = await GetPersonaAsync(Users.Other);
+            var other = await GetPersonaAsync(Personas.Other);
 
             var tou = new TermsOfUse
             {

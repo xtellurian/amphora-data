@@ -17,7 +17,7 @@ namespace Amphora.Tests.Integration
 {
     public abstract class WebAppIntegrationTestBase : IntegrationTestBase
     {
-        protected static class Users
+        protected static class Personas
         {
             public const string Standard = nameof(Standard) + "@example.org";
             public const string StandardTwo = nameof(StandardTwo) + "@example.org";
@@ -36,7 +36,7 @@ namespace Amphora.Tests.Integration
             _factory = factory;
         }
 
-        protected async Task<Persona> GetPersonaAsync(string name = Users.Standard)
+        protected async Task<Persona> GetPersonaAsync(string name = Personas.Standard)
         {
             if (!personaCache.ContainsKey(name))
             {
@@ -84,14 +84,14 @@ namespace Amphora.Tests.Integration
         private async Task CreateAndAddToCache(HttpClient httpClient, string email)
         {
             // special case when name == standard2
-            if (email == Users.StandardTwo)
+            if (email == Personas.StandardTwo)
             {
                 // login with 1
-                var client = personaCache[Users.Standard];
+                var client = personaCache[Personas.Standard];
                 var (c, u, o) = await GetNewClientInOrg(client.Http, client.Organisation, email, httpClient);
                 personaCache[email] = new Persona(email, c, u, o);
             }
-            else if (email == Users.Standard)
+            else if (email == Personas.Standard)
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
                 personaCache[email] = new Persona(email, c, u, o);
