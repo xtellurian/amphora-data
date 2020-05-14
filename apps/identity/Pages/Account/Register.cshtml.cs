@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Amphora.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class RegisterPageModel : PageModelBase
+    public class RegisterPageModel : RegisterPageModelBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
@@ -23,7 +23,7 @@ namespace Amphora.Identity.Pages.Account
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterPageModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender) : base(userManager, signInManager, logger, emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -36,7 +36,6 @@ namespace Amphora.Identity.Pages.Account
         [BindProperty]
         [IsTrue(ErrorMessage = "You must accept the service agreement.")]
         public bool AcceptServiceAgreement { get; set; }
-        public string? ReturnUrl { get; set; }
 
         public IActionResult OnGet(string? returnUrl = null, string? email = null)
         {
@@ -50,10 +49,8 @@ namespace Amphora.Identity.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+        public virtual async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
-            this.ReturnUrl = returnUrl ?? Url.Content("~/");
-
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -64,61 +61,12 @@ namespace Amphora.Identity.Pages.Account
                     About = Input.About,
                     FullName = Input.FullName
                 };
-
-                var result = await userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
-                {
-                    logger.LogInformation("User created a new account with password.");
-                    await SendConfirmationEmailAsync(user);
-
-                    await signInManager.SignInAsync(user, isPersistent: false);
-
-                    // if (string.IsNullOrEmpty(invitation?.TargetOrganisationId))
-                    // {
-                    return this.LoadingPage("/Redirect", this.ReturnUrl);
-                    // }
-                    // else
-                    // {
-                    //     return RedirectToPage("/Join", new { area = "organisations", orgId = invitation?.TargetOrganisationId });
-                    // }
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
+                return await HandleRegistration(returnUrl, user, Input.Password!);
             }
-
-            // If we got this far, something failed, redisplay form
-            return Page();
-        }
-
-        private async Task SendConfirmationEmailAsync(ApplicationUser user)
-        {
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { userId = user.Id, code = code },
-                protocol: Request.Scheme);
-
-            // the links are broken when you do it this way
-            // if (!string.IsNullOrEmpty(hostOptions.CurrentValue?.MainHost))
-            // {
-            //     await emailSender.SendEmailAsync(new ConfirmEmailEmail(user, hostOptions.CurrentValue, code));
-            // }
-            // else
-            // {
-            //     await emailSender.SendEmailAsync(Input.Email, "Please confirm your email",
-            //     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-            // }
-
-            await emailSender.SendEmailAsync(user.Email, "Please confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            else
+            {
+                return Page();
+            }
         }
     }
 }
