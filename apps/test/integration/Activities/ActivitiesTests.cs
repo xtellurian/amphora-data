@@ -40,7 +40,7 @@ namespace Amphora.Tests.Integration
             var run = await AssertHttpSuccess<Run>(startRunRes);
 
             run.Id.Should().NotBeNull();
-            run.StartTime.Should().BeCloseTo(DateTime.UtcNow, 100, "because the run was just started");
+            run.StartTime.Should().BeCloseTo(DateTime.UtcNow, 500, "because the run was just started");
 
             // create an amphora to reference
             var amphora = EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
@@ -69,7 +69,7 @@ namespace Amphora.Tests.Integration
             var completeRun = await AssertHttpSuccess<Run>(completeRes);
             completeRun.Id.Should().Be(run.Id);
             completeRun.Success.Should().BeTrue();
-            completeRun.EndTime.Should().BeCloseTo(DateTime.UtcNow, 100, "because it just completed");
+            completeRun.EndTime.Should().BeCloseTo(DateTime.UtcNow, 500, "because it just completed");
             completeRun.AmphoraReferences.Should().NotBeEmpty();
             completeRun.AmphoraReferences.Should().Contain(_ => _.AmphoraId == amphora.Id, "because we referenced that amphora");
 
