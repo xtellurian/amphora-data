@@ -34,6 +34,7 @@ namespace Amphora.Tests.Integration.Pages
         }
 
         [Theory]
+        [InlineData("/")]
         [InlineData("/Home/Values")]
         [InlineData("/Home/Error")]
         [InlineData("/DataRequests/Create")]

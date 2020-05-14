@@ -5,15 +5,14 @@ then
     CoverletOutput="$(pwd)"
 fi
 
+echo Running React tests
+yarn --cwd api/ClientApp test
+
 echo Coverlet Output Directory is $CoverletOutput
 commonArgs="-l:trx;LogFileName=$CoverletOutput/TestOutput.xml /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$CoverletOutput/"
 set -x
 # run the first phase tests
 dotnet test --filter Phase=One $commonArgs
-
-# spin up a server for the SPA proxy
-echo Starting background CRA server with Yarn
-yarn --cwd api/ClientApp start &
 
 # run all the tests
 dotnet test $commonArgs

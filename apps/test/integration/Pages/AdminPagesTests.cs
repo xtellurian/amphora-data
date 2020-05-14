@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -10,8 +11,7 @@ namespace Amphora.Tests.Integration.Pages
     public class AdminPagesTests : WebAppIntegrationTestBase
     {
         public AdminPagesTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
-        {
-        }
+        { }
 
         [Fact]
         public async Task CanLoadPage()
@@ -40,8 +40,7 @@ namespace Amphora.Tests.Integration.Pages
                 Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
 
                 var otherResponse = await otherClient.GetAsync(path);
-                Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
-                Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other will not find the page
+                otherResponse.IsSuccessStatusCode.Should().BeFalse("because the user isn't global admin");
             }
 
             await DestroyOrganisationAsync(adminClient, adminOrg);
@@ -66,8 +65,7 @@ namespace Amphora.Tests.Integration.Pages
 
             // ensure other can't access it
             var otherResponse = await otherClient.GetAsync($"{path}?id={otherOrg.Id}");
-            Assert.False(otherResponse.IsSuccessStatusCode); // other is not authorized
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, otherResponse.StatusCode); // other is not authorized
+            otherResponse.IsSuccessStatusCode.Should().BeFalse("because the user isn't global admin");
 
             await DestroyOrganisationAsync(otherClient, otherOrg);
             await DestroyUserAsync(otherClient, otherUser);
