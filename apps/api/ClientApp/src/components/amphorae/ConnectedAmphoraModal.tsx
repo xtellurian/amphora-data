@@ -6,8 +6,6 @@ import { actionCreators } from '../../redux/actions/ui';
 import { UiState } from '../../redux/state/ui';
 import { AmphoraDetail } from './AmphoraDetail';
 
-Modal.setAppElement('#root');
-
 const customStyles = {
     // content: {
     //     top: '50%',
@@ -24,6 +22,10 @@ type ModalProps =
     & typeof actionCreators;
 
 class ConnectedAmphoraModal extends React.PureComponent<ModalProps> {
+
+    public componentWillMount() {
+        Modal.setAppElement('#root'); // TODO: figure out where to put this
+    }
 
     private afterModalOpen() {
 

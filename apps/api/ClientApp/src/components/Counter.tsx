@@ -11,7 +11,7 @@ type CounterProps =
     RouteComponentProps<{}>;
 
 class Counter extends React.PureComponent<CounterProps> {
-    public render() {
+    public render(): React.ReactElement {
         return (
             <React.Fragment>
                 <h1>Counter</h1>
@@ -22,13 +22,13 @@ class Counter extends React.PureComponent<CounterProps> {
 
                 <button type="button"
                     className="btn btn-primary btn-lg"
-                    onClick={() => { this.props.increment(); }}>
+                    onClick={(): void => { this.props.increment(); }}>
                     Increment
                 </button>
             </React.Fragment>
         );
     }
-};
+}
 
 export default connect(
     (state: ApplicationState) => state.counter,

@@ -1,24 +1,23 @@
-import * as React from 'react';
-import {connect} from 'react-redux';
-import {User} from 'oidc-client';
-import {push} from 'connected-react-router';
+import { connect } from 'react-redux';
+import { User } from 'oidc-client';
+import { push } from 'connected-react-router';
 import userManager from './../userManager';
-import {Dispatch} from 'redux';
-import {useEffect} from 'react';
+import { Dispatch } from 'redux';
+import { useEffect, ReactElement } from 'react';
 
 interface CallbackPageProps {
   dispatch: Dispatch;
   signInParams: string;
 }
 
-const CallbackPage = (props: CallbackPageProps) => {
-  const successCallback = (user: User) => {
+const CallbackPage = (props: CallbackPageProps): ReactElement => {
+  const successCallback = (user: User): void => {
     // get the user's previous location, passed during signinRedirect()
-    var redirectPath = user.state.path as string;
+    const redirectPath = user.state.path as string;
     props.dispatch(push(redirectPath));
   };
 
-  const errorCallback = (error: Error) => {
+  const errorCallback = (error: Error): void => {
     console.log(error);
     props.dispatch(push('/'));
   };

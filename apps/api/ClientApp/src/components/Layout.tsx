@@ -12,12 +12,13 @@ interface LayoutProps {
   user: User;
   isLoadingUser: boolean;
   dispatch: Dispatch;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   location: any;
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
-const Layout = (props: LayoutProps) => {
-  const isConnected: boolean = !!props.user;
+const Layout = (props: LayoutProps): React.ReactElement => {
+  const isConnected = !!props.user;
   if (isConnected) {
     return (
       <React.Fragment>
@@ -40,7 +41,7 @@ const Layout = (props: LayoutProps) => {
   }
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: ApplicationState): any {
   return {
     user: state.oidc.user,
     isLoadingUser: state.oidc.isLoadingUser,

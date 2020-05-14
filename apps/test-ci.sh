@@ -5,7 +5,8 @@ then
     CoverletOutput="$(pwd)"
 fi
 
-echo Running React tests
+echo Running Yarn scripts...
+yarn --cwd api/ClientApp lint
 yarn --cwd api/ClientApp test
 
 echo Coverlet Output Directory is $CoverletOutput
