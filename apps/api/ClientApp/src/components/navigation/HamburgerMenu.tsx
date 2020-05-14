@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { slide as PlainMenu } from 'react-burger-menu';
 import { decorator as reduxBurgerMenu } from 'redux-burger-menu';
 import userManager from '../../userManager';
-import { NavItem, NavLink, Nav, Collapse, NavbarBrand } from 'reactstrap';
+import { NavItem, NavLink, Nav, NavbarBrand } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { IBurgerMenuState } from '../../redux/state/plugins/burgerMenu'
 import { ApplicationState } from '../../redux/state';
