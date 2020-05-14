@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { User } from 'oidc-client';
 import { push } from 'connected-react-router';
@@ -10,7 +11,7 @@ interface CallbackPageProps {
   signInParams: string;
 }
 
-const CallbackPage = (props: CallbackPageProps): ReactElement => {
+const CallbackPage = (props: CallbackPageProps) => {
   const successCallback = (user: User): void => {
     // get the user's previous location, passed during signinRedirect()
     const redirectPath = user.state.path as string;
