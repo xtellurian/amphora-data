@@ -10,5 +10,10 @@ commonArgs="-l:trx;LogFileName=$CoverletOutput/TestOutput.xml /p:CollectCoverage
 set -x
 # run the first phase tests
 dotnet test --filter Phase=One $commonArgs
+
+# spin up a server for the SPA proxy
+echo Starting background CRA server with Yarn
+yarn --cwd api/ClientApp start &
+
 # run all the tests
 dotnet test $commonArgs

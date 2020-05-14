@@ -31,7 +31,7 @@ namespace Amphora.Tests.Integration.Pages
             // Assert
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+                response.Content.Headers.ContentType.ToString().ToLower());
         }
 
         [Theory]
@@ -58,7 +58,7 @@ namespace Amphora.Tests.Integration.Pages
             // Assert
             await AssertHttpSuccess(response);
             Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+                response.Content.Headers.ContentType.ToString().ToLower());
         }
 
         [Fact]
