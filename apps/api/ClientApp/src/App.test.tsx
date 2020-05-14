@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { ApplicationState } from './redux/state';
+// import { ApplicationState } from './redux/state';
 
 it('renders without crashing', () => {
     const storeFake = (state: any) => ({
