@@ -15,7 +15,7 @@ namespace Amphora.Identity.IdentityConfig
         private readonly ExternalServices externalServices;
         private readonly EnvironmentInfo envInfo;
         private readonly string mvcClientSecret;
-        public ProductionConfig(ExternalServices externalServices, EnvironmentInfo envInfo, string mvcClientSecret)
+        public ProductionConfig(ExternalServices externalServices, EnvironmentInfo envInfo, string mvcClientSecret) : base(mvcClientSecret)
         {
             this.externalServices = externalServices;
             this.envInfo = envInfo;
@@ -32,38 +32,20 @@ namespace Amphora.Identity.IdentityConfig
             return base.Apis();
         }
 
-        public IEnumerable<Client> Clients()
+        protected override ICollection<string> StandardRedirectUrls(params string[] callbackPaths)
         {
-            return new Client[]
+            if (callbackPaths == null)
             {
-                // MVC client using code flow + pkce
-                new Client
-                {
-                    ClientId = OAuthClients.WebApp,
-                    ClientName = "MVC Client",
-                    RequireConsent = false,
-                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials.Union(GrantTypes.ResourceOwnerPassword).ToList(),
-                    RequirePkce = true,
+                throw new System.ArgumentNullException($"{nameof(callbackPaths)} must not be null.");
+            }
 
-                    ClientSecrets = { new Secret(mvcClientSecret) },
-
-                    RedirectUris = StandardRedirectUrls(externalServices, envInfo),
-                    FrontChannelLogoutUri = StandardLogoutUrl(externalServices, envInfo),
-                    PostLogoutRedirectUris = StandardPostLogoutRedirects(externalServices, envInfo),
-
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
-                }
-            };
-        }
-
-        private static ICollection<string> StandardRedirectUrls(ExternalServices externalServices, EnvironmentInfo envInfo)
-        {
             var urls = new List<string>();
-
             if (string.IsNullOrEmpty(envInfo.Location))
             {
-                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                foreach (var p in callbackPaths)
+                {
+                    urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + p);
+                }
             }
             else
             {
@@ -82,7 +64,7 @@ namespace Amphora.Identity.IdentityConfig
             return urls;
         }
 
-        private static ICollection<string> StandardPostLogoutRedirects(ExternalServices externalServices, EnvironmentInfo envInfo)
+        protected override ICollection<string> StandardPostLogoutRedirects()
         {
             var urls = new List<string>();
 
@@ -98,7 +80,7 @@ namespace Amphora.Identity.IdentityConfig
             return urls;
         }
 
-        private static string StandardLogoutUrl(ExternalServices externalServices, EnvironmentInfo envInfo)
+        protected override string StandardLogoutUrl()
         {
             string logoutRedirect;
 

@@ -9,11 +9,8 @@ namespace Amphora.Identity.IdentityConfig
 {
     internal class DevelopmentConfig : ConfigBase, IIdentityServerConfig
     {
-        private readonly string mvcClientSecret;
-        public DevelopmentConfig(string mvcClientSecret)
-        {
-            this.mvcClientSecret = mvcClientSecret;
-        }
+        public DevelopmentConfig(string mvcClientSecret) : base(mvcClientSecret)
+        { }
 
         public override IEnumerable<IdentityResource> IdentityResources()
         {
@@ -25,41 +22,24 @@ namespace Amphora.Identity.IdentityConfig
             return base.Apis();
         }
 
-        public IEnumerable<Client> Clients()
-        {
-            return new Client[]
-            {
-                // MVC client using code flow + pkce
-                new Client
-                {
-                    ClientId = OAuthClients.WebApp,
-                    ClientName = "MVC Client",
-                    RequireConsent = false,
-                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials.Union(GrantTypes.ResourceOwnerPassword).ToList(),
-                    RequirePkce = true,
-
-                    ClientSecrets = { new Secret(mvcClientSecret) },
-
-                    RedirectUris = StandardRedirectUrls(),
-                    FrontChannelLogoutUri = StandardLogoutUrl(),
-                    PostLogoutRedirectUris = StandardPostLogoutRedirects(),
-
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
-                }
-            };
-        }
-
-        private static ICollection<string> StandardRedirectUrls()
+        protected override ICollection<string> StandardRedirectUrls(params string[] callbackPaths)
         {
             var urls = new List<string>();
-            urls.Add("localhost:5001".ToUri().ToStandardString() + "/signin-oidc");
+            if (callbackPaths == null)
+            {
+                throw new System.ArgumentNullException($"{nameof(callbackPaths)} must not be null.");
+            }
+
+            foreach (var p in callbackPaths)
+            {
+                urls.Add("localhost:5001".ToUri().ToStandardString() + p);
+            }
 
             System.Console.WriteLine($"Redirects: {JsonConvert.SerializeObject(urls, Formatting.Indented)}");
             return urls;
         }
 
-        private static ICollection<string> StandardPostLogoutRedirects()
+        protected override ICollection<string> StandardPostLogoutRedirects()
         {
             var urls = new List<string>();
             urls.Add("localhost:5001".ToUri().ToStandardString() + "/signout-callback-oidc");
@@ -68,7 +48,7 @@ namespace Amphora.Identity.IdentityConfig
             return urls;
         }
 
-        private static string StandardLogoutUrl()
+        protected override string StandardLogoutUrl()
         {
             var logoutRedirect = "localhost:5001".ToUri().ToStandardString() + "/signout-oidc";
             System.Console.WriteLine($"Logout Redirect: {logoutRedirect}");

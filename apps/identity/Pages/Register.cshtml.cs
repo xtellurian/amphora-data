@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
 using Amphora.Common.DataAnnotations;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models.Dtos;
 using Amphora.Common.Models.Options;
 using Amphora.Identity.Models;
