@@ -153,9 +153,9 @@ namespace Amphora.Api
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = $"/Profiles/Account/Login";
-                options.LogoutPath = $"/Profiles/Account/Logout";
-                options.AccessDeniedPath = $"/Profiles/Account/AccessDenied"; // TODO: create access denided oasge
+                options.LoginPath = "/Profiles/Account/Login";
+                options.LogoutPath = "/Profiles/Account/Logout";
+                options.AccessDeniedPath = "/AccessDenied"; // TODO: create access denided oasge
             });
 
             // In production, the React files will be served from this directory
@@ -200,7 +200,7 @@ namespace Amphora.Api
 
                     if (env.IsDevelopment())
                     {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                        spa.UseReactDevelopmentServer(npmScript: "start");
                     }
                 });
             });
