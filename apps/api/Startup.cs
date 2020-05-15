@@ -171,9 +171,11 @@ namespace Amphora.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             CommonPipeline(app, env, mapper);
+            // default application
             app.UseEndpoints(endpoints =>
             {
-                MapCommonEndpoints(endpoints);
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
             // specific to SPA.
             app.UseSpaStaticFiles();
@@ -189,12 +191,6 @@ namespace Amphora.Api
                     }
                 });
             });
-        }
-
-        private static void MapCommonEndpoints(IEndpointRouteBuilder endpoints)
-        {
-            endpoints.MapRazorPages();
-            endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
         }
 
         // The shared config pipeline across both SPA and Raor
