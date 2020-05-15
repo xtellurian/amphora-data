@@ -170,18 +170,18 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            CommonPipeline(app, env, mapper);
-            // default application
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
+            
             // specific to SPA.
-            app.UseSpaStaticFiles();
             app.UseForFeature(nameof(ApiFeatureFlags.Spa), appBuilder =>
             {
-                appBuilder.UseSpa(spa =>
+                CommonPipeline(appBuilder, env, mapper);
+                appBuilder.UseSpaStaticFiles();
+                appBuilder.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                })
+                .UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";
 
@@ -189,6 +189,18 @@ namespace Amphora.Api
                     {
                         spa.UseReactDevelopmentServer(npmScript: "start");
                     }
+                });
+            });
+            CommonPipeline(app, env, mapper);
+            // default application
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapGet("/", context =>
+                {
+                    context.Response.Redirect("/Quickstart");
+                    return Task.CompletedTask;
                 });
             });
         }
