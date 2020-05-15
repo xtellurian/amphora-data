@@ -170,30 +170,15 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            app.UseForFeature(nameof(ApiFeatureFlags.Razor), appBuilder =>
+            CommonPipeline(app, env, mapper);
+            app.UseEndpoints(endpoints =>
             {
-                CommonPipeline(appBuilder, env, mapper);
-                appBuilder.UseEndpoints(endpoints =>
-                {
-                    MapCommonEndpoints(endpoints);
-                    endpoints.MapGet("/", context =>
-                    {
-                        // Rediect to quickstart when NOT using SPA.
-                        context.Response.Redirect("/Quickstart");
-                        return Task.CompletedTask;
-                    });
-                });
+                MapCommonEndpoints(endpoints);
             });
-
+            // specific to SPA.
+            app.UseSpaStaticFiles();
             app.UseForFeature(nameof(ApiFeatureFlags.Spa), appBuilder =>
             {
-                CommonPipeline(appBuilder, env, mapper);
-                appBuilder.UseEndpoints(endpoints =>
-                {
-                    MapCommonEndpoints(endpoints);
-                });
-                // specific to SPA.
-                appBuilder.UseSpaStaticFiles();
                 appBuilder.UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";
