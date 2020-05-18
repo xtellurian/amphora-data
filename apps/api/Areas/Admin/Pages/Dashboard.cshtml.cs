@@ -144,6 +144,17 @@ namespace Amphora.Api.Areas.Admin.Pages
 
         private async Task LoadAmphoraStats()
         {
+            var readSelf = await userDataService.ReadAsync(User);
+            if (readSelf.Succeeded)
+            {
+                this.Stats.Amphorae.TotalNotThisOrg = await this.amphoraeService.AmphoraStore
+                    .Query(_ => _.OrganisationId != readSelf.Entity.OrganisationId).CountAsync();
+            }
+            else
+            {
+                this.Stats.Amphorae.TotalNotThisOrg = -1;
+            }
+
             this.Stats.Amphorae.MeanActivePrice =
                 await this.amphoraeService.AmphoraStore.Query(Active<AmphoraModel>()).AverageAsync(a => a.Price);
 
@@ -232,13 +243,18 @@ namespace Amphora.Api.Areas.Admin.Pages
         public long? TotalUniqueCount { get; set; }
     }
 
+    public class ExternalOrgsCountableGroup : CountableGroup
+    {
+        public long? TotalNotThisOrg { get; set; }
+    }
+
     public class OrgStatsGroup : ActiveCountableGroup
     {
         public double? AggregateBalance { get; set; }
         public double? MeanBalance { get; set; }
     }
 
-    public class PricedGroup : CountableGroup
+    public class PricedGroup : ExternalOrgsCountableGroup
     {
         public int? ActiveCount { get; set; }
         public double? MeanActivePrice { get; set; }
