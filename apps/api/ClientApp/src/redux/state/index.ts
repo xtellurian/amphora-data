@@ -4,13 +4,13 @@ import { AmphoraState } from './amphora';
 import { IBurgerMenuState } from './plugins/burgerMenu';
 import { OidcState } from './plugins/oidc';
 import { UiState } from './ui';
-import { IReducers } from '../reducers'
+import { Reducers } from '../reducers'
 
 
 // The top-level state object
-export interface ApplicationState extends IReducers {
+export interface ApplicationState extends Reducers {
     amphora: AmphoraState;
-    burgerMenu: IBurgerMenuState
+    burgerMenu: IBurgerMenuState;
     counter: Counter.CounterState | undefined;
     ui: UiState;
     oidc: OidcState;
