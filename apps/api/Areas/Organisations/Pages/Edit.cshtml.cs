@@ -79,7 +79,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
             if (ModelState.IsValid)
             {
                 var userReadRes = await userDataService.ReadAsync(User);
-                if (userReadRes.Succeeded)
+                if (!userReadRes.Succeeded)
                 {
                     ModelState.AddModelError(string.Empty, userReadRes.Message);
                     return Page();
