@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,12 +22,11 @@ namespace Amphora.Api.Pages.Changelog
         public IWebHostEnvironment Env { get; }
         public string ContentRootPath { get; }
         public List<VersionFile> VersionDetails { get; private set; } = new List<VersionFile>();
+        private IComparer<string> comparer = new VersionComparer();
 
         public IActionResult OnGetAsync()
         {
-            var fullyQualifiedPaths = Directory.EnumerateFiles(Path.Join(ContentRootPath, RootName, ChangelogsRelativePath))
-                .ToList()
-                .OrderByDescending(_ => _);
+            var fullyQualifiedPaths = Directory.EnumerateFiles(Path.Join(ContentRootPath, RootName, ChangelogsRelativePath));
 
             foreach (var f in fullyQualifiedPaths)
             {
@@ -35,7 +35,52 @@ namespace Amphora.Api.Pages.Changelog
                 VersionDetails.Add(new VersionFile(version, p));
             }
 
+            VersionDetails = VersionDetails.OrderByDescending(_ => _.VersionName, comparer).ToList();
+
             return Page();
+        }
+    }
+
+    public class VersionComparer : IComparer<string>
+    {
+        public static bool IsNumeric(string value)
+        {
+            return int.TryParse(value, out _);
+        }
+
+        /// <inheritdoc />
+        public int Compare(string s1, string s2)
+        {
+            var (s1Major, s1Minor, s1Patch) = GetSections(s1);
+            var (s2Major, s2Minor, s2Patch) = GetSections(s2);
+
+            var diff = (s1Major * 100) - (s2Major * 100)
+                + (s1Minor * 10) - (s2Minor * 10)
+                + s1Patch - s2Patch;
+
+            return diff;
+        }
+
+        private (int major, int minor, int patch) GetSections(string version)
+        {
+            var array = version.Split('.');
+            if (array.Length == 1 && IsNumeric(array[0]))
+            {
+                return (int.Parse(array[0]), -1, -1);
+            }
+
+            if (array.Length == 2 && IsNumeric(array[0]) && IsNumeric(array[1]))
+            {
+                return (int.Parse(array[0]), int.Parse(array[1]), -1);
+            }
+            else if (array.Length == 3 && IsNumeric(array[0]) && IsNumeric(array[1]) && IsNumeric(array[0]))
+            {
+                return (int.Parse(array[0]), int.Parse(array[1]), int.Parse(array[2]));
+            }
+            else
+            {
+                return (-1, -1, -1);
+            }
         }
     }
 }
