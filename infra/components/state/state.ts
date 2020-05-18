@@ -297,7 +297,7 @@ export class State extends pulumi.ComponentResource {
       },
     );
 
-    const ehAuthRule = new azure.eventhub.EventHubAuthorizationRule("ehAuthRule", {
+    const ehAuthRule = new azure.eventhub.AuthorizationRule("ehAuthRule", {
       eventhubName: this.eh.name,
       listen: true,
       manage: false,

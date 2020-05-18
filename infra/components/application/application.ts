@@ -97,7 +97,7 @@ export class Application extends pulumi.ComponentResource
 
   private createAks(rg: azure.core.ResourceGroup, acr: azure.containerservice.Registry) {
 
-    const roleAssignment = new azure.role.Assignment("acrPull", {
+    const roleAssignment = new azure.authorization.Assignment("acrPull", {
       principalId: objectId,
       roleDefinitionName: "AcrPull",
       scope: this.acr.id,
