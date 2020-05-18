@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { Action } from 'redux';
 
-interface IUserFoundAction extends Action {
-    payload: {access_token: string}
+
+interface UserFoundAction extends Action {
+    payload: { access_token: string };
 }
 
-export const axiosUpdater = (store: any) => (next: any) => (action: IUserFoundAction) => {
+export const axiosUpdater = (store: any) => (next: any) => (action: UserFoundAction) => {
 
     if (action.type === "redux-oidc/USER_FOUND") {
         if (action.payload && action.payload.access_token) {
@@ -13,5 +14,6 @@ export const axiosUpdater = (store: any) => (next: any) => (action: IUserFoundAc
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + action.payload.access_token;
         }
     }
-    return next(action)
+    
+    return next(action);
 }

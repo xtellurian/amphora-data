@@ -6,7 +6,7 @@ export const OPEN_AMPHORA_DETAIL_MODAL = '[ui] OPEN AMPHORA DETAIL MODAL';
 export const CLOSE_AMPHORA_DETAIL_MODAL = '[ui] CLOSE AMPHORA DETAIL MODAL';
 
 export interface OpenAmphoraModelAction extends Action {
-  payload: DetailedAmphora
+  payload: DetailedAmphora;
 }
 
 export const actionCreators = {

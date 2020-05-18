@@ -11,21 +11,21 @@ export const ERROR_AMPHORAE_LIST = '[amphorae] ERROR AMPHORA LIST';
 
 
 interface ListMyCreatedAmphora extends Action {
-    type: typeof LIST_MY_CREATED_AMPHORAE,
+    type: typeof LIST_MY_CREATED_AMPHORAE;
 }
 interface ListOrganisationCreatedAmphora extends Action {
-    type: typeof LIST_ORGANISATION_CREATED_AMPHORAE,
+    type: typeof LIST_ORGANISATION_CREATED_AMPHORAE;
 }
 interface ListMyPurchasedAmphora extends Action {
-    type: typeof LIST_MY_PURCHASED_AMPHORAE,
+    type: typeof LIST_MY_PURCHASED_AMPHORAE;
 }
 interface ListOrganisationPurchasedAmphora extends Action {
-    type: typeof LIST_ORGANISATION_PURCHASED_AMPHORAE,
+    type: typeof LIST_ORGANISATION_PURCHASED_AMPHORAE;
 }
 
 export interface RecieveAmphoraAction extends Action {
-    type: typeof RECIEVE_AMPHORAE_LIST,
-    payload: DetailedAmphora[]
+    type: typeof RECIEVE_AMPHORAE_LIST;
+    payload: DetailedAmphora[];
 }
 
 export const actionCreators = {
