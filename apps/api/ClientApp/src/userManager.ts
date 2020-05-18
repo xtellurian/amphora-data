@@ -26,6 +26,15 @@ function getSettings(): UserManagerSettings {
     settings.authority = "https://develop.identity.amphoradata.com";
     settings.redirect_uri = `${protocol}://${host}/#/callback`
     settings.silent_redirect_uri = `${protocol}://${host}/silentRenew.html`
+  } else if (window.location.host.includes("master")) {
+    settings.authority = "https://master.identity.amphoradata.com";
+    settings.redirect_uri = `${protocol}://${host}/#/callback`
+    settings.silent_redirect_uri = `${protocol}://${host}/silentRenew.html`
+  } else if (!window.location.host.includes("localhost")) {
+    // do prod
+    settings.authority = "https://identity.amphoradata.com";
+    settings.redirect_uri = "https://app.amphoradata.com/#/callback"
+    settings.silent_redirect_uri = "https://app.amphoradata.com/silentRenew.html"
   }
 
   console.log(settings)
