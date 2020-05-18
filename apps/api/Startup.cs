@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Amphora.Api.AspNet;
+﻿using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
@@ -170,7 +168,6 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            
             // specific to SPA.
             app.UseForFeature(nameof(ApiFeatureFlags.Spa), appBuilder =>
             {
