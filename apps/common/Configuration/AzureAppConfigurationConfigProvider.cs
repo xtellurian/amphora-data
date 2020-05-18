@@ -18,7 +18,8 @@ namespace Amphora.Common.Configuration
                 config.AddAzureAppConfiguration(options =>
                 {
                     options.Connect(connectionString);
-                    //    .ConfigureRefresh(refresh =>
+
+                    // .ConfigureRefresh(refresh =>
                     //         {
                     //             refresh.Register("Api:Settings:Sentinel", refreshAll: true)
                     //                    .SetCacheExpiration(new System.TimeSpan(0, 5, 0));
