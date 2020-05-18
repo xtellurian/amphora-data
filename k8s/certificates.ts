@@ -33,7 +33,7 @@ export class Certificates extends pulumi.ComponentResource {
         }, opts);
 
         // cert manager crds
-        const certManagerVersion = "v0.14.1";
+        const certManagerVersion = "v0.15.0";
         const certManagerCrds = new k8s.yaml.ConfigFile("cert-man-crds", {
             file: `https://github.com/jetstack/cert-manager/releases/download/${certManagerVersion}/cert-manager.crds.yaml`,
         }, opts);
