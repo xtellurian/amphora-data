@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,7 +45,12 @@ namespace Amphora.SharedUI
                 });
             }
 
-            app.UseHealthChecks("/healthz");
+            app.MapWhen(
+                context => context.Request.Method == HttpMethod.Get.Method &&
+                    context.Request.Path.StartsWithSegments("/healthz"),
+                builder => builder.UseHealthChecks("/healthz"));
+
+            // app.UseHealthChecks("/healthz");
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
