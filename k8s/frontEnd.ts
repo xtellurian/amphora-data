@@ -11,6 +11,7 @@ export interface IFrontendArgs {
 
 const frontendConfig = new pulumi.Config("frontend")
 const image = frontendConfig.require("image");
+const replicas = frontendConfig.getNumber("replicas") ?? 1;
 
 export class FrontEnd extends pulumi.ComponentResource {
 
@@ -82,7 +83,7 @@ export class FrontEnd extends pulumi.ComponentResource {
                 namespace: "amphora",
             },
             spec: {
-                replicas: 1,
+                replicas,
                 selector: {
                     matchLabels: {
                         app: name
