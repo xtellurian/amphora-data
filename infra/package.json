@@ -5,15 +5,14 @@
         "lint": "tslint -c tslint.json './**/*.ts'"
     },
     "devDependencies": {
-        "@types/node": "^12.12.34",
+        "@types/node": "^12.12.39",
         "tslint": "^5.20.1"
     },
     "dependencies": {
-        "@pulumi/azure": "^1.14.0",
-        "@pulumi/azuread": "^1.8.0",
-        "@pulumi/kubernetes": "^1.6.0",
-        "@pulumi/pulumi": "^1.13.1",
-        "@pulumi/random": "^1.7.0",
+        "@pulumi/azure": "^3.5.1",
+        "@pulumi/kubernetes": "^2.2.0",
+        "@pulumi/pulumi": "^2.2.1",
+        "@pulumi/random": "^2.1.1",
         "reflect-metadata": "^0.1.13"
     }
 }
