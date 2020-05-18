@@ -74,6 +74,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         private async Task LoadUserStats()
         {
             this.Stats.Users.TotalCount = await userDataService.Query(User, _ => true).CountAsync();
+            this.Stats.Users.TotalActive = await userDataService.Query(User, _ => _.LastSeen > monthAgo).CountAsync();
         }
 
         private async Task LoadOrganisationStats()
@@ -88,6 +89,13 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .Query(_ => true)
                 .ToListAsync()) // switch to client side, can't do distinct in Cosmos?
                 .Sum(_ => _.Account.Balance);
+
+            // Calculated via active users with distinct org ids
+            this.Stats.Organisations.TotalActive =
+                            await userDataService.Query(User, _ => _.LastSeen > monthAgo)
+                                .Select(_ => _.OrganisationId)
+                                .Distinct()
+                                .CountAsync();
         }
 
         private async Task LoadPurchaseStats()
@@ -201,7 +209,7 @@ namespace Amphora.Api.Areas.Admin.Pages
     {
         public DateTimeOffset? GeneratedTime { get; set; }
         public PricedGroup Amphorae { get; set; } = new PricedGroup();
-        public CountableGroup Users { get; set; } = new CountableGroup();
+        public ActiveCountableGroup Users { get; set; } = new ActiveCountableGroup();
         public OrgStatsGroup Organisations { get; set; } = new OrgStatsGroup();
         public PricedGroup Debits { get; set; } = new PricedGroup();
         public PricedGroup Purchases { get; set; } = new PricedGroup();
@@ -214,12 +222,17 @@ namespace Amphora.Api.Areas.Admin.Pages
         public long? TotalCount { get; set; }
     }
 
+    public class ActiveCountableGroup : CountableGroup
+    {
+        public long? TotalActive { get; set; }
+    }
+
     public class UniqueCountableGroup : CountableGroup
     {
         public long? TotalUniqueCount { get; set; }
     }
 
-    public class OrgStatsGroup : CountableGroup
+    public class OrgStatsGroup : ActiveCountableGroup
     {
         public double? AggregateBalance { get; set; }
         public double? MeanBalance { get; set; }

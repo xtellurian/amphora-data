@@ -11,6 +11,7 @@ namespace Amphora.Api.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<UserDataMiddleware> logger;
+        private System.TimeSpan lastSeenFilter = new System.TimeSpan(6, 0, 0); // 6 hours
 
         public UserDataMiddleware(RequestDelegate next,
                                    ILogger<UserDataMiddleware> logger)
@@ -20,8 +21,10 @@ namespace Amphora.Api.Middleware
         }
 
         public async Task Invoke(HttpContext httpContext,
-                                IUserDataService userDataService)
+                                IUserDataService userDataService,
+                                IDateTimeProvider dtProvider)
         {
+            var now = dtProvider.UtcNow;
             // is the user authenticated
             if (httpContext.User.Identity.IsAuthenticated)
             {
@@ -42,7 +45,8 @@ namespace Amphora.Api.Middleware
                             Id = id,
                             UserName = name,
                             About = about,
-                            ContactInformation = new ContactInformation(email, fullName)
+                            ContactInformation = new ContactInformation(email, fullName),
+                            LastSeen = now
                         });
 
                     if (!createRes.Succeeded)
@@ -59,6 +63,13 @@ namespace Amphora.Api.Middleware
                     if (!string.Equals(userData.About, about))
                     {
                         userData.About = about;
+                        needsUpdate = true;
+                    }
+
+                    // if LastSeen is null or larger than the filter time, then update it.
+                    if (userData.LastSeen == null || (userData.LastSeen + lastSeenFilter > now))
+                    {
+                        userData.LastSeen = now;
                         needsUpdate = true;
                     }
 

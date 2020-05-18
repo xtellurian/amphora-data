@@ -23,6 +23,7 @@ namespace Amphora.Common.Models.Users
         public string? UserName { get; set; }
         public string? About { get; set; }
         public string? PhoneNumber { get; set; }
+        public System.DateTimeOffset? LastSeen { get; set; }
 
         public virtual ContactInformation? ContactInformation { get; set; } = new ContactInformation();
         // navigation
