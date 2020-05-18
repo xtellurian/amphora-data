@@ -12,8 +12,7 @@ namespace Amphora.Tests.Integration
     {
         private int _apiVersion = 0;
         public GracefulErrorsTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
-        {
-        }
+        { }
 
         [Theory]
         [InlineData("/api/amphorae")]

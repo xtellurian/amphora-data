@@ -33,5 +33,11 @@ namespace Amphora.Infrastructure.Services.Events
             client.GetMetric(metric).TrackValue(value);
             logger.LogInformation($"Tracked metric | {metric} = {value}");
         }
+
+        public void TrackMetricValue(string metric, string dimension, double? value)
+        {
+            client.GetMetric(metric, dimension).TrackValue(value);
+            logger.LogInformation($"Tracked 2d metric | {metric}:{dimension} = {value}");
+        }
     }
 }

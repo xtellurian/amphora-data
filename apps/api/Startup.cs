@@ -224,6 +224,7 @@ namespace Amphora.Api
             app.UseAuthorization();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
             app.UseMiddleware<Middleware.PlanSelectorMiddleware>();
+            app.UseMiddleware<Middleware.ClientTrackerMiddleware>();
         }
     }
 }
