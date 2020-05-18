@@ -2,8 +2,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Activities;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models;
 using Amphora.Common.Models.Activities;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -114,7 +116,16 @@ namespace Amphora.Api.Controllers
             var readRes = await activityService.ReadAsync(User, id);
             if (readRes.Succeeded)
             {
-                var createRunRes = await runService.StartRunAsync(User, readRes.Entity);
+                EntityOperationResult<ActivityRunModel> createRunRes;
+                if (Request.TryReadClientVersion(out var versionInfo))
+                {
+                    createRunRes = await runService.StartRunAsync(User, readRes.Entity, versionInfo);
+                }
+                else
+                {
+                    createRunRes = await runService.StartRunAsync(User, readRes.Entity);
+                }
+
                 if (createRunRes.Succeeded)
                 {
                     var dto = mapper.Map<Run>(createRunRes.Entity);

@@ -9,7 +9,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
         public void Configure(EntityTypeBuilder<ActivityRunModel> builder)
         {
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
-
+            builder.Property(p => p.VersionInfo).HasJsonConversion();
             builder
                 .HasOne(_ => _.Activity)
                 .WithMany(_ => _!.Runs)

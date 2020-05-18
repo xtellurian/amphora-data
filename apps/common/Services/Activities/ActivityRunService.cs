@@ -35,7 +35,9 @@ namespace Amphora.Common.Services.Activities
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<ActivityRunModel>> StartRunAsync(ClaimsPrincipal principal, ActivityModel activity)
+        public async Task<EntityOperationResult<ActivityRunModel>> StartRunAsync(ClaimsPrincipal principal,
+                                                                                 ActivityModel activity,
+                                                                                 VersionInfo? versionInfo = null)
         {
             var userDataReadRes = await userDataService.ReadAsync(principal);
             if (userDataReadRes.Failed || userDataReadRes.Entity == null)
@@ -49,7 +51,10 @@ namespace Amphora.Common.Services.Activities
             if (authorized)
             {
                 // add a new run.
-                var run = new ActivityRunModel(activity, user, dtProvider.UtcNow);
+                var run = new ActivityRunModel(activity, user, dtProvider.UtcNow)
+                {
+                    VersionInfo = versionInfo
+                };
                 activity.Runs ??= new List<ActivityRunModel>(); // ensure not null
                 activity.Runs.Add(run);
                 activity = await store.UpdateAsync(activity);

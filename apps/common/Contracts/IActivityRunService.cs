@@ -15,6 +15,8 @@ namespace Amphora.Common.Contracts
                                                                             ActivityModel activity,
                                                                             ActivityRunModel run,
                                                                             ActivityAmphoraReference amphoraRef);
-        Task<EntityOperationResult<ActivityRunModel>> StartRunAsync(ClaimsPrincipal principal, ActivityModel activity);
+        Task<EntityOperationResult<ActivityRunModel>> StartRunAsync(ClaimsPrincipal principal,
+                                                                    ActivityModel activity,
+                                                                    VersionInfo? versionInfo = null);
     }
 }

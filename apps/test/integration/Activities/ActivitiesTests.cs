@@ -22,6 +22,8 @@ namespace Amphora.Tests.Integration
         public async Task StandardUser_HappyPathWithRuns_ThenCanDelete()
         {
             var persona = await GetPersonaAsync();
+            // set the version in the client
+            persona.Http.DefaultRequestHeaders.Add("amphora-client-version", "0.10.2");
             var name = nameof(StandardUser_HappyPathWithRuns_ThenCanDelete) + Guid.NewGuid().ToString(); // for unique name
 
             var createRes = await persona.Http.PostAsJsonAsync("api/activities", new CreateActivity(name));
@@ -41,6 +43,10 @@ namespace Amphora.Tests.Integration
 
             run.Id.Should().NotBeNull();
             run.StartTime.Should().BeCloseTo(DateTime.UtcNow, 500, "because the run was just started");
+            run.VersionInfo.Should().NotBeNull();
+            run.VersionInfo.Major.Should().Be(0);
+            run.VersionInfo.Minor.Should().Be(10);
+            run.VersionInfo.Patch.Should().Be(2);
 
             // create an amphora to reference
             var amphora = EntityLibrary.GetAmphoraDto(persona.Organisation.Id);

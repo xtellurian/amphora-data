@@ -19,6 +19,7 @@ namespace Amphora.Common.Models.Activities
 
         public string? StartedByUserId { get; set; }
         public virtual ApplicationUserDataModel? StartedByUser { get; set; }
+        public virtual VersionInfo? VersionInfo { get; set; }
         public bool? Success { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
