@@ -7,12 +7,18 @@ import { Route, Switch } from 'react-router-dom';
 
 import CallbackPage from './components/CallbackPage';
 import { ApplicationState } from './redux/state';
+import { Dispatch } from 'redux';
 
 import userManager from './userManager';
 import { User } from 'oidc-client';
 import UserInfo from './components/UserInfo';
 import Amphora from './components/amphorae/MyAmphorae';
-import { Dispatch } from 'redux';
+import Create from './components/amphorae/CreateAmphora';
+import Request from './components/amphorae/RequestAmphora';
+import Find from './components/amphorae/FindAmphora';
+
+import Pallete from './components/Pallete';
+
 
 import Main from './components/public/MainPage';
 
@@ -55,7 +61,14 @@ const Routes = (props: RoutesModuleProps) => {
                     <Route exact path='/' component={Home} />
                     <Route path='/counter' component={Counter} />
                     <Route path="/user" component={UserInfo} />
+
+                    <Route path="/create" component={Create} />
                     <Route path="/amphora" component={Amphora} />
+                    <Route path="/request" component={Request} />
+
+                    <Route path="/pallete" component={Pallete} />
+
+                    <Route path="/find" component={Find} />
                 </Switch>
             </React.Fragment>
         );

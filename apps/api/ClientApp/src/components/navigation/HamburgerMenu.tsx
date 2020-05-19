@@ -37,7 +37,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
         return (
             <Menu styles={this.styles()}>
                 <h3>Menu</h3>
-                <NavbarBrand className="m-2 bg-white w-100" tag={Link} to="/" >Amphora Data</NavbarBrand>
+                <NavbarBrand className="m-3 bg-white w-100" tag={Link} to="/">Amphora Data</NavbarBrand>
                 <Avatar />
 
                 <Nav vertical className="m-2">
@@ -47,10 +47,14 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                         <NavLink tag={Link} className="text-light" to="/amphora">My Amphora</NavLink>
                     </NavItem>
                     <NavItem className="menu-item" onClick={() => { this.props.close() }}>
-                        <NavLink tag={Link} className="text-light" to="/find">Create</NavLink>
+                        <NavLink tag={Link} className="text-light" to="/create">Create</NavLink>
                     </NavItem>
                     <NavItem className="menu-item" onClick={() => { this.props.close() }}>
-                        <NavLink tag={Link} className="text-light" to="/find">Request</NavLink>
+                        <NavLink tag={Link} className="text-light" to="/request">Request</NavLink>
+                    </NavItem>
+                    <hr className="bg-white" />
+                    <NavItem className="menu-item" onClick={() => { this.props.close() }}>
+                        <NavLink tag={Link} className="text-light" to="/find">Find</NavLink>
                     </NavItem>
 
                     <hr className="bg-white" />
