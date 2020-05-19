@@ -14,7 +14,7 @@ const Menu = reduxBurgerMenu(PlainMenu); // this line connects the burger menu t
 type HamburgerMenuProps =
     IBurgerMenuState // ... state we've requested from the Redux store
     & typeof actionCreators // ... plus action creators we've requested
-    & { path: string, isConnected: boolean }; // ... plus incoming routing parameters
+    & { path: string; isConnected: boolean }; // ... plus incoming routing parameters
 
 
 class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {

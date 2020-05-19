@@ -27,15 +27,11 @@ class ConnectedAmphoraModal extends React.PureComponent<ModalProps> {
         Modal.setAppElement('#root'); // TODO: figure out where to put this
     }
 
-    private afterModalOpen() {
-
-    }
-
     public render() {
         if (this.props.current) {
             return (
                 <Modal isOpen={this.props.isAmphoraDetailOpen}
-                    onAfterOpen={() => this.afterModalOpen()}
+                    onAfterOpen={() => 0}
                     onRequestClose={() => this.setState({ isOpen: false })}
                     style={customStyles}
                     contentLabel="Example Modal"  >

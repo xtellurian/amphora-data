@@ -4,16 +4,13 @@ import { DetailedAmphora } from 'amphoradata';
 import { Button } from 'reactstrap';
 
 
-interface IAmphoraeListItemProps {
+interface AmphoraeListItemProps {
     amphora: DetailedAmphora;
-    openModal(amphora: DetailedAmphora): void
+    openModal(amphora: DetailedAmphora): void;
 }
 
 
-export class AmphoraListItem extends React.PureComponent<IAmphoraeListItemProps> {
-    // This method is called when the component is first added to the document
-    public componentDidMount() {
-    }
+export class AmphoraListItem extends React.PureComponent<AmphoraeListItemProps> {
 
     private openModal = () => {
         console.log("Opening Modal for amphora", this.props.amphora);
