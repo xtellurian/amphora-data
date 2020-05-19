@@ -61,8 +61,8 @@ namespace Amphora.Api.Services.Azure
                 }
                 catch (Microsoft.Rest.Azure.CloudException ex) // only catch these dumb exceptions
                 {
-                    logger.LogCritical("Failed to created Amohora Index", ex);
-                    if (attempts > maxAttempts)
+                    logger.LogCritical("Failed to created Amphora Index", ex);
+                    if (attempts++ > maxAttempts)
                     {
                         logger.LogCritical("Max Attempts reached", ex);
                         throw ex;
