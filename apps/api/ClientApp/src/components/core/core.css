@@ -1,0 +1,35 @@
+:root {
+    /* primary colours */
+    --amphora-red: #BC312A;
+    --amphora-black: #181717;
+    --amphora-white: #FFFEFD;
+
+    /* secondary */
+    --turqoise: #5AA6C0;
+    --blue-garnet: #0A789E;
+    --pearl: #CFD2D6;
+    /* text colours */
+    --ebony: #222222;
+    --stone: #696464;
+    /* messaging and alerts */
+    --mandarin: #F68D00;
+    --plum: #E7140D;
+    --apple: #399B1E;
+    --berry: #057ED1;
+    /* messaging and alert pastels */
+    --pear: #FFFAED;
+    --peach: #FBEAE5;
+    --avocado: #EFFAE3;
+    --yam: #E7F4FF;
+    /* backgerounds and dividers */
+    --marble: #AAADB0;
+    --platinum: #F1F4F6;
+    --porcelain: #FCFCFC;
+
+    --main-font: Helvetica, bold, sans-serif;
+}
+
+body {
+    font: helvetica, bold;
+    font-family: Arial, Helvetica, sans-serif;
+}

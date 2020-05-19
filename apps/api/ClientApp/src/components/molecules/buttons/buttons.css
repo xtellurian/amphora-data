@@ -1,0 +1,41 @@
+.button {
+    height: 46px;
+    min-width: 46px;
+    max-width: 296px;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 3px 3px;
+}
+
+.button-disabled{
+  color: var(--stone);
+  background-color: var(--pearl);
+}
+
+.button-primary {
+    font: var(--main-font);
+    color: var(--amphora-white);
+    background-color: var(--blue-garnet);
+    box-shadow: 0px 0px 0px 2px var(--turqoise);
+}
+
+.button-primary:hover {
+    color: var(--amphora-white);
+    background-color: var(--turqoise);
+    box-shadow: 0px 0px 0px 2px var(--blue-garnet);
+}
+
+.button-secondary {
+    font: var(--main-font);
+    color: var(--blue-garnet);
+    background-color: var(--amphora-white);
+    box-shadow: 0px 0px 0px 2px var(--turqoise);
+}
+
+.button-secondary:hover {
+    color: var(--amphora-white);
+    background-color: var(--turqoise);
+    box-shadow: 0px 0px 0px 2px var(--blue-garnet);
+}
+
+
