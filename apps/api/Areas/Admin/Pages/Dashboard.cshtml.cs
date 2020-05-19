@@ -92,10 +92,11 @@ namespace Amphora.Api.Areas.Admin.Pages
 
             // Calculated via active users with distinct org ids
             this.Stats.Organisations.TotalActive =
-                            await userDataService.Query(User, _ => _.LastSeen > monthAgo)
+                            (await userDataService.Query(User, _ => _.LastSeen > monthAgo)
                                 .Select(_ => _.OrganisationId)
+                                .ToListAsync())
                                 .Distinct()
-                                .CountAsync();
+                                .Count();
         }
 
         private async Task LoadPurchaseStats()
