@@ -9,7 +9,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration
         public void Configure(EntityTypeBuilder<ActivityModel> builder)
         {
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
-            // builder.HasIndex(p => p.Name);
+            builder.HasIndex(p => p.Name);
             builder
                 .HasOne(_ => _.Organisation)
                 .WithMany()
