@@ -72,6 +72,10 @@ namespace Amphora.Api.Services.Azure
 
         private async Task<DataSource> TryCreateDatasource()
         {
+            // these are the only models available in the search index;
+            // var discriminators = $"(c.Discriminator = '{nameof(AmphoraModel)}' "
+            // + $"or c.Discriminator='{nameof(OrganisationModel)}' "
+            // + $"or c.Discriminator = '{nameof(DataRequestModel)}' )";
             var query = "SELECT * FROM c WHERE c._ts > @HighWaterMark ORDER BY c._ts";
             var cosmosDbConnectionString = cosmosOptions.CurrentValue.GenerateConnectionString(cosmosOptions.CurrentValue.PrimaryReadonlyKey);
             var deletionPolicy = new SoftDeleteColumnDeletionDetectionPolicy(nameof(EntityBase.IsDeleted), "true");
@@ -101,7 +105,8 @@ namespace Amphora.Api.Services.Azure
                 },
                 FieldMappings = new List<FieldMapping>
                 {
-                    new FieldMapping(nameof(ISearchable.Name), "PartialName")
+                     new FieldMapping(nameof(ISearchable.Name), nameof(ISearchable.Name)),
+                     new FieldMapping(nameof(ISearchable.Name), "PartialName")
                 }
             };
             indexer.Validate();
