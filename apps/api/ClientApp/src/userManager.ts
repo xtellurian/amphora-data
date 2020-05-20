@@ -8,12 +8,12 @@ const settings = {
   redirect_uri: 'https://localhost:5001/#/callback',
   silent_redirect_uri: 'http://localhost:5001/silentRenew.html',
   client_id: 'spa',
-  response_type: 'token id_token',
+  response_type: 'code',
   scope: "openid profile web_api offline_access",
   automaticSilentRenew: true,
   filterProtocolClaims: true,
   loadUserInfo: true,
-  monitorSession: true
+  monitorSession: true,
 };
 
 

@@ -32,6 +32,10 @@ const UserInfo: FunctionComponent<UserInfoProps> = (props: UserInfoProps): React
             <td>{props.user.access_token}</td>
           </tr>
           <tr>
+            <td>refresh_token</td>
+            <td>{props.user.refresh_token}</td>
+          </tr>
+          <tr>
             <td>expires_at</td>
             <td>{props.user.expires_at}</td>
           </tr>

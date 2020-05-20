@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amphora.Common.Security;
 using IdentityServer4.Models;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Amphora.Identity.IdentityConfig
 {
@@ -65,7 +66,14 @@ namespace Amphora.Identity.IdentityConfig
                     PostLogoutRedirectUris = StandardPostLogoutRedirects(),
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApp, Scopes.AmphoraScope }
+                    AllowedScopes =
+                    {
+                        StandardScopes.OpenId,
+                        StandardScopes.Profile,
+                        StandardScopes.Email,
+                        Common.Security.Resources.WebApi,
+                        Scopes.AmphoraScope
+                    }
                 },
                  // SPA client.
                 new Client
@@ -73,9 +81,10 @@ namespace Amphora.Identity.IdentityConfig
                     ClientId = OAuthClients.SPA,
                     ClientName = "SPA Client",
                     AllowAccessTokensViaBrowser = true,
-                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedGrantTypes = GrantTypes.Code,
                     AllowOfflineAccess = true,
                     RequireConsent = false,
+                    RequireClientSecret = false,
                     RequirePkce = true,
 
                     ClientSecrets = { new Secret(mvcClientSecret) },
@@ -84,7 +93,15 @@ namespace Amphora.Identity.IdentityConfig
                     FrontChannelLogoutUri = StandardLogoutUrl(),
                     PostLogoutRedirectUris = StandardPostLogoutRedirects(),
 
-                    AllowedScopes = { "openid", "profile", "email", Common.Security.Resources.WebApi, Scopes.AmphoraScope }
+                    AllowedScopes =
+                    {
+                        StandardScopes.OpenId,
+                        StandardScopes.Profile,
+                        StandardScopes.Email,
+                        StandardScopes.OfflineAccess,
+                        Common.Security.Resources.WebApi,
+                        Scopes.AmphoraScope
+                    }
                 }
             };
         }
