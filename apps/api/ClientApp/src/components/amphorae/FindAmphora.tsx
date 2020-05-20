@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { Button, Spinner } from 'reactstrap';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
 // import { actionCreators } from '../../redux/actions/amphorae';
@@ -47,7 +46,8 @@ function mapStateToProps(state: ApplicationState): AmphoraState {
   } else {
     return {
       isLoading: true,
-      list: []
+      list: [],
+      cache: {}
     }
   }
 }

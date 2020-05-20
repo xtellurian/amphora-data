@@ -59,11 +59,11 @@ const Routes = (props: RoutesModuleProps) => {
             <React.Fragment>
                 <Switch>
                     <Route exact path='/' component={Home} />
-                    <Route path='/counter' component={Counter} />
                     <Route path="/user" component={UserInfo} />
 
-                    <Route path="/create" component={Create} />
                     <Route path="/amphora" component={Amphora} />
+                    
+                    <Route path="/create" component={Create} />
                     <Route path="/request" component={Request} />
 
                     <Route path="/pallete" component={Pallete} />

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../redux/state';
 import { actionCreators } from '../../redux/actions/ui';
-import { UiState } from '../../redux/state/ui';
-import { AmphoraDetail } from './AmphoraDetail';
+import { ModalWrapper } from '../molecules/modal/ModalWrapper';
+import { RouteComponentProps } from 'react-router';
+import ReactMarkdown from 'react-markdown';
+import { AmphoraState } from '../../redux/state/amphora';
+import { Spinner } from 'reactstrap';
 
 const customStyles = {
     // content: {
@@ -17,39 +19,52 @@ const customStyles = {
     // }
 };
 
-type ModalProps =
-    UiState
-    & typeof actionCreators;
+type ConnectedAmphoraModalProps =
+    AmphoraState
+    & typeof actionCreators
+    & RouteComponentProps<{ id: string }>;
 
-class ConnectedAmphoraModal extends React.PureComponent<ModalProps> {
 
-    public componentWillMount() {
-        Modal.setAppElement('#root'); // TODO: figure out where to put this
+class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalProps> {
+
+    public componentDidMount() {
+        // alert("connected amphora model mounted");
+        // TODO: refresh cache here
     }
 
     public render() {
-        if (this.props.current) {
+        const id = this.props.match.params.id;
+        const amphora = this.props.cache[id]
+        if (amphora) {
             return (
-                <Modal isOpen={this.props.isAmphoraDetailOpen}
-                    onAfterOpen={() => 0}
-                    onRequestClose={() => this.setState({ isOpen: false })}
-                    style={customStyles}
-                    contentLabel="Example Modal"  >
+                <ModalWrapper isOpen={true} onCloseRedirectTo="/amphora" >
+                    {id}
+                    <h3>{amphora.name}</h3>
+                    <div>
+                        Description:
+                        <ReactMarkdown>
+                            {amphora.description}
+                        </ReactMarkdown>
+                    </div>
+                    <div>
+                        Price: {amphora.price}
+                    </div>
 
-                    <button className="float-right" onClick={() => this.props.close()}>close</button>
-                    <AmphoraDetail amphora={this.props.current} />
-                </Modal>
+                </ModalWrapper>
             )
         } else {
-            return <div></div>
+            return <Spinner></Spinner>
         }
+        
     }
 }
 
-function mapStateToProps(state: ApplicationState): UiState {
-    return state.ui || {
-        isAmphoraDetailOpen: false
-    };
+function mapStateToProps(state: ApplicationState) {
+    return {
+        isLoading: state.amphora.isLoading,
+        list: state.amphora.list,
+        cache: state.amphora.cache,
+    }
 }
 
 export default connect(

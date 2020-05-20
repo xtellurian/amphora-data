@@ -1,7 +1,7 @@
 import * as React from 'react';
-import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 import { DetailedAmphora } from 'amphoradata';
-import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import { SecondaryButton } from '../molecules/buttons'
 
 
 interface AmphoraeListItemProps {
@@ -22,10 +22,13 @@ export class AmphoraListItem extends React.PureComponent<AmphoraeListItemProps> 
         if (this.props.amphora) {
             return (
                 <div>
-                    {this.props.amphora.name}
+                    {this.props.amphora.name} :: 
                     {this.props.amphora.price}
-                    <Button color="primary" onClick={() => this.openModal()}>Show</Button>
-                    <ConnectedAmphoraModal />
+                    <Link to={`/amphora/detail/${this.props.amphora.id}`}>
+                        <SecondaryButton>
+                            View  
+                        </SecondaryButton>
+                    </Link>
                 </div>
             );
         }

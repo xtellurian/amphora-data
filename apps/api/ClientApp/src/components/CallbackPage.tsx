@@ -4,7 +4,7 @@ import { User } from 'oidc-client';
 import { push } from 'connected-react-router';
 import userManager from './../userManager';
 import { Dispatch } from 'redux';
-import { useEffect, ReactElement } from 'react';
+import { useEffect } from 'react';
 
 interface CallbackPageProps {
   dispatch: Dispatch;

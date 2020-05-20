@@ -8,6 +8,9 @@ import { AmphoraState } from '../../redux/state/amphora';
 import { actionCreators as listActions } from "../../redux/actions/amphora/list";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
 import { AmphoraListItem } from './AmphoraListItem';
+import { Route } from 'react-router-dom';
+
+import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
@@ -42,6 +45,8 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
         <Button color="primary" onClick={() => this.setMyView()}>My List</Button>
         <Button color="secondary" onClick={() => this.setOrganisationView()}>My Organisation</Button>
         {this.renderList()}
+
+        <Route path='/amphora/detail/:id' component={ConnectedAmphoraModal} />
       </React.Fragment>
     );
   }
@@ -80,7 +85,8 @@ function mapStateToProps(state: ApplicationState): AmphoraState {
   } else {
     return {
       isLoading: true,
-      list: []
+      list: [],
+      cache: {}
     }
   }
 }

@@ -3,13 +3,10 @@ import { DetailedAmphora } from 'amphoradata';
 import * as ReactMarkdown from 'react-markdown';
 
 interface AmphoraListItemProps {
-    amphora: DetailedAmphora,
+    amphora: DetailedAmphora;
 }
 
 export class AmphoraDetail extends React.PureComponent<AmphoraListItemProps> {
-    // This method is called when the component is first added to the document
-    public componentDidMount() {
-    }
 
     // This method is called when the route parameters change
     public componentDidUpdate(prevProps: AmphoraListItemProps) {

@@ -30,19 +30,7 @@ class CreateAmphora extends React.PureComponent<CreateAmphoraProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1>Create a new Amphora</h1>
-        <PrimaryButton>
-          Primary Button
-        </PrimaryButton>
-        <PrimaryButton disabled={true}>
-          Primary Disabled
-        </PrimaryButton>
-        <SecondaryButton>
-          Secondary Button
-        </SecondaryButton>
-        <SecondaryButton disabled={true}>
-          Secondary Disabled
-        </SecondaryButton>
+          <h1>Create a new Amphora</h1>
       </React.Fragment>
     );
   }
@@ -58,7 +46,8 @@ function mapStateToProps(state: ApplicationState): AmphoraState {
   } else {
     return {
       isLoading: true,
-      list: []
+      list: [],
+      cache: {}
     }
   }
 }
