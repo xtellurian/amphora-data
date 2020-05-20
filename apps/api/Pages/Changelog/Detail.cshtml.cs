@@ -23,6 +23,11 @@ namespace Amphora.Api.Pages.Changelog
 
         public IActionResult OnGet(string version)
         {
+            if (!IsValidVersion(version))
+            {
+                return RedirectToPage("./Index");
+            }
+
             this.Version = version;
             var fullPath = Path.Join(ContentRootPath, Rootname, ChangelogsRelativePath);
             var versionFiles = Directory.EnumerateFiles(fullPath);
@@ -37,6 +42,23 @@ namespace Amphora.Api.Pages.Changelog
             this.RelativePath = absolutePath.Substring(absolutePath.IndexOf(Rootname) + Rootname.Length);
 
             return Page();
+        }
+
+        private bool IsValidVersion(string v)
+        {
+            if (string.IsNullOrEmpty(v))
+            {
+                return false;
+            }
+
+            var arr = v.Split('.').ToList();
+            if (arr.Count == 1)
+            {
+                // cannot have a version with no periods.
+                return false;
+            }
+
+            return true;
         }
     }
 }
