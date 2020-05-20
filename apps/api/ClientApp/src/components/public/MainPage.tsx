@@ -1,15 +1,22 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { isLocalhost } from '../../utlities';
+
 class MainPage extends React.PureComponent {
 
 
     public render() {
-        return (
-            <div>
-                THIS IS THE PUBLIC PAGE
-            </div>
-        );
+        if (isLocalhost) {
+            return (<div>
+                Placeholder for a redirect
+            </div>);
+        } else {
+            window && (window.location.href = 'https://amphoradata.com');
+            return (
+                <div> </div>
+            );
+        }
     }
 }
 
