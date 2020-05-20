@@ -40,7 +40,11 @@ export default class Pallete extends React.PureComponent {
           </SecondaryButton>
         <hr/>
         <h2> Inputs </h2>
-        <TextInput label="An Input Label" support="Some support text" onComplete={(v) => alert(v)} validator={(v) => this.validateText(v)} />
+        <TextInput 
+          label="An Input Label" 
+          helpText={(v) => "Some support text"} 
+          onComplete={(v) => alert("Input completed: " + v)} 
+          validator={(v) => this.validateText(v)} />
 
       </React.Fragment>
     );

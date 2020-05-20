@@ -2,11 +2,13 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { PrimaryButton, SecondaryButton } from '../molecules/buttons';
+import { TextInput, TextAreaInput } from '../molecules/inputs';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
 // import { actionCreators } from '../../redux/actions/amphorae';
 import { actionCreators as listActions } from "../../redux/actions/amphora/list";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
+import { ValidateResult } from '../molecules/inputs/inputProps';
 
 // At runtime, Redux will merge together...
 type CreateAmphoraProps =
@@ -27,10 +29,48 @@ class CreateAmphora extends React.PureComponent<CreateAmphoraProps> {
     // this.ensureDataFetched();
   }
 
+  private validateDescription(s: string): ValidateResult {
+    if(s && s.length > 62) {
+      return {
+        isValid: false,
+        message: "Description must be less than 620 characters"
+      }
+    }
+    return {
+      isValid: true,
+    }
+  }
+
+  private validateName(name: string): ValidateResult {
+    if(name && name.length > 120) {
+      return {
+        isValid: false,
+        message: "Name must be less than 120 characters"
+      }
+    }
+    return {
+      isValid: true,
+    }
+  }
+
   public render() {
     return (
       <React.Fragment>
-          <h1>Create a new Amphora</h1>
+        <h1>Create Amphora</h1>
+        <h3>Package your data</h3>
+        <div className="row">
+          <div className="col-6">
+            <TextInput label="Name" 
+              placeholder="What data are you packaging?" 
+              helpText={(value) => `${value.length}/120`}
+              validator={(value) => this.validateName(value)}/>
+            <TextAreaInput 
+              label="Description" 
+              placeholder="Provide more details" 
+              helpText={(value) => "620 characters"}
+              validator={(s) => this.validateDescription(s)} />
+          </div>
+        </div>
       </React.Fragment>
     );
   }

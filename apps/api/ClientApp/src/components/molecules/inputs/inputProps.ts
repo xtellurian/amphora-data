@@ -7,8 +7,9 @@ export interface ValidateResult {
 
 export interface InputProps<T> {
     label: string;
-    support?: string;
     value?: T;
+    placeholder?: string;
+    helpText(value: string): string;
     onComplete?: (value: T) => void;
     validator?: (value: T) => ValidateResult;
 }

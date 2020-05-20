@@ -1,3 +1,4 @@
 import { TextInput } from './TextInput';
+import { TextAreaInput } from './TextAreaInput';
 
-export { TextInput }
+export { TextInput, TextAreaInput }
