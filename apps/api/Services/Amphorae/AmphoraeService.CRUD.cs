@@ -174,7 +174,8 @@ namespace Amphora.Api.Services.Amphorae
 
                 if (purchased)
                 {
-                    var purchases = purchaseStore.Query(_ => _.PurchasedByOrganisationId == userReadRes.Entity.OrganisationId);
+                    // .Select can't be translated into cosmos
+                    var purchases = await purchaseStore.QueryAsync(_ => _.PurchasedByOrganisationId == userReadRes.Entity.OrganisationId);
                     res.AddRange(purchases.Select(_ => _.Amphora));
                 }
 
