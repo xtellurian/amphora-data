@@ -169,7 +169,7 @@ namespace Amphora.Api.Services.Amphorae
                 var res = new List<AmphoraModel>();
                 if (created)
                 {
-                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.CreatedBy.OrganisationId == userReadRes.Entity.OrganisationId));
+                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.OrganisationId == userReadRes.Entity.OrganisationId));
                 }
 
                 if (purchased)
