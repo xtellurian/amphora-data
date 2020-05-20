@@ -1,0 +1,35 @@
+.input {
+    display:flex;
+    flex-direction:row;
+    
+    /* This bit draws the box around it */
+    border:1px solid grey;
+
+    /* I've used padding so you can see the edges of the elements. */
+    padding:2px;
+
+  }
+
+
+  .input:focus-within {
+    outline: 2px solid var(--turqoise);
+  }
+
+.input input:focus {
+    /* removing the input focus blue box. Put this on the form if you like. */
+    outline: none;
+  }
+
+.input input {
+    width: 100%;
+    /* This bit draws the box around it */
+    border: transparent;
+
+    /* I've used padding so you can see the edges of the elements. */
+    padding:2px;
+
+  }
+.input button {
+    border: transparent;
+    color: var(--blue-garnet)
+  }

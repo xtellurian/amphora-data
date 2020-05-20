@@ -1,24 +1,14 @@
-import * as React from 'react';
-import { ButtonProps } from './buttonProps';
+import { Button } from './Button';
 
-import './buttons.css';
+export class SecondaryButton extends Button {
 
-export class SecondaryButton extends React.PureComponent<ButtonProps> {
-
-    public render() {
+    classNames(): string {
         let classNames = "button";
         if (this.props.disabled) {
             classNames += " button-disabled";
         } else {
             classNames += " button-secondary";
         }
-
-        return (
-            <React.Fragment>
-                <button className={classNames} disabled={this.props.disabled || false}>
-                    {this.props.children}
-                </button>
-            </React.Fragment>
-        );
+        return classNames;
     }
 }
