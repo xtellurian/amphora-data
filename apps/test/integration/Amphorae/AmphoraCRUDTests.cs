@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Tests.Helpers;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -56,6 +58,68 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task CanListAmphora_InVariousSituations()
+        {
+            // setcup the scipes up here
+            var self = "scope=self";
+            var org = "scope=organisation";
+            var created = "accessType=created";
+            var purchased = "accessType=purchased";
+
+            // we need 2 people in org and 1 outside of org.
+            // one of them needs to purchase something
+            // and the other needs to do the get list
+            var p1 = await GetPersonaAsync(Personas.Standard);
+            var p2 = await GetPersonaAsync(Personas.StandardTwo);
+            var other = await GetPersonaAsync(Personas.Other);
+
+            // create the 3 amphora
+            var amphora1 = EntityLibrary.GetAmphoraDto(p1.Organisation.Id);
+            var createRes1 = await p1.Http.PostAsJsonAsync("api/amphorae", amphora1);
+            amphora1 = await AssertHttpSuccess<DetailedAmphora>(createRes1);
+
+            var amphora2 = EntityLibrary.GetAmphoraDto(p2.Organisation.Id);
+            var createRes2 = await p2.Http.PostAsJsonAsync("api/amphorae", amphora2);
+            amphora2 = await AssertHttpSuccess<DetailedAmphora>(createRes2);
+
+            var otherAmphora = EntityLibrary.GetAmphoraDto(other.Organisation.Id);
+            var createOtherRes = await other.Http.PostAsJsonAsync("api/amphorae", otherAmphora);
+            otherAmphora = await AssertHttpSuccess<DetailedAmphora>(createOtherRes);
+
+            // now get p2 to purchase the other's amphora
+            var purchaseRes = await p2.Http.PostAsJsonAsync($"api/Amphorae/{otherAmphora.Id}/Purchases", new { });
+            await AssertHttpSuccess(purchaseRes);
+
+            // now do some listing and ensure they exist
+            // p1s created amphora
+            var res1 = await p1.Http.GetAsync($"api/amphorae?{self}&{created}");
+            var list1 = await AssertHttpSuccess<List<DetailedAmphora>>(res1);
+            list1.Should().Contain(_ => _.Id == amphora1.Id, "because p1 should see their own amphora");
+            list1.Should().NotContain(_ => _.Id == amphora2.Id, "because p1 did not create amphora2");
+            // p1 should be able to see p2's amphora
+            var res2 = await p1.Http.GetAsync($"api/amphorae?{org}&{created}");
+            var list2 = await AssertHttpSuccess<List<DetailedAmphora>>(res2);
+            list2.Should().Contain(_ => _.Id == amphora1.Id, "because p1 should still see the amphora they created");
+            list2.Should().Contain(_ => _.Id == amphora2.Id, "because p1 should be able to see p2s amphora");
+            // p1 should be able to see p2's purchased amphora
+            var res3 = await p1.Http.GetAsync($"api/amphorae?{org}&{purchased}");
+            var list3 = await AssertHttpSuccess<List<DetailedAmphora>>(res3);
+            list3.Should().Contain(_ => _.Id == otherAmphora.Id, "because p1 should be able to see p2s purchased amphora");
+            list3.Should()
+                .NotContain(_ => _.Id == amphora1.Id, "because created amphora 1 shouldn't show")
+                .And
+                .NotContain(_ => _.Id == amphora2.Id, "because created amphora 2 shouldn't show");
+            // p2 should see their own purchase
+            var res4 = await p2.Http.GetAsync($"api/amphorae?{self}&{purchased}");
+            var list4 = await AssertHttpSuccess<List<DetailedAmphora>>(res4);
+            list4.Should().Contain(_ => _.Id == otherAmphora.Id, "because p2 purchased the other amphora");
+            list4.Should()
+                .NotContain(_ => _.Id == amphora1.Id, "because created amphora 1 shouldn't show")
+                .And
+                .NotContain(_ => _.Id == amphora2.Id, "because created amphora 2 shouldn't show");
         }
 
         [Fact]
