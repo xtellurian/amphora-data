@@ -7,6 +7,7 @@ import AppNavMenu from './navigation/AppNavMenu';
 import PublicNavMenu from './navigation/PublicNavMenu';
 import HamburgerMenu from './navigation/HamburgerMenu';
 import { ApplicationState } from '../redux/state';
+import { Link } from 'react-router-dom';
 
 interface LayoutProps {
   user: User;
@@ -22,7 +23,8 @@ const fixedMenuStyle: React.CSSProperties = {
   position: "fixed",
   width: "60px",
   height: "100%",
-  margin: "0px 0px"
+  margin: "0px 0px",
+  paddingTop: "60px"
 }
 
 const Layout = (props: LayoutProps): React.ReactElement => {
@@ -31,6 +33,9 @@ const Layout = (props: LayoutProps): React.ReactElement => {
     return (
       <div id="outer-container">
         <div style={fixedMenuStyle}>
+          <Link to="/">
+            <img className="img-fluid p-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg"/>
+          </Link>
         </div>
         <HamburgerMenu isConnected={isConnected} path={props.location.pathname} pageWrapId="page-wrap" outerContainerId="outer-container" />
         <AppNavMenu isConnected={isConnected} path={props.location.pathname} />

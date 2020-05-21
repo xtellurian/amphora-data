@@ -43,8 +43,9 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
         return (
             // noOverlay prevents greying out the main parts when triggering the menu
             <Menu noOverlay styles={this.styles()} outerContainerId={this.props.outerContainerId} pageWrapId={this.props.pageWrapId}>
-                <h3>Menu</h3>
-                <NavbarBrand className="m-3 bg-white w-100" tag={Link} to="/">Amphora Data</NavbarBrand>
+                <NavbarBrand className="w-100 m-2" tag={Link} to="/">
+                    <img className="img-fluid" src="/_content/sharedui/images/Amphora_Data_Logo_white.png"/>
+                </NavbarBrand>
                 <Avatar />
 
                 <Nav vertical className="m-2">
