@@ -12,7 +12,7 @@ class MainPage extends React.PureComponent {
                 Placeholder for a redirect
             </div>);
         } else {
-            window && (window.location.href = 'https://amphoradata.com');
+           //  window && (window.location.href = 'https://amphoradata.com');
             return (
                 <div> </div>
             );
