@@ -1,18 +1,20 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { slide as PlainMenu } from 'react-burger-menu';
+import { push as PlainMenu } from 'react-burger-menu';
+// import { slide as PlainMenu } from 'react-burger-menu';
 import { decorator as reduxBurgerMenu } from 'redux-burger-menu';
 import userManager from '../../userManager';
 import { NavItem, NavLink, Nav, NavbarBrand } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { IBurgerMenuState } from '../../redux/state/plugins/burgerMenu'
+import { BurgerMenuState } from '../../redux/state/plugins/burgerMenu'
 import { ApplicationState } from '../../redux/state';
 import { actionCreators } from '../../redux/actions/plugins/burgerMenu';
 import Avatar from './Avatar';
 
 const Menu = reduxBurgerMenu(PlainMenu); // this line connects the burger menu to redux state
 type HamburgerMenuProps =
-    IBurgerMenuState // ... state we've requested from the Redux store
+    { pageWrapId?: string; outerContainerId?: string }
+    & BurgerMenuState // ... state we've requested from the Redux store
     & typeof actionCreators // ... plus action creators we've requested
     & { path: string; isConnected: boolean }; // ... plus incoming routing parameters
 
@@ -32,10 +34,15 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
         });
     };
 
+    private onItemClick() {
+        // this.props.close();
+    }
+
 
     public render() {
         return (
-            <Menu styles={this.styles()}>
+            // noOverlay prevents greying out the main parts when triggering the menu
+            <Menu noOverlay styles={this.styles()} outerContainerId={this.props.outerContainerId} pageWrapId={this.props.pageWrapId}>
                 <h3>Menu</h3>
                 <NavbarBrand className="m-3 bg-white w-100" tag={Link} to="/">Amphora Data</NavbarBrand>
                 <Avatar />
@@ -43,23 +50,23 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                 <Nav vertical className="m-2">
 
                     <hr className="bg-white" />
-                    <NavItem onClick={() => { this.props.close() }}>
+                    <NavItem onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/amphora">My Amphora</NavLink>
                     </NavItem>
-                    <NavItem className="menu-item" onClick={() => { this.props.close() }}>
+                    <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/create">Create</NavLink>
                     </NavItem>
-                    <NavItem className="menu-item" onClick={() => { this.props.close() }}>
+                    <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/request">Request</NavLink>
                     </NavItem>
                     <hr className="bg-white" />
-                    <NavItem className="menu-item" onClick={() => { this.props.close() }}>
+                    <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/find">Find</NavLink>
                     </NavItem>
 
                     <hr className="bg-white" />
 
-                    <NavItem onClick={() => { this.props.close() }}>
+                    <NavItem onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/user">User Info</NavLink>
                     </NavItem>
                 </Nav>
@@ -79,7 +86,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
             },
             /* Color/shape of burger icon bars */
             bmBurgerBars: {
-                background: '#373a47'
+                background: 'var(--amphora-white)'
             },
             /* Color/shape of burger icon bars on hover*/
             bmBurgerBarsHover: {
@@ -104,7 +111,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
             },
             /* General sidebar styles */
             bmMenu: {
-                background: 'rgb(56,56,56)',
+                background: 'var(--ebony)',
                 padding: '2.5em 1.5em 0',
                 fontSize: '1.15em'
             },

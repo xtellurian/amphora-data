@@ -17,17 +17,32 @@ interface LayoutProps {
   children?: React.ReactNode;
 }
 
+const fixedMenuStyle: React.CSSProperties = {
+  backgroundColor: "var(--ebony)",
+  position: "fixed",
+  width: "60px",
+  height: "100%",
+  margin: "0px 0px"
+}
+
 const Layout = (props: LayoutProps): React.ReactElement => {
   const isConnected = !!props.user;
   if (isConnected) {
     return (
-      <React.Fragment>
-        <HamburgerMenu isConnected={isConnected} path={props.location.pathname} />
+      <div id="outer-container">
+        <div style={fixedMenuStyle}>
+        </div>
+        <HamburgerMenu isConnected={isConnected} path={props.location.pathname} pageWrapId="page-wrap" outerContainerId="outer-container" />
         <AppNavMenu isConnected={isConnected} path={props.location.pathname} />
-        <Container>
-          {props.children}
+        <Container id="page-wrap">
+          {/* adding these two divs so the menu doesn't push too far */}
+          <div className="row">
+            <div className="col-8">
+              {props.children}
+            </div>
+          </div>
         </Container>
-      </React.Fragment>
+      </div>
     );
   } else {
     return (

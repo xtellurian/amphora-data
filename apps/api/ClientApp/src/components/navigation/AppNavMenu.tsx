@@ -27,7 +27,7 @@ export default class AppNavMenu extends React.Component<{ path: string, isConnec
     public render() {
         return (
             <header>
-                <Navbar className="border-bottom box-shadow mb-3 justify-content-end" light>
+                <Navbar className="box-shadow mb-3 justify-content-end" light>
                     <Container className="">
                         {/* <Collapse className="d-inline-flex flex-sm-row-reverse" isOpen={this.state.isOpen} navbar>
                         </Collapse> */}

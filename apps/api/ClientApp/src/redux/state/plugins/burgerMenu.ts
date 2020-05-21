@@ -1,4 +1,4 @@
-export interface IBurgerMenuState {
-    isOpen: boolean
+export interface BurgerMenuState {
+    isOpen: boolean;
 }
 
