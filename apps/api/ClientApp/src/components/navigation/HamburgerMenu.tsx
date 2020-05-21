@@ -21,18 +21,21 @@ type HamburgerMenuProps =
 
 class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
 
-    logout(event: any) {
-        event.preventDefault();
-        userManager.signoutRedirect();
-        userManager.removeUser();
-    };
+    componentDidMount() {
+        this.props.open();
+    }
+    // private logout(event: any) {
+    //     event.preventDefault();
+    //     userManager.signoutRedirect();
+    //     userManager.removeUser();
+    // };
 
-    login() {
-        // pass the current path to redirect to the correct page after successfull login
-        userManager.signinRedirect({
-            data: { path: this.props.path },
-        });
-    };
+    // private login() {
+    //     // pass the current path to redirect to the correct page after successfull login
+    //     userManager.signinRedirect({
+    //         data: { path: this.props.path },
+    //     });
+    // };
 
     private onItemClick() {
         // this.props.close();
