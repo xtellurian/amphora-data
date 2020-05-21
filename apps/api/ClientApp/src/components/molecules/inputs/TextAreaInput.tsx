@@ -4,10 +4,6 @@ import { TextInputBase } from './TextInputBase';
 
 export class TextAreaInput extends TextInputBase {
 
-    private handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>): void {
-
-    }
-
     private characterCount(): React.ReactElement | undefined {
         return (
             <React.Fragment>
@@ -25,7 +21,6 @@ export class TextAreaInput extends TextInputBase {
                 <div className="input-inner">
                     <textarea className="form-control" rows={5} cols={20} name="description"
                         onChange={(e) => this.handleChange(e)}
-                        onKeyDown={(e) => this.handleKeyDown(e)}
                         onBlur={(e) => this.handleBlur(e)}>
                         {this.props.children}
                     </textarea>

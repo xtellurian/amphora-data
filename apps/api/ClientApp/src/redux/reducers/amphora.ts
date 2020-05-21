@@ -16,7 +16,7 @@ export const reducer: Reducer<AmphoraState> = (state: AmphoraState | undefined, 
     switch (incomingAction.type) {
 
         case listActions.RECIEVE_AMPHORAE_LIST:
-            const recieveAmphoraAction = incomingAction as listActions.RecieveAmphoraAction
+            const recieveAmphoraAction = incomingAction as listActions.RecieveAmphoraListAction
             const allAmphora = recieveAmphoraAction.payload;
             const cache: StringToEntityMap<DetailedAmphora> =  state.cache || {};
             allAmphora.forEach((a) => {

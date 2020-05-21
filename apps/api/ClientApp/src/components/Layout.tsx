@@ -6,6 +6,7 @@ import { Container } from 'reactstrap';
 import AppNavMenu from './navigation/AppNavMenu';
 import PublicNavMenu from './navigation/PublicNavMenu';
 import HamburgerMenu from './navigation/HamburgerMenu';
+import ConnectedMessages from './ConnectedMessages';
 import { ApplicationState } from '../redux/state';
 import { Link } from 'react-router-dom';
 
@@ -41,6 +42,7 @@ const Layout = (props: LayoutProps): React.ReactElement => {
         <AppNavMenu isConnected={isConnected} path={props.location.pathname} />
         <Container id="page-wrap">
           {/* adding these two divs so the menu doesn't push too far */}
+          <ConnectedMessages/>
           <div className="row">
             <div className="col-8">
               {props.children}
