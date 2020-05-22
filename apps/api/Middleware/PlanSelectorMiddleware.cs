@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Organisations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -49,30 +50,42 @@ namespace Amphora.Api.Middleware
             var userDetailsRes = await userDataService.ReadAsync(httpContext.User, userId);
 
             var userDetails = userDetailsRes.Entity;
-
             var organisationId = userDetailsRes.Succeeded ? userDetailsRes.Entity?.OrganisationId : null;
 
-            if (httpContext.User.Identity?.IsAuthenticated == true // don't redirect if there's no user
-                 && string.IsNullOrEmpty(organisationId) // only redirect if user doesn't have an org
-                 && !AcceptablePaths.Any(_ => string.Equals(httpContext.Request.Path, _, comparisonType: StringComparison.OrdinalIgnoreCase))
-                 && !httpContext.Request.Path.StartsWithSegments("/api")) // don't redirect API calls
+            if (httpContext.User.Identity?.IsAuthenticated == true)
             {
-                // check for invitation
-                var inviteRes = await invitationService.GetMyInvitations(httpContext.User);
+                // if we are authenticated
+                if (string.IsNullOrEmpty(organisationId))
+                {
+                    var inviteRes = await invitationService.GetMyInvitations(httpContext.User);
 
-                if (inviteRes.Succeeded && inviteRes.Entity != null && inviteRes.Entity.Any())
-                {
-                    var invitation = inviteRes.Entity.FirstOrDefault();
-                    // now navigate to accept that invite.
-                    logger.LogInformation("Found invitation! Redirecting...");
-                    httpContext.Response.Redirect($"{JoinOrgPath}?id={invitation.TargetOrganisationId}");
-                }
-                else
-                {
-                    logger.LogInformation($"No invitation. Redirecting {name} to {SelectPlanPath}");
-                    httpContext.Response.Redirect($"{SelectPlanPath}");
+                    if (inviteRes.Succeeded && inviteRes.Entity != null && inviteRes.Entity.Any())
+                    {
+                        // there's an invitation.
+                        var invitation = inviteRes.Entity.FirstOrDefault();
+                        // now navigate to accept that invite.
+                        logger.LogInformation("Found invitation! Redirecting...");
+                        httpContext.Response.Redirect($"{JoinOrgPath}?id={invitation.TargetOrganisationId}");
+                    }
+                    else
+                    {
+                        logger.LogInformation($"No invitation. Redirecting {name} to {SelectPlanPath}");
+                        // actually le's just create an org here too.
+                        var org = OrganisationModel.Autogenerate($"{userDetails.UserName}'s Organisation");
+                        var createRes = await organisationService.CreateAsync(httpContext.User, org);
+                        // httpContext.Response.Redirect($"{SelectPlanPath}");
+                    }
                 }
             }
+
+            // if (httpContext.User.Identity?.IsAuthenticated == true // don't redirect if there's no user
+            //      && string.IsNullOrEmpty(organisationId) // only redirect if user doesn't have an org
+            //      && !AcceptablePaths.Any(_ => string.Equals(httpContext.Request.Path, _, comparisonType: StringComparison.OrdinalIgnoreCase))
+            //      && !httpContext.Request.Path.StartsWithSegments("/api")) // don't redirect API calls
+            // {
+            //     // check for invitation
+
+            // }
 
             await _next(httpContext);
         }
