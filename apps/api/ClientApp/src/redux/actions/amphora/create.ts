@@ -10,11 +10,11 @@ export interface CreateAmphoraAction extends Action {
     type: typeof CREATE;
     payload: CreateAmphora;
 }
-interface RecieveCreatedAmphoraAction extends Action {
+export interface RecieveCreatedAmphoraAction extends Action {
     type: typeof RECIEVE_AMPHORAE_CREATED;
     payload: DetailedAmphora;
 }
-interface CreateAmphoraFailedAction extends Action {
+export interface CreateAmphoraFailedAction extends Action {
     type: typeof CREATE_ERROR;
     message: string;
 }

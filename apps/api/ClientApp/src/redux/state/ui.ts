@@ -11,6 +11,7 @@ export interface Alert {
     id: string;
     content: string;
     level: AlertLevel;
+    path?: string;
 }
 
 export interface UiState {

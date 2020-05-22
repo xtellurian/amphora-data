@@ -8,11 +8,23 @@
 }
 
 .icon {
-    margin: 12px;
+    margin: 12px 0px;
 }
 
 .content {
     margin: 12px;
+}
+
+.actions {
+    margin: 3px;
+}
+
+.action {
+    padding: 12px;
+}
+
+.action:hover {
+    cursor: pointer
 }
 
 /* Success */
@@ -51,5 +63,8 @@
 }
 
 .message-error .icon {
+    color: var(--plum);
+}
+.message-error .actions {
     color: var(--plum);
 }

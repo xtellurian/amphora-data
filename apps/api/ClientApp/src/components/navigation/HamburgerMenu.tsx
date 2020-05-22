@@ -111,7 +111,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
             */
             bmMenuWrap: {
                 position: 'fixed',
-                height: '100%'
+                height: '100%',
             },
             /* General sidebar styles */
             bmMenu: {

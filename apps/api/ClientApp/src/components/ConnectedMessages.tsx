@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../redux/state';
-import { UiState } from '../redux/state/ui';
+import { UiState, Alert, SUCCESS, INFO, WARNING, ERROR } from '../redux/state/ui';
 import { actionCreators } from '../redux/actions/ui';
 
-import { Message } from './molecules/messages/Message';
+import { SuccessMessage, InfoMessage, WarningMessage, ErrorMessage } from './molecules/messages';
 
 type MessagesProps =
     UiState
@@ -13,12 +13,20 @@ type MessagesProps =
 class ConnectedMessages extends React.PureComponent<MessagesProps> {
     private renderMessages() {
         if (this.props.alerts) {
-            const x = this.props.alerts.map(a =>
-                <Message dismiss={(id) => this.dismissMessage(id)} alert={a} key={a.id} />
-            );
+            return this.props.alerts.map(a => this.renderMessage(a));
+        }
+    }
 
-            console.log(x)
-            return x;
+    private renderMessage(alert: Alert) {
+        switch (alert.level) {
+            case SUCCESS:
+                return <SuccessMessage key={alert.id} alert={alert} dismiss={(id) => this.dismissMessage(id)} />
+            case INFO:
+                return <InfoMessage key={alert.id} alert={alert} dismiss={(id) => this.dismissMessage(id)} />
+            case WARNING:
+                return <WarningMessage key={alert.id} alert={alert} dismiss={(id) => this.dismissMessage(id)} />
+            case ERROR:
+                return <ErrorMessage key={alert.id} alert={alert} dismiss={(id) => this.dismissMessage(id)} />
         }
     }
 

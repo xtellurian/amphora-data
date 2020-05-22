@@ -2,7 +2,11 @@ import * as React from 'react';
 import Modal from 'react-modal';
 import { Redirect } from 'react-router-dom';
 
-const customStyles = {
+const customStyles: Modal.Styles = {
+
+    overlay: {
+        zIndex: 1500, // this should be on top of the hamburger menu.
+    }
     // content: {
     //     top: '50%',
     //     left: '50%',
