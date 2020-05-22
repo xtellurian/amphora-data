@@ -58,13 +58,9 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 return Ok(mapper.Map<DetailedAmphora>(result.Entity));
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403);
-            }
             else
             {
-                return NotFound(result);
+                return Handle(result);
             }
         }
 
@@ -120,13 +116,9 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 return Ok(mapper.Map<DetailedAmphora>(result.Entity));
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403);
-            }
             else
             {
-                return NotFound(result.Errors);
+                return Handle(result);
             }
         }
 
@@ -150,13 +142,9 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 return Ok(mapper.Map<DetailedAmphora>(result.Entity));
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403);
-            }
             else
             {
-                return BadRequest(result.Errors);
+                return Handle(result);
             }
         }
 
@@ -177,13 +165,9 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 return Ok("Deleted Amohora");
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403);
-            }
             else
             {
-                return BadRequest(result.Errors);
+                return Handle(result);
             }
         }
 
@@ -199,7 +183,23 @@ namespace Amphora.Api.Controllers.Amphorae
             }
             else
             {
-                return NotFound(result.Errors);
+                return NotFound(result.Message);
+            }
+        }
+
+        private IActionResult Handle<T>(EntityOperationResult<T> result) where T : class
+        {
+            if (result.Succeeded)
+            {
+                return Ok(mapper.Map<List<DetailedAmphora>>(result.Entity));
+            }
+            else if (result.WasForbidden)
+            {
+                return StatusCode(403);
+            }
+            else
+            {
+                return NotFound(result.Message);
             }
         }
     }
