@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Pallete extends React.PureComponent {
 
-  public validateText(t: string): ValidateResult {
-    if (!t || t.length < 10) {
+  public validateText(t?: string): ValidateResult {
+    if (t && t.length < 10) {
       return {
         isValid: false,
         message: "Text must be more than 10 chars."

@@ -9,7 +9,7 @@ export interface InputProps<T> {
     label: string;
     value?: T;
     placeholder?: string;
-    helpText(value: string): string;
-    onComplete?: (value: T) => void;
-    validator?: (value: T) => ValidateResult;
+    helpText?: (value?: T) => string | undefined;
+    validator?: (value?: T) => ValidateResult;
+    onComplete?: (value?: T) => void;
 }
