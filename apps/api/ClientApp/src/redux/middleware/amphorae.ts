@@ -1,11 +1,7 @@
 import { Action } from "redux";
 import * as listActions from "../actions/amphora/list";
 import * as createActions from "../actions/amphora/create";
-
-import * as amphoradata from 'amphoradata';
-
-const configuration = new amphoradata.Configuration({ basePath: "." });
-const amphoraApiClient = new amphoradata.AmphoraeApi(configuration);
+import { amphoraApiClient } from '../../clients/amphoraApiClient';
 
 const listAmphora = (store: any) => (next: any) => (action: Action) => {
   next(action);
