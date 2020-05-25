@@ -30,6 +30,7 @@ interface ModalWrapperProps extends Modal.Props {
 
 interface ModalState {
     willClose: boolean;
+    isOpen: boolean;
 }
 
 const xStyle: React.CSSProperties = {
@@ -41,11 +42,15 @@ export class ModalWrapper extends React.PureComponent<ModalWrapperProps, ModalSt
 
     constructor(props: ModalWrapperProps) {
         super(props);
+        this.state = {
+            isOpen: props.isOpen,
+            willClose: false
+        };
         Modal.setAppElement('#root');
     }
 
     private close() {
-        this.setState({ willClose: true });
+        this.setState({ willClose: true, isOpen: false });
     }
 
     public render() {
@@ -56,9 +61,11 @@ export class ModalWrapper extends React.PureComponent<ModalWrapperProps, ModalSt
         }
 
         return (
-            <Modal isOpen={this.props.isOpen}
+            <Modal isOpen={this.state.isOpen}
+                shouldCloseOnEsc={true}
+                shouldCloseOnOverlayClick={true}
                 onAfterOpen={this.props.onAfterOpen}
-                onRequestClose={this.props.onRequestClose}
+                onRequestClose={ (e) => this.close()}
                 style={customStyles}
                 contentLabel="Example Modal"  >
                 <FontAwesomeIcon style={xStyle} className="m-3 float-right" size="2x" icon="times" onClick={() => this.close()} />
