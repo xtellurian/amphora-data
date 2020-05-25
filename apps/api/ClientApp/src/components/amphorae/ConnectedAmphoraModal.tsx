@@ -3,21 +3,21 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../../redux/state';
 import { actionCreators } from '../../redux/actions/ui';
 import { ModalWrapper } from '../molecules/modal/ModalWrapper';
-import { RouteComponentProps } from 'react-router';
-import ReactMarkdown from 'react-markdown';
+import { RouteComponentProps, Route } from 'react-router';
+import Description from './detail/Description';
+import Files from './detail/Files';
+import Signals from './detail/Signals';
+import Integrate from './detail/Integrate';
+import TermsOfUse from './detail/TermsOfUse';
+import Location from './detail/Location';
+import Quality from './detail/Quality';
 import { AmphoraState } from '../../redux/state/amphora';
 import { Spinner } from 'reactstrap';
+import DetailMenu from './detail/AmphoraDetailMenu'
 
-const customStyles = {
-    // content: {
-    //     top: '50%',
-    //     left: '50%',
-    //     right: 'auto',
-    //     bottom: 'auto',
-    //     marginRight: '-50%',
-    //     transform: 'translate(-50%, -50%)'
-    // }
-};
+interface MenuState {
+    isOpen: boolean;
+}
 
 type ConnectedAmphoraModalProps =
     AmphoraState
@@ -25,29 +25,47 @@ type ConnectedAmphoraModalProps =
     & RouteComponentProps<{ id: string }>;
 
 
-class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalProps> {
+class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalProps, MenuState> {
 
+    /**
+     *
+     */
+    constructor(props: ConnectedAmphoraModalProps) {
+        super(props);
+        this.state = { isOpen: true };
+    }
     public componentDidMount() {
         // alert("connected amphora model mounted");
         // TODO: refresh cache here
     }
 
+    private toggleMenu(isOpen: boolean) {
+        this.setState({ isOpen });
+    }
+
     public render() {
         const id = this.props.match.params.id;
-        const amphora = this.props.cache[id]
+        const amphora = this.props.cache[id];
+        const openClose = this.state.isOpen ? "menu-open" : "menu-closed";
         if (amphora) {
             return (
                 <ModalWrapper isOpen={true} onCloseRedirectTo="/amphora" >
-                    {id}
-                    <h3>{amphora.name}</h3>
-                    <div>
-                        Description:
-                        <ReactMarkdown>
-                            {amphora.description}
-                        </ReactMarkdown>
-                    </div>
-                    <div>
-                        Price: {amphora.price}
+                    <div className={openClose}>
+                        {/* this renders the master menu */}
+                        <DetailMenu id={this.props.match.params.id} toggleMenu={(o) => this.toggleMenu(o)} isOpen={this.state.isOpen} />
+                        <div className="modal-inner">
+                            <h3>{amphora.name}</h3>
+                            <small>Created {amphora.createdDate? "on " + amphora.createdDate.toLocaleString() : "earlier"}</small>
+                            <br/>
+                            {/* these render the detail views */}
+                            <Route exact path='/amphora/detail/:id/' component={Description} />
+                            <Route exact path='/amphora/detail/:id/files' component={Files} />
+                            <Route exact path='/amphora/detail/:id/signals' component={Signals} />
+                            <Route exact path='/amphora/detail/:id/integrate' component={Integrate} />
+                            <Route exact path='/amphora/detail/:id/terms' component={TermsOfUse} />
+                            <Route exact path='/amphora/detail/:id/location' component={Location} />
+                            <Route exact path='/amphora/detail/:id/quality' component={Quality} />
+                        </div>
                     </div>
 
                 </ModalWrapper>
@@ -55,7 +73,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
         } else {
             return <Spinner></Spinner>
         }
-        
+
     }
 }
 
