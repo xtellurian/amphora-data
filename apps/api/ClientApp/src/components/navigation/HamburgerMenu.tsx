@@ -3,15 +3,14 @@ import { connect } from 'react-redux';
 import { push as PlainMenu } from 'react-burger-menu';
 // import { slide as PlainMenu } from 'react-burger-menu';
 import { decorator as reduxBurgerMenu } from 'redux-burger-menu';
-import userManager from '../../userManager';
 import { NavItem, NavLink, Nav, NavbarBrand } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { BurgerMenuState } from '../../redux/state/plugins/burgerMenu'
 import { ApplicationState } from '../../redux/state';
 import { actionCreators } from '../../redux/actions/plugins/burgerMenu';
 import Avatar from './Avatar';
-
-const Menu = reduxBurgerMenu(PlainMenu); // this line connects the burger menu to redux state
+const menuId = "primary";
+const Menu = reduxBurgerMenu(PlainMenu, menuId); // this line connects the burger menu to redux state
 type HamburgerMenuProps =
     { pageWrapId?: string; outerContainerId?: string }
     & BurgerMenuState // ... state we've requested from the Redux store
@@ -22,20 +21,8 @@ type HamburgerMenuProps =
 class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
 
     componentDidMount() {
-        this.props.open();
+        this.props.open(menuId);
     }
-    // private logout(event: any) {
-    //     event.preventDefault();
-    //     userManager.signoutRedirect();
-    //     userManager.removeUser();
-    // };
-
-    // private login() {
-    //     // pass the current path to redirect to the correct page after successfull login
-    //     userManager.signinRedirect({
-    //         data: { path: this.props.path },
-    //     });
-    // };
 
     private onItemClick() {
         // this.props.close();
