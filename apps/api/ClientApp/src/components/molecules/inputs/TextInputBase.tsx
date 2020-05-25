@@ -84,7 +84,7 @@ export abstract class TextInputBase extends React.PureComponent<InputProps<strin
     protected clearButton(): React.ReactElement | null | undefined {
         if (this.state && this.state.value) {
             return (
-                <button onClick={(e) => this.setState({ value: "", validation: { isValid: true } })}>
+                <button onClick={(e) => this.setState({ value: "", validation: { isValid: true } })} tabIndex={-1}>
                     <FontAwesomeIcon icon="times-circle" />
                 </button>
             )
