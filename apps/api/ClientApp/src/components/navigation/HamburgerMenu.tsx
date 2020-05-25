@@ -133,7 +133,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        isOpen: state.burgerMenu.isOpen,
+        isOpen: state.burgerMenu.primary ? state.burgerMenu.primary.isOpen : false,
     };
 }
 
