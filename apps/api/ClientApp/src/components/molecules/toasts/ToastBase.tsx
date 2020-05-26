@@ -1,18 +1,16 @@
 import * as React from 'react';
-import { Alert } from '../../../redux/state/ui';
-
-import './messages.css';
+import { ToastContent } from './model';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
-interface MessageProps {
-    alert?: Alert;
-    dismiss: (id: string) => void;
+export interface ToastProps {
+    content?: ToastContent;
 }
-export abstract class MessageBase extends React.PureComponent<MessageProps> {
 
-    protected outerDivClass = "message row justify-content-between";
+export abstract class ToastBase extends React.PureComponent<ToastProps> {
+
+    protected outerDivClass = "text-sm txt-ebony message row justify-content-between";
 
     protected renderIconColumn(iconName: IconProp) {
         return (
@@ -23,27 +21,18 @@ export abstract class MessageBase extends React.PureComponent<MessageProps> {
     }
 
     protected renderContent(): JSX.Element | undefined {
-        if(this.props.alert) {
+        if (this.props.content) {
             return (
                 <div className="content col d-flex align-items-center">
-                    {this.props.alert.content}
+                    {this.props.content.text}
                 </div>
             );
         }
     }
 
-    private renderDismiss(): JSX.Element | undefined {
-        if (this.props.alert) {
-            return (
-                <React.Fragment>
-                    Dismiss
-                </React.Fragment>)
-        }
-    }
-
     private renderLink(): JSX.Element | undefined {
-        if (this.props.alert && this.props.alert.path) {
-            const path = this.props.alert.path;
+        if (this.props.content && this.props.content.path) {
+            const path = this.props.content.path;
             return (
                 <React.Fragment>
                     <Link to={path}>
@@ -54,16 +43,11 @@ export abstract class MessageBase extends React.PureComponent<MessageProps> {
     }
 
     protected renderActionsColumn(): JSX.Element | undefined {
-        if (this.props.alert) {
-            const alertId = this.props.alert.id;
-            return (<div className="col-3 d-flex align-items-center actions" onClick={() => this.props.dismiss(alertId)}>
+        if (this.props.content) {
+            return (<div className="col-3 d-flex align-items-center actions" onClick={() => 1}>
                 <span className="action">
                     {this.renderLink()}
                 </span>
-                <span className="action">
-                    {this.renderDismiss()}
-                </span>
-
             </div>);
         }
     }

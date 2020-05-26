@@ -1,0 +1,45 @@
+.Toastify__toast-container {
+    width: 33% !important;
+}
+
+/* Success */
+.toast-success {
+    background-color: var(--avocado) !important;
+    border-left: 8px solid var(--apple);
+}
+
+.toast-success .icon {
+    color: var(--apple);
+}
+/* Info */
+.toast-info {
+    background-color: var(--yam) !important;
+    border-left: 8px solid var(--berry);
+}
+
+.toast-info .icon {
+    color: var(--berry);
+}
+
+/* Warn */
+.toast-warn {
+    background-color: var(--pear) !important;
+    border-left: 8px solid var(--mandarin);
+}
+
+.toast-warn .icon {
+    color: var(--mandarin);
+}
+
+/* Error */
+.toast-error {
+    background-color: var(--peach) !important;
+    border-left: 8px solid var(--plum);
+}
+
+.toast-error .icon {
+    color: var(--plum);
+}
+.toast-error .actions {
+    color: var(--plum);
+}

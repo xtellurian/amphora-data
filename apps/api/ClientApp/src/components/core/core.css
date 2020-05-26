@@ -36,7 +36,8 @@ body {
     font-family: var(--helvetica)
 }
 
-/* text classes */
+/* TEXT CLASSES */
+/* fonts */
 .txt-bold{
     font-weight: bold;
 }
@@ -82,4 +83,8 @@ body {
     line-height: 54px;
     font-weight: normal;
     letter-spacing: 0.025em;
+}
+/* colours */
+.txt-ebony {
+    color: var(--ebony)
 }

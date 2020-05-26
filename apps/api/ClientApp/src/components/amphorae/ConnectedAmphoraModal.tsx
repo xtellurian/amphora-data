@@ -54,9 +54,10 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
                         {/* this renders the master menu */}
                         <DetailMenu id={this.props.match.params.id} toggleMenu={(o) => this.toggleMenu(o)} isOpen={this.state.isOpen} />
                         <div className="modal-inner">
-                            <h3>{amphora.name}</h3>
-                            <small>Created {amphora.createdDate? "on " + amphora.createdDate.toLocaleString() : "earlier"}</small>
-                            <br/>
+                            <div className="mb-2">
+                                <h4>{amphora.name}</h4>
+                                <small>Created {amphora.createdDate? "on " + amphora.createdDate.toLocaleString() : "earlier"}</small>
+                            </div>
                             {/* these render the detail views */}
                             <Route exact path='/amphora/detail/:id/' component={Description} />
                             <Route exact path='/amphora/detail/:id/files' component={Files} />

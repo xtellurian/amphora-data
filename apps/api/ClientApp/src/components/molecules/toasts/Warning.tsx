@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { MessageBase } from './MessageBase';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ToastContent } from './model';
+import { ToastBase } from './ToastBase';
 
-export class WarningMessage extends MessageBase {
+class Warning extends ToastBase {
     render() {
-        if (this.props.alert) {
+        if (this.props.content) {
             return (
-                <div className={`message-warn ${this.outerDivClass}`} >
+                <div className={`${this.outerDivClass}`} >
                     {this.renderIconColumn("exclamation-triangle")}
-
                     {this.renderContent()}
                     {this.renderActionsColumn()}
                 </div >);
@@ -17,3 +16,5 @@ export class WarningMessage extends MessageBase {
         }
     }
 }
+
+export const warning = (content: ToastContent): JSX.Element => (<Warning content={content}></Warning>)

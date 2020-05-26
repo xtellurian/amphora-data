@@ -4,10 +4,13 @@ import { Spinner } from 'reactstrap';
 import { AmphoraDetailProps, mapStateToProps } from './props';
 import { EmptyState } from '../../molecules/empty/EmptyState';
 import { amphoraApiClient } from '../../../clients/amphoraApiClient';
+import { PrimaryButton } from '../../molecules/buttons';
 
 interface FilesState {
     files: string[];
 }
+
+const hiddenInputId = "select-file-input";
 
 class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
 
@@ -30,9 +33,20 @@ class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
             return <p> THERE ARE FILES HERE TO SEE</p>
         } else {
             return (
-            <EmptyState>
-                <strong>You haven't uploaded a file</strong>
-            </EmptyState>)
+                <EmptyState>
+                    <strong>There are no files.</strong>
+                </EmptyState>)
+        }
+    }
+
+    private onFileChangedHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        console.log(e.target.files)
+    }
+
+    private triggerUpload() {
+        const x = document.getElementById(hiddenInputId);
+        if (x) {
+            x.click()
         }
     }
 
@@ -42,8 +56,17 @@ class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
         if (amphora) {
             return (
                 <React.Fragment>
-                    <h5>Files</h5>
-                    <hr/>
+                    <div className="row">
+                        <div className="col-6">
+                            <h5>Files</h5>
+                        </div>
+                        <div className="col-6 pr-5 text-right">
+
+                            <input id={hiddenInputId} hidden type="file" name="file" onChange={(e) => this.onFileChangedHandler(e)} />
+                            <PrimaryButton onClick={e => this.triggerUpload()}> Upload File </PrimaryButton>
+                        </div>
+                    </div>
+                    <hr />
                     {this.renderFileList()}
                 </React.Fragment>
 

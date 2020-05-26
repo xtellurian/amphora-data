@@ -6,9 +6,11 @@ import { Container } from 'reactstrap';
 import AppNavMenu from './navigation/AppNavMenu';
 import PublicNavMenu from './navigation/PublicNavMenu';
 import HamburgerMenu from './navigation/HamburgerMenu';
-import ConnectedMessages from './ConnectedMessages';
 import { ApplicationState } from '../redux/state';
 import { Link } from 'react-router-dom';
+import { Toaster } from './molecules/toasts/Toaster';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LayoutProps {
   user: User;
@@ -33,16 +35,16 @@ const Layout = (props: LayoutProps): React.ReactElement => {
   if (isConnected) {
     return (
       <div id="outer-container">
+        {/* this is a fxed menu when hamburger is minimised */}
         <div style={fixedMenuStyle}>
           <Link to="/">
-            <img className="img-fluid p-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg"/>
+            <img className="img-fluid p-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
           </Link>
         </div>
+        <Toaster />
         <HamburgerMenu isConnected={isConnected} path={props.location.pathname} pageWrapId="page-wrap" outerContainerId="outer-container" />
         <AppNavMenu isConnected={isConnected} path={props.location.pathname} />
         <Container id="page-wrap">
-          {/* adding these two divs so the menu doesn't push too far */}
-          <ConnectedMessages/>
           <div className="row">
             <div className="col-8">
               {props.children}
