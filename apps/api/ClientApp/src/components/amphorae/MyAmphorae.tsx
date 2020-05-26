@@ -41,7 +41,7 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1 id="tabelLabel">My Amphora</h1>
+        <div className="txt-xxl">My Amphora</div>
         <Button color="primary" onClick={() => this.setMyView()}>My List</Button>
         <Button color="secondary" onClick={() => this.setOrganisationView()}>My Organisation</Button>
         {this.renderList()}

@@ -27,9 +27,59 @@
     --porcelain: #FCFCFC;
 
     --main-font: Helvetica, bold, sans-serif;
+    --helvetica:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --fjalla:   'Fjalla One', Arial, sans-serif;
 }
 
 body {
     font: helvetica, bold;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--helvetica)
+}
+
+/* text classes */
+.txt-bold{
+    font-weight: bold;
+}
+.txt-xxs {
+    font-family: var(--helvetica);
+    font-size: 0.75em;
+    line-height: 16px;
+    font-weight: normal;
+}
+.txt-xs {
+    font-family: var(--helvetica);
+    font-size: 0.875em;
+    line-height: 16px;
+    font-weight: normal;
+}
+.txt-sm {
+    font-family: var(--helvetica);
+    font-size: 1em;
+    line-height: 22px;
+    font-weight: normal;
+}
+.txt-med {
+    font-family: var(--helvetica);
+    font-size: 1.25em;
+    line-height: 28px;
+    font-weight: normal;
+}
+.txt-lg {
+    font-family: var(--fjalla);
+    font-size: 1.5em;
+    line-height: 32px;
+    font-weight: normal;
+}
+.txt-xl {
+    font-family: var(--fjalla);
+    font-size: 2em;
+    line-height: 44px;
+    font-weight: normal;
+}
+.txt-xxl {
+    font-family: var(--fjalla);
+    font-size: 2.8em;
+    line-height: 54px;
+    font-weight: normal;
+    letter-spacing: 0.025em;
 }
