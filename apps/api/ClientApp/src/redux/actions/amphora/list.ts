@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { DetailedAmphora, CreateAmphora } from 'amphoradata';
+import { DetailedAmphora } from 'amphoradata';
 
 export const LIST_MY_CREATED_AMPHORAE = '[amphorae] LIST MY CREATED';
 export const LIST_ORGANISATION_CREATED_AMPHORAE = '[amphorae] LIST ORGANISATION CREATED';

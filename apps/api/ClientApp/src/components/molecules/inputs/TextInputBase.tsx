@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { InputProps, ValidateResult } from './inputProps';
-import { Label, Input } from 'reactstrap';
+import { Label } from 'reactstrap';
 
 import './inputs.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

@@ -7,7 +7,7 @@ export class EmptyState extends React.PureComponent {
         return (<React.Fragment>
             <div className="emptystate text-center">
                 <div id="emptystate-img" className="oval">
-                    <img className="img-fluid m-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
+                    <img className="img-fluid m-2" alt="An empty state placeholder" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
                 </div>
                 <div>
                     {this.props.children}

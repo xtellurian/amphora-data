@@ -1,5 +1,4 @@
 import Home from './components/Home';
-import Counter from './components/Counter';
 
 import * as React from 'react';
 import { connect } from 'react-redux';
