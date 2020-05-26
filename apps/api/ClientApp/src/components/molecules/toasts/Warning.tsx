@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ToastContent } from './model';
 import { ToastBase } from './ToastBase';
+import { toast } from 'react-toastify';
 
 class Warning extends ToastBase {
     render() {
@@ -17,4 +18,9 @@ class Warning extends ToastBase {
     }
 }
 
-export const warning = (content: ToastContent): JSX.Element => (<Warning content={content}></Warning>)
+export function warning(content: ToastContent, autoClose: number | undefined = 5000) {
+    toast((<Warning content={content}></Warning>), {
+        className: "toast-warning",
+        autoClose
+    });
+}

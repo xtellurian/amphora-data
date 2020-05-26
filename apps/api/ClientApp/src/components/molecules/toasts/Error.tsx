@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ToastContent } from './model';
 import { ToastBase } from './ToastBase';
+import { toast } from 'react-toastify';
 
 class Error extends ToastBase {
     render() {
@@ -22,4 +23,9 @@ class Error extends ToastBase {
     }
 }
 
-export const error = (content: ToastContent): JSX.Element => (<Error content={content}></Error>)
+export function error(content: ToastContent, autoClose: number | undefined = 5000) {
+    toast((<Error content={content}></Error>), {
+        className: "toast-error",
+        autoClose
+    });
+}

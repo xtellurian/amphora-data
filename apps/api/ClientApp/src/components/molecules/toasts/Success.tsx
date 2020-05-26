@@ -2,6 +2,8 @@ import * as React from 'react';
 import { ToastContent } from './model';
 import { ToastBase } from './ToastBase';
 
+import { toast } from 'react-toastify';
+
 export class Success extends ToastBase {
     render() {
         if (this.props.content) {
@@ -17,5 +19,9 @@ export class Success extends ToastBase {
     }
 }
 
-export const success = (content: ToastContent): JSX.Element => (<Success content={content}></Success>)
-
+export function success(content: ToastContent, autoClose: number | undefined = 5000) {
+    toast((<Success content={content}></Success>), {
+        className: "toast-success",
+        autoClose
+    });
+}

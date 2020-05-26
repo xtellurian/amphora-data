@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ToastContent } from './model';
 import { ToastBase } from './ToastBase';
+import { toast } from 'react-toastify';
 
 class Info extends ToastBase {
     render() {
@@ -17,4 +18,10 @@ class Info extends ToastBase {
     }
 }
 
-export const info = (content: ToastContent): JSX.Element => (<Info content={content}></Info>)
+
+export function info(content: ToastContent, autoClose: number | undefined = 5000) {
+    toast((<Info content={content}></Info>), {
+        className: "toast-info",
+        autoClose
+    });
+}

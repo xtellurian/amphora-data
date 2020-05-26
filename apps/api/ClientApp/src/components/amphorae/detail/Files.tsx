@@ -1,36 +1,56 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Spinner } from 'reactstrap';
+import { actionCreators } from '../../../redux/actions/amphora/files';
 import { AmphoraDetailProps, mapStateToProps } from './props';
 import { EmptyState } from '../../molecules/empty/EmptyState';
 import { amphoraApiClient } from '../../../clients/amphoraApiClient';
 import { PrimaryButton } from '../../molecules/buttons';
+import * as toast from '../../molecules/toasts';
 
 interface FilesState {
+    isLoading: boolean;
     files: string[];
+    newFileName?: string;
 }
+
+type AmphoraDetailFilesProps =
+    AmphoraDetailProps
+    & typeof actionCreators;
 
 const hiddenInputId = "select-file-input";
 
-class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
+class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     /**
      *
      */
-    constructor(props: AmphoraDetailProps) {
+    constructor(props: AmphoraDetailFilesProps) {
         super(props);
-        this.state = { files: [] };
+        this.state = { isLoading: true, files: [] };
     }
     public componentDidMount() {
+        this.loadFiles();
+    }
+
+    private loadFiles() {
         amphoraApiClient.amphoraeFilesListFiles(this.props.match.params.id)
-            .then(f => this.setState({ files: f.data }))
-            .catch(e => console.log(e));
+            .then((f) => this.setState({ isLoading: false, files: f.data }))
+            .catch((e) => this.handleFileLoadError(e));
+    }
+
+    private handleFileLoadError(e: any) {
+        this.setState({ isLoading: false, files: [] });
+        toast.error({text: "Error getting files"})
     }
 
     renderFileList() {
-        if (this.state.files && this.state.files.length) {
+        if (this.state.isLoading) {
+            return <Spinner></Spinner>
+        }
+        else if (this.state.files && this.state.files.length > 0) {
             // there are files
-            return <p> THERE ARE FILES HERE TO SEE</p>
+            return this.state.files.map(f => <p key={f}> {f}</p>)
         } else {
             return (
                 <EmptyState>
@@ -40,7 +60,13 @@ class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
     }
 
     private onFileChangedHandler(e: React.ChangeEvent<HTMLInputElement>) {
-        console.log(e.target.files)
+        const id = this.props.match.params.id;
+        const amphora = this.props.cache[id];
+        if (amphora && e.target.files && e.target.files.length > 0) {
+            const name = this.state.newFileName || e.target.files[0].name;
+            this.props.uploadFile(amphora, e.target.files[0], name);
+            setTimeout(() => this.loadFiles(), 2000); //TODO: Improve this
+        }
     }
 
     private triggerUpload() {
@@ -61,7 +87,6 @@ class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
                             <h5>Files</h5>
                         </div>
                         <div className="col-6 pr-5 text-right">
-
                             <input id={hiddenInputId} hidden type="file" name="file" onChange={(e) => this.onFileChangedHandler(e)} />
                             <PrimaryButton onClick={e => this.triggerUpload()}> Upload File </PrimaryButton>
                         </div>
@@ -80,5 +105,5 @@ class Files extends React.PureComponent<AmphoraDetailProps, FilesState> {
 
 export default connect(
     mapStateToProps,
-    null,
+    actionCreators,
 )(Files);
