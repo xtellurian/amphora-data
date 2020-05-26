@@ -5,7 +5,7 @@ import './empty.css';
 export class EmptyState extends React.PureComponent {
     render() {
         return (<React.Fragment>
-            <div id="emptystate" className="text-center">
+            <div className="emptystate text-center">
                 <div id="emptystate-img" className="oval">
                     <img className="img-fluid m-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
                 </div>
