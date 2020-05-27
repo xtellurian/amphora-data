@@ -37,7 +37,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                 outerContainerId={this.props.outerContainerId} 
                 pageWrapId={this.props.pageWrapId}>
                 <NavbarBrand className="w-100 m-2" tag={Link} to="/">
-                    <img className="img-fluid" src="/_content/sharedui/images/Amphora_Data_Logo_white.png"/>
+                    <img alt="The Amphora Data logo" className="img-fluid" src="/_content/sharedui/images/Amphora_Data_Logo_white.png"/>
                 </NavbarBrand>
                 <Avatar />
 

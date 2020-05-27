@@ -23,13 +23,6 @@ const baseLink = "/amphora/detail";
 
 class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
 
-    /**
-     *
-     */
-    constructor(props: DetailMenuProps) {
-        super(props);
-    }
-
     private pages = [
         "Files",
         "Signals",

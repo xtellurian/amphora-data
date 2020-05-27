@@ -6,7 +6,6 @@ import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_FAIL, UploadFileFailedAction, UploadFi
 
 
 export const toastsListener = (store: any) => (next: any) => (action: Action) => {
-    const alertId = new Date().getTime().toString()
     next(action);
 
     switch (action.type) {

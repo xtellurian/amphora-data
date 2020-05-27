@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { DetailedAmphora, CreateAmphora } from 'amphoradata';
+import { DetailedAmphora } from 'amphoradata';
 
 export const UPLOAD_FILE = '[amphorae] UPLOAD FILE';
 export const UPLOAD_FILE_SUCCESS = `${UPLOAD_FILE} SUCCESS`;

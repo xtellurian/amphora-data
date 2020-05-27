@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import * as listActions from "../actions/amphora/list";
 import * as createActions from "../actions/amphora/create";
 import * as fileActions from '../actions/amphora/files';

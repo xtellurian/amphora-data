@@ -38,7 +38,7 @@ const Layout = (props: LayoutProps): React.ReactElement => {
         {/* this is a fxed menu when hamburger is minimised */}
         <div style={fixedMenuStyle}>
           <Link to="/">
-            <img className="img-fluid p-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
+            <img alt="An Amphora logo" className="img-fluid p-2" src="/_content/sharedui/images/logos/amphora_white_transparent.svg" />
           </Link>
         </div>
         <Toaster />
