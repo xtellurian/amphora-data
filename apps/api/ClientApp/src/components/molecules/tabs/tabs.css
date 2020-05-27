@@ -6,8 +6,6 @@
 .tab {
     background-color: var(--porcelain);
     text-align: center;
-    cursor: pointer;
-    padding: 0.5em;
     border-radius: 2px;
 }
 
@@ -17,12 +15,25 @@
     border-bottom: 4px solid var(--turquoise);
 }
 
+.tab a {
+    padding: 0.5em;
+    display: block;
+    color: inherit;
+    font: inherit;
+    text-underline-position: inherit;
+}
+
 .tab:hover {
     background-color: var(--blue-garnet);
     color: var(--amphora-white);
 }
 
-.tab:active {
+.tab a:hover {
+    background-color: var(--blue-garnet);
+    color: var(--amphora-white);
+}
+
+.tab:active a {
     background-color: var(--turquoise);
     color: var(--amphora-white);
 }

@@ -4,19 +4,24 @@ import { RouteComponentProps } from 'react-router';
 import { Button, Spinner } from 'reactstrap';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
-// import { actionCreators } from '../../redux/actions/amphorae';
+import { Table } from '../molecules/tables/Table';
 import { actionCreators as listActions } from "../../redux/actions/amphora/list";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
-import { AmphoraListItem } from './AmphoraListItem';
 import { Route } from 'react-router-dom';
+import qs from 'qs';
 
 import ConnectedAmphoraModal from './ConnectedAmphoraModal';
+import { Tabs, Tab } from '../molecules/tabs/Tabs';
+
+const CREATED = "created";
+const PURCHASED = "purchased";
+type AccessType = typeof CREATED | typeof PURCHASED;
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
   AmphoraState // ... state we've requested from the Redux store
   & (typeof listActions & typeof modalActions)  // ... plus action creators we've requested
-  & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
+  & RouteComponentProps<{ accessType: string }>; // ... plus incoming routing parameters
 
 
 class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
@@ -24,11 +29,6 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
   // This method is called when the component is first added to the document
   public componentDidMount() {
     this.setMyView();
-  }
-
-  // This method is called when the route parameters change
-  public componentDidUpdate(prevProps: MyAmphoraeProps) {
-    // this.ensureDataFetched();
   }
 
   private countAmphora(): number {
@@ -51,6 +51,26 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
     );
   }
 
+  private getAccessType(): AccessType {
+    const search = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    console.log(search)
+    return search.accessType as AccessType || "created";
+  }
+
+  private renderTabs() {
+    const accessType = this.getAccessType();
+    const tabs: Tab[] = [
+      { isActive: accessType==CREATED, text: "Created", to: `${this.props.match.path}?accessType=created` },
+      {isActive: accessType==PURCHASED, text: "Purchased", to: `${this.props.match.path}?accessType=purchased` }
+    ]
+    return (
+      <React.Fragment>
+        {this.getAccessType()}
+        < Tabs tabs={tabs} />
+      </React.Fragment>
+    )
+  }
+
   private renderList() {
     if (this.props.isLoading) {
       return (
@@ -60,12 +80,14 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
 
     return (
       <div>
-        <p>There are {this.countAmphora()} amphoras </p>
+        {this.renderTabs()}
+        <Table />
+        {/* <p>There are {this.countAmphora()} amphoras </p>
         {
           this.props.list.map(a => (
             <AmphoraListItem openModal={() => this.props.open(a)} amphora={a} key={a.id || ""} />
           ))
-        }
+        } */}
       </div>
     )
   }
