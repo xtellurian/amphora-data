@@ -13,7 +13,7 @@ type DetailMenuProps =
 
 const iconBackground: React.CSSProperties = {
     textAlign: "end",
-    backgroundColor: "var(--turqoise)"
+    backgroundColor: "var(--turquoise)"
 }
 const icon: React.CSSProperties = {
     cursor: "pointer",

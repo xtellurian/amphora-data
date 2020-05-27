@@ -20,19 +20,12 @@ type TabsProps =
 
 class Tabs extends React.PureComponent<TabsProps> {
 
-    /**
-     *
-     */
-    constructor(props: TabsProps) {
-        super(props);
-    }
-
     private getActiveTabId(): string {
         return activeTab(this.props.location.search) || this.props.default;
     }
 
     private isTabActive(t: Tab) {
-        return this.getActiveTabId() == t.id;
+        return this.getActiveTabId() === t.id;
     }
 
     renderTab(t: Tab) {

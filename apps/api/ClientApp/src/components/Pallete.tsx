@@ -2,8 +2,10 @@ import * as React from 'react';
 import { PrimaryButton, SecondaryButton } from './molecules/buttons';
 import { TextInput } from './molecules/inputs';
 import { ValidateResult } from './molecules/inputs/inputProps';
-import { Tabs } from './molecules/tabs/Tabs';
+import { Toggle } from './molecules/toggles/Toggle';
+import { Tabs, activeTab } from './molecules/tabs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { RouteComponentProps } from 'react-router';
 
 interface TabState {
   created?: boolean;
@@ -11,12 +13,14 @@ interface TabState {
   purchased?: boolean;
 }
 
-export default class Pallete extends React.PureComponent<{}, TabState> {
+type PalleteProps = RouteComponentProps<{ tab: string }>
+
+export default class Pallete extends React.PureComponent<PalleteProps, TabState> {
 
   /**
    *
    */
-  constructor(props: {}) {
+  constructor(props: PalleteProps) {
     super(props);
     this.state = {
       created: true,
@@ -39,13 +43,18 @@ export default class Pallete extends React.PureComponent<{}, TabState> {
 
       <React.Fragment>
         <h2>Tabs</h2>
-        <Tabs tabs={[
-          { isActive: this.state.created, text: "Created", onClick: () => this.setState({ created: true, requested: false, purchased: false }) },
-          { isActive: this.state.requested, text: "Data Requested", onClick: () => this.setState({ created: false, requested: true, purchased: false }) },
-          { isActive: this.state.purchased, text: "Purchased", onClick: () => this.setState({ created: false, requested: false, purchased: true }) },
-        ]}>
+        <Tabs default="created" tabs={[
+          { id: "created" },
+          { text: "Data Requested", id: "requested" },
+          { id: "purchased" },
+        ]} />
 
-        </Tabs>
+        The active tab is {activeTab(this.props.location.search)}
+
+        <h2>Toggles</h2>
+        <div className="w-100">
+          <Toggle values={[{ text: "One", value: "1" }, { text: "Two", value: "2" }]} onToggleSelected={(v) => alert(v)} />
+        </div>
 
         <h2>Icons</h2>
         <FontAwesomeIcon icon="times-circle" />

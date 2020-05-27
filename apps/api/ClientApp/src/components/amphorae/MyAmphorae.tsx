@@ -8,14 +8,8 @@ import { Table } from '../molecules/tables/Table';
 import { actionCreators as listActions } from "../../redux/actions/amphora/list";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
 import { Route } from 'react-router-dom';
-import qs from 'qs';
-
 import ConnectedAmphoraModal from './ConnectedAmphoraModal';
-import { Tabs, Tab } from '../molecules/tabs/Tabs';
-
-const CREATED = "created";
-const PURCHASED = "purchased";
-type AccessType = typeof CREATED | typeof PURCHASED;
+import { Tabs, activeTab } from '../molecules/tabs';
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
@@ -51,22 +45,14 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
     );
   }
 
-  private getAccessType(): AccessType {
-    const search = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-    console.log(search)
-    return search.accessType as AccessType || "created";
-  }
-
   private renderTabs() {
-    const accessType = this.getAccessType();
-    const tabs: Tab[] = [
-      { isActive: accessType==CREATED, text: "Created", to: `${this.props.match.path}?accessType=created` },
-      {isActive: accessType==PURCHASED, text: "Purchased", to: `${this.props.match.path}?accessType=purchased` }
+    const tabs = [
+      { id: "created" },
+      { id: "purchased" }
     ]
     return (
       <React.Fragment>
-        {this.getAccessType()}
-        < Tabs tabs={tabs} />
+        <Tabs default="created" tabs={tabs} />
       </React.Fragment>
     )
   }
@@ -81,13 +67,8 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
     return (
       <div>
         {this.renderTabs()}
+        {activeTab(this.props.location.search)}
         <Table />
-        {/* <p>There are {this.countAmphora()} amphoras </p>
-        {
-          this.props.list.map(a => (
-            <AmphoraListItem openModal={() => this.props.open(a)} amphora={a} key={a.id || ""} />
-          ))
-        } */}
       </div>
     )
   }
