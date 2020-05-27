@@ -9,41 +9,38 @@
 
 .input-inner {
     margin: 2px 2px;
-    display:flex;
-    flex-direction:row;
-    
+    display: flex;
+    flex-direction: row;
     /* This bit draws the box around it */
-    border:1px solid grey;
-
+    border: 1px solid grey;
     /* I've used padding so you can see the edges of the elements. */
-    padding:2px;
+    padding: 2px;
     border-radius: 2px;
-  }
+}
 
 .input-invalid {
-    border:1px solid red;
+    border: 1px solid red;
 }
 
 .input-inner:focus-within {
-    outline: 2px solid var(--turqoise);
-  }
+    outline: 2px solid var(--turquoise);
+}
 
 .input-inner input:focus {
     /* removing the input focus blue box. Put this on the form if you like. */
     outline: none;
-  }
+}
 
 .input-inner input {
     width: 100%;
     min-height: 32px;
     /* This bit draws the box around it */
     border: transparent;
-
     /* I've used padding so you can see the edges of the elements. */
-    padding:2px;
+    padding: 2px;
+}
 
-  }
 .input-inner button {
     border: transparent;
     color: var(--blue-garnet)
-  }
+}

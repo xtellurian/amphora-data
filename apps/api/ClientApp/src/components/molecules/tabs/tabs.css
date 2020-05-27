@@ -1,0 +1,28 @@
+.tabs {
+    border-bottom: 1px solid var(--marble);
+    text-transform: capitalize;
+}
+
+.tab {
+    background-color: var(--porcelain);
+    text-align: center;
+    cursor: pointer;
+    padding: 0.5em;
+    border-radius: 2px;
+}
+
+.tab.active {
+    border-left: 1px solid var(--platinum);
+    border-right: 1px solid var(--platinum);
+    border-bottom: 4px solid var(--turquoise);
+}
+
+.tab:hover {
+    background-color: var(--blue-garnet);
+    color: var(--amphora-white);
+}
+
+.tab:active {
+    background-color: var(--turquoise);
+    color: var(--amphora-white);
+}

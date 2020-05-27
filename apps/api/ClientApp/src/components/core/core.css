@@ -3,9 +3,8 @@
     --amphora-red: #BC312A;
     --amphora-black: #181717;
     --amphora-white: #FFFEFD;
-
     /* secondary */
-    --turqoise: #5AA6C0;
+    --turquoise: #5AA6C0;
     --blue-garnet: #0A789E;
     --pearl: #CFD2D6;
     /* text colours */
@@ -25,58 +24,69 @@
     --marble: #AAADB0;
     --platinum: #F1F4F6;
     --porcelain: #FCFCFC;
-
     --main-font: Helvetica, bold, sans-serif;
-    --helvetica:  'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --fjalla:   'Fjalla One', Arial, sans-serif;
+    --helvetica: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --fjalla: 'Fjalla One', Arial, sans-serif;
 }
 
 body {
     font: helvetica, bold;
-    font-family: var(--helvetica)
+    font-family: var(--helvetica);
+    color: var(--ebony)
 }
 
+
 /* TEXT CLASSES */
+
+
 /* fonts */
-.txt-bold{
+
+.txt-bold {
     font-weight: bold;
 }
+
 .txt-xxs {
     font-family: var(--helvetica);
     font-size: 0.75em;
     line-height: 16px;
     font-weight: normal;
 }
+
 .txt-xs {
     font-family: var(--helvetica);
     font-size: 0.875em;
     line-height: 16px;
     font-weight: normal;
 }
+
 .txt-sm {
     font-family: var(--helvetica);
     font-size: 1em;
     line-height: 22px;
     font-weight: normal;
 }
+
 .txt-med {
     font-family: var(--helvetica);
     font-size: 1.25em;
     line-height: 28px;
     font-weight: normal;
 }
+
 .txt-lg {
     font-family: var(--fjalla);
     font-size: 1.5em;
     line-height: 32px;
     font-weight: normal;
 }
+
 .txt-xl {
     font-family: var(--fjalla);
     font-size: 2em;
     line-height: 44px;
     font-weight: normal;
 }
+
 .txt-xxl {
     font-family: var(--fjalla);
     font-size: 2.8em;
@@ -84,7 +94,10 @@ body {
     font-weight: normal;
     letter-spacing: 0.025em;
 }
+
+
 /* colours */
+
 .txt-ebony {
     color: var(--ebony)
 }
