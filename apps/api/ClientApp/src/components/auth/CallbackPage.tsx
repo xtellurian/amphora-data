@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { User } from 'oidc-client';
 import { push } from 'connected-react-router';
-import userManager from './../userManager';
+import userManager from '../../userManager';
 import { Dispatch } from 'redux';
 import { useEffect } from 'react';
 
