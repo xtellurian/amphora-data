@@ -42,15 +42,16 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
     return (
       <React.Fragment>
         <div className="row">
-          <div className="col-5">
+          <div className="col-lg-5">
             <div className="txt-xxl">My Amphora</div>
           </div>
-          <div className="col-7">
+          <div className="col-lg-7">
             <Toggle
               options={[{ text: "My List", id: "self" }, { text: "My Organisation", id: "organisation" }]}
               onOptionSelected={(v) => this.toggleScope(v)} />
           </div>
         </div>
+        <hr/>
         {this.renderList()}
 
         <Route path='/amphora/detail/:id' component={ConnectedAmphoraModal} />
