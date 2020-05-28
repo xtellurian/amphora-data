@@ -1,17 +1,18 @@
-body, html {
+body,
+html {
     height: 100%;
-  }
+    background-color: #02181a;
+}
 
 .bg-login {
     /* The image used */
+    background-color: navy;
     background-image: url("/_content/sharedui/images/backgrounds/network_1.jpg");
-  
     /* Full height */
     height: 100%;
     width: 100%;
-  
     /* Center and scale the image nicely */
     background-repeat: no-repeat;
     background-position: 50% 0;
     background-size: cover;
-  }
+}

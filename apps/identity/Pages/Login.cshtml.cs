@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amphora.Identity.Pages.Account
+namespace Amphora.Identity.Pages
 {
     [SecurityHeaders]
     [ValidateAntiForgeryToken]
@@ -26,7 +26,7 @@ namespace Amphora.Identity.Pages.Account
                               IClientStore clientStore,
                               IOptionsMonitor<ExternalServices> externalOptions,
                               IAuthenticationSchemeProvider schemeProvider,
-                              ILogger<LoginPageModel> logger,
+                              ILogger<LoginPageModelBase> logger,
                               IEventRoot eventService) : base(interaction,
                                                               userManager,
                                                               signInManager,
@@ -35,7 +35,8 @@ namespace Amphora.Identity.Pages.Account
                                                               schemeProvider,
                                                               logger,
                                                               eventService)
-        { }
+        {
+        }
 
         public async Task<IActionResult> OnGetAsync(string? returnUrl)
         {
@@ -51,7 +52,7 @@ namespace Amphora.Identity.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPostLoginAsync(string? returnUrl)
+        public async Task<IActionResult> OnPostAsync(string? returnUrl)
         {
             return await HandleLogin(returnUrl);
         }

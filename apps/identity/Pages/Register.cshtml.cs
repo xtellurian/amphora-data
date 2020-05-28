@@ -41,7 +41,7 @@ namespace Amphora.Identity.Pages
                     Email = Registration.Email
                 };
 
-                returnUrl ??= externalSvcsOptions.CurrentValue?.WebAppUri()?.ToStandardString() + "/Challenge";
+                returnUrl ??= externalSvcsOptions.CurrentValue?.WebAppUri()?.ToStandardString() + "/Chall";
                 return await HandleRegistration(returnUrl, user, Registration.Password!);
             }
             else

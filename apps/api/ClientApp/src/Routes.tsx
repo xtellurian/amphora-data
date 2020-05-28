@@ -4,7 +4,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
-import CallbackPage from './components/CallbackPage';
+import CallbackPage from './components/auth/CallbackPage';
+import { Challenge } from './components/auth/Challenge';
 import { ApplicationState } from './redux/state';
 import { Dispatch } from 'redux';
 
@@ -61,7 +62,7 @@ const Routes = (props: RoutesModuleProps) => {
                     <Route path="/user" component={UserInfo} />
 
                     <Route path="/amphora" component={Amphora} />
-                    
+
                     <Route path="/create" component={Create} />
                     <Route path="/request" component={Request} />
 
@@ -75,6 +76,7 @@ const Routes = (props: RoutesModuleProps) => {
         return (
             <React.Fragment>
                 <Switch>
+                    <Route exact path="/chall" component={Challenge} />
                     <Route exact path='/' component={Main} />
                 </Switch>
             </React.Fragment>
