@@ -11,10 +11,12 @@ import { Link } from 'react-router-dom';
 import { Toaster } from './molecules/toasts/Toaster';
 
 import 'react-toastify/dist/ReactToastify.css';
+import '../components/core/layout.css';
 
 interface LayoutProps {
   user: User;
   isLoadingUser: boolean;
+  isMenuOpen: boolean;
   dispatch: Dispatch;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   location: any;
@@ -44,9 +46,9 @@ const Layout = (props: LayoutProps): React.ReactElement => {
         <Toaster />
         <HamburgerMenu isConnected={isConnected} path={props.location.pathname} pageWrapId="page-wrap" outerContainerId="outer-container" />
         <AppNavMenu isConnected={isConnected} path={props.location.pathname} />
-        <Container id="page-wrap">
+        <Container fluid={true} id="page-wrap">
           <div className="row">
-            <div className="col-8">
+            <div className={`${props.isMenuOpen ? "col-8" : "col-11"}`}>
               {props.children}
             </div>
           </div>
@@ -57,7 +59,7 @@ const Layout = (props: LayoutProps): React.ReactElement => {
     return (
       <React.Fragment>
         <PublicNavMenu isConnected={isConnected} path={props.location.pathname} />
-        <Container>
+        <Container fluid={true}>
           {props.children}
         </Container>
       </React.Fragment>
@@ -70,6 +72,7 @@ function mapStateToProps(state: ApplicationState): any {
     user: state.oidc.user,
     isLoadingUser: state.oidc.isLoadingUser,
     location: state.router.location,
+    isMenuOpen: state.burgerMenu.primary ? state.burgerMenu.primary.isOpen : false,
   };
 }
 
