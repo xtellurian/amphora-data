@@ -5,11 +5,13 @@
 
 .tab {
     background-color: var(--porcelain);
+    color: var(--turquoise);
     text-align: center;
     border-radius: 2px;
 }
 
 .tab.active {
+    color: var(--ebony);
     border-left: 1px solid var(--platinum);
     border-right: 1px solid var(--platinum);
     border-bottom: 4px solid var(--turquoise);
