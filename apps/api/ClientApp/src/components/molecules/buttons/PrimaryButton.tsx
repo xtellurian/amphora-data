@@ -2,15 +2,6 @@ import { Button } from './Button';
 
 export class PrimaryButton extends Button {
     classNames(): string {
-        let classNames = `button`;
-        if(this.props.className) {
-            classNames += ` ${this.props.className}`;
-        }
-        if (this.props.disabled) {
-            classNames += " button-disabled";
-        } else {
-            classNames += " button-primary";
-        }
-        return classNames;
+        return this.props.disabled ? this.disabledClass : "button-primary";
     }
 }

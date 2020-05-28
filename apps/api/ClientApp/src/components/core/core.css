@@ -42,7 +42,7 @@ body {
 /* fonts */
 
 .txt-bold {
-    font-weight: bold;
+    font-weight: bold !important;
 }
 
 .txt-xxs {

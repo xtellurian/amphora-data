@@ -4,7 +4,13 @@
     max-width: 296px;
     padding: 8px 24px;
     border-radius: 4px;
+    border: none;
     margin: 3px 3px;
+}
+
+.button.slim {
+    height: 32px !important;
+    padding: 0px 24px !important;
 }
 
 .button-disabled {
