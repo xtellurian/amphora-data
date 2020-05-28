@@ -46,7 +46,9 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<AmphoraModel, DetailedAmphora>()
                 .IncludeBase<AmphoraModel, BasicAmphora>()
                 .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
-                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
+                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()))
+                .ForMember(o => o.SignalCount, p => p.MapFrom(src => src.V2Signals.Count))
+                .ForMember(o => o.FileCount, p => p.MapFrom(src => src.FileAttributes.Count));
 
             CreateMap<DataQuality, Quality>();
             CreateMap<Quality, DataQuality>();

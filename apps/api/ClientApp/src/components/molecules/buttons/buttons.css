@@ -31,6 +31,11 @@
     box-shadow: 0px 0px 0px 2px var(--blue-garnet);
 }
 
+.button-primary:focus {
+    background-color: var(--turquoise);
+    box-shadow: 0px 0px 0px 2px var(--blue-garnet);
+}
+
 .button-secondary {
     font: var(--main-font);
     color: var(--blue-garnet);
@@ -39,7 +44,16 @@
 }
 
 .button-secondary:hover {
-    color: var(--amphora-white);
-    background-color: var(--turquoise);
+    color: var(--blue-garnet);
+    background-color: var(--platinum);
+    box-shadow: 0px 0px 0px 2px var(--blue-garnet);
+}
+
+
+/* active is same as hover, for toggles */
+
+.button-secondary.active {
+    color: var(--blue-garnet);
+    background-color: var(--platinum);
     box-shadow: 0px 0px 0px 2px var(--blue-garnet);
 }

@@ -53,7 +53,7 @@ export default class Pallete extends React.PureComponent<PalleteProps, TabState>
 
         <h2>Toggles</h2>
         <div className="w-100">
-          <Toggle values={[{ text: "One", value: "1" }, { text: "Two", value: "2" }]} onToggleSelected={(v) => alert(v)} />
+          <Toggle options={[{ text: "Option One", id: "1" }, { text: "Option Two", id: "2" }]} onOptionSelected={(v) => alert(v)} />
         </div>
 
         <h2>Icons</h2>
@@ -72,6 +72,13 @@ export default class Pallete extends React.PureComponent<PalleteProps, TabState>
           </SecondaryButton>
         <SecondaryButton disabled={true}>
           Secondary Disabled
+          </SecondaryButton>
+          <hr/>
+          <PrimaryButton variant="slim">
+          Primary Slim Button
+          </PrimaryButton>
+          <SecondaryButton variant="slim">
+          Secondary Slim Button
           </SecondaryButton>
         <hr />
         <h2> Inputs </h2>

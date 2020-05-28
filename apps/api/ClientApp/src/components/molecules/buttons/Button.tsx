@@ -7,10 +7,10 @@ export abstract class Button extends React.PureComponent<ButtonProps> {
 
     abstract classNames(): string; // must be implemented in derived classes
 
-    protected commonClasses = "button txt-sm txt-bold";
+    protected commonClasses = "btn button txt-sm txt-bold";
     protected disabledClass = "button-disabled";
     public render() {
-        let classNames = `${this.commonClasses} ${this.classNames()}`;
+        let classNames = `${this.commonClasses} ${this.classNames()} ${this.props.className}`;
         if (this.props.variant === "slim") {
             classNames += " slim";
         }

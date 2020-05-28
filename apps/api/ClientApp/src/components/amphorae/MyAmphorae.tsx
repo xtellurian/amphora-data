@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import { Route } from 'react-router-dom';
 import { Button, Spinner } from 'reactstrap';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
-import { Table } from '../molecules/tables/Table';
+import AmphoraTable from '../molecules/tables/ConnectedAmphoraTable';
 import { actionCreators as listActions } from "../../redux/actions/amphora/list";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
-import { Route } from 'react-router-dom';
 import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 import { Tabs, activeTab } from '../molecules/tabs';
+import { Toggle } from '../molecules/toggles/Toggle';
+import { Scope } from './scope';
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
@@ -22,22 +24,33 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
 
   // This method is called when the component is first added to the document
   public componentDidMount() {
-    this.setMyView();
+    this.setScopeSelf();
   }
 
-  private countAmphora(): number {
-    if (this.props.list) {
-      return this.props.list.length;
-    } else { }
-    return 0;
+  private toggleScope(scope: string | Scope) {
+    switch (scope as Scope) {
+      case "organisation":
+        this.setScopeOrg();
+        break;
+      case "self":
+        this.setScopeSelf();
+        break;
+    }
   }
 
   public render() {
     return (
       <React.Fragment>
-        <div className="txt-xxl">My Amphora</div>
-        <Button color="primary" onClick={() => this.setMyView()}>My List</Button>
-        <Button color="secondary" onClick={() => this.setOrganisationView()}>My Organisation</Button>
+        <div className="row">
+          <div className="col-5">
+            <div className="txt-xxl">My Amphora</div>
+          </div>
+          <div className="col-7">
+            <Toggle
+              options={[{ text: "My List", id: "self" }, { text: "My Organisation", id: "organisation" }]}
+              onOptionSelected={(v) => this.toggleScope(v)} />
+          </div>
+        </div>
         {this.renderList()}
 
         <Route path='/amphora/detail/:id' component={ConnectedAmphoraModal} />
@@ -68,16 +81,16 @@ class MyAmphorae extends React.PureComponent<MyAmphoraeProps> {
       <div>
         {this.renderTabs()}
         {activeTab(this.props.location.search)}
-        <Table />
+        <AmphoraTable />
       </div>
     )
   }
 
-  private setMyView(): void {
+  private setScopeSelf(): void {
     this.props.listMyCreatedAmphora();
   }
 
-  private setOrganisationView(): void {
+  private setScopeOrg(): void {
     this.props.listOrganisationCreatedAmphora();
   }
 }

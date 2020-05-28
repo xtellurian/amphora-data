@@ -1,0 +1,7 @@
+.toggle {
+    color: var(--blue-garnet)
+}
+
+.toggle .active {
+    border-bottom: 3px solid var(--blue-garnet);
+}
