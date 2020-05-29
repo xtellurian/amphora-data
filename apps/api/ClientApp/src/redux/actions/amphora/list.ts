@@ -1,5 +1,6 @@
 import { Action } from 'redux';
 import { DetailedAmphora } from 'amphoradata';
+import { OnFailedAction } from '../fail';
 
 export const LIST_AMPHORAE = '[amphorae] LIST AMPHORA';
 export const LIST_AMPHORAE_SUCCESS = `${LIST_AMPHORAE} SUCCESS`;
@@ -10,7 +11,6 @@ export interface ListMyAmphoraAction extends Action {
     scope: Scope;
     accessType: AccessType;
 }
-
 export interface RecieveAmphoraListAction extends Action {
     type: typeof LIST_AMPHORAE_SUCCESS;
     payload: DetailedAmphora[];
@@ -35,7 +35,9 @@ export const actionCreators = {
         accessType
     }),
 
-    error: (e: any): Action => ({
+    error: (e: any): OnFailedAction => ({
+        failed: true,
         type: LIST_AMPHORAE_FAIL,
+        message: `Failed to create: ${e}`
     })
 }

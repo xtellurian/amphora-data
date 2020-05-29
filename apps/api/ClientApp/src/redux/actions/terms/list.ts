@@ -1,5 +1,6 @@
 import { Action } from 'redux';
 import { TermsOfUse } from 'amphoradata';
+import { OnFailedAction } from '../fail';
 
 export const LIST_TERMS = '[terms] LIST TERMS';
 export const LIST_TERMS_SUCCESS = `${LIST_TERMS} SUCCESS`;
@@ -13,9 +14,6 @@ export interface ListTermsSuccessAction extends Action {
     type: typeof LIST_TERMS_SUCCESS;
     payload: TermsOfUse[];
 }
-export interface ListTermsFailAction extends Action {
-    type: typeof LIST_TERMS_FAIL;
-}
 
 export const actionCreators = {
     // listing amphora
@@ -25,9 +23,11 @@ export const actionCreators = {
         payload: data,
     }),
 
-    fail: (e: any): Action => ({
+    fail: (e: any): OnFailedAction => ({
         type: LIST_TERMS_FAIL,
+        message: `Failed to get Terms, ${e}`,
+        failed: true
     })
 }
 
-export type TermsAction = ListTermsAction | ListTermsSuccessAction | ListTermsFailAction;
+export type TermsAction = ListTermsAction | ListTermsSuccessAction | OnFailedAction;

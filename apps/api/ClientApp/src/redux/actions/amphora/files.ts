@@ -1,5 +1,6 @@
 import { Action } from 'redux';
 import { DetailedAmphora } from 'amphoradata';
+import { OnFailedAction } from '../fail';
 
 export const UPLOAD_FILE = '[amphorae] UPLOAD FILE';
 export const UPLOAD_FILE_SUCCESS = `${UPLOAD_FILE} SUCCESS`;
@@ -21,16 +22,11 @@ export interface UploadFileSuccessAction extends Action {
     type: typeof UPLOAD_FILE_SUCCESS;
     payload: UploadFileSuccessPayload;
 }
-export interface UploadFileFailedAction extends Action {
-    type: typeof UPLOAD_FILE_FAIL;
-    message: string;
-}
-
 
 export const actionCreators = {
     uploadFile: (amphora: DetailedAmphora, file: File, name: string): UploadFileAction =>
         ({ type: UPLOAD_FILE, payload: { amphora, file, name } }),
     uploadFileSuccess: (amphora: DetailedAmphora, name: string): UploadFileSuccessAction =>
         ({ type: UPLOAD_FILE_SUCCESS, payload: { amphora, name } }),
-    uploadFileError: (m: string): UploadFileFailedAction => ({ type: UPLOAD_FILE_FAIL, message: m })
+    uploadFileError: (m: string): OnFailedAction => ({ failed: true, type: UPLOAD_FILE_FAIL, message: m })
 }
