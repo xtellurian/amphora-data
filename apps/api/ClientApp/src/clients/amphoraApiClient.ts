@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const configuration = new amphoradata.Configuration({ basePath: "." });
 export const amphoraApiClient = new amphoradata.AmphoraeApi(configuration);
+export const termsOfUseApiClient = new amphoradata.TermsOfUseApi(configuration);
 
 function setDates(e: any | undefined) {
     if (e && e.createdDate) {

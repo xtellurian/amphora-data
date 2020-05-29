@@ -11,6 +11,7 @@ import { actionCreators as modalActions } from "../../redux/actions/ui";
 import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 import { Tabs, activeTab } from '../molecules/tabs';
 import { Toggle } from '../molecules/toggles/Toggle';
+import { LoadingState } from '../molecules/empty/LoadingState';
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
@@ -97,11 +98,10 @@ class MyAmphorae extends React.Component<MyAmphoraeProps, MyAmphoraeState> {
   }
 
   private renderList() {
-    if (this.props.isLoading) { return (<Spinner color="dark" />) }
+    if (this.props.isLoading) { return (<LoadingState />) }
     return (
       <div>
         {this.renderTabs()}
-        {}
         <AmphoraTable scope={this.state.scope} accessType={this.getAccessType()} {...this.props} />
       </div>
     )

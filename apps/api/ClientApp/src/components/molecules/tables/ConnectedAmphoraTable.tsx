@@ -4,8 +4,9 @@ import { ApplicationState } from '../../../redux/state';
 import { Table } from './Table';
 import { DetailedAmphora } from 'amphoradata';
 import { RouteComponentProps } from 'react-router';
-import { StringToEntityMap } from '../../../redux/state/amphora';
+import { StringToEntityMap } from '../../../redux/state/common';
 import { AccessType, Scope } from '../../../redux/actions/amphora/list';
+import { EmptyState } from '../empty/EmptyState';
 
 interface ConnectedAmphoraTableProps {
     accessType: AccessType;
@@ -57,13 +58,19 @@ class ConnectedAmphoraTable extends React.PureComponent<ConnectedAmphoraTablePro
 
     render() {
         const ids = this.getIdsList();
-        return (<div>
-            <Table
-                onRowClicked={(r) => this.props.history.push(`amphora/detail/${r.id}`)}
-                columns={columns}
-                rowGetter={(i: number) => this.props.cache[ids[i]]}
-                rowCount={Math.min(10, ids.length)} />
-        </div>)
+        if (ids && ids.length > 0) {
+            return (<div>
+                <Table
+                    onRowClicked={(r) => this.props.history.push(`amphora/detail/${r.id}`)}
+                    columns={columns}
+                    rowGetter={(i: number) => this.props.cache[ids[i]]}
+                    rowCount={Math.min(10, ids.length)} />
+            </div>)
+        } else {
+            return <EmptyState >
+                There are no Amphora here yet.
+            </EmptyState>
+        }
     }
 }
 

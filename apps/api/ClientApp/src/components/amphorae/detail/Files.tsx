@@ -7,6 +7,7 @@ import { EmptyState } from '../../molecules/empty/EmptyState';
 import { amphoraApiClient } from '../../../clients/amphoraApiClient';
 import { PrimaryButton } from '../../molecules/buttons';
 import * as toast from '../../molecules/toasts';
+import { LoadingState } from '../../molecules/empty/LoadingState';
 
 interface FilesState {
     isLoading: boolean;
@@ -41,12 +42,12 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     private handleFileLoadError(e: any) {
         this.setState({ isLoading: false, files: [] });
-        toast.error({text: "Error getting files"})
+        toast.error({ text: "Error getting files" })
     }
 
     renderFileList() {
         if (this.state.isLoading) {
-            return <Spinner></Spinner>
+            return <LoadingState />
         }
         else if (this.state.files && this.state.files.length > 0) {
             // there are files
@@ -97,7 +98,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
             )
         } else {
-            return <Spinner></Spinner>
+            return <LoadingState />
         }
 
     }

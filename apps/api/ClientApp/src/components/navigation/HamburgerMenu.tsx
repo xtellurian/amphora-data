@@ -53,6 +53,9 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                     <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/request">Request</NavLink>
                     </NavItem>
+                    <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
+                        <NavLink tag={Link} className="text-light" to="/terms">Terms of Use</NavLink>
+                    </NavItem>
                     <hr className="bg-white" />
                     <NavItem className="menu-item" onClick={() => { this.onItemClick() }}>
                         <NavLink tag={Link} className="text-light" to="/find">Find</NavLink>

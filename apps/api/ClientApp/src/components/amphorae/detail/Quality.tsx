@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Spinner } from 'reactstrap';
 import { AmphoraDetailProps, mapStateToProps } from './props';
+import { LoadingState } from '../../molecules/empty/LoadingState';
 
 
 class Quality extends React.PureComponent<AmphoraDetailProps> {
@@ -20,7 +21,7 @@ class Quality extends React.PureComponent<AmphoraDetailProps> {
 
             )
         } else {
-            return <Spinner></Spinner>
+            return <LoadingState />
         }
 
     }

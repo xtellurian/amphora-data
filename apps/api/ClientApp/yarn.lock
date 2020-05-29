@@ -1900,10 +1900,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amphoradata@^0.9.8-dev2:
-  version "0.9.8-dev2"
-  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.9.8-dev2.tgz#bd735a07701b15c517052c9d49496879bb41d663"
-  integrity sha512-Va3vnj3jUIfOHZJdpBkhNCj0JlwEJCIQor9JA3JDoRb3xiFKIgr6iwbo9NR70IcG7/ntIq9flhD78OEG/2R9Ag==
+amphoradata@^0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.10.4.tgz#88469574b4634f056141b2a867d4ee0a8c2a8738"
+  integrity sha512-dNmOiiil6pk0NnOBFK5ZDeZlEjNgFX7UWuxRQOrbW4cvNF7N1yV2ZlP8+Lq3J2EbnCkppX6WmBrn5GzX2sFGCA==
   dependencies:
     request "^2.88.2"
     url "^0.11.0"

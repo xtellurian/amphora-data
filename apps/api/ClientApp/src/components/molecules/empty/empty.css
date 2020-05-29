@@ -1,5 +1,7 @@
 .emptystate {
     margin-top: 60px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .oval {
@@ -8,5 +10,4 @@
     background-color: #f1f4f6;
     border-radius: 50%;
     margin: auto;
-  }
-
+}

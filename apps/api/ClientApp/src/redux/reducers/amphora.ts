@@ -1,7 +1,8 @@
 import * as listActions from "../actions/amphora/list";
-import { AmphoraState, StringToEntityMap } from "../state/amphora";
+import { AmphoraState } from "../state/amphora";
 import { Reducer, Action } from "redux";
 import { DetailedAmphora } from "amphoradata";
+import { emptyCache } from "../state/common";
 
 export const reducer: Reducer<AmphoraState> = (state: AmphoraState | undefined, incomingAction: Action): AmphoraState => {
 
@@ -32,9 +33,9 @@ export const reducer: Reducer<AmphoraState> = (state: AmphoraState | undefined, 
             }
 
         case listActions.LIST_AMPHORAE_SUCCESS:
-            const recieveAmphoraAction = incomingAction as listActions.RecieveAmphoraListAction
+            const recieveAmphoraAction = incomingAction as listActions.RecieveAmphoraListAction;
             const allAmphora = recieveAmphoraAction.payload;
-            const cache: StringToEntityMap<DetailedAmphora> = state.cache || {};
+            const cache = state.cache || emptyCache<DetailedAmphora>();
             // always update the cache
             allAmphora.forEach((a) => {
                 if (a.id) {

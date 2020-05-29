@@ -1,9 +1,9 @@
 import { Action } from "redux";
 import axios from 'axios';
-import * as listActions from "../actions/amphora/list";
-import * as createActions from "../actions/amphora/create";
-import * as fileActions from '../actions/amphora/files';
-import { amphoraApiClient } from '../../clients/amphoraApiClient';
+import * as listActions from "../../actions/amphora/list";
+import * as createActions from "../../actions/amphora/create";
+import * as fileActions from '../../actions/amphora/files';
+import { amphoraApiClient } from '../../../clients/amphoraApiClient';
 import { UploadResponse, DetailedAmphora } from "amphoradata";
 
 // backup upload url

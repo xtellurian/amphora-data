@@ -1,7 +1,8 @@
 import { RouterState } from 'connected-react-router';
 import * as Counter from './counter';
 import { AmphoraState } from './amphora';
-import { BurgerMenuState, MenuStates } from './plugins/burgerMenu';
+import { TermsOfUseState } from './terms';
+import { MenuStates } from './plugins/burgerMenu';
 import { OidcState } from './plugins/oidc';
 import { UiState } from './ui';
 import { Reducers } from '../reducers'
@@ -15,4 +16,5 @@ export interface ApplicationState extends Reducers {
     ui: UiState;
     oidc: OidcState;
     router: RouterState;
+    terms: TermsOfUseState;
 }

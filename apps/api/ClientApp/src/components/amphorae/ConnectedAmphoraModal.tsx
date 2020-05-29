@@ -11,10 +11,11 @@ import Integrate from './detail/Integrate';
 import TermsOfUse from './detail/TermsOfUse';
 import Location from './detail/Location';
 import Quality from './detail/Quality';
-import { StringToEntityMap } from '../../redux/state/amphora';
+import { StringToEntityMap } from '../../redux/state/common';
 import { Spinner } from 'reactstrap';
 import DetailMenu from './detail/AmphoraDetailMenu'
 import { DetailedAmphora } from 'amphoradata';
+import { LoadingState } from '../molecules/empty/LoadingState';
 
 interface MenuState {
     isOpen: boolean;
@@ -73,7 +74,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
                 </ModalWrapper>
             )
         } else {
-            return <Spinner></Spinner>
+            return <LoadingState/>
         }
 
     }

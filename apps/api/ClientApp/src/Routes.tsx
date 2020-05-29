@@ -17,6 +17,8 @@ import Create from './components/amphorae/CreateAmphora';
 import Request from './components/amphorae/RequestAmphora';
 import Find from './components/amphorae/FindAmphora';
 
+import TermsOfUse from './components/terms/TermsOfUseComponent';
+
 import Pallete from './components/Pallete';
 
 
@@ -62,6 +64,7 @@ const Routes = (props: RoutesModuleProps) => {
                     <Route path="/user" component={UserInfo} />
 
                     <Route path="/amphora" component={Amphora} />
+                    <Route path="/terms" component={TermsOfUse} />
 
                     <Route path="/create" component={Create} />
                     <Route path="/request" component={Request} />
