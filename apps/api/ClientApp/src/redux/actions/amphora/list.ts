@@ -1,51 +1,41 @@
 import { Action } from 'redux';
 import { DetailedAmphora } from 'amphoradata';
 
-export const LIST_MY_CREATED_AMPHORAE = '[amphorae] LIST MY CREATED';
-export const LIST_ORGANISATION_CREATED_AMPHORAE = '[amphorae] LIST ORGANISATION CREATED';
-export const LIST_MY_PURCHASED_AMPHORAE = '[amphorae] LIST ORGANISATION PURCHASED';
-export const LIST_ORGANISATION_PURCHASED_AMPHORAE = '[amphorae] LIST ORGANISATION PURCHASED';
+export const LIST_AMPHORAE = '[amphorae] LIST AMPHORA';
+export const LIST_AMPHORAE_SUCCESS = `${LIST_AMPHORAE} SUCCESS`;
+export const LIST_AMPHORAE_FAIL = `${LIST_AMPHORAE} FAIL`;
 
-export const RECIEVE_AMPHORAE_LIST = '[amphorae] RECIEVE AMPHORA LIST';
-export const ERROR_AMPHORAE_LIST = '[amphorae] ERROR AMPHORA LIST';
-
-interface ListMyCreatedAmphora extends Action {
-    type: typeof LIST_MY_CREATED_AMPHORAE;
-}
-interface ListOrganisationCreatedAmphora extends Action {
-    type: typeof LIST_ORGANISATION_CREATED_AMPHORAE;
-}
-interface ListMyPurchasedAmphora extends Action {
-    type: typeof LIST_MY_PURCHASED_AMPHORAE;
-}
-interface ListOrganisationPurchasedAmphora extends Action {
-    type: typeof LIST_ORGANISATION_PURCHASED_AMPHORAE;
+export interface ListMyAmphoraAction extends Action {
+    type: typeof LIST_AMPHORAE;
+    scope: Scope;
+    accessType: AccessType;
 }
 
 export interface RecieveAmphoraListAction extends Action {
-    type: typeof RECIEVE_AMPHORAE_LIST;
+    type: typeof LIST_AMPHORAE_SUCCESS;
     payload: DetailedAmphora[];
+    scope: Scope;
+    accessType: AccessType;
 }
+
+const SELF_SCOPE = "self";
+const ORG_SCOPE = "organisation";
+const ACCESS_TYPE_CREATED = "created";
+const ACCESS_TYPE_PURCHASED = "purchased";
+export type Scope = typeof SELF_SCOPE | typeof ORG_SCOPE;
+export type AccessType = typeof ACCESS_TYPE_CREATED | typeof ACCESS_TYPE_PURCHASED;
 
 export const actionCreators = {
     // listing amphora
-    listMyCreatedAmphora: (): ListMyCreatedAmphora => ({ type: LIST_MY_CREATED_AMPHORAE }),
-    listOrganisationCreatedAmphora: (): ListOrganisationCreatedAmphora => ({ type: LIST_ORGANISATION_CREATED_AMPHORAE }),
-    listMyPurchasedAmphora: (): ListMyPurchasedAmphora => ({ type: LIST_MY_PURCHASED_AMPHORAE }),
-    listOrganisationPurchasedAmphora: (): ListOrganisationPurchasedAmphora => ({ type: LIST_ORGANISATION_PURCHASED_AMPHORAE }),
-    recieveList: (data: DetailedAmphora[]): RecieveAmphoraListAction => ({
-        type: RECIEVE_AMPHORAE_LIST,
-        payload: data
+    listMyCreatedAmphora: (scope: Scope, accessType: AccessType): ListMyAmphoraAction => ({ type: LIST_AMPHORAE, scope, accessType }),
+    recieveList: (data: DetailedAmphora[], scope: Scope, accessType: AccessType): RecieveAmphoraListAction => ({
+        type: LIST_AMPHORAE_SUCCESS,
+        payload: data,
+        scope,
+        accessType
     }),
 
     error: (e: any): Action => ({
-        type: ERROR_AMPHORAE_LIST,
+        type: LIST_AMPHORAE_FAIL,
     })
 }
-
-export type ListAction =
-    ListMyCreatedAmphora
-    | ListOrganisationCreatedAmphora
-    | ListMyPurchasedAmphora
-    | ListOrganisationPurchasedAmphora
-    | RecieveAmphoraListAction;

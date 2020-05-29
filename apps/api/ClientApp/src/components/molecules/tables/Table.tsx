@@ -12,6 +12,7 @@ export interface TableBaseProps {
   columns: ColumnElement[];
   rowGetter: RowElement[] | ((rowIdx: number) => RowElement) | any;
   rowCount: number;
+  onRowClicked?: (r: RowElement) => void;
 }
 
 export class Table extends React.PureComponent<TableBaseProps> {
@@ -47,7 +48,7 @@ export class Table extends React.PureComponent<TableBaseProps> {
       cells.push(<td key={c.key}>{row[c.key]}</td>)
     })
     return (
-      <tr key={n}>
+      <tr key={n} onClick={() => this.props.onRowClicked ? this.props.onRowClicked(row) : null}>
         {cells}
       </tr>)
   }

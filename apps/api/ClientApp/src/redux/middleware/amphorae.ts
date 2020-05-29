@@ -33,9 +33,10 @@ function completeUpload(store: any, amphora: DetailedAmphora, name: string, file
 
 const listAmphora = (store: any) => (next: any) => (action: Action) => {
   next(action);
-  if (action.type === listActions.LIST_MY_CREATED_AMPHORAE) {
-    amphoraApiClient.amphoraeList("self", "created")
-      .then(r => store.dispatch(listActions.actionCreators.recieveList(r.data)))
+  if (action.type === listActions.LIST_AMPHORAE) {
+    const listAction = action as listActions.ListMyAmphoraAction;
+    amphoraApiClient.amphoraeList(listAction.scope, listAction.accessType)
+      .then(r => store.dispatch(listActions.actionCreators.recieveList(r.data, listAction.scope, listAction.accessType)))
       .catch(e => store.dispatch(listActions.actionCreators.error(e)))
   }
 };

@@ -8,6 +8,15 @@ export interface StringToEntityMap<T> {
 
 export interface AmphoraState {
     isLoading: boolean;
-    list: DetailedAmphora[];
+    collections?: {
+        self?: {
+            created?: string[];
+            purchased?: string[];
+        };
+        organisation?: {
+            created?: string[];
+            purchased?: string[];
+        };
+    };
     cache: StringToEntityMap<DetailedAmphora>;
 }

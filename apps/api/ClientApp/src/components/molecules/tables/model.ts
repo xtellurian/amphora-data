@@ -5,6 +5,7 @@ export interface ColumnElement {
 }
 
 export interface RowElement {
+    id: string;
     [index: string]: string | number | boolean;
     length: number;
 }

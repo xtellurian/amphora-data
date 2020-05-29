@@ -12,6 +12,7 @@ export interface Tab {
 
 type TabsProps =
     {
+        name?: string;
         tabs: Tab[];
         default: string;
     }
@@ -21,7 +22,7 @@ type TabsProps =
 class Tabs extends React.PureComponent<TabsProps> {
 
     private getActiveTabId(): string {
-        return activeTab(this.props.location.search) || this.props.default;
+        return activeTab(this.props.location.search, this.props.name) || this.props.default;
     }
 
     private isTabActive(t: Tab) {
@@ -33,7 +34,7 @@ class Tabs extends React.PureComponent<TabsProps> {
         const className = this.isTabActive(t) ? `${commonClassNames} active txt-bold` : commonClassNames
         return (
             <div key={t.id} className={className} >
-                <Link to={`${this.props.location.pathname}?tab=${t.id}`}>
+                <Link to={`${this.props.location.pathname}?${this.props.name || "tab"}=${t.id}`}>
                     {t.text || t.id}
                 </Link>
             </div>

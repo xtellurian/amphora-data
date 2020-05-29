@@ -9,7 +9,7 @@ export type AmphoraDetailProps =
 export function mapStateToProps(state: ApplicationState) {
     return {
         isLoading: state.amphora.isLoading,
-        list: state.amphora.list,
+        collections: state.amphora.collections,
         cache: state.amphora.cache,
     }
 }

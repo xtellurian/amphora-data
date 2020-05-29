@@ -4,15 +4,12 @@ import { RouteComponentProps } from 'react-router';
 import { CreateAmphora as Model } from 'amphoradata';
 import { PrimaryButton } from '../molecules/buttons';
 import { TextInput, TextAreaInput, FloatInput } from '../molecules/inputs';
-import { ApplicationState } from '../../redux/state';
-import { AmphoraState } from '../../redux/state/amphora';
 import { actionCreators as createActions } from "../../redux/actions/amphora/create";
 import { ValidateResult } from '../molecules/inputs/inputProps';
 
 // At runtime, Redux will merge together...
 type CreateAmphoraProps =
-  AmphoraState // ... state we've requested from the Redux store
-  & (typeof createActions)  // ... plus action creators we've requested
+  (typeof createActions)  // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 interface CreateAmphoraComponentState {
@@ -79,7 +76,7 @@ class CreateAmphora extends React.PureComponent<CreateAmphoraProps, CreateAmphor
   }
   private setDescription(description?: string) {
     const model = this.state.model;
-    if(description) {
+    if (description) {
       model.description = description;
       this.setState({
         model
@@ -122,19 +119,7 @@ class CreateAmphora extends React.PureComponent<CreateAmphoraProps, CreateAmphor
   }
 }
 
-function mapStateToProps(state: ApplicationState): AmphoraState {
-  if (state.amphora) {
-    return state.amphora;
-  } else {
-    return {
-      isLoading: true,
-      list: [],
-      cache: {}
-    }
-  }
-}
-
 export default connect(
-  mapStateToProps, // Selects which state properties are merged into the component's props
+  null, // Selects which state properties are merged into the component's props
   { ...createActions } // Selects which action creators are merged into the component's props
 )(CreateAmphora);

@@ -1,3 +1,7 @@
-.tabke-container {
+.table-container {
     width: 100%;
+}
+
+.table-container tr {
+    cursor: pointer;
 }

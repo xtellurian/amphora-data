@@ -11,16 +11,17 @@ import Integrate from './detail/Integrate';
 import TermsOfUse from './detail/TermsOfUse';
 import Location from './detail/Location';
 import Quality from './detail/Quality';
-import { AmphoraState } from '../../redux/state/amphora';
+import { StringToEntityMap } from '../../redux/state/amphora';
 import { Spinner } from 'reactstrap';
 import DetailMenu from './detail/AmphoraDetailMenu'
+import { DetailedAmphora } from 'amphoradata';
 
 interface MenuState {
     isOpen: boolean;
 }
 
 type ConnectedAmphoraModalProps =
-    AmphoraState
+    { cache: StringToEntityMap<DetailedAmphora> }
     & typeof actionCreators
     & RouteComponentProps<{ id: string }>;
 
@@ -56,7 +57,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
                         <div className="modal-inner">
                             <div className="mb-2">
                                 <h4>{amphora.name}</h4>
-                                <small>Created {amphora.createdDate? "on " + amphora.createdDate.toLocaleString() : "earlier"}</small>
+                                <small>Created {amphora.createdDate ? "on " + amphora.createdDate.toLocaleString() : "earlier"}</small>
                             </div>
                             {/* these render the detail views */}
                             <Route exact path='/amphora/detail/:id/' component={Description} />
@@ -81,7 +82,6 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
 function mapStateToProps(state: ApplicationState) {
     return {
         isLoading: state.amphora.isLoading,
-        list: state.amphora.list,
         cache: state.amphora.cache,
     }
 }

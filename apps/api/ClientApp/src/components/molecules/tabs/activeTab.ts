@@ -1,6 +1,6 @@
 import qs from 'qs';
 
-export function activeTab(queryString: string): string {
+export function activeTab(queryString: string, name = "tab"): string {
     const search = qs.parse(queryString, { ignoreQueryPrefix: true });
-    return search.tab as string;
+    return search[name] as string;
 }
