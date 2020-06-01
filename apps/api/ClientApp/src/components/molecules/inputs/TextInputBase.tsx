@@ -10,12 +10,12 @@ interface TextInputState {
     validation: ValidateResult;
 }
 
-export abstract class TextInputBase extends React.PureComponent<InputProps<string>, TextInputState> {
+export abstract class TextInputBase<T extends InputProps<string>> extends React.PureComponent<T, TextInputState> {
 
     /**
      *
      */
-    constructor(props: InputProps<string>) {
+    constructor(props: T) {
         super(props);
         this.state = {
             validation: {
@@ -26,7 +26,7 @@ export abstract class TextInputBase extends React.PureComponent<InputProps<strin
         }
     }
     componentDidMount() {
-        this.setState({ value: this.props.value || "", validation: { isValid: true } });
+        this.setState({ value: this.props.value as string || "", validation: { isValid: true } });
     }
 
     protected handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {

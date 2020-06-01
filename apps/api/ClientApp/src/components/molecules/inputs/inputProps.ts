@@ -6,6 +6,7 @@ export interface ValidateResult {
 }
 
 export interface InputProps<T> {
+    className?: string;
     label: string;
     value?: T;
     placeholder?: string;

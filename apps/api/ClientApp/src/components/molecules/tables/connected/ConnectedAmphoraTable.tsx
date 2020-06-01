@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState } from '../../../redux/state';
-import { Table } from './Table';
+import { ApplicationState } from '../../../../redux/state';
+import { Table } from '../Table';
 import { DetailedAmphora } from 'amphoradata';
 import { RouteComponentProps } from 'react-router';
-import { StringToEntityMap } from '../../../redux/state/common';
-import { AccessType, Scope } from '../../../redux/actions/amphora/list';
-import { EmptyState } from '../empty/EmptyState';
+import { StringToEntityMap } from '../../../../redux/state/common';
+import { AccessType, Scope } from '../../../../redux/actions/amphora/list';
+import { EmptyState } from '../../empty/EmptyState';
 
 interface ConnectedAmphoraTableProps {
     accessType: AccessType;

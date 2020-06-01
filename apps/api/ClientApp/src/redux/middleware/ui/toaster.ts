@@ -2,15 +2,17 @@ import { Action } from "redux";
 import * as toast from "../../../components/molecules/toasts";
 
 import {
-  CREATE_ERROR,
   CREATE_SUCCESS,
   CreateAmphoraSuccessAction,
 } from "../../actions/amphora/create";
 import {
   UPLOAD_FILE_SUCCESS,
-  UPLOAD_FILE_FAIL,
   UploadFileSuccessAction,
 } from "../../actions/amphora/files";
+import {
+  CREATE_TERMS_SUCCESS,
+  CreateTermsSuccessAction,
+} from "../../actions/terms/create";
 
 import { OnFailedAction } from "../../actions/fail";
 
@@ -39,6 +41,12 @@ export const toastsListener = (store: any) => (next: any) => (
       const fileUploadSuccess = action as UploadFileSuccessAction;
       toast.success({
         text: `Uploaded File: ${fileUploadSuccess.payload.name}`,
+      });
+      break;
+    case CREATE_TERMS_SUCCESS:
+      const createTermsSuccessAction = action as CreateTermsSuccessAction;
+      toast.success({
+        text: `Created New Terms of Use: ${createTermsSuccessAction.payload.name}`,
       });
       break;
   }

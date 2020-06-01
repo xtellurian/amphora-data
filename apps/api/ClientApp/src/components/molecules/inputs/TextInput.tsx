@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { TextInputBase } from './TextInputBase';
+import { InputProps } from './inputProps';
 
 
-export class TextInput extends TextInputBase {
+export class TextInput extends TextInputBase<InputProps<string>> {
 
     private handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
         if (event.key === 'Enter') {
@@ -13,7 +14,7 @@ export class TextInput extends TextInputBase {
     public render() {
         const invalidClassName = this.state.validation.isValid ? "" : "input-invalid";
         return (
-            <div className="input-outer">
+            <div className={`input-outer ${this.props.className || ""}`}>
                 <span>
                     <strong>{this.props.label}</strong>
                 </span>

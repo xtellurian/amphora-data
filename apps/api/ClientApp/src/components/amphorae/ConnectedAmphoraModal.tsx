@@ -12,7 +12,6 @@ import TermsOfUse from './detail/TermsOfUse';
 import Location from './detail/Location';
 import Quality from './detail/Quality';
 import { StringToEntityMap } from '../../redux/state/common';
-import { Spinner } from 'reactstrap';
 import DetailMenu from './detail/AmphoraDetailMenu'
 import { DetailedAmphora } from 'amphoradata';
 import { LoadingState } from '../molecules/empty/LoadingState';

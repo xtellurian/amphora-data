@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
-import { Spinner } from 'reactstrap';
 import { AmphoraDetailProps, mapStateToProps } from './props';
 import { LoadingState } from '../../molecules/empty/LoadingState';
 

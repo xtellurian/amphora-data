@@ -1,4 +1,4 @@
-import { Action } from 'redux';
+import { Action as listActions } from 'redux';
 import { TermsOfUse } from 'amphoradata';
 import { OnFailedAction } from '../fail';
 
@@ -6,11 +6,11 @@ export const LIST_TERMS = '[terms] LIST TERMS';
 export const LIST_TERMS_SUCCESS = `${LIST_TERMS} SUCCESS`;
 export const LIST_TERMS_FAIL = `${LIST_TERMS} FAIL`;
 
-export interface ListTermsAction extends Action {
+export interface ListTermsAction extends listActions {
     type: typeof LIST_TERMS;
 }
 
-export interface ListTermsSuccessAction extends Action {
+export interface ListTermsSuccessAction extends listActions {
     type: typeof LIST_TERMS_SUCCESS;
     payload: TermsOfUse[];
 }
