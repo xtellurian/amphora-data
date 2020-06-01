@@ -74,7 +74,7 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
             className="m-2"
             size="lg"
             onClick={() => this.props.toggleMenu(false)}
-            icon="arrow-left"
+            icon="chevron-left"
           />
         </div>
         <div className="menu-items">{this.renderLinks()}</div>
@@ -91,7 +91,7 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
             className="m-2"
             size="lg"
             onClick={() => this.props.toggleMenu(true)}
-            icon="arrow-right"
+            icon="chevron-right"
           />
         </div>
         {this.renderLinks()}
