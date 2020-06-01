@@ -2,7 +2,6 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
-import { Spinner } from 'reactstrap';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
 import AmphoraTable from '../molecules/tables/connected/ConnectedAmphoraTable';

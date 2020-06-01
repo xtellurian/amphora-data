@@ -1,6 +1,6 @@
 import { Action, Reducer } from "redux";
 import { TermsOfUseState } from "../state/terms";
-import { emptyCache, StringToEntityMap } from "../state/common";
+import { emptyCache } from "../state/common";
 import { TermsOfUse } from "amphoradata";
 import * as listActions from "../actions/terms/list";
 import * as createActions from "../actions/terms/create";

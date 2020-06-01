@@ -1,0 +1,28 @@
+
+.menu-item {
+  position: relative;
+  margin-left: 2em;
+  margin-top: 3px;
+  text-align: left;
+  padding: 4px 5px;
+  color: var(--ebony)
+}
+
+.menu-item a {
+  color: inherit;
+}
+
+.menu-item .menu-icon {
+  color: var(--blue-garnet);
+  font-weight: bolder;
+}
+
+.menu-item .menu-item-name {
+  text-align: left;
+  width: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

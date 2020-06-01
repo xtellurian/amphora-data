@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Spinner } from 'reactstrap';
 import { actionCreators } from '../../../redux/actions/amphora/files';
 import { AmphoraDetailProps, mapStateToProps } from './props';
 import { EmptyState } from '../../molecules/empty/EmptyState';
@@ -62,7 +61,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     private onFileChangedHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const id = this.props.match.params.id;
-        const amphora = this.props.cache[id];
+        const amphora = this.props.amphora.cache[id];
         if (amphora && e.target.files && e.target.files.length > 0) {
             const name = this.state.newFileName || e.target.files[0].name;
             this.props.uploadFile(amphora, e.target.files[0], name);
@@ -79,7 +78,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     public render() {
         const id = this.props.match.params.id;
-        const amphora = this.props.cache[id];
+        const amphora = this.props.amphora.cache[id];
         if (amphora) {
             return (
                 <React.Fragment>
@@ -107,4 +106,4 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 export default connect(
     mapStateToProps,
     actionCreators,
-)(Files);
+)(Files as any);

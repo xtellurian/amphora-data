@@ -3,12 +3,19 @@ import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { CreateAmphora as Model } from "amphoradata";
 import { PrimaryButton } from "../molecules/buttons";
-import { TextInput, TextAreaInput, FloatInput, Dropdown } from "../molecules/inputs";
+import {
+  TextInput,
+  TextAreaInput,
+  FloatInput,
+  Dropdown,
+} from "../molecules/inputs";
 import { actionCreators as createActions } from "../../redux/actions/amphora/create";
 import { actionCreators as listTermsActions } from "../../redux/actions/terms/list";
 import { ValidateResult } from "../molecules/inputs/inputProps";
 import { TermsOfUseState } from "../../redux/state/terms";
 import { ApplicationState } from "../../redux/state";
+
+const TERMS_DEFAULT = "1";
 
 // At runtime, Redux will merge together...
 type CreateAmphoraProps = typeof createActions & // ... plus action creators we've requested
@@ -108,12 +115,22 @@ class CreateAmphora extends React.PureComponent<
     this.props.createNewAmphora(this.state.model);
   }
   private termOptions() {
-    return this.props.termIds.map(t => {
-      return {
-        value: t,
-        text: this.props.cache[t].name
-      }
-    });
+    return [
+      { value: TERMS_DEFAULT, text: "None" },
+      ...this.props.termIds.map((t) => {
+        return {
+          value: t,
+          text: this.props.cache[t].name,
+        };
+      }),
+    ];
+  }
+  private setTerms(t: string) {
+    const model = this.state.model;
+    if (model.termsOfUseId !== t) {
+      model.termsOfUseId =  t === TERMS_DEFAULT ? null : t;
+      this.setState({ model });
+    }
   }
 
   public render() {
@@ -140,7 +157,11 @@ class CreateAmphora extends React.PureComponent<
 
             <FloatInput label="Price" onComplete={(p) => this.setPrice(p)} />
 
-            <Dropdown onChange={v => alert(v)} options={this.termOptions()} />
+            <Dropdown
+              label="Terms of Use"
+              onChange={(v) => this.setTerms(v)}
+              options={this.termOptions()}
+            />
 
             <PrimaryButton
               onClick={() => this.createAmphora()}

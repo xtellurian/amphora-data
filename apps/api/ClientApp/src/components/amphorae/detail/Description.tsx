@@ -9,7 +9,7 @@ class Description extends React.PureComponent<AmphoraDetailProps> {
 
     public render() {
         const id = this.props.match.params.id;
-        const amphora = this.props.cache[id];
+        const amphora = this.props.amphora.cache[id];
         if (amphora) {
             return (
                 <React.Fragment>

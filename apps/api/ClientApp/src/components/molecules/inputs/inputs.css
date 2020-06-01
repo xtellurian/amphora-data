@@ -1,5 +1,5 @@
 .input-outer {
-    margin: 2px 2px;
+    margin: 5px 2px;
 }
 
 .input-outer textarea {
@@ -43,4 +43,11 @@
 .input-inner button {
     border: transparent;
     color: var(--blue-garnet)
+}
+/* dropdowns */
+.dropdown {
+    min-height: 2em;
+    margin-left: 2em;
+    padding: 5px;
+    overflow: auto;
 }
