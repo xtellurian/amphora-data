@@ -29,7 +29,7 @@ export const actionCreators = {
 
   fail: (e: any): OnFailedAction => ({
     type: CREATE_TERMS_FAIL,
-    message: `Failed to create new Terms of Use, ${e}`,
+    message: `Failed to create terms [${e}]`,
     failed: true,
   }),
 };

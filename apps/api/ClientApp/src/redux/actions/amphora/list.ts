@@ -38,6 +38,6 @@ export const actionCreators = {
     error: (e: any): OnFailedAction => ({
         failed: true,
         type: LIST_AMPHORAE_FAIL,
-        message: `Failed to create: ${e}`
+        message: `Failed to fetch amphoras [${e}]`
     })
 }

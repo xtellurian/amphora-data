@@ -25,7 +25,7 @@ export const actionCreators = {
 
     fail: (e: any): OnFailedAction => ({
         type: LIST_TERMS_FAIL,
-        message: `Failed to get Terms, ${e}`,
+        message: `Failed to fetch terms [${e}]`,
         failed: true
     })
 }
