@@ -54,7 +54,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
                 <ModalWrapper isOpen={true} onCloseRedirectTo="/amphora" >
                     <div className={openClose}>
                         {/* this renders the master menu */}
-                        <DetailMenu id={this.props.match.params.id} toggleMenu={(o) => this.toggleMenu(o)} isOpen={this.state.isOpen} />
+                        <DetailMenu {...this.props} id={this.props.match.params.id} toggleMenu={(o) => this.toggleMenu(o)} isOpen={this.state.isOpen} />
                         <div className="modal-inner">
                             <div className="mb-2">
                                 <h4>{amphora.name}</h4>

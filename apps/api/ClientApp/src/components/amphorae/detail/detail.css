@@ -1,7 +1,7 @@
 
 .menu-item {
   position: relative;
-  margin-left: 2em;
+  padding-left: 2em;
   margin-top: 3px;
   text-align: left;
   padding: 4px 5px;
@@ -15,14 +15,21 @@
 .menu-item .menu-icon {
   color: var(--blue-garnet);
   font-weight: bolder;
+  margin-left: 2em;
 }
 
 .menu-item .menu-item-name {
   text-align: left;
   width: 50%;
   margin: 0;
+  margin-left: 1em;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+
+.menu-item.active {
+  border-left: 4px solid var(--turquoise);
 }

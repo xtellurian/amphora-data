@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 import { ApplicationState } from "../../../redux/state";
 import { actionCreators } from "../../../redux/actions/plugins/burgerMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 
 import "./detail.css";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type DetailMenuProps = { toggleMenu: (isOpen: boolean) => void } & {
   id: string;
-} & { isOpen: boolean } & typeof actionCreators; // ... plus action creators we've requested
+} & { isOpen: boolean } & typeof actionCreators & RouteComponentProps<{}>; // ... plus action creators we've requested
 
 const iconBackground: React.CSSProperties = {
   textAlign: "end",
@@ -41,8 +41,10 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
     return `${baseLink}/${this.props.id}/${path}`;
   }
 
-  private onItemClick() {
-    // this.props.close();
+  private isPageActive(path: string): boolean {
+    const actual = this.props.location.pathname;
+    const link = this.getLink(path);
+    return link === actual;
   }
 
   private renderLinks(): JSX.Element {
@@ -50,7 +52,7 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
       <React.Fragment>
         {this.pages.map((p) => (
           <Link key={p.path} to={this.getLink(p.path)}>
-            <div className="menu-item txt-sm">
+            <div className={`menu-item txt-sm ${this.isPageActive(p.path) ? "active" : ""}`}>
               <span className="menu-icon">
                 <FontAwesomeIcon icon={p.icon} />
               </span>
