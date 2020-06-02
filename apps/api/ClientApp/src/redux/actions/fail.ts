@@ -16,7 +16,13 @@ interface ErrorResponse {
 
 export function toMessage(r: ErrorResponse) {
   if (r.response && r.response.data) {
-    return `${r.response.data}`;
+    if (typeof r.response.data === "string") {
+      return r.response.data;
+    } else if (r.response.data.errors && r.response.data.title) {
+      return r.response.data.title;
+    } else {
+      return `${r.response.data}`;
+    }
   } else if (r.response) {
     return `${r.response}`;
   } else {
