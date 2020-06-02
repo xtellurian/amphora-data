@@ -26,13 +26,12 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
   private pages: {
     path: string;
     name: string;
-    icon?: IconProp;
-    iconText?: string;
+    icon: IconProp;
   }[] = [
     { path: "", name: "Description", icon: "edit" },
     { path: "files", name: "Files", icon: "paperclip" },
     { path: "signals", name: "Signals", icon: "chart-line" },
-    { path: "integrate", name: "Integrate", iconText: "</>" },
+    { path: "integrate", name: "Integrate", icon: "code" },
     { path: "terms", name: "Terms", icon: "file-signature" },
     { path: "location", name: "Location", icon: "map-marker-alt" },
     { path: "quality", name: "Quality", icon: "award" },
@@ -50,10 +49,10 @@ class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
     return (
       <React.Fragment>
         {this.pages.map((p) => (
-          <Link key={p.path}  to={this.getLink(p.path)}>
+          <Link key={p.path} to={this.getLink(p.path)}>
             <div className="menu-item txt-sm">
               <span className="menu-icon">
-                {p.icon ? <FontAwesomeIcon icon={p.icon} /> : p.iconText}
+                <FontAwesomeIcon icon={p.icon} />
               </span>
               {this.props.isOpen ? (
                 <span className="menu-item-name">{p.name}</span>
