@@ -52,7 +52,7 @@ class CreateAmphora extends React.PureComponent<
   }
 
   private ensureTerms() {
-    if (!this.props.lastLoaded) {
+    if (!this.props.cache.lastUpdated) {
       this.props.listTerms();
     } else {
       console.log("not downloading terms");
@@ -120,7 +120,7 @@ class CreateAmphora extends React.PureComponent<
       ...this.props.termIds.map((t) => {
         return {
           value: t,
-          text: this.props.cache[t].name,
+          text: this.props.cache.store[t].name,
         };
       }),
     ];

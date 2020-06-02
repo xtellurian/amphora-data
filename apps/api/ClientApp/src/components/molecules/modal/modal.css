@@ -1,6 +1,13 @@
+.ReactModal__Content .menu-open {
+    height: 100%;
+}
+.ReactModal__Content .modal-inner {
+    height: 100%;
+}
 .ReactModal__Content .menu-open .modal-inner {
     padding-top: 10px;
     margin-left: 16rem;
+    height: 100%;
 }
 
 .ReactModal__Content .menu-closed .modal-inner {

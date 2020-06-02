@@ -12,7 +12,7 @@ import Integrate from './detail/Integrate';
 import TermsOfUse from './detail/TermsOfUse';
 import Location from './detail/Location';
 import Quality from './detail/Quality';
-import { StringToEntityMap } from '../../redux/state/common';
+import { Cache } from '../../redux/state/common';
 import DetailMenu from './detail/AmphoraDetailMenu'
 import { DetailedAmphora } from 'amphoradata';
 import { LoadingState } from '../molecules/empty/LoadingState';
@@ -22,7 +22,7 @@ interface MenuState {
 }
 
 type ConnectedAmphoraModalProps =
-    { cache: StringToEntityMap<DetailedAmphora> }
+    { cache: Cache<DetailedAmphora> }
     & typeof actionCreators
     & RouteComponentProps<{ id: string }>;
 
@@ -47,7 +47,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
 
     public render() {
         const id = this.props.match.params.id;
-        const amphora = this.props.cache[id];
+        const amphora = this.props.cache.store[id];
         const openClose = this.state.isOpen ? "menu-open" : "menu-closed";
         if (amphora) {
             return (
@@ -86,7 +86,7 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
 function mapStateToProps(state: ApplicationState) {
     return {
         isLoading: state.amphora.isLoading,
-        cache: state.amphora.cache,
+        cache: state.amphora.metadata,
     }
 }
 

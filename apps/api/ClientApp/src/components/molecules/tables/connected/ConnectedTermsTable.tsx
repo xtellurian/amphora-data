@@ -4,12 +4,12 @@ import { ApplicationState } from "../../../../redux/state";
 import { Table } from "../Table";
 import { TermsOfUse } from "amphoradata";
 import { RouteComponentProps } from "react-router";
-import { StringToEntityMap, emptyCache } from "../../../../redux/state/common";
+import { Cache, emptyCache } from "../../../../redux/state/common";
 import { EmptyState } from "../../empty/EmptyState";
 
 interface ConnectedTermsTableProps {
   termIds: string[];
-  cache: StringToEntityMap<TermsOfUse>;
+  cache: Cache<TermsOfUse>;
 }
 
 const columns = [
@@ -29,7 +29,7 @@ class ConnectedTermsTable extends React.PureComponent<
               this.props.history.push(`/terms/detail/${r.id}`)
             }
             columns={columns}
-            rowGetter={(i: number) => this.props.cache[ids[i]]}
+            rowGetter={(i: number) => this.props.cache.store[ids[i]]}
             rowCount={Math.min(10, ids.length)}
           />
         </div>

@@ -61,7 +61,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     private onFileChangedHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const id = this.props.match.params.id;
-        const amphora = this.props.amphora.cache[id];
+        const amphora = this.props.amphora.metadata.store[id];
         if (amphora && e.target.files && e.target.files.length > 0) {
             const name = this.state.newFileName || e.target.files[0].name;
             this.props.uploadFile(amphora, e.target.files[0], name);
@@ -78,7 +78,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
 
     public render() {
         const id = this.props.match.params.id;
-        const amphora = this.props.amphora.cache[id];
+        const amphora = this.props.amphora.metadata.store[id];
         if (amphora) {
             return (
                 <React.Fragment>

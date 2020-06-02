@@ -54,7 +54,7 @@ class AddSignal extends React.PureComponent<AddSignalProps, AddSignalState> {
 
   public render() {
     const id = this.props.match.params.id;
-    const amphora = this.props.amphora.cache[id];
+    const amphora = this.props.amphora.metadata.store[id];
     if (amphora) {
       return (
         <React.Fragment>

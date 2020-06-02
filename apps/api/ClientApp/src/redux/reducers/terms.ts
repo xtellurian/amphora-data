@@ -15,7 +15,7 @@ export const reducer: Reducer<TermsOfUseState> = (
   if (state === undefined) {
     return {
       cache: emptyCache<TermsOfUse>(),
-      isLoading: true,
+      isLoading: false,
       termIds: [],
     };
   }
@@ -24,7 +24,6 @@ export const reducer: Reducer<TermsOfUseState> = (
     // listing
     case listActions.LIST_TERMS:
       return {
-        lastLoaded: new Date(),
         cache: state.cache,
         isLoading: true, // just set loading to true
         termIds: state.termIds,
@@ -33,20 +32,19 @@ export const reducer: Reducer<TermsOfUseState> = (
       const listAction = incomingAction as listActions.ListTermsSuccessAction;
       const allTerms = listAction.payload;
       const cache = state.cache || emptyCache<TermsOfUse>();
+      cache.lastUpdated = new Date();
       allTerms.forEach((a) => {
         if (a.id) {
-          cache[a.id] = a;
+          cache.store[a.id] = a;
         }
       });
       return {
-        lastLoaded: new Date(),
         cache,
         isLoading: false,
         termIds: allTerms.map((t) => t.id).filter((t) => t) as string[],
       };
     case listActions.LIST_TERMS_FAIL:
       return {
-        lastLoaded: state.lastLoaded,
         cache: state.cache,
         isLoading: false,
         termIds: state.termIds,
@@ -54,18 +52,17 @@ export const reducer: Reducer<TermsOfUseState> = (
     // creating
     case createActions.CREATE_TERMS:
       return {
-        lastLoaded: state.lastLoaded,
         cache: state.cache,
         isLoading: true, // just set loading to true
         termIds: state.termIds,
       };
     case createActions.CREATE_TERMS_SUCCESS:
       const createdTermsAction = incomingAction as createActions.CreateTermsSuccessAction;
+      state.cache.lastUpdated = new Date();
       if (createdTermsAction.payload.id) {
-        state.cache[createdTermsAction.payload.id] = createdTermsAction.payload;
+        state.cache.store[createdTermsAction.payload.id] = createdTermsAction.payload;
         const termIds = [createdTermsAction.payload.id, ...state.termIds];
         return {
-          lastLoaded: state.lastLoaded,
           cache: state.cache,
           isLoading: false,
           termIds: termIds,
@@ -75,7 +72,6 @@ export const reducer: Reducer<TermsOfUseState> = (
       }
     case createActions.CREATE_TERMS_FAIL:
       return {
-        lastLoaded: state.lastLoaded,
         cache: state.cache,
         isLoading: false,
         termIds: state.termIds,

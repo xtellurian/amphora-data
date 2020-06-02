@@ -2,10 +2,13 @@ export interface StringToEntityMap<T> {
   [id: string]: T;
 }
 
-export interface StateCachedFromServer {
-  lastLoaded?: Date | undefined;
+export interface Cache<T> {
+  store: StringToEntityMap<T>;
+  lastUpdated?: Date;
 }
 
-export function emptyCache<T>(): StringToEntityMap<T> {
-  return {};
+export function emptyCache<T>(): Cache<T> {
+  return {
+    store: {}
+  };
 }

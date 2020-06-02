@@ -4,7 +4,7 @@ import { ApplicationState } from '../../../../redux/state';
 import { Table } from '../Table';
 import { DetailedAmphora } from 'amphoradata';
 import { RouteComponentProps } from 'react-router';
-import { StringToEntityMap } from '../../../../redux/state/common';
+import { Cache } from '../../../../redux/state/common';
 import { AccessType, Scope } from '../../../../redux/actions/amphora/list';
 import { EmptyState } from '../../empty/EmptyState';
 
@@ -21,7 +21,7 @@ interface ConnectedAmphoraTableProps {
             purchased?: string[];
         };
     };
-    cache: StringToEntityMap<DetailedAmphora>;
+    cache: Cache<DetailedAmphora>;
 }
 
 const columns = [
@@ -63,7 +63,7 @@ class ConnectedAmphoraTable extends React.PureComponent<ConnectedAmphoraTablePro
                 <Table
                     onRowClicked={(r) => this.props.history.push(`amphora/detail/${r.id}`)}
                     columns={columns}
-                    rowGetter={(i: number) => this.props.cache[ids[i]]}
+                    rowGetter={(i: number) => this.props.cache.store[ids[i]]}
                     rowCount={Math.min(10, ids.length)} />
             </div>)
         } else {
@@ -78,7 +78,7 @@ function mapStateToProps(state: ApplicationState) {
     if (state && state.amphora && state.amphora.collections) {
         return {
             collections: state.amphora.collections,
-            cache: state.amphora.cache
+            cache: state.amphora.metadata
         };
     } else {
         return {
@@ -86,7 +86,7 @@ function mapStateToProps(state: ApplicationState) {
                 self: { created: [], purchased: [] },
                 organisation: { created: [], purchased: [] }
             },
-            cache: state.amphora.cache
+            cache: state.amphora.metadata
         };
     }
 }

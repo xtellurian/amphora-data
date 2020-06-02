@@ -11,6 +11,8 @@ import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 import { Tabs, activeTab } from '../molecules/tabs';
 import { Toggle } from '../molecules/toggles/Toggle';
 import { LoadingState } from '../molecules/empty/LoadingState';
+import { emptyCache } from '../../redux/state/common';
+import { DetailedAmphora, Signal } from 'amphoradata';
 
 // At runtime, Redux will merge together...
 type MyAmphoraeProps =
@@ -108,6 +110,7 @@ class MyAmphorae extends React.Component<MyAmphoraeProps, MyAmphoraeState> {
 }
 
 function mapStateToProps(state: ApplicationState): AmphoraState {
+
   if (state.amphora) {
     return state.amphora;
   } else {
@@ -123,7 +126,8 @@ function mapStateToProps(state: ApplicationState): AmphoraState {
           purchased: []
         }
       },
-      cache: {}
+      metadata: emptyCache<DetailedAmphora>(),
+      signals: emptyCache<Signal[]>()
     }
   }
 }

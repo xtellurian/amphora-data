@@ -1,5 +1,5 @@
-import { DetailedAmphora } from 'amphoradata'
-import { StringToEntityMap } from './common';
+import { DetailedAmphora, Signal } from 'amphoradata'
+import { Cache } from './common';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
@@ -15,5 +15,6 @@ export interface AmphoraState {
             purchased?: string[];
         };
     };
-    cache: StringToEntityMap<DetailedAmphora>;
+    metadata: Cache<DetailedAmphora>;
+    signals: Cache<Signal[]>;
 }

@@ -17,7 +17,7 @@ type TermsOfUseDetailProps = TermsOfUseState & {
 class TermsOfUseDetailComponent extends React.Component<TermsOfUseDetailProps> {
   // rendering methods
   public render() {
-    const terms = this.props.cache[this.props.match.params.id];
+    const terms = this.props.cache.store[this.props.match.params.id];
     if (!terms) {
       return <LoadingState />;
     } else {
