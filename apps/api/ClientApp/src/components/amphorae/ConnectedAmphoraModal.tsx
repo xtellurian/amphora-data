@@ -6,7 +6,8 @@ import { ModalWrapper } from '../molecules/modal/ModalWrapper';
 import { RouteComponentProps, Route } from 'react-router';
 import Description from './detail/Description';
 import Files from './detail/Files';
-import Signals from './detail/Signals';
+import Signals from './detail/signals/Signals';
+import AddSignal from './detail/signals/AddSignal';
 import Integrate from './detail/Integrate';
 import TermsOfUse from './detail/TermsOfUse';
 import Location from './detail/Location';
@@ -62,7 +63,10 @@ class ConnectedAmphoraModal extends React.PureComponent<ConnectedAmphoraModalPro
                             {/* these render the detail views */}
                             <Route exact path='/amphora/detail/:id/' component={Description} />
                             <Route exact path='/amphora/detail/:id/files' component={Files} />
+                            
                             <Route exact path='/amphora/detail/:id/signals' component={Signals} />
+                            <Route exact path='/amphora/detail/:id/signals/add' component={AddSignal} />
+
                             <Route exact path='/amphora/detail/:id/integrate' component={Integrate} />
                             <Route exact path='/amphora/detail/:id/terms' component={TermsOfUse} />
                             <Route exact path='/amphora/detail/:id/location' component={Location} />

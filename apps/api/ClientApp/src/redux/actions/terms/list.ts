@@ -1,6 +1,6 @@
 import { Action as listActions } from 'redux';
 import { TermsOfUse } from 'amphoradata';
-import { OnFailedAction } from '../fail';
+import { OnFailedAction, toMessage } from '../fail';
 
 export const LIST_TERMS = '[terms] LIST TERMS';
 export const LIST_TERMS_SUCCESS = `${LIST_TERMS} SUCCESS`;
@@ -25,7 +25,7 @@ export const actionCreators = {
 
     fail: (e: any): OnFailedAction => ({
         type: LIST_TERMS_FAIL,
-        message: `Failed to fetch terms [${e}]`,
+        message: toMessage(e),
         failed: true
     })
 }

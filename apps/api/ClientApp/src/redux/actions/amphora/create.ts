@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { OnFailedAction } from "../fail";
+import { OnFailedAction, toMessage } from "../fail";
 import { DetailedAmphora, CreateAmphora } from "amphoradata";
 
 export const CREATE = "[amphorae] CREATE NEW";
@@ -25,12 +25,11 @@ export const actionCreators = {
     type: CREATE_SUCCESS,
     payload: a,
   }),
-  createdError: (m: string): OnFailedAction => ({
+  createdError: (e: any): OnFailedAction => ({
     failed: true,
     type: CREATE_ERROR,
-    message: m,
+    message: toMessage(e),
   }),
-  // listing amphora
 };
 
 export type CreateAction = CreateAmphoraAction;

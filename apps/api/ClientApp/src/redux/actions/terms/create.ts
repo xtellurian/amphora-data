@@ -1,6 +1,6 @@
 import { Action } from "redux";
 import { TermsOfUse, CreateTermsOfUse } from "amphoradata";
-import { OnFailedAction } from "../fail";
+import { OnFailedAction, toMessage } from "../fail";
 
 export const CREATE_TERMS = "[terms] CREATE TERMS";
 export const CREATE_TERMS_SUCCESS = `${CREATE_TERMS} SUCCESS`;
@@ -29,7 +29,7 @@ export const actionCreators = {
 
   fail: (e: any): OnFailedAction => ({
     type: CREATE_TERMS_FAIL,
-    message: `Failed to create terms [${e}]`,
+    message: toMessage(e),
     failed: true,
   }),
 };
