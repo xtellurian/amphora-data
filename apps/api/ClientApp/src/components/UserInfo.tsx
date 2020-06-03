@@ -1,12 +1,19 @@
-import * as React from 'react';
-import {RouteComponentProps} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {User} from 'oidc-client';
-import {FunctionComponent, ReactElement} from 'react';
+import * as React from "react";
+import { RouteComponentProps } from "react-router-dom";
+import { connect } from "react-redux";
+import { User } from "oidc-client";
+import { FunctionComponent, ReactElement } from "react";
+import { ApplicationState } from "../redux/state";
+import { Self } from "../redux/state/self";
 
-type UserInfoProps = {user: User} & RouteComponentProps<{}>;
+type UserInfoProps = {
+  user: User;
+  self: Self;
+} & RouteComponentProps<{}>;
 
-const UserInfo: FunctionComponent<UserInfoProps> = (props: UserInfoProps): ReactElement => {
+const UserInfo: FunctionComponent<UserInfoProps> = (
+  props: UserInfoProps
+): ReactElement => {
   if (!props.user) {
     return (
       <div className="empty">
@@ -17,10 +24,24 @@ const UserInfo: FunctionComponent<UserInfoProps> = (props: UserInfoProps): React
       </div>
     );
   }
-
+  console.log("rendering thingo")
   return (
     <div className="container">
-      <h2>User information</h2>
+      <h3>From API</h3>
+      <table className="table">
+        <tbody>
+          {props.self.userInfo
+            ? Object.keys(props.self.userInfo).map((key) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>{(props.self.userInfo as any)[key]}</td>
+                </tr>
+              ))
+            : null}
+        </tbody>
+      </table>
+      <hr/>
+      <h3>From Token</h3>
       <table className="table">
         <tbody>
           <tr>
@@ -43,7 +64,7 @@ const UserInfo: FunctionComponent<UserInfoProps> = (props: UserInfoProps): React
             <td>scope</td>
             <td>{props.user.scope}</td>
           </tr>
-          {Object.keys(props.user.profile).map(key => (
+          {Object.keys(props.user.profile).map((key) => (
             <tr key={key}>
               <td>{key}</td>
               <td>{props.user.profile[key]}</td>
@@ -55,13 +76,11 @@ const UserInfo: FunctionComponent<UserInfoProps> = (props: UserInfoProps): React
   );
 };
 
-function mapStateToProps(state: any) {
+function mapStateToProps(state: ApplicationState) {
   return {
     user: state.oidc.user,
+    self: state.self,
   };
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(UserInfo);
+export default connect(mapStateToProps, null)(UserInfo);

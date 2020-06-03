@@ -11,10 +11,7 @@ type TermsOfUseProps = AmphoraDetailProps & typeof listActions;
 class TermsOfUse extends React.PureComponent<TermsOfUseProps> {
   private renderTerms(amphora: DetailedAmphora) {
     const termsId = amphora.termsOfUseId;
-    console.log(JSON.stringify(this.props.terms))
     if (this.props.terms.cache.lastUpdated === undefined && !this.props.terms.isLoading) {
-      console.log("updating terms!!!!")
-      console.log(this.props.terms.cache)
       this.props.listTerms();
       return (
         <React.Fragment>
