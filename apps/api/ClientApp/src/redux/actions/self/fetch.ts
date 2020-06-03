@@ -2,7 +2,7 @@ import { Action } from "redux";
 import { AmphoraUser } from "amphoradata";
 import { OnFailedAction, toMessage } from "../fail";
 
-export const FETCH_SELF = "[signals] FETCH SELF";
+export const FETCH_SELF = "[self] FETCH SELF";
 export const FETCH_SELF_SUCCESS = `${FETCH_SELF} SUCCESS`;
 export const FETCH_SELF_FAIL = `${FETCH_SELF} FAIL`;
 

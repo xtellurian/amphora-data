@@ -5,6 +5,8 @@ const configuration = new amphoradata.Configuration({ basePath: "." });
 export const amphoraApiClient = new amphoradata.AmphoraeApi(configuration);
 export const termsOfUseApiClient = new amphoradata.TermsOfUseApi(configuration);
 export const usersClient = new amphoradata.UsersApi(configuration);
+export const searchClient = new amphoradata.SearchApi(configuration);
+
 function setDates(e: any | undefined) {
     if (e && e.createdDate) {
         e.createdDate = new Date(e.createdDate);

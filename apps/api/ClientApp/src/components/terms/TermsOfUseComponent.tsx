@@ -5,7 +5,7 @@ import { ApplicationState } from "../../redux/state";
 import { TermsOfUseState } from "../../redux/state/terms";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { actionCreators as listActions } from "../../redux/actions/terms/list";
-import ConnectedTermsTable from "../molecules/tables/connected/ConnectedTermsTable";
+import ConnectedTermsTable from "../tables/ConnectedTermsTable";
 import { PrimaryButton } from "../molecules/buttons";
 import { emptyCache } from "../../redux/state/common";
 import { TermsOfUse } from "amphoradata";

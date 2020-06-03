@@ -15,7 +15,7 @@ import UserInfo from './components/UserInfo';
 import Amphora from './components/amphorae/MyAmphorae';
 import Create from './components/amphorae/CreateAmphora';
 import Request from './components/amphorae/RequestAmphora';
-import Find from './components/amphorae/FindAmphora';
+import Find from './components/amphorae/Search';
 
 import TermsOfUse from './components/terms/TermsOfUseComponent';
 

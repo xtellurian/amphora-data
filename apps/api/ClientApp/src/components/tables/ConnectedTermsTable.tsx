@@ -1,11 +1,11 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { ApplicationState } from "../../../../redux/state";
-import { Table } from "../Table";
+import { ApplicationState } from "../../redux/state";
+import { Table } from "../molecules/tables/Table";
 import { TermsOfUse } from "amphoradata";
 import { RouteComponentProps } from "react-router";
-import { Cache, emptyCache } from "../../../../redux/state/common";
-import { EmptyState } from "../../empty/EmptyState";
+import { Cache, emptyCache } from "../../redux/state/common";
+import { EmptyState } from "../molecules/empty/EmptyState";
 
 interface ConnectedTermsTableProps {
   termIds: string[];

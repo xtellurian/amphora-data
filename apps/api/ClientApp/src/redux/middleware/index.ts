@@ -2,6 +2,7 @@ import { amphoraMiddleware } from "./api/amphorae";
 import { termsMiddleware } from "./api/terms";
 import { signalsMiddleware } from "./api/signals";
 import { selfMiddleware } from "./api/self";
+import { searchMiddleware } from "./api/search";
 import { axiosUpdater } from "./reactors/axiosUpdater";
 import { onLogin } from "./reactors/onLogin";
 import { logger, crashReporter } from "./logger";
@@ -17,6 +18,7 @@ export default [
   ...amphoraMiddleware,
   ...termsMiddleware,
   ...signalsMiddleware,
+  ...searchMiddleware,
   controlMenu,
   toastsListener,
 ];

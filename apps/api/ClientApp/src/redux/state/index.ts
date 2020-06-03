@@ -3,6 +3,7 @@ import * as Counter from "./counter";
 import { AmphoraState } from "./amphora";
 import { TermsOfUseState } from "./terms";
 import { Self } from "./self";
+import { SearchState } from "./search";
 import { MenuStates } from "./plugins/burgerMenu";
 import { OidcState } from "./plugins/oidc";
 import { UiState } from "./ui";
@@ -14,6 +15,7 @@ export interface ApplicationState extends Reducers {
   amphora: AmphoraState;
   terms: TermsOfUseState;
   self: Self;
+  search: SearchState;
   // other states
   burgerMenu: MenuStates;
   counter: Counter.CounterState | undefined;
