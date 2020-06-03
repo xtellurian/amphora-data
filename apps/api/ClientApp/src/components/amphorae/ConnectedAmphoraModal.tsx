@@ -38,9 +38,7 @@ class ConnectedAmphoraModal extends React.PureComponent<
     this.state = { isOpen: true };
   }
   public componentDidMount() {
-    console.log("mounted connecetd modal!")
     if (this.props.match.params.id) {
-      console.log("Triggering amphora fetch!");
       this.props.fetchAmphora(this.props.match.params.id);
     }
   }
