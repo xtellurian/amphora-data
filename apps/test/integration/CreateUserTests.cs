@@ -99,15 +99,26 @@ namespace Amphora.Tests.Integration
             var token = await loginResponse.Content.ReadAsStringAsync();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var org = EntityLibrary.GetOrganisationDto();
-
-            response = await client.PostAsJsonAsync("api/organisations", org);
-            var orgCreateContent = await response.Content.ReadAsStringAsync();
-            await AssertHttpSuccess(response);
-            var createdOrg = JsonConvert.DeserializeObject<Organisation>(orgCreateContent);
+            // there might be an org already, so check.
+            var selfRes = await client.GetAsync("api/users/self");
+            var self = await AssertHttpSuccess<AmphoraUser>(selfRes);
+            Organisation organisation;
+            if (self.OrganisationId is null)
+            {
+                var org = EntityLibrary.GetOrganisationDto();
+                response = await client.PostAsJsonAsync("api/organisations", org);
+                var orgCreateContent = await response.Content.ReadAsStringAsync();
+                await AssertHttpSuccess(response);
+                organisation = JsonConvert.DeserializeObject<Organisation>(orgCreateContent);
+            }
+            else
+            {
+                var orgRes = await client.GetAsync($"api/organisations/{self.OrganisationId}");
+                organisation = await AssertHttpSuccess<Organisation>(orgRes);
+            }
 
             // now delete the org
-            await client.DeleteAsync($"api/organisations/{createdOrg.Id}");
+            await client.DeleteAsync($"api/organisations/{organisation.Id}");
         }
 
         [Trait("Phase", "One")]

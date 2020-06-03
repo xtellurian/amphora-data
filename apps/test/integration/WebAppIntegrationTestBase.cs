@@ -19,8 +19,8 @@ namespace Amphora.Tests.Integration
     {
         protected static class Personas
         {
-            public const string Standard = nameof(Standard) + "@example.org";
-            public const string StandardTwo = nameof(StandardTwo) + "@example.org";
+            public const string Standard = nameof(Standard) + "@standard.org";
+            public const string StandardTwo = nameof(StandardTwo) + "@standard.org";
             public const string AmphoraAdmin = nameof(AmphoraAdmin) + "@amphoradata.com";
             public const string Attacker = nameof(Attacker) + "@badactor.net";
             public const string Other = nameof(Other) + "@other.com";

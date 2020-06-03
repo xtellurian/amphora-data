@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
+using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -60,13 +61,28 @@ namespace Amphora.Tests.Helpers
 
         public static async Task<Organisation> CreateOrganisationAsync(this HttpClient client, string testName)
         {
-            var a = Helpers.EntityLibrary.GetOrganisationDto(testName);
-            var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/organisations", requestBody);
-            var createResponseContent = await response.Content.ReadAsStringAsync();
-            Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
-            var org = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
-            return org;
+            // check if already in org before trying to create one (autocreate effect)
+            var selfRes = await client.GetAsync("api/users/self");
+            selfRes.IsSuccessStatusCode.Should().BeTrue();
+            var self = JsonConvert.DeserializeObject<AmphoraUser>(await selfRes.Content.ReadAsStringAsync());
+            Organisation organisation;
+            if (self.OrganisationId is null)
+            {
+                var a = Helpers.EntityLibrary.GetOrganisationDto(testName);
+                var requestBody = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("api/organisations", requestBody);
+                var createResponseContent = await response.Content.ReadAsStringAsync();
+                Assert.True(response.IsSuccessStatusCode, "Content: " + await response.Content.ReadAsStringAsync());
+                organisation = JsonConvert.DeserializeObject<Organisation>(createResponseContent);
+            }
+            else
+            {
+                var orgRes = await client.GetAsync($"api/organisations/{self.OrganisationId}");
+                orgRes.IsSuccessStatusCode.Should().BeTrue();
+                organisation = JsonConvert.DeserializeObject<Organisation>(await orgRes.Content.ReadAsStringAsync());
+            }
+
+            return organisation;
         }
 
         public static async Task<Organisation> GetOrganisationAsync(this HttpClient client, string organisationId)
