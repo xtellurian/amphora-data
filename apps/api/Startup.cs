@@ -153,7 +153,7 @@ namespace Amphora.Api
             {
                 options.LoginPath = "/Profiles/Account/Login";
                 options.LogoutPath = "/Profiles/Account/Logout";
-                options.AccessDeniedPath = "/AccessDenied"; // TODO: create access denided oasge
+                options.AccessDeniedPath = "/AccessDenied";
             });
 
             // In production, the React files will be served from this directory
