@@ -61,6 +61,7 @@ namespace Amphora.Api.Controllers
             var userReadRes = await userDataService.ReadAsync(User);
             if (userReadRes.Succeeded)
             {
+                logger.LogInformation($"User {userReadRes.Entity.UserName} is fetching self data.");
                 return Ok(mapper.Map<AmphoraUser>(userReadRes.Entity));
             }
             else
