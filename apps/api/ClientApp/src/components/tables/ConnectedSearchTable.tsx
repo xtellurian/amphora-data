@@ -25,7 +25,7 @@ class ConnectedSearchTable extends React.PureComponent<
         <div>
           <Table
             onRowClicked={(r) =>
-              this.props.history.push(`/amphora/detail/${r.id}`)
+              this.props.history.push(`/search/detail/${r.id}`)
             }
             columns={columns}
             rowGetter={(i: number) => this.props.results[i]}

@@ -47,13 +47,24 @@ class ConnectedAmphoraModal extends React.PureComponent<
     this.setState({ isOpen });
   }
 
+  private redirectToPath(): string {
+    if (this.props.location.pathname) {
+      const split = this.props.location.pathname.split("/");
+      if (split.length > 1) {
+        return `${split[0]}/${split[1]}`;
+      }
+    }
+    // default to this:
+    return "/amphora";
+  }
+
   public render() {
     const id = this.props.match.params.id;
     const amphora = this.props.cache.store[id];
     const openClose = this.state.isOpen ? "menu-open" : "menu-closed";
     if (amphora) {
       return (
-        <ModalWrapper isOpen={true} onCloseRedirectTo="/amphora">
+        <ModalWrapper isOpen={true} onCloseRedirectTo={this.redirectToPath()}>
           <div className={openClose}>
             {/* this renders the master menu */}
             <DetailMenu
@@ -125,6 +136,7 @@ function mapStateToProps(state: ApplicationState) {
   return {
     isLoading: state.amphora.isLoading,
     cache: state.amphora.metadata,
+    onCloseRedirectTo: null,
   };
 }
 

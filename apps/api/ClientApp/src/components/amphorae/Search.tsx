@@ -1,12 +1,13 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, Route } from "react-router";
 import ConnectedSearchTable from '../tables/ConnectedSearchTable';
 import { actionCreators as actions } from "../../redux/actions/search/searchAmphora";
 import { TextInput } from "../molecules/inputs";
 import { ApplicationState } from "../../redux/state";
 import { SearchState } from "../../redux/state/search";
 import { LoadingState } from "../molecules/empty/LoadingState";
+import ConnectedAmphoraModal from "./ConnectedAmphoraModal";
 
 // At runtime, Redux will merge together...
 type FindAmphoraProps = {
@@ -46,6 +47,8 @@ class FindAmphora extends React.PureComponent<FindAmphoraProps> {
         <TextInput onComplete={(t) => this.doSearch(t)} label="SearchTerm" />
         {this.renderLoader()}
         {this.renderTable()}
+
+        <Route path='/search/detail/:id' component={ConnectedAmphoraModal} />
       </React.Fragment>
     );
   }
