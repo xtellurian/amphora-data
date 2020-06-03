@@ -72,13 +72,18 @@ namespace Amphora.Api.Controllers.Amphorae
             foreach (var id in ids)
             {
                 var res = await amphoraeService.ReadAsync(User, id);
-                if (res.Succeeded && await permissionService.IsAuthorizedAsync(userReadRes.Entity, res.Entity, AccessLevels.ReadContents))
+                if (res.Failed)
                 {
-                    // all good
+                    return NotFound($"Amphora({id}) not found");
                 }
-                else if (res.WasForbidden)
+
+                if (!await permissionService.IsAuthorizedAsync(userReadRes.Entity, res.Entity, AccessLevels.ReadContents))
                 {
                     return StatusCode(403);
+                }
+                else
+                {
+                    logger.LogInformation("Granting user access to signals");
                 }
             }
 
