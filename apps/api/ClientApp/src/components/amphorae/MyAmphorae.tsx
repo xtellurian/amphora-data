@@ -5,7 +5,7 @@ import { Route } from 'react-router-dom';
 import { ApplicationState } from '../../redux/state';
 import { AmphoraState } from '../../redux/state/amphora';
 import AmphoraTable from '../tables/ConnectedAmphoraTable';
-import { actionCreators as listActions, Scope, AccessType } from "../../redux/actions/amphora/list";
+import { actionCreators as listActions, Scope, AccessType } from "../../redux/actions/amphora/fetch";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
 import ConnectedAmphoraModal from './ConnectedAmphoraModal';
 import { Tabs, activeTab } from '../molecules/tabs';

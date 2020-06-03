@@ -1,4 +1,4 @@
-import * as listActions from "../actions/amphora/list";
+import * as fetchActions from "../actions/amphora/fetch";
 import * as signalsActions from "../actions/signals/fetch";
 import { AmphoraState } from "../state/amphora";
 import { Reducer, Action } from "redux";
@@ -28,7 +28,8 @@ export const reducer: Reducer<AmphoraState> = (
   }
 
   switch (incomingAction.type) {
-    case listActions.LIST_AMPHORAE:
+    case fetchActions.LIST_AMPHORAE:
+    case fetchActions.FETCH_AMPHORA:
       return {
         isLoading: true,
         metadata: state.metadata,
@@ -36,8 +37,8 @@ export const reducer: Reducer<AmphoraState> = (
         signals: state.signals,
       };
 
-    case listActions.LIST_AMPHORAE_SUCCESS:
-      const recieveAmphoraAction = incomingAction as listActions.RecieveAmphoraListAction;
+    case fetchActions.LIST_AMPHORAE_SUCCESS:
+      const recieveAmphoraAction = incomingAction as fetchActions.RecieveAmphoraListAction;
       const allAmphora = recieveAmphoraAction.payload;
       const metadata = state.metadata || emptyCache<DetailedAmphora>();
       // always update the cache
@@ -162,16 +163,28 @@ export const reducer: Reducer<AmphoraState> = (
       }
 
     case signalsActions.FETCH_SIGNALS_SUCCESS:
-        const fetchSignalsAction = incomingAction as signalsActions.FetchSignalsSuccessAction;
-        const signals = state.signals || emptyCache<Signal[]>();
-        signals.store[fetchSignalsAction.amphoraId] = fetchSignalsAction.payload;
-        signals.lastUpdated = new Date();
-        return {
-            collections: state.collections,
-            isLoading: false,
-            metadata: state.metadata,
-            signals: signals
-        }
+      const fetchSignalsAction = incomingAction as signalsActions.FetchSignalsSuccessAction;
+      const signals = state.signals || emptyCache<Signal[]>();
+      signals.store[fetchSignalsAction.amphoraId] = fetchSignalsAction.payload;
+      signals.lastUpdated = new Date();
+      return {
+        collections: state.collections,
+        isLoading: false,
+        metadata: state.metadata,
+        signals: signals,
+      };
+
+    case fetchActions.FETCH_AMPHORA_SUCCESS: 
+      const fetchSuccessAction = incomingAction as fetchActions.FetchAmphoraSuccessAction;
+      const newMeta = {...state.metadata }
+      newMeta.store[fetchSuccessAction.amphoraId] = fetchSuccessAction.payload;
+      newMeta.lastUpdated = new Date();
+      return {
+        isLoading: false,
+        metadata: newMeta,
+        signals: state.signals,
+        collections: state.collections
+      }
 
     default:
       return state;

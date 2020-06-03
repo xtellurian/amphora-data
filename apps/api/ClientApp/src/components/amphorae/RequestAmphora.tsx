@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 // import { actionCreators } from '../../redux/actions/amphorae';
-import { actionCreators as listActions } from "../../redux/actions/amphora/list";
+import { actionCreators as listActions } from "../../redux/actions/amphora/fetch";
 import { actionCreators as modalActions } from "../../redux/actions/ui";
 
 // At runtime, Redux will merge together...

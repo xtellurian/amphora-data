@@ -6,6 +6,10 @@ export const LIST_AMPHORAE = "[amphorae] LIST AMPHORA";
 export const LIST_AMPHORAE_SUCCESS = `${LIST_AMPHORAE} SUCCESS`;
 export const LIST_AMPHORAE_FAIL = `${LIST_AMPHORAE} FAIL`;
 
+export const FETCH_AMPHORA = "[amphora] FETCH";
+export const FETCH_AMPHORA_SUCCESS = `${FETCH_AMPHORA} SUCCESS`;
+export const FETCH_AMPHORA_FAIL = `${FETCH_AMPHORA} FAIL`;
+
 export interface ListMyAmphoraAction extends Action {
   type: typeof LIST_AMPHORAE;
   scope: Scope;
@@ -16,6 +20,15 @@ export interface RecieveAmphoraListAction extends Action {
   payload: DetailedAmphora[];
   scope: Scope;
   accessType: AccessType;
+}
+export interface FetchAmphoraAction extends Action {
+  type: typeof FETCH_AMPHORA;
+  amphoraId: string;
+}
+export interface FetchAmphoraSuccessAction extends Action {
+  type: typeof FETCH_AMPHORA_SUCCESS;
+  amphoraId: string;
+  payload: DetailedAmphora;
 }
 
 const SELF_SCOPE = "self";
@@ -44,6 +57,20 @@ export const actionCreators = {
     accessType,
   }),
 
+  fetchAmphora: (amphoraId: string): FetchAmphoraAction =>( {
+    type: FETCH_AMPHORA,
+    amphoraId
+  }),
+  fetchAmphoraSuccess: (amphoraId: string, payload: DetailedAmphora): FetchAmphoraSuccessAction =>( {
+    type: FETCH_AMPHORA_SUCCESS,
+    amphoraId,
+    payload
+  }),
+  fetchError: (amphoraId: string, e: any): OnFailedAction =>( {
+    type: FETCH_AMPHORA_SUCCESS,
+    message: `Failed to fetch Amphora(${amphoraId}), ${toMessage(e)}`,
+    failed: true
+  }),
   error: (e: any): OnFailedAction => ({
     failed: true,
     type: LIST_AMPHORAE_FAIL,

@@ -5,6 +5,7 @@ import { Signal } from "amphoradata";
 import "tsiclient/tsiclient.css";
 import "./tsi.css";
 import { LoadingState } from "../../../molecules/empty/LoadingState";
+import { EmptyState } from "../../../molecules/empty/EmptyState";
 
 // import { data } from "./fake";
 
@@ -24,10 +25,12 @@ const lineChartOptions = {
 };
 
 interface TsiComponentProps {
+  token: string;
   amphoraId: string;
   signals: Signal[];
 }
 interface TsiComponentState {
+  loading: boolean;
   lineChart?: any;
   data?: any;
 }
@@ -41,7 +44,9 @@ export class TsiComponent extends React.Component<
    */
   constructor(props: TsiComponentProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      loading: true,
+    };
   }
   componentDidMount() {
     if (!this.state.lineChart) {
@@ -56,12 +61,17 @@ export class TsiComponent extends React.Component<
   }
   private fetchData() {
     console.log("Fetching data...");
-    getData(this.props.amphoraId, this.props.signals, null, "")
+    getData(this.props.token, this.props.amphoraId, this.props.signals, null, "")
       .then((d: any) => this.dataCallback(d))
       .catch((e) => this.handleFetchDataError(e));
   }
   private handleFetchDataError(e: any) {
     console.log("Failed to fetch data from server.");
+    this.setState({
+      data: null,
+      loading: false,
+      lineChart: this.state.lineChart
+    })
   }
 
   public componentDidUpdate(prevProps: TsiComponentProps) {
@@ -78,6 +88,7 @@ export class TsiComponent extends React.Component<
 
   private dataCallback(data: any) {
     this.setState({
+      loading: false,
       lineChart: this.state.lineChart,
       data,
     });
@@ -86,7 +97,8 @@ export class TsiComponent extends React.Component<
   render() {
     return (
       <React.Fragment>
-        {this.state.data ? null : <LoadingState />}
+        {this.state.loading ? <LoadingState />: null }
+        {this.state.data === null ? <EmptyState>Oops! The data can't be rendered</EmptyState> : null}
         <div id="tsichart"></div>
       </React.Fragment>
     );

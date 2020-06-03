@@ -69,6 +69,7 @@ async function getLineChartExpressions(
 }
 
 export async function getData(
+  token: string,
   id: string,
   signals: Signal[],
   filters: any,
@@ -87,15 +88,23 @@ export async function getData(
 
   const url = window.location.host + "/api";
   const result = await tsiClient.server.getTsqResults(
-    "token",
+    token,
     url,
     linechartTsqExpressions.map(function (ae) {
       return ae.toTsq();
     })
   );
+
+  if (result && result.length > 0) {
+    const res1 = result[0];
+    if (res1["__tsiError__"]) {
+      throw new Error(res1["__tsiError__"].title);
+    }
+  }
   const data = tsiClient.ux.transformTsqResultsForVisualization(
     result,
     linechartTsqExpressions
   );
+
   return data;
 }
