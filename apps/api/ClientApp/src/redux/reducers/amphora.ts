@@ -172,7 +172,6 @@ export const reducer: Reducer<AmphoraState> = (
             metadata: state.metadata,
             signals: signals
         }
-      break;
 
     default:
       return state;
