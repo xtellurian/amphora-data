@@ -6,7 +6,6 @@ import { Self } from "./self";
 import { SearchState } from "./search";
 import { MenuStates } from "./plugins/burgerMenu";
 import { OidcState } from "./plugins/oidc";
-import { UiState } from "./ui";
 import { Reducers } from "../reducers";
 
 // The top-level state object
@@ -19,7 +18,6 @@ export interface ApplicationState extends Reducers {
   // other states
   burgerMenu: MenuStates;
   counter: Counter.CounterState | undefined;
-  ui: UiState;
   oidc: OidcState;
   router: RouterState;
 }
