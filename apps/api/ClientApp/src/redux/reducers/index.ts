@@ -4,22 +4,25 @@ import { reducer as amphora } from "./amphora";
 import { reducer as terms } from "./terms";
 import { reducer as self } from "./self";
 import { reducer as search } from "./search";
+import { reducer as maps } from "./maps";
 
 export interface Reducers {
-  amphora: any;
-  terms: any;
-  self: any;
-  search: any;
-  burgerMenu: any;
-  oidc: any;
+    amphora: any;
+    maps: any;
+    terms: any;
+    self: any;
+    search: any;
+    burgerMenu: any;
+    oidc: any;
 }
 
 // make sure these match the names of state!
 export const reducers: Reducers = {
-  amphora,
-  terms,
-  self,
-  search,
-  burgerMenu,
-  oidc,
+    amphora,
+    maps,
+    terms,
+    self,
+    search,
+    burgerMenu,
+    oidc,
 };

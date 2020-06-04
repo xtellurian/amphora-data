@@ -8,5 +8,6 @@ namespace Amphora.Common.Contracts
     {
         Task<FuzzySearchResponse> FuzzySearchAsync(string query);
         Task<byte[]> GetStaticMapImageAsync(GeoLocation location, int height = 512, int width = 512);
+        Task<string?> GetSubscriptionKeyAsync();
     }
 }

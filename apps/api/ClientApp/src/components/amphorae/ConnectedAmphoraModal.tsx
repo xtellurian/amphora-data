@@ -18,129 +18,137 @@ import { DetailedAmphora } from "amphoradata";
 import { LoadingState } from "../molecules/empty/LoadingState";
 
 interface ConnectedAmphoraModalState {
-  isOpen: boolean;
+    isOpen: boolean;
 }
 
 type ConnectedAmphoraModalProps = {
-  cache: Cache<DetailedAmphora>;
+    cache: Cache<DetailedAmphora>;
 } & typeof actionCreators &
-  RouteComponentProps<{ id: string }>;
+    RouteComponentProps<{ id: string }>;
 
 class ConnectedAmphoraModal extends React.PureComponent<
-  ConnectedAmphoraModalProps,
-  ConnectedAmphoraModalState
+    ConnectedAmphoraModalProps,
+    ConnectedAmphoraModalState
 > {
-  /**
-   *
-   */
-  constructor(props: ConnectedAmphoraModalProps) {
-    super(props);
-    this.state = { isOpen: true };
-  }
-  public componentDidMount() {
-    if (this.props.match.params.id) {
-      this.props.fetchAmphora(this.props.match.params.id);
+    /**
+     *
+     */
+    constructor(props: ConnectedAmphoraModalProps) {
+        super(props);
+        this.state = { isOpen: true };
     }
-  }
-
-  private toggleMenu(isOpen: boolean) {
-    this.setState({ isOpen });
-  }
-
-  private redirectToPath(): string {
-    if (this.props.location.pathname) {
-      const split = this.props.location.pathname.split("/");
-      if (split.length > 1) {
-        return `${split[0]}/${split[1]}`;
-      }
+    public componentDidMount() {
+        if (this.props.match.params.id) {
+            this.props.fetchAmphora(this.props.match.params.id);
+        }
     }
-    // default to this:
-    return "/amphora";
-  }
 
-  public render() {
-    const id = this.props.match.params.id;
-    const amphora = this.props.cache.store[id];
-    const openClose = this.state.isOpen ? "menu-open" : "menu-closed";
-    if (amphora) {
-      return (
-        <ModalWrapper isOpen={true} onCloseRedirectTo={this.redirectToPath()}>
-          <div className={openClose}>
-            {/* this renders the master menu */}
-            <DetailMenu
-              {...this.props}
-              id={this.props.match.params.id}
-              toggleMenu={(o) => this.toggleMenu(o)}
-              isOpen={this.state.isOpen}
-            />
-            <div className="modal-inner">
-              <div className="mb-2">
-                <h4>{amphora.name}</h4>
-                <small>
-                  Created{" "}
-                  {amphora.createdDate
-                    ? "on " + amphora.createdDate.toLocaleString()
-                    : "earlier"}
-                </small>
-              </div>
-              {/* these render the detail views */}
-              <Route
-                exact
-                path="/amphora/detail/:id/"
-                component={Description}
-              />
-              <Route exact path="/amphora/detail/:id/files" component={Files} />
-
-              <Route
-                exact
-                path="/amphora/detail/:id/signals"
-                component={Signals}
-              />
-              <Route
-                exact
-                path="/amphora/detail/:id/signals/add"
-                component={AddSignal}
-              />
-
-              <Route
-                exact
-                path="/amphora/detail/:id/integrate"
-                component={Integrate}
-              />
-              <Route
-                exact
-                path="/amphora/detail/:id/terms"
-                component={TermsOfUse}
-              />
-              <Route
-                exact
-                path="/amphora/detail/:id/location"
-                component={Location}
-              />
-              <Route
-                exact
-                path="/amphora/detail/:id/quality"
-                component={Quality}
-              />
-            </div>
-          </div>
-        </ModalWrapper>
-      );
-    } else {
-      return <LoadingState />;
+    private toggleMenu(isOpen: boolean) {
+        this.setState({ isOpen });
     }
-  }
+
+    private redirectToPath(): string {
+        if (this.props.location.pathname) {
+            const split = this.props.location.pathname.split("/");
+            if (split.length > 1) {
+                return `${split[0]}/${split[1]}`;
+            }
+        }
+        // default to this:
+        return "/amphora";
+    }
+
+    public render() {
+        const id = this.props.match.params.id;
+        const amphora = this.props.cache.store[id];
+        const openClose = this.state.isOpen ? "menu-open" : "menu-closed";
+        if (amphora) {
+            return (
+                <ModalWrapper
+                    isOpen={true}
+                    onCloseRedirectTo={this.redirectToPath()}
+                >
+                    <div className={openClose}>
+                        {/* this renders the master menu */}
+                        <DetailMenu
+                            {...this.props}
+                            id={this.props.match.params.id}
+                            toggleMenu={(o) => this.toggleMenu(o)}
+                            isOpen={this.state.isOpen}
+                        />
+                        <div className="modal-inner">
+                            <div className="mb-2">
+                                <h4>{amphora.name}</h4>
+                                <small>
+                                    Created{" "}
+                                    {amphora.createdDate
+                                        ? "on " +
+                                          amphora.createdDate.toLocaleString()
+                                        : "earlier"}
+                                </small>
+                            </div>
+                            {/* these render the detail views */}
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/"
+                                component={Description}
+                            />
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/files"
+                                component={Files}
+                            />
+
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/signals"
+                                component={Signals}
+                            />
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/signals/add"
+                                component={AddSignal}
+                            />
+
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/integrate"
+                                component={Integrate}
+                            />
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/terms"
+                                component={TermsOfUse}
+                            />
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/location"
+                                component={Location}
+                            />
+                            <Route
+                                exact
+                                path="/amphora/detail/:id/quality"
+                                component={Quality}
+                            />
+                        </div>
+                    </div>
+                </ModalWrapper>
+            );
+        } else {
+            return <LoadingState />;
+        }
+    }
 }
 
 function mapStateToProps(state: ApplicationState) {
-  return {
-    isLoading: state.amphora.isLoading,
-    cache: state.amphora.metadata,
-    onCloseRedirectTo: null,
-  };
+    return {
+        isLoading: state.amphora.isLoading,
+        cache: state.amphora.metadata,
+        onCloseRedirectTo: null,
+    };
 }
 
 export default connect(
-  mapStateToProps,
-  actionCreators
+    mapStateToProps,
+    actionCreators
 )(ConnectedAmphoraModal as any);

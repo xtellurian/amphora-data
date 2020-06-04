@@ -55,6 +55,11 @@ namespace Amphora.Api.Services.Azure
             isInit = true;
         }
 
+        public Task<string?> GetSubscriptionKeyAsync()
+        {
+            return Task.FromResult(this.subscriptionKey);
+        }
+
         public async Task<FuzzySearchResponse> FuzzySearchAsync(string query)
         {
             if (query == null) { return new FuzzySearchResponse() { Results = new List<Result>() }; }

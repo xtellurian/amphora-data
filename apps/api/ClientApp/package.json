@@ -11,6 +11,7 @@
     "@fortawesome/react-fontawesome": "^0.1.9",
     "amphoradata": "^0.10.4",
     "axios": "^0.19.2",
+    "azure-maps-control": "^2.0.25",
     "bootstrap": "^4.3.1",
     "connected-react-router": "6.5.2",
     "history": "4.10.1",
