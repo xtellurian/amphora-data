@@ -97,6 +97,8 @@ export class MapComponent extends React.PureComponent<MapComponentProps> {
     private getCenter(): number[] {
         if (this.props.center) {
             return [this.props.center.lon, this.props.center.lat];
+        } else if (this.props.points && this.props.points.length > 0) {
+            return [this.props.points[0].lon, this.props.points[0].lat];
         } else {
             return defaultCenter;
         }

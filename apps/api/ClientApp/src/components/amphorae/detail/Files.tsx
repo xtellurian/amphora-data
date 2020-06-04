@@ -54,7 +54,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
         } else {
             return (
                 <EmptyState>
-                    <strong>There are no files.</strong>
+                    There are no files.
                 </EmptyState>)
         }
     }
@@ -82,7 +82,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
         if (amphora) {
             return (
                 <React.Fragment>
-                    <div className="row">
+                    <div className="m-1 row">
                         <div className="col-6">
                             <h5>Files</h5>
                         </div>

@@ -3,7 +3,6 @@ import "./info.css";
 
 interface InfoPaneProps {
   title?: string;
-  content: string;
 }
 
 export class InfoPane extends React.PureComponent<InfoPaneProps> {
@@ -11,7 +10,7 @@ export class InfoPane extends React.PureComponent<InfoPaneProps> {
     return (
       <div className="infopane">
         <div className="title txt-med">{this.props.title || "Information"} </div>
-        {this.props.content}
+        {this.props.children}
       </div>
     );
   }

@@ -90,7 +90,7 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
     protected clearButton(): React.ReactElement | null | undefined {
         if (this.state && this.state.value) {
             return (
-                <button onClick={(e) => this.setState({ value: 0, validation: { isValid: true } })}>
+                <button tabIndex={-1} onClick={(e) => this.setState({ value: 0, validation: { isValid: true } })}>
                     <FontAwesomeIcon icon="times-circle" />
                 </button>
             )
