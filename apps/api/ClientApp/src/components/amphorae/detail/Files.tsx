@@ -1,12 +1,13 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { actionCreators } from '../../../redux/actions/amphora/files';
-import { AmphoraDetailProps, mapStateToProps } from './props';
-import { EmptyState } from '../../molecules/empty/EmptyState';
-import { amphoraApiClient } from '../../../clients/amphoraApiClient';
-import { PrimaryButton } from '../../molecules/buttons';
-import * as toast from '../../molecules/toasts';
-import { LoadingState } from '../../molecules/empty/LoadingState';
+import * as React from "react";
+import { connect } from "react-redux";
+import { actionCreators } from "../../../redux/actions/amphora/files";
+import { AmphoraDetailProps, mapStateToProps } from "./props";
+import { EmptyState } from "../../molecules/empty/EmptyState";
+import { amphoraApiClient } from "../../../clients/amphoraApiClient";
+import { PrimaryButton } from "../../molecules/buttons";
+import * as toast from "../../molecules/toasts";
+import { LoadingState } from "../../molecules/empty/LoadingState";
+import { Header } from "./Header";
 
 interface FilesState {
     isLoading: boolean;
@@ -14,14 +15,11 @@ interface FilesState {
     newFileName?: string;
 }
 
-type AmphoraDetailFilesProps =
-    AmphoraDetailProps
-    & typeof actionCreators;
+type AmphoraDetailFilesProps = AmphoraDetailProps & typeof actionCreators;
 
 const hiddenInputId = "select-file-input";
 
 class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
-
     /**
      *
      */
@@ -34,28 +32,25 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
     }
 
     private loadFiles() {
-        amphoraApiClient.amphoraeFilesListFiles(this.props.match.params.id)
+        amphoraApiClient
+            .amphoraeFilesListFiles(this.props.match.params.id)
             .then((f) => this.setState({ isLoading: false, files: f.data }))
             .catch((e) => this.handleFileLoadError(e));
     }
 
     private handleFileLoadError(e: any) {
         this.setState({ isLoading: false, files: [] });
-        toast.error({ text: "Error getting files" })
+        toast.error({ text: "Error getting files" });
     }
 
     renderFileList() {
         if (this.state.isLoading) {
-            return <LoadingState />
-        }
-        else if (this.state.files && this.state.files.length > 0) {
+            return <LoadingState />;
+        } else if (this.state.files && this.state.files.length > 0) {
             // there are files
-            return this.state.files.map(f => <p key={f}> {f}</p>)
+            return this.state.files.map((f) => <p key={f}> {f}</p>);
         } else {
-            return (
-                <EmptyState>
-                    There are no files.
-                </EmptyState>)
+            return <EmptyState>There are no files.</EmptyState>;
         }
     }
 
@@ -72,7 +67,7 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
     private triggerUpload() {
         const x = document.getElementById(hiddenInputId);
         if (x) {
-            x.click()
+            x.click();
         }
     }
 
@@ -82,28 +77,26 @@ class Files extends React.PureComponent<AmphoraDetailFilesProps, FilesState> {
         if (amphora) {
             return (
                 <React.Fragment>
-                    <div className="m-1 row">
-                        <div className="col-6">
-                            <h5>Files</h5>
-                        </div>
-                        <div className="col-6 pr-5 text-right">
-                            <input id={hiddenInputId} hidden type="file" name="file" onChange={(e) => this.onFileChangedHandler(e)} />
-                            <PrimaryButton onClick={e => this.triggerUpload()}> Upload File </PrimaryButton>
-                        </div>
-                    </div>
-                    <hr />
+                    <Header title="Files">
+                        <input
+                            id={hiddenInputId}
+                            hidden
+                            type="file"
+                            name="file"
+                            onChange={(e) => this.onFileChangedHandler(e)}
+                        />
+                        <PrimaryButton onClick={(e) => this.triggerUpload()}>
+                            {" "}
+                            Upload File{" "}
+                        </PrimaryButton>
+                    </Header>
                     {this.renderFileList()}
                 </React.Fragment>
-
-            )
+            );
         } else {
-            return <LoadingState />
+            return <LoadingState />;
         }
-
     }
 }
 
-export default connect(
-    mapStateToProps,
-    actionCreators,
-)(Files as any);
+export default connect(mapStateToProps, actionCreators)(Files as any);

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { AmphoraDetailProps, mapStateToProps } from "./props";
 import ConnectedMapComponent from "../../geo/ConnectedMapComponent";
 import { LoadingState } from "../../molecules/empty/LoadingState";
+import { Header } from "./Header";
 
 class Location extends React.PureComponent<AmphoraDetailProps> {
     public render() {
@@ -11,18 +12,13 @@ class Location extends React.PureComponent<AmphoraDetailProps> {
         if (amphora) {
             return (
                 <React.Fragment>
-                    <div>
-                        <div className="mr-1 row justify-content-between">
-                            <div className="col-6 txt-lg align-text-bottom">
-                                Location
-                            </div>
-                            <div className="col-3 bg-light">
-                                {amphora.lat},{amphora.lon}
-                            </div>
-                        </div>
-                        <hr />
-                        <ConnectedMapComponent amphora={[amphora]} />
-                    </div>
+                    <Header title="Location">
+                        <span className="bg-light">
+                            {amphora.lat},{amphora.lon}
+                        </span>
+                    </Header>
+
+                    <ConnectedMapComponent amphora={[amphora]} />
                 </React.Fragment>
             );
         } else {

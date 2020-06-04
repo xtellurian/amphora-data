@@ -6,6 +6,7 @@ import { actionCreators as listActions } from "../../../redux/actions/terms/list
 import { DetailedAmphora } from "amphoradata";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { EmptyState } from "../../molecules/empty/EmptyState";
+import { Header } from "./Header";
 
 type TermsOfUseProps = AmphoraDetailProps & typeof listActions;
 
@@ -46,7 +47,12 @@ class TermsOfUse extends React.PureComponent<TermsOfUseProps> {
         const id = this.props.match.params.id;
         const amphora = this.props.amphora.metadata.store[id];
         if (amphora) {
-            return <React.Fragment>{this.renderTerms(amphora)}</React.Fragment>;
+            return (
+                <React.Fragment>
+                    <Header title="Terms of Use" />
+                    {this.renderTerms(amphora)}
+                </React.Fragment>
+            );
         } else {
             return <LoadingState />;
         }

@@ -1,5 +1,6 @@
 import * as fetchActions from "../actions/amphora/fetch";
-import * as signalsActions from "../actions/signals/fetch";
+import * as fetchSignalsActions from "../actions/signals/fetch";
+import * as createSignalsActions from "../actions/signals/create";
 import { AmphoraState } from "../state/amphora";
 import { Reducer, Action } from "redux";
 import { DetailedAmphora, Signal } from "amphoradata";
@@ -162,8 +163,8 @@ export const reducer: Reducer<AmphoraState> = (
         };
       }
 
-    case signalsActions.FETCH_SIGNALS_SUCCESS:
-      const fetchSignalsAction = incomingAction as signalsActions.FetchSignalsSuccessAction;
+    case fetchSignalsActions.FETCH_SIGNALS_SUCCESS:
+      const fetchSignalsAction = incomingAction as fetchSignalsActions.FetchSignalsSuccessAction;
       const signals = state.signals || emptyCache<Signal[]>();
       signals.store[fetchSignalsAction.amphoraId] = fetchSignalsAction.payload;
       signals.lastUpdated = new Date();
@@ -172,6 +173,18 @@ export const reducer: Reducer<AmphoraState> = (
         isLoading: false,
         metadata: state.metadata,
         signals: signals,
+      };
+
+    case createSignalsActions.CREATE_SIGNAL_SUCCESS:
+      const createSignalAction = incomingAction as createSignalsActions.CreateSignalSuccessAction;
+      const newSig = {...state.signals} || emptyCache<Signal[]>();
+      newSig.store[createSignalAction.amphoraId] =  [...newSig.store[createSignalAction.amphoraId], createSignalAction.payload];
+      newSig.lastUpdated = new Date();
+      return {
+        collections: state.collections,
+        isLoading: false,
+        metadata: state.metadata,
+        signals: newSig,
       };
 
     case fetchActions.FETCH_AMPHORA_SUCCESS: 

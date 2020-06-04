@@ -9,6 +9,7 @@ import { TsiComponent } from "./TsiComponent";
 import { Signal } from "amphoradata";
 import { ApplicationState } from "../../../../redux/state";
 import { EmptyState } from "../../../molecules/empty/EmptyState";
+import { Header } from "../Header";
 
 type SignalsProps = AmphoraDetailProps &
     typeof actionCreators & { token: string };
@@ -29,14 +30,14 @@ class Signals extends React.PureComponent<SignalsProps> {
         if (amphora) {
             return (
                 <React.Fragment>
-                    <div className="text-right">
+                    <Header title="Signals">
                         <Link to={`/amphora/detail/${id}/signals/add`}>
-                            <PrimaryButton className="mr-2">
+                            <PrimaryButton>
                                 Add Signal
                             </PrimaryButton>
                         </Link>
-                        <hr />
-                    </div>
+                    </Header>
+
                     {signals && signals.length > 0 ? (
                         <TsiComponent
                             token={this.props.token}
