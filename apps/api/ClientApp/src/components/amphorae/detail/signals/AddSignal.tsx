@@ -114,4 +114,4 @@ class AddSignal extends React.PureComponent<AddSignalProps, AddSignalState> {
     }
 }
 
-export default connect(mapStateToProps, actionCreators)(AddSignal);
+export default connect(mapStateToProps, actionCreators)(AddSignal as any);

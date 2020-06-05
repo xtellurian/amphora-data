@@ -59,4 +59,4 @@ class TermsOfUse extends React.PureComponent<TermsOfUseProps> {
     }
 }
 
-export default connect(mapStateToProps, { ...listActions })(TermsOfUse);
+export default connect(mapStateToProps, { ...listActions })(TermsOfUse as any);

@@ -5,10 +5,12 @@ import { reducer as terms } from "./terms";
 import { reducer as self } from "./self";
 import { reducer as search } from "./search";
 import { reducer as maps } from "./maps";
+import { reducer as permissions } from "./permissions";
 
 export interface Reducers {
     amphora: any;
     maps: any;
+    permissions: any;
     terms: any;
     self: any;
     search: any;
@@ -20,6 +22,7 @@ export interface Reducers {
 export const reducers: Reducers = {
     amphora,
     maps,
+    permissions,
     terms,
     self,
     search,

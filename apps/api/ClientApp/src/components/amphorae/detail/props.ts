@@ -6,11 +6,13 @@ import { TermsOfUseState } from "../../../redux/state/terms";
 export type AmphoraDetailProps = {
   amphora: AmphoraState;
   terms: TermsOfUseState;
+  permissions: PermissionState;
 } & RouteComponentProps<{ id: string }>;
 
 export function mapStateToProps(state: ApplicationState) {
   return {
     amphora: state.amphora,
-    terms: state.terms
+    terms: state.terms,
+    permissions: state.permissions,
   };
 }

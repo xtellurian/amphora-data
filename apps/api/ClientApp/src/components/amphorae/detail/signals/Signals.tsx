@@ -62,4 +62,4 @@ function mapActualStateToProps(state: ApplicationState) {
         token: state.oidc.user ? state.oidc.user.access_token : "",
     };
 }
-export default connect(mapActualStateToProps, actionCreators)(Signals);
+export default connect(mapActualStateToProps, actionCreators)(Signals as any);

@@ -43,8 +43,8 @@ class FindAmphora extends React.PureComponent<FindAmphoraProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1>Find Amphora</h1>
-        <TextInput onComplete={(t) => this.doSearch(t)} label="SearchTerm" />
+        <h2>Search</h2>
+        <TextInput onComplete={(t) => this.doSearch(t)} label="" placeholder="Enter a term..." />
         {this.renderLoader()}
         {this.renderTable()}
 
