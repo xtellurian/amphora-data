@@ -2,7 +2,7 @@ import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { getPermissions } from "../../../utlities/permissions";
-
+import { baseLink } from "../ConnectedAmphoraModal";
 import "./detail.css";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { PermissionsState } from "../../../redux/state/permissions";
@@ -22,14 +22,6 @@ const icon: React.CSSProperties = {
 };
 
 export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
-    private baseLink(): string {
-        const split = this.props.location.pathname.split("/");
-        if (split.length > 2) {
-            return `${split[0]}/${split[1]}/${split[2]}`;
-        } else {
-            return "/amphora/detail";
-        }
-    }
     private pages: {
         path: string;
         name: string;
@@ -60,7 +52,9 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
     }
 
     private getLink(path: string) {
-        return `${this.baseLink()}/${this.props.id}/${path}`;
+        return `${baseLink(this.props.location.pathname)}/${
+            this.props.id
+        }/${path}`;
     }
 
     private isPageActive(path: string): boolean {

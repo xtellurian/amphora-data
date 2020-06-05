@@ -1,0 +1,46 @@
+/*  */
+.harvey {
+    --radius: 76px;
+    --fill: var(--turquoise);
+    display: inline-block;
+    width: var(--radius);
+    height: var(--radius);
+    border-radius: 100%;
+    border: solid 1px var(--turquoise);
+    overflow: hidden;
+}
+.harvey:hover {
+    opacity: 0.5;
+}
+.harvey.hover:after {
+    border-color: #f7931d;
+    background-color: #f7931d;
+}
+.harvey.quarters:before {
+    --qtr: 36px;
+    content: " ";
+    display: block;
+    border: solid 1px transparent;
+    background: var(--fill);
+    width: var(--qtr);
+    height: var(--qtr);
+}
+.harvey.half:before,
+.harvey.three-quarters:before {
+    --half: 76px;
+    height: var(--half);
+}
+.harvey.three-quarters:after {
+    --mt: -39px;
+    content: " ";
+    display: block;
+    border: solid 1px transparent;
+    background-color: var(--fill);
+    margin-top: var(--mt);
+    width: 76px;
+    height: 38px;
+}
+.harvey.quarters.full:before {
+    height: var(--radius);
+    width: var(--radius);
+}

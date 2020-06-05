@@ -27,8 +27,9 @@ class TermsOfUse extends React.PureComponent<TermsOfUseProps> {
         const terms = termsId ? this.props.terms.cache.store[termsId] : null;
         if (terms) {
             return (
+                // TODO: get working for other user
                 <React.Fragment>
-                    <div className="txt-lg">Terms of Use</div>
+                    <div className="txt-lg">Terms of Use (other use cant see terms yet)</div> 
                     <div className="txt-med">{terms.name}</div>
                     <hr />
                     <ReactMarkdown>{terms.contents}</ReactMarkdown>

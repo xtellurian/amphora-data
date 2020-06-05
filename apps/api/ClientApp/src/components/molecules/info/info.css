@@ -6,3 +6,13 @@
 .infopane .title {
   color: var(--berry);
 }
+
+.quality-pane {
+  padding: 0.2em;
+  min-height: 6em;
+  max-width: 20em;
+  margin: 1px;
+  border-radius: 4px;
+  background-color: var(--porcelain);
+  border: 1px solid var(--marble);
+}
