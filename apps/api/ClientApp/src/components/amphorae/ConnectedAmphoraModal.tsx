@@ -13,9 +13,10 @@ import TermsOfUse from "./detail/TermsOfUse";
 import Location from "./detail/Location";
 import Quality from "./detail/Quality";
 import { Cache } from "../../redux/state/common";
-import DetailMenu from "./detail/AmphoraDetailMenu";
+import { AmphoraDetailMenu } from "./detail/AmphoraDetailMenu";
 import { DetailedAmphora } from "amphoradata";
 import { LoadingState } from "../molecules/empty/LoadingState";
+import { PermissionsState } from "../../redux/state/permissions";
 
 interface ConnectedAmphoraModalState {
     isOpen: boolean;
@@ -23,6 +24,7 @@ interface ConnectedAmphoraModalState {
 
 type ConnectedAmphoraModalProps = {
     cache: Cache<DetailedAmphora>;
+    permissions: PermissionsState;
 } & typeof actionCreators &
     RouteComponentProps<{ id: string }>;
 
@@ -70,7 +72,8 @@ class ConnectedAmphoraModal extends React.PureComponent<
                 >
                     <div className={openClose}>
                         {/* this renders the master menu */}
-                        <DetailMenu
+                        <AmphoraDetailMenu
+                            permissions={this.props.permissions}
                             {...this.props}
                             id={this.props.match.params.id}
                             toggleMenu={(o) => this.toggleMenu(o)}
@@ -145,6 +148,7 @@ function mapStateToProps(state: ApplicationState) {
         isLoading: state.amphora.isLoading,
         cache: state.amphora.metadata,
         onCloseRedirectTo: null,
+        permissions: state.permissions,
     };
 }
 
