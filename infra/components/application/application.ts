@@ -127,11 +127,11 @@ export class Application extends pulumi.ComponentResource
     //   rg,
     //   state: this.state,
     // }, { parent: this });
-
-    // this.aks = {
-    //   primary,
-    //   secondary,
-    // };
+    // TODO: renable secondary
+    this.aks = {
+      primary,
+      // secondary,
+    };
   }
 
   private createSearch(rg: azure.core.ResourceGroup) {
