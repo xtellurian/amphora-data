@@ -38,6 +38,7 @@ jobs:
 - deployment: australiaeast
   displayName: Deployment - australiaeast
   environment: ${{ parameters.environment }}
+  condition: false #TODO: renable secondary
   dependsOn: 
     - australiasoutheast
     - infrastructure
