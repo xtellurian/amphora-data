@@ -32,7 +32,7 @@ export interface IApplication {
 
 export interface IAksCollection {
   primary: Aks;
-  secondary: Aks;
+  secondary?: Aks;
 }
 
 export class Application extends pulumi.ComponentResource
@@ -117,21 +117,21 @@ export class Application extends pulumi.ComponentResource
       state: this.state,
     }, { parent: this });
 
-    const secondary = new Aks("aks-au2", {
-      acr: this.acr,
-      appSettings: this.appSvc.appSettings,
-      kv: this.state.kv,
-      location: CONSTANTS.location.secondary,
-      monitoring: this.monitoring,
-      network: this.network,
-      rg,
-      state: this.state,
-    }, { parent: this });
+    // const secondary = new Aks("aks-au2", {
+    //   acr: this.acr,
+    //   appSettings: this.appSvc.appSettings,
+    //   kv: this.state.kv,
+    //   location: CONSTANTS.location.secondary,
+    //   monitoring: this.monitoring,
+    //   network: this.network,
+    //   rg,
+    //   state: this.state,
+    // }, { parent: this });
 
-    this.aks = {
-      primary,
-      secondary,
-    };
+    // this.aks = {
+    //   primary,
+    //   secondary,
+    // };
   }
 
   private createSearch(rg: azure.core.ResourceGroup) {

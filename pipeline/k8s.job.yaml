@@ -32,6 +32,7 @@ jobs:
   - template: app.deploy-k8s.steps.yaml
 
 - job: australiaeast
+  condition: false # TODO: renable secondary
   displayName: Deployment - australiaeast
   dependsOn:
     - australiasoutheast

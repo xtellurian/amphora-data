@@ -96,9 +96,10 @@ const asAksOutput = (c: Aks) => {
   };
 };
 
+// TODO: re-enable secondary
 export let k8s = result.then((r) => {
   return {
-    australiaeast: asAksOutput(r.application.aks.secondary),
+    // australiaeast: asAksOutput(r.application.aks.secondary),
     australiasoutheast: asAksOutput(r.application.aks.primary),
   };
 });

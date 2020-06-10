@@ -153,20 +153,21 @@ export class Tsi extends pulumi.ComponentResource {
       { parent: rg, dependsOn: eventSource },
     ));
 
-    accessPolicies.push(new azure.core.TemplateDeployment(
-      "aksSecondary_ap",
-      {
-        deploymentMode: "Incremental",
-        parameters: {
-          accessPolicyReaderObjectId: this.params.akss.secondary.identities.webApp.principalId,
-          environmentName: this.envName.result,
-          name: this.params.akss.secondary.k8sCluster.name,
-        },
-        resourceGroupName: rg.name,
-        templateBody: JSON.stringify(accessPolicyTemplate()),
-      },
-      { parent: rg, dependsOn: eventSource },
-    ));
+    // TODO: renable secondary
+    // accessPolicies.push(new azure.core.TemplateDeployment(
+    //   "aksSecondary_ap",
+    //   {
+    //     deploymentMode: "Incremental",
+    //     parameters: {
+    //       accessPolicyReaderObjectId: this.params.akss.secondary.identities.webApp.principalId,
+    //       environmentName: this.envName.result,
+    //       name: this.params.akss.secondary.k8sCluster.name,
+    //     },
+    //     resourceGroupName: rg.name,
+    //     templateBody: JSON.stringify(accessPolicyTemplate()),
+    //   },
+    //   { parent: rg, dependsOn: eventSource },
+    // ));
 
     this.dataAccessFqdn = env.outputs.dataAccessFqdn;
 
