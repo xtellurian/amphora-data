@@ -1,5 +1,8 @@
 {
     "name": "azure-typescript",
+    "prettier": {
+        "tabWidth": 4
+    },
     "devDependencies": {
         "@types/node": "^13.7.0",
         "tslint": "^5.20.1"

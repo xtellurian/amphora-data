@@ -6,7 +6,7 @@ export interface IKubernetesCluster {
 }
 
 export interface IMultiCluster {
-    australiaeast: IKubernetesCluster;
+    australiaeast?: IKubernetesCluster;
     australiasoutheast: IKubernetesCluster;
 }
 

@@ -114,13 +114,14 @@ function createPool(poolName: string, envName: string, url: IUniqueUrl, healthPr
     : azure.types.input.frontdoor.FrontdoorBackendPool {
     const backends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
     // add sydney
-    const sydHost = `${envName}.${locations.syd}.${url.appName}.${domain}`;
-    backends.push({
-        address: sydHost,
-        hostHeader: sydHost,
-        httpPort: 80,
-        httpsPort: 443,
-    });
+    // TODO: renable secondary
+    // const sydHost = `${envName}.${locations.syd}.${url.appName}.${domain}`;
+    // backends.push({
+    //     address: sydHost,
+    //     hostHeader: sydHost,
+    //     httpPort: 80,
+    //     httpsPort: 443,
+    // });
     // add melbourne
     const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
     backends.push({

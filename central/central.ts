@@ -34,14 +34,15 @@ const rg = new azure.core.ResourceGroup("constant",
 );
 const outputName = "k8s";
 
+// TODO: renable secondary
 const clusters: IMultiEnvironmentMultiCluster = {
     develop: {
-        australiaeast: {
-            ingressIp: developStack.getOutput(outputName)
-                .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(outputName)
-                .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
-        },
+        // australiaeast: {
+        //     ingressIp: developStack.getOutput(outputName)
+        //         .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
+        //     location: developStack.getOutput(outputName)
+        //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
+        // },
         australiasoutheast: {
             ingressIp: developStack.getOutput(outputName)
                 .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
@@ -50,12 +51,12 @@ const clusters: IMultiEnvironmentMultiCluster = {
         },
     },
     master: {
-        australiaeast: {
-            ingressIp: masterStack.getOutput(outputName)
-                .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(outputName)
-                .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
-        },
+        // australiaeast: {
+        //     ingressIp: masterStack.getOutput(outputName)
+        //         .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
+        //     location: masterStack.getOutput(outputName)
+        //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
+        // },
         australiasoutheast: {
             ingressIp: masterStack.getOutput(outputName)
                 .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
@@ -64,12 +65,12 @@ const clusters: IMultiEnvironmentMultiCluster = {
         },
     },
     prod: {
-        australiaeast: {
-            ingressIp: prodStack.requireOutput(outputName)
-                .apply((k) => k.australiaeast.ingressIp) as pulumi.Output<string>,
-            location: prodStack.requireOutput(outputName)
-                .apply((k) => k.australiaeast.location) as pulumi.Output<string>,
-        },
+        // australiaeast: {
+        //     ingressIp: prodStack.requireOutput(outputName)
+        //         .apply((k) => k.australiaeast.ingressIp) as pulumi.Output<string>,
+        //     location: prodStack.requireOutput(outputName)
+        //         .apply((k) => k.australiaeast.location) as pulumi.Output<string>,
+        // },
         australiasoutheast: {
             ingressIp: prodStack.requireOutput(outputName)
                 .apply((k) => k.australiasoutheast.ingressIp) as pulumi.Output<string>,
