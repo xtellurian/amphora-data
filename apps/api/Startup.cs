@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Amphora.Api.AspNet.Cors;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
@@ -23,6 +24,7 @@ using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -133,6 +135,10 @@ namespace Amphora.Api
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
+            // services.AddTransient<ICorsPolicyProvider, TestCorsProvider>();
+            services.AddCors();
+            services.AddTransient<ICorsPolicyProvider, BasicCorsPolicyProvider>();
+
             services.AddMvc(opts =>
             {
             })
@@ -215,11 +221,11 @@ namespace Amphora.Api
             this.storageModule.Configure(app, env);
             this.openApiModule.Configure(app);
             app.UseRouting();
+            app.UseCors("test"); // needs to match policy name above
 
             app.UseMarkdown(); // Westwind.AspNetCore.Markdown
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<Middleware.UserDataMiddleware>();
