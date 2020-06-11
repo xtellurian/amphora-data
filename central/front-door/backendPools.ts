@@ -23,33 +23,27 @@ const locations = {
 
 const prodBackendCount = 2;
 
-export function getBackendPools({ backendEnvironments, frontendHosts, prodHostnames }:
-    {
-        // param type definition
-        backendEnvironments: IBackendEnvironments;
-        frontendHosts: IFrontendHosts;
-        prodHostnames: pulumi.Output<any>;
-    })
-    : pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> {
-
-    const backendPools: pulumi.Input<Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>> = [];
-    // add the squarespace backend
-    backendPools.push(
-        {
-            backends: [{
-                address: "azalea-orca-x567.squarespace.com",
-                hostHeader: "azalea-orca-x567.squarespace.com",
-                httpPort: 80,
-                httpsPort: 443,
-            }],
-            healthProbeName: "normal",
-            loadBalancingName: "loadBalancingSettings1",
-            name: "squarespaceBackend",
-        });
+export function getBackendPools({
+    backendEnvironments,
+    frontendHosts,
+    prodHostnames,
+}: {
+    // param type definition
+    backendEnvironments: IBackendEnvironments;
+    frontendHosts: IFrontendHosts;
+    prodHostnames: pulumi.Output<any>;
+}): pulumi.Input<
+    Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>
+> {
+    const backendPools: pulumi.Input<Array<
+        pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>
+    >> = [];
 
     // APP SERVICE BACKENDS
     // add app service backends
-    const prodBackends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
+    const prodBackends: Array<pulumi.Input<
+        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
+    >> = [];
     for (let i = 0; i < prodBackendCount; i++) {
         prodBackends.push({
             address: prodHostnames.apply((h) => h[i]),
@@ -75,7 +69,7 @@ export function getBackendPools({ backendEnvironments, frontendHosts, prodHostna
 
     const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends: prodBackends,
-        healthProbeName:  "quickstart",
+        healthProbeName: "quickstart",
         loadBalancingName: "loadBalancingSettings1",
         name: backendEnvironments.prod.app,
     };
@@ -83,17 +77,39 @@ export function getBackendPools({ backendEnvironments, frontendHosts, prodHostna
     backendPools.push(prodBackendPool);
 
     // Prod ID pool
-    const prodIdPool = createPool(`${backendEnvironments.prod.identity}`, "prod", frontendHosts.prod.identity);
+    const prodIdPool = createPool(
+        `${backendEnvironments.prod.identity}`,
+        "prod",
+        frontendHosts.prod.identity
+    );
 
     backendPools.push(prodIdPool);
 
     // create develop pools
-    const devAppPool = createPool(`${backendEnvironments.develop.app}`, "develop", frontendHosts.develop.app, "quickstart");
-    const devIdPool = createPool(`${backendEnvironments.develop.identity}`, "develop", frontendHosts.develop.identity);
+    const devAppPool = createPool(
+        `${backendEnvironments.develop.app}`,
+        "develop",
+        frontendHosts.develop.app,
+        "quickstart"
+    );
+    const devIdPool = createPool(
+        `${backendEnvironments.develop.identity}`,
+        "develop",
+        frontendHosts.develop.identity
+    );
 
     // create master pools
-    const masterAppPool = createPool(`${backendEnvironments.master.app}`, "master", frontendHosts.master.app, "quickstart");
-    const masterIdPool = createPool(`${backendEnvironments.master.identity}`, "master", frontendHosts.master.identity);
+    const masterAppPool = createPool(
+        `${backendEnvironments.master.app}`,
+        "master",
+        frontendHosts.master.app,
+        "quickstart"
+    );
+    const masterIdPool = createPool(
+        `${backendEnvironments.master.identity}`,
+        "master",
+        frontendHosts.master.identity
+    );
 
     // add tobackends
     if (config.requireBoolean("deployDevelop")) {
@@ -110,9 +126,15 @@ export function getBackendPools({ backendEnvironments, frontendHosts, prodHostna
 
 const domain = "amphoradata.com";
 
-function createPool(poolName: string, envName: string, url: IUniqueUrl, healthProbeName: string = "normal")
-    : azure.types.input.frontdoor.FrontdoorBackendPool {
-    const backends: Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPoolBackend>> = [];
+function createPool(
+    poolName: string,
+    envName: string,
+    url: IUniqueUrl,
+    healthProbeName: string = "normal"
+): azure.types.input.frontdoor.FrontdoorBackendPool {
+    const backends: Array<pulumi.Input<
+        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
+    >> = [];
     // add sydney
     // TODO: renable secondary
     // const sydHost = `${envName}.${locations.syd}.${url.appName}.${domain}`;

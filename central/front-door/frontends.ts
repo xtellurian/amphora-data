@@ -1,22 +1,29 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
+// tslint:disable-next-line: no-duplicate-imports
 import { Input } from "@pulumi/pulumi";
 import { IFrontendHosts, IUniqueUrl } from "../dns/front-door-dns";
 
 const config = new pulumi.Config();
 
-export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts: IFrontendHosts)
-    : Input<Array<Input<azure.types.input.frontdoor.FrontdoorFrontendEndpoint>>> {
-    const frontends: Input<Array<Input<azure.types.input.frontdoor.FrontdoorFrontendEndpoint>>> = [
+export function getFrontendEndpoints(
+    kv: azure.keyvault.KeyVault,
+    frontendHosts: IFrontendHosts
+): Input<Array<Input<azure.types.input.frontdoor.FrontdoorFrontendEndpoint>>> {
+    const frontends: Input<Array<
+        Input<azure.types.input.frontdoor.FrontdoorFrontendEndpoint>
+    >> = [
         {
             customHttpsProvisioningEnabled: false,
             hostName: "amphora.azurefd.net",
             name: "defaultFrontend",
             sessionAffinityEnabled: false,
-        }, {
+        },
+        {
             customHttpsConfiguration: {
                 azureKeyVaultCertificateSecretName: "static-site",
-                azureKeyVaultCertificateSecretVersion: "2cb1416e06e640229d2e28bacb1eb9cd",
+                azureKeyVaultCertificateSecretVersion:
+                    "2cb1416e06e640229d2e28bacb1eb9cd",
                 azureKeyVaultCertificateVaultId: kv.id,
                 certificateSource: "AzureKeyVault",
             },
@@ -24,15 +31,17 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
             hostName: "amphoradata.com",
             name: "rootDomain",
             sessionAffinityEnabled: false,
-        }, {
+        },
+        {
             customHttpsConfiguration: {
                 certificateSource: "FrontDoor",
             },
             customHttpsProvisioningEnabled: true,
-            hostName: "www.amphoradata.com",
-            name: "wwwDomain",
+            hostName: "docs.amphoradata.com",
+            name: "docsDomain",
             sessionAffinityEnabled: false,
-        }, {
+        },
+        {
             customHttpsConfiguration: {
                 certificateSource: "FrontDoor",
             },
@@ -59,7 +68,9 @@ export function getFrontendEndpoints(kv: azure.keyvault.KeyVault, frontendHosts:
     return frontends;
 }
 
-function getFrontend(frontend: IUniqueUrl): azure.types.input.frontdoor.FrontdoorFrontendEndpoint {
+function getFrontend(
+    frontend: IUniqueUrl
+): azure.types.input.frontdoor.FrontdoorFrontendEndpoint {
     return {
         customHttpsConfiguration: {
             certificateSource: "FrontDoor",

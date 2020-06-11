@@ -18,7 +18,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
     };
 
     const opts = {
-        protect: true,
+        protect: false,
     };
 
     const dnsZone = new azure.dns.Zone("centralDnsZone",
@@ -55,9 +55,9 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
         zone: dnsZone,
     });
 
-    const docsCName = new azure.dns.CNameRecord("docsCName",
+    const wwwCname = new azure.dns.CNameRecord("wwwCname",
         {
-            name: "docs",
+            name: "www",
             record: "amphoradata.github.io",
             resourceGroupName: rg.name,
             tags,
@@ -152,19 +152,6 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             resourceGroupName: rg.name,
             tags,
             ttl: 3600,
-            zoneName: dnsZone.name,
-        },
-        opts,
-    );
-
-    // squarespace
-    const verifyCName = new azure.dns.CNameRecord("verifySquarespace",
-        {
-            name: "4cexeacc9y5xc84bxj78",
-            record: "verify.squarespace.com",
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 60,
             zoneName: dnsZone.name,
         },
         opts,

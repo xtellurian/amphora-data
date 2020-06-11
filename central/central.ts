@@ -24,13 +24,14 @@ const opts = {
     protect: true,
 };
 
-const rg = new azure.core.ResourceGroup("constant",
+const rg = new azure.core.ResourceGroup(
+    "constant",
     {
         location: "AustraliaSoutheast",
         name: "amphora-central",
         tags,
     },
-    opts,
+    opts
 );
 const outputName = "k8s";
 
@@ -44,10 +45,16 @@ const clusters: IMultiEnvironmentMultiCluster = {
         //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
         // },
         australiasoutheast: {
-            ingressIp: developStack.getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
-            location: developStack.getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<string>,
+            ingressIp: developStack
+                .getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<
+                string
+            >,
+            location: developStack
+                .getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<
+                string
+            >,
         },
     },
     master: {
@@ -58,10 +65,16 @@ const clusters: IMultiEnvironmentMultiCluster = {
         //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
         // },
         australiasoutheast: {
-            ingressIp: masterStack.getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<string>,
-            location: masterStack.getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<string>,
+            ingressIp: masterStack
+                .getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<
+                string
+            >,
+            location: masterStack
+                .getOutput(outputName)
+                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<
+                string
+            >,
         },
     },
     prod: {
@@ -72,21 +85,37 @@ const clusters: IMultiEnvironmentMultiCluster = {
         //         .apply((k) => k.australiaeast.location) as pulumi.Output<string>,
         // },
         australiasoutheast: {
-            ingressIp: prodStack.requireOutput(outputName)
-                .apply((k) => k.australiasoutheast.ingressIp) as pulumi.Output<string>,
-            location: prodStack.requireOutput(outputName)
-                .apply((k) => k.australiasoutheast.location) as pulumi.Output<string>,
+            ingressIp: prodStack
+                .requireOutput(outputName)
+                .apply((k) => k.australiasoutheast.ingressIp) as pulumi.Output<
+                string
+            >,
+            location: prodStack
+                .requireOutput(outputName)
+                .apply((k) => k.australiasoutheast.location) as pulumi.Output<
+                string
+            >,
         },
     },
 };
 
 export const frontendHosts = createDns(rg, clusters);
 
-const kv = new azure.keyvault.KeyVault("central-keyVault",
+const kv = new azure.keyvault.KeyVault(
+    "central-keyVault",
     {
         accessPolicies: [
             {
-                certificatePermissions: ["create", "list", "get", "delete", "listissuers", "import", "manageissuers", "managecontacts"],
+                certificatePermissions: [
+                    "create",
+                    "list",
+                    "get",
+                    "delete",
+                    "listissuers",
+                    "import",
+                    "manageissuers",
+                    "managecontacts",
+                ],
                 objectId: authConfig.require("rian"),
                 secretPermissions: ["list", "set", "get", "delete"],
                 tenantId: authConfig.require("tenantId"),
@@ -124,7 +153,12 @@ const kv = new azure.keyvault.KeyVault("central-keyVault",
         tags,
         tenantId: authConfig.require("tenantId"),
     },
-    opts,
+    opts
 );
 
-export const backendEnvironments = createFrontDoor({ rg, kv, frontendHosts, prodHostnames });
+export const backendEnvironments = createFrontDoor({
+    frontendHosts,
+    kv,
+    prodHostnames,
+    rg,
+});

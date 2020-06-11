@@ -4,7 +4,7 @@ import * as pulumi from "@pulumi/pulumi";
 const record = "amphora.azurefd.net";
 
 const opts = {
-    protect: true,
+    protect: false,
 };
 
 const tags = {
@@ -31,18 +31,7 @@ export interface IFrontendHosts {
 }
 
 export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IFrontendHosts {
-    // static site
-    const wwwCName = new azure.dns.CNameRecord("wwwCName",
-        {
-            name: "www",
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: zone.name,
-        },
-        opts,
-    );
+
     // backwards compat
     const betaCName = new azure.dns.CNameRecord("betaCName",
         {
@@ -80,6 +69,18 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
         },
         opts,
     );
+
+    const docsCName = new azure.dns.CNameRecord("docsCName",
+    {
+        name: "docs",
+        record,
+        resourceGroupName: rg.name,
+        tags,
+        ttl: 30,
+        zoneName: zone.name,
+    },
+    opts,
+);
 
     const develop = addForEnvironment("develop", rg, zone);
     const master = addForEnvironment("master", rg, zone);
