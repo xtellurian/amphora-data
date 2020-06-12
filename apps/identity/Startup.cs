@@ -9,6 +9,7 @@ using Amphora.Identity.IdentityConfig;
 using Amphora.Identity.Models;
 using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
+using Amphora.Identity.Stores.IdentityServer;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Modules;
@@ -102,6 +103,9 @@ namespace Amphora.Identity
                 config = new ProductionConfig(externalServices, EnvironmentInfo, mvcClientSecret);
             }
 
+            // add this to the container so it can be consumed in InMemoryResourceStore
+            services.AddSingleton<IIdentityServerConfig>(config);
+
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
@@ -111,8 +115,9 @@ namespace Amphora.Identity
                     options.UserInteraction.LoginUrl = "/Account/Login";
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
                 })
-                .AddInMemoryIdentityResources(config.IdentityResources())
-                .AddInMemoryApiResources(config.Apis())
+                .AddResourceStore<InMemoryResourceStore>()
+                // .AddInMemoryIdentityResources(config.IdentityResources())
+                // .AddInMemoryApiResources(config.Apis())
                 .AddInMemoryClients(config.Clients())
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
