@@ -116,9 +116,10 @@ namespace Amphora.Identity
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
                 })
                 .AddResourceStore<InMemoryResourceStore>()
+                .AddClientStore<InMemoryClientStore>()
                 // .AddInMemoryIdentityResources(config.IdentityResources())
                 // .AddInMemoryApiResources(config.Apis())
-                .AddInMemoryClients(config.Clients())
+                // .AddInMemoryClients(config.Clients())
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 
