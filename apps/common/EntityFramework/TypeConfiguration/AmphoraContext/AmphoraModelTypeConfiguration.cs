@@ -2,7 +2,7 @@ using Amphora.Common.Models.Amphorae;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Amphora.Common.EntityFramework.TypeConfiguration
+namespace Amphora.Common.EntityFramework.TypeConfiguration.AmphoraContext
 {
     public class AmphoraModelTypeConfiguration : IEntityTypeConfiguration<AmphoraModel>
     {

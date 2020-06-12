@@ -2,7 +2,7 @@ using Amphora.Common.Models.Activities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Amphora.Common.EntityFramework.TypeConfiguration
+namespace Amphora.Common.EntityFramework.TypeConfiguration.AmphoraContext
 {
     public class ActivityModelTypeConfiguration : IEntityTypeConfiguration<ActivityModel>
     {

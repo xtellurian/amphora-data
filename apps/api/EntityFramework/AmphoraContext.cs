@@ -1,3 +1,4 @@
+using Amphora.Common.EntityFramework.TypeConfiguration.AmphoraContext;
 using Amphora.Common.Models.Activities;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
@@ -19,7 +20,8 @@ namespace Amphora.Api.EntityFramework
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Common.EntityFramework.TypeConfiguration.AmphoraModelTypeConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AmphoraModelTypeConfiguration).Assembly,
+            _ => _.Namespace.StartsWith(typeof(AmphoraModelTypeConfiguration).Namespace));
         }
 
         public DbSet<AmphoraAccessControlModel> AmphoraAccessControls { get; set; }
