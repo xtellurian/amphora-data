@@ -18,10 +18,10 @@ else
     echo "ACR_NAME is empty, building locals"
     docker build -t builder .
     echo "BUILDER DONE"
-    docker build -t identity -f identity/Dockerfile --build-arg "BASE=builder" .
-    echo "IDENTITY SERVER DONE"
-    docker build -t webapp -f api/Dockerfile --build-arg "BASE=builder" .
-    echo "WEBAPP SERVER DONE"
+    # docker build -t identity -f identity/Dockerfile --build-arg "BASE=builder" .
+    # echo "IDENTITY SERVER DONE"
+    # docker build -t webapp -f api/Dockerfile --build-arg "BASE=builder" .
+    # echo "WEBAPP SERVER DONE"
     exit 1
 fi
 if [ "$CACHED_IMAGE" != "" ]; then
