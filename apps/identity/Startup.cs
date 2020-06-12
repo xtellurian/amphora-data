@@ -10,7 +10,9 @@ using Amphora.Identity.Models;
 using Amphora.Identity.Services;
 using Amphora.Identity.Stores;
 using Amphora.Identity.Stores.IdentityServer;
+using Amphora.Infrastructure.Database.Contexts;
 using Amphora.Infrastructure.Database.EFCoreProviders;
+using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
@@ -67,22 +69,28 @@ namespace Amphora.Identity
             services.AddSingleton(typeof(ITelemetryChannel),
                                     new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsights" });
             services.AddApplicationInsightsTelemetry();
-
+            services.Configure<OAuthClientSecret>(Configuration);
             if (IsUsingCosmos())
             {
                 var cosmosOptions = new CosmosOptions();
                 Configuration.GetSection("Cosmos").Bind(cosmosOptions);
                 services.UseCosmos<IdentityContext>(cosmosOptions);
+                services.RegisterApplications(cosmosOptions, HostingEnvironment.IsDevelopment());
             }
             else if (IsUsingSql())
             {
-                var sqlOptions = new SqlServerOptions();
-                Configuration.GetSection("SqlServer").Bind(sqlOptions);
-                services.UseSqlServer<IdentityContext>(sqlOptions);
+                var identitySqlOptions = new SqlServerOptions();
+                Configuration.GetSection("SqlServer:Identity").Bind(identitySqlOptions);
+                services.UseSqlServer<IdentityContext>(identitySqlOptions);
+                // apps context for sql
+                var applicationsSqlOptions = new SqlServerOptions();
+                Configuration.GetSection("SqlServer:Applications").Bind(applicationsSqlOptions);
+                services.RegisterApplications(applicationsSqlOptions, HostingEnvironment.IsDevelopment());
             }
             else if (HostingEnvironment.IsDevelopment())
             {
                 services.UseInMemory<IdentityContext>();
+                services.RegisterApplications(HostingEnvironment.IsDevelopment()); // use in memory applications store
             }
             else
             {
@@ -116,7 +124,7 @@ namespace Amphora.Identity
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
                 })
                 .AddResourceStore<InMemoryResourceStore>()
-                .AddClientStore<InMemoryClientStore>()
+                .AddClientStore<ConnectedClientStore>()
                 // .AddInMemoryIdentityResources(config.IdentityResources())
                 // .AddInMemoryApiResources(config.Apis())
                 // .AddInMemoryClients(config.Clients())
@@ -190,6 +198,7 @@ namespace Amphora.Identity
             if (IsUsingSql())
             {
                 app.MigrateSql<IdentityContext>();
+                app.MigrateSql<ApplicationsContext>();
             }
 
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -197,6 +206,11 @@ namespace Amphora.Identity
                 var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<IdentityContext>>();
                 initialiser.EnsureContainerCreated().ConfigureAwait(false);
                 initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+                initialiser.LogInformationAsync().ConfigureAwait(false);
+
+                var appInitialiser = scope.ServiceProvider.GetService<CosmosInitialiser<ApplicationsContext>>();
+                initialiser.EnsureContainerCreated().ConfigureAwait(false);
+                // initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
                 initialiser.LogInformationAsync().ConfigureAwait(false);
             }
         }

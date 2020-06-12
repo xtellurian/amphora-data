@@ -18,7 +18,8 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
       sql: "true"
-      SqlServer__Host: sql
+      SqlServer__Identity__Host: sql
+      SqlServer__Applications__Host: sql
       PersistentStores: ${PersistentStores}
       kvUri: ${kvUri}
       disableKv: ${disableKv}

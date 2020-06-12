@@ -87,7 +87,7 @@ namespace Amphora.Identity.IdentityConfig
                     RequireClientSecret = false,
                     RequirePkce = true,
 
-                    ClientSecrets = { new Secret(mvcClientSecret) },
+                    // ClientSecrets = { new Secret(mvcClientSecret) },
 
                     RedirectUris = StandardRedirectUrls("/#/callback",  "/silentRenew.html"),
                     FrontChannelLogoutUri = StandardLogoutUrl(),
