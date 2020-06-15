@@ -18,5 +18,6 @@ namespace Amphora.Infrastructure.Database.Contexts
         }
 
         public DbSet<ApplicationModel> Applications { get; set; } = null!;
+        public DbSet<ApplicationLocationModel> Locations { get; set; } = null!;
     }
 }

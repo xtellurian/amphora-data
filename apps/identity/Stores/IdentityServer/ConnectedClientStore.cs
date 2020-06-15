@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Applications;
@@ -37,14 +38,14 @@ namespace Amphora.Identity.Stores.IdentityServer
                 ClientName = model.Name,
                 AllowAccessTokensViaBrowser = true,
                 AllowedGrantTypes = GrantTypes.Code,
+                RequirePkce = true,
                 AllowOfflineAccess = model.AllowOffline ?? false,
                 RequireConsent = model.RequireConsent ?? true,
-                RequirePkce = true,
-                RequireClientSecret = false,
-                RedirectUris = new List<string>(model.RedirectUris),
+                RedirectUris = model.RedirectUris(),
                 FrontChannelLogoutUri = model.LogoutUrl,
-                PostLogoutRedirectUris = new List<string>(model.PostLogoutRedirects),
-
+                PostLogoutRedirectUris = model.PostLogoutRedirects(),
+                AllowedCorsOrigins = model.Origins,
+                RequireClientSecret = false,
                 AllowedScopes = CommonScopes(model)
             };
         }

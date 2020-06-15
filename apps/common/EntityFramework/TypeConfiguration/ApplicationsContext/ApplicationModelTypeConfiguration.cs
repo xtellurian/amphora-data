@@ -9,8 +9,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration.ApplicationsContext
         public void Configure(EntityTypeBuilder<ApplicationModel> builder)
         {
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
-            builder.Property(p => p.RedirectUris).HasJsonConversion();
-            builder.Property(p => p.PostLogoutRedirects).HasJsonConversion();
+            builder.HasMany(p => p.Locations).WithOne().HasForeignKey(_ => _.ApplicationId);
         }
     }
 }

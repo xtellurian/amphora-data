@@ -171,7 +171,7 @@ namespace Amphora.Identity
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddSingleton<ICorsPolicyService, CorsPolicyService>();
+            services.AddScoped<ICorsPolicyService, ConnectedCorsPolicyService>();
         }
 
         public void Configure(IApplicationBuilder app)

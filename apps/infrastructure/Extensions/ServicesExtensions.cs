@@ -33,13 +33,16 @@ namespace Amphora.Infrastructure.Extensions
         private static void RegisterApplicationsServices(IServiceCollection services, bool isDevelopment)
         {
             services.AddScoped<IEntityStore<ApplicationModel>, ApplicationModelEFStore>();
+            services.AddScoped<IEntityStore<ApplicationLocationModel>, ApplicationLocationModelEFStore>();
             if (isDevelopment)
             {
                 services.Decorate<IEntityStore<ApplicationModel>, ApplicationStoreOurAppsDecoratorDevelop>();
+                services.Decorate<IEntityStore<ApplicationLocationModel>, ApplicationLocationsStoreOurAppsDecoratorDevelop>();
             }
             else
             {
                 services.Decorate<IEntityStore<ApplicationModel>, ApplicationStoreOurAppsDecoratorProduction>();
+                services.Decorate<IEntityStore<ApplicationLocationModel>, ApplicationLocationsStoreOurAppsDecoratorProduction>();
             }
         }
     }
