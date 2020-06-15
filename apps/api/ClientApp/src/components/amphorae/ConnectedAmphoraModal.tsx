@@ -17,6 +17,8 @@ import { AmphoraDetailMenu } from "./detail/AmphoraDetailMenu";
 import { DetailedAmphora } from "amphoradata";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { PermissionsState } from "../../redux/state/permissions";
+import { PurchaseButton } from "./PurchaseButton";
+import "./amphoraModal.css";
 
 export function baseLink(pathname: string): string {
     const split = pathname.split("/");
@@ -82,7 +84,7 @@ class ConnectedAmphoraModal extends React.PureComponent<
                     <div className={openClose}>
                         {/* this renders the master menu */}
                         <AmphoraDetailMenu
-                            permissions={this.props.permissions}
+                            // permissions={this.props.permissions}
                             {...this.props}
                             id={this.props.match.params.id}
                             toggleMenu={(o) => this.toggleMenu(o)}
@@ -102,46 +104,68 @@ class ConnectedAmphoraModal extends React.PureComponent<
                             {/* these render the detail views */}
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/`}
                                 component={Description}
                             />
                             <Route
                                 exact
-                                path= {`${baseLink(this.props.location.pathname)}/:id/files`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/files`}
                                 component={Files}
                             />
 
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/signals`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/signals`}
                                 component={Signals}
                             />
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/signals/add`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/signals/add`}
                                 component={AddSignal}
                             />
 
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/integrate`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/integrate`}
                                 component={Integrate}
                             />
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/terms`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/terms`}
                                 component={TermsOfUse}
                             />
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/location`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/location`}
                                 component={Location}
                             />
                             <Route
                                 exact
-                                path={`${baseLink(this.props.location.pathname)}/:id/quality`}
+                                path={`${baseLink(
+                                    this.props.location.pathname
+                                )}/:id/quality`}
                                 component={Quality}
                             />
+                            <div className="purchase-button-row">
+                                <PurchaseButton
+                                    price={amphora.price || 0}
+                                    id={id}
+                                />
+                            </div>
                         </div>
                     </div>
                 </ModalWrapper>
