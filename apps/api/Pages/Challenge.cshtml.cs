@@ -9,7 +9,7 @@ namespace Amphora.Api.Pages
     {
         public IActionResult OnGet()
         {
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Quickstart");
         }
     }
 }
