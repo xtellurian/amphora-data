@@ -10,6 +10,12 @@ namespace Amphora.Common.Models.Applications
         public string Name { get; set; } = null!;
         public bool? AllowOffline { get; set; }
         public bool? RequireConsent { get; set; }
+        /// <summary>
+        /// Overrides the default allowed grant types.
+        /// Defaults to authorization_code
+        /// You probably should change this.
+        /// </summary>
+        public virtual ICollection<string> AllowedGrantTypes { get; set; } = new List<string> { "authorization_code" };
         public virtual ICollection<ApplicationLocationModel> Locations { get; set; } = new Collection<ApplicationLocationModel>();
         public string LogoutUrl { get; set; } = null!;
         public ICollection<string>? Origins => Locations?.Select(_ => _.Origin).ToList() ?? new List<string>();

@@ -13,6 +13,27 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
             {
                 new ApplicationModel
                 {
+                    Id = Common.Security.OAuthClients.WebApp,
+                    Name = "Traditional Amphora Web Client",
+                    AllowOffline = true,
+                    RequireConsent = false,
+                    AllowedGrantTypes = new List<string> { "implicit", "password", "client_credentials" },
+                    Locations = new List<ApplicationLocationModel>
+                    {
+                        new ApplicationLocationModel
+                        {
+                            Id = $"web-{locationId}-localhost",
+                            Origin = "https://localhost:5001",
+                            AllowedRedirectPaths = new List<string>
+                            {
+                                "/signin-oidc"
+                            },
+                            PostLogoutRedirects = StandardPostLogoutRedirects("localhost:5001", true)
+                        }
+                    }
+                },
+                new ApplicationModel
+                {
                     Id = Common.Security.OAuthClients.SPA,
                     Name = "SPA Client",
                     AllowOffline = true,

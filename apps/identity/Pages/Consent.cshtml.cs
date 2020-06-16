@@ -49,31 +49,32 @@ namespace Amphora.Identity.Pages
         public async Task<IActionResult> OnPostDeclineAsync(string returnUrl)
         {
             this.ReturnUrl = returnUrl;
-            await BuildViewModel(returnUrl);
-            var result = await ProcessConsent(ViewModel, false);
-            if (result == null)
-            {
-                return BadRequest();
-            }
+            await Task.Delay(1);
+            return Redirect(returnUrl ?? "/");
+            // await BuildViewModel(returnUrl);
+            // var result = await ProcessConsent(ViewModel, false);
+            // if (result == null)
+            // {
+            //     return BadRequest();
+            // }
 
-            if (result.IsRedirect)
-            {
-                if (await clientStore.IsPkceClientAsync(result.ClientId))
-                {
-                    // if the client is PKCE then we assume it's native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return this.LoadingPage("Redirect", result?.RedirectUri ?? "~");
-                }
+            // if (result.IsRedirect)
+            // {
+            //     if (await clientStore.IsPkceClientAsync(result.ClientId))
+            //     {
+            //         // if the client is PKCE then we assume it's native, so this change in how to
+            //         // return the response is for better UX for the end user.
+            //         return this.LoadingPage("Redirect", result?.RedirectUri ?? "~");
+            //     }
+            //     return Redirect(result?.RedirectUri);
+            // }
 
-                return Redirect(result?.RedirectUri);
-            }
+            // if (result.HasValidationError)
+            // {
+            //     ModelState.AddModelError(string.Empty, result.ValidationError);
+            // }
 
-            if (result.HasValidationError)
-            {
-                ModelState.AddModelError(string.Empty, result.ValidationError);
-            }
-
-            return Page();
+            // return Page();
         }
 
         public async Task<IActionResult> OnPostAcceptAsync(string returnUrl)

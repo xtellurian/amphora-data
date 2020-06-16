@@ -61,6 +61,7 @@ namespace Amphora.Identity
             Configuration.GetSection("ExternalServices").Bind(externalServices);
 
             var mvcClientSecret = Configuration["MvcClientSecret"];
+            services.Configure<MvcOptions>(Configuration);
 
             // The following will configure the channel to use the given folder to temporarily
             // store telemetry items during network or Application Insights server issues.
