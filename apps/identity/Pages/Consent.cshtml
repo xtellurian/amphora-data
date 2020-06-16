@@ -1,0 +1,117 @@
+@page
+@model ConsentPageModel
+
+@{
+    Layout = "_NewLayout";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10 col-sm-11 col-12">
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col-6 text-center">
+                    <img class="img-fluid" src="/_content/sharedui/images/logos/amphoradata_white_1.png" />
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center m-4">
+                <div class="col text-center text-white">
+                    <h5>Start collaborating</h5>
+                </div>
+            </div>
+
+            @if(!Model.ModelState.IsValid) 
+            {
+            <div class="row m-4 align-items-center text-danger notification">
+                <div class="col-2 mt-3 mb-3">
+                    <i class="fas fa-exclamation-circle fa-lg"></i>
+                </div>
+                <div class="col text-left">
+                    There was an error during processing.
+                </div>
+            </div>
+            }
+            @if(Model?.ViewModel?.ClientLogoUrl != null) 
+            {
+            <div class="row m-4 align-items-center notification">
+                <div class="col mt-3 mb-3">
+                    <img src="@Model?.ViewModel?.ClientLogoUrl">
+                </div>
+            </div>
+            }
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col h-100">
+                    <div class="card text-left mb-2">
+
+                        <div class="card-header">
+                            <h5>
+                                @Model?.ViewModel?.ClientName
+                                <small>is requesting your permission to login.</small>
+                            </h5>
+                        </div>
+
+                        <div class="card-body p-5">
+                            <form id="accept-form" asp-route-returnUrl="@Model?.ReturnUrl" asp-page-handler="accept" method="post">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                @if (Model?.ViewModel?.IdentityScopes?.Any() ?? false)
+                                {
+                                    <div class="panel panel-default consent-buttons">
+                                        <div class="panel-heading">
+                                            <span class="glyphicon glyphicon-user"></span>
+                                            Personal Information
+                                        </div>
+                                        <ul class="list-group">
+                                            @foreach (var scope in Model.ViewModel.IdentityScopes)
+                                            {
+                                                <partial name="_ScopeListItem" model="@scope" />
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                @if (Model?.ViewModel?.ResourceScopes?.Any() ?? false)
+                                {
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <span class="glyphicon glyphicon-tasks"></span>
+                                            Application Access
+                                        </div>
+                                        <ul class="list-group">
+                                            @foreach (var scope in Model.ViewModel.ResourceScopes)
+                                            {
+                                                <partial name="_ScopeListItem" model="scope" />
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                @if (Model?.ViewModel?.AllowRememberConsent ?? false)
+                                {
+                                    <div class="consent-remember">
+                                        <label>
+                                            <input form="accept-form" class="consent-scopecheck" asp-for="ViewModel.RememberConsent" />
+                                            <strong>Remember My Decision</strong>
+                                        </label>
+                                    </div>
+                                }
+                                   
+                            
+                                <button type="submit" class="btn btn-primary btn-block mt-3 mb-3">Sign In with Amphora</button>
+                            </form>
+                            <form asp-route-returnUrl="@Model?.ReturnUrl" asp-page-handler="accept" method="post">
+                                <button type="submit" asp-page-handler="decline" class="btn btn-danger btn-block mt-3 mb-3">Deny</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col text-center text-white">
+                    <a class="btn btn-link text-white" href="https://amphoradata.com">Learn more about Amphora Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
