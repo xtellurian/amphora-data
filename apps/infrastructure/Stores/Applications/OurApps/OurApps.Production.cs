@@ -16,6 +16,38 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
             {
                 new ApplicationModel
                 {
+                    Id = Common.Security.OAuthClients.WebApp,
+                    Name = "Traditional Amphora Web Client",
+                    AllowOffline = true,
+                    RequireConsent = false,
+                    AllowedGrantTypes = new List<string> { "implicit", "password", "client_credentials" },
+                    Locations = new List<ApplicationLocationModel>
+                    {
+                        new ApplicationLocationModel()
+                        {
+                            Id = $"web-{locationId}-stack-loc",
+                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString(),
+                            AllowedRedirectPaths = new List<string> { "/signin-oidc" },
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                        },
+                        new ApplicationLocationModel()
+                        {
+                            Id = $"web-{locationId}-stack",
+                            Origin = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString(),
+                            AllowedRedirectPaths = new List<string> { "/signin-oidc" },
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                        },
+                        new ApplicationLocationModel()
+                        {
+                            Id = $"web-{locationId}-prod",
+                            Origin = $"{AppUrl}".ToUri().ToStandardString(),
+                            AllowedRedirectPaths = new List<string> { "/signin-oidc" },
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                        }
+                    }
+                },
+                new ApplicationModel
+                {
                     Id = Common.Security.OAuthClients.SPA,
                     Name = "SPA Client",
                     AllowOffline = true,
@@ -26,6 +58,13 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                         {
                             Id = $"spa-{locationId}-stack-loc",
                             Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString(),
+                            AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
+                            PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
+                        },
+                        new ApplicationLocationModel()
+                        {
+                            Id = $"spa-{locationId}-stack",
+                            Origin = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
                         },
