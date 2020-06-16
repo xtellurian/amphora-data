@@ -6,7 +6,6 @@ import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Header } from "./Header";
 import { HarveyPane } from "../../molecules/info/HarveyPane";
 import { HarveyBall, HarveyBallLevel } from "../../molecules/info/HarveyBall";
-import { EmptyState } from "../../molecules/empty/EmptyState";
 
 import { amphoraApiClient } from "../../../clients/amphoraApiClient";
 

@@ -112,7 +112,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
               this.onItemClick();
             }}
           >
-            <a className="ml-3 text-light" href="/quickstart">
+            <a className="ml-3 text-light" href="/challenge">
               Classic View
             </a>
           </NavItem>

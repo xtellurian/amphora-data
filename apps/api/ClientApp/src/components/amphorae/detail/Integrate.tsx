@@ -60,6 +60,7 @@ const Integrate = (props: AmphoraDetailProps & { name: string }) => {
                     <a
                         href="https://docs.amphoradata.com/docs/python-download-file"
                         target="_blank"
+                    rel="noopener noreferrer"
                     >
                         Learn More
                     </a>

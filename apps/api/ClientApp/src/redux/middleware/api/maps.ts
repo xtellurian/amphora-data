@@ -6,7 +6,6 @@ const getToken = (store: any) => (next: any) => (
 ) => {
   next(action);
   if (action.type === authActions.FETCH_AZURE_MAP_TOKEN) {
-    const fetchTokenAction = action as authActions.FetchTokenAction;
     axiosClient.get("api/maps/key")
       .then((r) => store.dispatch(authActions.actionCreators.receiveToken(r.data)))
       .catch((e) => store.dispatch(authActions.actionCreators.fail(e)));

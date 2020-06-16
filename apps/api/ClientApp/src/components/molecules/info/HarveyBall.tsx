@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Tooltip } from "reactstrap";
+import React from "react";
 import "./harvey.css";
 
 const ZERO = 0;

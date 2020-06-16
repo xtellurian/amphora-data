@@ -1,6 +1,3 @@
-import qs from 'qs';
-
-export function activeTab(queryString: string, name = "tab"): string {
-    const search = qs.parse(queryString, { ignoreQueryPrefix: true });
-    return search[name] as string;
+export function activeTab(queryString: string, name = "tab"): string | null {
+    return new URLSearchParams(queryString).get(name);
 }

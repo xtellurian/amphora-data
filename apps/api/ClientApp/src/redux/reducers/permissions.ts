@@ -33,11 +33,11 @@ export const reducer: Reducer<PermissionsState> = (
             const readContentsStore = { ...state.readContents.store };
             const writeContentsStore = { ...state.writeContents.store };
             onSuccessAction.payload.forEach((a) => {
-                if (a.accessLevel == actions.Purchase) {
+                if (a.accessLevel === actions.Purchase) {
                     if(a.amphoraId) purchaseStore[a.amphoraId] = a.isAuthorized || false;
-                } else if (a.accessLevel == actions.ReadContents) {
+                } else if (a.accessLevel === actions.ReadContents) {
                     if(a.amphoraId) readContentsStore[a.amphoraId] = a.isAuthorized || false;
-                } else if (a.accessLevel == actions.WriteContents) {
+                } else if (a.accessLevel === actions.WriteContents) {
                     if(a.amphoraId) writeContentsStore[a.amphoraId] = a.isAuthorized || false;
                 }
             });

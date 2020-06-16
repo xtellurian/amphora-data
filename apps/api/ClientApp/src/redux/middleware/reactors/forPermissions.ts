@@ -1,5 +1,5 @@
 import * as fetchAmphoraActions from "../../actions/amphora/fetch";
-import { actionCreators, LevelQuery } from "../../actions/permissions/fetch";
+import { actionCreators } from "../../actions/permissions/fetch";
 import { Action } from "redux";
 
 function getAccessLevel(
