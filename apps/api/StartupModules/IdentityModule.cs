@@ -73,7 +73,6 @@ namespace Amphora.Api.StartupModules
                 .AddOpenIdConnect(CommonAuthorizeAttribute.OidcSchemeName, options =>
                 {
                     options.SignInScheme = CommonAuthorizeAttribute.CookieSchemeName;
-
                     options.CorrelationCookie.Path = "/";
                     options.NonceCookie.Path = "/";
 
@@ -123,7 +122,10 @@ namespace Amphora.Api.StartupModules
             services.AddTransient<IPermissionService, PermissionService>();
             services.AddTransient<IInvitationService, InvitationService>();
 
-            IdentityModelEventSource.ShowPII = true;
+            if (hostingEnvironment.IsDevelopment())
+            {
+                IdentityModelEventSource.ShowPII = true;
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
