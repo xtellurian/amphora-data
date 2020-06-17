@@ -9,7 +9,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
     public static class OurAppsProduction
     {
         private static string locationId = "6b9d70ee-d499-4d77-b5e9-b352de5e2df67";
-        private const string AppUrl = "app.amphoradata.com";
+        private const string AppHost = "app.amphoradata.com";
         public static List<ApplicationModel> Get(EnvironmentInfo envInfo, ExternalServices externalServices)
         {
             return new List<ApplicationModel>
@@ -26,21 +26,21 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                         new ApplicationLocationModel()
                         {
                             Id = $"web-{locationId}-stack-loc",
-                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
                             PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"web-{locationId}-stack",
-                            Origin = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
                             PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"web-{locationId}-prod",
-                            Origin = $"{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
                             PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
                         }
@@ -57,21 +57,21 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-stack-loc",
-                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-stack",
-                            Origin = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-main",
-                            Origin = $"{AppUrl}".ToUri().ToStandardString(),
+                            Origin = $"{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
                         }
@@ -95,20 +95,20 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
             {
                 foreach (var p in callbackPaths)
                 {
-                    urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + p);
+                    urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + p);
                 }
             }
             else
             {
-                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString() + "/signin-oidc");
             }
 
-            urls.Add(AppUrl.ToUri().ToStandardString() + "/signin-oidc");
+            urls.Add(AppHost.ToUri().ToStandardString() + "/signin-oidc");
 
             if (!string.IsNullOrEmpty(envInfo.Stack))
             {
                 // add something like develop.app.amphoradata.com
-                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signin-oidc");
             }
 
             return urls;
@@ -118,12 +118,12 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
         {
             var urls = new List<string>();
 
-            urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString() + "/signout-callback-oidc");
-            urls.Add(AppUrl.ToUri().ToStandardString() + "/signout-callback-oidc");
+            urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString() + "/signout-callback-oidc");
+            urls.Add(AppHost.ToUri().ToStandardString() + "/signout-callback-oidc");
 
             if (!string.IsNullOrEmpty(envInfo.Stack))
             {
-                urls.Add($"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signout-callback-oidc");
+                urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signout-callback-oidc");
             }
 
             return urls;
@@ -139,15 +139,15 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
             }
             else if (envInfo.Stack?.ToLower() == "prod")
             {
-                logoutRedirect = $"{AppUrl.ToUri().ToStandardString()}/signout-oidc";
+                logoutRedirect = $"{AppHost.ToUri().ToStandardString()}/signout-oidc";
             }
             else if (!string.IsNullOrEmpty(envInfo.Stack))
             {
-                logoutRedirect = $"{envInfo.Stack}.{AppUrl}".ToUri().ToStandardString() + "/signout-oidc";
+                logoutRedirect = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signout-oidc";
             }
             else
             {
-                var app = $"{envInfo.Stack}.{envInfo.Location}.{AppUrl}".ToUri().ToStandardString();
+                var app = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString();
                 logoutRedirect = $"{app}/signout-oidc";
             }
 

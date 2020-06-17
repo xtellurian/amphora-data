@@ -7,6 +7,7 @@ using Amphora.Common.Models.Options;
 using Amphora.Common.Security;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Identity.Stores.IdentityServer
@@ -14,18 +15,33 @@ namespace Amphora.Identity.Stores.IdentityServer
     public class ConnectedClientStore : IClientStore
     {
         private readonly IEntityStore<ApplicationModel> store;
+        private readonly ILogger<ConnectedClientStore> logger;
         private readonly string? secret;
 
-        public ConnectedClientStore(IEntityStore<ApplicationModel> store, IOptions<MvcOptions> mvc)
+        public ConnectedClientStore(IEntityStore<ApplicationModel> store,
+                                    IOptions<MvcOptions> mvc,
+                                    ILogger<ConnectedClientStore> logger)
         {
             this.store = store;
+            this.logger = logger;
             this.secret = mvc.Value.MvcClientSecret;
         }
 
         public async Task<Client?> FindClientByIdAsync(string clientId)
         {
             var model = await store.ReadAsync(clientId);
-            return ToClient(model);
+            var client = ToClient(model);
+            if (client is null)
+            {
+                logger.LogWarning($"No client found with id {clientId}");
+            }
+            else
+            {
+                logger.LogInformation($"Found client {clientId}");
+                logger.LogInformation($"Client{clientId} has allowed CORS origins {string.Join(',', client.AllowedCorsOrigins)}");
+            }
+
+            return client;
         }
 
         // below: need to map ApplicationModel to Client
