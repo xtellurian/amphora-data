@@ -17,4 +17,4 @@ set -x
 dotnet test --filter Phase=One $commonArgs
 
 # run all the tests
-dotnet test --filter DisplayName~Amphora.Tests.Identity.Integration $commonArgs
+dotnet test $commonArgs
