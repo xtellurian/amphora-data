@@ -3,6 +3,7 @@ using Amphora.Api.AspNet.Cors;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
+using Amphora.Api.Services.Applications;
 using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.InMemory;
@@ -117,6 +118,7 @@ namespace Amphora.Api
             services.AddTransient<ITermsOfUseService, TermsOfUseService>();
             services.AddTransient<IActivityService, ActivityService>();
             services.AddTransient<IActivityRunService, ActivityRunService>();
+            services.AddTransient<IApplicationService, ApplicationService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 

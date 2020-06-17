@@ -9,6 +9,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Activities;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Applications;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
@@ -17,8 +18,10 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using Amphora.Infrastructure.Database.EFCoreProviders;
+using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Services;
+using Amphora.Infrastructure.Stores.Applications;
 using Amphora.Infrastructure.Stores.EFCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -73,16 +76,20 @@ namespace Amphora.Api.StartupModules
                 services.AddSingleton<IAmphoraBlobStore, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
                 services.AddSingleton<IBlobCache, PlatformCacheBlobStore>();
+                services.RegisterApplications(cosmosOptions, HostingEnvironment.IsDevelopment());
             }
             else if (HostingEnvironment.IsDevelopment())
             {
-                // services.UseInMemory<AmphoraContext>();
-                var sqlOptions = new SqlServerOptions();
-                Configuration.GetSection("SqlServer:Amphora").Bind(sqlOptions);
-                services.UseSqlServer<AmphoraContext>(sqlOptions);
+                var amphoraSqlOptions = new SqlServerOptions();
+                Configuration.GetSection("SqlServer:Amphora").Bind(amphoraSqlOptions);
+                services.UseSqlServer<AmphoraContext>(amphoraSqlOptions);
                 services.AddSingleton<IAmphoraBlobStore, InMemoryAmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();
                 services.AddSingleton<IBlobCache, InMemoryBlobCache>();
+                // applications
+                var appsSqlOptions = new SqlServerOptions();
+                Configuration.GetSection("SqlServer:Applications").Bind(appsSqlOptions);
+                services.RegisterApplications(appsSqlOptions, HostingEnvironment.IsDevelopment());
             }
 
             services.AddTransient<CosmosInitialiser<AmphoraContext>>();
@@ -97,6 +104,7 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<InvitationModel>, InvitationsEFStore>();
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUserDataModel>, ApplicationUserDataEFStore>();
+            services.AddScoped<IEntityStore<ApplicationModel>, ApplicationModelEFStore>();
 
             // cache
             services.AddSingleton<ICache, InMemoryCache>();

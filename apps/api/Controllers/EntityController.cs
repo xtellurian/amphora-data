@@ -20,7 +20,7 @@ namespace Amphora.Api.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(result.Message);
                 }
             }
             else

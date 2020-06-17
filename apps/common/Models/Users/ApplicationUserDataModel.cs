@@ -31,5 +31,15 @@ namespace Amphora.Common.Models.Users
         public virtual OrganisationModel? Organisation { get; set; }
 
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
+
+        public bool IsAdministrator()
+        {
+            if (this.Organisation == null)
+            {
+                return false;
+            }
+
+            return this.Organisation.IsAdministrator(this);
+        }
     }
 }
