@@ -1,7 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import userManager from "../../userManager";
-import { isLocalhost } from "../../utlities";
 import { PrimaryButton } from "../molecules/buttons";
 
 class MainPage extends React.PureComponent {

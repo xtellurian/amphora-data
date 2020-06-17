@@ -20,16 +20,15 @@ const settings = {
 function getSettings(): UserManagerSettings {
 
   const host = window.location.host;
-  const protocol = window.location.protocol;
-
+  const protocol = window.location.protocol; // protocol ends in :
   if (window.location.host.includes("develop")) {
     settings.authority = "https://develop.identity.amphoradata.com";
-    settings.redirect_uri = `${protocol}://${host}/#/callback`
-    settings.silent_redirect_uri = `${protocol}://${host}/silentRenew.html`
+    settings.redirect_uri = `${protocol}//${host}/#/callback`
+    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`
   } else if (window.location.host.includes("master")) {
     settings.authority = "https://master.identity.amphoradata.com";
-    settings.redirect_uri = `${protocol}://${host}/#/callback`
-    settings.silent_redirect_uri = `${protocol}://${host}/silentRenew.html`
+    settings.redirect_uri = `${protocol}//${host}/#/callback`
+    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`
   } else if (!window.location.host.includes("localhost")) {
     // do prod
     settings.authority = "https://identity.amphoradata.com";
