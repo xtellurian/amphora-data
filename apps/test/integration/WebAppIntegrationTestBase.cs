@@ -96,6 +96,13 @@ namespace Amphora.Tests.Integration
                 var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
                 personaCache[email] = new Persona(email, c, u, o);
             }
+            else if (email == Personas.AmphoraAdmin)
+            {
+                // this should have the institution plan
+                var (c, u, o) = await NewUser(email, Password, httpClient, FreePlan);
+                await c.SetPlan(o.Id, Plan.PlanTypes.Institution);
+                personaCache[email] = new Persona(email, c, u, o);
+            }
             else
             {
                 var (c, u, o) = await NewUser(email, Password, httpClient, FreePlan);

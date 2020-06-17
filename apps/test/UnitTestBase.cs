@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -101,21 +102,27 @@ namespace Amphora.Tests.Unit
             return new InMemoryCache();
         }
 
-        private Dictionary<string, AmphoraContext> contexts = new Dictionary<string, AmphoraContext>();
+        private Dictionary<string, DbContext> contexts = new Dictionary<string, DbContext>();
         protected AmphoraContext GetContext([CallerMemberName] string databaseName = "")
         {
+            return this.GetContext<AmphoraContext>(databaseName);
+        }
+
+        protected T GetContext<T>([CallerMemberName] string databaseName = "") where T : DbContext
+        {
+            databaseName = $"{typeof(T)}|{databaseName}"; // prepend the type
             if (contexts.TryGetValue(databaseName, out var x))
             {
-                return x;
+                return (T)x;
             }
             else
             {
-                var options = new DbContextOptionsBuilder<AmphoraContext>()
+                var options = new DbContextOptionsBuilder<T>()
                 .UseInMemoryDatabase(databaseName: databaseName)
                 .Options;
 
                 // Run the test against one instance of the context
-                var context = new AmphoraContext(options);
+                var context = Activator.CreateInstance(typeof(T), new object[] { options }) as T;
                 contexts[databaseName] = context;
                 return context;
             }
