@@ -1,9 +1,11 @@
 using System.Linq;
 using Amphora.Identity.EntityFramework;
+using Amphora.Infrastructure.Database.Contexts;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Amphora.Tests.Setup
 {
@@ -14,16 +16,11 @@ namespace Amphora.Tests.Setup
             builder.ConfigureServices(services =>
             {
                 // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(
-                        d => d.ServiceType ==
-                            typeof(DbContextOptions<IdentityContext>));
-
-                if (descriptor != null)
-                {
-                    services.Remove(descriptor);
-                }
+                TryRemoveContext<IdentityContext>(services);
+                TryRemoveContext<ApplicationsContext>(services);
 
                 services.UseInMemory<IdentityContext>();
+                services.UseInMemory<ApplicationsContext>();
 
                 // Create a scope to obtain a reference to the database
                 // context (ApplicationDbContext).
@@ -49,6 +46,18 @@ namespace Amphora.Tests.Setup
                 //     }
                 // }
             });
+        }
+
+        private static void TryRemoveContext<T>(IServiceCollection services) where T : DbContext
+        {
+            var descriptor = services.SingleOrDefault(
+                                    d => d.ServiceType ==
+                                        typeof(DbContextOptions<T>));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
         }
     }
 }
