@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { AmphoraDetailProps, mapStateToProps } from "./props";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { Header } from "./Header";
 import { ApplicationState } from "../../../redux/state";
 
