@@ -205,14 +205,14 @@ namespace Amphora.Identity
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var identtityInitialiser = scope.ServiceProvider.GetService<CosmosInitialiser<IdentityContext>>();
-                identtityInitialiser.EnsureContainerCreated().ConfigureAwait(false);
-                identtityInitialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
-                identtityInitialiser.LogInformationAsync().ConfigureAwait(false);
+                identtityInitialiser?.EnsureContainerCreated().ConfigureAwait(false);
+                identtityInitialiser?.EnableCosmosTimeToLive().ConfigureAwait(false);
+                identtityInitialiser?.LogInformationAsync().ConfigureAwait(false);
 
                 var appInitialiser = scope.ServiceProvider.GetService<CosmosInitialiser<ApplicationsContext>>();
-                appInitialiser.EnsureContainerCreated().ConfigureAwait(false);
-                // initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
-                appInitialiser.LogInformationAsync().ConfigureAwait(false);
+                appInitialiser?.EnsureContainerCreated().ConfigureAwait(false);
+                // initialiser?.EnableCosmosTimeToLive().ConfigureAwait(false);
+                appInitialiser?.LogInformationAsync().ConfigureAwait(false);
             }
         }
     }
