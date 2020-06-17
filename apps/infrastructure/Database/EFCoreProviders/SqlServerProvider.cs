@@ -2,6 +2,7 @@ using Amphora.Infrastructure.Models.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Infrastructure.Database.EFCoreProviders
 {
@@ -36,7 +37,7 @@ namespace Amphora.Infrastructure.Database.EFCoreProviders
                 throw new System.ArgumentException("Connection String could not be constructed");
             }
 
-            var msg = $"Using Sql Server, Host:{options?.Host ?? DefaultHost} on port: {options?.Port ?? DefaultPort}";
+            var msg = $"Using Sql [${typeof(TContext)}] Host:{options?.Host ?? DefaultHost} on port: {options?.Port ?? DefaultPort}";
 
             services.AddDbContext<TContext>(o =>
             {
@@ -52,10 +53,21 @@ namespace Amphora.Infrastructure.Database.EFCoreProviders
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<TContext>();
+                var loggerFactory = scope.ServiceProvider.GetService<ILoggerFactory>();
                 if (context.Database.IsSqlServer())
                 {
-                    context.Database.EnsureCreated();
-                    context.Database.Migrate();
+                    var logger = loggerFactory.CreateLogger("Amphora.Infrastructure.Database.EFCoreProviders.SqlServerProvider");
+                    logger.LogWarning($"Migrating context: ${typeof(TContext)}");
+                    try
+                    {
+                        context.Database.EnsureCreated();
+                        context.Database.Migrate();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        logger.LogCritical($"Failed to migrate context ${typeof(TContext)}");
+                        throw ex;
+                    }
                 }
             }
         }

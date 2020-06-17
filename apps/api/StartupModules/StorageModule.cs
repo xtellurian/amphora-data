@@ -78,7 +78,7 @@ namespace Amphora.Api.StartupModules
             {
                 // services.UseInMemory<AmphoraContext>();
                 var sqlOptions = new SqlServerOptions();
-                Configuration.GetSection("SqlServer").Bind(sqlOptions);
+                Configuration.GetSection("SqlServer:Amphora").Bind(sqlOptions);
                 services.UseSqlServer<AmphoraContext>(sqlOptions);
                 services.AddSingleton<IAmphoraBlobStore, InMemoryAmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, InMemoryBlobStore<OrganisationModel>>();

@@ -33,7 +33,9 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
       ExternalServices__IdentityBaseUrl: http://identity:6500
-      SqlServer__Host: sql
+      SqlServer__Amphora__Host: sql
+      SqlServer__Identity__Host: sql
+      SqlServer__Applications__Host: sql
       PersistentStores: ${PersistentStores}
       kvUri: ${kvUri}
       disableKv: ${disableKv}
