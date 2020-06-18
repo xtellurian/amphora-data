@@ -4,7 +4,6 @@ import * as kx from "@pulumi/kubernetesx";
 
 export interface IIdentityArgs {
     environment: string,
-    fqdn: pulumi.Output<string>,
     location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
@@ -163,7 +162,7 @@ export class Identity extends pulumi.ComponentResource {
                 spec: {
                     tls: [
                         {
-                            hosts: [...hosts, this.params.fqdn],
+                            hosts: [...hosts],
                             secretName: "identity-tls-secret"
                         }
                     ],

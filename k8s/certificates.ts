@@ -22,45 +22,15 @@ export class Certificates extends pulumi.ComponentResource {
             provider: this.params.provider,
         }
 
-        const certManNamespace = new k8s.core.v1.Namespace(`ns`, {
-            apiVersion: "v1",
-            metadata: {
-                labels: {
-                    "cert-manager.io/disable-validation": "true",
-                },
-                name: "cert-manager",
-            },
-        }, opts);
-
-        // cert manager crds
-        const certManagerVersion = "v0.15.0";
-        const certManagerCrds = new k8s.yaml.ConfigFile("cert-man-crds", {
-            file: `https://github.com/jetstack/cert-manager/releases/download/${certManagerVersion}/cert-manager.crds.yaml`,
-        }, opts);
-
-        // const certManagerCrds = new k8s.yaml.ConfigFile(
-        //     `${this.name}-certManCrds`, {
-        //     file: "components/application/aks/infrastructure-manifests/cert-manager-crds.yml",
-        //     resourcePrefix: this.name,
-        // }, opts);
-
         // let's encrypt
-        const releaseName = "cert-man";
+        const certManagerVersion = "v0.15.0";
         const chartName = "cert-manager";
-        const certManagerChart = new k8s.helm.v2.Chart(releaseName,
-            {
-                chart: chartName,
-                fetchOpts: {
-                    repo: "https://charts.jetstack.io",
-                },
-                namespace: certManNamespace.metadata.name,
-                values: {},
-                version: certManagerVersion,
-            },
-            {
-                ...opts,
-                dependsOn: certManagerCrds,
-            });
+
+        const x = new k8s.yaml.ConfigFile("cert-manager", {
+            file: `https://github.com/jetstack/cert-manager/releases/download/${certManagerVersion}/cert-manager.yaml`,
+        }, {
+            ...opts
+        })
 
         // you can disable this for dev if you're debugging, but hsts redirects will fail
         const transformations = [];
@@ -71,14 +41,15 @@ export class Certificates extends pulumi.ComponentResource {
             }
         });
 
-        const webhookDeployment = certManagerChart.getResource("apps/v1/Deployment", `${releaseName}-${chartName}-webhook`);
+        // const webhookDeployment = x.getResource("apps/v1/Deployment", `${releaseName}-${chartName}-webhook`);
+        const webhookDeployment = x.getResource("apps/v1/Deployment", `${chartName}-webhook`);
         // certificate issuer
         const caClusterIssuer = new k8s.yaml.ConfigFile("caClusterIssuer", {
             file: `manifests/cert-issuer.yml`,
             transformations,
         }, {
             ...opts,
-            dependsOn: [certManagerCrds, certManagerChart, webhookDeployment],
+            dependsOn: [ x, webhookDeployment],
         });
     }
 }

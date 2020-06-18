@@ -4,7 +4,6 @@ import * as kx from "@pulumi/kubernetesx";
 
 export interface IFrontendArgs {
     environment: string,
-    fqdn: pulumi.Output<string>,
     location: pulumi.Output<string>,
     provider: k8s.Provider,
 }
@@ -133,12 +132,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             ]
         }
         // add the rule for each host
-        const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [
-            {
-                host: this.params.fqdn,
-                http
-            }
-        ];
+        const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [];
 
         const hosts: pulumi.Output<string>[] = [
             pulumi.interpolate `${this.params.environment}.${this.params.location}.app.amphoradata.com`,
@@ -169,7 +163,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             spec: {
                 tls: [
                     {
-                        hosts: [...hosts, this.params.fqdn],
+                        hosts: [...hosts],
                         secretName: "front-tls-secret"
                     }
                 ],

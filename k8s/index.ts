@@ -31,14 +31,12 @@ const certs = new Certificates("certificates", {
 
 const frontEnd = new FrontEnd("frontend1", {
     environment,
-    fqdn: <pulumi.Output<string>>k8sInfo.apply(k => k.fqdn),
     location: <pulumi.Output<string>>k8sInfo.apply(k => k.location),
     provider,
 });
 
 const identity = new Identity("identity1", {
     environment,
-    fqdn: <pulumi.Output<string>>k8sInfo.apply(k => k.fqdn),
     location: <pulumi.Output<string>>k8sInfo.apply(k => k.location),
     provider,
 });
