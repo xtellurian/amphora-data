@@ -21,7 +21,7 @@ class Avatar extends React.PureComponent<AvatarState> {
             return (
                 <div className={`${this.props.className} ml-2 d-flex align-items-center`}>
                     <FontAwesomeIcon className="align-middle mr-2" size="sm" icon={faUser} />
-                    {`Hi, ${this.props.user.profile.name}`}
+                    {`Hi ${this.props.user.profile.name}`}
                 </div>
             )
         } else {
