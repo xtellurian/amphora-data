@@ -53,7 +53,7 @@ namespace Amphora.Tests.Integration.Applications
 
             // delete
             var deleteRes = await persona.Http.DeleteAsync($"api/applications/{app.Id}");
-            deleteRes.IsSuccessStatusCode.Should().BeTrue();
+            await AssertHttpSuccess(deleteRes, $"api/application/{app.Id}");
         }
     }
 }

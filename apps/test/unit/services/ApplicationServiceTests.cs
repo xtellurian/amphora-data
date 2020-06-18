@@ -85,6 +85,7 @@ namespace Amphora.Tests.Unit.Services
             var user = new ApplicationUserDataModel();
             user.OrganisationId = organisation.Id;
             user.Organisation = organisation;
+            organisation.AddOrUpdateMembership(user, Common.Models.Organisations.Roles.Administrator);
             var userDataService = MockUser(principal, user);
             var store = new ApplicationModelEFStore(appsContext, CreateMockLogger<ApplicationModelEFStore>());
             var sut = new ApplicationService(store, userDataService.Object, CreateMockLogger<ApplicationService>());
@@ -108,13 +109,14 @@ namespace Amphora.Tests.Unit.Services
             // create
             var res = await sut.CreateAsync(principal, app);
             res.Succeeded.Should().BeTrue();
+            res.Entity.Id.Should().NotBeNull();
             res.Entity.LastModified.Should().NotBeNull();
             res.Entity.CreatedDate.Should().NotBeNull();
             res.Entity.Name.Should().NotBeNull().And.Be("Hello World");
             res.Entity.Locations.Should().NotBeNull().And.HaveCount(1);
 
             // delete
-            var deleteRes = await sut.DeleteAsync(principal, app.Id);
+            var deleteRes = await sut.DeleteAsync(principal, res.Entity.Id);
             deleteRes.Succeeded.Should().BeTrue();
         }
     }
