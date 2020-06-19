@@ -1,0 +1,39 @@
+trigger: none # will disable CI builds entirely
+
+variables:
+- group: Pulumi xtellurian
+- group: AzureDeploySP
+
+jobs:
+  - job: purge_develop
+    displayName: Purge Develop ACR (30 days old)
+    steps:
+    - template: install.pulumi.steps.yaml
+    - template: az-login.steps.yaml
+    - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
+        pushd infra
+        npm install
+
+        k8s=`pulumi stack output -s develop -j k8s`
+        acrName=$(jq -r '.acrName' <<< ${k8s})
+
+        # Environment variable for container command line
+        PURGE_CMD="acr purge --filter '*' \
+          --untagged --ago 30d"
+
+        az acr run \
+          --cmd "$PURGE_CMD" \
+          --registry $acrName \
+          /dev/null
+          
+        popd
+      displayName: Delete Old Images
+      name: destroy
+      env:
+        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+        ARM_CLIENT_ID: $(appId)
+        ARM_CLIENT_SECRET: $(password)
+        ARM_SUBSCRIPTION_ID: $(subscription)
+        ARM_TENANT_ID: $(tenant)
+        STACK: $(stack) 
