@@ -17,9 +17,9 @@ jobs:
 
         acrName=`pulumi stack output acrName -s develop`
         echo acrName is $acrName
-        
+        set -e
         # Environment variable for container command line
-        PURGE_CMD="acr purge --filter '*' --untagged --ago 30d"
+        PURGE_CMD="acr purge --filter 'builder/*' --filter 'webapp/*' --filter 'identity/*' --untagged --ago 30d"
         az acr run --cmd "$PURGE_CMD" --registry $acrName /dev/null
           
         popd
