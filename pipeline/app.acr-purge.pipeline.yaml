@@ -17,15 +17,11 @@ jobs:
 
         k8s=`pulumi stack output -s develop -j k8s`
         acrName=$(jq -r '.acrName' <<< ${k8s})
-
+        echo acrName is $acrName
+        
         # Environment variable for container command line
-        PURGE_CMD="acr purge --filter '*' \
-          --untagged --ago 30d"
-
-        az acr run \
-          --cmd "$PURGE_CMD" \
-          --registry $acrName \
-          /dev/null
+        PURGE_CMD="acr purge --filter '*' --untagged --ago 30d"
+        az acr run --cmd "$PURGE_CMD" --registry $acrName /dev/null
           
         popd
       displayName: Delete Old Images
