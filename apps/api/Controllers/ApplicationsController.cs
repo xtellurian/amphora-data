@@ -59,7 +59,7 @@ namespace Amphora.Api.Controllers
         [CommonAuthorize]
         [Produces(typeof(Application))]
         [ValidateModel]
-        public async Task<IActionResult> CreateApplication(string id)
+        public async Task<IActionResult> ReadApplication(string id)
         {
             var result = await applicationService.ReadAsync(User, id);
             if (result.Succeeded)
