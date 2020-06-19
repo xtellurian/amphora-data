@@ -15,8 +15,7 @@ jobs:
         pushd infra
         npm install
 
-        k8s=`pulumi stack output -s develop -j k8s`
-        acrName=$(jq -r '.acrName' <<< ${k8s})
+        acrName=`pulumi stack output acrName -s develop`
         echo acrName is $acrName
         
         # Environment variable for container command line
