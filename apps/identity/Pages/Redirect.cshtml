@@ -1,8 +1,45 @@
 @page
 @model Amphora.Identity.Pages.RedirectPageModel
+@{
+    Layout = "_NewLayout";
+}
 
-<h1>You are now being returned to the application.</h1>
-<p>Once complete, you may close this tab</p>
+
+<div class="container">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-11 col-12">
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col-6 text-center">
+                    <img class="img-fluid" src="/_content/sharedui/images/logos/amphoradata_white_1.png" />
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center m-4">
+                <div class="col text-center text-white">
+                    <h5>Start collaborating</h5>
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col h-100">
+                    <div class="card text-left mb-2">
+                        <div class="card-header">
+                            <h5>You are now being returned to the application.</h5>
+                        </div>
+                        <div class="card-body p-5 text-center">
+                            <div class="spinner-border text-danger" role="status"></div>
+                            <p>Once complete, you may close this tab</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <meta http-equiv="refresh" content="0;url=@Model.RedirectUrl" data-url="@Model.RedirectUrl">
 <script src="~/js/signin-redirect.js"></script>
