@@ -40,7 +40,7 @@ namespace Amphora.Identity.Pages
 
         public async Task<IActionResult> OnGetAsync(string? returnUrl)
         {
-            returnUrl ??= options.WebAppUri().ToStandardString() + "/Chall";
+            returnUrl ??= options.WebAppUri().ToStandardString() + "/Challenge";
             await BuildModel(returnUrl);
 
             if (IsExternalLoginOnly)

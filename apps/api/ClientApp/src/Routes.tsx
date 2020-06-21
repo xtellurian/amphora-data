@@ -77,7 +77,7 @@ const Routes = (props: RoutesModuleProps) => {
     return (
       <React.Fragment>
         <Switch>
-          <Route exact path="/chall" component={Challenge} />
+          <Route exact path="/challenge" component={Challenge} />
           <Route exact path="/" component={Main} />
         </Switch>
       </React.Fragment>

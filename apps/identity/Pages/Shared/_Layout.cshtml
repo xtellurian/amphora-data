@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(profileUrl, isAdminGlobal, "/Account/Register", returnUrl: returnUrl, webAppUri: externalServicesOptions.CurrentValue.WebAppUri() ))
+    @await Html.PartialAsync("_IdentityHeader", new Amphora.SharedUI.Models.HeaderModel(profileUrl, isAdminGlobal, "/Register", returnUrl: returnUrl, webAppUri: externalServicesOptions.CurrentValue.WebAppUri() ))
     
     <div class="container">
         <partial name="_CookieConsentPartial" />

@@ -121,7 +121,7 @@ namespace Amphora.Identity
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    options.UserInteraction.LoginUrl = "/Account/Login";
+                    options.UserInteraction.LoginUrl = "/Login";
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
                 })
                 .AddResourceStore<InMemoryResourceStore>()
