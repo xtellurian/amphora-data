@@ -1,24 +1,51 @@
 ﻿@page
 @model Amphora.Identity.Pages.Account.LogoutModel
 @{
+    Layout="_NewLayout";
     ViewData["Title"] = "Log out";
 }
 
-<div class="logout-page">
-    <div class="page-header">
-        <h1>Logout</h1>
-    </div>
+<div class="container">
 
-    <div class="row">
-        <div class="col-sm-6">
-            <p>Would you like to logout of Amphora Data?</p>
-            <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
-                <fieldset>
-                    <div class="form-group">
-                        <button class="btn btn-primary">Yes</button>
-                    </div>
-                </fieldset>
-            </form>
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-11 col-12">
+
+            <div class="row justify-content-center align-items-center mb-5 m-3">
+                <div class="col-6 text-center">
+                    <img class="img-fluid" src="/_content/sharedui/images/logos/amphoradata_white_1.png" />
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col h-100">
+                    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div class="card text-left mb-2">
+                            <div class="card-header">
+                                <h5>
+                                    Would you like to logout of Amphora Data?
+                                </h5>
+                            </div>
+                            <div class="card-body p-5">
+                                <div class="m-3">
+                                    You're logged in as <strong> @User.Identity.Name </strong>
+                                </div>
+                                <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <button class="btn btn-lg btn-primary btn-block">Logout</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+             <div class="row align-items-center">
+                <div class="col text-center text-white">
+                    <a class="ml-2 btn btn-link text-white" asp-page="/Register">Don't have an account?  Register for free</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

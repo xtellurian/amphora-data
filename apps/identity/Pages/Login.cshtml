@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-             @if(!Model.ModelState.IsValid) 
+            @if(!Model.ModelState.IsValid) 
             {
             <div class="row m-4 align-items-center text-danger notification">
                 <div class="col-2 mt-3 mb-3">
@@ -32,6 +32,8 @@
                 </div>
             </div>
             }
+
+            <partial name="_AlreadyLoggedInPartial"/>
 
             <div class="row justify-content-center align-items-center m-3">
                 <div class="col h-100">
@@ -62,7 +64,7 @@
             </div>
             <div class="row align-items-center">
                 <div class="col text-center text-white">
-                    <a class="ml-2 btn btn-link text-white" asp-page="./Register">Don't have an account?  Register for free</a>
+                    <a class="ml-2 btn btn-link text-white" asp-page="/Register">Don't have an account?  Register for free</a>
                 </div>
             </div>
             <div class="row align-items-center">

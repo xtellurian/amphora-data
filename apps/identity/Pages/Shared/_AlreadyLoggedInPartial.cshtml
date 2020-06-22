@@ -1,0 +1,12 @@
+@if(User.Identity != null && User.Identity.IsAuthenticated)
+{
+<div class="row m-4 align-items-center notification">
+        <div class="col-2 text-warning">
+        <i class="fas fa-exclamation-circle fa-lg"></i>
+    </div>
+    <div class="col text-left p-2">
+        You're logged in as <strong> @User.Identity.Name </strong>
+        <a class="float-right btn btn-warning" asp-page="/Account/Logout">Logout</a>
+    </div>
+</div>
+}

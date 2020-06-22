@@ -2,9 +2,44 @@
 @model Amphora.Identity.Pages.Account.ConfirmLogoutPageModel
 @{
     ViewData["Title"] = "Logged Out";
+    Layout = "_NewLayout";
 }
 
 
-<div>
-    <h2>You are logged out.</h2>
+<div class="container">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-11 col-12">
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col-6 text-center">
+                    <img class="img-fluid" src="/_content/sharedui/images/logos/amphoradata_white_1.png" />
+                </div>
+            </div>
+
+            <partial name="_AlreadyLoggedInPartial"/>
+
+            <div class="row justify-content-center align-items-center m-3">
+                <div class="col h-100">
+                        <div class="card text-center mb-2">
+                            
+                            <div class="card-body p-5">
+                                <h2>You are logged out</h2>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col text-center text-white">
+                    <a class="ml-2 btn btn-link text-white" asp-page="/Register">Don't have an account?  Register for free</a>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col text-center text-white">
+                    <a class="btn btn-link text-white" href="https://amphoradata.com">Learn more about Amphora Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
