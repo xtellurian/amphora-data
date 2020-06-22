@@ -29,7 +29,7 @@ namespace Amphora.Api.Middleware
                 }
                 else
                 {
-                    logger.LogInformation($"Couldn't get version");
+                    logger.LogDebug($"Couldn't get version");
                 }
             }
 
