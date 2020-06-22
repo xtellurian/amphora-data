@@ -6,7 +6,8 @@
     },
     "devDependencies": {
         "@types/node": "^12.12.39",
-        "tslint": "^5.20.1"
+        "tslint": "^5.20.1",
+        "tslint-config-prettier": "^1.18.0"
     },
     "dependencies": {
         "@pulumi/azure": "^3.5.1",
