@@ -78,6 +78,27 @@ namespace Amphora.Api.Services.Applications
             }
         }
 
+        public async Task<EntityOperationResult<ApplicationModel>> UpdateAsync(ClaimsPrincipal principal, ApplicationModel model)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Failed)
+            {
+                return new EntityOperationResult<ApplicationModel>("Unknown user");
+            }
+
+            if (userReadRes.Entity.OrganisationId != model.OrganisationId)
+            {
+                // not matching, return not found.
+                return new EntityOperationResult<ApplicationModel>(userReadRes.Entity, $"Application not found in Organisation({userReadRes.Entity.OrganisationId}).");
+            }
+            else
+            {
+                // found it, apply the update
+                model = await store.UpdateAsync(model);
+                return new EntityOperationResult<ApplicationModel>(userReadRes.Entity, model);
+            }
+        }
+
         public async Task<EntityOperationResult<ApplicationModel>> DeleteAsync(ClaimsPrincipal principal, string id)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
@@ -94,8 +115,10 @@ namespace Amphora.Api.Services.Applications
 
             if (userReadRes.Entity.OrganisationId == model.OrganisationId && userReadRes.Entity.IsAdministrator())
             {
-                // check the org is on institution
-                model.OrganisationId = userReadRes.Entity.OrganisationId;
+                // clean up the locations first.
+                model.Locations.Clear();
+                model = await store.UpdateAsync(model);
+                // now delete the application
                 await store.DeleteAsync(model);
                 return new EntityOperationResult<ApplicationModel>(userReadRes.Entity, true);
             }

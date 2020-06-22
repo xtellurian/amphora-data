@@ -73,13 +73,13 @@
                                     @(entity.Account?.Plan?.PlanType?.ToString() ?? "Free" )
                                 </td>
                                 <td>  
-                                    <a asp-area="Admin" asp-page="./Detail/Index" asp-route-id="@entity.Id"> 
+                                    <a asp-area="Admin" asp-page="/Detail/Index" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-info">Detail</button> 
                                     </a>
-                                    <a asp-area="Admin" asp-page="./Detail/AddCredit" asp-route-id="@entity.Id"> 
+                                    <a asp-area="Admin" asp-page="/Detail/AddCredit" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-success">Add Credit</button> 
                                     </a>
-                                    <a asp-area="Admin" asp-page="./Detail/Configuration" asp-route-id="@entity.Id"> 
+                                    <a asp-area="Admin" asp-page="/Detail/Configuration" asp-route-id="@entity.Id"> 
                                         <button class="btn btn-link text-success">Configuration</button> 
                                     </a>
                                 </td>

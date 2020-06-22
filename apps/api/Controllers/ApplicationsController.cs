@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -66,6 +67,48 @@ namespace Amphora.Api.Controllers
             {
                 var mapped = mapper.Map<Application>(result.Entity);
                 return Ok(mapped);
+            }
+            else
+            {
+                return Handle(result);
+            }
+        }
+
+        /// <summary>
+        /// Updates an application by Id, if it exists.
+        /// </summary>
+        /// <param name="id">The id of the application to update.</param>
+        /// <param name="application">The information to update (old locations will be deleted).</param>
+        /// <returns>The Application information.</returns>
+        [HttpPut("{id}")]
+        [CommonAuthorize]
+        [Produces(typeof(Application))]
+        [ValidateModel]
+        public async Task<IActionResult> UpdateApplication(string id, [FromBody] UpdateApplication application)
+        {
+            if (application?.Id != id)
+            {
+                return BadRequest("URL and model Id parameter must match.");
+            }
+
+            var result = await applicationService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                // load locations so they are tracked.
+                var model = result.Entity;
+                var currentLocations = model.Locations;
+                model.Name = application.Name;
+                model.LogoutUrl = application.LogoutUrl;
+                model.Locations = mapper.Map<List<ApplicationLocationModel>>(application.Locations);
+                var res = await applicationService.UpdateAsync(User, model);
+                if (res.Succeeded)
+                {
+                    return Ok(res.Entity);
+                }
+                else
+                {
+                    return Handle(res);
+                }
             }
             else
             {

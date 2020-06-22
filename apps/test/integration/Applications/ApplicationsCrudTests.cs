@@ -18,13 +18,15 @@ namespace Amphora.Tests.Integration.Applications
         }
 
         [Fact]
-        public async Task Can_CreateReadDelete_Application()
+        public async Task Can_CRUD_Application()
         {
+            var appName = System.Guid.NewGuid().ToString();
             var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
 
             var cApp = new CreateApplication
             {
-                Name = "My Applicaton",
+                Name = appName,
+                LogoutUrl = "http://localhost:11",
                 Locations = new List<CreateAppLocation>
                 {
                     new CreateAppLocation
@@ -47,9 +49,49 @@ namespace Amphora.Tests.Integration.Applications
             var readRes = await persona.Http.GetAsync($"api/applications/{app.Id}");
             var appRead = await AssertHttpSuccess<Application>(readRes);
             appRead.Name.Should().Be(app.Name);
+            appRead.LogoutUrl.Should().Be("http://localhost:11");
             appRead.Id.Should().Be(app.Id);
             appRead.Locations.Should().HaveCount(1);
             appRead.Locations[0].Origin.Should().Be(fakeOrigin);
+
+            // update
+            var updateModel = new UpdateApplication(app.Id);
+            var newName = System.Guid.NewGuid().ToString();
+            updateModel.Name = newName;
+            updateModel.LogoutUrl = "https://localhost:91";
+            updateModel.Locations = new List<CreateAppLocation>
+            {
+                new CreateAppLocation
+                {
+                    AllowedRedirectPaths = { "/login" },
+                    Origin = "https://localhost:1010",
+                    PostLogoutRedirects = { "https://google.com" }
+                },
+                new CreateAppLocation
+                {
+                    AllowedRedirectPaths = { "/login", "/login-two" },
+                    Origin = fakeOrigin,
+                    PostLogoutRedirects = { "https://bing.com" }
+                },
+                new CreateAppLocation
+                {
+                    AllowedRedirectPaths = { "/login", "/sign-in" },
+                    Origin = "https://localhost:9000",
+                    PostLogoutRedirects = { "https://amphoradata.com" }
+                }
+            };
+            var updateRes = await persona.Http.PutAsJsonAsync($"api/applications/{app.Id}", updateModel);
+            var updated = await AssertHttpSuccess<Application>(updateRes);
+            updated.Name.Should().Be(newName);
+            updated.LogoutUrl.Should().Be("https://localhost:91");
+            updated.Locations.Should().HaveCount(3);
+
+            // read again to check
+            // read
+            var readRes2 = await persona.Http.GetAsync($"api/applications/{app.Id}");
+            var appRead2 = await AssertHttpSuccess<Application>(readRes2);
+            appRead2.Name.Should().Be(newName);
+            appRead2.Locations.Should().HaveCount(3);
 
             // delete
             var deleteRes = await persona.Http.DeleteAsync($"api/applications/{app.Id}");

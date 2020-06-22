@@ -10,5 +10,6 @@ namespace Amphora.Api.Contracts
         Task<EntityOperationResult<ApplicationModel>> CreateAsync(ClaimsPrincipal principal, ApplicationModel model);
         Task<EntityOperationResult<ApplicationModel>> DeleteAsync(ClaimsPrincipal principal, string id);
         Task<EntityOperationResult<ApplicationModel>> ReadAsync(ClaimsPrincipal principal, string id);
+        Task<EntityOperationResult<ApplicationModel>> UpdateAsync(ClaimsPrincipal principal, ApplicationModel model);
     }
 }
