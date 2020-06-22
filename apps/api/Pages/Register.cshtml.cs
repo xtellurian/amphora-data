@@ -18,7 +18,7 @@ namespace Amphora.Api.Pages
         {
             var protocol = Request.IsHttps ? "https" : "http";
             var returnUrl = $"{protocol}://{Request.Host}/Challenge";
-            string registerUrl = $"{externalServices.CurrentValue.IdentityUri().ToStandardString()}/Account/Register?returnUrl={returnUrl}";
+            string registerUrl = $"{externalServices.CurrentValue.IdentityUri().ToStandardString()}/Register?returnUrl={returnUrl}";
 
             if (!User.Identity.IsAuthenticated)
             {
