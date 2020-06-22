@@ -54,15 +54,19 @@
                                 <div class="form-group">
                                     <strong>
                                         <label asp-for="Registration.Password"></label>
+                                        <i class="fa fa-info-circle" 
+                                            aria-hidden="true" 
+                                            data-toggle="tooltip" 
+                                            data-placement="bottom" 
+                                            title="Requires at least 1 digit and at least 6 unique characters"></i>
                                     </strong>
                                     <label class="float-right">
                                         <input tabindex="-1" type="checkbox" id="toggle-password" /> Show
                                     </label>
                                     <div class="input-group">
                                         <input id="password" asp-for="Registration.Password" class="form-control" />
-                                        
-                                        <span asp-validation-for="Registration.Password" class="text-danger"></span>
                                     </div>
+                                    <span asp-validation-for="Registration.Password" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
@@ -108,6 +112,11 @@
 </div>
 
 @section Scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
     <script>
         const toggle = document.getElementById('toggle-password');
         const textbox = document.getElementById('password');
