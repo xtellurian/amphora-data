@@ -7,7 +7,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import configureStore from './redux/configureStore';
 import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 
 // Create browser history to use in the Redux store
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as string;
@@ -22,4 +22,5 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('root'));
 
-registerServiceWorker();
+// TODO: re-enable when old version is gone
+// registerServiceWorker();
