@@ -16,7 +16,6 @@ namespace Amphora.Common.Models.Dtos
         [Display(Name = "About")]
         public string? About { get; set; }
 
-        [Required]
         [DataType(DataType.Text)]
         [Display(Name = "Full Name")]
         public string? FullName { get; set; }
