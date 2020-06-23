@@ -1927,6 +1927,15 @@ amphoradata@^0.10.5-dev1:
     request "^2.88.2"
     url "^0.11.0"
 
+amphoradata@^0.10.6-dev.2:
+  version "0.10.6-dev.2"
+  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.10.6-dev.2.tgz#b26a21c6c7c32c67560eeaa16784665f8bc7a48a"
+  integrity sha512-xSLVu1zxczhCIzzGBVJvlJmiTeYgKeHNp/zYb4MEIzyDEgHgqFGO0KKaHDCYfZVaH8ZIRo30uL8yY3c1Qg33xg==
+  dependencies:
+    axios "^0.19.2"
+    request "^2.88.2"
+    url "^0.11.0"
+
 ansi-colors@^3.0.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
@@ -5540,7 +5549,7 @@ icss-utils@^4.0.0, icss-utils@^4.1.1:
   dependencies:
     postcss "^7.0.14"
 
-identity-obj-proxy@3.0.0:
+identity-obj-proxy@3.0.0, identity-obj-proxy@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/identity-obj-proxy/-/identity-obj-proxy-3.0.0.tgz#94d2bda96084453ef36fbc5aaec37e0f79f1fc14"
   integrity sha1-lNK9qWCERT7zb7xarsN+D3nx/BQ=
@@ -9091,6 +9100,14 @@ raw-body@2.4.0:
     http-errors "1.7.2"
     iconv-lite "0.4.24"
     unpipe "1.0.0"
+
+react-amphora@^1.0.1-4:
+  version "1.0.1-4"
+  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.0.1-4.tgz#c26441aa49c82d1a5de72cabaeb92b45bcd07402"
+  integrity sha512-SI2AsmTVWw0BdGYxliKdbfxUIYsPjjAUPCXbkd37cFbYATcE+Lqswwwc8dgCU9B74YysRMcdv7xi76fq/qiyuA==
+  dependencies:
+    amphoradata "^0.10.6-dev.2"
+    oidc-client "^1.10.1"
 
 react-app-polyfill@^1.0.6:
   version "1.0.6"
