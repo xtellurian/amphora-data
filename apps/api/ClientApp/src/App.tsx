@@ -7,6 +7,7 @@ import './components/core/fontawesome'; // Load FontAwesome library
 // Load all global css
 import './custom.css';
 import './components/core/core.css';
+import 'react-amphora/dist/index.css'
 
 class App extends React.PureComponent {
 
