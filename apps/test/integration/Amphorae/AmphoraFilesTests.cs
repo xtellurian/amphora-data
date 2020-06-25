@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -152,14 +153,22 @@ namespace Amphora.Tests.Integration.Amphorae
                 { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
                 { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() }
             };
-            var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/meta", testMetadata);
+            var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/attributes", testMetadata);
             await AssertHttpSuccess(createMetaRes);
             // get the amphora again
             var readRes = await adminClient.GetAsync($"{url}/{amphora.Id}");
             await AssertHttpSuccess(readRes);
             amphora = JsonConvert.DeserializeObject<DetailedAmphora>(await readRes.Content.ReadAsStringAsync());
-            Assert.NotNull(amphora.FileAttributes);
-            Assert.Equal(testMetadata, amphora.FileAttributes[file].Attributes);
+
+            // get attributes
+            var attributesReq = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/files/{file}/attributes");
+            var attr = await AssertHttpSuccess<Dictionary<string, string>>(attributesReq);
+            attr.Should().NotBeEmpty();
+            attr.Should().HaveCount(4);
+            foreach (var kvp in testMetadata)
+            {
+                attr.Should().ContainKey(kvp.Key).And.ContainValue(kvp.Value);
+            }
         }
 
         [Fact]
@@ -188,6 +197,45 @@ namespace Amphora.Tests.Integration.Amphorae
             var uploadResponse2 = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             Assert.False(uploadResponse2.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.Conflict, uploadResponse2.StatusCode);
+        }
+
+        [Fact]
+        public async Task ListFiles_CanQueryByAttribute()
+        {
+            var persona = await GetPersonaAsync(Personas.Standard);
+
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
+            // create an amphora for us to work with
+            var createResponse = await persona.Http.PostAsJsonAsync("api/amphorae/", amphora);
+            amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
+
+            // upload a file
+            var generator = new Helpers.RandomGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
+            var file1 = Guid.NewGuid().ToString();
+            var uploadResponse1 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{file1}", requestBody);
+            var file2 = Guid.NewGuid().ToString();
+            var uploadResponse2 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{file2}", requestBody);
+            // add some attributes
+            var testAttributes = new Dictionary<string, string>()
+            {
+                { "a_1", "foo" },
+                { "a_2", "bar" },
+            };
+            var createMetaRes = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file1}/attributes", testAttributes);
+            createMetaRes.IsSuccessStatusCode.Should().BeTrue();
+
+            // // now do a query w/ orderBy
+            // var qAlphaRes = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=Alphabetical");
+            // qAlphaRes.IsSuccessStatusCode.Should().BeTrue();
+            // var qLatModifiedRes = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=LastModified");
+            // qLatModifiedRes.IsSuccessStatusCode.Should().BeTrue();
+
+            // now do a query
+            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a_1]=foo");
+            var qFiles = await AssertHttpSuccess<List<string>>(q);
+            qFiles.Should().HaveCount(1);
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)
