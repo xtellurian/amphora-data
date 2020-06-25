@@ -89,7 +89,6 @@ namespace Amphora.Api
             }
 
             services.AddTransient<IEmailSender, SendGridEmailSender>();
-            services.AddTransient<IAmphoraeTextAnalysisService, AmphoraeTextAnalysisService>();
             services.AddScoped<ISignalService, SignalsService>();
 
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())
