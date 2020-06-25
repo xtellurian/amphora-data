@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Common.Configuration.Options;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
@@ -14,12 +15,14 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
     {
         protected readonly ILogger<AzBlobBase<T>> logger;
         protected readonly BlobServiceClient blobServiceClient;
+        private string? accountKey;
 
         protected AzBlobBase(IOptionsMonitor<AzureStorageAccountOptions> options, ILogger<AzBlobBase<T>> logger)
         {
             this.logger = logger;
             // Check whether the connection string can be parsed.
             this.blobServiceClient = new BlobServiceClient(options.CurrentValue.StorageConnectionString);
+            this.accountKey = options.CurrentValue.Key;
         }
 
         protected abstract BlobContainerClient GetContainerReference(T entity);
@@ -73,7 +76,8 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
                         // Get the continuation token and loop until it is empty.
                         continuationToken = blobPage.ContinuationToken;
                     }
-                } while (continuationToken != "");
+                }
+                while (continuationToken != "");
             }
             catch (Azure.RequestFailedException e)
             {
@@ -89,7 +93,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
             if (await container.ExistsAsync())
             {
                 var blob = container.GetBlobClient(path);
-                var uri = await GetBlobSasUriAsync(blob, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(15));
+                var uri = GetBlobSasUriAsync(blob, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(15));
                 return uri.ToString();
             }
             else
@@ -103,7 +107,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
             if (await container.ExistsAsync())
             {
                 var blob = container.GetBlobClient(path);
-                var uri = await GetBlobSasUriAsync(blob, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(15), BlobSasPermissions.Write);
+                var uri = GetBlobSasUriAsync(blob, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMinutes(15), BlobSasPermissions.Write);
                 return uri.ToString();
             }
             else
@@ -112,13 +116,13 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
             }
         }
 
-        private async Task<Uri> GetBlobSasUriAsync(BlobClient blob,
+        private Uri GetBlobSasUriAsync(BlobClient blob,
                                                    DateTimeOffset startsOn,
                                                    DateTimeOffset endsOn,
                                                    BlobSasPermissions permission = BlobSasPermissions.Read)
         {
-            var key = await this.blobServiceClient.GetUserDelegationKeyAsync(startsOn, endsOn);
-
+            // var key = await this.blobServiceClient.GetUserDelegationKeyAsync(startsOn, endsOn);
+            // var key = await blobServiceClient.GetUserDelegationKeyAsync
             // Create a SAS token that's valid for one hour.
             var sasBuilder = new BlobSasBuilder()
             {
@@ -129,11 +133,12 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
                 ExpiresOn = endsOn
             };
 
+            var credentials = new StorageSharedKeyCredential(blob.AccountName, this.accountKey);
             // Specify read permissions for the SAS.
             sasBuilder.SetPermissions(permission);
 
             // Use the key to get the SAS token.
-            var sasToken = sasBuilder.ToSasQueryParameters(key, blob.AccountName).ToString();
+            var sasToken = sasBuilder.ToSasQueryParameters(credentials).ToString();
 
             // Construct the full URI, including the SAS token.
             UriBuilder fullUri = new UriBuilder()
