@@ -220,8 +220,8 @@ namespace Amphora.Tests.Integration.Amphorae
             // add some attributes
             var testAttributes = new Dictionary<string, string>()
             {
-                { "a_1", "foo" },
-                { "a_2", "bar" },
+                { "a-1", "foo" },
+                { "a-2", "bar" },
             };
             var createMetaRes = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file1}/attributes", testAttributes);
             createMetaRes.IsSuccessStatusCode.Should().BeTrue();
@@ -233,7 +233,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // qLatModifiedRes.IsSuccessStatusCode.Should().BeTrue();
 
             // now do a query
-            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a_1]=foo");
+            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a-1]=foo");
             var qFiles = await AssertHttpSuccess<List<string>>(q);
             qFiles.Should().HaveCount(1);
         }
