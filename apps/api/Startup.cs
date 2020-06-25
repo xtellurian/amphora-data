@@ -137,9 +137,9 @@ namespace Amphora.Api
             // Angular's default header name for sending the XSRF token.
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
-            // services.AddTransient<ICorsPolicyProvider, TestCorsProvider>();
+            // CORS for applications
             services.AddCors();
-            services.AddTransient<ICorsPolicyProvider, BasicCorsPolicyProvider>();
+            services.AddScoped<ICorsPolicyProvider, ConnectedCorsPolicyProvider>();
 
             services.AddMvc(opts =>
             {
