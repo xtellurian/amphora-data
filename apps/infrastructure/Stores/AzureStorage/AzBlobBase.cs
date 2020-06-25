@@ -9,7 +9,7 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amphora.Api.Stores.AzureStorageAccount
+namespace Amphora.Infrastructure.Stores.AzureStorage
 {
     public abstract class AzBlobBase<T> where T : class
     {
@@ -51,7 +51,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 .Sum(b => b.Properties.Length);
         }
 
-        protected async Task<IList<string>> ListNamesAsync(CloudBlobContainer container)
+        protected async Task<IList<string>> ListNamesAsync(CloudBlobContainer container, string? prefix = null, int page = 0, int count = 64)
         {
             if (!await container.ExistsAsync())
             {
@@ -59,10 +59,10 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
 
             var names = new List<string>();
-            BlobContinuationToken blobContinuationToken = null;
+            BlobContinuationToken? blobContinuationToken = null;
             do
             {
-                var results = await container.ListBlobsSegmentedAsync(null, blobContinuationToken);
+                var results = await container.ListBlobsSegmentedAsync(prefix, blobContinuationToken);
                 // Get the value of the continuation token returned by the listing call.
                 blobContinuationToken = results.ContinuationToken;
                 foreach (var item in results.Results)
@@ -78,7 +78,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return names;
         }
 
-        protected async Task<string> GetReadonlyUrlWithSasToken(CloudBlobContainer container, string path)
+        protected async Task<string?> GetReadonlyUrlWithSasToken(CloudBlobContainer container, string path)
         {
             if (await container.ExistsAsync())
             {
@@ -92,7 +92,10 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             }
         }
 
-        private static string GetBlobSasToken(CloudBlobContainer container, CloudBlockBlob blob, SharedAccessBlobPermissions permissions, string policyName = null)
+        private static string GetBlobSasToken(CloudBlobContainer container,
+                                              CloudBlockBlob blob,
+                                              SharedAccessBlobPermissions permissions,
+                                              string? policyName = null)
         {
             string sasBlobToken;
 

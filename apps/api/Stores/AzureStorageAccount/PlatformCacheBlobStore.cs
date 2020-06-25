@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Configuration.Options;
+using Amphora.Infrastructure.Stores.AzureStorage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
