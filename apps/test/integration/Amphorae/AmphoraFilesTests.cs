@@ -148,10 +148,8 @@ namespace Amphora.Tests.Integration.Amphorae
             // Act
             var testMetadata = new Dictionary<string, string>()
             {
-                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
-                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
-                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
-                { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() }
+                { "abc", Guid.NewGuid().ToString() },
+                { "def", Guid.NewGuid().ToString() }
             };
             var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/attributes", testMetadata);
             await AssertHttpSuccess(createMetaRes);
@@ -164,7 +162,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var attributesReq = await adminClient.GetAsync($"api/amphorae/{amphora.Id}/files/{file}/attributes");
             var attr = await AssertHttpSuccess<Dictionary<string, string>>(attributesReq);
             attr.Should().NotBeEmpty();
-            attr.Should().HaveCount(4);
+            attr.Should().HaveCount(testMetadata.Count);
             foreach (var kvp in testMetadata)
             {
                 attr.Should().ContainKey(kvp.Key).And.ContainValue(kvp.Value);
@@ -220,11 +218,11 @@ namespace Amphora.Tests.Integration.Amphorae
             // add some attributes
             var testAttributes = new Dictionary<string, string>()
             {
-                { "a-1", "foo" },
-                { "a-2", "bar" },
+                { "a", "foo" },
+                { "b", "bar" },
             };
             var createMetaRes = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file1}/attributes", testAttributes);
-            createMetaRes.IsSuccessStatusCode.Should().BeTrue();
+            await AssertHttpSuccess(createMetaRes);
 
             // // now do a query w/ orderBy
             // var qAlphaRes = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=Alphabetical");
@@ -233,7 +231,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // qLatModifiedRes.IsSuccessStatusCode.Should().BeTrue();
 
             // now do a query
-            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a-1]=foo");
+            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo");
             var qFiles = await AssertHttpSuccess<List<string>>(q);
             qFiles.Should().HaveCount(1);
         }

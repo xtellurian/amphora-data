@@ -22,7 +22,7 @@ namespace Amphora.Api.Services.Amphorae
 
         private readonly ILogger<AmphoraFileService> logger;
         private readonly IPlanLimitService planLimitService;
-        private Regex attributeRegex = new Regex("^[A-Za-z0-9-]*$");
+        private Regex attributeRegex = new Regex("^[A-Za-z-]*$");
 
         public AmphoraFileService(
             ILogger<AmphoraFileService> logger,
