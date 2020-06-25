@@ -125,8 +125,10 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         {
             var container = GetContainerReference(entity);
             var created = await container.CreateIfNotExistsAsync();
-
-            logger.LogInformation($"Blob container {container.Name} last modified at {created.Value?.LastModified}");
+            if (created != null)
+            {
+                logger.LogInformation($"Blob container {container.Name} created");
+            }
 
             var uri = await GetWritableUrlWithSasToken(container, fileName);
 
