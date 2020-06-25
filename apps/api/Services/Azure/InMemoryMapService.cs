@@ -26,7 +26,11 @@ namespace Amphora.Api.Services.Azure
             {
                 return new FuzzySearchResponse
                 {
-                    Summary = new Summary(),
+                    Summary = new Summary
+                    {
+                        Query = query,
+                        NumResults = 1
+                    },
                     Results = new System.Collections.Generic.List<Result>()
                     {
                         new Result

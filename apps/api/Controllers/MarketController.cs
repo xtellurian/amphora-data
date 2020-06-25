@@ -8,6 +8,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.AzureMaps;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Amphora.Api.Controllers
 {
@@ -38,6 +39,7 @@ namespace Amphora.Api.Controllers
         /// <param name="query">Search Text.</param>
         /// <returns> A fuzzy search response. </returns>
         [Produces(typeof(FuzzySearchResponse))]
+        [OpenApiIgnore] // ignore in favour of the GeoController
         [HttpGet("api/location/fuzzy")]
         [CommonAuthorize]
         public async Task<IActionResult> LookupLocationAsync(string query)
@@ -54,6 +56,7 @@ namespace Amphora.Api.Controllers
         /// <param name="skip">How many pages (in multiples of top) to skip.</param>
         /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<BasicAmphora>))]
+        [OpenApiIgnore] // I think we can just ignore this too.
         [HttpGet("api/market/search")]
         [CommonAuthorize]
         public async Task<IActionResult> Find(string query, int? top, int? skip)
