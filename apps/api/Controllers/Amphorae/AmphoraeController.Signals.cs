@@ -5,7 +5,6 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Api.Options;
-using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,7 +21,7 @@ namespace Amphora.Api.Controllers.Amphorae
     [Produces("application/json")]
     [Route("api/amphorae/{id}")]
     [OpenApiTag("Amphorae")]
-    public class AmphoraeSignalsController : Controller
+    public class AmphoraeSignalsController : EntityController
     {
         private readonly IAmphoraeService amphoraeService;
         private readonly ISignalService signalService;
@@ -68,13 +67,9 @@ namespace Amphora.Api.Controllers.Amphorae
 
                 return Ok(res);
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
             else
             {
-                return BadRequest(result.Message);
+                return Handle(result);
             }
         }
 
@@ -115,13 +110,9 @@ namespace Amphora.Api.Controllers.Amphorae
 
                 return Ok(res);
             }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
             else
             {
-                return BadRequest(result.Message);
+                return Handle(result);
             }
         }
 
@@ -133,63 +124,49 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>Signal metadata.</returns>
         [Produces(typeof(Signal))]
         [HttpPost("signals")]
+        [ValidateModel]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> CreateSignal(string id, [FromBody] Signal signal)
+        public async Task<IActionResult> CreateSignal(string id, [FromBody] CreateSignal signal)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                var result = await amphoraeService.ReadAsync(User, id, true);
+                if (result.Succeeded)
                 {
-                    var result = await amphoraeService.ReadAsync(User, id, true);
-                    if (result.Succeeded)
+                    var amphora = result.Entity;
+                    var newSignal = new SignalV2(signal.Property, signal.ValueType, signal.Attributes);
+                    string message;
+                    if (amphora.TryAddSignal(newSignal, out message))
                     {
-                        var amphora = result.Entity;
-                        var newSignal = new SignalV2(signal.Property, signal.ValueType, signal.Attributes);
-                        string message;
-                        if (amphora.TryAddSignal(newSignal, out message))
+                        var updateRes = await amphoraeService.UpdateAsync(User, amphora);
+                        if (updateRes.Succeeded)
                         {
-                            var updateRes = await amphoraeService.UpdateAsync(User, amphora);
-                            if (updateRes.Succeeded)
-                            {
-                                // happy path
-                                signal.Id = newSignal.Id;
-                                return Ok(signal);
-                            }
-                            else if (result.WasForbidden)
-                            {
-                                return StatusCode(403, result.Message);
-                            }
-                            else
-                            {
-                                return BadRequest(result.Message);
-                            }
+                            // happy path
+                            var dto = new Signal(newSignal.Id, newSignal.Property, newSignal.ValueType, newSignal.Attributes.Attributes);
+                            return Ok(dto);
                         }
                         else
                         {
-                            return BadRequest(message);
+                            return Handle(updateRes);
                         }
-                    }
-                    else if (result.WasForbidden)
-                    {
-                        return StatusCode(403, result.Message);
                     }
                     else
                     {
-                        return BadRequest(result.Message);
+                        return BadRequest(message);
                     }
                 }
-                catch (System.ArgumentException ex)
+                else
                 {
-                    return BadRequest(ex.Message);
-                }
-                catch (System.Exception ex)
-                {
-                    return BadRequest(ex.Message);
+                    return Handle(result);
                 }
             }
-            else
+            catch (System.ArgumentException ex)
             {
-                return BadRequest("Invalid Model");
+                return BadRequest(ex.Message);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -221,15 +198,14 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(new Signal(existingSignal.Id, existingSignal.Property, existingSignal.ValueType, existingSignal.Attributes.Attributes));
                 }
-                else { return BadRequest(updateRes.Message); }
-            }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
+                else
+                {
+                    return Handle(updateRes);
+                }
             }
             else
             {
-                return NotFound(result.Message);
+                return Handle(result);
             }
         }
 
@@ -255,15 +231,14 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(res.Entity);
                 }
-                else { return BadRequest(res.Message); }
-            }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
+                else
+                {
+                    return Handle(res);
+                }
             }
             else
             {
-                return NotFound(result.Message);
+                return Handle(result);
             }
         }
 
@@ -289,27 +264,14 @@ namespace Amphora.Api.Controllers.Amphorae
                 {
                     return Ok(res.Entity);
                 }
-                else { return BadRequest(res.Message); }
-            }
-            else if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
-            }
-            else
-            {
-                return NotFound(result.Message);
-            }
-        }
-
-        private IActionResult NotFoundOrForbidden(EntityOperationResult<AmphoraModel> result)
-        {
-            if (result.WasForbidden)
-            {
-                return StatusCode(403, result.Message);
+                else
+                {
+                    return Handle(res);
+                }
             }
             else
             {
-                return NotFound(result.Message);
+                return Handle(result);
             }
         }
     }
