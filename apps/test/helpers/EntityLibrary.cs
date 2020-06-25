@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;

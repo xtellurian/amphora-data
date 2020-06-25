@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Api.Options;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Amphorae;

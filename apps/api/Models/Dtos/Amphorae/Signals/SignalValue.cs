@@ -3,7 +3,7 @@ using Amphora.Api.AspNet;
 using Amphora.Common.Models.Amphorae;
 using Newtonsoft.Json;
 
-namespace Amphora.Api.Models.Dtos.Amphorae
+namespace Amphora.Api.Models.Dtos.Amphorae.Signals
 {
     public class SignalValue
     {

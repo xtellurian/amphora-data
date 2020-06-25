@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Amphora.Common.Models.Amphorae
+namespace Amphora.Api.Models.Dtos.Amphorae.Signals
 {
     public class UpdateSignal
     {

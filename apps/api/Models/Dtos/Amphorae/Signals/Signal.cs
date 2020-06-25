@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Amphora.Api.Models.Dtos.Amphorae
+namespace Amphora.Api.Models.Dtos.Amphorae.Signals
 {
     public class Signal
     {

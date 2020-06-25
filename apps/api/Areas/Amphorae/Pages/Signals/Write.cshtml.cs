@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Signals;
 using Microsoft.AspNetCore.Mvc;

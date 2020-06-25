@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Common.Models.Amphorae;
+using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
