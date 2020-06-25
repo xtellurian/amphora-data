@@ -64,10 +64,15 @@ export class State extends pulumi.ComponentResource {
 
     this.kv = this.keyvault(stateRg);
     this.storageAccount = this.createStorage(stateRg);
-    const secret = this.storeInVault(
+    const connectionString = this.storeInVault(
       CONSTANTS.AzStorage_KV_CS_SecretName,
       `Storage--${CONSTANTS.AzStorage_KV_CS_SecretName}`,
       this.storageAccount.primaryConnectionString,
+    );
+    const accountKey = this.storeInVault(
+      "StorageAccountKey",
+      'Storage--Key',
+      this.storageAccount.primaryAccessKey,
     );
     const gitHubTokenSecret = this.storeInVault(
       "gitHubToken",
