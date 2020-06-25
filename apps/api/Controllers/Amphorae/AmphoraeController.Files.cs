@@ -7,6 +7,7 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
@@ -36,35 +37,42 @@ namespace Amphora.Api.Controllers.Amphorae
         /// Get's a list of an Amphora's files.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
-        /// <param name="orderBy">Can be alphabetical or lastModified.</param>
+        /// <param name="options">Option for querying the files.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
         [HttpGet]
         [CommonAuthorize]
-        public async Task<IActionResult> ListFiles(string id, string orderBy = null)
+        public async Task<IActionResult> ListFiles(string id, [FromQuery] FileQueryOptions options)
         {
             var result = await amphoraeService.ReadAsync(User, id);
+            options ??= FileQueryOptions.Default;
             if (result.Succeeded)
             {
                 var files = await amphoraFileService.Store.GetFilesAsync(result.Entity);
-                if (orderBy != null)
+                switch (options.OrderBy)
                 {
-                    if (orderBy != "alphabetical" || orderBy != "lastModified")
-                    {
-                        return BadRequest("orderBy must be alphabetical or lastModified");
-                    }
-                    else if (orderBy == "lastModified")
-                    {
+                    case FileQueryOptions.Alphabetical:
+                        files = files.OrderBy(_ => _.Name).ToList();
+                        break;
+                    case FileQueryOptions.LastModified:
                         await files.LoadAttributesAsync();
                         files = files.OrderBy(_ => _.LastModified).ToList();
-                    }
-                    else if (orderBy == "alphabetical")
-                    {
-                        files = files.OrderBy(_ => _.Name).ToList();
-                    }
+                        break;
                 }
 
-                var names = files.Select(_ => _.Name);
+                var final = new List<IAmphoraFileReference>();
+                if (options.Attributes != null && options.Attributes.Count > 0)
+                {
+                    final.AddRange(files
+                        .Where(file => file.Metadata
+                            .Any(metadata => options.Attributes.ContainsKey(metadata.Key) && options.Attributes[metadata.Key] == metadata.Value)));
+                }
+                else
+                {
+                    final.AddRange(files);
+                }
+
+                var names = final.Select(_ => _.Name);
                 return Ok(names);
             }
             else { return Handle(result); }
@@ -167,16 +175,16 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's a list of an Amphora's files.
+        /// Gets the attributes of a file.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>
-        /// <param name="metadata">A dict containing metadata for the file.</param>
-        /// <returns>A list of file names.</returns>
+        /// <param name="attributes">A dict containing attributes for the file.</param>
+        /// <returns>The attributes.</returns>
         [Produces(typeof(Dictionary<string, string>))]
-        [HttpPost("{file}/meta")]
+        [HttpPost("{file}/attributes")]
         [CommonAuthorize]
-        public async Task<IActionResult> WriteFileMetadata(string id, string file, [FromBody] Dictionary<string, string> metadata)
+        public async Task<IActionResult> WriteFileAttributes(string id, string file, [FromBody] Dictionary<string, string> attributes)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             if (result.Succeeded)
@@ -186,15 +194,43 @@ namespace Amphora.Api.Controllers.Amphorae
                 if (fileExists)
                 {
                     // the file exists, now update the metadata
-                    entity.FileAttributes ??= new Dictionary<string, AttributeStore>();
-
-                    entity.FileAttributes[file] = new AttributeStore(metadata);
-                    var updateRes = await amphoraeService.UpdateAsync(User, entity);
-                    if (updateRes.Succeeded)
+                    var writeResult = await amphoraFileService.WriteAttributesAsync(User, entity, attributes, file);
+                    if (writeResult.Succeeded)
                     {
-                        return Ok(metadata);
+                        return Ok(attributes);
                     }
-                    else { return Handle(updateRes); }
+                    else { return Handle(writeResult); }
+                }
+                else { return NotFound(); }
+            }
+            else { return Handle(result); }
+        }
+
+        /// <summary>
+        /// Get's the attributes of a file.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="file">The name of the file.</param>
+        /// <returns>The attributes.</returns>
+        [Produces(typeof(Dictionary<string, string>))]
+        [HttpGet("{file}/attributes")]
+        [CommonAuthorize]
+        public async Task<IActionResult> ReadFileAttributes(string id, string file)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            if (result.Succeeded)
+            {
+                var entity = result.Entity;
+                var fileExists = await amphoraFileService.Store.ExistsAsync(result.Entity, file);
+                if (fileExists)
+                {
+                    // the file exists, now update the metadata
+                    var readRes = await amphoraFileService.ReadAttributesAsync(User, entity, file);
+                    if (readRes.Succeeded)
+                    {
+                        return Ok(readRes.Entity);
+                    }
+                    else { return Handle(readRes); }
                 }
                 else { return NotFound(); }
             }

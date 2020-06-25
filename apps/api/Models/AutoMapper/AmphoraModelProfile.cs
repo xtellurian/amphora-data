@@ -28,7 +28,6 @@ namespace Amphora.Api.Models.AutoMapper
                 .ForMember(o => o.OrganisationId, p => p.Ignore())
                 .ForMember(o => o.TermsOfUse, p => p.Ignore())
                 .ForMember(o => o.Quality, p => p.Ignore())
-                .ForMember(o => o.FileAttributes, p => p.Ignore())
                 .ForMember(o => o.AccessControl, p => p.Ignore())
                 .ForMember(o => o.V2Signals, p => p.Ignore())
                 .ForMember(o => o.IsPublic, p => p.MapFrom(src => true))
@@ -47,8 +46,7 @@ namespace Amphora.Api.Models.AutoMapper
                 .IncludeBase<AmphoraModel, BasicAmphora>()
                 .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
                 .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()))
-                .ForMember(o => o.SignalCount, p => p.MapFrom(src => src.V2Signals.Count))
-                .ForMember(o => o.FileCount, p => p.MapFrom(src => src.FileAttributes.Count));
+                .ForMember(o => o.SignalCount, p => p.MapFrom(src => src.V2Signals.Count));
 
             CreateMap<DataQuality, Quality>();
             CreateMap<Quality, DataQuality>();

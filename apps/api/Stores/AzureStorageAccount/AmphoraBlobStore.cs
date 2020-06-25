@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
@@ -44,6 +43,50 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<IDictionary<string, string>> ReadAttributes(AmphoraModel entity, string path)
+        {
+            var container = GetContainerReference(entity);
+            if (await container.ExistsAsync())
+            {
+                var blob = container.GetBlobClient(path);
+                if (await blob.ExistsAsync())
+                {
+                    var properties = await blob.GetPropertiesAsync();
+                    return properties?.Value?.Metadata ?? new Dictionary<string, string>();
+                }
+                else
+                {
+                    return new Dictionary<string, string>();
+                }
+            }
+            else
+            {
+                return new Dictionary<string, string>();
+            }
+        }
+
+        public async Task WriteAttributes(AmphoraModel entity, string path, IDictionary<string, string> attributes)
+        {
+            var container = GetContainerReference(entity);
+            if (await container.ExistsAsync())
+            {
+                var blob = container.GetBlobClient(path);
+                if (await blob.ExistsAsync())
+                {
+                    var properties = await blob.GetPropertiesAsync();
+                    await blob.SetMetadataAsync(attributes);
+                }
+                else
+                {
+                    logger.LogWarning($"Blob {path} doesn't exist in container {container.Name}");
+                }
+            }
+            else
+            {
+                logger.LogWarning($"Container {container.Name} doesn't exist");
             }
         }
 
@@ -95,7 +138,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return await this.ReadBytesAsync(entity, name);
         }
 
-        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity)
+        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int? segmentSize = null)
         {
             var container = GetContainerReference(entity);
             var files = new List<IAmphoraFileReference>();
@@ -104,7 +147,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 return files;
             }
 
-            var blobs = await ListBlobsAsync(container);
+            var blobs = await ListBlobsAsync(container, prefix, true, segmentSize);
             files.AddRange(blobs.Select(_ => new AzureBlobAmphoraFileReference(_, Path.GetFileName(_.Name))));
 
             return files;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -182,6 +183,77 @@ namespace Amphora.Api.Services.Amphorae
                 {
                     logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
                     return new EntityOperationResult<UploadResponse>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
+                }
+            }
+        }
+
+        public async Task<EntityOperationResult<WriteAttributesResponse>> WriteAttributesAsync(
+            ClaimsPrincipal principal,
+            AmphoraModel entity,
+            IDictionary<string, string> attributes,
+            string path)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Message);
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(principal)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.WriteContents);
+
+                if (granted)
+                {
+                    if (await Store.ExistsAsync(entity, path))
+                    {
+                        await Store.WriteAttributes(entity, path, attributes);
+                        return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Entity, new WriteAttributesResponse());
+                    }
+                    else
+                    {
+                        return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Entity, $"File {path} doesn't exist");
+                    }
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
+                    return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
+                }
+            }
+        }
+
+        public async Task<EntityOperationResult<IDictionary<string, string>>> ReadAttributesAsync(
+            ClaimsPrincipal principal,
+            AmphoraModel entity,
+            string path)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (!userReadRes.Succeeded)
+            {
+                return new EntityOperationResult<IDictionary<string, string>>(userReadRes.Message);
+            }
+
+            using (logger.BeginScope(new LoggerScope<AmphoraFileService>(principal)))
+            {
+                var granted = await permissionService.IsAuthorizedAsync(userReadRes.Entity, entity, ResourcePermissions.ReadContents);
+
+                if (granted)
+                {
+                    if (await Store.ExistsAsync(entity, path))
+                    {
+                        var attributes = await Store.ReadAttributes(entity, path);
+                        return new EntityOperationResult<IDictionary<string, string>>(userReadRes.Entity, attributes);
+                    }
+                    else
+                    {
+                        return new EntityOperationResult<IDictionary<string, string>>(userReadRes.Entity, $"File {path} doesn't exist");
+                    }
+                }
+                else
+                {
+                    logger.LogInformation($"Permission denied to user {userReadRes.Entity.Id} to write contents of {entity.Id}");
+                    return new EntityOperationResult<IDictionary<string, string>>(userReadRes.Entity, "Permission Denied") { WasForbidden = true };
                 }
             }
         }

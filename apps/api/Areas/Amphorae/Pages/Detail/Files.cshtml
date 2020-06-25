@@ -13,19 +13,19 @@
     var nextEnabled = (Model.PageNumber + 1) * Model.PerPage < Model.TotalFiles ? "": "disabled";
 }
 
-@foreach (var n in Model.Names)
+@foreach (var file in Model.Files)
 {
     var metadataId = "A" + System.Guid.NewGuid().ToString();
-    metadataModalIdDic[n] = metadataId;
+    metadataModalIdDic[file.Name] = metadataId;
     <div>
-        @await Component.InvokeAsync("Metadata", new {id = metadataId, title = $"{n} Metadata", meta = Model.Amphora.FileAttributes?.GetValueOrDefault(n)})
+        @await Component.InvokeAsync("Metadata", new {id = metadataId, title = $"{file.Name} Metadata", meta = file.Metadata})
     </div>
-    @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
+    @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(file.Name))
     {
         var filePreviewId = "A" + System.Guid.NewGuid().ToString();
-        filePreviewModalIdDic[n] = filePreviewId;
+        filePreviewModalIdDic[file.Name] = filePreviewId;
         <div>
-            @await Component.InvokeAsync("FilePreview", new {id = filePreviewId, amphora = Model.Amphora, name = n, user = Model.Result.User})
+            @await Component.InvokeAsync("FilePreview", new {id = filePreviewId, amphora = Model.Amphora, name = file.Name, user = Model.Result.User})
         </div>
     }
 }
@@ -42,11 +42,11 @@
             <div class="row">
                 <div class="col">
                     @{var index = 0;}
-                    @if(Model.Names.Count == 0)
+                    @if(Model.FileCount == 0)
                     {
                         <p>No Files</p>
                     }
-                    @foreach (var n in Model.Names)
+                    @foreach (var file in Model.Files)
                     {
                         var bg = "";
                         if(index++ %2 == 1)
@@ -55,12 +55,12 @@
                         }
                         <div class="row m-2 @bg">
                             <div class="col text-wrap">
-                                @n
+                                @file.Name
                             </div>
                             <div class="col-1 text-left">
-                                @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(n))
+                                @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(file.Name))
                                 {
-                                    <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[n]"></i>
+                                    <i class="text-primary fas fa-images" data-toggle="modal" data-target="#@filePreviewModalIdDic[file.Name]"></i>
                                 }
                             </div>
                             <div class="col-lg text-right">
@@ -68,7 +68,7 @@
                                     <div class="btn-group mr-1" role="group">
                                         @if(Model.CanReadContents)
                                         {
-                                            <a class="btn btn-primary btn" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="@PageMap.FileDownload">
+                                            <a class="btn btn-primary btn" asp-route-id="@Model.Amphora.Id" asp-route-name="@file.Name" asp-page="@PageMap.FileDownload">
                                                 Download
                                             </a>
                                         }
@@ -81,13 +81,13 @@
                                             <div class="dropdown-menu" aria-labelledby="attributesMenuButton">
                                                 @if(Model.CanReadContents)
                                                 {
-                                                    <button class="dropdown-item" data-toggle="modal" data-target="#@metadataModalIdDic[n]">
+                                                    <button class="dropdown-item" data-toggle="modal" data-target="#@metadataModalIdDic[file.Name]">
                                                         View
                                                     </button>
                                                 }
                                                 @if(Model.CanWriteContents)
                                                 {
-                                                    <a class="dropdown-item" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-area="Amphorae" asp-page="/Files/EditMetadata">
+                                                    <a class="dropdown-item" asp-route-id="@Model.Amphora.Id" asp-route-name="@file.Name" asp-area="Amphorae" asp-page="/Files/EditMetadata">
                                                         Edit
                                                     </a>
                                                 }
@@ -98,7 +98,7 @@
                                     <div class="btn-group pull-right" role="group">
                                         @if(Model.CanDeleteFiles)
                                         {
-                                            <a class="btn" asp-route-id="@Model.Amphora.Id" asp-route-name="@n" asp-page="/Files/Delete">
+                                            <a class="btn" asp-route-id="@Model.Amphora.Id" asp-route-name="@file.Name" asp-page="/Files/Delete">
                                                 <i class="text-danger fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i>
                                             </a>
                                         }

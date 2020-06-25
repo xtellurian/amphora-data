@@ -12,8 +12,11 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
     [CommonAuthorize]
     public class EditMetadataPageModel : AmphoraPageModel
     {
-        public EditMetadataPageModel(IAmphoraeService amphoraeService) : base(amphoraeService)
+        private readonly IAmphoraFileService amphoraFileService;
+
+        public EditMetadataPageModel(IAmphoraeService amphoraeService, IAmphoraFileService amphoraFileService) : base(amphoraeService)
         {
+            this.amphoraFileService = amphoraFileService;
         }
 
         public Dictionary<string, KeyValuePair<string, string>> Meta { get; set; } = new Dictionary<string, KeyValuePair<string, string>>();
@@ -26,16 +29,13 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
             this.Name = name;
             if (Amphora != null)
             {
-                Amphora.FileAttributes ??= new Dictionary<string, Common.Models.Amphorae.AttributeStore>();
+                var meta = await amphoraFileService.Store.ReadAttributes(Amphora, name);
 
-                if (Amphora.FileAttributes.TryGetValue(name, out var meta))
+                this.Meta = new Dictionary<string, KeyValuePair<string, string>>();
+                var index = 0;
+                foreach (var m in meta)
                 {
-                    this.Meta = new Dictionary<string, KeyValuePair<string, string>>();
-                    var index = 0;
-                    foreach (var m in meta.Attributes)
-                    {
-                        this.Meta.Add(index++.ToString(), new KeyValuePair<string, string>(m.Key, m.Value));
-                    }
+                    this.Meta.Add(index++.ToString(), new KeyValuePair<string, string>(m.Key, m.Value));
                 }
             }
             else
@@ -58,10 +58,8 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Files
                     {
                         this.Meta = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(meta);
                         var dic = this.Meta?.ToChildDictionary();
-                        Amphora.FileAttributes ??= new Dictionary<string, Common.Models.Amphorae.AttributeStore>();
-                        Amphora.FileAttributes[name] = new Common.Models.Amphorae.AttributeStore(dic);
+                        var res = await amphoraFileService.WriteAttributesAsync(User, Amphora, dic, name);
 
-                        var res = await amphoraeService.UpdateAsync(User, Amphora);
                         if (res.Succeeded)
                         {
                             return RedirectToPage(PageMap.Files, new { id = id });

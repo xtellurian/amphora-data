@@ -12,6 +12,8 @@ namespace Amphora.Api.Stores.InMemory
     public class InMemoryBlobStore<T> : IBlobStore<T> where T : class, IEntity
     {
         protected Dictionary<string, Dictionary<string, byte[]>> store = new Dictionary<string, Dictionary<string, byte[]>>();
+        protected Dictionary<string, Dictionary<string, IDictionary<string, string>>> metadata
+            = new Dictionary<string, Dictionary<string, IDictionary<string, string>>>();
         public Task<byte[]> ReadBytesAsync(T entity, string path)
         {
             return Task<byte[]>.Factory.StartNew(() =>

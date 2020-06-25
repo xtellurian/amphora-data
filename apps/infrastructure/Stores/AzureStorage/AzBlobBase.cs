@@ -50,6 +50,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
 
         protected async Task<IList<BlobItem>> ListBlobsAsync(BlobContainerClient container,
                                                              string? prefix = null,
+                                                             bool includeMetadata = true,
                                                              int? segmentSize = null)
         {
             if (!await container.ExistsAsync())
@@ -59,6 +60,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
 
             string? continuationToken = null;
             var results = new List<BlobItem>();
+            var traits = includeMetadata ? BlobTraits.Metadata : BlobTraits.None;
             try
             {
                 // Call the listing operation and enumerate the result segment.
@@ -66,7 +68,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
                 // and execution can exit the loop.
                 do
                 {
-                    var resultSegment = container.GetBlobsAsync(prefix: prefix)
+                    var resultSegment = container.GetBlobsAsync(prefix: prefix, traits: traits)
                         .AsPages(continuationToken, segmentSize);
 
                     await foreach (var blobPage in resultSegment)

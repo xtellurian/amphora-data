@@ -16,7 +16,5 @@ namespace Amphora.Api.Models.Dtos.Amphorae
 
         [Display(Name = "Terms of Use Id")]
         public string TermsOfUseId { get; set; }
-        [Display(Name = "Files MetaData")]
-        public Dictionary<string, AttributeStore> FileAttributes { get; set; } = new Dictionary<string, AttributeStore>();
     }
 }

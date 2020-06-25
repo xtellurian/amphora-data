@@ -10,7 +10,5 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         public int? PurchaseCount { get; set; }
         [Display(Name = "Signals Count")]
         public int? SignalCount { get; set; }
-        [Display(Name = "Files Count")]
-        public int? FileCount { get; set; }
     }
 }
