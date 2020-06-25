@@ -28,8 +28,9 @@ namespace Amphora.Api.Services.Purchases
             var path = GetBlobPath(invoice);
             if (!await blobStore.ExistsAsync(invoice.Account.Organisation, path))
             {
-                var stream = await blobStore.GetWritableStreamAsync(invoice.Account.Organisation, path);
+                var stream = new MemoryStream();
                 await GenerateFileAsync(invoice, stream);
+                await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
             }
 
             var contents = await blobStore.ReadBytesAsync(invoice.Account.Organisation, path);

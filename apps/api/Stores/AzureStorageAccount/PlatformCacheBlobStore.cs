@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Configuration.Options;
 using Amphora.Infrastructure.Stores.AzureStorage;
-using Microsoft.Azure.Storage.Blob;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -18,14 +18,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         : base(options, logger)
         { }
 
-        private CloudBlobContainer GetContainerReference()
-        {
-            return cloudBlobClient.GetContainerReference(ContainerName);
-        }
-
         public async Task<T> TryGetValue<T>(string key) where T : class
         {
-            var container = GetContainerReference();
+            var container = GetContainerReference(this);
             if (!await container.ExistsAsync())
             {
                 return default(T); // empty
@@ -33,9 +28,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
             try
             {
-                var blob = container.GetBlockBlobReference(key);
+                var blob = container.GetBlobClient(key);
                 var buffer = new MemoryStream();
-                await blob.DownloadToStreamAsync(buffer);
+                var d = await blob.DownloadToAsync(buffer);
                 var data = buffer.ToArray();
                 var s = Encoding.UTF8.GetString(data);
                 var value = JsonConvert.DeserializeObject<T>(s);
@@ -50,9 +45,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         public async Task SetAsync<T>(string key, T value) where T : class
         {
             // 1 container per amphora
-            var container = GetContainerReference();
+            var container = GetContainerReference(this);
             await container.CreateIfNotExistsAsync();
-            var blob = container.GetBlockBlobReference(key);
+            var blob = container.GetBlobClient(key);
             if (await blob.ExistsAsync())
             {
                 logger.LogError($"{key} already exists. ${blob.Uri}. Deleting");
@@ -61,13 +56,15 @@ namespace Amphora.Api.Stores.AzureStorageAccount
 
             var serialised = JsonConvert.SerializeObject(value);
             var bytes = Encoding.ASCII.GetBytes(serialised);
-            await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
+            var stream = new MemoryStream(bytes);
+            var response = await blob.UploadAsync(stream);
         }
 
-        protected override CloudBlobContainer GetContainerReference(PlatformCacheBlobStore entity)
+        // self referential == singleton
+        protected override BlobContainerClient GetContainerReference(PlatformCacheBlobStore entity)
         {
-            // kinda dumb workaround
-            throw new System.NotImplementedException();
+            // base class workaround
+            return blobServiceClient.GetBlobContainerClient(ContainerName);
         }
     }
 }

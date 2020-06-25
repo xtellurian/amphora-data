@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Common.Contracts;
 
 namespace Amphora.Api.Stores.InMemory
@@ -117,6 +118,11 @@ namespace Amphora.Api.Stores.InMemory
         public Task<long> GetContainerSizeAsync(T entity)
         {
             return Task.FromResult<long>(1024);
+        }
+
+        public async Task WriteAsync(T entity, string path, Stream content)
+        {
+            await WriteBytesAsync(entity, path, await content.ReadFullyAsync());
         }
     }
 }

@@ -6,6 +6,5 @@ namespace Amphora.Common.Contracts
     {
         string Name { get; }
         System.DateTimeOffset? LastModified { get; }
-        Task LoadAttributesAsync();
     }
 }

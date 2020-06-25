@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Common.Configuration.Options;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Infrastructure.Stores.AzureStorage;
-using Microsoft.Azure.Storage.Blob;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,9 +28,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 return null; // empty
             }
 
-            var blob = container.GetBlockBlobReference(path);
+            var blob = container.GetBlobClient(path);
             var buffer = new MemoryStream();
-            await blob.DownloadToStreamAsync(buffer);
+            await blob.DownloadToAsync(buffer);
             return buffer.ToArray();
         }
 
@@ -51,14 +52,15 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             // 1 container per amphora
             var container = GetContainerReference(entity);
             await container.CreateIfNotExistsAsync();
-            var blob = container.GetBlockBlobReference(path);
+            var blob = container.GetBlobClient(path);
             if (await blob.ExistsAsync())
             {
                 logger.LogError($"{path} already exists in {entity.Id}. ${blob.Uri}");
                 throw new ArgumentException($"{path} already exists in {entity.Id}. ${blob.Uri}");
             }
 
-            await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
+            var stream = new MemoryStream(bytes);
+            await blob.UploadAsync(stream);
         }
 
         public async Task<DateTimeOffset?> LastModifiedAsync(AmphoraModel entity)
@@ -67,8 +69,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             var container = GetContainerReference(entity);
             if (await container.ExistsAsync())
             {
-                await container.FetchAttributesAsync();
-                return container.Properties.LastModified;
+                var properties = await container.GetPropertiesAsync();
+                return properties.Value.LastModified;
             }
             else
             {
@@ -79,17 +81,12 @@ namespace Amphora.Api.Stores.AzureStorageAccount
         public async Task<string> GetWritableUrl(AmphoraModel entity, string fileName)
         {
             var container = GetContainerReference(entity);
-            if (await container.CreateIfNotExistsAsync())
-            {
-                logger.LogInformation($"Created blob container {container.Name}");
-            }
+            var created = await container.CreateIfNotExistsAsync();
 
-            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
-            sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30);
-            sasConstraints.Permissions = SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create;
+            logger.LogInformation($"Blob container {container.Name} last modified at {created.Value.LastModified}");
 
-            var blob = container.GetBlockBlobReference(fileName);
-            var uri = $"{blob.Uri}{blob.GetSharedAccessSignature(sasConstraints)}";
+            var uri = await GetWritableUrlWithSasToken(container, fileName);
+
             return uri;
         }
 
@@ -107,20 +104,8 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 return files;
             }
 
-            BlobContinuationToken blobContinuationToken = null;
-            do
-            {
-                var results = await container.ListBlobsSegmentedAsync(null, blobContinuationToken);
-                // Get the value of the continuation token returned by the listing call.
-                blobContinuationToken = results.ContinuationToken;
-                foreach (var item in results.Results)
-                {
-                    var name = Path.GetFileName(item.Uri.LocalPath);
-                    var blob = container.GetBlobReference(name);
-                    files.Add(new AzureBlobAmphoraFileReference(blob, name));
-                }
-            }
-            while (blobContinuationToken != null); // Loop while the continuation token is not null.
+            var blobs = await ListBlobsAsync(container);
+            files.AddRange(blobs.Select(_ => new AzureBlobAmphoraFileReference(_, Path.GetFileName(_.Name))));
 
             return files;
         }
@@ -137,9 +122,9 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return await GetReadonlyUrlWithSasToken(container, path);
         }
 
-        protected override CloudBlobContainer GetContainerReference(AmphoraModel amphora)
+        protected override BlobContainerClient GetContainerReference(AmphoraModel amphora)
         {
-            return cloudBlobClient.GetContainerReference(GetContainerName(amphora));
+            return blobServiceClient.GetBlobContainerClient(GetContainerName(amphora));
         }
 
         private string GetContainerName(AmphoraModel amphora)
@@ -147,36 +132,18 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return $"amphora-{amphora.Id}";
         }
 
-        public async Task<IList<string>> ListBlobsAsync(AmphoraModel entity)
-        {
-            var container = GetContainerReference(entity);
-            if (!await container.ExistsAsync())
-            {
-                return new List<string>(); // empty
-            }
-
-            return await ListNamesAsync(container);
-        }
-
-        public async Task<Stream> GetWritableStreamAsync(AmphoraModel amphora, string path)
-        {
-            var container = GetContainerReference(amphora);
-            await container.CreateIfNotExistsAsync();
-            var blob = container.GetBlockBlobReference(path);
-            if (await blob.ExistsAsync())
-            {
-                logger.LogError($"{path} already exists in {GetContainerName(amphora)}. ${blob.Uri}");
-                throw new ArgumentException($"{path} already exists in {GetContainerName(amphora)}. ${blob.Uri}");
-            }
-
-            return await blob.OpenWriteAsync();
-        }
-
         public async Task<bool> DeleteAsync(AmphoraModel entity, string path)
         {
             var container = GetContainerReference(entity);
-            var blob = container.GetBlockBlobReference(path);
+            var blob = container.GetBlobClient(path);
             return await blob.DeleteIfExistsAsync();
+        }
+
+        public async Task WriteAsync(AmphoraModel entity, string path, Stream content)
+        {
+            var container = GetContainerReference(entity);
+            var blob = container.GetBlobClient(path);
+            await blob.UploadAsync(content);
         }
     }
 }

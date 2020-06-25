@@ -11,10 +11,9 @@ namespace Amphora.Common.Contracts
         Task<bool> ExistsAsync(T entity, string path);
         Task<string> GetPublicUrl(T entity, string path);
         Task<long> GetContainerSizeAsync(T entity);
-        Task<Stream> GetWritableStreamAsync(T entity, string path);
+        Task WriteAsync(T entity, string path, Stream content);
         Task<string> GetWritableUrl(T entity, string fileName);
         Task<DateTimeOffset?> LastModifiedAsync(T entity);
-        Task<IList<string>> ListBlobsAsync(T entity);
         Task<byte[]> ReadBytesAsync(T entity, string path);
         Task WriteBytesAsync(T entity, string path, byte[] bytes);
         Task<bool> DeleteAsync(T entity, string path);

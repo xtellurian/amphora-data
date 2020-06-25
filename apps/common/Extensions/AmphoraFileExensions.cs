@@ -6,15 +6,16 @@ namespace Amphora.Common.Extensions
 {
     public static class AmphoraFileExtensions
     {
-        public static async Task LoadAttributesAsync(this IEnumerable<IAmphoraFileReference> files)
+        public static Task LoadAttributesAsync(this IEnumerable<IAmphoraFileReference> files)
         {
-            var tasks = new List<Task>();
-            foreach (var f in files)
-            {
-                tasks.Add(f.LoadAttributesAsync());
-            }
+            return Task.CompletedTask;
+            // var tasks = new List<Task>();
+            // foreach (var f in files)
+            // {
+            //     tasks.Add(f.LoadAttributesAsync());
+            // }
 
-            await Task.WhenAll(tasks);
+            // await Task.WhenAll(tasks);
         }
     }
 }

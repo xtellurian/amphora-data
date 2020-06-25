@@ -1,23 +1,17 @@
 using System;
-using System.Threading.Tasks;
 using Amphora.Common.Contracts;
-using Microsoft.Azure.Storage.Blob;
+using Azure.Storage.Blobs.Models;
 
 namespace Amphora.Infrastructure.Stores.AzureStorage
 {
     public class AzureBlobAmphoraFileReference : IAmphoraFileReference
     {
-        private readonly CloudBlob blob;
+        private readonly BlobItem blob;
 
-        public AzureBlobAmphoraFileReference(CloudBlob blob, string name)
+        public AzureBlobAmphoraFileReference(BlobItem blob, string name)
         {
             this.blob = blob;
             Name = name;
-        }
-
-        public async Task LoadAttributesAsync()
-        {
-            await blob.FetchAttributesAsync();
         }
 
         public string Name { get; set; }
