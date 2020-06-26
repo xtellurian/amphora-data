@@ -20,7 +20,10 @@ namespace Amphora.Api.Stores.InMemory
                 var items = store[entity.Id];
                 foreach (var kvp in items)
                 {
-                    res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
+                    if (string.IsNullOrEmpty(prefix) || kvp.Key.StartsWith(prefix))
+                    {
+                        res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
+                    }
                 }
             }
 
