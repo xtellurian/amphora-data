@@ -8,7 +8,7 @@ a) ACR_NAME=${OPTARG};; # Azure Container Registry Name
 c) CACHED_IMAGE=${OPTARG};; # Image to cache from
 g) GITHASH=${OPTARG};; # The git hash
 t) TAG=${OPTARG};; # The git hash
-s) SKIP=${DEPLOY};; # put anything here to skip building the final images for testing.
+s) SKIP=${OPTARG};; # put anything here to skip building the final images for testing.
 esac
 done
 
