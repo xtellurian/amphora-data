@@ -224,16 +224,42 @@ namespace Amphora.Tests.Integration.Amphorae
             var createMetaRes = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file1}/attributes", testAttributes);
             await AssertHttpSuccess(createMetaRes);
 
-            // // now do a query w/ orderBy
-            // var qAlphaRes = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=Alphabetical");
-            // qAlphaRes.IsSuccessStatusCode.Should().BeTrue();
-            // var qLatModifiedRes = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=LastModified");
-            // qLatModifiedRes.IsSuccessStatusCode.Should().BeTrue();
-
             // now do a query
             var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo");
             var qFiles = await AssertHttpSuccess<List<string>>(q);
             qFiles.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task ListFiles_CanSortByLastModifiedOr()
+        {
+            var persona = await GetPersonaAsync(Personas.Standard);
+
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
+            // create an amphora for us to work with
+            var createResponse = await persona.Http.PostAsJsonAsync("api/amphorae/", amphora);
+            amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
+
+            // upload a file
+            var generator = new Helpers.RandomGenerator(1024);
+            var content = generator.GenerateBufferFromSeed(1024);
+            var requestBody = new ByteArrayContent(content);
+            var alpha = "alpha";
+            var beta = "beta";
+            // beta get's uploaded first
+            var uploadResponse2 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{beta}", requestBody);
+            var uploadResponse1 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{alpha}", requestBody);
+
+            // now do a query w/ orderBy
+            var alphabeticalResponse = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=Alphabetical");
+            var alphabeticalList = await AssertHttpSuccess<List<string>>(alphabeticalResponse);
+            alphabeticalList.Should().HaveCount(2);
+            alphabeticalList.Should().BeInAscendingOrder("because we sorted alphabetically");
+
+            var lastModifiedResponse = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?OrderBy=LastModified");
+            var lastModifiedList = await AssertHttpSuccess<List<string>>(lastModifiedResponse);
+            lastModifiedList.Should().HaveCount(2);
+            lastModifiedList.Should().NotBeInAscendingOrder("because we sorted by last modified");
         }
 
         private async Task DeleteAmphora(HttpClient client, string id)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Common.Contracts;
 
@@ -14,6 +13,15 @@ namespace Amphora.Api.Stores.InMemory
         protected Dictionary<string, Dictionary<string, byte[]>> store = new Dictionary<string, Dictionary<string, byte[]>>();
         protected Dictionary<string, Dictionary<string, IDictionary<string, string>>> metadata
             = new Dictionary<string, Dictionary<string, IDictionary<string, string>>>();
+        protected Dictionary<string, Dictionary<string, DateTimeOffset?>> lastModified
+            = new Dictionary<string, Dictionary<string, DateTimeOffset?>>();
+        private readonly IDateTimeProvider dateTimeProvider;
+
+        public InMemoryBlobStore(IDateTimeProvider dateTimeProvider)
+        {
+            this.dateTimeProvider = dateTimeProvider;
+        }
+
         public Task<byte[]> ReadBytesAsync(T entity, string path)
         {
             return Task<byte[]>.Factory.StartNew(() =>
@@ -42,7 +50,8 @@ namespace Amphora.Api.Stores.InMemory
         {
             if (string.IsNullOrEmpty(entity.Id))
             {
-                entity.Id = Guid.NewGuid().ToString();
+                throw new ArgumentNullException("Entity.Id must not be null");
+                // entity.Id = Guid.NewGuid().ToString();
             }
 
             if (!store.ContainsKey(entity.Id))
@@ -50,8 +59,13 @@ namespace Amphora.Api.Stores.InMemory
                 store[entity.Id] = new Dictionary<string, byte[]>();
             }
 
-            var dataStore = store[entity.Id];
-            dataStore[path] = bytes;
+            if (!lastModified.ContainsKey(entity.Id))
+            {
+                lastModified[entity.Id] = new Dictionary<string, DateTimeOffset?>();
+            }
+
+            store[entity.Id][path] = bytes;
+            lastModified[entity.Id][path] = dateTimeProvider.UtcNow;
             return Task.CompletedTask;
         }
 

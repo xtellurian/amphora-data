@@ -55,7 +55,6 @@ namespace Amphora.Api.Controllers.Amphorae
                         files = files.OrderBy(_ => _.Name).ToList();
                         break;
                     case FileQueryOptions.LastModified:
-                        await files.LoadAttributesAsync();
                         files = files.OrderBy(_ => _.LastModified).ToList();
                         break;
                 }

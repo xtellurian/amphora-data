@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 
@@ -9,6 +8,10 @@ namespace Amphora.Api.Stores.InMemory
 {
     public class InMemoryAmphoraBlobStore : InMemoryBlobStore<AmphoraModel>, IAmphoraBlobStore
     {
+        public InMemoryAmphoraBlobStore(IDateTimeProvider dateTimeProvider) : base(dateTimeProvider)
+        {
+        }
+
         public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int? segmentSize = null)
         {
             var res = new List<IAmphoraFileReference>();
@@ -17,7 +20,7 @@ namespace Amphora.Api.Stores.InMemory
                 var items = store[entity.Id];
                 foreach (var kvp in items)
                 {
-                    res.Add(new InMemoryFileReference(kvp.Key, await ReadAttributes(entity, kvp.Key)));
+                    res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
                 }
             }
 
@@ -53,12 +56,11 @@ namespace Amphora.Api.Stores.InMemory
         public class InMemoryFileReference : IAmphoraFileReference
         {
             private readonly IDictionary<string, string> attributes;
-            private Random rand = new Random();
-            public InMemoryFileReference(string name, IDictionary<string, string> attributes)
+            public InMemoryFileReference(string name, DateTimeOffset? lastModified, IDictionary<string, string> attributes)
             {
                 Name = name;
                 this.attributes = attributes;
-                LastModified = DateTime.UtcNow.AddHours(-1 * rand.Next(1, 100));
+                LastModified = lastModified;
             }
 
             public string Name { get; }
