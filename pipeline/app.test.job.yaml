@@ -60,7 +60,7 @@ jobs:
         docker pull $acrName.azurecr.io/$IMAGE:$BUILD
         set -e
 
-        ./build-containers.sh -a $acrName -c $acrName.azurecr.io/$IMAGE:latest -t $BUILD -g $GITHASH
+        ./build-containers.sh -a $acrName -c $acrName.azurecr.io/$IMAGE:latest -t $BUILD -g $GITHASH -s skip
         docker push $acrName.azurecr.io/$IMAGE:latest
         docker push $acrName.azurecr.io/$IMAGE:$BUILD
       displayName: Create Test Candidate Container

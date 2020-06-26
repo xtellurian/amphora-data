@@ -23,9 +23,9 @@ docker pull $CACHED_IMAGE || true # don't fail when cached image doesn't exist.
 
 # build
 pushd apps
+# don't skip here, this is where it gets built for prod.
 ./build-containers.sh -a $ACR_NAME -c $CACHED_IMAGE -g $GITHASH -t $BUILD
-# docker build --target builder --cache-from $CACHED_IMAGE -t $CACHED_IMAGE $CONTEXT # rebuild the cache
-# docker build --cache-from $CACHED_IMAGE -t $IMAGE:latest -t $IMAGE:$GITHASH -t $IMAGE:$BUILD -t webapp:latest --build-arg gitHash=$GITHASH $CONTEXT
+
 echo "Pushing to ACR: $ACR_NAMR"
 # push
 REPOSITORY=$ACR_NAME.azurecr.io

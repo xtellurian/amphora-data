@@ -8,6 +8,7 @@ a) ACR_NAME=${OPTARG};; # Azure Container Registry Name
 c) CACHED_IMAGE=${OPTARG};; # Image to cache from
 g) GITHASH=${OPTARG};; # The git hash
 t) TAG=${OPTARG};; # The git hash
+s) SKIP=${DEPLOY};; # put anything here to skip building the final images for testing.
 esac
 done
 
@@ -18,10 +19,6 @@ else
     echo "ACR_NAME is empty, building locals"
     docker build -t builder .
     echo "BUILDER DONE"
-    # docker build -t identity -f identity/Dockerfile --build-arg "BASE=builder" .
-    # echo "IDENTITY SERVER DONE"
-    # docker build -t webapp -f api/Dockerfile --build-arg "BASE=builder" .
-    # echo "WEBAPP SERVER DONE"
     exit 1
 fi
 if [ "$CACHED_IMAGE" != "" ]; then
@@ -49,10 +46,15 @@ set -e
 echo "<< Building Builder Container >>"
 docker build -t builder -t $REGISTRY/builder:$TAG -t $REGISTRY/builder:$GITHASH -t $REGISTRY/builder:latest --build-arg "TreatWarningsAsErrors=true" --cache-from $CACHED_IMAGE .
 
-echo "<< Building API Container >>"
-docker build -f api/Dockerfile -t api -t $REGISTRY/webapp:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/webapp:latest --build-arg "BASE=builder" .
+if [ "$SKIP" != "" ]; then
+    echo "SKIP is $SKIP... Skipping the final images."
+else
+    echo "SKIP not set. Building the final images"
+    echo "<< Building API Container >>"
+    docker build -f api/Dockerfile -t api -t $REGISTRY/webapp:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/webapp:latest --build-arg "BASE=builder" .
 
-echo "<< Building Identity Container >>"
-docker build -f identity/Dockerfile -t identity -t $REGISTRY/identity:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/identity:latest --build-arg gitHash=$GITHASH --build-arg "BASE=builder" .
+    echo "<< Building Identity Container >>"
+    docker build -f identity/Dockerfile -t identity -t $REGISTRY/identity:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/identity:latest --build-arg gitHash=$GITHASH --build-arg "BASE=builder" .
+fi
 
 echo "Finished Building Containers"
