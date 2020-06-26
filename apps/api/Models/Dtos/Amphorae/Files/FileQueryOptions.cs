@@ -42,7 +42,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae.Files
         public string OrderBy { get; set; }
 
         /// <summary>
-        /// Gets or sets filters for all files with at least one of these attribute values.
+        /// Gets or sets the attribute filters.
         /// </summary>
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
 
