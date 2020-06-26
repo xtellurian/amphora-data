@@ -57,7 +57,7 @@ namespace Amphora.Identity.Controllers
             }
             else
             {
-                logger.LogWarning($"{request.Username} signed in failed.");
+                logger.LogWarning($"{request.Username} signed in failed. IsLockedOut: {result.IsLockedOut}, IsNotAllowed: {result.IsNotAllowed}");
                 return BadRequest();
             }
         }
