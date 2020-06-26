@@ -267,7 +267,7 @@ namespace Amphora.Tests.Integration.Amphorae
             // beta get's uploaded first
             var uploadResponse2 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{beta}", requestBody);
             // wait a bit to ignore race conds
-            await Task.Delay(200);
+            await Task.Delay(1000);
             var uploadResponse1 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{alpha}", requestBody);
 
             // now do a query w/ orderBy
