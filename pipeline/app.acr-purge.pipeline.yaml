@@ -6,7 +6,7 @@ variables:
 
 jobs:
   - job: purge_develop
-    displayName: Purge Develop ACR (30 days old)
+    displayName: Purge Develop ACR (60 days old)
     steps:
     - template: install.pulumi.steps.yaml
     - template: az-login.steps.yaml
@@ -20,7 +20,7 @@ jobs:
         echo "Purging Old Images..."
         set -e
         # Environment variable for container command line
-        PURGE_CMD="acr purge --filter 'builder:.*' --filter 'webapp:.*' --filter 'identity:.*' --untagged --ago 30d"
+        PURGE_CMD="acr purge --filter 'builder:.*' --filter 'webapp:.*' --filter 'identity:.*' --untagged --ago 60d"
         az acr run --cmd "$PURGE_CMD" --registry $acrName /dev/null
         echo "Done!"
         popd
