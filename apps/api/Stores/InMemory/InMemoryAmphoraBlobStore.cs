@@ -23,7 +23,7 @@ namespace Amphora.Api.Stores.InMemory
                 {
                     if (string.IsNullOrEmpty(prefix) || kvp.Key.StartsWith(prefix))
                     {
-                        if (skipped >= skip && res.Count < take)
+                        if (skipped++ >= skip && res.Count < take)
                         {
                             res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
                         }
