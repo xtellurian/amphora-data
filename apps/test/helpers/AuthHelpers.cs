@@ -127,6 +127,7 @@ namespace Amphora.Tests.Helpers
             }
             else
             {
+                var responseContent = await loginResponse.Content.ReadAsStringAsync();
                 return false;
             }
         }
