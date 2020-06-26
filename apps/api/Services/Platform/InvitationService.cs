@@ -67,7 +67,9 @@ namespace Amphora.Api.Services.Platform
                 return new EntityOperationResult<InvitationModel>(userData, $"{principal.GetUserName()} must be an administrator to invite to an organisation");
             }
 
-            var existing = await invitationStore.QueryAsync(i => i.TargetEmail == invitation.TargetEmail);
+            var existing = await invitationStore.QueryAsync(i => i.TargetEmail == invitation.TargetEmail &&
+                i.TargetOrganisationId == invitation.TargetOrganisationId);
+
             if (existing.Any())
             {
                 var current = existing.FirstOrDefault();
