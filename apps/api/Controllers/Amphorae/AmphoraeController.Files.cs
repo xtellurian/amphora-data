@@ -48,7 +48,7 @@ namespace Amphora.Api.Controllers.Amphorae
             options ??= FileQueryOptions.Default;
             if (result.Succeeded)
             {
-                var files = await amphoraFileService.Store.GetFilesAsync(result.Entity);
+                var files = await amphoraFileService.Store.GetFilesAsync(result.Entity, options.Prefix, options.Skip, options.Take);
                 switch (options.OrderBy)
                 {
                     case FileQueryOptions.Alphabetical:
@@ -62,9 +62,22 @@ namespace Amphora.Api.Controllers.Amphorae
                 var final = new List<IAmphoraFileReference>();
                 if (options.Attributes != null && options.Attributes.Count > 0)
                 {
-                    final.AddRange(files
-                        .Where(file => file.Metadata
-                            .Any(metadata => options.Attributes.ContainsKey(metadata.Key) && options.Attributes[metadata.Key] == metadata.Value)));
+                    if (options.AllAttributes)
+                    {
+                        final.AddRange(files
+                            .Where(file => options.Attributes
+                                .All(optionAttribute =>
+                                    file.Metadata.ContainsKey(optionAttribute.Key) &&
+                                    file.Metadata[optionAttribute.Key] == optionAttribute.Value)));
+                    }
+                    else
+                    {
+                        final.AddRange(files
+                            .Where(file => options.Attributes
+                                .Any(optionAttribute =>
+                                    file.Metadata.ContainsKey(optionAttribute.Key) &&
+                                    file.Metadata[optionAttribute.Key] == optionAttribute.Value)));
+                    }
                 }
                 else
                 {

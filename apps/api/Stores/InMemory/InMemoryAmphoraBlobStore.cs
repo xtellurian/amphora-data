@@ -12,9 +12,10 @@ namespace Amphora.Api.Stores.InMemory
         {
         }
 
-        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int? segmentSize = null)
+        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int skip = 0, int take = 64)
         {
             var res = new List<IAmphoraFileReference>();
+            var skipped = 0;
             if (store.ContainsKey(entity.Id))
             {
                 var items = store[entity.Id];
@@ -22,7 +23,10 @@ namespace Amphora.Api.Stores.InMemory
                 {
                     if (string.IsNullOrEmpty(prefix) || kvp.Key.StartsWith(prefix))
                     {
-                        res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
+                        if (skipped >= skip && res.Count < take)
+                        {
+                            res.Add(new InMemoryFileReference(kvp.Key, lastModified[entity.Id][kvp.Key], await ReadAttributes(entity, kvp.Key)));
+                        }
                     }
                 }
             }

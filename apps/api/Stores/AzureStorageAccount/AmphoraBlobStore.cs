@@ -140,7 +140,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return await this.ReadBytesAsync(entity, name);
         }
 
-        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int? segmentSize = null)
+        public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int skip = 0, int take = 64)
         {
             var container = GetContainerReference(entity);
             var files = new List<IAmphoraFileReference>();
@@ -149,7 +149,7 @@ namespace Amphora.Api.Stores.AzureStorageAccount
                 return files;
             }
 
-            var blobs = await ListBlobsAsync(container, prefix, true, segmentSize);
+            var blobs = await ListBlobsAsync(container, prefix, true, skip, take);
             files.AddRange(blobs.Select(_ => new AzureBlobAmphoraFileReference(_, Path.GetFileName(_.Name))));
 
             return files;

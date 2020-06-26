@@ -51,7 +51,8 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
         protected async Task<IList<BlobItem>> ListBlobsAsync(BlobContainerClient container,
                                                              string? prefix = null,
                                                              bool includeMetadata = true,
-                                                             int? segmentSize = null)
+                                                             int skip = 0,
+                                                             int? take = null)
         {
             if (!await container.ExistsAsync())
             {
@@ -61,6 +62,7 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
             string? continuationToken = null;
             var results = new List<BlobItem>();
             var traits = includeMetadata ? BlobTraits.Metadata : BlobTraits.None;
+            int skipped = 0;
             try
             {
                 // Call the listing operation and enumerate the result segment.
@@ -69,11 +71,17 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
                 do
                 {
                     var resultSegment = container.GetBlobsAsync(prefix: prefix, traits: traits)
-                        .AsPages(continuationToken, segmentSize);
+                        .AsPages(continuationToken, take);
 
                     await foreach (var blobPage in resultSegment)
                     {
-                        results.AddRange(blobPage.Values);
+                        foreach (var blobItem in blobPage.Values)
+                        {
+                            if (skipped++ >= skip && results.Count < take)
+                            {
+                                results.Add(blobItem);
+                            }
+                        }
 
                         // Get the continuation token and loop until it is empty.
                         continuationToken = blobPage.ContinuationToken;
