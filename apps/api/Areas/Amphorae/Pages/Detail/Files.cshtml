@@ -18,7 +18,7 @@
     var metadataId = "A" + System.Guid.NewGuid().ToString();
     metadataModalIdDic[file.Name] = metadataId;
     <div>
-        @await Component.InvokeAsync("Metadata", new {id = metadataId, title = $"{file.Name} Metadata", meta = file.Metadata})
+        @await Component.InvokeAsync("Attributes", new {id = metadataId, title = $"{file.Name} Attributes", attributes = file.Metadata})
     </div>
     @if(Amphora.Api.AspNet.ContentTypeRecogniser.IsImage(file.Name))
     {

@@ -1,0 +1,37 @@
+@model Amphora.Api.Areas.Amphorae.Pages.Components.AttributesViewComponent
+
+<div id="@Model.Id" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">@Model.Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if(Model?.Attributes != null && Model?.Attributes.Count > 0)
+        {
+          @foreach (var m in Model.Attributes)
+          {
+            <div class="row">
+              <div class="col">
+                @m.Key
+              </div>
+              <div class="col">
+                @m.Value
+              </div>
+            </div>
+          }
+        }
+        else
+        {
+          <p>No Metadata</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
