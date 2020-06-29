@@ -227,10 +227,16 @@ namespace Amphora.Tests.Integration.Amphorae
             var createMetaRes2 = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file2}/attributes", testAttributes);
             await AssertHttpSuccess(createMetaRes2);
 
-            // now do a query with 1 attribute
+            // now do a query with 1 attribute and correct attribute value
             var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo");
             var qFiles = await AssertHttpSuccess<List<string>>(q);
             qFiles.Should().HaveCount(2);
+
+            // now do a query with 1 attribute and INCORRECT attribute value
+            var qIncorrectValue = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=xxx");
+            var qIncorrectValueFiles = await AssertHttpSuccess<List<string>>(qIncorrectValue);
+            qIncorrectValueFiles.Should().BeEmpty("because [a]=xxx never occurs in the attributes");
+
             // now do a query with both attributes and All Attributes = true
             var qBoth = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo&Attributes[b]=bar&AllAttributes=true");
             var qBothFiles = await AssertHttpSuccess<List<string>>(qBoth);
