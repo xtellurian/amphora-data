@@ -17,6 +17,7 @@ using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Infrastructure.Database.Contexts;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Models.Options;
@@ -114,16 +115,26 @@ namespace Amphora.Api.StartupModules
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<AmphoraContext>>();
-                initialiser.EnsureContainerCreated().ConfigureAwait(false);
-                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
-                initialiser.LogInformationAsync().ConfigureAwait(false);
+                InitCosmosContext<AmphoraContext>(scope, true);
+                InitCosmosContext<ApplicationsContext>(scope);
             }
 
             if (!IsUsingCosmos())
             {
                 app.MigrateSql<AmphoraContext>();
             }
+        }
+
+        private static void InitCosmosContext<T>(IServiceScope scope, bool isTtl = false) where T : DbContext
+        {
+            var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<T>>();
+            initialiser.EnsureContainerCreated().ConfigureAwait(false);
+            if (isTtl)
+            {
+                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+            }
+
+            initialiser.LogInformationAsync().ConfigureAwait(false);
         }
     }
 }

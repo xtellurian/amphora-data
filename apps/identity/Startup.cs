@@ -134,9 +134,6 @@ namespace Amphora.Identity
                 })
                 .AddResourceStore<InMemoryResourceStore>()
                 .AddClientStore<ConnectedClientStore>()
-                // .AddInMemoryIdentityResources(config.IdentityResources())
-                // .AddInMemoryApiResources(config.Apis())
-                // .AddInMemoryClients(config.Clients())
                 .AddProfileService<IdentityProfileService>()
                 .AddAspNetIdentity<ApplicationUser>();
 
@@ -160,9 +157,7 @@ namespace Amphora.Identity
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory>();
             services.AddScoped<IEntityStore<ApplicationUser>, UsersEFStore>();
             services.AddScoped<IIdentityService, IdentityServerService>();
-
             services.AddScoped<IEventSink, IdentityServerEventConnectorService>();
-
             services.AddTransient<IEmailSender, SendGridEmailSender>();
 
             services.AddAuthentication();
@@ -212,16 +207,21 @@ namespace Amphora.Identity
 
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var identtityInitialiser = scope.ServiceProvider.GetService<CosmosInitialiser<IdentityContext>>();
-                identtityInitialiser?.EnsureContainerCreated().ConfigureAwait(false);
-                identtityInitialiser?.EnableCosmosTimeToLive().ConfigureAwait(false);
-                identtityInitialiser?.LogInformationAsync().ConfigureAwait(false);
-
-                var appInitialiser = scope.ServiceProvider.GetService<CosmosInitialiser<ApplicationsContext>>();
-                appInitialiser?.EnsureContainerCreated().ConfigureAwait(false);
-                // initialiser?.EnableCosmosTimeToLive().ConfigureAwait(false);
-                appInitialiser?.LogInformationAsync().ConfigureAwait(false);
+                InitCosmosContext<IdentityContext>(scope, true);
+                InitCosmosContext<ApplicationsContext>(scope, false);
             }
+        }
+
+        private static void InitCosmosContext<T>(IServiceScope scope, bool isTtl = false) where T : DbContext
+        {
+            var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<T>>();
+            initialiser.EnsureContainerCreated().ConfigureAwait(false);
+            if (isTtl)
+            {
+                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+            }
+
+            initialiser.LogInformationAsync().ConfigureAwait(false);
         }
     }
 }
