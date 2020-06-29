@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Permissions;
@@ -32,7 +31,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Components
             this.Amphora = amphora;
             this.Name = name;
             this.IsAuthorized = await permissionService.IsAuthorizedAsync(user, amphora, AccessLevels.ReadContents);
-            this.RelPath = $"Files/Download?id={Amphora.Id}&name={Name}";
+            this.RelPath = $"/Amphorae/Files/Download?id={Amphora.Id}&name={Name}";
             return View(this);
         }
     }
