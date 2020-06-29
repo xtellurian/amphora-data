@@ -8,7 +8,6 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Microsoft.AspNetCore.Http;
@@ -34,30 +33,59 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's a list of an Amphora's files.
+        /// Lists an Amphora's files.
+        /// </summary>
+        /// <param name="id">Amphora Id.</param>
+        /// <param name="options">Option for listing the files.</param>
+        /// <returns>A list of file names.</returns>
+        [Produces(typeof(List<string>))]
+        [HttpGet]
+        [CommonAuthorize]
+        public async Task<IActionResult> ListFiles(string id, [FromQuery] FileListOptions options)
+        {
+            var result = await amphoraeService.ReadAsync(User, id);
+            options ??= FileListOptions.Default;
+            if (result.Succeeded)
+            {
+                var files = await ListFilesAsync(result.Entity, options);
+                var names = files.Select(_ => _.Name);
+                return Ok(names);
+            }
+            else { return Handle(result); }
+        }
+
+        private async Task<IList<IAmphoraFileReference>> ListFilesAsync(AmphoraModel model, FileListOptions options)
+        {
+            var files = await amphoraFileService.Store.GetFilesAsync(model, options.Prefix, options.Skip, options.Take);
+            switch (options.OrderBy)
+            {
+                case FileQueryOptions.Alphabetical:
+                    files = files.OrderBy(_ => _.Name).ToList();
+                    break;
+                case FileQueryOptions.LastModified:
+                    files = files.OrderBy(_ => _.LastModified).ToList();
+                    break;
+            }
+
+            return files;
+        }
+
+        /// <summary>
+        /// Queries an Amphora's files.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="options">Option for querying the files.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
-        [HttpGet]
+        [HttpPost]
         [CommonAuthorize]
-        public async Task<IActionResult> ListFiles(string id, [FromQuery] FileQueryOptions options)
+        public async Task<IActionResult> QueryFiles(string id, FileQueryOptions options)
         {
             var result = await amphoraeService.ReadAsync(User, id);
             options ??= FileQueryOptions.Default;
             if (result.Succeeded)
             {
-                var files = await amphoraFileService.Store.GetFilesAsync(result.Entity, options.Prefix, options.Skip, options.Take);
-                switch (options.OrderBy)
-                {
-                    case FileQueryOptions.Alphabetical:
-                        files = files.OrderBy(_ => _.Name).ToList();
-                        break;
-                    case FileQueryOptions.LastModified:
-                        files = files.OrderBy(_ => _.LastModified).ToList();
-                        break;
-                }
+                var files = await ListFilesAsync(result.Entity, options);
 
                 var final = new List<IAmphoraFileReference>();
                 if (options.Attributes != null && options.Attributes.Count > 0)
@@ -176,9 +204,18 @@ namespace Amphora.Api.Controllers.Amphorae
 
                 if (fileResult.Succeeded)
                 {
+                    // then it's relative, add the host here.
+                    if (fileResult.Entity.Url.StartsWith('/'))
+                    {
+                        fileResult.Entity.Url = $"{Request.Scheme}://{Request.Host}{fileResult.Entity.Url}";
+                    }
+
                     return Ok(fileResult.Entity);
                 }
-                else { return Handle(fileResult); }
+                else
+                {
+                    return Handle(fileResult);
+                }
             }
             else
             {

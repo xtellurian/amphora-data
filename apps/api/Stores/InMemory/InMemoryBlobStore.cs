@@ -92,7 +92,8 @@ namespace Amphora.Api.Stores.InMemory
 
         public Task<string> GetWritableUrl(T entity, string fileName)
         {
-            return Task.FromResult(string.Empty);
+            // return the relative url
+            return Task.FromResult($"/api/amphorae/{entity.Id}/files/{fileName}");
         }
 
         public Task<DateTimeOffset?> LastModifiedAsync(T entity)

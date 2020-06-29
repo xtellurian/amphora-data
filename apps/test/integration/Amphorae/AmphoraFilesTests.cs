@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Amphorae.Files;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -227,28 +228,46 @@ namespace Amphora.Tests.Integration.Amphorae
             var createMetaRes2 = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files/{file2}/attributes", testAttributes);
             await AssertHttpSuccess(createMetaRes2);
 
+            var filter = new Dictionary<string, string>();
+            var query = new FileQueryOptions
+            {
+                Attributes = filter
+            };
+            filter.Add("a", "foo");
             // now do a query with 1 attribute and correct attribute value
-            var q = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo");
+            var q = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files", query);
             var qFiles = await AssertHttpSuccess<List<string>>(q);
             qFiles.Should().HaveCount(2);
+            filter.Clear();
 
             // now do a query with 1 attribute and INCORRECT attribute value
-            var qIncorrectValue = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=xxx");
+            filter.Add("a", "xxx");
+            var qIncorrectValue = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files", query);
             var qIncorrectValueFiles = await AssertHttpSuccess<List<string>>(qIncorrectValue);
             qIncorrectValueFiles.Should().BeEmpty("because [a]=xxx never occurs in the attributes");
+            filter.Clear();
 
             // now do a query with both attributes and All Attributes = true
-            var qBoth = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo&Attributes[b]=bar&AllAttributes=true");
+            filter.Add("a", "foo");
+            filter.Add("b", "bar");
+            query.AllAttributes = true;
+            var qBoth = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files", query);
             var qBothFiles = await AssertHttpSuccess<List<string>>(qBoth);
             qBothFiles.Should().HaveCount(1);
+            filter.Clear();
 
             // now do a query with an extra attribute, but still should return 2 (all attributes is false)
-            var qExtra = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo&Attributes[b]=bar&Attributes[z]=zeta");
+            filter.Add("a", "foo");
+            filter.Add("b", "bar");
+            filter.Add("z", "zeta");
+            query.AllAttributes = false;
+            var qExtra = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files", query);
             var qExtraFiles = await AssertHttpSuccess<List<string>>(qExtra);
             qExtraFiles.Should().HaveCount(2);
 
-            // now do a query with an extra attribute, but still should return 1 (all attributes is false)
-            var qNone = await persona.Http.GetAsync($"api/amphorae/{amphora.Id}/files?Attributes[a]=foo&Attributes[z]=zeta&AllAttributes=true");
+            // now do a query with an extra attribute, but still should return 0 (all attributes is TRUE)
+            query.AllAttributes = true;
+            var qNone = await persona.Http.PostAsJsonAsync($"api/amphorae/{amphora.Id}/files", query);
             var qNoneFiles = await AssertHttpSuccess<List<string>>(qNone);
             qNoneFiles.Should().HaveCount(0);
 
