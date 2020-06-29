@@ -215,13 +215,20 @@ namespace Amphora.Identity
         private static void InitCosmosContext<T>(IServiceScope scope, bool isTtl = false) where T : DbContext
         {
             var initialiser = scope.ServiceProvider.GetService<CosmosInitialiser<T>>();
-            initialiser.EnsureContainerCreated().ConfigureAwait(false);
-            if (isTtl)
+            if (initialiser != null)
             {
-                initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
-            }
+                initialiser.EnsureContainerCreated().ConfigureAwait(false);
+                if (isTtl)
+                {
+                    initialiser.EnableCosmosTimeToLive().ConfigureAwait(false);
+                }
 
-            initialiser.LogInformationAsync().ConfigureAwait(false);
+                initialiser.LogInformationAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                System.Console.WriteLine("WARNING: Cosmos Initialiser was null");
+            }
         }
     }
 }
