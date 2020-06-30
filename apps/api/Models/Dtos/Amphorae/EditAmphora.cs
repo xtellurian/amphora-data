@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Dtos.Amphorae
 {

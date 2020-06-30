@@ -16,7 +16,7 @@ namespace Amphora.Api.Extensions
             return entity;
         }
 
-        public static AmphoraModel UpdateProperties(this AmphoraModel entity, DetailedAmphora dto)
+        public static AmphoraModel UpdateProperties(this AmphoraModel entity, EditAmphora dto)
         {
             UpdateProperties(entity, dto as BasicAmphora);
             entity.TermsOfUseId = dto.TermsOfUseId;

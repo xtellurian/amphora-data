@@ -131,7 +131,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(DetailedAmphora))]
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Update(string id, [FromBody] DetailedAmphora amphora)
+        public async Task<IActionResult> Update(string id, [FromBody] EditAmphora amphora)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
             if (a == null) { return NotFound(); }
