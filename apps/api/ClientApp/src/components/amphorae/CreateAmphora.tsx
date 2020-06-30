@@ -1,19 +1,21 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
-import { CreateAmphora as Model } from "amphoradata";
-import { PrimaryButton } from "../molecules/buttons";
+import { CreateAmphora as Model, Result, Position } from "amphoradata";
+import { PrimaryButton, SecondaryButton } from "../molecules/buttons";
 import {
     TextInput,
     TextAreaInput,
     FloatInput,
     Dropdown,
 } from "../molecules/inputs";
+import { GeoLookupComponent } from "react-amphora";
 import { actionCreators as createActions } from "../../redux/actions/amphora/create";
 import { actionCreators as listTermsActions } from "../../redux/actions/terms/list";
 import { ValidateResult } from "../molecules/inputs/inputProps";
 import { TermsOfUseState } from "../../redux/state/terms";
 import { ApplicationState } from "../../redux/state";
+import { LoadingState } from "../molecules/empty/LoadingState";
 
 const TERMS_DEFAULT = "1";
 
@@ -27,6 +29,8 @@ type CreateAmphoraProps = typeof createActions & // ... plus action creators we'
 
 interface CreateAmphoraComponentState {
     model: Model;
+    freetextAddress?: string | null | undefined;
+    manualPositionEntry: boolean;
 }
 
 class CreateAmphora extends React.PureComponent<
@@ -44,6 +48,7 @@ class CreateAmphora extends React.PureComponent<
                 description: "",
                 price: 0,
             },
+            manualPositionEntry: false,
         };
     }
 
@@ -132,10 +137,18 @@ class CreateAmphora extends React.PureComponent<
             this.setState({ model });
         }
     }
+    private setPosition(position?: Position | null | undefined) {
+        const model = this.state.model;
+        if (position) {
+            model.lat = position.lat;
+            model.lon = position.lon;
+            this.setState({ model });
+        }
+    }
     private setLat(lat?: number) {
         const model = this.state.model;
         model.lat = lat;
-        if(lat === undefined) {
+        if (lat === undefined) {
             model.lon = null;
         }
         this.setState({ model });
@@ -143,7 +156,7 @@ class CreateAmphora extends React.PureComponent<
     private setLon(lon?: number) {
         const model = this.state.model;
         model.lon = lon;
-        if(lon === undefined) {
+        if (lon === undefined) {
             model.lat = null;
         }
         this.setState({ model });
@@ -179,21 +192,75 @@ class CreateAmphora extends React.PureComponent<
                             label="Price"
                             onComplete={(p) => this.setPrice(p)}
                         />
-                        <div className="row">
+                        <div
+                            className={`row ${
+                                this.state.manualPositionEntry && "d-none"
+                            }`}
+                        >
+                            <div className="col-8">
+                                <GeoLookupComponent
+                                    heading={
+                                        <div>
+                                            <strong>Geo Location</strong>
+                                        </div>
+                                    }
+                                    buttonClassName="d-none"
+                                    loadingPlaceholder={<LoadingState/>}
+                                    onResultSelected={(r: Result) => {
+                                        this.setPosition(r.position);
+                                        this.setState({
+                                            freetextAddress: r.address
+                                                ? r.address.freeformAddress
+                                                : "",
+                                        });
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div
+                            className={`row ${
+                                this.state.manualPositionEntry && "d-none"
+                            }`}
+                        >
+                            <div className="col">
+                                {this.state.freetextAddress}
+                                {this.state.model.lat && this.state.model.lon &&
+                                (`  (${this.state.model.lat}, ${this.state.model.lon})`)}
+                            </div>
+                        </div>
+                        <div
+                            className={`row ${
+                                !this.state.manualPositionEntry && "d-none"
+                            }`}
+                        >
                             <div className="col">
                                 <FloatInput
                                     className="w-50"
                                     label="Latitude"
+                                    value={this.state.model.lat || 0}
                                     onComplete={(p) => this.setLat(p)}
                                 />
                             </div>
                             <div className="col">
                                 <FloatInput
                                     label="Longitude"
+                                    value={this.state.model.lon || 0}
                                     onComplete={(p) => this.setLon(p)}
                                 />
                             </div>
                         </div>
+                        <SecondaryButton
+                            onClick={(e) =>
+                                this.setState({
+                                    manualPositionEntry: !this.state
+                                        .manualPositionEntry,
+                                })
+                            }
+                        >
+                            {this.state.manualPositionEntry
+                                ? "Search Locations"
+                                : "Enter Location Manually"}
+                        </SecondaryButton>
 
                         <Dropdown
                             label="Terms of Use"
