@@ -35,8 +35,23 @@ namespace Amphora.Api.Services.Azure
                     {
                         new Result
                         {
-                            Address = new Address { FreeformAddress = "A Fake Address" },
-                            Id = "fake"
+                            Address = new Address { FreeformAddress = "Somewhere in Sydney" },
+                            Id = "fake-sydney",
+                            Position = new Position
+                            {
+                                Lat = -33.8688,
+                                Lon = 151.2093
+                            }
+                        },
+                        new Result
+                        {
+                            Address = new Address { FreeformAddress = "Somewhere in Melbourne" },
+                            Id = "fake-melbourne",
+                            Position = new Position
+                            {
+                                Lat = -37.8136,
+                                Lon = 144.9631
+                            }
                         }
                     }
                 };
