@@ -43,7 +43,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A new Amphora.</returns>
         [HttpPost]
         [Produces(typeof(DetailedAmphora))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Create([FromBody] CreateAmphora amphora)
         {
             if (amphora == null || amphora.Name == null)
@@ -72,7 +72,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A list of Amphora.</returns>
         [Produces(typeof(IEnumerable<DetailedAmphora>))]
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> List(string scope = "self", string accessType = "created")
         {
             if (!string.Equals(scope, "self") && !string.Equals(scope, "organisation"))
@@ -108,7 +108,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>The Amphora details.</returns>
         [Produces(typeof(DetailedAmphora))]
         [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Read(string id)
         {
             var result = await this.amphoraeService.ReadAsync(User, id);
@@ -130,7 +130,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>The Amphora details.</returns>
         [Produces(typeof(DetailedAmphora))]
         [HttpPut("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> Update(string id, [FromBody] EditAmphora amphora)
         {
             var a = await this.amphoraeService.ReadAsync(User, id);
@@ -154,7 +154,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>A Message.</returns>
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [Produces(typeof(string))]
         public async Task<IActionResult> Delete(string id)
         {

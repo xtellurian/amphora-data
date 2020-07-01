@@ -46,7 +46,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A collection of signals.</returns>
         [Produces(typeof(List<Signal>))]
         [HttpGet("signals")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> GetSignals(string id)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
@@ -81,7 +81,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A collection of signals.</returns>
         [Produces(typeof(Signal))]
         [HttpGet("signals/{property}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> GetSignal(string id, string property)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
@@ -125,7 +125,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [Produces(typeof(Signal))]
         [HttpPost("signals")]
         [ValidateModel]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> CreateSignal(string id, [FromBody] CreateSignal signal)
         {
             try
@@ -179,7 +179,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>Signal metadata.</returns>
         [Produces(typeof(Signal))]
         [HttpPut("signals/{signalId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         public async Task<IActionResult> UpdateSignal(string id, string signalId, [FromBody] UpdateSignal signal)
         {
             var result = await amphoraeService.ReadAsync(User, id);
@@ -217,7 +217,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>The signal values.</returns>
         [HttpPost("signals/values")]
         [HttpPost("signalValues")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -250,7 +250,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>A collection of signal values.</returns>
         [HttpPost("signals/batchvalues")] // TODO: make obsolete
         [HttpPost("batchSignalValues")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CommonAuthorize]
         [Produces(typeof(Dictionary<string, object>))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
