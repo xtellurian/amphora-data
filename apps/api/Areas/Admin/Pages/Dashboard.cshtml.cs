@@ -44,8 +44,33 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.cache = cache;
         }
 
-        private Expression<Func<T, bool>> Active<T>() where T : IEntity => a => a.LastModified > monthAgo;
-        private DateTime monthAgo = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, 0);
+        private bool useLastMonth = DateTime.UtcNow.Day < 15;
+        private Expression<Func<T, bool>> Active<T>() where T : IEntity => a => a.LastModified > MonthAgo;
+        public DateTime MonthAgo => CalculateMonthAgo();
+
+        private DateTime CalculateMonthAgo()
+        {
+            var now = DateTime.UtcNow;
+            if (useLastMonth)
+            {
+                if (now.Month > 1)
+                {
+                    // no year wrapping, just return month - 1
+                    return new DateTime(now.Year, now.Month - 1, 1, 0, 0, 0, 0);
+                }
+                else
+                {
+                    // month == 1 (January).
+                    // wrap to last year, 1st of december
+                    return new DateTime(now.Year - 1, 12, 1, 0, 0, 0, 0);
+                }
+            }
+            else
+            {
+                // first of the current month
+                return new DateTime(now.Year, now.Month, 1, 0, 0, 0, 0);
+            }
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -74,7 +99,7 @@ namespace Amphora.Api.Areas.Admin.Pages
         private async Task LoadUserStats()
         {
             this.Stats.Users.TotalCount = await userDataService.Query(User, _ => true).CountAsync();
-            this.Stats.Users.TotalActive = await userDataService.Query(User, _ => _.LastSeen > monthAgo).CountAsync();
+            this.Stats.Users.TotalActive = await userDataService.Query(User, _ => _.LastSeen > MonthAgo).CountAsync();
         }
 
         private async Task LoadOrganisationStats()
@@ -92,7 +117,7 @@ namespace Amphora.Api.Areas.Admin.Pages
 
             // Calculated via active users with distinct org ids
             this.Stats.Organisations.TotalActive =
-                            (await userDataService.Query(User, _ => _.LastSeen > monthAgo)
+                            (await userDataService.Query(User, _ => _.LastSeen > MonthAgo)
                                 .Select(_ => _.OrganisationId)
                                 .ToListAsync())
                                 .Distinct()
@@ -131,7 +156,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .ToListAsync())
                 .Where(_ => _.Account != null)
                 .SelectMany(_ => _.Account.Debits)
-                .Where(_ => _.CreatedDate > monthAgo)
+                .Where(_ => _.CreatedDate > MonthAgo)
                 .Count();
 
             this.Stats.Debits.MeanActivePrice = (await organisationService.Store
@@ -139,7 +164,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 .ToListAsync())
                 .Where(_ => _.Account != null)
                 .SelectMany(_ => _.Account.Debits)
-                .Where(_ => _.CreatedDate > monthAgo)
+                .Where(_ => _.CreatedDate > MonthAgo)
                 .Average(_ => _.Amount);
         }
 
