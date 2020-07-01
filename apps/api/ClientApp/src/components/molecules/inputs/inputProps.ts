@@ -10,6 +10,7 @@ export interface InputProps<T> {
     label: string;
     value?: T;
     placeholder?: string;
+    focusOnMount?: boolean;
     helpText?: (value?: T) => string | undefined;
     validator?: (value?: T) => ValidateResult;
     onComplete?: (value?: T) => void;

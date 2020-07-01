@@ -22,7 +22,7 @@ export abstract class TextInputBase<T extends InputProps<string>> extends React.
                 isValid: true,
                 message: ""
             },
-            value: ""
+            value: props.value || ''
         }
     }
     componentDidMount() {

@@ -1,18 +1,26 @@
-import * as React from 'react';
-import { TextInputBase } from './TextInputBase';
-import { InputProps } from './inputProps';
-
+import * as React from "react";
+import { TextInputBase } from "./TextInputBase";
+import { InputProps } from "./inputProps";
 
 export class TextInput extends TextInputBase<InputProps<string>> {
+    private input?: HTMLInputElement | null;
+
+    componentDidMount() {
+        if (this.props.focusOnMount && this.input) {
+            this.input.focus();
+        }
+    }
 
     private handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
-        if (event.key === 'Enter') {
+        if (event.key === "Enter") {
             event.currentTarget.blur();
         }
     }
 
     public render() {
-        const invalidClassName = this.state.validation.isValid ? "" : "input-invalid";
+        const invalidClassName = this.state.validation.isValid
+            ? ""
+            : "input-invalid";
         return (
             <div className={`input-outer ${this.props.className || ""}`}>
                 <span>
@@ -26,6 +34,7 @@ export class TextInput extends TextInputBase<InputProps<string>> {
                         onChange={(e) => this.handleChange(e)}
                         onKeyDown={(e) => this.handleKeyDown(e)}
                         onBlur={(e) => this.handleBlur(e)}
+                        ref={(input) => (this.input = input)}
                     />
                     {this.clearButton()}
                 </div>
