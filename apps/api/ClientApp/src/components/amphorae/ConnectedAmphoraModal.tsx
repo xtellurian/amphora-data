@@ -4,7 +4,7 @@ import { ApplicationState } from "../../redux/state";
 import { actionCreators } from "../../redux/actions/amphora/fetch";
 import { ModalWrapper } from "../molecules/modal/ModalWrapper";
 import { RouteComponentProps, Route } from "react-router";
-import Description from "./detail/Description";
+import { Description } from "./detail/Description";
 import Files from "./detail/Files";
 import Signals from "./detail/signals/Signals";
 import AddSignal from "./detail/signals/AddSignal";
@@ -15,6 +15,7 @@ import Quality from "./detail/Quality";
 import { Cache } from "../../redux/state/common";
 import { AmphoraDetailMenu } from "./detail/AmphoraDetailMenu";
 import { DetailedAmphora } from "amphoradata";
+import { MagicLabel } from "../molecules/magic-inputs/MagicLabel";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { PermissionsState } from "../../redux/state/permissions";
 import { PurchaseButton } from "./PurchaseButton";
@@ -92,7 +93,16 @@ class ConnectedAmphoraModal extends React.PureComponent<
                         />
                         <div className="modal-inner">
                             <div className="mb-2">
-                                <h4>{amphora.name}</h4>
+                                <div>
+                                    <MagicLabel
+                                        initialValue={amphora.name}
+                                        onSave={(v) => alert(v)}
+                                    >
+                                        <span className="txt-lg">
+                                            {amphora.name}
+                                        </span>
+                                    </MagicLabel>
+                                </div>
                                 <small>
                                     Created{" "}
                                     {amphora.createdDate
@@ -107,7 +117,13 @@ class ConnectedAmphoraModal extends React.PureComponent<
                                 path={`${baseLink(
                                     this.props.location.pathname
                                 )}/:id/`}
-                                component={Description}
+                                render={(props) => (
+                                    <Description
+                                        {...props}
+                                        amphora={amphora}
+                                        isLoading={false}
+                                    />
+                                )}
                             />
                             <Route
                                 exact

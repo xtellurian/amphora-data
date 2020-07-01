@@ -2,6 +2,7 @@ import { AmphoraState } from "../../../redux/state/amphora";
 import { RouteComponentProps } from "react-router";
 import { ApplicationState } from "../../../redux/state";
 import { TermsOfUseState } from "../../../redux/state/terms";
+import { DetailedAmphora } from "amphoradata";
 
 export type AmphoraDetailProps = {
   amphora: AmphoraState;
@@ -15,4 +16,9 @@ export function mapStateToProps(state: ApplicationState) {
     terms: state.terms,
     permissions: state.permissions,
   };
+}
+
+export interface OneAmphora {
+  amphora: DetailedAmphora;
+  isLoading?: boolean;
 }
