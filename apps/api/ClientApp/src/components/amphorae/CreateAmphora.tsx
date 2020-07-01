@@ -65,7 +65,7 @@ class CreateAmphora extends React.PureComponent<
     }
 
     private validateDescription(s?: string): ValidateResult {
-        if (s && s.length > 62) {
+        if (s && s.length > 620) {
             return {
                 isValid: false,
                 message: "Description must be less than 620 characters",
