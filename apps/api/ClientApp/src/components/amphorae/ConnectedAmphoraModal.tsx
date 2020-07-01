@@ -9,7 +9,7 @@ import AddSignal from "./detail/signals/AddSignal";
 import Integrate from "./detail/Integrate";
 import { TermsOfUsePage } from "./detail/TermsOfUse";
 import Location from "./detail/Location";
-import Quality from "./detail/Quality";
+import { QualityPage } from "./detail/Quality";
 import { AmphoraDetailMenu } from "./detail/AmphoraDetailMenu";
 import { MagicLabel } from "../molecules/magic-inputs/MagicLabel";
 import { LoadingState } from "../molecules/empty/LoadingState";
@@ -130,7 +130,9 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/files`}
-                            render={(props) => <FilesPage {...props} amphora={amphora} />}
+                            render={(props) => (
+                                <FilesPage {...props} amphora={amphora} />
+                            )}
                         />
 
                         <Route
@@ -180,7 +182,9 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/quality`}
-                            component={Quality}
+                            render={(props) => (
+                                <QualityPage {...props} amphora={amphora} />
+                            )}
                         />
                         <div className="purchase-button-row">
                             <PurchaseButton

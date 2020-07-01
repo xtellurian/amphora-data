@@ -1,10 +1,8 @@
 import * as React from "react";
-import { connect } from "react-redux";
 import { useAmphoraClients } from "react-amphora";
-import { actionCreators } from "../../../redux/actions/amphora/files";
-import { AmphoraDetailProps, mapStateToProps, OneAmphora } from "./props";
+import { OneAmphora } from "./props";
 import { EmptyState } from "../../molecules/empty/EmptyState";
-import { amphoraApiClient } from "../../../clients/amphoraApiClient";
+import * as axios from "axios";
 import { PrimaryButton } from "../../molecules/buttons";
 import * as toast from "../../molecules/toasts";
 import { LoadingState } from "../../molecules/empty/LoadingState";
@@ -13,7 +11,7 @@ import { UploadResponse, DetailedAmphora } from "amphoradata";
 import { AxiosInstance } from "axios";
 
 interface FilesState {
-    loaded: boolean;
+    isLoading: boolean;
     fileNames: string[];
     newFileName?: string;
 }
@@ -51,24 +49,39 @@ function completeUpload(
     }
 }
 
-type AmphoraDetailFilesProps = AmphoraDetailProps & typeof actionCreators;
-
 const hiddenInputId = "select-file-input";
 
 export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
     const clients = useAmphoraClients();
     const [state, setState] = React.useState<FilesState>({
         fileNames: [],
-        loaded: false,
+        isLoading: false,
     });
+
+    const cancelToken = axios.default.CancelToken;
+    const source = cancelToken.source();
+
     React.useEffect(() => {
-        if (props.amphora.id && !state.loaded) {
+        if (props.amphora.id && !state.isLoading) {
+            setState({ isLoading: true, fileNames: state.fileNames });
             clients.amphoraeApi
-                .amphoraeFilesListFiles(props.amphora.id)
-                .then((r) => setState({ fileNames: r.data, loaded: true }))
-                .catch((e) => setState({ fileNames: [], loaded: true }));
+                .amphoraeFilesListFiles(
+                    props.amphora.id,
+                    64,
+                    0,
+                    "Alphabetical",
+                    undefined,
+                    undefined,
+                    {
+                        cancelToken: source.token,
+                    }
+                )
+                .then((r) => setState({ fileNames: r.data, isLoading: false }))
+                .catch((e) => setState({ fileNames: [], isLoading: false }));
+
+            return () => source.cancel("The files component unmounted");
         }
-    });
+    }, []);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);
@@ -84,7 +97,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
         const file = e.target.files && e.target.files[0];
         const localFileName = file && file.name;
         const fileName = state.newFileName || localFileName;
-        console.log(clients.axios)
+        console.log(clients.axios);
         if (
             props.amphora.id &&
             file &&
@@ -93,10 +106,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
             e.target.files.length > 0
         ) {
             clients.amphoraeApi
-                .amphoraeFilesCreateFileRequest(
-                    props.amphora.id,
-                    fileName
-                )
+                .amphoraeFilesCreateFileRequest(props.amphora.id, fileName)
                 .then((r) =>
                     completeUpload(
                         props.amphora,
@@ -109,6 +119,14 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                 .catch((e) => console.log(e));
         }
     };
+
+    if (state.isLoading) {
+        return <LoadingState />;
+    }
+
+    if (state.fileNames.length === 0) {
+        return <EmptyState> There are no files in this Amphora.</EmptyState>;
+    }
 
     return (
         <React.Fragment>
@@ -125,94 +143,10 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                     Upload File{" "}
                 </PrimaryButton>
             </Header>
+
             {state.fileNames.map((f) => (
                 <p key={f}> {f}</p>
             ))}
         </React.Fragment>
     );
 };
-
-// class FilesClassy extends React.PureComponent<
-//     AmphoraDetailFilesProps,
-//     FilesState
-// > {
-//     /**
-//      *
-//      */
-//     constructor(props: AmphoraDetailFilesProps) {
-//         super(props);
-//         this.state = { isLoading: true, files: [] };
-//     }
-//     public componentDidMount() {
-//         this.loadFiles();
-//     }
-
-//     private loadFiles() {
-//         amphoraApiClient
-//             .amphoraeFilesListFiles(this.props.match.params.id)
-//             .then((f) => this.setState({ isLoading: false, files: f.data }))
-//             .catch((e) => this.handleFileLoadError(e));
-//     }
-
-//     private handleFileLoadError(e: any) {
-//         this.setState({ isLoading: false, files: [] });
-//         toast.error({ text: "Error getting files" });
-//     }
-
-//     renderFileList() {
-//         if (this.state.isLoading) {
-//             return <LoadingState />;
-//         } else if (this.state.files && this.state.files.length > 0) {
-//             // there are files
-//             return this.state.files.map((f) => <p key={f}> {f}</p>);
-//         } else {
-//             return <EmptyState>There are no files.</EmptyState>;
-//         }
-//     }
-
-//     private onFileChangedHandler(e: React.ChangeEvent<HTMLInputElement>) {
-//         const id = this.props.match.params.id;
-//         const amphora = this.props.amphora.metadata.store[id];
-//         if (amphora && e.target.files && e.target.files.length > 0) {
-//             const name = this.state.newFileName || e.target.files[0].name;
-//             this.props.uploadFile(amphora, e.target.files[0], name);
-//             setTimeout(() => this.loadFiles(), 2000); //TODO: Improve this
-//         }
-//     }
-
-//     private triggerUpload() {
-//         const x = document.getElementById(hiddenInputId);
-//         if (x) {
-//             x.click();
-//         }
-//     }
-
-//     public render() {
-//         const id = this.props.match.params.id;
-//         const amphora = this.props.amphora.metadata.store[id];
-//         if (amphora) {
-//             return (
-//                 <React.Fragment>
-//                     <Header title="Files">
-//                         <input
-//                             id={hiddenInputId}
-//                             hidden
-//                             type="file"
-//                             name="file"
-//                             onChange={(e) => this.onFileChangedHandler(e)}
-//                         />
-//                         <PrimaryButton onClick={(e) => this.triggerUpload()}>
-//                             {" "}
-//                             Upload File{" "}
-//                         </PrimaryButton>
-//                     </Header>
-//                     {this.renderFileList()}
-//                 </React.Fragment>
-//             );
-//         } else {
-//             return <LoadingState />;
-//         }
-//     }
-// }
-
-// export default connect(mapStateToProps, actionCreators)(FilesClassy as any);
