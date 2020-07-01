@@ -49,7 +49,7 @@ export default class PublicNavMenu extends React.Component<
                                     </NavLink>
                                 </NavItem>
                             </ul>
-                            {this.props.isConnected ? (
+                            {/* {this.props.isConnected ? (
                                 <button
                                     className="btn btn-default"
                                     onClick={(event) => this.logout(event)}
@@ -63,8 +63,10 @@ export default class PublicNavMenu extends React.Component<
                                 >
                                     Login
                                 </button>
-                            )}
-                            <SignInButton />
+                            )} */}
+                            <SignInButton>
+                                Sign In
+                            </SignInButton>
                             <Avatar />
                         </div>
                     </Container>

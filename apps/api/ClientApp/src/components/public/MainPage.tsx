@@ -1,7 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import userManager from "../../userManager";
-import { PrimaryButton } from "../molecules/buttons";
+import { SignInButton } from "react-amphora";
 
 class MainPage extends React.PureComponent {
     public render() {
@@ -12,13 +11,9 @@ class MainPage extends React.PureComponent {
                     We're working on a new user interface. To switch back to the
                     old experience, <a href="/challenge">click here</a>
                 </p>
-                <PrimaryButton
-                    onClick={() =>
-                        userManager.signinRedirect({ data: { path: "/" } })
-                    }
-                >
-                    Login
-                </PrimaryButton>
+                <div className="w-25">
+                    <SignInButton>Sign In</SignInButton>
+                </div>
             </div>
         );
     }
