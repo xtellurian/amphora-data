@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -18,6 +20,11 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             this.accountsService = accountsService;
         }
 
+        [BindProperty]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{yyyy-MM}")]
+        public DateTimeOffset? Month { get; set; }
+
         public Report Report { get; private set; }
         [TempData]
         public string Message { get; set; } = null;
@@ -31,7 +38,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
         public async Task<IActionResult> OnPostGenerateTransactionsAsync(int pageNumber = 0, int perPage = 10, string name = null)
         {
             await LoadOrgsAsync(pageNumber, perPage, name);
-            this.Report = await accountsService.PopulateDebitsAndCreditsAsync();
+            this.Report = await accountsService.PopulateDebitsAndCreditsAsync(this.Month);
             Message = "Done";
             return Page();
         }

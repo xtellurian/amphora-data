@@ -44,6 +44,14 @@
                 <div class="col text-right">
                     <h5>Operations</h5>
                     <form method="post" asp-page-handler="GenerateTransactions" asp-route-name="@Model.Name" asp-route-pageNumber="@Model.PageNumber">
+
+                        <div class="form-group">
+                            <label asp-for="Month"></label>
+                            <span asp-validation-for="Month" class="text-danger"></span>
+                            <input class="form-control" asp-for="Month" />
+                            <p>UTC</p>
+                        </div>
+                        
                         <div class="form-group">
                             <input value="Run Transaction Generation Process" type="submit" class="btn btn-primary" />
                         </div>
