@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { Route } from "react-router-dom";
 import MyAmphoraTable from "../tables/MyAmphoraTable";
 import { Scope, AccessType } from "../../redux/actions/amphora/fetch";
-import ConnectedAmphoraModal from "./ConnectedAmphoraModal";
+import { ConnectedAmphoraModal } from "./ConnectedAmphoraModal";
 import { Tabs, activeTab } from "../molecules/tabs";
 import { Toggle } from "../molecules/toggles/Toggle";
 import { LoadingState } from "../molecules/empty/LoadingState";

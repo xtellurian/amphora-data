@@ -3,12 +3,12 @@ import { SearchContext } from "react-amphora";
 import { RouteComponentProps, Route } from "react-router";
 import { TextInput } from "../molecules/inputs";
 import { LoadingState } from "../molecules/empty/LoadingState";
-import ConnectedAmphoraModal from "./ConnectedAmphoraModal";
+import { ConnectedAmphoraModal } from "./ConnectedAmphoraModal";
 import { Table } from "../molecules/tables/Table";
 
 // At runtime, Redux will merge together...
 type SearchComponentProps = SearchContext.SearchState &
-SearchContext.SearchDispatch &
+    SearchContext.SearchDispatch &
     RouteComponentProps<{}>; // ... plus incoming routing parameters
 
 const columns = [

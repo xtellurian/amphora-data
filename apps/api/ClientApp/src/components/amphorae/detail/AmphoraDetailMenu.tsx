@@ -1,16 +1,14 @@
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { getPermissions } from "../../../utlities/permissions";
 import { baseLink } from "../ConnectedAmphoraModal";
 import "./detail.css";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { PermissionsState } from "../../../redux/state/permissions";
 
 type DetailMenuProps = { toggleMenu: (isOpen: boolean) => void } & {
     id: string;
     isOpen: boolean;
-    permissions: PermissionsState;
+    maxPermissionLevel: number;
 } & RouteComponentProps<{}>; // ... plus action creators we've requested
 
 const iconBackground: React.CSSProperties = {
@@ -36,16 +34,9 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
         { path: "quality", name: "Quality", icon: "award" },
     ];
 
-    private isEnabled(
-        path: string,
-        permissions: {
-            canPurchase: boolean;
-            canReadContents: boolean;
-            canWriteContents: boolean;
-        }
-    ) {
+    private isEnabled(path: string, maxPermissionLevel: number) {
         if (path === "files" || path === "signals") {
-            return permissions.canReadContents;
+            return maxPermissionLevel >= 32; // read contents
         } else {
             return true;
         }
@@ -64,14 +55,10 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
     }
 
     private renderLinks(): JSX.Element {
-        const permissions = getPermissions(
-            this.props.permissions,
-            this.props.id
-        );
         return (
             <React.Fragment>
                 {this.pages
-                    .filter((p) => this.isEnabled(p.path, permissions))
+                    .filter((p) => this.isEnabled(p.path, this.props.maxPermissionLevel))
                     .map((p) => (
                         <Link key={p.path} to={this.getLink(p.path)}>
                             <div
