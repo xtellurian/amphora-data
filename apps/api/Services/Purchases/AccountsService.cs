@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Admin;
@@ -40,10 +40,10 @@ namespace Amphora.Api.Services.Purchases
         /// Takes all the purchases from this month and creates debits in the system.
         /// </summary>
         /// <returns> An awaitable Task. </returns>
-        public async Task<Report> PopulateDebitsAndCreditsAsync()
+        public async Task<Report> PopulateDebitsAndCreditsAsync(DateTimeOffset? month = null)
         {
             var report = new Report();
-            var startOfMonth = dateTimeProvider.UtcNow.StartOfMonth();
+            var startOfMonth = (month ?? dateTimeProvider.UtcNow).StartOfMonth();
             var thisMonth = purchaseStore.Query(p => p.LastDebitTime < startOfMonth || p.LastDebitTime == null);
 
             foreach (var purchase in thisMonth)
