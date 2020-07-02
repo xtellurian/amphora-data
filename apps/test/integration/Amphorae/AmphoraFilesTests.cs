@@ -202,6 +202,44 @@ namespace Amphora.Tests.Integration.Amphorae
             await DeleteAmphora(adminClient, amphora.Id);
         }
 
+        // byte[] is implicitly convertible to ReadOnlySpan<byte>
+        public static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
+        {
+            return a1.SequenceEqual(a2);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(500)]
+        public async Task FileUpload_LoadTest(int numberFiles)
+        {
+            // Arrange
+            var url = "api/amphorae";
+            var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
+            var nameSuffix = "file";
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            // create an amphora for us to work with
+            var createResponse = await adminClient.PostAsJsonAsync(url, amphora);
+            amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
+
+            for (var n = 0; n < numberFiles; n++)
+            {
+                // create a file for us to work with
+                var content = generator.GenerateBufferFromSeed(1024);
+                var requestBody = new ByteArrayContent(content);
+                // then upload it
+                var uploadResponse = await adminClient.PutAsync($"{url}/{amphora.Id}/files/{n}.{nameSuffix}", requestBody);
+                await AssertHttpSuccess(uploadResponse);
+                // now download and check its the same
+                var downloadResponse = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{n}.{nameSuffix}");
+                var downloadedContent = await downloadResponse.Content.ReadAsByteArrayAsync();
+                Assert.True(ByteArrayCompare(downloadedContent, content));
+            }
+
+            // await DeleteAmphora(adminClient, amphora.Id);
+        }
+
         [Fact]
         public async Task ListFiles_CanQueryByAttribute()
         {

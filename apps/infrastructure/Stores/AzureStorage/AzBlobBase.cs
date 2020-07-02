@@ -48,6 +48,45 @@ namespace Amphora.Infrastructure.Stores.AzureStorage
             return sum;
         }
 
+        protected async Task<int> CountBlobsAsync(BlobContainerClient container,
+                                                             string? prefix = null)
+        {
+            if (!await container.ExistsAsync())
+            {
+                throw new ArgumentException($"Container {container} does not exist");
+            }
+
+            string? continuationToken = null;
+            var count = 0;
+            try
+            {
+                // Call the listing operation and enumerate the result segment.
+                // When the continuation token is empty, the last segment has been returned
+                // and execution can exit the loop.
+                do
+                {
+                    var resultSegment = container.GetBlobsAsync(prefix: prefix)
+                        .AsPages(continuationToken);
+
+                    await foreach (var blobPage in resultSegment)
+                    {
+                        count += blobPage.Values.Count;
+
+                        // Get the continuation token and loop until it is empty.
+                        continuationToken = blobPage.ContinuationToken;
+                    }
+                }
+                while (continuationToken != "");
+            }
+            catch (Azure.RequestFailedException e)
+            {
+                logger.LogCritical("Error Listing Blobs", e);
+                throw e;
+            }
+
+            return count;
+        }
+
         protected async Task<IList<BlobItem>> ListBlobsAsync(BlobContainerClient container,
                                                              string? prefix = null,
                                                              bool includeMetadata = true,

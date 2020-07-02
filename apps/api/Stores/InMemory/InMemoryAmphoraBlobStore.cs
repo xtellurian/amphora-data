@@ -12,6 +12,11 @@ namespace Amphora.Api.Stores.InMemory
         {
         }
 
+        public async Task<int> CountFilesAsync(AmphoraModel entity, string prefix = null)
+        {
+            return (await this.GetFilesAsync(entity, prefix)).Count;
+        }
+
         public async Task<IList<IAmphoraFileReference>> GetFilesAsync(AmphoraModel entity, string prefix = null, int skip = 0, int take = 64)
         {
             var res = new List<IAmphoraFileReference>();

@@ -155,6 +155,17 @@ namespace Amphora.Api.Stores.AzureStorageAccount
             return files;
         }
 
+        public async Task<int> CountFilesAsync(AmphoraModel entity, string prefix = null)
+        {
+            var container = GetContainerReference(entity);
+            if (!await container.ExistsAsync())
+            {
+                return 0;
+            }
+
+            return await CountBlobsAsync(container, prefix);
+        }
+
         public async Task<byte[]> SetDataAsync(AmphoraModel entity, byte[] data, string name)
         {
             await this.WriteBytesAsync(entity, name, data);
