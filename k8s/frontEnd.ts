@@ -12,6 +12,8 @@ const frontendConfig = new pulumi.Config("frontend")
 const image = frontendConfig.require("image");
 const replicas = frontendConfig.getNumber("replicas") ?? 1;
 
+const name = "amphora-front";
+
 export class FrontEnd extends pulumi.ComponentResource {
 
     constructor(
@@ -29,8 +31,6 @@ export class FrontEnd extends pulumi.ComponentResource {
             parent: this,
             provider: this.params.provider,
         };
-
-        const name = "amphora-front";
 
         const pb = new kx.PodBuilder({
             nodeSelector: {
@@ -56,6 +56,7 @@ export class FrontEnd extends pulumi.ComponentResource {
                         name: "amphora-frontend-config"
                     }
                 }],
+                env: [{ name: "FeatureManagement__Spa", value: "false" }], // old app, no SPA
                 livenessProbe: {
                     httpGet: {
                         path: "/healthz",
@@ -151,7 +152,7 @@ export class FrontEnd extends pulumi.ComponentResource {
         const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
             kind: "Ingress",
             metadata: {
-                name: "amphora-front-ingress",
+                name: `${name}-ingress`,
                 namespace: "amphora",
                 annotations: {
                     "kubernetes.io/ingress.class": "nginx",

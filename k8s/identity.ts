@@ -11,6 +11,8 @@ export interface IIdentityArgs {
 const identityConfig = new pulumi.Config("identity")
 const image = identityConfig.require("image");
 
+const name = "amphora-identity";
+
 export class Identity extends pulumi.ComponentResource {
 
     constructor(
@@ -28,8 +30,6 @@ export class Identity extends pulumi.ComponentResource {
             parent: this,
             provider: this.params.provider,
         };
-
-        const name = "amphora-identity";
 
         const pb = new kx.PodBuilder({
             nodeSelector: {
@@ -151,7 +151,7 @@ export class Identity extends pulumi.ComponentResource {
             const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
                 kind: "Ingress",
                 metadata: {
-                    name: "amphora-identity-ingress",
+                    name: `${name}-ingress`,
                     namespace: "amphora",
                     annotations: {
                         "kubernetes.io/ingress.class": "nginx",
