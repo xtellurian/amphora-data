@@ -7,7 +7,6 @@ using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
