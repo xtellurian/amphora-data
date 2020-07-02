@@ -185,7 +185,7 @@ namespace Amphora.Api
                 appBuilder.UseSpaStaticFiles();
                 appBuilder.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapRazorPages();
+                    // endpoints.MapRazorPages(); // disable razor pages on SPA mode
                     endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 })
                 .UseSpa(spa =>
