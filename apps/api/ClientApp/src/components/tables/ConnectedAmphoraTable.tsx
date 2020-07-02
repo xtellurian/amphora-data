@@ -5,8 +5,10 @@ import { Table } from '../molecules/tables/Table';
 import { DetailedAmphora } from 'amphoradata';
 import { RouteComponentProps } from 'react-router';
 import { Cache } from '../../redux/state/common';
-import { AccessType, Scope } from '../../redux/actions/amphora/fetch';
 import { EmptyState } from '../molecules/empty/EmptyState';
+
+type Scope = 'self' | 'organisation'
+type AccessType = 'created' | 'purchased'
 
 interface ConnectedAmphoraTableProps {
     accessType: AccessType;

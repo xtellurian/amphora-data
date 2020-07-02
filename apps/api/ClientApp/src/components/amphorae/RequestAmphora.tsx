@@ -1,35 +1,10 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
-// import { actionCreators } from '../../redux/actions/amphorae';
-import { actionCreators as listActions } from "../../redux/actions/amphora/fetch";
-import { actionCreators as modalActions } from "../../redux/actions/ui";
+import * as React from "react";
 
-// At runtime, Redux will merge together...
-type RequestAmphoraProps =
-  (typeof listActions & typeof modalActions)  // ... plus action creators we've requested
-  & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
-
-
-class RequestAmphora extends React.PureComponent<RequestAmphoraProps> {
-
-  // This method is called when the route parameters change
-  public componentDidUpdate(prevProps: RequestAmphoraProps) {
-    // this.ensureDataFetched();
-  }
-
-  public render() {
+export const RequestAmphoraPage: React.FunctionComponent = (props) => {
     return (
-      <React.Fragment>
-        <h1>Request Amphora</h1>
-        
-      </React.Fragment>
+        <React.Fragment>
+            <h2>Request Amphora</h2>
+            <p>Coming soon...</p>
+        </React.Fragment>
     );
-  }
-}
-
-
-export default connect(
-  null, // Selects which state properties are merged into the component's props
-  { ...listActions, ...modalActions } // Selects which action creators are merged into the component's props
-)(RequestAmphora);
+};

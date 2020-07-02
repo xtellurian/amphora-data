@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { FrontEnd } from "./frontEnd";
+import { AmphoraApi } from "./amphoraApi";
 import { Identity } from "./identity";
 import { Certificates } from "./certificates";
 
@@ -30,6 +31,12 @@ const certs = new Certificates("certificates", {
 });
 
 const frontEnd = new FrontEnd("frontend1", {
+    environment,
+    location: <pulumi.Output<string>>k8sInfo.apply(k => k.location),
+    provider,
+});
+
+const api = new AmphoraApi("api", {
     environment,
     location: <pulumi.Output<string>>k8sInfo.apply(k => k.location),
     provider,

@@ -1,16 +1,13 @@
 import * as React from "react";
-import { connect } from "react-redux";
 import { Quality } from "amphoradata";
-import { AmphoraDetailProps, mapStateToProps, OneAmphora } from "./props";
+import { OneAmphora } from "./props";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Header } from "./Header";
 import { HarveyPane } from "../../molecules/info/HarveyPane";
 import { HarveyBall, HarveyBallLevel } from "../../molecules/info/HarveyBall";
 import * as axios from "axios";
-import { amphoraApiClient } from "../../../clients/amphoraApiClient";
 import { useAmphoraClients } from "react-amphora";
 import { EmptyState } from "../../molecules/empty/EmptyState";
-import { makeCancelable } from "../../../utlities";
 
 interface QualityState {
     quality?: Quality | null;
