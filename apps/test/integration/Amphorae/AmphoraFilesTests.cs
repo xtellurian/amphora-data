@@ -85,6 +85,9 @@ namespace Amphora.Tests.Integration.Amphorae
             standard.Http.DefaultRequestHeaders.Add("Accept", "application/json");
             var uploadResponse = await standard.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             await AssertHttpSuccess(uploadResponse);
+            // uploader can download it
+            var standardDownloadRes = await standard.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            await AssertHttpSuccess(standardDownloadRes);
 
             // Act and Assert
             // now let's download by someone in the same org - should work
