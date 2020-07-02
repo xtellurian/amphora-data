@@ -65,14 +65,14 @@ namespace Amphora.Tests.Integration.Amphorae
 
         [Theory]
         [InlineData("/api/amphorae")]
-        public async Task Post_DownloadFiles_AsOtherUsers(string url)
+        public async Task Post_DownloadFiles_AsOtherUser(string url)
         {
             // Arrange
-            var client = await GetPersonaAsync(Personas.Standard);
+            var standard = await GetPersonaAsync(Personas.Standard);
 
-            var amphora = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(standard.Organisation.Id);
             // create an amphora for us to work with
-            var createResponse = await client.Http.PostAsync(url,
+            var createResponse = await standard.Http.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
             await AssertHttpSuccess(createResponse);
             var createResponseContent = await createResponse.Content.ReadAsStringAsync();
@@ -82,14 +82,14 @@ namespace Amphora.Tests.Integration.Amphorae
             var requestBody = new ByteArrayContent(content);
             var file = Guid.NewGuid().ToString();
 
-            client.Http.DefaultRequestHeaders.Add("Accept", "application/json");
-            var uploadResponse = await client.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
+            standard.Http.DefaultRequestHeaders.Add("Accept", "application/json");
+            var uploadResponse = await standard.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             await AssertHttpSuccess(uploadResponse);
 
             // Act and Assert
             // now let's download by someone in the same org - should work
-            var sameOrgClient = await GetPersonaAsync(Personas.StandardTwo);
-            var downloadResponse = await sameOrgClient.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
+            var two = await GetPersonaAsync(Personas.StandardTwo);
+            var downloadResponse = await two.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(downloadResponse);
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
 
@@ -99,7 +99,7 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(HttpStatusCode.Forbidden, downloadResponse.StatusCode);
 
             // cleanup
-            await DeleteAmphora(client.Http, amphora.Id);
+            await DeleteAmphora(standard.Http, amphora.Id);
         }
 
         [Theory]
