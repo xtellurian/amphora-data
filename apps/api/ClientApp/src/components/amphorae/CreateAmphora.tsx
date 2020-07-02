@@ -154,7 +154,6 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
     const termsOptions = termsContext.results.map((t) => {
         return { value: t.id || "", text: t.name || "" };
     });
-    console.log(termsOptions)
 
     return (
         <React.Fragment>

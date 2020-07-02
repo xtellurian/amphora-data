@@ -81,7 +81,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
 
             return () => source.cancel("The files component unmounted");
         }
-    }, []);
+    }, [props.amphora, clients, state.isLoading]);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);

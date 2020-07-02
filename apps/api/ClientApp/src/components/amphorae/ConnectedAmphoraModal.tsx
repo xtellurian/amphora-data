@@ -64,7 +64,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
             });
         }
         console.log(context);
-    });
+    }, [context, props.match.params.id, state, actions]);
 
     const toggleMenu = (isOpen: boolean) => {
         setState({ isOpen, loadAttempts: state.loadAttempts });
@@ -197,7 +197,6 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
             </ModalWrapper>
         );
     } else {
-        console.log("RENDERING unknown empty");
         return (
             <ModalWrapper isOpen={true} onCloseRedirectTo={redirectToPath()}>
                 <EmptyState>Unknown Amphora...</EmptyState>;
