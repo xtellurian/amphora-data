@@ -16,6 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AssetsSourceFiles Include="configs/**/*.*"/>
+  </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(AssetsSourceFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="28.4.1" />
     <PackageReference Include="coverlet.collector" Version="1.1.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

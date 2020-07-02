@@ -28,7 +28,7 @@ namespace Amphora.Tests.Integration
             var response = await client.PostAsync(url, new ByteArrayContent(content));
             var responseContent = await response.Content.ReadAsStringAsync();
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]

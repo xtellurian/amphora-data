@@ -175,7 +175,10 @@ namespace Amphora.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
-            // specific to SPA.
+            // write to console whether we are running the SPA
+            var isUsingSpa = Configuration.GetSection("FeatureManagement")["Spa"];
+            System.Console.WriteLine($"SPA Enabled: {isUsingSpa}");
+
             app.UseForFeature(nameof(ApiFeatureFlags.Spa), appBuilder =>
             {
                 CommonPipeline(appBuilder, env, mapper);

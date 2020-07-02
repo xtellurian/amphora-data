@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -33,7 +35,17 @@ namespace Amphora.Tests.Integration
 
         public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
         {
-            _factory = factory;
+            // factory.ClientOptions.AllowAutoRedirect = false;
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "test.api.appsettings.json");
+
+            _factory = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((context, conf) =>
+                {
+                    conf.AddJsonFile(configPath);
+                });
+            });
         }
 
         protected async Task<Persona> GetPersonaAsync(string name = Personas.Standard)
