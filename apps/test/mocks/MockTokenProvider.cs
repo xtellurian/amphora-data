@@ -9,10 +9,7 @@ namespace Amphora.Tests.Mocks
 
         public Task<string> GetAccessTokenAsync(string resource, string tenantId = null)
         {
-            return Task<string>.Factory.StartNew(() =>
-            {
-                return Token;
-            });
+            return Task.FromResult(Token);
         }
     }
 }

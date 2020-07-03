@@ -22,7 +22,7 @@ namespace Amphora.Api.Services.Azure
 
         public Task<FuzzySearchResponse> FuzzySearchAsync(string query)
         {
-            return Task<FuzzySearchResponse>.Factory.StartNew(() =>
+            return Task<FuzzySearchResponse>.Run(() =>
             {
                 return new FuzzySearchResponse
                 {
