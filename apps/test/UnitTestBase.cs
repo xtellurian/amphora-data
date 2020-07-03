@@ -11,6 +11,7 @@ using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Users;
+using Amphora.Tests.Mocks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,12 @@ namespace Amphora.Tests.Unit
 {
     public abstract class UnitTestBase
     {
+        // byte[] is implicitly convertible to ReadOnlySpan<byte>
+        public static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
+        {
+            return a1.SequenceEqual(a2);
+        }
+
         protected UnitTestBase()
         {
             var config = new MapperConfiguration(cfg =>
@@ -85,6 +92,11 @@ namespace Amphora.Tests.Unit
             var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             return new PermissionService(orgStore, amphoraStore, userDataService, CreateMockLogger<PermissionService>());
+        }
+
+        protected IDateTimeProvider GetMockDateTimeProvider(DateTimeOffset? now = null)
+        {
+            return now.HasValue ? new MockDateTimeProvider(now.Value) : new MockDateTimeProvider();
         }
 
         protected IMemoryCache CreateMemoryCache()

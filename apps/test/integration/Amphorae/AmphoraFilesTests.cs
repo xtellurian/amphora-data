@@ -74,24 +74,28 @@ namespace Amphora.Tests.Integration.Amphorae
             // create an amphora for us to work with
             var createResponse = await standard.Http.PostAsync(url,
                 new StringContent(JsonConvert.SerializeObject(amphora), Encoding.UTF8, "application/json"));
-            await AssertHttpSuccess(createResponse);
-            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            amphora = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
-
+            amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
             var content = generator.GenerateBufferFromSeed(1024);
             var requestBody = new ByteArrayContent(content);
             var file = Guid.NewGuid().ToString();
 
-            standard.Http.DefaultRequestHeaders.Add("Accept", "application/json");
             var uploadResponse = await standard.Http.PutAsync($"{url}/{amphora.Id}/files/{file}", requestBody);
             await AssertHttpSuccess(uploadResponse);
             // uploader can download it
             var standardDownloadRes = await standard.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(standardDownloadRes);
 
-            // Act and Assert
-            // now let's download by someone in the same org - should work
+            // check it shows up in the list for standard
+            var listResponse = await standard.Http.GetAsync($"{url}/{amphora.Id}/files");
+            var allFiles = await AssertHttpSuccess<List<string>>(listResponse);
+            allFiles.Should().NotBeEmpty().And.Contain(file);
+
+            // this was breaking here before I made the dictionaries in InMemoryBlobStore Static
             var two = await GetPersonaAsync(Personas.StandardTwo);
+            var listResponse2 = await two.Http.GetAsync($"{url}/{amphora.Id}/files");
+            var allFiles2 = await AssertHttpSuccess<List<string>>(listResponse2);
+            allFiles2.Should().NotBeEmpty().And.Contain(file);
+
             var downloadResponse = await two.Http.GetAsync($"{url}/{amphora.Id}/files/{file}");
             await AssertHttpSuccess(downloadResponse);
             Assert.Equal(content, await downloadResponse.Content.ReadAsByteArrayAsync());
@@ -200,12 +204,6 @@ namespace Amphora.Tests.Integration.Amphorae
             Assert.Equal(HttpStatusCode.Conflict, uploadResponse2.StatusCode);
 
             await DeleteAmphora(adminClient, amphora.Id);
-        }
-
-        // byte[] is implicitly convertible to ReadOnlySpan<byte>
-        public static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
-        {
-            return a1.SequenceEqual(a2);
         }
 
         [Theory]
@@ -378,7 +376,6 @@ namespace Amphora.Tests.Integration.Amphorae
         public async Task ListFiles_CanSkipAndTake()
         {
             var persona = await GetPersonaAsync(Personas.Standard);
-
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
             // create an amphora for us to work with
             var createResponse = await persona.Http.PostAsJsonAsync("api/amphorae/", amphora);

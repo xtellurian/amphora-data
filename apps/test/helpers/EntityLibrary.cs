@@ -28,7 +28,7 @@ namespace Amphora.Tests.Helpers
             return a.Generate();
         }
 
-        public static AmphoraModel GetAmphoraModel(OrganisationModel org, bool isPublic = true)
+        public static AmphoraModel GetAmphoraModel(OrganisationModel org, bool isPublic = true, bool setId = false)
         {
             var faker = new Faker<AmphoraModel>()
                .StrictMode(false)
@@ -40,7 +40,13 @@ namespace Amphora.Tests.Helpers
                .RuleFor(_ => _.IsPublic, f => isPublic)
                .RuleFor(_ => _.GeoLocation, f => new GeoLocation(f.Address.Longitude(), f.Address.Latitude()));
 
-            return faker.Generate();
+            var amphora = faker.Generate();
+            if (setId)
+            {
+                amphora.Id = System.Guid.NewGuid().ToString();
+            }
+
+            return amphora;
         }
 
         public static SignalV2 GetSignalV2(string property = null, string valueType = "Numeric")

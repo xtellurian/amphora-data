@@ -1,49 +1,56 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Extensions;
 using Amphora.Common.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Stores.InMemory
 {
     public class InMemoryBlobStore<T> : IBlobStore<T> where T : class, IEntity
     {
-        protected Dictionary<string, Dictionary<string, byte[]>> store = new Dictionary<string, Dictionary<string, byte[]>>();
-        protected Dictionary<string, Dictionary<string, IDictionary<string, string>>> metadata
-            = new Dictionary<string, Dictionary<string, IDictionary<string, string>>>();
-        protected Dictionary<string, Dictionary<string, DateTimeOffset?>> lastModified
-            = new Dictionary<string, Dictionary<string, DateTimeOffset?>>();
-        private readonly IDateTimeProvider dateTimeProvider;
+        protected static readonly object DataContainersLock = new object();
+        protected static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> DataContainers = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
+        protected static readonly object MetadataLock = new object();
+        protected static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentDictionary<string, string>>> Metadata
+            = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentDictionary<string, string>>>();
+        protected static readonly object LastModifiedLock = new object();
+        protected static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, DateTimeOffset?>> LastModified
+            = new ConcurrentDictionary<string, ConcurrentDictionary<string, DateTimeOffset?>>();
 
-        public InMemoryBlobStore(IDateTimeProvider dateTimeProvider)
+        protected readonly IDateTimeProvider dateTimeProvider;
+        protected readonly ILogger<InMemoryBlobStore<T>> logger;
+
+        public InMemoryBlobStore(IDateTimeProvider dateTimeProvider, ILogger<InMemoryBlobStore<T>> logger)
         {
             this.dateTimeProvider = dateTimeProvider;
+            this.logger = logger;
         }
 
         public Task<byte[]> ReadBytesAsync(T entity, string path)
         {
-            return Task<byte[]>.Factory.StartNew(() =>
+            if (entity?.Id == null) { throw new ArgumentException(); }
+            lock (DataContainersLock)
             {
-                if (entity?.Id == null) { throw new ArgumentException(); }
-                if (store.ContainsKey(entity.Id))
+                if (DataContainers.TryGetValue(entity.Id, out var container))
                 {
-                    var dataStore = store[entity.Id];
-                    if (dataStore.ContainsKey(path))
+                    if (container.TryGetValue(path, out var data))
                     {
-                        return dataStore[path];
+                        return Task.FromResult(data.ToArray()); // copy the data
                     }
                     else
                     {
-                        return null;
+                        return Task.FromResult(null as byte[]);
                     }
                 }
                 else
                 {
-                    return null;
+                    return Task.FromResult(null as byte[]);
                 }
-            });
+            }
         }
 
         public Task WriteBytesAsync(T entity, string path, byte[] bytes)
@@ -54,18 +61,52 @@ namespace Amphora.Api.Stores.InMemory
                 // entity.Id = Guid.NewGuid().ToString();
             }
 
-            if (!store.ContainsKey(entity.Id))
+            lock (DataContainersLock)
             {
-                store[entity.Id] = new Dictionary<string, byte[]>();
+                if (!DataContainers.ContainsKey(entity.Id))
+                {
+                    DataContainers.TryAdd(entity.Id, new ConcurrentDictionary<string, byte[]>());
+                }
             }
 
-            if (!lastModified.ContainsKey(entity.Id))
+            lock (LastModifiedLock)
             {
-                lastModified[entity.Id] = new Dictionary<string, DateTimeOffset?>();
+                if (!LastModified.ContainsKey(entity.Id))
+                {
+                    LastModified.TryAdd(entity.Id, new ConcurrentDictionary<string, DateTimeOffset?>());
+                }
             }
 
-            store[entity.Id][path] = bytes;
-            lastModified[entity.Id][path] = dateTimeProvider.UtcNow;
+            lock (DataContainersLock)
+            {
+                if (DataContainers.TryGetValue(entity.Id, out var container))
+                {
+                    if (!container.TryAdd(path, bytes.ToArray())) // copy the data to a new reference
+                    {
+                        throw new InMemoryStoreException($"Failed to add data to dataContainer({entity.Id}), path: {path}");
+                    }
+                }
+                else
+                {
+                    throw new InMemoryStoreException($"Expected dataContainers to contain {entity.Id}");
+                }
+            }
+
+            lock (LastModifiedLock)
+            {
+                if (LastModified.TryGetValue(entity.Id, out var lastModifiedContainer))
+                {
+                    if (!lastModifiedContainer.TryAdd(path, dateTimeProvider.UtcNow))
+                    {
+                        throw new InMemoryStoreException($"Failed to add last Modified to ({entity.Id}), path: {path}");
+                    }
+                }
+                else
+                {
+                    throw new InMemoryStoreException($"Expected lastModified to contain {entity.Id}");
+                }
+            }
+
             return Task.CompletedTask;
         }
 
@@ -76,18 +117,18 @@ namespace Amphora.Api.Stores.InMemory
 
         public Task<IList<string>> ListBlobsAsync(T entity)
         {
-            return Task<IList<string>>.Factory.StartNew(() =>
+            lock (DataContainersLock)
             {
-                if (store.ContainsKey(entity.Id))
+                if (DataContainers.ContainsKey(entity.Id))
                 {
-                    var entityData = store[entity.Id];
-                    return entityData.Keys.ToList();
+                    var entityData = DataContainers[entity.Id];
+                    return Task.FromResult(entityData.Keys.ToList() as IList<string>);
                 }
                 else
                 {
-                    return new List<string>();
+                    return Task.FromResult(new List<string>() as IList<string>);
                 }
-            });
+            }
         }
 
         public Task<string> GetWritableUrl(T entity, string fileName)
@@ -103,14 +144,16 @@ namespace Amphora.Api.Stores.InMemory
 
         public Task<bool> ExistsAsync(T entity, string path)
         {
-            if (store.ContainsKey(entity.Id))
+            lock (DataContainersLock)
             {
-                return Task.FromResult(store[entity.Id].ContainsKey(path));
+                if (DataContainers.TryGetValue(entity.Id, out var container))
+                {
+                    return Task.FromResult(container.ContainsKey(path));
+                }
             }
-            else
-            {
-                return Task.FromResult(false);
-            }
+
+            logger.LogWarning($"Entity({entity.Id}) has no file named {path}");
+            return Task.FromResult(false);
         }
 
         public Task<Stream> GetWritableStreamAsync(T entity, string path)
@@ -120,12 +163,24 @@ namespace Amphora.Api.Stores.InMemory
 
         public Task<bool> DeleteAsync(T entity, string path)
         {
-            if (this.store.TryGetValue(entity.Id, out var x))
+            lock (DataContainersLock)
             {
-                if (x.ContainsKey(path))
+                if (DataContainers.TryGetValue(entity.Id, out var container))
                 {
-                    x.Remove(path);
-                    return Task.FromResult(true);
+                    if (container.ContainsKey(path))
+                    {
+                        if (container.TryRemove(path, out var value))
+                        {
+                            logger.LogInformation($"Removed {value?.Length} bytes from container({entity.Id})");
+                        }
+                        else
+                        {
+                            logger.LogWarning($"Error when removing data from container({entity.Id})");
+                            return Task.FromResult(false);
+                        }
+
+                        return Task.FromResult(true);
+                    }
                 }
             }
 

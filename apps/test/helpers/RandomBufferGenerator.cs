@@ -24,7 +24,7 @@ namespace Amphora.Tests.Helpers
             Buffer.BlockCopy(_seedBuffer, randomWindow, buffer, 0, size - randomWindow);
             Buffer.BlockCopy(_seedBuffer, 0, buffer, size - randomWindow, randomWindow);
 
-            return buffer;
+            return buffer.ToArray(); // return a copy
         }
 
         public string RandomString(int length)
