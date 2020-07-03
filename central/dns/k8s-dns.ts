@@ -67,10 +67,28 @@ export class K8sDns extends pulumi.ComponentResource {
         cluster: IKubernetesCluster;
         index: number;
     }) {
+
+        // don't set Develop or Master DNS here.
+        // set it in update-main-dns-sh script.
         const appARecord = new azure.dns.ARecord(
             `${env}-${this.name}-${index}-AppARec`,
             {
                 name: pulumi.interpolate`${env}.${cluster.location}.app`,
+                records: [cluster.ingressIp],
+                resourceGroupName: rg.name,
+                tags,
+                ttl: 30,
+                zoneName: zone.name,
+            },
+            {
+                parent: this,
+            }
+        );
+
+        const apiARecord = new azure.dns.ARecord(
+            `${env}-${this.name}-${index}-ApiARec`,
+            {
+                name: pulumi.interpolate`${env}.${cluster.location}.api`,
                 records: [cluster.ingressIp],
                 resourceGroupName: rg.name,
                 tags,
