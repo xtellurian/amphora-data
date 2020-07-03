@@ -8,5 +8,6 @@ namespace Amphora.Common.Services.Timing
         public DateTimeOffset Now => DateTime.Now;
 
         public DateTimeOffset UtcNow => DateTime.UtcNow;
+        public DateTimeOffset MinValue => DateTime.MinValue;
     }
 }

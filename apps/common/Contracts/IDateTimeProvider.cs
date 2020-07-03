@@ -6,5 +6,6 @@ namespace Amphora.Common.Contracts
     {
         DateTimeOffset Now { get; }
         DateTimeOffset UtcNow { get; }
+        DateTimeOffset MinValue { get; }
     }
 }
