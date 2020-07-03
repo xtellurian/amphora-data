@@ -209,7 +209,6 @@ namespace Amphora.Tests.Integration.Amphorae
         [Theory]
         [InlineData(10)]
         [InlineData(100)]
-        [InlineData(500)]
         public async Task FileUpload_LoadTest(int numberFiles)
         {
             // Arrange
