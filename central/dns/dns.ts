@@ -7,6 +7,8 @@ import { sendGridDns } from "./sendgrid";
 
 const config = new pulumi.Config();
 
+const ttl = 3600;
+
 // pass through the frontend fqdns
 export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironmentMultiCluster): IFrontendHosts {
 
@@ -61,7 +63,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             record: "amphoradata.github.io",
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -75,7 +77,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             record: "sipdir.online.lync.com",
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -86,7 +88,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             record: "webdir.online.lync.com",
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -102,7 +104,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             ],
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -120,7 +122,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             ],
             resourceGroupName: rg.name,
             tags,
-            ttl: 3600,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -132,7 +134,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             record: "autodiscover.outlook.com",
             resourceGroupName: rg.name,
             tags,
-            ttl: 3600,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,
@@ -151,7 +153,7 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
             ],
             resourceGroupName: rg.name,
             tags,
-            ttl: 3600,
+            ttl,
             zoneName: dnsZone.name,
         },
         opts,

@@ -7,6 +7,7 @@ const config = new pulumi.Config();
 
 export interface IBackendPoolNames {
     app: string;
+    api: string;
     identity: string;
 }
 
@@ -41,11 +42,11 @@ export function getBackendPools({
 
     // APP SERVICE BACKENDS
     // add app service backends
-    const prodBackends: Array<pulumi.Input<
+    const prodApplicationBackends: Array<pulumi.Input<
         azure.types.input.frontdoor.FrontdoorBackendPoolBackend
     >> = [];
     for (let i = 0; i < prodBackendCount; i++) {
-        prodBackends.push({
+        prodApplicationBackends.push({
             address: prodHostnames.apply((h) => h[i]),
             hostHeader: frontendHosts.prod.app.globalHost,
             httpPort: 80,
@@ -54,27 +55,48 @@ export function getBackendPools({
     }
 
     // add k8s primary + secondary backend from aks
-    prodBackends.push({
-        address: `prod.${locations.syd}.app.${domain}`,
-        hostHeader: `prod.${locations.syd}.app.${domain}`,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-    prodBackends.push({
+    // sydney cluster removed for cost reasons
+    // prodBackends.push({
+    //     address: `prod.${locations.syd}.app.${domain}`,
+    //     hostHeader: `prod.${locations.syd}.app.${domain}`,
+    //     httpPort: 80,
+    //     httpsPort: 443,
+    // });
+    prodApplicationBackends.push({
         address: `prod.${locations.mel}.app.${domain}`,
         hostHeader: `prod.${locations.mel}.app.${domain}`,
         httpPort: 80,
         httpsPort: 443,
     });
 
-    const prodBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: prodBackends,
+    const prodApplicationBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
+        backends: prodApplicationBackends,
         healthProbeName: "quickstart",
         loadBalancingName: "loadBalancingSettings1",
         name: backendEnvironments.prod.app,
     };
 
-    backendPools.push(prodBackendPool);
+    backendPools.push(prodApplicationBackendPool);
+
+    // THE API PROD POOL
+    const prodAPIBackends: Array<pulumi.Input<
+        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
+    >> = [];
+    prodAPIBackends.push({
+        address: `prod.${locations.mel}.api.${domain}`,
+        hostHeader: `prod.${locations.mel}.api.${domain}`,
+        httpPort: 80,
+        httpsPort: 443,
+    });
+
+    const prodAPIBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
+        backends: prodAPIBackends,
+        healthProbeName: "quickstart",
+        loadBalancingName: "loadBalancingSettings1",
+        name: backendEnvironments.prod.api,
+    };
+
+    backendPools.push(prodAPIBackendPool);
 
     // Prod ID pool
     const prodIdPool = createPool(
@@ -92,6 +114,11 @@ export function getBackendPools({
         frontendHosts.develop.app,
         "quickstart"
     );
+    const devApiPool = createPool(
+        `${backendEnvironments.develop.api}`,
+        "develop",
+        frontendHosts.develop.api
+    );
     const devIdPool = createPool(
         `${backendEnvironments.develop.identity}`,
         "develop",
@@ -105,6 +132,11 @@ export function getBackendPools({
         frontendHosts.master.app,
         "quickstart"
     );
+    const masterApiPool = createPool(
+        `${backendEnvironments.master.api}`,
+        "master",
+        frontendHosts.master.api
+    );
     const masterIdPool = createPool(
         `${backendEnvironments.master.identity}`,
         "master",
@@ -114,10 +146,12 @@ export function getBackendPools({
     // add tobackends
     if (config.requireBoolean("deployDevelop")) {
         backendPools.push(devAppPool);
+        backendPools.push(devApiPool);
         backendPools.push(devIdPool);
     }
     if (config.requireBoolean("deployMaster")) {
         backendPools.push(masterAppPool);
+        backendPools.push(masterApiPool);
         backendPools.push(masterIdPool);
     }
 

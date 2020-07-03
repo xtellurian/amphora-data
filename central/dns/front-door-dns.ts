@@ -7,6 +7,8 @@ const opts = {
     protect: false,
 };
 
+const ttl = 3600;
+
 const tags = {
     component: "central-dns",
     project: pulumi.getProject(),
@@ -21,6 +23,7 @@ export interface IUniqueUrl {
 
 export interface IGlobalUrl {
     app: IUniqueUrl;
+    api: IUniqueUrl;
     identity: IUniqueUrl;
 }
 
@@ -30,57 +33,63 @@ export interface IFrontendHosts {
     prod: IGlobalUrl;
 }
 
-export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IFrontendHosts {
-
-    // backwards compat
-    const betaCName = new azure.dns.CNameRecord("betaCName",
-        {
-            name: "beta",
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl: 30,
-            zoneName: zone.name,
-        },
-        opts,
-    );
+export function frontDoorDns(
+    rg: azure.core.ResourceGroup,
+    zone: azure.dns.Zone
+): IFrontendHosts {
 
     // PROD
-    const appCName = new azure.dns.CNameRecord("appCName",
+    const appCName = new azure.dns.CNameRecord(
+        "appCName",
         {
             name: "app",
             record,
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: zone.name,
         },
-        opts,
+        opts
     );
 
-    const identityCName = new azure.dns.CNameRecord("identityCName",
+    const apiCName = new azure.dns.CNameRecord(
+        "apiCName",
+        {
+            name: "api",
+            record,
+            resourceGroupName: rg.name,
+            tags,
+            ttl,
+            zoneName: zone.name,
+        },
+        opts
+    );
+
+    const identityCName = new azure.dns.CNameRecord(
+        "identityCName",
         {
             name: "identity",
             record,
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: zone.name,
         },
-        opts,
+        opts
     );
 
-    const docsCName = new azure.dns.CNameRecord("docsCName",
-    {
-        name: "docs",
-        record,
-        resourceGroupName: rg.name,
-        tags,
-        ttl: 30,
-        zoneName: zone.name,
-    },
-    opts,
-);
+    const docsCName = new azure.dns.CNameRecord(
+        "docsCName",
+        {
+            name: "docs",
+            record,
+            resourceGroupName: rg.name,
+            tags,
+            ttl,
+            zoneName: zone.name,
+        },
+        opts
+    );
 
     const develop = addForEnvironment("develop", rg, zone);
     const master = addForEnvironment("master", rg, zone);
@@ -89,6 +98,11 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
         develop,
         master,
         prod: {
+            api: {
+                appName: "api",
+                frontendName: "apiDomain",
+                globalHost: apiCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
+            },
             app: {
                 appName: "app",
                 frontendName: "appDomain",
@@ -103,32 +117,56 @@ export function frontDoorDns(rg: azure.core.ResourceGroup, zone: azure.dns.Zone)
     };
 }
 
-function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azure.dns.Zone): IGlobalUrl {
-    const appCName = new azure.dns.CNameRecord(`${env}-app-CN`,
+function addForEnvironment(
+    env: string,
+    rg: azure.core.ResourceGroup,
+    zone: azure.dns.Zone
+): IGlobalUrl {
+    const appCName = new azure.dns.CNameRecord(
+        `${env}-app-CN`,
         {
             name: `${env}.app`,
             record,
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: zone.name,
         },
-        opts,
+        opts
     );
 
-    const identityCName = new azure.dns.CNameRecord(`${env}-id-CN`,
+    const apiCName = new azure.dns.CNameRecord(
+        `${env}-api-CN`,
+        {
+            name: `${env}.api`,
+            record,
+            resourceGroupName: rg.name,
+            tags,
+            ttl,
+            zoneName: zone.name,
+        },
+        opts
+    );
+
+    const identityCName = new azure.dns.CNameRecord(
+        `${env}-id-CN`,
         {
             name: `${env}.identity`,
             record,
             resourceGroupName: rg.name,
             tags,
-            ttl: 30,
+            ttl,
             zoneName: zone.name,
         },
-        opts,
+        opts
     );
 
     return {
+        api: {
+            appName: "api",
+            frontendName: `${env}apifront`,
+            globalHost: apiCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
+        },
         app: {
             appName: "app",
             frontendName: `${env}appfront`,
@@ -137,7 +175,7 @@ function addForEnvironment(env: string, rg: azure.core.ResourceGroup, zone: azur
         identity: {
             appName: "identity",
             frontendName: `${env}idfront`,
-            globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)),  // remove a trailing period
+            globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
         },
     };
 }

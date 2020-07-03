@@ -8,14 +8,17 @@ import { getRoutingRules } from "./routingRules";
 
 const backendEnvironments: IBackendEnvironments = {
     develop: {
+        api: "devApiBackend",
         app: "devAppBackend",
         identity: "devIdBackend",
     },
     master: {
+        api: "masterApiBackend",
         app: "masterAppBackend",
         identity: "masterIdBackend",
     },
     prod: {
+        api: "prodApiBackend",
         app: "prodBackend",
         identity: "identityBackend",
     },
