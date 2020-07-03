@@ -43,7 +43,7 @@ export class Application extends pulumi.ComponentResource
   public tsi: Tsi;
   public imageName: pulumi.Output<string>;
   public AzureMaps: AzureMaps;
-  public appConfiguration: azure.appconfiguration.ConfigurationStore;
+  private appConfiguration: azure.appconfiguration.ConfigurationStore;
 
   constructor(
     params: IComponentParams,
@@ -82,7 +82,8 @@ export class Application extends pulumi.ComponentResource
       });
 
     this.createAzureMaps(rg);
-    this.createConfigStore(rg);
+    // disable creating the config store for now
+    // this.createConfigStore(rg);
     this.createAks(rg, this.acr);
     this.createTsi();
 

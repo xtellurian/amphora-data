@@ -25,7 +25,9 @@ namespace Amphora.Api
                     config = KeyVaultConfigProvider.Configure(config, settings);
                     // then we use the Azure App Config Connection String in the KeyVault to connect
                     settings = config.Build(); // build again for appsettings
-                    config = AzureAppConfigurationConfigProvider.Configure(config, settings);
+
+                    // disable Azure App Config. I'm not using it and its fucking my tests, due to rate limiting
+                    // config = AzureAppConfigurationConfigProvider.Configure(config, settings);
 
                     config.AddInMemoryCollection(new Dictionary<string, string>
                         {
