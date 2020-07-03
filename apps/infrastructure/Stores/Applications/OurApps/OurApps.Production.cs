@@ -9,7 +9,9 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
     public static class OurAppsProduction
     {
         private static string locationId = "6b9d70ee-d499-4d77-b5e9-b352de5e2df67";
-        private const string AppHost = "app.amphoradata.com";
+        private const string RootDomain = "amphoradata.com";
+        private static string AppHost => $"app.{RootDomain}";
+        private static string ApiHost => $"api.{RootDomain}";
         public static List<ApplicationModel> Get(EnvironmentInfo envInfo, ExternalServices externalServices)
         {
             return new List<ApplicationModel>
@@ -28,21 +30,21 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                             Id = $"web-{locationId}-stack-loc",
                             Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
-                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices, AppHost)
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"web-{locationId}-stack",
                             Origin = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
-                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices, AppHost)
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"web-{locationId}-prod",
                             Origin = $"{AppHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/signin-oidc" },
-                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices, ApiHost)
                         }
                     }
                 },
@@ -57,79 +59,46 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-stack-loc",
-                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{envInfo.Location}.{ApiHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-stack",
-                            Origin = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString(),
+                            Origin = $"{envInfo.Stack}.{ApiHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
                             PostLogoutRedirects = new List<string> { "/signout-callback-oidc" }
                         },
                         new ApplicationLocationModel()
                         {
                             Id = $"spa-{locationId}-main",
-                            Origin = $"{AppHost}".ToUri().ToStandardString(),
+                            Origin = $"{ApiHost}".ToUri().ToStandardString(),
                             AllowedRedirectPaths = new List<string> { "/#/callback", "/silentRenew.html" },
-                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices)
+                            PostLogoutRedirects = StandardPostLogoutRedirects(envInfo, externalServices, ApiHost)
                         }
                     },
-                    LogoutUrl = StandardLogoutUrl(envInfo, externalServices),
+                    LogoutUrl = StandardLogoutUrl(envInfo, externalServices, ApiHost),
                 }
             };
         }
 
-        private static ICollection<string> StandardRedirectUrls(EnvironmentInfo envInfo,
-                                                                ExternalServices externalServices,
-                                                                params string[] callbackPaths)
+        private static ICollection<string> StandardPostLogoutRedirects(EnvironmentInfo envInfo, ExternalServices externalServices, string host)
         {
-            if (callbackPaths == null)
-            {
-                throw new System.ArgumentNullException($"{nameof(callbackPaths)} must not be null.");
-            }
-
             var urls = new List<string>();
-            if (string.IsNullOrEmpty(envInfo.Location))
-            {
-                foreach (var p in callbackPaths)
-                {
-                    urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + p);
-                }
-            }
-            else
-            {
-                urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString() + "/signin-oidc");
-            }
 
-            urls.Add(AppHost.ToUri().ToStandardString() + "/signin-oidc");
+            urls.Add($"{envInfo.Stack}.{envInfo.Location}.{host}".ToUri().ToStandardString() + "/signout-callback-oidc");
+            urls.Add(host.ToUri().ToStandardString() + "/signout-callback-oidc");
 
             if (!string.IsNullOrEmpty(envInfo.Stack))
             {
-                // add something like develop.app.amphoradata.com
-                urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signin-oidc");
+                urls.Add($"{envInfo.Stack}.{host}".ToUri().ToStandardString() + "/signout-callback-oidc");
             }
 
             return urls;
         }
 
-        private static ICollection<string> StandardPostLogoutRedirects(EnvironmentInfo envInfo, ExternalServices externalServices)
-        {
-            var urls = new List<string>();
-
-            urls.Add($"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString() + "/signout-callback-oidc");
-            urls.Add(AppHost.ToUri().ToStandardString() + "/signout-callback-oidc");
-
-            if (!string.IsNullOrEmpty(envInfo.Stack))
-            {
-                urls.Add($"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signout-callback-oidc");
-            }
-
-            return urls;
-        }
-
-        private static string StandardLogoutUrl(EnvironmentInfo envInfo, ExternalServices externalServices)
+        private static string StandardLogoutUrl(EnvironmentInfo envInfo, ExternalServices externalServices, string host)
         {
             string logoutRedirect;
 
@@ -139,15 +108,15 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
             }
             else if (envInfo.Stack?.ToLower() == "prod")
             {
-                logoutRedirect = $"{AppHost.ToUri().ToStandardString()}/signout-oidc";
+                logoutRedirect = $"{host.ToUri().ToStandardString()}/signout-oidc";
             }
             else if (!string.IsNullOrEmpty(envInfo.Stack))
             {
-                logoutRedirect = $"{envInfo.Stack}.{AppHost}".ToUri().ToStandardString() + "/signout-oidc";
+                logoutRedirect = $"{envInfo.Stack}.{host}".ToUri().ToStandardString() + "/signout-oidc";
             }
             else
             {
-                var app = $"{envInfo.Stack}.{envInfo.Location}.{AppHost}".ToUri().ToStandardString();
+                var app = $"{envInfo.Stack}.{envInfo.Location}.{host}".ToUri().ToStandardString();
                 logoutRedirect = $"{app}/signout-oidc";
             }
 
