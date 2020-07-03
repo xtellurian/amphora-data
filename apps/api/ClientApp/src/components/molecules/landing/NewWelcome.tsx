@@ -12,7 +12,7 @@ export const NewWelcome: React.FunctionComponent<NewWelcomeProps> = (props) => {
             <h1>Howdy!</h1>
             <p>
                 We're working on this new user interface. To switch back to the
-                old experience, <a href="/challenge">click here</a>
+                old experience, <a href="https://app.amphoradata.com/challenge">click here</a>
             </p>
 
             <img
