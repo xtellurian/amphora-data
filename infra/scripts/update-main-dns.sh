@@ -39,15 +39,25 @@ fi
 GROUP='amphora-central'
 ZONE='amphoradata.com'
 APP_NAME="$STACK.$LOCATION.app"
+API_NAME="$STACK.$LOCATION.api"
 IDENTITY_NAME="$STACK.$LOCATION.identity"
+
+function renewDns {
+    az network dns record-set a delete --yes -g $1 -z $2 -n $3 #-n develop.australiasoutheast.app
+    az network dns record-set a add-record -g $1 -z $2 -n $3 -a $4
+} 
 
 if [ "$STACK" = "prod" ]; then
     echo "Not setting DNS for prod. Use Amphora Central Pulumi Stack."
 else
     echo "Setting DNS for stack $STACK."
-    az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $APP_NAME #-n develop.australiasoutheast.app
-    az network dns record-set a add-record -g $GROUP -z $ZONE -n $APP_NAME -a $IP
+    renewDns $GROUP $ZONE $APP_NAME $IP
+    renewDns $GROUP $ZONE $API_NAME $IP
+    renewDns $GROUP $ZONE $IDENTITY_NAME $IP
 
-    az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $IDENTITY_NAME
-    az network dns record-set a add-record -g $GROUP -z $ZONE -n $IDENTITY_NAME -a $IP
+    # az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $APP_NAME #-n develop.australiasoutheast.app
+    # az network dns record-set a add-record -g $GROUP -z $ZONE -n $APP_NAME -a $IP
+
+    # az network dns record-set a delete --yes -g $GROUP -z $ZONE -n $IDENTITY_NAME
+    # az network dns record-set a add-record -g $GROUP -z $ZONE -n $IDENTITY_NAME -a $IP
 fi
