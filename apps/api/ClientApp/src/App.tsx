@@ -4,6 +4,8 @@ import Layout from './components/Layout';
 import Routes from './Routes'
 import './components/core/fontawesome'; // Load FontAwesome library
 
+import withSplashScreen from './components/splash/withSplashScreen'
+
 // Load all global css
 import './custom.css';
 import './components/core/core.css';
@@ -20,5 +22,7 @@ class App extends React.PureComponent {
     }
 }
 
-export default connect()(App);
+const AppWithSplash = withSplashScreen(App)
+
+export default connect()(AppWithSplash);
 
