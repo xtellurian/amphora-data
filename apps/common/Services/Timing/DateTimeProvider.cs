@@ -5,9 +5,8 @@ namespace Amphora.Common.Services.Timing
 {
     public class DateTimeProvider : IDateTimeProvider
     {
-        public DateTimeOffset Now => DateTime.Now;
-
-        public DateTimeOffset UtcNow => DateTime.UtcNow;
-        public DateTimeOffset MinValue => DateTime.MinValue;
+        public DateTimeOffset Now => DateTimeOffset.Now;
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
+        public DateTimeOffset MinValue => DateTimeOffset.MinValue;
     }
 }
