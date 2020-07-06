@@ -1,43 +1,38 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { createUserManager } from 'redux-oidc';
-import { UserManagerSettings } from 'oidc-client';
-
+import { createUserManager } from "redux-oidc";
+import { UserManagerSettings } from "oidc-client";
 
 const settings = {
-  authority: 'http://localhost:6500',
-  redirect_uri: 'https://localhost:5001/#/callback',
-  silent_redirect_uri: 'http://localhost:5001/silentRenew.html',
-  client_id: 'spa',
-  response_type: 'code',
-  scope: "openid profile web_api offline_access",
-  automaticSilentRenew: true,
-  filterProtocolClaims: true,
-  loadUserInfo: true,
-  monitorSession: true,
+    authority: "http://localhost:6500",
+    redirect_uri: "https://localhost:5001/#/callback",
+    silent_redirect_uri: "http://localhost:5001/silentRenew.html",
+    client_id: "spa",
+    response_type: "code",
+    scope: "openid profile web_api offline_access",
+    automaticSilentRenew: true,
+    filterProtocolClaims: true,
+    loadUserInfo: true,
+    monitorSession: true,
 };
 
-
 function getSettings(): UserManagerSettings {
+    const host = window.location.host;
+    const protocol = window.location.protocol; // protocol ends in :
+    settings.redirect_uri = `${protocol}//${host}/#/callback`;
+    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`;
 
-  const host = window.location.host;
-  const protocol = window.location.protocol; // protocol ends in :
-  if (window.location.host.includes("develop")) {
-    settings.authority = "https://develop.identity.amphoradata.com";
-    settings.redirect_uri = `${protocol}//${host}/#/callback`
-    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`
-  } else if (window.location.host.includes("master")) {
-    settings.authority = "https://master.identity.amphoradata.com";
-    settings.redirect_uri = `${protocol}//${host}/#/callback`
-    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`
-  } else if (!window.location.host.includes("localhost")) {
-    // do prod
-    settings.authority = "https://identity.amphoradata.com";
-    settings.redirect_uri = "https://app.amphoradata.com/#/callback"
-    settings.silent_redirect_uri = "https://app.amphoradata.com/silentRenew.html"
-  }
+    // choose the authority based on the environment (develop, master, prod)
+    if (window.location.host.includes("develop")) {
+        settings.authority = "https://develop.identity.amphoradata.com";
+    } else if (window.location.host.includes("master")) {
+        settings.authority = "https://master.identity.amphoradata.com";
+    } else if (!window.location.host.includes("localhost")) {
+        // do prod
+        settings.authority = "https://identity.amphoradata.com";
+    }
 
-  console.log(settings)
-  return settings;
+    console.log(settings);
+    return settings;
 }
 
 const userManager = createUserManager(getSettings());
