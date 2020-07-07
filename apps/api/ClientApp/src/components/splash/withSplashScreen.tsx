@@ -4,12 +4,16 @@ import "./splash-screen.css";
 import { randomQuote } from "./quotes";
 import { QuoteBlock } from "./quote";
 
+import { ParticlesBackgound } from "./particles";
+
 function LoadingMessage(isAuthenticated: boolean) {
     return (
-        <div className="splash-screen">
-            <div className="loading-dot">.</div>
-            <QuoteBlock quote={randomQuote()} />
-        </div>
+        <React.Fragment>
+            <ParticlesBackgound />
+            <div className="splash-screen">
+                <QuoteBlock quote={randomQuote()} />
+            </div>
+        </React.Fragment>
     );
 }
 
@@ -22,7 +26,7 @@ const withSplashScreen = (WrappedComponent: any) => {
         React.useEffect(() => {
             setTimeout(() => {
                 setIsloading(false);
-            }, 2000);
+            }, 3000);
         }, []);
 
         if (isLoading) {

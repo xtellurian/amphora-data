@@ -15,7 +15,6 @@ h1 {
     margin: 0;
     padding: 0;
 
-    background: none;
     color: gray;
     font-family: Georgia, serif;
     font-size: 1.5em;
@@ -50,6 +49,7 @@ h1 {
 }
 
 .testimonial-quote img {
+    margin-left: 1rem;
     border: 3px solid #9CC1D3;
     border-radius: 50%;
     display: block;
@@ -77,11 +77,14 @@ h1 {
 }
 
 .testimonial-quote {
-    position: relative; 
+    top: 15rem;
+    position: absolute; 
+    z-index: -1;
 }
 
 .testimonial-quote .quote-container {
     padding-left: 160px; 
+    padding-right: 80px; 
 }
   
 .testimonial-quote.right .quote-container {

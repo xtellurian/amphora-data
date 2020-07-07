@@ -21,11 +21,6 @@ const quotes: Quote[] = [
         by: "Ronald Coase",
     },
     {
-        text:
-            "With data collection, ‘the sooner the better’ is always the best answer.",
-        by: "Marissa Mayer",
-    },
-    {
         text: "Big data isn’t about bits, it’s about talent.",
         by: "Douglas Merrill",
     },
