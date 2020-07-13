@@ -1,3 +1,3 @@
-import { isLocalhost } from './isLocalhost';
+import { isLocalhost, getHostUrl } from './host';
 
-export { isLocalhost }
+export { isLocalhost, getHostUrl }

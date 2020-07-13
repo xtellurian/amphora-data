@@ -1,30 +1,23 @@
 import * as React from "react";
-import { connect } from "react-redux";
-import { AmphoraDetailProps, mapStateToProps } from "./props";
+import { OneAmphora } from "./props";
 import ConnectedMapComponent from "../../geo/ConnectedMapComponent";
-import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Header } from "./Header";
 
-class Location extends React.PureComponent<AmphoraDetailProps> {
-    public render() {
-        const id = this.props.match.params.id;
-        const amphora = this.props.amphora.metadata.store[id];
-        if (amphora) {
-            return (
-                <React.Fragment>
-                    <Header title="Location">
-                        <span className="bg-light">
-                            {amphora.lat},{amphora.lon}
-                        </span>
-                    </Header>
-
-                    <ConnectedMapComponent amphora={[amphora]} />
-                </React.Fragment>
-            );
-        } else {
-            return <LoadingState />;
+export const Location: React.FunctionComponent<OneAmphora> = (props) => {
+    const renderNoLocationNotification = (): React.ReactNode | undefined => {
+        if (props.amphora && !props.amphora.lat && !props.amphora.lon) {
+            return <div className="alert alert-warning w-75">This Amphora has no defined location.</div>
         }
-    }
-}
-
-export default connect(mapStateToProps, null)(Location);
+    };
+    return (
+        <React.Fragment>
+            <Header title="Location">
+                <span className="bg-light">
+                    {props.amphora.lat},{props.amphora.lon}
+                </span>
+            </Header>
+            {renderNoLocationNotification()}
+            <ConnectedMapComponent amphora={[props.amphora]} />
+        </React.Fragment>
+    );
+};

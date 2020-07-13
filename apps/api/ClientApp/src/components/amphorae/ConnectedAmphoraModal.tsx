@@ -4,17 +4,17 @@ import { RouteComponentProps, Route } from "react-router";
 import { AmphoraOperationsContext } from "react-amphora";
 import { Description } from "./detail/Description";
 import { FilesPage } from "./detail/Files";
-import Signals from "./detail/signals/Signals";
-import AddSignal from "./detail/signals/AddSignal";
-import Integrate from "./detail/Integrate";
+import { Signals } from "./detail/signals/Signals";
+import AddSignal from "./detail/signals/AddSignalComponent";
+import { Integrate } from "./detail/Integrate";
 import { TermsOfUsePage } from "./detail/TermsOfUse";
-import Location from "./detail/Location";
+import { Location } from "./detail/Location";
 import { QualityPage } from "./detail/Quality";
 import { AmphoraDetailMenu } from "./detail/AmphoraDetailMenu";
 import { MagicLabel } from "../molecules/magic-inputs/MagicLabel";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { EmptyState } from "../molecules/empty/EmptyState";
-import { PurchaseButton } from "./PurchaseButton";
+import { PurchaseButtonComponent } from "./PurchaseButton";
 import "./amphoraModal.css";
 
 type ConnectedAmphoraModalProps = RouteComponentProps<{ id: string }>;
@@ -140,14 +140,14 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/signals`}
-                            component={Signals}
+                            render={(props) => <Signals {...props} amphora={amphora} />}
                         />
                         <Route
                             exact
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/signals/add`}
-                            component={AddSignal}
+                            render={(props) => <AddSignal {...props} amphora={amphora} />}
                         />
 
                         <Route
@@ -155,7 +155,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/integrate`}
-                            component={Integrate}
+                            render={(props) => <Integrate {...props} amphora={amphora} name={'<user name>'}/>}
                         />
                         <Route
                             exact
@@ -175,7 +175,9 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/location`}
-                            component={Location}
+                            render={(props) => (
+                                <Location {...props} amphora={amphora} />
+                            )}
                         />
                         <Route
                             exact
@@ -187,9 +189,8 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             )}
                         />
                         <div className="purchase-button-row">
-                            <PurchaseButton
-                                price={amphora.price || 0}
-                                id={amphora.id || ""}
+                            <PurchaseButtonComponent
+                                amphora={amphora}
                             />
                         </div>
                     </div>

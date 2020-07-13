@@ -1,91 +1,61 @@
 import * as React from "react";
 import { PrimaryButton } from "../molecules/buttons/PrimaryButton";
+import { OneAmphora } from "./detail/props";
+import { useAmphoraClients } from "react-amphora";
 import { LoadingState } from "../molecules/empty/LoadingState";
-import { amphoraApiClient } from "../../clients/amphoraApiClient";
-import { permissionClient } from "../../clients/amphoraApiClient";
-import { AxiosResponse } from "axios";
-import { PermissionsResponse } from "amphoradata";
 
 interface PurchaseButtonProps {
     id: string;
     price: number;
 }
 
-interface PurchaseButtonState {
-    canPurchase?: boolean;
-    isLoading?: boolean;
-    isError?: boolean;
-}
+export const PurchaseButtonComponent: React.FunctionComponent<OneAmphora> = (
+    props
+) => {
+    const [loading, setLoading] = React.useState(false);
+    const [canPurchase, setCanPurchase] = React.useState(
+        props.maxPermissionLevel && props.maxPermissionLevel >= 32
+    );
+    const clients = useAmphoraClients();
+    const amphoraId = props.amphora.id;
 
-export class PurchaseButton extends React.PureComponent<
-    PurchaseButtonProps,
-    PurchaseButtonState
-> {
-    constructor(props: PurchaseButtonProps) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            isError: false,
-        };
+    if (!amphoraId) {
+        return <div>Loading...</div>;
     }
 
-    componentDidMount() {
-        this.setState({ isLoading: true });
-        permissionClient
-            .permissionGetPermissions({
-                accessQueries: [{ accessLevel: 32, amphoraId: this.props.id }],
-            })
-            .then((r) => this.handlePermission(r))
-            .catch((e) => this.handleError(e));
-    }
-
-    handleError(e: any): any {
-        this.setState({ isError: true });
-    }
-    handlePermission(r: AxiosResponse<PermissionsResponse>): any {
-        if (r.data.accessResponses) {
-            const p = r.data.accessResponses.find(
-                (_) => _.amphoraId === this.props.id
-            );
-            this.setState({
-                isLoading: false,
-                isError: false,
-                canPurchase: !(p && p.isAuthorized),
-            });
-        } else {
-            this.setState({ isLoading: false, isError: true });
-        }
-    }
-
-    private purchase(
+    const purchase = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined
-    ): void {
-        this.setState({ isLoading: true });
-        amphoraApiClient
-            .purchasesPurchase(this.props.id)
-            .then((p) =>
-                this.setState({ isLoading: false, canPurchase: false })
-            )
-            .catch((e) => this.setState({ isLoading: false, isError: true }));
-        setTimeout(() => this.setState({ isLoading: false }), 1000);
-    }
+    ): void => {
+        setLoading(true);
+        clients.amphoraeApi
+            .purchasesPurchase(amphoraId)
+            .then((p) => {
+                setLoading(false);
+                setCanPurchase(false);
+            })
+            .catch((e) => setLoading(false));
+        setTimeout(() => setLoading(false), 1000);
+    };
 
-    render() {
-        if (this.state.isLoading) {
-            return <LoadingState />;
-        } else if (this.state.canPurchase) {
-            return (
-                <PrimaryButton onClick={(e) => this.purchase(e)}>
-                    Get Data for $ {this.props.price}
-                </PrimaryButton>
-            );
-        } else {
-            // can already read, no need to purchase
-            return (
-                <React.Fragment>
-                    <small>You have access to this data.</small>
-                </React.Fragment>
-            );
-        }
+    if (loading) {
+        return (
+            <PrimaryButton>
+                <LoadingState />
+            </PrimaryButton>
+        );
     }
-}
+    else if (canPurchase) {
+        return (
+            <PrimaryButton onClick={(e) => purchase(e)}>
+                Get Data for $ {props.amphora.price}
+            </PrimaryButton>
+        );
+    } else {
+        // can already read, no need to purchase
+        return (
+            <React.Fragment>
+                <small>You have access to this data.</small>
+            </React.Fragment>
+        );
+    }
+};

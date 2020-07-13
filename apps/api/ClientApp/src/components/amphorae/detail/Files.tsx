@@ -4,7 +4,6 @@ import { OneAmphora } from "./props";
 import { EmptyState } from "../../molecules/empty/EmptyState";
 import * as axios from "axios";
 import { PrimaryButton } from "../../molecules/buttons";
-import * as toast from "../../molecules/toasts";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Header } from "./Header";
 import { UploadResponse, DetailedAmphora } from "amphoradata";
@@ -81,7 +80,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
 
             return () => source.cancel("The files component unmounted");
         }
-    }, [props.amphora, clients, state.isLoading]);
+    }, [props.amphora, clients, state.isLoading, state.fileNames, source]);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);

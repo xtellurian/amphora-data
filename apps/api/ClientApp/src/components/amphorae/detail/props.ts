@@ -10,14 +10,6 @@ export type AmphoraDetailProps = {
   permissions: PermissionState;
 } & RouteComponentProps<{ id: string }>;
 
-export function mapStateToProps(state: ApplicationState) {
-  return {
-    amphora: state.amphora,
-    terms: state.terms,
-    permissions: state.permissions,
-  };
-}
-
 export interface OneAmphora {
   amphora: DetailedAmphora;
   terms?: TermsOfUse | null | undefined;
