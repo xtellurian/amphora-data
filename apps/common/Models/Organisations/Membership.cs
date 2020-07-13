@@ -19,6 +19,7 @@ namespace Amphora.Common.Models.Organisations
         public Roles Role { get; set; }
         // Navigation
         public string UserId { get; set; }
+        public string OrganisationModelId { get; set; } = null!;
         public virtual ApplicationUserDataModel User { get; set; } = null!;
     }
 }

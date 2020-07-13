@@ -17,7 +17,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration.AmphoraContext
 
             builder.OwnsMany(b => b.Memberships, membership =>
             {
-                membership.HasKey(nameof(Membership.UserId));
+                membership.HasKey(m => new { m.UserId, m.OrganisationModelId });
                 membership.HasOne(b => b.User).WithMany().HasForeignKey(u => u.UserId);
             });
             builder.HasOne(_ => _.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById);

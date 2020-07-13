@@ -20,6 +20,7 @@
     <PackageReference Include="automapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="CsvHelper" Version="13.0.0" />
+    <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.2" />
@@ -82,6 +83,7 @@
     <ProjectReference Include="..\common\common.csproj" />
     <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
     <ProjectReference Include="..\sharedui\sharedui.csproj" />
+    <ProjectReference Include="..\workflow\workflow.csproj" />
   </ItemGroup>
 
 </Project>

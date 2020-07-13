@@ -11,7 +11,7 @@ namespace Amphora.Api.Contracts
     {
         IEntityStore<InvitationModel> Store { get; }
 
-        Task<EntityOperationResult<InvitationModel>> AcceptInvitationAsync(ClaimsPrincipal principal, Common.Models.Platform.InvitationModel invitation);
+        Task<EntityOperationResult<InvitationModel>> HandleInvitationAsync(ClaimsPrincipal principal, InvitationModel invitation, InvitationTrigger trigger);
         Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation);
         Task<EntityOperationResult<InvitationModel>> GetInvitation(ClaimsPrincipal principal, string orgId);
         Task<InvitationModel> GetInvitationByEmailAsync(string email);

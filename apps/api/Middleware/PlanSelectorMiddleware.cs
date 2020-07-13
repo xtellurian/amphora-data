@@ -23,7 +23,7 @@ namespace Amphora.Api.Middleware
         }
 
         private const string CreateOrgPath = "/Organisations/Create";
-        private const string JoinOrgPath = "/Organisations/Account/Join";
+        private const string JoinOrgPath = "/Organisations/Join";
         private const string SelectPlanPath = "/Organisations/Account/SelectPlan";
 
         private static readonly string[] AcceptablePaths =
@@ -65,7 +65,10 @@ namespace Amphora.Api.Middleware
                         var invitation = inviteRes.Entity.FirstOrDefault();
                         // now navigate to accept that invite.
                         logger.LogInformation("Found invitation! Redirecting...");
-                        httpContext.Response.Redirect($"{JoinOrgPath}?id={invitation.TargetOrganisationId}");
+                        if (httpContext.Request.Path != JoinOrgPath)
+                        {
+                            httpContext.Response.Redirect($"{JoinOrgPath}?id={invitation.TargetOrganisationId}");
+                        }
                     }
                     else
                     {

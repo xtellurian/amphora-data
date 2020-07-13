@@ -21,6 +21,7 @@ using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Services.Azure;
+using Amphora.Workflow;
 using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
@@ -170,6 +171,9 @@ namespace Amphora.Api
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            // add workflows
+            services.RegisterWorkflows();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

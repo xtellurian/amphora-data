@@ -9,6 +9,7 @@ using Amphora.Common.Models;
 using Amphora.Common.Models.Emails;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Platform;
+using Amphora.Workflow.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -21,6 +22,7 @@ namespace Amphora.Api.Services.Platform
         private readonly IPlanLimitService planLimitService;
         private readonly IUserDataService userDataService;
         private readonly IEmailSender emailSender;
+        private readonly IWorkflows workflows;
         private readonly bool isDevelopment;
 
         public InvitationService(IEntityStore<InvitationModel> invitationStore,
@@ -28,6 +30,7 @@ namespace Amphora.Api.Services.Platform
                                  IPlanLimitService planLimitService,
                                  IUserDataService userDataService,
                                  IEmailSender emailSender,
+                                 IWorkflows workflows,
                                  IWebHostEnvironment env)
         {
             this.invitationStore = invitationStore;
@@ -35,6 +38,7 @@ namespace Amphora.Api.Services.Platform
             this.planLimitService = planLimitService;
             this.userDataService = userDataService;
             this.emailSender = emailSender;
+            this.workflows = workflows;
             this.isDevelopment = env.IsDevelopment();
         }
 
@@ -146,7 +150,9 @@ namespace Amphora.Api.Services.Platform
             return invite;
         }
 
-        public async Task<EntityOperationResult<InvitationModel>> AcceptInvitationAsync(ClaimsPrincipal principal, InvitationModel invitation)
+        public async Task<EntityOperationResult<InvitationModel>> HandleInvitationAsync(ClaimsPrincipal principal,
+                                                                                        InvitationModel invitation,
+                                                                                        InvitationTrigger trigger)
         {
             if (invitation.TargetOrganisationId == null) { throw new System.ArgumentException("TargetOrganisationId cannot be null"); }
 
@@ -161,19 +167,22 @@ namespace Amphora.Api.Services.Platform
 
             if (!string.Equals(email, invitation.TargetEmail)) { throw new System.ArgumentException("Emails do not match"); }
 
-            userData.OrganisationId = invitation.TargetOrganisationId;
-            userData.Organisation.AddOrUpdateMembership(userData, Common.Models.Organisations.Roles.User);
-            var res = await userDataService.UpdateAsync(principal, userData);
-            if (res.Succeeded)
+            if (trigger == InvitationTrigger.Accept)
             {
-                invitation.IsClaimed = true;
-                invitation = await invitationStore.UpdateAsync(invitation);
-                return new EntityOperationResult<InvitationModel>(userData, invitation);
+                // TODO: somehow move this into a workflow too
+                userData.OrganisationId = invitation.TargetOrganisationId;
+                invitation.TargetOrganisation.AddOrUpdateMembership(userData, Common.Models.Organisations.Roles.User);
+                var res = await userDataService.UpdateAsync(principal, userData);
+                if (res.Failed)
+                {
+                    return new EntityOperationResult<InvitationModel>(userData, res.Message);
+                }
             }
-            else
-            {
-                return new EntityOperationResult<InvitationModel>(userData, res.Message);
-            }
+
+            var wf = workflows.InvitationWorkflow(invitation);
+            wf.Transition(trigger);
+            invitation = await invitationStore.UpdateAsync(invitation);
+            return new EntityOperationResult<InvitationModel>(userData, invitation);
         }
     }
 }

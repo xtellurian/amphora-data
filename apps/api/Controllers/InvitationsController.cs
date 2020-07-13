@@ -15,7 +15,7 @@ namespace Amphora.Api.Controllers
     [ApiController]
     [SkipStatusCodePages]
     [OpenApiIgnore]
-    public class InvitationsController : Controller
+    public class InvitationsController : EntityController
     {
         private readonly IInvitationService invitationService;
         private readonly IMapper mapper;
@@ -44,31 +44,51 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Accepts an invitation sent to me.
+        /// Accepts or rejects an invitation sent to the user.
         /// </summary>
         /// <param name="orgId">Organisation to accept invitation for.</param>
-        /// <param name="accept">Invitation to accept.</param>
-        /// <returns> An object with an invitation id. </returns>
+        /// <param name="handle">Invitation information to accept or reject.</param>
+        /// <returns> Invitation information that was submitted. </returns>
         [HttpPost("api/invitations/{orgId}")]
-        [Produces(typeof(AcceptInvitation))]
+        [Produces(typeof(HandleInvitation))]
         [CommonAuthorize]
-        public async Task<IActionResult> AcceptInvitation(string orgId, AcceptInvitation accept)
+        public async Task<IActionResult> AcceptInvitation(string orgId, HandleInvitation handle)
         {
-            var res = await invitationService.GetInvitation(User, accept.TargetOrganisationId);
+            var res = await invitationService.GetInvitation(User, handle.TargetOrganisationId);
             if (res.Succeeded)
             {
-                var acceptResult = await invitationService.AcceptInvitationAsync(User, res.Entity);
-                if (acceptResult.Succeeded)
+                if (handle.AcceptOrReject == true)
                 {
-                    return Ok(accept);
+                    var acceptResult = await invitationService.HandleInvitationAsync(User, res.Entity, InvitationTrigger.Accept);
+                    if (acceptResult.Succeeded)
+                    {
+                        return Ok(handle);
+                    }
+                    else
+                    {
+                        return Handle(acceptResult);
+                    }
                 }
-                else if (acceptResult.WasForbidden) { return StatusCode(403); }
-                else { return BadRequest(acceptResult.Message); }
+                else if (handle.AcceptOrReject == false)
+                {
+                    var rejectResult = await invitationService.HandleInvitationAsync(User, res.Entity, InvitationTrigger.Reject);
+                    if (rejectResult.Succeeded)
+                    {
+                        return Ok(handle);
+                    }
+                    else
+                    {
+                        return Handle(rejectResult);
+                    }
+                }
+                else
+                {
+                    return BadRequest("The server does not know how to handle that request.");
+                }
             }
-            else if (res.WasForbidden) { return StatusCode(403); }
             else
             {
-                return BadRequest(res.Message);
+                return Handle(res);
             }
         }
 

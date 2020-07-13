@@ -157,7 +157,7 @@ namespace Amphora.Tests.Integration
             user.UserName = createUser.UserName;
             user.Email = createUser.Email;
             user.Id = createUser.Id;
-            var acceptDto = new AcceptInvitation { TargetOrganisationId = org.Id };
+            var acceptDto = new HandleInvitation { TargetOrganisationId = org.Id, AcceptOrReject = true };
             var accept = await client.PostAsJsonAsync($"api/invitations/{org.Id}", acceptDto);
             accept.EnsureSuccessStatusCode();
             user.OrganisationId = org.Id;

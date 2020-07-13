@@ -20,8 +20,23 @@
         </div>
 
         <div class="col-md-9 detail">
+            @if(Model.Invitation != null)
+            {
+                <div class="alert alert-primary">
+                    You have an Open Invitation to join @Model.Invitation.TargetOrganisation.Name
+                    <a asp-area="Organisations" asp-page="/Join" asp-route-id="@Model.Invitation.TargetOrganisationId" class="ml-3 btn btn-primary w-25">
+                        View
+                    </a>
+                </div>
+            }
             <h5>Account Details</h5>
             <br/>
+            <p>
+                Account Name: @Model.Organisation.Name
+            </p>
+            <p>
+                Created By: @Model.Organisation.CreatedBy.UserName
+            </p>
             <p>
                 Account Id: @Model.Organisation.Id
             </p>

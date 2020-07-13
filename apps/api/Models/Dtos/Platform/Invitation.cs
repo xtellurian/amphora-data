@@ -9,6 +9,6 @@ namespace Amphora.Api.Models.Dtos.Platform
         [Required]
         public string TargetEmail { get; set; }
         public string TargetOrganisationId { get; set; }
-        public bool? IsClaimed { get; set; }
+        public string State { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,6 +21,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
         }
 
         public InvitationModel Invitation { get; private set; }
+        public IUser UserData { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -28,7 +30,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 var res = await invitationService.GetMyInvitations(User);
                 if (res.Succeeded)
                 {
-                    this.Invitation = res.Entity.FirstOrDefault(_ => !_.IsClaimed.HasValue || !_.IsClaimed.Value); // either null or false
+                    this.Invitation = res.Entity.FirstOrDefault(_ => _.State == InvitationState.Open);
+                    this.UserData = res.User;
                 }
                 else if (res.WasForbidden) { return StatusCode(403); }
                 else
@@ -43,6 +46,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 if (res2.Succeeded)
                 {
                     this.Invitation = res2.Entity;
+                    this.UserData = res2.User;
                 }
                 else if (res2.WasForbidden) { return StatusCode(403); }
                 else { return BadRequest(); }
@@ -61,7 +65,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 return BadRequest();
             }
 
-            var result = await invitationService.AcceptInvitationAsync(User, Invitation);
+            var result = await invitationService.HandleInvitationAsync(User, Invitation, InvitationTrigger.Accept);
             if (result.Succeeded)
             {
                 return RedirectToPage("./Detail", new { id = Invitation.TargetOrganisationId });
@@ -83,8 +87,17 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 return BadRequest();
             }
 
-            await invitationService.Store.DeleteAsync(Invitation);
-            return RedirectToPage("./Index");
+            var result = await invitationService.HandleInvitationAsync(User, Invitation, InvitationTrigger.Reject);
+
+            if (result.Succeeded)
+            {
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return Page();
+            }
         }
     }
 }

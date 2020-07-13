@@ -22,6 +22,6 @@ namespace Amphora.Tests.Mocks
 
         public DateTimeOffset UtcNow => Now.UtcDateTime;
 
-        public DateTimeOffset MinValue => minValue ?? DateTime.MinValue;
+        public DateTimeOffset MinValue => minValue ?? DateTimeOffset.MinValue;
     }
 }

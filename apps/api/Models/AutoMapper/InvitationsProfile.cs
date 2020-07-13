@@ -11,14 +11,14 @@ namespace Amphora.Api.Models.AutoMapper
             CreateMap<Invitation, InvitationModel>()
                 .ForMember(p => p.TargetOrganisation, o => o.Ignore())
                 .ForMember(p => p.TargetDomain, o => o.Ignore())
-                .ForMember(p => p.IsClaimed, o => o.Ignore())
+                .ForMember(p => p.State, o => o.Ignore())
                 .ForMember(p => p.Id, o => o.Ignore())
                 .ForMember(p => p.ttl, o => o.Ignore())
                 .ForMember(p => p.IsDeleted, o => o.Ignore())
                 .ForMember(p => p.LastModified, o => o.Ignore())
                 .ForMember(p => p.CreatedDate, o => o.Ignore());
 
-            CreateMap<InvitationModel, InvitationModel>();
+            CreateMap<InvitationModel, Invitation>();
         }
     }
 }

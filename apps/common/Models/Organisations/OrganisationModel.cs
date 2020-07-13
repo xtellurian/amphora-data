@@ -53,9 +53,16 @@ namespace Amphora.Common.Models.Organisations
         public void AddOrUpdateMembership(ApplicationUserDataModel user, Roles role = Roles.User)
         {
             if (this.Memberships == null) { this.Memberships = new List<Membership>(); }
-            var existing = this.Memberships.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
-
-            this.Memberships.Add(new Membership(user, role));
+            var allMembers = this.Memberships; // so they are tracked.
+            var existing = allMembers.FirstOrDefault(m => string.Equals(m.UserId, user.Id));
+            if (existing == null)
+            {
+                this.Memberships.Add(new Membership(user, role));
+            }
+            else
+            {
+                existing.Role = role;
+            }
         }
 
         public bool IsInOrgansation(IUser user)

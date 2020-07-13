@@ -1,6 +1,6 @@
 @page
 @model Amphora.Api.Areas.Organisations.Pages.JoinModel
-
+@using Humanizer
 @{
     ViewData["Title"] = "Join Organisation";
 }
@@ -11,22 +11,41 @@
         <div class="row">
             <div class="col">
                 <h3>You've been invited to join an Organisation.</h3> 
-                <p>The team at @Model.Invitation.TargetOrganisation.Name are waiting for your response.</p>
+                <p>The team at @Model.Invitation.TargetOrganisation.Name have invited to to collaborate.</p>
                 <hr/>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6">
-                <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="accept">
-                    <div class="form-group">
-                        <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
+                @if(Model.Invitation.State != Amphora.Common.Models.Platform.InvitationState.Open)
+                {
+                    <div class="alert alert-info">
+                        This invitation has been @Model.Invitation.State?.Humanize()
                     </div>
-                </form>
-                <form class="mt-3" method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="reject">
-                    <div class="form-group">
-                        <input type="submit" value="Reject Invitation to @Model.Invitation.TargetOrganisation.Name" class="btn btn-danger btn-block" />
+                }
+                else if(Model.UserData.OrganisationId != null)
+                {
+                    <div class="alert alert-danger">
+                        <p>
+                            Accepting this invitation means losing your current organisation. If this is in error, contact us.
+                        </p>
                     </div>
-                </form>
+                }
+
+                @if(Model.Invitation.State == Amphora.Common.Models.Platform.InvitationState.Open)
+                {
+                    <form method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="accept">
+                        <div class="form-group">
+                            <input type="submit" value="Join @Model.Invitation.TargetOrganisation.Name" class="btn btn-success btn-block" />
+                        </div>
+                    </form>
+                    <form class="mt-3" method="post" asp-route-invitationId="@Model.Invitation.Id" asp-route-handler="reject">
+                        <div class="form-group">
+                            <input type="submit" value="Reject Invitation to @Model.Invitation.TargetOrganisation.Name" class="btn btn-danger btn-block" />
+                        </div>
+                    </form>
+                }
+
             </div>
 
             <div class="col-md-6">
