@@ -32,8 +32,8 @@ namespace Amphora.Tests.Unit.Services
         }
 
         [Theory]
-        [InlineData(Plan.PlanTypes.Free, 1)]
-        [InlineData(Plan.PlanTypes.Team, 25)]
+        [InlineData(Plan.PlanTypes.Free, 2)]
+        [InlineData(Plan.PlanTypes.Team, 10)]
         [InlineData(Plan.PlanTypes.Institution, int.MaxValue)]
         public async Task ForPlans_MaxUsers(Plan.PlanTypes planType, long maxUsers)
         {

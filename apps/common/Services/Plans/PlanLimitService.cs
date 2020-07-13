@@ -46,12 +46,12 @@ namespace Amphora.Common.Services.Plans
 
         private PlanLimits FreePlanLimits()
         {
-            return new PlanLimits(10 * Units.GB, 1);
+            return new PlanLimits(10 * Units.GB, 2);
         }
 
         private PlanLimits TeamPlanLimits(int nUsers)
         {
-            return new PlanLimits(100 * nUsers * Units.GB, 25);
+            return new PlanLimits(100 * nUsers * Units.GB, 10);
         }
 
         private PlanLimits InstitutionPlanLimits(int nUsers)
