@@ -1,4 +1,4 @@
-namespace Amphora.Api.Models.Dtos.Organisations
+namespace Amphora.Api.Models.Dtos.Terms
 {
     public class TermsOfUse : CreateTermsOfUse
     {

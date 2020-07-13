@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Terms;
 using Amphora.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -157,6 +157,38 @@ namespace Amphora.Tests.Integration.Amphorae
             await DestroyAmphoraAsync(adminClient, b.Id);
             await DestroyOrganisationAsync(adminClient, adminOrg);
             await DestroyUserAsync(adminClient, adminUser);
+        }
+
+        [Fact]
+        public async Task CanPaginate_MyAmphora()
+        {
+            var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
+            var total = 10;
+            // create some amphora
+            var allAmphoraCreated = new List<DetailedAmphora>();
+            for (var n = 0; n < total; n++)
+            {
+                var amphora = EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
+                var createRes = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
+                amphora = await AssertHttpSuccess<DetailedAmphora>(createRes);
+                allAmphoraCreated.Add(amphora);
+            }
+
+            var res1 = await persona.Http.GetAsync($"api/amphorae");
+            var list1 = await AssertHttpSuccess<List<DetailedAmphora>>(res1);
+            list1.Should().HaveCountGreaterOrEqualTo(total);
+
+            var res2 = await persona.Http.GetAsync($"api/amphorae?Take=2");
+            var list2 = await AssertHttpSuccess<List<DetailedAmphora>>(res2);
+            list2.Should().HaveCount(2);
+
+            var res3 = await persona.Http.GetAsync($"api/amphorae?Skip=3&Take=2");
+            var list3 = await AssertHttpSuccess<List<DetailedAmphora>>(res3);
+            list3.Should().HaveCount(2);
+            foreach (var a in list3)
+            {
+                list2.Should().NotContain(_ => _.Id == a.Id, "because the lists should be distinct");
+            }
         }
 
         [Fact]

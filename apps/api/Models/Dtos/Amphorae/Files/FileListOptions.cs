@@ -1,7 +1,9 @@
 // these are used for GET requests
+using Amphora.Api.Models.Dtos.Platform;
+
 namespace Amphora.Api.Models.Dtos.Amphorae.Files
 {
-    public class FileListOptions
+    public class FileListOptions : PaginatedResponse
     {
         public const string Alphabetical = nameof(Alphabetical);
         public const string LastModified = nameof(LastModified);
@@ -10,18 +12,6 @@ namespace Amphora.Api.Models.Dtos.Amphorae.Files
         {
             OrderBy = Alphabetical
         };
-
-        /// <summary>
-        /// Gets or sets how many files to return.
-        /// Defaults to 64.
-        /// </summary>
-        public int Take { get; set; } = 64;
-
-        /// <summary>
-        /// Gets or sets how many files to skip before returning.
-        /// Defaults to 0.
-        /// </summary>
-        public int Skip { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the the orderBy parameter.

@@ -68,12 +68,14 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="scope">'self' or 'organisation'. Defaults to self.</param>
         /// <param name="accessType">'created' or 'purchased'. Defaults to created.</param>
+        /// <param name="options">Options to control the response.</param>
         /// <returns>A list of Amphora.</returns>
         [Produces(typeof(IEnumerable<DetailedAmphora>))]
         [HttpGet]
         [CommonAuthorize]
-        public async Task<IActionResult> List(string scope = "self", string accessType = "created")
+        public async Task<IActionResult> List(string scope = "self", string accessType = "created", [FromQuery] ListAmphoraOptions options = null)
         {
+            options ??= new ListAmphoraOptions(); // set defaults if not provided.
             if (!string.Equals(scope, "self") && !string.Equals(scope, "organisation"))
             {
                 return BadRequest($"Parameter 'scope' must be 'self' or 'organisation', got {scope}");
@@ -88,13 +90,13 @@ namespace Amphora.Api.Controllers.Amphorae
             switch (o)
             {
                 case "self.created":
-                    return Handle(await this.amphoraeService.ListForSelfAsync(User, created: true, purchased: false));
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip, options.Take, created: true, purchased: false));
                 case "self.purchased":
-                    return Handle(await this.amphoraeService.ListForSelfAsync(User, created: false, purchased: true));
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip, options.Take, created: false, purchased: true));
                 case "organisation.created":
-                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, created: true, purchased: false));
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip, options.Take, created: true, purchased: false));
                 case "organisation.purchased":
-                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, created: false, purchased: true));
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip, options.Take, created: false, purchased: true));
                 default:
                     return BadRequest("Unknown Type of Get");
             }

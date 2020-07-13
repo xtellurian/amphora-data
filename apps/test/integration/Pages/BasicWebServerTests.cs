@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Terms;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;

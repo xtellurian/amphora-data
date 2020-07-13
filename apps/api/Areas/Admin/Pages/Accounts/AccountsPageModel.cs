@@ -40,7 +40,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts
             }
             else
             {
-                Orgs = (await orgStore.QueryAsync(_ => true))
+                Orgs = (await orgStore.QueryAsync(_ => true, 0, 256))
                     .Where(_ => _.Name.ToLower().Contains(name))
                     .Skip(pageNumber * perPage)
                     .Take(perPage)

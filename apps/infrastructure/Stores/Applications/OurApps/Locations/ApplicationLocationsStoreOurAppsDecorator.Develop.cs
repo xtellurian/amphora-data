@@ -31,9 +31,9 @@ namespace Amphora.Identity.Stores.EFCore
                 ?.Locations.FirstOrDefault(_ => _.Id == id);
         }
 
-        public override async Task<IEnumerable<ApplicationLocationModel>> QueryAsync(Expression<Func<ApplicationLocationModel, bool>> where)
+        public override async Task<IEnumerable<ApplicationLocationModel>> QueryAsync(Expression<Func<ApplicationLocationModel, bool>> where, int skip, int take)
         {
-            var res = await base.QueryAsync(where);
+            var res = await base.QueryAsync(where, skip, take);
             var locations = OurAppsDevelop.Get()
                .SelectMany(_ => _.Locations);
             var ours = locations.Where(_ => where.Compile()(_));

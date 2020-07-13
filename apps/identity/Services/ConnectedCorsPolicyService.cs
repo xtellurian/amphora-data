@@ -22,8 +22,13 @@ namespace Amphora.Identity.Services
         {
             // dont use Query(), use QueryAsync()
             logger.LogDebug($"Testing whether origin {origin} is allowed");
-            var allApps = await locationsStore.QueryAsync(_ => _.Origin == origin);
+            var allApps = await locationsStore.QueryAsync(_ => _.Origin == origin, 0, 64);
             var count = allApps.Count();
+            if (count >= 60)
+            {
+                logger.LogWarning("Number of apps is reaching query limit");
+            }
+
             logger.LogInformation($"Found {count} origins matching {origin}");
             return count > 0;
         }

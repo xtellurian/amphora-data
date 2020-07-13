@@ -127,8 +127,10 @@ namespace Amphora.Api.Services.Amphorae
         }
 
         public async Task<EntityOperationResult<IEnumerable<AmphoraModel>>> ListForSelfAsync(ClaimsPrincipal principal,
-                                                                                          bool owned = true,
-                                                                                          bool purchased = false)
+                                                                                             int skip = 0,
+                                                                                             int take = 64,
+                                                                                             bool owned = true,
+                                                                                             bool purchased = false)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
             if (!userReadRes.Succeeded)
@@ -141,13 +143,13 @@ namespace Amphora.Api.Services.Amphorae
                 var res = new List<AmphoraModel>();
                 if (owned)
                 {
-                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.CreatedById == userReadRes.Entity.Id));
+                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.CreatedById == userReadRes.Entity.Id, skip, take));
                 }
 
                 if (purchased)
                 {
                     // .Select can't be translated into cosmos
-                    var purchases = await purchaseStore.QueryAsync(_ => _.PurchasedByUserId == userReadRes.Entity.Id);
+                    var purchases = await purchaseStore.QueryAsync(_ => _.PurchasedByUserId == userReadRes.Entity.Id, skip, take);
                     res.AddRange(purchases.Select(_ => _.Amphora));
                 }
 
@@ -156,8 +158,10 @@ namespace Amphora.Api.Services.Amphorae
         }
 
         public async Task<EntityOperationResult<IEnumerable<AmphoraModel>>> ListForOrganisationAsync(ClaimsPrincipal principal,
-                                                                                                  bool created = true,
-                                                                                                  bool purchased = false)
+                                                                                                     int skip = 0,
+                                                                                                     int take = 64,
+                                                                                                     bool created = true,
+                                                                                                     bool purchased = false)
         {
             var userReadRes = await userDataService.ReadAsync(principal);
             if (!userReadRes.Succeeded)
@@ -170,13 +174,13 @@ namespace Amphora.Api.Services.Amphorae
                 var res = new List<AmphoraModel>();
                 if (created)
                 {
-                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.OrganisationId == userReadRes.Entity.OrganisationId));
+                    res.AddRange(await AmphoraStore.QueryAsync(_ => _.OrganisationId == userReadRes.Entity.OrganisationId, skip, take));
                 }
 
                 if (purchased)
                 {
                     // .Select can't be translated into cosmos
-                    var purchases = await purchaseStore.QueryAsync(_ => _.PurchasedByOrganisationId == userReadRes.Entity.OrganisationId);
+                    var purchases = await purchaseStore.QueryAsync(_ => _.PurchasedByOrganisationId == userReadRes.Entity.OrganisationId, skip, take);
                     res.AddRange(purchases.Select(_ => _.Amphora));
                 }
 

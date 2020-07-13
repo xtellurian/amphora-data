@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Terms;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -36,11 +37,12 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <returns> A collection of Terms of Use.</returns>
         [HttpGet("")]
-        [Produces(typeof(IEnumerable<Models.Dtos.Organisations.TermsOfUse>))]
+        [Produces(typeof(IEnumerable<Models.Dtos.Terms.TermsOfUse>))]
         [CommonAuthorize]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List([FromQuery] ListTermsOptions options = null)
         {
-            var res = await termsOfUseService.ListAsync(User);
+            options ??= new ListTermsOptions();
+            var res = await termsOfUseService.ListAsync(User, options.Skip, options.Take);
             if (res.Succeeded)
             {
                 var dto = mapper.Map<List<TermsOfUse>>(res.Entity);
@@ -55,7 +57,7 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <returns> A collection of Terms of Use.</returns>
         [HttpGet("{id}")]
-        [Produces(typeof(Models.Dtos.Organisations.TermsOfUse))]
+        [Produces(typeof(Models.Dtos.Terms.TermsOfUse))]
         [CommonAuthorize]
         public async Task<IActionResult> Read(string id)
         {

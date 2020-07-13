@@ -63,7 +63,7 @@ namespace Amphora.Api.Services.Organisations
             {
                 if (await Store.CountAsync(_ => _.WebsiteUrl != null && _.WebsiteUrl == org.WebsiteUrl) > 0)
                 {
-                    var existing = (await Store.QueryAsync(_ => _.WebsiteUrl == org.WebsiteUrl)).FirstOrDefault();
+                    var existing = (await Store.QueryAsync(_ => _.WebsiteUrl == org.WebsiteUrl, 0, 5)).FirstOrDefault();
                     // an organisation with that website already exists.
                     return new EntityOperationResult<OrganisationModel>(userData,
                         $"An organisation called {existing?.Name} with website {existing?.WebsiteUrl} already exists. You may wish to join that org.");

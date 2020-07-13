@@ -13,7 +13,7 @@ namespace Amphora.Common.Contracts
         Task<T?> ReadAsync(string id);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
-        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where);
+        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where, int skip, int take);
         IQueryable<T> Query(Expression<Func<T, bool>> where);
         Task<int> CountAsync(Expression<Func<T, bool>>? where = null);
         bool IsModified<TProperty>(T model, Expression<Func<T, TProperty>> propertyExpression);

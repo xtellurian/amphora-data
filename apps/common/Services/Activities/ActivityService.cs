@@ -88,7 +88,7 @@ namespace Amphora.Common.Services.Activities
             // create the activity in the database.
             var activity = await store.ReadAsync(idOrName);
             // try by name, if activity is null
-            activity ??= (await store.QueryAsync(_ => _.Name == idOrName && _.OrganisationId == user.OrganisationId))?.FirstOrDefault();
+            activity ??= (await store.QueryAsync(_ => _.Name == idOrName && _.OrganisationId == user.OrganisationId, 0, 1))?.FirstOrDefault();
             // if still null, return not found
             if (activity == null)
             {

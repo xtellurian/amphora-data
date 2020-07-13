@@ -33,7 +33,7 @@ namespace Amphora.Api.Services.Amphorae
             this.logger = logger;
         }
 
-        public async Task<EntityOperationResult<IEnumerable<TermsOfUseModel>>> ListAsync(ClaimsPrincipal principal)
+        public async Task<EntityOperationResult<IEnumerable<TermsOfUseModel>>> ListAsync(ClaimsPrincipal principal, int skip, int take)
         {
             var userDataRes = await userDataService.ReadAsync(principal);
             if (userDataRes.Failed)
@@ -41,7 +41,7 @@ namespace Amphora.Api.Services.Amphorae
                 return new EntityOperationResult<IEnumerable<TermsOfUseModel>>("Unknown User");
             }
 
-            var res = await store.QueryAsync(_ => _.OrganisationId == userDataRes.Entity.OrganisationId || _.OrganisationId == null);
+            var res = await store.QueryAsync(_ => _.OrganisationId == userDataRes.Entity.OrganisationId || _.OrganisationId == null, skip, take);
             return new EntityOperationResult<IEnumerable<TermsOfUseModel>>(userDataRes.Entity, res);
         }
 

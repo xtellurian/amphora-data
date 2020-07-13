@@ -41,9 +41,9 @@ namespace Amphora.Identity.Stores.EFCore
             return am ?? OurAppsProduction.Get(envInfo, externalServices).FirstOrDefault(_ => _.Id == id);
         }
 
-        public override async Task<IEnumerable<ApplicationModel>> QueryAsync(Expression<Func<ApplicationModel, bool>> where)
+        public override async Task<IEnumerable<ApplicationModel>> QueryAsync(Expression<Func<ApplicationModel, bool>> where, int skip, int take)
         {
-            var res = await base.QueryAsync(where);
+            var res = await base.QueryAsync(where, skip, take);
             var ours = OurAppsProduction.Get(envInfo, externalServices).Where(_ => where.Compile()(_));
             return ours.Union(res);
         }

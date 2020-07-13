@@ -26,7 +26,11 @@ namespace Amphora.Api.AspNet.Cors
             IEnumerable<ApplicationLocationModel> locations;
             try
             {
-                locations = await store.QueryAsync(_ => true);
+                locations = await store.QueryAsync(_ => true, 0, 256);
+                if (locations.Count() > 254)
+                {
+                    logger.LogWarning("Locations returned is higher than 254");
+                }
             }
             catch (Exception ex)
             {

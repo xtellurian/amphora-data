@@ -22,7 +22,7 @@ namespace Amphora.Api.Areas.Admin.Pages.TermsOfUse
 
         public async Task<IActionResult> OnGetAsync()
         {
-            this.Terms = await store.QueryAsync(_ => true);
+            this.Terms = await store.QueryAsync(_ => true, 0, 25);
             return Page();
         }
     }

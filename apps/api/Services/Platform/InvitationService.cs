@@ -68,7 +68,7 @@ namespace Amphora.Api.Services.Platform
             }
 
             var existing = await invitationStore.QueryAsync(i => i.TargetEmail == invitation.TargetEmail &&
-                i.TargetOrganisationId == invitation.TargetOrganisationId);
+                i.TargetOrganisationId == invitation.TargetOrganisationId, 0, 3);
 
             if (existing.Any())
             {
@@ -99,7 +99,7 @@ namespace Amphora.Api.Services.Platform
             var email = principal.GetEmail();
 
             if (userData == null) { return new EntityOperationResult<IList<InvitationModel>>(userData, "null user") { WasForbidden = true }; }
-            var existing = await invitationStore.QueryAsync(i => i.TargetEmail == email);
+            var existing = await invitationStore.QueryAsync(i => i.TargetEmail == email, 0, 1);
             if (existing.Count() > 0)
             {
                 return new EntityOperationResult<IList<InvitationModel>>(userData, new List<InvitationModel>(existing));
@@ -123,7 +123,7 @@ namespace Amphora.Api.Services.Platform
 
             var existing = await invitationStore.QueryAsync(i =>
                 i.TargetEmail == email
-                && i.TargetOrganisationId == orgId);
+                && i.TargetOrganisationId == orgId, 0, 1);
             var invite = existing.FirstOrDefault();
             if (invite != null) { return new EntityOperationResult<InvitationModel>(userData, invite); }
             else { return new EntityOperationResult<InvitationModel>(userData, "Invitation does not exist"); }
@@ -133,13 +133,13 @@ namespace Amphora.Api.Services.Platform
         {
             email = email?.ToUpper();
             var existing = await invitationStore.QueryAsync(i =>
-                i.TargetEmail == email);
+                i.TargetEmail == email, 0, 5);
             var invite = existing.FirstOrDefault();
             if (invite == null)
             {
                 var domain = email.Split('@')[1];
                 existing = await invitationStore.QueryAsync(i =>
-                    i.TargetDomain == domain);
+                    i.TargetDomain == domain, 0, 5);
                 invite = existing.FirstOrDefault();
             }
 

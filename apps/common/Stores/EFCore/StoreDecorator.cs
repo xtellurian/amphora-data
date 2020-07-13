@@ -75,11 +75,11 @@ namespace Amphora.Common.Stores.EFCore
             }
         }
 
-        public virtual Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where)
+        public virtual Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where, int skip, int take)
         {
             if (this.store != null)
             {
-                return store.QueryAsync(where);
+                return store.QueryAsync(where, skip, take);
             }
             else
             {

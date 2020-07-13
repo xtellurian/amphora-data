@@ -129,7 +129,7 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.Stats.Purchases.TotalCount = await purchaseStore.CountAsync();
             this.Stats.Purchases.ActiveCount = await purchaseStore.CountAsync(Active<PurchaseModel>());
             this.Stats.Purchases.MeanActivePrice =
-                (await purchaseStore.QueryAsync(Active<PurchaseModel>()))
+                (await purchaseStore.QueryAsync(Active<PurchaseModel>(), 0, 1000))
                 .Average(_ => _.Price);
         }
 
@@ -138,7 +138,7 @@ namespace Amphora.Api.Areas.Admin.Pages
             this.Stats.Commissions.TotalCount = await commissionStore.CountAsync();
             this.Stats.Commissions.ActiveCount = await commissionStore.CountAsync(Active<CommissionModel>());
             this.Stats.Commissions.MeanActivePrice =
-                (await commissionStore.QueryAsync(Active<CommissionModel>()))
+                (await commissionStore.QueryAsync(Active<CommissionModel>(), 0, 1000))
                 .Average(_ => _.Amount);
         }
 

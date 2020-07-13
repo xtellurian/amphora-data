@@ -54,7 +54,7 @@ namespace Amphora.Common.Services.Users
 
         public async Task<EntityOperationResult<ApplicationUserDataModel>> ReadFromEmailAsync(ClaimsPrincipal principal, string email)
         {
-            var res = await store.QueryAsync(_ => _.ContactInformation!.Email == email);
+            var res = await store.QueryAsync(_ => _.ContactInformation!.Email == email, 0, 1);
             var user = res.FirstOrDefault();
             if (user != null)
             {
@@ -68,7 +68,7 @@ namespace Amphora.Common.Services.Users
 
         public async Task<EntityOperationResult<ApplicationUserDataModel>> ReadFromUsernameAsync(ClaimsPrincipal principal, string username)
         {
-            var res = await store.QueryAsync(_ => _.UserName == username);
+            var res = await store.QueryAsync(_ => _.UserName == username, 0, 1);
             var user = res.FirstOrDefault();
             if (user != null)
             {

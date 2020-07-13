@@ -1,4 +1,4 @@
-using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Terms;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;
 

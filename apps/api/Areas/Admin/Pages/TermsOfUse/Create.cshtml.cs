@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Terms;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using AutoMapper;

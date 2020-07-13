@@ -85,7 +85,7 @@ namespace Amphora.Api.Services.Purchases
             using (logger.BeginScope(new LoggerScope<PurchaseService>(user)))
             {
                 if (!await CanPurchaseAmphoraAsync(user, amphora)) { return new EntityOperationResult<PurchaseModel>(user, "Purchase permission denied"); }
-                var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id);
+                var purchases = await purchaseStore.QueryAsync(p => p.PurchasedByUserId == user.Id && p.AmphoraId == amphora.Id, 0, 1);
                 if (purchases.Any())
                 {
                     logger.LogWarning($"{user.UserName} has already purchased {amphora.Id}");

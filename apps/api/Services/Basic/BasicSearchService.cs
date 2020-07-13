@@ -31,7 +31,7 @@ namespace Amphora.Api.Services.Basic
             var entities = new List<AmphoraModel>();
 
             var res = await amphoraeService.AmphoraStore.QueryAsync(
-                a => a.Name.Contains(searchText) || a.Description.Contains(searchText));
+                a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
             entities.AddRange(res);
 
             if (parameters.Skip.HasValue && parameters.Top.HasValue)
@@ -59,7 +59,7 @@ namespace Amphora.Api.Services.Basic
                 var entities = new List<AmphoraModel>();
 
                 var res = await amphoraeService.AmphoraStore.QueryAsync(
-                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText));
+                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
                 entities.AddRange(res);
 
                 if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)
@@ -76,7 +76,7 @@ namespace Amphora.Api.Services.Basic
                 var entities = new List<DataRequestModel>();
 
                 var res = await dataRequestStore.QueryAsync(
-                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText));
+                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
                 entities.AddRange(res);
 
                 if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)
@@ -93,7 +93,7 @@ namespace Amphora.Api.Services.Basic
                 var entities = new List<OrganisationModel>();
 
                 var res = await organisationStore.QueryAsync(
-                    a => a.Name.Contains(searchText) || a.About.Contains(searchText));
+                    a => a.Name.Contains(searchText) || a.About.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
                 entities.AddRange(res);
 
                 if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)

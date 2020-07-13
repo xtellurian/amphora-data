@@ -24,7 +24,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.TermsOfUse
         }
 
         [BindProperty]
-        public Amphora.Api.Models.Dtos.Organisations.CreateTermsOfUse TermsOfUse { get; set; }
+        public Amphora.Api.Models.Dtos.Terms.CreateTermsOfUse TermsOfUse { get; set; }
         public OrganisationModel Organisation { get; private set; }
         [TempData]
         public bool? Success { get; set; } = null;
