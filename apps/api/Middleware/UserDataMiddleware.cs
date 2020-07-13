@@ -73,6 +73,13 @@ namespace Amphora.Api.Middleware
                         needsUpdate = true;
                     }
 
+                    // check username
+                    if (!string.Equals(userData.UserName, name))
+                    {
+                        userData.UserName = name;
+                        needsUpdate = true;
+                    }
+
                     if (!string.Equals(userData.ContactInformation?.FullName, fullName))
                     {
                         userData.ContactInformation.FullName = fullName;
