@@ -26,7 +26,7 @@ const withSplashScreen = (WrappedComponent: any) => {
         React.useEffect(() => {
             setTimeout(() => {
                 setIsloading(false);
-            }, 3000);
+            }, 2000);
         }, []);
 
         if (isLoading) {

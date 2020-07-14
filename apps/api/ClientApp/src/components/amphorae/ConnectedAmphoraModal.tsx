@@ -71,7 +71,6 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
     };
 
     if (context.isLoading) {
-        console.log("RENDERING loading...");
         return (
             <ModalWrapper isOpen={true} onCloseRedirectTo={redirectToPath()}>
                 <LoadingState />;
@@ -82,6 +81,22 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
         const amphora = context.current;
         const terms = context.terms;
         const openClose = state.isOpen ? "menu-open" : "menu-closed";
+
+        const handleUpdateName = (name: string) => {
+            if (name !== amphora.name) {
+                actions.dispatch({
+                    type: "amphora-operation-update",
+                    payload: {
+                        id: amphora.id || "",
+                        model: {
+                            ...amphora,
+                            name,
+                        },
+                    },
+                });
+            }
+        };
+
         return (
             <ModalWrapper isOpen={true} onCloseRedirectTo={redirectToPath()}>
                 <div className={openClose}>
@@ -98,7 +113,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             <div>
                                 <MagicLabel
                                     initialValue={amphora.name}
-                                    onSave={(v) => alert(v)}
+                                    onSave={(v) => handleUpdateName(v)}
                                 >
                                     <span className="txt-lg">
                                         {amphora.name}
@@ -120,7 +135,9 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             render={(props) => (
                                 <Description
                                     {...props}
-                                    maxPermissionLevel={context.maxPermissionLevel}
+                                    maxPermissionLevel={
+                                        context.maxPermissionLevel
+                                    }
                                     amphora={amphora}
                                     isLoading={false}
                                 />
@@ -141,14 +158,18 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/signals`}
-                            render={(props) => <Signals {...props} amphora={amphora} />}
+                            render={(props) => (
+                                <Signals {...props} amphora={amphora} />
+                            )}
                         />
                         <Route
                             exact
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/signals/add`}
-                            render={(props) => <AddSignal {...props} amphora={amphora} />}
+                            render={(props) => (
+                                <AddSignal {...props} amphora={amphora} />
+                            )}
                         />
 
                         <Route
@@ -156,7 +177,13 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             path={`${baseLink(
                                 props.location.pathname
                             )}/:id/integrate`}
-                            render={(props) => <Integrate {...props} amphora={amphora} name={'<user name>'}/>}
+                            render={(props) => (
+                                <Integrate
+                                    {...props}
+                                    amphora={amphora}
+                                    name={"<user name>"}
+                                />
+                            )}
                         />
                         <Route
                             exact
@@ -190,9 +217,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             )}
                         />
                         <div className="purchase-button-row">
-                            <PurchaseButtonComponent
-                                amphora={amphora}
-                            />
+                            <PurchaseButtonComponent amphora={amphora} />
                         </div>
                     </div>
                 </div>

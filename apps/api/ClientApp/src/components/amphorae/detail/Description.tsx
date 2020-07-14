@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { OneAmphora } from "./props";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { MagicTextArea } from "../../molecules/magic-inputs/MagicTextArea";
+import { MagicModalCurrencyInput } from "../../molecules/magic-inputs/MagicModalCurrencyInput";
 import { Header } from "./Header";
 
 export const Description: React.FunctionComponent<OneAmphora> = (props) => {
@@ -15,7 +16,7 @@ export const Description: React.FunctionComponent<OneAmphora> = (props) => {
         !props.maxPermissionLevel || props.maxPermissionLevel < 128;
     console.log(props);
     const actions = AmphoraOperationsContext.useAmphoraOperationsDispatch();
-    const onSave = (value: string) => {
+    const onSaveDescription = (value: string) => {
         if (value !== props.amphora.description) {
             actions.dispatch({
                 type: "amphora-operation-update",
@@ -29,17 +30,33 @@ export const Description: React.FunctionComponent<OneAmphora> = (props) => {
             });
         }
     };
+
+    const onSavePrice = (value: number) => {
+        if (value != null && value !== props.amphora.price) {
+            actions.dispatch({
+                type: "amphora-operation-update",
+                payload: {
+                    id: amphoraId,
+                    model: {
+                        ...props.amphora,
+                        price: value,
+                    },
+                },
+            });
+        }
+    };
     if (props.isLoading) {
         return <LoadingState />;
     } else if (props.amphora) {
         return (
             <React.Fragment>
                 <Header title="Description">
-                    <div>Price: ${props.amphora.price}</div>
+                <MagicModalCurrencyInput initialValue={props.amphora.price} onSave={(onSavePrice)} />
+                    {/* <div>Price: ${props.amphora.price}</div> */}
                 </Header>
                 <MagicTextArea
                     initialValue={props.amphora.description}
-                    onSave={onSave}
+                    onSave={onSaveDescription}
                     disableEditing={disableEditing}
                 >
                     <ReactMarkdown>
