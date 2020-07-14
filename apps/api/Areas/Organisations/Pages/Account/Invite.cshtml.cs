@@ -71,7 +71,8 @@ namespace Amphora.Api.Areas.Organisations.Pages
                 // check email confirmed
                 if (!User.IsEmailConfirmed())
                 {
-                    ModelState.AddModelError(string.Empty, "You haven't confirmed your email, so you can't invite anyone");
+                    ModelState.AddModelError(string.Empty, "You haven't confirmed your email, so you can't invite anyone. " +
+                    "If you've recently confirmed your email, try logging out, then back in.");
                     return Page();
                 }
 
