@@ -21,7 +21,7 @@ namespace Amphora.Common.Models.Emails
             }
             else
             {
-                BaseUrl = "https://identity.amphoradata.com"; // invitations are sent by the identity
+                BaseUrl = "https://app.amphoradata.com";
             }
         }
 
