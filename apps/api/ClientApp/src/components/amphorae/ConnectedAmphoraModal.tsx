@@ -120,6 +120,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             render={(props) => (
                                 <Description
                                     {...props}
+                                    maxPermissionLevel={context.maxPermissionLevel}
                                     amphora={amphora}
                                     isLoading={false}
                                 />
