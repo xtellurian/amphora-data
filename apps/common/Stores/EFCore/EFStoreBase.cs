@@ -83,7 +83,11 @@ namespace Amphora.Common.Stores.EFCore
 
         public virtual async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>> where, int skip, int take)
         {
-            return await Set.Where(where).Skip(skip).Take(take).ToListAsync();
+            return await Set.Where(where)
+                .OrderByDescending(_ => _.LastModified)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
         }
 
         public virtual async Task<IList<T>> TopAsync()
