@@ -2,7 +2,12 @@ using Amphora.Common.Models.Organisations;
 
 namespace Amphora.Common.Models.Platform
 {
-    public enum InvitationTrigger { Accept, Reject }
+    public enum InvitationTrigger
+    {
+        Accept,
+        Reject
+    }
+
     public enum InvitationState
     {
         Open = 0,
