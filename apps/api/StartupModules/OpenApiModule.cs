@@ -40,9 +40,6 @@ namespace Amphora.Api.StartupModules
                 });
 
                 document.OperationProcessors.Add(
-                    new AmphoraDataApiVersionOperationProcessor());
-
-                document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
                 document.Description = Description;
@@ -60,9 +57,6 @@ namespace Amphora.Api.StartupModules
                     In = OpenApiSecurityApiKeyLocation.Header,
                     Description = "Bearer {your JWT token}."
                 });
-
-                document.OperationProcessors.Add(
-                    new AmphoraDataApiVersionOperationProcessor());
 
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
