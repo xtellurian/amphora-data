@@ -1,2 +1,2 @@
 config:
-  frontend:replicas: 3
+  frontend:replicas: 2
