@@ -11,6 +11,7 @@ import {
 import { GeoLookupComponent } from "react-amphora";
 import { ValidateResult } from "../molecules/inputs/inputProps";
 import { LoadingState } from "../molecules/empty/LoadingState";
+import { useHistory } from "react-router";
 
 const TERMS_DEFAULT = "1";
 
@@ -26,12 +27,12 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
 
     const actions = AmphoraOperationsContext.useAmphoraOperationsDispatch();
 
-    const [attempts, setAttempts] = React.useState(0)
+    const [attempts, setAttempts] = React.useState(0);
     // ensure terms are fetched
     React.useEffect(() => {
         if (termsContext.isAuthenticated && attempts < 1) {
             termsDispatch.dispatch({ type: "fetch-terms" });
-            setAttempts(attempts + 1)
+            setAttempts(attempts + 1);
         }
     }, [termsContext.isAuthenticated, termsDispatch, attempts, setAttempts]);
 
@@ -100,7 +101,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
             });
         }
     };
-
+    const history = useHistory()
     const createAmphora = () => {
         actions.dispatch({
             type: "amphora-operation-create",
@@ -108,6 +109,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
                 model: state.model,
             },
         });
+        history.replace('/amphora')
     };
     const setTerms = (t: string) => {
         const model = state.model;

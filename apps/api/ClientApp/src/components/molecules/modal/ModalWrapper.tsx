@@ -19,7 +19,7 @@ const customStyles: Modal.Styles = {
     background: "rgb(255, 255, 255)",
     overflow: "auto",
     borderRadius: "4px",
-    outline: "none",
+    outline: "var(--marble) solid 2px",
     padding: "0px",
   },
 };

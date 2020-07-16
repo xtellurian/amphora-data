@@ -109,7 +109,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                         maxPermissionLevel={context.maxPermissionLevel}
                     />
                     <div className="modal-inner">
-                        <div className="mb-2">
+                        <div className="mb-1">
                             <div>
                                 <MagicLabel
                                     initialValue={amphora.name}
