@@ -7,7 +7,6 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Applications;
 using Amphora.Common.Stores.EFCore;
 using Amphora.Infrastructure.Stores.Applications.OurApps;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Identity.Stores.EFCore
