@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amphora.Api;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Terms;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -14,8 +15,64 @@ namespace Amphora.Tests.Integration.Amphorae
     [Collection(nameof(ApiFixtureCollection))]
     public class TermsOfUseTests : WebAppIntegrationTestBase
     {
+        private const string EmbeddedTermsId = "0";
         public TermsOfUseTests(WebApplicationFactory<Startup> factory) : base(factory)
         {
+        }
+
+        [Fact]
+        public async Task Terms_ShouldNeverBeEmpty()
+        {
+            var persona = await GetPersonaAsync();
+
+            var response = await persona.Http.GetAsync("api/TermsOfUse");
+            var terms = await AssertHttpSuccess<List<TermsOfUse>>(response);
+            terms.Should().NotBeEmpty("because the terms should be decorated with embdedded");
+            terms.Should().Contain(_ => _.Id == EmbeddedTermsId, $"because the embedded Id is {EmbeddedTermsId}");
+        }
+
+        [Fact]
+        public async Task StandardTerms_CanBeRead()
+        {
+            var persona = await GetPersonaAsync();
+
+            var response = await persona.Http.GetAsync("api/TermsOfUse/0");
+            var terms = await AssertHttpSuccess<TermsOfUse>(response);
+            terms.Id.Should().Be(EmbeddedTermsId);
+            terms.Contents.Should().NotBeNullOrWhiteSpace();
+            terms.Name.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public async Task Terms_CanBePagedCorrectly()
+        {
+            var numberToCreate = 10;
+            var persona = await GetPersonaAsync();
+
+            var tou = new TermsOfUse
+            {
+                Name = System.Guid.NewGuid().ToString(),
+                Contents = System.Guid.NewGuid().ToString()
+            };
+
+            for (var i = 0; i < numberToCreate; i++)
+            {
+                // create some terms to put in the system
+                var createResponse = await persona.Http.PostAsJsonAsync("api/TermsOfUse", tou);
+                await AssertHttpSuccess(createResponse);
+            }
+
+            var response = await persona.Http.GetAsync("api/TermsOfUse");
+            var terms = await AssertHttpSuccess<List<TermsOfUse>>(response);
+            terms.Should().NotBeEmpty("because the terms should be decorated with embdedded");
+            terms.Should().Contain(_ => _.Id == EmbeddedTermsId, $"because the embedded Id is {EmbeddedTermsId}");
+            terms.Should().HaveCountGreaterOrEqualTo(numberToCreate, "because we created at least this many");
+
+            var response_skip1 = await persona.Http.GetAsync("api/TermsOfUse?skip=1");
+            var terms_skip1 = await AssertHttpSuccess<List<TermsOfUse>>(response_skip1);
+
+            terms_skip1.Should().NotContain(_ => _.Id == EmbeddedTermsId, "because we skipped it");
+            terms_skip1.Should().HaveCountGreaterOrEqualTo(numberToCreate, "because we should still get at least that many");
         }
 
         [Fact]

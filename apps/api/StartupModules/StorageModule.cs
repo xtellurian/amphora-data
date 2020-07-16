@@ -17,6 +17,7 @@ using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
+using Amphora.Common.Stores.TermsOfUse;
 using Amphora.Infrastructure.Database.Contexts;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Extensions;
@@ -106,6 +107,9 @@ namespace Amphora.Api.StartupModules
             services.AddScoped<IEntityStore<CommissionModel>, CommissionsEFStore>();
             services.AddScoped<IEntityStore<ApplicationUserDataModel>, ApplicationUserDataEFStore>();
             services.AddScoped<IEntityStore<ApplicationModel>, ApplicationModelEFStore>();
+
+            // add decorators for stores
+            services.Decorate<IEntityStore<TermsOfUseModel>, EmbeddedTermsOfUseStoreDecorator>();
 
             // cache
             services.AddSingleton<ICache, InMemoryCache>();
