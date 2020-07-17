@@ -19,6 +19,8 @@ namespace Amphora.Infrastructure.Services.Azure
         private const string Resource = "https://api.timeseries.azure.com/";
         private readonly IOptionsMonitor<TsiOptions> options;
         private readonly IAzureServiceTokenProvider tokenProvider;
+        private readonly ITelemetry telemetry;
+        private readonly IDateTimeProvider dateTimeProvider;
         private readonly ILogger<TsiService> logger;
         private readonly HttpClient httpClient;
         private ITimeSeriesInsightsClient? client;
@@ -26,10 +28,14 @@ namespace Amphora.Infrastructure.Services.Azure
         public TsiService(IOptionsMonitor<TsiOptions> options,
                           IHttpClientFactory factory,
                           IAzureServiceTokenProvider tokenProvider,
+                          ITelemetry telemetry,
+                          IDateTimeProvider dateTimeProvider,
                           ILogger<TsiService> logger)
         {
             this.options = options;
             this.tokenProvider = tokenProvider;
+            this.telemetry = telemetry;
+            this.dateTimeProvider = dateTimeProvider;
             this.logger = logger;
             this.httpClient = factory.CreateClient(HttpClientNames.TimeSeriesInsights);
         }
@@ -38,6 +44,17 @@ namespace Amphora.Infrastructure.Services.Azure
         {
             if (client != null) { return; }
             this.client = await GetTimeSeriesInsightsClientAsync();
+        }
+
+        private DateTimeOffset StartTelemetry()
+        {
+            return dateTimeProvider.UtcNow;
+        }
+
+        private void StopTelemetry(string queryType, DateTimeOffset startTime)
+        {
+            var milliseconds = (dateTimeProvider.UtcNow - startTime).TotalMilliseconds;
+            telemetry.TrackMetricValue("AmphoraData.TimeSeriesInsights.Latency", queryType, milliseconds);
         }
 
         public async Task<IList<TimeSeriesInstance>> GetInstancesAsync()
@@ -59,8 +76,24 @@ namespace Amphora.Infrastructure.Services.Azure
 
         public async Task<QueryResultPage> RunQueryAsync(QueryRequest query, string? continuationToken = null)
         {
+            var start = StartTelemetry();
             await InitAsync();
             var queryResponse = await client.ExecuteQueryPagedAsync(query, continuationToken);
+            var queryType = "unknown";
+            if (query.AggregateSeries != null)
+            {
+                queryType = nameof(query.AggregateSeries);
+            }
+            else if (query.GetEvents != null)
+            {
+                queryType = nameof(query.GetEvents);
+            }
+            else if (query.GetSeries != null)
+            {
+                queryType = nameof(query.GetSeries);
+            }
+
+            StopTelemetry(queryType, start);
             return queryResponse;
         }
 
@@ -68,6 +101,7 @@ namespace Amphora.Infrastructure.Services.Azure
                                                             DateTimeRange span,
                                                             IList<string>? properties = null)
         {
+            var start = StartTelemetry();
             await InitAsync();
             string continuationToken;
             QueryResultPage queryResponse;
@@ -85,7 +119,7 @@ namespace Amphora.Infrastructure.Services.Azure
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
-
+            StopTelemetry("GetEvents", start);
             return queryResponse;
         }
 
@@ -95,6 +129,7 @@ namespace Amphora.Infrastructure.Services.Azure
                                                                 TimeSpan? interval = null,
                                                                 IList<string>? projections = null)
         {
+            var start = StartTelemetry();
             await InitAsync();
             interval ??= TimeSpan.FromDays(365);
             string continuationToken;
@@ -115,7 +150,7 @@ namespace Amphora.Infrastructure.Services.Azure
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
-
+            StopTelemetry("GetAggregate", start);
             return queryResponse;
         }
 
@@ -124,6 +159,7 @@ namespace Amphora.Infrastructure.Services.Azure
                                                              DateTimeRange span,
                                                              IList<string>? projections = null)
         {
+            var start = StartTelemetry();
             await InitAsync();
             string continuationToken;
             QueryResultPage queryResponse;
@@ -142,7 +178,7 @@ namespace Amphora.Infrastructure.Services.Azure
                 continuationToken = queryResponse.ContinuationToken;
             }
             while (continuationToken != null);
-
+            StopTelemetry("GetSeries", start);
             return queryResponse;
         }
 
