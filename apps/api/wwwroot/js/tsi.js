@@ -180,7 +180,7 @@ async function getLineChartExpressions(
       kind,
       // value: { tsx: `$event.${sig.Property}` },
       value: {
-        tsx: `coalesce($event.${sig.property}.Double, toDouble($event.${sig.property}.Long))`,
+        tsx: `coalesce($event.${sig.Property}.Double, toDouble($event.${sig.Property}.Long))`,
       },
       filter,
       aggregation: { tsx: "avg($value)" },
