@@ -12,21 +12,24 @@ import configureStore from "./redux/configureStore";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import { getHostUrl } from "./utlities";
-
+import { toastOnActionResult } from "./utlities/toasts";
 // Create browser history to use in the Redux store
 const baseUrl = document
     .getElementsByTagName("base")[0]
     .getAttribute("href") as string;
 const history = createBrowserHistory({ basename: baseUrl });
 const store = configureStore(history);
-const host = getHostUrl()
-console.log(`HOST is ${host}`)
+const host = getHostUrl();
+console.log(`HOST is ${host}`);
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
             <AmphoraProvider
                 userManager={userManager}
-                configuration={new amphoradata.Configuration({ basePath: host })}
+                configuration={
+                    new amphoradata.Configuration({ basePath: host })
+                }
+                onActionResult={(r) => toastOnActionResult(r)}
             >
                 <App />
             </AmphoraProvider>
