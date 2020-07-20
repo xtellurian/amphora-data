@@ -21,7 +21,7 @@ export const CreateTermsOfUseComponent: React.FunctionComponent = (props) => {
         contents: "",
     });
     const complete = () => {
-        actions.dispatch({type: 'create-terms', payload: {
+        actions.dispatch({type: 'terms:create', payload: {
             model: model
         }})
         history.replace("/terms");

@@ -9,7 +9,7 @@ export const TermsOfUseList: React.FunctionComponent = (props) => {
     const [dispatched, setDispatched] = React.useState(false);
     React.useEffect(() => {
         if (context.isAuthenticated && !dispatched) {
-            actions.dispatch({ type: "fetch-terms" });
+            actions.dispatch({ type: "terms:fetch-list" });
             setDispatched(true);
         }
     }, [actions, context.isAuthenticated, dispatched]);

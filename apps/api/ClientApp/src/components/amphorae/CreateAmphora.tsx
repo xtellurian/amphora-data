@@ -31,7 +31,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
     // ensure terms are fetched
     React.useEffect(() => {
         if (termsContext.isAuthenticated && attempts < 1) {
-            termsDispatch.dispatch({ type: "fetch-terms" });
+            termsDispatch.dispatch({ type: "terms:fetch-list" });
             setAttempts(attempts + 1);
         }
     }, [termsContext.isAuthenticated, termsDispatch, attempts, setAttempts]);
@@ -104,7 +104,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
     const history = useHistory()
     const createAmphora = () => {
         actions.dispatch({
-            type: "amphora-operation-create",
+            type: "amphora-operation:create",
             payload: {
                 model: state.model,
             },

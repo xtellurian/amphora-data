@@ -14,7 +14,7 @@ export const ConnectedTermsOfUseDetail: React.FunctionComponent = () => {
     const actions = TermsOfUseContext.useTermsDispatch();
     React.useEffect(() => {
         actions.dispatch({
-            type: "fetch-single-terms",
+            type: "terms:fetch-single",
             payload: {
                 id: params.id,
             },

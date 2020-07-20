@@ -55,7 +55,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
             context.current && context.current.id === props.match.params.id;
         if (!context.isLoading && !isCorrectId && state.loadAttempts < 4) {
             actions.dispatch({
-                type: "amphora-operation-read",
+                type: "amphora-operation:read",
                 payload: { id: props.match.params.id },
             });
             setState({
@@ -85,7 +85,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
         const handleUpdateName = (name: string) => {
             if (name !== amphora.name) {
                 actions.dispatch({
-                    type: "amphora-operation-update",
+                    type: "amphora-operation:update",
                     payload: {
                         id: amphora.id || "",
                         model: {

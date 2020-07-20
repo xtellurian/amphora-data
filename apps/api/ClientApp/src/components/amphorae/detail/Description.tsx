@@ -19,7 +19,7 @@ export const Description: React.FunctionComponent<OneAmphora> = (props) => {
     const onSaveDescription = (value: string) => {
         if (value !== props.amphora.description) {
             actions.dispatch({
-                type: "amphora-operation-update",
+                type: "amphora-operation:update",
                 payload: {
                     id: amphoraId,
                     model: {
@@ -34,7 +34,7 @@ export const Description: React.FunctionComponent<OneAmphora> = (props) => {
     const onSavePrice = (value: number) => {
         if (value != null && value !== props.amphora.price) {
             actions.dispatch({
-                type: "amphora-operation-update",
+                type: "amphora-operation:update",
                 payload: {
                     id: amphoraId,
                     model: {

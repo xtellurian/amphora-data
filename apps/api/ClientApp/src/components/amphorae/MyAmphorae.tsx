@@ -67,7 +67,7 @@ class MyAmphorae extends React.Component<MyAmphoraeProps, MyAmphoraeState> {
     private loadList(): void {
         const scope = this.state.scope;
         const accessType = this.getAccessType();
-        this.props.dispatch({ type: "fetch", payload: { accessType, scope } });
+        this.props.dispatch({ type: "my-amphora:fetch-list", payload: { accessType, scope } });
     }
 
     // rendering methods

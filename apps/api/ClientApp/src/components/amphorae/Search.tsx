@@ -35,7 +35,7 @@ class SearchComponent extends React.PureComponent<SearchComponentProps> {
 
     private doSearch(term?: string) {
         if (term) {
-            this.props.dispatch({ type: "search", payload: { term } });
+            this.props.dispatch({ type: "search:execute", payload: { term } });
         }
     }
 
