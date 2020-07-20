@@ -48,7 +48,6 @@ export class ModalWrapper extends React.PureComponent<
       isOpen: props.isOpen,
       willClose: false,
     };
-    Modal.setAppElement("#root");
   }
 
   private close() {

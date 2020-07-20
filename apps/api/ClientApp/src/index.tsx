@@ -13,6 +13,7 @@ import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import { getHostUrl } from "./utilities";
 import { toastOnActionResult } from "./utilities/toasts";
+import Modal from "react-modal";
 // Create browser history to use in the Redux store
 const baseUrl = document
     .getElementsByTagName("base")[0]
@@ -20,7 +21,9 @@ const baseUrl = document
 const history = createBrowserHistory({ basename: baseUrl });
 const store = configureStore(history);
 const host = getHostUrl();
+Modal.setAppElement("#root");
 console.log(`HOST is ${host}`);
+
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>

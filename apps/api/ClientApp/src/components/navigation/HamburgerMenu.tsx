@@ -18,13 +18,14 @@ type HamburgerMenuProps = {
     typeof actionCreators & { path: string; isConnected: boolean }; // ... plus action creators we've requested // ... plus incoming routing parameters
 
 const ClickableMenuItem: React.FunctionComponent<{
+    id?: string;
     to: string;
     onClick?:
         | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
         | undefined;
 }> = (props) => {
     return (
-        <NavItem onClick={(e) => props.onClick && props.onClick(e)}>
+        <NavItem id={props.id} onClick={(e) => props.onClick && props.onClick(e)}>
             <NavLink tag={Link} className="text-light" to={props.to}>
                 {props.children}
             </NavLink>
@@ -72,7 +73,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                 <Nav vertical className="m-2">
                     <hr className="bg-white" />
                     <MenuSection title="Find Data">
-                        <ClickableMenuItem to="/search">
+                        <ClickableMenuItem id="main-search-button" to="/search">
                             Search
                         </ClickableMenuItem>
                         <ClickableMenuItem to="/request">

@@ -9,7 +9,7 @@ interface NewWelcomeProps {
 export const NewWelcome: React.FunctionComponent<NewWelcomeProps> = (props) => {
     return (
         <React.Fragment>
-            <h1>Howdy!</h1>
+            <h1 id="howdy">Howdy!</h1>
             <p>
                 We're working on this new user interface. To switch back to the
                 old experience, <a href="https://app.amphoradata.com/challenge">click here</a>
