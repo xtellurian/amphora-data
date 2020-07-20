@@ -5,7 +5,6 @@ import { TermsOfUseState } from "./terms";
 import { Self } from "./self";
 import { MapState } from "./MapState";
 import { SearchState } from "./search";
-import { PermissionsState } from "./permissions";
 import { MenuStates } from "./plugins/burgerMenu";
 import { OidcState } from "./plugins/oidc";
 import { Reducers } from "../reducers";
@@ -17,7 +16,6 @@ export interface ApplicationState extends Reducers {
     terms: TermsOfUseState;
     self: Self;
     search: SearchState;
-    permissions: PermissionsState;
     maps: MapState;
     // other states
     burgerMenu: MenuStates;
