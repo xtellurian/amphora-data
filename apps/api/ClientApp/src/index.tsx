@@ -11,8 +11,8 @@ import { createBrowserHistory } from "history";
 import configureStore from "./redux/configureStore";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import { getHostUrl } from "./utlities";
-import { toastOnActionResult } from "./utlities/toasts";
+import { getHostUrl } from "./utilities";
+import { toastOnActionResult } from "./utilities/toasts";
 // Create browser history to use in the Redux store
 const baseUrl = document
     .getElementsByTagName("base")[0]
