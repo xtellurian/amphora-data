@@ -168,9 +168,9 @@ namespace Amphora.Identity
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = $"/Account/Login";
-                options.LogoutPath = $"/Account/Logout";
-                options.AccessDeniedPath = $"/AccessDenied";
+                options.LoginPath = "/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/AccessDenied";
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
