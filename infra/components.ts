@@ -20,8 +20,8 @@ const CONSTANTS = {
     tenantId: "617bc365-674a-436e-8a27-5bacbe6df190",
   },
   location: {
-    primary: "AustraliaSoutheast",
-    secondary: "AustraliaEast",
+    primary: "australiasoutheast",
+    secondary: "australiaeast",
   },
 };
 
