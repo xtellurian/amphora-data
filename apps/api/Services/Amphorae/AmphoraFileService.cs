@@ -86,7 +86,7 @@ namespace Amphora.Api.Services.Amphorae
                         }
                         else
                         {
-                            return new EntityOperationResult<byte[]>(userReadRes.Entity, $"File {file} does not found");
+                            return new EntityOperationResult<byte[]>(userReadRes.Entity, $"File {file} was empty");
                         }
                     }
                     else
