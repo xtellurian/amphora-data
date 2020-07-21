@@ -46,6 +46,7 @@ const sshPublicKey = cfg.requireSecret("sshPublicKey");
 
 const nodeCount = config.getNumber("nodeCount") || 2;
 const nodeSize = config.get("nodeSize") || "Standard_D2_v2";
+const kubernetesVersion = config.get('kubeVersion')
 
 export class Aks extends pulumi.ComponentResource {
     public k8sCluster: azure.containerservice.KubernetesCluster;
@@ -84,6 +85,7 @@ export class Aks extends pulumi.ComponentResource {
                 vmSize: nodeSize,
             },
             dnsPrefix: `${pulumi.getStack()}-kube`,
+            kubernetesVersion: "",
             linuxProfile: {
                 adminUsername: "aksuser",
                 sshKey: { keyData: sshPublicKey },

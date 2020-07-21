@@ -2,6 +2,7 @@ config:
   acr:sku: Standard
   aks:nodeCount: "1"
   aks:nodeSize: Standard_B2ms
+  aks:kubeVersion: "1.15.12"
   aks:spAppId: e69d9fa5-8116-49c9-800b-de239bd64028
   aks:spObjectId: 603d0342-9c5a-492c-98ee-1ec701e827b2
   amphora:SendGridApiKey:
