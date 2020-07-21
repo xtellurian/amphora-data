@@ -98,7 +98,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             if (Amphora != null)
             {
                 this.Files = await amphoraFileService.Store.GetFilesAsync(Amphora, null, skip: PerPage * PageNumber ?? 0, take: PerPage);
-                this.Files = Files?.Skip(PerPage * PageNumber ?? 0).Take(PerPage).ToList();
                 TotalFiles = await amphoraFileService.Store.CountFilesAsync(Amphora);
             }
         }
