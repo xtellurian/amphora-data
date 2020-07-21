@@ -84,6 +84,21 @@ namespace Amphora.Tests.Integration.Amphorae
         }
 
         [Fact]
+        public async Task CreateAmphora_LabelLength12()
+        {
+            var persona = await GetPersonaAsync();
+            var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
+            var generator = new Helpers.RandomGenerator();
+            amphora.Labels = generator.RandomString(12); ;
+            // Act
+            var createResponse = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
+
+            // Assert
+            amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
+            amphora.Labels.Should().HaveLength(12);
+        }
+
+        [Fact]
         public async Task CanListAmphora_InVariousSituations()
         {
             // setcup the scipes up here
