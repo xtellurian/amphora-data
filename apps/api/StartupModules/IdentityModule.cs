@@ -67,8 +67,8 @@ namespace Amphora.Api.StartupModules
                 {
                     // Configure the client application to use sliding sessions
                     options.SlidingExpiration = true;
-                    // Expire the session of 30 minutes of inactivity
-                    options.ExpireTimeSpan = System.TimeSpan.FromMinutes(30);
+                    // Expire the session of 1 hour of inactivity
+                    options.ExpireTimeSpan = System.TimeSpan.FromHours(1);
                 })
                 .AddOpenIdConnect(CommonAuthorizeAttribute.OidcSchemeName, options =>
                 {
@@ -86,7 +86,8 @@ namespace Amphora.Api.StartupModules
 
                     options.Events.OnTicketReceived = (context) =>
                     {
-                        context.Properties.ExpiresUtc = System.DateTime.UtcNow.AddHours(2);
+                        // expire in 24 hours
+                        context.Properties.ExpiresUtc = System.DateTime.UtcNow.AddHours(24);
                         return System.Threading.Tasks.Task.CompletedTask;
                     };
                 })

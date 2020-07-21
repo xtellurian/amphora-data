@@ -67,7 +67,10 @@ namespace Amphora.Identity.Stores.IdentityServer
                 AllowedCorsOrigins = model.Origins,
                 RequireClientSecret = model?.AllowedGrantTypes?.Contains("implicit") == true ? true : false,
                 ClientSecrets = { new Secret(this.secret) },
-                AllowedScopes = CommonScopes(model)
+                AllowedScopes = CommonScopes(model),
+                // defaults
+                // AccessTokenLifetime = 3600,
+                // AbsoluteRefreshTokenLifetime = 30 * 24 * 60 * 60
             };
         }
 
