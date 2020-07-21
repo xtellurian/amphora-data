@@ -1,7 +1,19 @@
 import * as React from "react";
-import Joyride, { CallBackProps } from "react-joyride";
+import Joyride, {
+    CallBackProps,
+    ACTIONS,
+    EVENTS,
+    LIFECYCLE,
+    STATUS,
+} from "react-joyride";
 import Modal from "react-modal";
 import * as toast from "../molecules/toasts";
+import { steps, ExtendedStep } from "./tourSteps";
+import { useHistory } from "react-router";
+
+interface CustomCallbackProps extends CallBackProps {
+    step: ExtendedStep;
+}
 
 const customModalStyles: Modal.Styles = {
     overlay: {
@@ -22,33 +34,40 @@ const customModalStyles: Modal.Styles = {
 const withTour = (WrappedComponent: any) => {
     const tourItem = localStorage.getItem("tour");
     const Tour: React.FunctionComponent = (props) => {
+        const history = useHistory();
         const initialState = {
             modalOpen: tourItem !== "dismiss",
-            doTour: typeof tourItem !== "undefined" && tourItem !== "dismiss",
-            steps: [
-                {
-                    target: "#howdy",
-                    content: "This is my awesome feature!",
-                },
-                {
-                    target: "#main-search-button",
-                    content: "This another awesome feature!",
-                },
-            ],
+            promptForTour: !tourItem,
+            doTour: tourItem === "accept",
+            steps,
+            toasted: false,
         };
         const [state, setState] = React.useState(initialState);
 
         const dismissTour = () => {
-            setState({ ...state, modalOpen: false, doTour: false });
+            setState({
+                steps,
+                promptForTour: false,
+                modalOpen: false,
+                doTour: false,
+                toasted: state.toasted,
+            });
             localStorage.setItem("tour", "dismiss");
         };
 
         const acceptTour = () => {
-            setState({ ...state, modalOpen: false, doTour: true });
+            console.log("accepting tour");
             localStorage.setItem("tour", "accept");
+            setState({
+                steps,
+                promptForTour: false,
+                modalOpen: false,
+                doTour: true,
+                toasted: state.toasted,
+            });
         };
 
-        if (!tourItem) {
+        if (state.promptForTour) {
             // then we never run this before
             return (
                 <React.Fragment>
@@ -69,8 +88,7 @@ const withTour = (WrappedComponent: any) => {
 
                             <div className="lead btn-group">
                                 <a
-                                    className="btn btn-primary btn-lg"
-                                    href="#"
+                                    className="btn btn-primary btn-lg text-white"
                                     role="button"
                                     onClick={() => acceptTour()}
                                 >
@@ -78,7 +96,6 @@ const withTour = (WrappedComponent: any) => {
                                 </a>
                                 <a
                                     className="btn btn-secondary btn-lg"
-                                    href="#"
                                     role="button"
                                     onClick={() => dismissTour()}
                                 >
@@ -90,8 +107,19 @@ const withTour = (WrappedComponent: any) => {
                 </React.Fragment>
             );
         }
-        const tourCallback = (c: CallBackProps) => {
-            if (c.action === "reset") {
+        const tourCallback = (c: CustomCallbackProps) => {
+            console.log(c);
+            if (
+                c.step.navigateOnClick &&
+                c.step.navigateOnClick.length > 0 &&
+                c.action === ACTIONS.UPDATE &&
+                c.lifecycle == LIFECYCLE.TOOLTIP
+            ) {
+                console.log(`pushing to ${c.step.navigateOnClick}`);
+                console.log(c);
+                history.push(c.step.navigateOnClick);
+            }
+            if (c.action === "reset" && c.index === steps.length) {
                 // tour is done
                 localStorage.setItem("tour", "dismiss");
                 setState({ ...state, doTour: false });
@@ -99,7 +127,19 @@ const withTour = (WrappedComponent: any) => {
         };
 
         if (state.doTour) {
-            toast.success({text: "Starting a tour."})
+            if (!state.toasted) {
+                setState({
+                    steps: state.steps,
+                    doTour: state.doTour,
+                    modalOpen: state.modalOpen,
+                    promptForTour: state.promptForTour,
+                    toasted: true,
+                });
+                toast.success(
+                    { text: "Starting the Tour" },
+                    { autoClose: 1000 }
+                );
+            }
             return (
                 <React.Fragment>
                     <Joyride

@@ -22,7 +22,7 @@ export class TextInput extends TextInputBase<InputProps<string>> {
             ? ""
             : "input-invalid";
         return (
-            <div className={`input-outer ${this.props.className || ""}`}>
+            <div id={this.props.id} className={`input-outer ${this.props.className || ""}`}>
                 <span>
                     <strong>{this.props.label}</strong>
                 </span>

@@ -73,7 +73,7 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                 <Nav vertical className="m-2">
                     <hr className="bg-white" />
                     <MenuSection title="Find Data">
-                        <ClickableMenuItem id="main-search-button" to="/search">
+                        <ClickableMenuItem id="search-button" to="/search">
                             Search
                         </ClickableMenuItem>
                         <ClickableMenuItem to="/request">

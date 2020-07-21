@@ -6,6 +6,7 @@ export interface ValidateResult {
 }
 
 export interface InputProps<T> {
+    id?: string; // the id of the outer component
     className?: string;
     label: string;
     value?: T;

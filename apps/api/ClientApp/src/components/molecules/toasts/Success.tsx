@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { ToastContent } from './model';
-import { ToastBase } from './ToastBase';
+import * as React from "react";
+import { ToastTrigger } from "./model";
+import { ToastBase } from "./ToastBase";
 
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export class Success extends ToastBase {
     render() {
@@ -12,16 +12,17 @@ export class Success extends ToastBase {
                     {this.renderIconColumn("check")}
                     {this.renderContent()}
                     {this.renderActionsColumn()}
-                </div>);
+                </div>
+            );
         } else {
-            return <React.Fragment></React.Fragment>
+            return <React.Fragment></React.Fragment>;
         }
     }
 }
 
-export function success(content: ToastContent, autoClose: number | undefined = 5000) {
-    toast((<Success content={content}></Success>), {
+export const success: ToastTrigger = (content, options?) => {
+    toast(<Success content={content}></Success>, {
+        ...options,
         className: "toast-success",
-        autoClose
     });
-}
+};

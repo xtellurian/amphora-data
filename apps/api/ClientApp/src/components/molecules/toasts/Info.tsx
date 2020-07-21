@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { ToastContent } from './model';
-import { ToastBase } from './ToastBase';
-import { toast } from 'react-toastify';
+import * as React from "react";
+import { ToastTrigger } from "./model";
+import { ToastBase } from "./ToastBase";
+import { toast } from "react-toastify";
 
 class Info extends ToastBase {
     render() {
@@ -11,17 +11,17 @@ class Info extends ToastBase {
                     {this.renderIconColumn("info-circle")}
                     {this.renderContent()}
                     {this.renderActionsColumn()}
-                </div>);
+                </div>
+            );
         } else {
-            return <React.Fragment></React.Fragment>
+            return <React.Fragment></React.Fragment>;
         }
     }
 }
 
-
-export function info(content: ToastContent, autoClose: number | undefined = 5000) {
-    toast((<Info content={content}></Info>), {
+export const info: ToastTrigger = (content, options) => {
+    toast(<Info content={content}></Info>, {
+        ...options,
         className: "toast-info",
-        autoClose
     });
-}
+};

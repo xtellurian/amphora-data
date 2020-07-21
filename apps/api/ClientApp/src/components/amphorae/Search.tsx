@@ -40,7 +40,7 @@ class SearchComponent extends React.PureComponent<SearchComponentProps> {
     }
 
     private renderLoader(): JSX.Element | undefined {
-        if (this.props.results && false) {
+        if (this.props.isLoading) {
             return <LoadingState />;
         } else {
             return <React.Fragment />;
@@ -67,6 +67,7 @@ class SearchComponent extends React.PureComponent<SearchComponentProps> {
             <React.Fragment>
                 <h2>Search</h2>
                 <TextInput
+                    id="search-bar"
                     value={this.searchParams().get("term") || ""}
                     onComplete={(t) => this.doSearch(t)}
                     label=""
