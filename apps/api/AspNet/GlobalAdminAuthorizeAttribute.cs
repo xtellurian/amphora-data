@@ -1,5 +1,4 @@
 using Amphora.Api.Services.Auth;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Amphora.Api.AspNet
 {
