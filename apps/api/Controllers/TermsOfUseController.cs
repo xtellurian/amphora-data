@@ -42,7 +42,7 @@ namespace Amphora.Api.Controllers
         public async Task<IActionResult> List([FromQuery] ListTermsOptions options = null)
         {
             options ??= new ListTermsOptions();
-            var res = await termsOfUseService.ListAsync(User, options.Skip, options.Take);
+            var res = await termsOfUseService.ListAsync(User, options.Skip ?? 0, options.Take ?? 64);
             if (res.Succeeded)
             {
                 var dto = mapper.Map<List<TermsOfUse>>(res.Entity);

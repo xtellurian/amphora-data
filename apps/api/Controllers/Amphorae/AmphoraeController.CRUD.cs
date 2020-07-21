@@ -90,13 +90,13 @@ namespace Amphora.Api.Controllers.Amphorae
             switch (o)
             {
                 case "self.created":
-                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip, options.Take, created: true, purchased: false));
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip ?? 0, options.Take ?? 64, created: true, purchased: false));
                 case "self.purchased":
-                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip, options.Take, created: false, purchased: true));
+                    return Handle(await this.amphoraeService.ListForSelfAsync(User, options.Skip ?? 0, options.Take ?? 64, created: false, purchased: true));
                 case "organisation.created":
-                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip, options.Take, created: true, purchased: false));
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip ?? 0, options.Take ?? 64, created: true, purchased: false));
                 case "organisation.purchased":
-                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip, options.Take, created: false, purchased: true));
+                    return Handle(await this.amphoraeService.ListForOrganisationAsync(User, options.Skip ?? 0, options.Take ?? 64, created: false, purchased: true));
                 default:
                     return BadRequest("Unknown Type of Get");
             }

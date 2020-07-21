@@ -56,7 +56,7 @@ namespace Amphora.Api.Controllers.Amphorae
 
         private async Task<IList<IAmphoraFileReference>> ListFilesAsync(AmphoraModel model, FileListOptions options)
         {
-            var files = await amphoraFileService.Store.GetFilesAsync(model, options.Prefix, options.Skip, options.Take);
+            var files = await amphoraFileService.Store.GetFilesAsync(model, options.Prefix, options.Skip ?? 0, options.Take ?? 64);
             switch (options.OrderBy)
             {
                 case FileQueryOptions.Alphabetical:

@@ -5,11 +5,11 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Search;
 using Amphora.Api.Models.Search;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Organisations;
-using Amphora.Common.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -39,36 +39,34 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Searches for Amphorae.
         /// </summary>
-        /// <param name="term">General search term for text comparison.</param>
-        /// <param name="labels">Comma separated labels that must be included in results.</param>
-        /// <param name="lat">Latitude (center of search area).</param>
-        /// <param name="lon">Longitude (center of search area).</param>
-        /// <param name="dist">Distance from center of search area (describing a circle).</param>
         /// <returns> A collection of Amphora. </returns>
         [Produces(typeof(List<BasicAmphora>))]
         [HttpGet("api/search/amphorae")]
         [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphorae(string term,
-                                                        string labels,
-                                                        double? lat,
-                                                        double? lon,
-                                                        double? dist)
+        public async Task<IActionResult> SearchAmphorae([FromQuery] AmphoraSearchParameters queryParameters)
         {
             var parameters = new SearchParameters();
-            var labelsArray = labels?.Split(',')?.ToList();
+            parameters.Skip = queryParameters.Skip;
+            parameters.Top = queryParameters.Take;
+            var labelsArray = queryParameters.Labels?.Split(',')?.ToList();
             if (labelsArray != null && labelsArray.Count > 0)
             {
                 parameters = parameters.FilterByLabel<AmphoraModel>(new List<Label>(labelsArray.Select(_ => new Label(_))));
             }
 
-            if (lat != null && lon != null)
+            if (queryParameters.Lat != null && queryParameters.Lon != null)
             {
-                parameters.WithGeoSearch<AmphoraModel>(lat.Value, lon.Value, dist ?? 50);
+                parameters.WithGeoSearch<AmphoraModel>(queryParameters.Lat.Value, queryParameters.Lon.Value, queryParameters.Dist ?? 50);
+            }
+
+            if (!string.IsNullOrEmpty(queryParameters.OrgId))
+            {
+                parameters = parameters.FilterByOrganisation<AmphoraModel>(queryParameters.OrgId);
             }
 
             try
             {
-                var response = await searchService.SearchAmphora(term ?? "", parameters);
+                var response = await searchService.SearchAmphora(queryParameters.Term ?? "", parameters);
                 var entities = response.Results.Select(a => a.Entity);
                 var dto = mapper.Map<List<BasicAmphora>>(entities);
                 return Ok(dto);
@@ -87,15 +85,11 @@ namespace Amphora.Api.Controllers
         /// <param name="lon">Longitude.</param>
         /// <param name="dist">Distance from Latitude and Longitude in which to search.</param>
         /// <returns>A collection of Amphora.</returns>
-        [Produces(typeof(List<BasicAmphora>))]
+        [OpenApiIgnore]
         [HttpGet("api/search/amphorae/byLocation")]
-        [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
+        public IActionResult SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
-            var response = await searchService.SearchAmphora("", new SearchParameters().WithGeoSearch<AmphoraModel>(lat, lon, dist));
-            var entities = response.Results.Select(a => a.Entity);
-            var dto = mapper.Map<List<BasicAmphora>>(entities);
-            return Ok(dto);
+            return Redirect($"api/search/amphorae?lat={lat}$lon={lon}&dist={dist}");
         }
 
         /// <summary>
@@ -103,16 +97,11 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="orgId">Organisation Id.</param>
         /// <returns> A collection of Amphora. </returns>
-        [Produces(typeof(List<BasicAmphora>))]
+        [OpenApiIgnore]
         [HttpGet("api/search/amphorae/byOrganisation")]
-        [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphoraeByOrganisation(string orgId)
+        public IActionResult SearchAmphoraeByOrganisation(string orgId)
         {
-            if (string.IsNullOrEmpty(orgId)) { return BadRequest("OrgId cannot be null"); }
-            var response = await searchService.SearchAmphora("", new SearchParameters().FilterByOrganisation<AmphoraModel>(orgId));
-            var entities = response.Results.Select(a => a.Entity);
-            var dto = mapper.Map<List<BasicAmphora>>(entities);
-            return Ok(dto);
+            return Redirect($"api/search/amphorae?orgId={orgId}");
         }
 
         /// <summary>
