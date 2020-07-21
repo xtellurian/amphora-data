@@ -17,8 +17,10 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "2 decimal places")]
         [DataType(DataType.Currency)]
         public double Price { get; set; }
+
+        // number of labels is enforced by this REGEX
         [Display(Name = "Labels")]
-        [RegularExpression(@"^(([-\w ]{0,12})[, ]?){1,6}$", ErrorMessage = "Comma Separated Labels, Max 5 Labels")]
+        [RegularExpression(@"^(([-\w ]{0,12})[, ]?){1,11}$", ErrorMessage = "Comma Separated Labels, Max 10 Labels")]
         public string Labels { get; set; } = "";
         public List<Label> GetLabels()
         {
