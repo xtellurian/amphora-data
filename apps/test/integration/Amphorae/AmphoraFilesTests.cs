@@ -216,6 +216,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var (adminClient, adminUser, adminOrg) = await NewOrgAuthenticatedClientAsync();
             var nameSuffix = "file";
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(adminOrg.Id);
+            amphora.Name = nameof(FileUpload_LoadTest);
             // create an amphora for us to work with
             var createResponse = await adminClient.PostAsJsonAsync(url, amphora);
             amphora = await AssertHttpSuccess<DetailedAmphora>(createResponse);
@@ -232,6 +233,7 @@ namespace Amphora.Tests.Integration.Amphorae
                 var downloadResponse = await adminClient.GetAsync($"{url}/{amphora.Id}/files/{n}.{nameSuffix}");
                 var downloadedContent = await downloadResponse.Content.ReadAsByteArrayAsync();
                 Assert.True(ByteArrayCompare(downloadedContent, content));
+                Assert.NotEmpty(downloadedContent);
             }
 
             // await DeleteAmphora(adminClient, amphora.Id);

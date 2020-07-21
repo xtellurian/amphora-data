@@ -13,7 +13,7 @@ namespace Amphora.Tests.Helpers
     public static class EntityLibrary
     {
         private static Random rnd = new Random();
-        public static DetailedAmphora GetAmphoraDto(string orgId, string testName = null)
+        public static DetailedAmphora GetAmphoraDto(string orgId, [CallerMemberName] string testName = null)
         {
             var a = new Faker<DetailedAmphora>()
                .StrictMode(false)
