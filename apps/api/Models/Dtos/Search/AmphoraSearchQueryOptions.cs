@@ -2,7 +2,7 @@ using Amphora.Api.Models.Dtos.Platform;
 
 namespace Amphora.Api.Models.Dtos.Search
 {
-    public class AmphoraSearchParameters : PaginatedResponse
+    public class AmphoraSearchQueryOptions : PaginatedResponse
     {
         /// <summary>
         /// Gets or sets the free text search term.
