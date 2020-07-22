@@ -90,7 +90,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("api/search/amphorae/byLocation")]
         public IActionResult SearchAmphoraeByLocation(double lat, double lon, double dist = 10)
         {
-            return Redirect($"api/search/amphorae?lat={lat}$lon={lon}&dist={dist}");
+            return Redirect($"api/search/amphorae?lat={lat}&lon={lon}&dist={dist}");
         }
 
         /// <summary>
