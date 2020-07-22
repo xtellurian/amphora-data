@@ -9,7 +9,7 @@ import { Challenge } from "./components/auth/Challenge";
 import { ApplicationState } from "./redux/state";
 import { Dispatch } from "redux";
 
-import userManager from "./userManager";
+import withTour from "./components/tour/withTour";
 import { User } from "oidc-client";
 import UserInfo from "./components/UserInfo";
 import Amphora from "./components/amphorae/MyAmphorae";
@@ -22,6 +22,7 @@ import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 import Pallete from "./components/Pallete";
 
 import { MainPage } from "./components/public/MainPage";
+import { LoadingState } from "./components/molecules/empty/LoadingState";
 
 interface RoutesModuleProps {
     user: User;
@@ -30,10 +31,37 @@ interface RoutesModuleProps {
     location: any;
 }
 
+const AuthenticatedRoutes: React.FunctionComponent = () => (
+    <React.Fragment>
+        <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/search" component={Search} />
+            <Route path="/create" component={CreateAmphoraPage} />
+            <Route path="/amphora" component={Amphora} />
+            <Route path="/terms" component={TermsOfUsePage} />
+            <Route path="/request" component={RequestAmphoraPage} />
+            
+            <Route path="/user" component={UserInfo} />
+            <Route path="/pallete" component={Pallete} />
+        </Switch>
+    </React.Fragment>
+);
+
+const RoutesWithTour = withTour(AuthenticatedRoutes)
+
+const AnonymousRoutes = () => (
+    <React.Fragment>
+        <Switch>
+            <Route exact path="/challenge" component={Challenge} />
+            <Route path="/" component={MainPage} />
+        </Switch>
+    </React.Fragment>
+);
+
 const Routes = (props: RoutesModuleProps) => {
     // wait for user to be loaded, and location is known
     if (props.isLoadingUser || !props.location) {
-        return <div>Loading...</div>;
+        return <LoadingState/>
     }
 
     // if location is callback page, return only CallbackPage route to allow signin process
@@ -44,44 +72,12 @@ const Routes = (props: RoutesModuleProps) => {
         return <CallbackPage {...props} signInParams={`${rest}`} />;
     }
 
-    // check if user is signed in
-    userManager.getUser().then((user) => {
-        if (user && !user.expired) {
-            // Set the authorization header for axios
-            // axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.access_token;
-        }
-    });
-
     const isConnected = !!props.user;
-    console.log("IsConnected: ", isConnected);
+
     if (isConnected) {
-        return (
-            <React.Fragment>
-                <Switch>
-                    <Route exact path="/" component={Home} />
-                    <Route path="/user" component={UserInfo} />
-
-                    <Route path="/amphora" component={Amphora} />
-                    <Route path="/terms" component={TermsOfUsePage} />
-
-                    <Route path="/create" component={CreateAmphoraPage} />
-                    <Route path="/request" component={RequestAmphoraPage} />
-
-                    <Route path="/pallete" component={Pallete} />
-
-                    <Route path="/search" component={Search} />
-                </Switch>
-            </React.Fragment>
-        );
+        return <RoutesWithTour/>;
     } else {
-        return (
-            <React.Fragment>
-                <Switch>
-                    <Route exact path="/challenge" component={Challenge} />
-                    <Route path="/" component={MainPage} />
-                </Switch>
-            </React.Fragment>
-        );
+        return <AnonymousRoutes />;
     }
 };
 
