@@ -89,7 +89,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var persona = await GetPersonaAsync();
             var amphora = Helpers.EntityLibrary.GetAmphoraDto(persona.Organisation.Id);
             var generator = new Helpers.RandomGenerator();
-            amphora.Labels = generator.RandomString(12); ;
+            amphora.Labels = generator.RandomString(12);
             // Act
             var createResponse = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
 
