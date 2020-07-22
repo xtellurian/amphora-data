@@ -19,7 +19,7 @@ namespace Amphora.Tests.Integration
         public async Task TopAndSkip()
         {
             // Arrange
-            var client = await GetPersonaAsync();
+            var client = await GetPersonaAsync(Personas.AmphoraAdmin);
 
             var amphorae = new List<DetailedAmphora>();
             int i = 0;
