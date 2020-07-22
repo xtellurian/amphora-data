@@ -45,9 +45,9 @@
             </p>
             <p>
                 Amphora contains 
-                <a asp-area="Amphorae" asp-page="/Files/Index" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountFiles files </a>
+                <a asp-area="Amphorae" asp-page="/Detail/Files" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountFiles files </a>
                 and
-                <a asp-area="Amphorae" asp-page="/Signals/Index" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountSignals signals. </a>
+                <a asp-area="Amphorae" asp-page="/Detail/Signals" asp-route-id="@Model.Amphora.Id">@Model.Quality.CountSignals signals. </a>
             </p>
             @if(Model.Amphora.TermsOfUseId != null && @Model.Amphora.TermsOfUse != null)
             {
