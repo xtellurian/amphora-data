@@ -30,18 +30,24 @@ namespace Amphora.Api.Services.Basic
         {
             var entities = new List<AmphoraModel>();
 
-            var res = await amphoraeService.AmphoraStore.QueryAsync(
-                a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
-            entities.AddRange(res);
-
-            if (parameters.Skip.HasValue && parameters.Top.HasValue)
+            if (string.IsNullOrEmpty(parameters.OrganisationId))
             {
-                var toRemove = parameters.Skip * parameters.Top;
-                entities.RemoveRange(0, toRemove.Value);
+                var res = await amphoraeService.AmphoraStore.QueryAsync(
+                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
+                entities.AddRange(res);
+            }
+            else
+            {
+                // filter by organisation
+                var res = await amphoraeService.AmphoraStore.QueryAsync(
+                    a =>
+                        (a.Name.Contains(searchText) || a.Description.Contains(searchText))
+                        && a.OrganisationId == parameters.OrganisationId,
+                    parameters.Skip ?? 0, parameters.Top ?? 99);
+                entities.AddRange(res);
             }
 
-            var take = parameters.Top ?? entities.Count;
-            return new EntitySearchResult<AmphoraModel>(entities.Take(take).ToList());
+            return new EntitySearchResult<AmphoraModel>(entities);
         }
 
         public async Task<long?> SearchAmphoraCount(string searchText, SearchParameters parameters)

@@ -10,6 +10,12 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     /// </summary>
     public class BasicAmphora : Entity
     {
+        /// <summary>
+        /// Gets or sets the owner's organisation Id.
+        /// Will be set by the server upon creation.
+        /// </summary>
+        public string OrganisationId { get; set; }
+
         [Required]
         [StringLength(120)]
         public string Name { get; set; }

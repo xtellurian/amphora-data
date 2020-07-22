@@ -122,7 +122,7 @@ namespace Amphora.Api.Controllers
 
         [HttpPost("api/search/indexers")]
         [OpenApiIgnore]
-        [CommonAuthorize]
+        [GlobalAdminAuthorize]
         public async Task<IActionResult> TryReindex()
         {
             var res = await searchService.TryIndex();

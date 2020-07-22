@@ -11,6 +11,7 @@ namespace Amphora.Api.Models.Search
             if (Filter == null) { Filter = ""; }
         }
 
+        public string OrganisationId { get; set; }
         private string LabelsProperty => nameof(AmphoraModel.Labels);
         private string IsPublicProperty => nameof(AmphoraModel.IsPublic);
         private string GeoLocationProperty => nameof(AmphoraModel.GeoLocation);
@@ -94,6 +95,8 @@ namespace Amphora.Api.Models.Search
             {
                 if (Filter.Length > 1) { Filter += " and "; }
                 Filter = $"{OrganisationIdProperty} eq '{orgId}'";
+
+                this.OrganisationId = orgId;
             }
 
             return this;

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Tests.Helpers;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -17,6 +20,31 @@ namespace Amphora.Tests.Integration
     {
         public SearchTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
+        }
+
+        private async Task PopulateAmphora(Persona persona, [CallerMemberName] string testName = null)
+        {
+            if (persona.User.Email != Personas.AmphoraAdmin)
+            {
+                throw new ArgumentException("You must use an admin to populate, because re-indexation is admin only");
+            }
+
+            for (var i = 0; i <= 5; i++)
+            {
+                var amphora = EntityLibrary.GetAmphoraDto(persona.Organisation.Id, testName);
+                var res = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
+                await AssertHttpSuccess(res);
+            }
+
+            // now trigger the indexing
+            var indexRes = await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
+            if (!indexRes.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Waiting one minute for reindexation");
+                await Task.Delay(60 * 1000);
+                Console.WriteLine("Retriggering index");
+                await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
+            }
         }
 
         [Theory]
@@ -61,6 +89,31 @@ namespace Amphora.Tests.Integration
             await AssertHttpSuccess(response);
 
             var responseList = JsonConvert.DeserializeObject<List<DetailedAmphora>>(responseContent);
+        }
+
+        [Fact]
+        public async Task SearchAmphora_CanPaginate()
+        {
+            var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
+            await PopulateAmphora(persona);
+
+            var paginateRes = await persona.Http.GetAsync("api/search/amphorae?skip=2&take=3");
+            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
+            results.Should().HaveCount(3, "because we set take to 3");
+        }
+
+        [Fact]
+        public async Task SearchAmphora_CanChooseOrgId()
+        {
+            var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
+            await PopulateAmphora(persona);
+
+            var paginateRes = await persona.Http.GetAsync($"api/search/amphorae?orgId={persona.Organisation.Id}");
+            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
+            foreach (var r in results)
+            {
+                r.OrganisationId.Should().Be(persona.Organisation.Id);
+            }
         }
 
         [Fact]
