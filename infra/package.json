@@ -10,10 +10,10 @@
         "tslint-config-prettier": "^1.18.0"
     },
     "dependencies": {
-        "@pulumi/azure": "^3.5.1",
-        "@pulumi/kubernetes": "^2.2.0",
-        "@pulumi/pulumi": "^2.2.1",
-        "@pulumi/random": "^2.1.1",
+        "@pulumi/azure": "^3.12.1",
+        "@pulumi/kubernetes": "^2.4.0",
+        "@pulumi/pulumi": "^2.6.1",
+        "@pulumi/random": "^2.2.0",
         "reflect-metadata": "^0.1.13"
     }
 }
