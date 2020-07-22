@@ -43,8 +43,9 @@ namespace Amphora.Api.Controllers
         [Produces(typeof(List<BasicAmphora>))]
         [HttpGet("api/search/amphorae")]
         [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphorae([FromQuery] AmphoraSearchParameters queryParameters)
+        public async Task<IActionResult> SearchAmphorae([FromQuery] AmphoraSearchQueryOptions queryParameters)
         {
+            queryParameters ??= new AmphoraSearchQueryOptions();
             var parameters = new SearchParameters();
             parameters.Skip = queryParameters.Skip;
             parameters.Top = queryParameters.Take;
