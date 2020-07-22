@@ -67,12 +67,18 @@ export function createFrontDoor({
             },
         ],
         backendPools,
+        backendPoolsSendReceiveTimeoutSeconds: 90,
         enforceBackendPoolsCertificateNameCheck: true,
         frontendEndpoints,
-        location: "global",
         name: "amphora",
         resourceGroupName: rg.name,
         routingRules,
+        tags: {
+            component: "constant",
+            project: pulumi.getProject(),
+            source: "pulumi",
+            stack: pulumi.getStack(),
+        },
     });
 
     return backendEnvironments;

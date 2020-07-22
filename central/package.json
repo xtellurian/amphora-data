@@ -9,7 +9,7 @@
         "tslint-config-prettier": "^1.18.0"
     },
     "dependencies": {
-        "@pulumi/azure": "^1.14.0",
-        "@pulumi/pulumi": "^1.13.1"
+        "@pulumi/azure": "^3.12.1",
+        "@pulumi/pulumi": "^2.6.1"
     }
 }
