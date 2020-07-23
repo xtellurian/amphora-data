@@ -2,20 +2,16 @@ using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.AzureMaps;
+using Amphora.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace Amphora.Api.Services.Azure
 {
-    public class InMemoryMapOptions
-    {
-        public string SubscriptionKey { get; set; }
-    }
-
     public class InMemoryMapService : IMapService
     {
-        private readonly IOptionsMonitor<InMemoryMapOptions> options;
+        private readonly IOptionsMonitor<AzureMapsOptions> options;
 
-        public InMemoryMapService(IOptionsMonitor<InMemoryMapOptions> options)
+        public InMemoryMapService(IOptionsMonitor<AzureMapsOptions> options)
         {
             this.options = options;
         }
@@ -65,7 +61,7 @@ namespace Amphora.Api.Services.Azure
 
         public Task<string> GetSubscriptionKeyAsync()
         {
-            return Task.FromResult(this.options.CurrentValue.SubscriptionKey);
+            return Task.FromResult(this.options.CurrentValue.Key);
         }
     }
 }

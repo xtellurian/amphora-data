@@ -30,7 +30,6 @@ namespace Amphora.Api.StartupModules
             }
             else if (hostingEnvironment.IsDevelopment())
             {
-                services.Configure<InMemoryMapOptions>(configuration.GetSection("MapOptions"));
                 services.AddTransient<IMapService, InMemoryMapService>();
             }
         }
