@@ -1,14 +1,28 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { push as PlainMenu } from "react-burger-menu";
-// import { slide as PlainMenu } from 'react-burger-menu';
+import {
+    faPlusCircle,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { decorator as reduxBurgerMenu } from "redux-burger-menu";
-import { NavItem, NavLink, Nav, NavbarBrand } from "reactstrap";
+import {
+    NavItem,
+    NavLink,
+    Nav,
+    NavbarBrand,
+    Collapse,
+    CardBody,
+} from "reactstrap";
 import { Link } from "react-router-dom";
 import { BurgerMenuState } from "../../redux/state/plugins/burgerMenu";
 import { ApplicationState } from "../../redux/state";
 import { actionCreators } from "../../redux/actions/plugins/burgerMenu";
 import Avatar from "./Avatar";
+
+import "./burgerMenu.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 const menuId = "primary";
 const Menu = reduxBurgerMenu(PlainMenu, menuId); // this line connects the burger menu to redux state
 type HamburgerMenuProps = {
@@ -17,38 +31,77 @@ type HamburgerMenuProps = {
 } & BurgerMenuState & // ... state we've requested from the Redux store
     typeof actionCreators & { path: string; isConnected: boolean }; // ... plus action creators we've requested // ... plus incoming routing parameters
 
+interface HambuergerMenuState {
+    openId?: string | null;
+}
+
 const ClickableMenuItem: React.FunctionComponent<{
     id?: string;
     to: string;
+    icon?: IconProp;
     onClick?:
         | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
         | undefined;
 }> = (props) => {
     return (
-        <NavItem id={props.id} onClick={(e) => props.onClick && props.onClick(e)}>
+        <NavItem
+            id={props.id}
+            onClick={(e) => props.onClick && props.onClick(e)}
+        >
             <NavLink tag={Link} className="text-light" to={props.to}>
+                {props.icon && (
+                    <FontAwesomeIcon
+                        icon={props.icon}
+                        style={{ marginRight: "0.5rem" }}
+                    />
+                )}
                 {props.children}
             </NavLink>
         </NavItem>
     );
 };
 
-const MenuSection: React.FunctionComponent<{ title: string }> = (props) => {
+const MenuSection: React.FunctionComponent<{
+    startOpen: boolean;
+    title: string;
+    icon?: IconProp;
+}> = (props) => {
+    const [open, setOpen] = React.useState(props.startOpen);
+    const toggle = () => setOpen(!open);
     return (
-        <React.Fragment>
-            <h5>{props.title}</h5>
-            {props.children}
-        </React.Fragment>
+        <div style={{ width: "100%" }}>
+            <h5
+                onClick={() => toggle()}
+                style={{ cursor: "pointer", marginTop: "1rem" }}
+            >
+                {props.icon && (
+                    <FontAwesomeIcon
+                        icon={props.icon}
+                        style={{ marginRight: "0.75rem" }}
+                    />
+                )}
+                {props.title}
+            </h5>
+            <Collapse isOpen={open}>
+                <CardBody>{props.children}</CardBody>
+            </Collapse>
+        </div>
     );
 };
 
-class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
+class HamburgerMenu extends React.PureComponent<
+    HamburgerMenuProps,
+    HambuergerMenuState
+> {
+    /**
+     *
+     */
+    constructor(props: HamburgerMenuProps) {
+        super(props);
+        this.state = {};
+    }
     componentDidMount() {
         this.props.open(menuId);
-    }
-
-    private onItemClick() {
-        // this.props.close();
     }
 
     public render() {
@@ -69,40 +122,63 @@ class HamburgerMenu extends React.PureComponent<HamburgerMenuProps> {
                     />
                 </NavbarBrand>
                 <Avatar />
-
-                <Nav vertical className="m-2">
+                {this.state.openId}
+                <Nav vertical className="m-2 w-100">
+                    <MenuSection
+                        startOpen={false}
+                        title="My Account"
+                        icon="user-circle"
+                    >
+                        <ClickableMenuItem to="/">TODO</ClickableMenuItem>
+                    </MenuSection>
                     <hr className="bg-white" />
-                    <MenuSection title="Find Data">
-                        <ClickableMenuItem id="search-button" to="/search">
+                    <MenuSection
+                        title="My Amphora"
+                        icon="font"
+                        startOpen={true}
+                    >
+                        <ClickableMenuItem to="/create" icon="plus-circle">
+                            Create
+                        </ClickableMenuItem>
+                        <ClickableMenuItem to="/amphora" icon="cubes">
+                            Collection
+                        </ClickableMenuItem>
+                        <ClickableMenuItem
+                            id="search-button"
+                            to="/search"
+                            icon="search"
+                        >
                             Search
                         </ClickableMenuItem>
-                        <ClickableMenuItem to="/request">
+                        <ClickableMenuItem to="/request" icon="hand-paper">
                             Request
                         </ClickableMenuItem>
                     </MenuSection>
 
-                    <MenuSection title="My Data">
-                        <ClickableMenuItem to="/amphora">
-                            Amphora
-                        </ClickableMenuItem>
-                        <ClickableMenuItem to="/create">
-                            Create
-                        </ClickableMenuItem>
-                    </MenuSection>
-
-                    <MenuSection title="Management">
-                        <ClickableMenuItem to="/terms">
+                    <MenuSection
+                        title="Management"
+                        icon="tasks"
+                        startOpen={false}
+                    >
+                        <ClickableMenuItem to="/terms" icon="file-contract">
                             Terms of Use
                         </ClickableMenuItem>
                     </MenuSection>
 
-                    <hr className="bg-white" />
-
-                    <NavItem>
-                        <a className="ml-3 text-light" href="https://app.amphoradata.com/challenge">
-                            Classic View
-                        </a>
-                    </NavItem>
+                    <MenuSection
+                        title="More"
+                        icon="ellipsis-h"
+                        startOpen={false}
+                    >
+                        <NavItem>
+                            <a
+                                className="ml-3 text-light"
+                                href="https://app.amphoradata.com/challenge"
+                            >
+                                Classic View
+                            </a>
+                        </NavItem>
+                    </MenuSection>
                 </Nav>
             </Menu>
         );

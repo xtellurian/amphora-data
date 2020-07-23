@@ -1,0 +1,9 @@
+ul {
+    outline: none;
+}
+ul:hover,
+ul:active,
+ul:focus {
+    /*Edit at will*/
+    background: inherit;
+}
