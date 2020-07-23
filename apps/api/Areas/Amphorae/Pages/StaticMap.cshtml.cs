@@ -17,7 +17,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages
         public async Task<IActionResult> OnGetAsync(string id, int? height, int? width)
         {
             await LoadAmphoraAsync(id);
-            if (Amphora != null && Amphora.GeoLocation != null && Amphora.GeoLocation.Lat().HasValue && Amphora.GeoLocation.Lon().HasValue)
+            if (Amphora != null && Amphora.GeoLocation != null && Amphora.GeoLocation.HasValue())
             {
                 byte[] image;
                 if (height.HasValue && width.HasValue)

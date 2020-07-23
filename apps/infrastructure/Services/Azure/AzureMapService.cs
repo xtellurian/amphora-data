@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
@@ -15,13 +17,14 @@ namespace Amphora.Api.Services.Azure
 {
     public class AzureMapService : IMapService
     {
+        private GeoLocation defaultPosition = new GeoLocation(133.77, -25.27); // australia center
         private readonly HttpClient client;
         private readonly IAzureServiceTokenProvider tokenProvider;
         private readonly ILogger<AzureMapService> logger;
         private readonly string? subscriptionKey;
         private const string ApiVersion = "1.0";
-        private const string CountrySet = "AU,US";
-        private string QueryString() => $"subscription-key={subscriptionKey}&api-version={ApiVersion}&countrySet={CountrySet}";
+        private const string DefaultCountrySet = "AU,US";
+        private string QueryString() => $"subscription-key={subscriptionKey}&api-version={ApiVersion}";
 
         public AzureMapService(IHttpClientFactory factory,
             IAzureServiceTokenProvider tokenProvider,
@@ -60,14 +63,45 @@ namespace Amphora.Api.Services.Azure
             return Task.FromResult(this.subscriptionKey);
         }
 
-        public async Task<FuzzySearchResponse> FuzzySearchAsync(string query)
+        public async Task<IpAddressToLocationResult> GetCountryFromIp(string ipAddress)
+        {
+            await InitAsync();
+            var queryString = QueryString();
+            queryString += $"&ip={ipAddress}";
+            var response = await client.GetAsync($"geolocation/ip/json?{queryString}");
+            var content = await response.Content.ReadAsStringAsync();
+            var o = JsonConvert.DeserializeObject<IpAddressToLocationResult>(content);
+            return o;
+        }
+
+        public async Task<GeoLocation> GetPositionFromIp(IPAddress ipAddress)
+        {
+            return await this.GetPositionFromIp(ipAddress.ToString());
+        }
+
+        public async Task<GeoLocation> GetPositionFromIp(string ipAddress)
+        {
+            var region = await GetCountryFromIp(ipAddress);
+            if (region.CountryRegion?.IsoCode != null)
+            {
+                var fuzzy = await FuzzySearchAsync(region.CountryRegion.IsoCode);
+                var first = fuzzy.Results.FirstOrDefault();
+                return first.Position?.Lat == null ? defaultPosition : new GeoLocation(first.Position.Lon, first.Position.Lat);
+            }
+            else
+            {
+                return defaultPosition;
+            }
+        }
+
+        public async Task<FuzzySearchResponse> FuzzySearchAsync(string query, string? countrySet = null)
         {
             if (query == null) { return new FuzzySearchResponse() { Results = new List<Result>() }; }
             await InitAsync();
             try
             {
                 var queryString = QueryString();
-                queryString += $"&query={query}";
+                queryString += $"&query={query}&countrySet={countrySet ?? DefaultCountrySet}";
                 var response = await client.GetAsync($"search/fuzzy/json?{queryString}");
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -85,7 +119,7 @@ namespace Amphora.Api.Services.Azure
 
         public async Task<byte[]> GetStaticMapImageAsync(GeoLocation location, int height = 512, int width = 512)
         {
-            if (location.Lat() == null || location.Lon() == null)
+            if (location.Coordinates.Length == 0)
             {
                 throw new ArgumentException("Geolocation has null lon lat");
             }

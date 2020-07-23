@@ -54,9 +54,9 @@ namespace Amphora.Api.Services.Discover
                 .NotDeleted()
                 .WithTotalResultCount();
 
-            if (location != null && location.Lat().HasValue && location.Lon().HasValue)
+            if (location != null && location.HasValue())
             {
-                parameters.WithGeoSearch<AmphoraModel>(location.Lat().Value, location.Lon().Value, d);
+                parameters.WithGeoSearch<AmphoraModel>(location.Lat(), location.Lon(), d);
             }
 
             parameters.Top = top;

@@ -89,9 +89,9 @@ namespace Amphora.Api.Services.Market
                 parameters = parameters.FilterByLabel<AmphoraModel>(new List<Label>(labels.Select(_ => new Label(_))));
             }
 
-            if (location != null && location.Lat().HasValue && location.Lon().HasValue)
+            if (location != null && location.HasValue())
             {
-                parameters.WithGeoSearch<AmphoraModel>(location.Lat().Value, location.Lon().Value, d);
+                parameters.WithGeoSearch<AmphoraModel>(location.Lat(), location.Lon(), d);
             }
 
             parameters.Top = top;

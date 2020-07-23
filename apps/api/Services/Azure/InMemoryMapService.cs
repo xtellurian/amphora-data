@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
@@ -16,7 +17,7 @@ namespace Amphora.Api.Services.Azure
             this.options = options;
         }
 
-        public Task<FuzzySearchResponse> FuzzySearchAsync(string query)
+        public Task<FuzzySearchResponse> FuzzySearchAsync(string query, string countrySet = null)
         {
             return Task<FuzzySearchResponse>.Run(() =>
             {
@@ -52,6 +53,16 @@ namespace Amphora.Api.Services.Azure
                     }
                 };
             });
+        }
+
+        public Task<GeoLocation> GetPositionFromIp(string ipAddress)
+        {
+            return Task.FromResult(new GeoLocation(133.77, -25.27)); // aus center
+        }
+
+        public Task<GeoLocation> GetPositionFromIp(IPAddress ipAddress)
+        {
+            return this.GetPositionFromIp(ipAddress.ToString());
         }
 
         public Task<byte[]> GetStaticMapImageAsync(GeoLocation location, int height, int width)

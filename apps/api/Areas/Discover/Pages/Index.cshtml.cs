@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Options;
 using Amphora.Common.Contracts;
+using Amphora.Common.Maths;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Infrastructure.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -20,18 +20,21 @@ namespace Amphora.Api.Areas.Discover.Pages
     {
         private readonly IMarketService marketService;
         private readonly IAuthenticateService authenticateService;
+        private readonly IMapService mapService;
 
         public string MapKey { get; }
-        public GeoLocation MapCenter { get; private set; } = new GeoLocation(133.77, -25.27); // centre of Aust
+        public GeoLocation MapCenter { get; private set; }
         public int Zoom { get; private set; } = 3;
 
         public IndexPageModel(IMarketService marketService,
                               IAuthenticateService authenticateService,
+                              IMapService mapService,
                               IOptionsMonitor<AzureMapsOptions> mapsOptions)
         {
             this.marketService = marketService;
             this.authenticateService = authenticateService;
-            this.MapKey = mapsOptions.CurrentValue?.SecondaryKey;
+            this.mapService = mapService;
+            this.MapKey = mapsOptions.CurrentValue?.Key;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -75,24 +78,64 @@ namespace Amphora.Api.Areas.Discover.Pages
         {
             this.MapView = true;
             this.Handler = "MapView";
-            CheckCenter();
-            return await OnGetAsync();
+            var response = await OnGetAsync();
+            await CheckCenterAsync();
+            return response;
         }
 
         public async Task<IActionResult> OnPostMapViewAsync()
         {
             this.MapView = true;
             this.Handler = "MapView";
-            CheckCenter();
-            return await OnPostAsync();
+            var response = await OnPostAsync();
+            await CheckCenterAsync();
+            return response;
         }
 
-        private void CheckCenter()
+        private async Task CheckCenterAsync()
         {
-            if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
+            if (Entities != null && Entities.Any())
+            {
+                // get the center based on the entities in the list
+                var withPosition = Entities.Where(e => e.GeoLocation != null && e.GeoLocation.HasValue()).ToList();
+                var maxLat = withPosition.Max(a => a.GeoLocation.Lat());
+                var minLat = withPosition.Min(a => a.GeoLocation.Lat());
+                var maxLon = withPosition.Max(a => a.GeoLocation.Lon());
+                var minLon = withPosition.Min(a => a.GeoLocation.Lon());
+                var maxRange = 30;
+                var reasonableSize =
+                    System.Math.Abs(maxLat - minLat) < maxRange
+                    && System.Math.Abs(maxLon - minLon) < maxRange;
+                if (reasonableSize)
+                {
+                    // use the average for the center
+                    MapCenter = new GeoLocation((maxLon + minLon) / 2, (maxLat + minLat) / 2);
+                    var maxDistance = Haversine.Distance(new GeoLocation(maxLon, maxLat), new GeoLocation(minLon, minLat));
+                    if (maxDistance > 10)
+                    {
+                        Zoom = DistanceToZoomLevel.DistanceInMetersToZoomLevel(maxDistance * 1000);
+                    }
+                    else
+                    {
+                        Zoom = 8;
+                    }
+                }
+                else
+                {
+                    MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
+                    Zoom = 3;
+                }
+            }
+            else if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
             {
                 MapCenter = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
                 Zoom = 8;
+            }
+            else
+            {
+                // load the map position based on the default position in the IP address
+                MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
+                Zoom = 3;
             }
         }
 

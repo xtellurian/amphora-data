@@ -17,9 +17,9 @@ namespace Amphora.Common.Models.Amphorae
         public string Type { get; set; }
         [JsonProperty("coordinates")]
         public double[] Coordinates { get; set; }
-
-        public double? Lat() => Coordinates?[1];
-        public double? Lon() => Coordinates?[0];
+        public bool HasValue() => Coordinates != null && Coordinates.Length == 2;
+        public double Lat() => Coordinates[1];
+        public double Lon() => Coordinates[0];
     }
 
     // {"type" : "Point", "coordinates": [long], [lat]
