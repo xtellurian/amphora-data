@@ -1,11 +1,5 @@
 import * as React from "react";
-import Joyride, {
-    CallBackProps,
-    ACTIONS,
-    EVENTS,
-    LIFECYCLE,
-    STATUS,
-} from "react-joyride";
+import Joyride, { CallBackProps, ACTIONS, LIFECYCLE } from "react-joyride";
 import Modal from "react-modal";
 import * as toast from "../molecules/toasts";
 import { steps, ExtendedStep } from "./tourSteps";
@@ -88,6 +82,7 @@ const withTour = (WrappedComponent: any) => {
 
                             <div className="lead btn-group">
                                 <a
+                                    href="#"
                                     className="btn btn-primary btn-lg text-white"
                                     role="button"
                                     onClick={() => acceptTour()}

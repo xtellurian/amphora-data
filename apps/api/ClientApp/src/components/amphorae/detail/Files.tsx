@@ -9,7 +9,6 @@ import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Table } from "../../molecules/tables/Table";
 import { Header } from "./Header";
 import { UploadResponse, DetailedAmphora } from "amphoradata";
-import { useHistory } from "react-router";
 import Modal, { Styles } from "react-modal";
 import { Link } from "react-router-dom";
 
@@ -72,7 +71,6 @@ function completeUpload(
 const hiddenInputId = "select-file-input";
 
 export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
-    const history = useHistory();
     const clients = useAmphoraClients();
     const [state, setState] = React.useState<FilesState>({
         fileNames: [],

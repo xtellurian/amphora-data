@@ -1,10 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { push as PlainMenu } from "react-burger-menu";
-import {
-    faPlusCircle,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
 import { decorator as reduxBurgerMenu } from "redux-burger-menu";
 import {
     NavItem,
