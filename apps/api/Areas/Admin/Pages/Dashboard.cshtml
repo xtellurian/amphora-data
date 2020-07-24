@@ -73,7 +73,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Aggregate Balance</h5>
                     <h6 class="card-subtitle mb-2 text-muted">$</h6>
-                    <p class="card-text">@Model.Stats.Organisations.AggregateBalance</p>
+                    <p class="card-text">@Model.Stats.Organisations.AggregateBalance?.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mean Balance</h5>
                     <h6 class="card-subtitle mb-2 text-muted">$</h6>
-                    <p class="card-text">@Model.Stats.Organisations.MeanBalance</p>
+                    <p class="card-text">@Model.Stats.Organisations.MeanBalance?.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mean Price of Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
-                    <p class="card-text">@Model.Stats.Amphorae.MeanActivePrice</p>
+                    <p class="card-text">@Model.Stats.Amphorae.MeanActivePrice?.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -184,7 +184,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mean Price of Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
-                    <p class="card-text">@Model.Stats.Debits.MeanActivePrice</p>
+                    <p class="card-text">@Model.Stats.Debits.MeanActivePrice?.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -221,7 +221,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mean Price of Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
-                    <p class="card-text">@Model.Stats.Purchases.MeanActivePrice</p>
+                    <p class="card-text">@Model.Stats.Purchases.MeanActivePrice?.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -258,7 +258,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mean Price of Active</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Dollars</h6>
-                    <p class="card-text">@Model.Stats.Commissions.MeanActivePrice</p>
+                    <p class="card-text">@Model.Stats.Commissions.MeanActivePrice?.ToString("C")</p>
                 </div>
             </div>
         </div>

@@ -86,6 +86,7 @@ namespace Amphora.Api.Areas.Admin.Pages
                 await LoadDebitStats();
                 await LoadPurchaseStats();
                 await LoadSignalsStats();
+                await LoadCommissionStats();
                 TrackMetrics(this.Stats);
                 this.Stats.GeneratedTime = DateTime.Now;
 
