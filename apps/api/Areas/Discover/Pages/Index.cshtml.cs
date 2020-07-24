@@ -40,6 +40,7 @@ namespace Amphora.Api.Areas.Discover.Pages
         [BindProperty(SupportsGet = true)]
         public MarketSearch SearchDefinition { get; set; } = new MarketSearch();
         public long Count { get; set; }
+        public string CenterReason { get; set; }
 
         public IEnumerable<AmphoraModel> Entities { get; set; }
         public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
@@ -96,8 +97,50 @@ namespace Amphora.Api.Areas.Discover.Pages
         {
             if (Entities != null && Entities.Any())
             {
-                // get the center based on the entities in the list
-                var withPosition = Entities.Where(e => e.GeoLocation != null && e.GeoLocation.HasValue()).ToList();
+                await LoadCenterFromEntities();
+            }
+            else if (!TryLoadCenterFromSearchDefinition())
+            {
+                await LoadCenterFromIp();
+            }
+            else if (MapCenter == null)
+            {
+                // last default
+                MapCenter = new GeoLocation(133.77, -25.27); // australia center
+                Zoom = 3;
+                CenterReason = "Defaulted to Australia";
+            }
+        }
+
+        private bool TryLoadCenterFromSearchDefinition()
+        {
+            if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
+            {
+                CenterReason = "Map Location based on search parameters";
+                MapCenter = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
+                Zoom = 8;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private async Task LoadCenterFromIp()
+        {
+            // load the map position based on the default position in the IP address
+            CenterReason = $"Map Location based on IP Address {HttpContext.Connection.RemoteIpAddress}";
+            MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
+            Zoom = 3;
+        }
+
+        private async Task LoadCenterFromEntities()
+        {
+            // get the center based on the entities in the list
+            var withPosition = Entities.Where(e => e.GeoLocation != null && e.GeoLocation.HasValue()).ToList();
+            if (withPosition.Count > 0)
+            {
                 var maxLat = withPosition.Max(a => a.GeoLocation.Lat());
                 var minLat = withPosition.Min(a => a.GeoLocation.Lat());
                 var maxLon = withPosition.Max(a => a.GeoLocation.Lon());
@@ -110,6 +153,7 @@ namespace Amphora.Api.Areas.Discover.Pages
                 {
                     // use the average for the center
                     MapCenter = new GeoLocation((maxLon + minLon) / 2, (maxLat + minLat) / 2);
+                    CenterReason = "Map Location based on Amphora positions";
                     var maxDistance = Haversine.Distance(new GeoLocation(maxLon, maxLat), new GeoLocation(minLon, minLat));
                     if (maxDistance > 10)
                     {
@@ -122,20 +166,12 @@ namespace Amphora.Api.Areas.Discover.Pages
                 }
                 else
                 {
-                    MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
-                    Zoom = 3;
+                    await LoadCenterFromIp();
                 }
-            }
-            else if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
-            {
-                MapCenter = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
-                Zoom = 8;
             }
             else
             {
-                // load the map position based on the default position in the IP address
-                MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
-                Zoom = 3;
+                await LoadCenterFromIp();
             }
         }
 
@@ -152,11 +188,11 @@ namespace Amphora.Api.Areas.Discover.Pages
             var geo = GetGeo();
             var labels = GetLabels();
             var res = await marketService.FindAsync(SearchDefinition.Term,
-                                                          geo,
-                                                          SearchDefinition.Dist,
-                                                          SearchDefinition.Skip,
-                                                          SearchDefinition.Top,
-                                                          labels);
+                                                    geo,
+                                                    SearchDefinition.Dist,
+                                                    SearchDefinition.Skip,
+                                                    SearchDefinition.Top,
+                                                    labels);
 
             this.Count = res.Count.HasValue ? res.Count.Value : 0;
             this.Entities = res.Results.Select(_ => _.Entity);

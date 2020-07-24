@@ -99,6 +99,13 @@
             <a asp-page="/DataRequests/Create" class="btn btn-link">I can't find what I'm looking for</a>
         </div>
     </div>
+    <div class="row justify-content-center">
+        <div class="col text-center">
+            <small>
+                @Model.CenterReason
+            </small>
+        </div>
+    </div>
 
     @{
         var d = Model.SearchDefinition;
