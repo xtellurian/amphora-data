@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Contracts;
 using Amphora.Common.Maths;
@@ -130,9 +131,18 @@ namespace Amphora.Api.Areas.Discover.Pages
         private async Task LoadCenterFromIp()
         {
             // load the map position based on the default position in the IP address
-            CenterReason = $"Map Location based on IP Address {HttpContext.Connection.RemoteIpAddress}";
-            MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
-            Zoom = 3;
+            if (HttpContext.Request.TryGetForwardedSourceIpAddress(out var ip))
+            {
+                CenterReason = $"Map Location based on IP Address {ip}";
+                MapCenter = await mapService.GetPositionFromIp(ip);
+                Zoom = 3;
+            }
+            else
+            {
+                CenterReason = $"Map Location based on IP Address {HttpContext.Connection.RemoteIpAddress}";
+                MapCenter = await mapService.GetPositionFromIp(HttpContext.Connection.RemoteIpAddress);
+                Zoom = 3;
+            }
         }
 
         private async Task LoadCenterFromEntities()

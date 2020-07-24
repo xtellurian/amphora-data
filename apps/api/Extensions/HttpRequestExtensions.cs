@@ -7,6 +7,26 @@ namespace Amphora.Api.Extensions
     public static class HttpRequestExtensions
     {
         private static string versionHeader = "amphora-client-version";
+        private static string forwardedForHeader = "X-Forwarded-For";
+        private static string azureClientIpHeader = "X-Azure-ClientIP";
+        public static bool TryGetForwardedSourceIpAddress(this HttpRequest request, out string ip)
+        {
+            if (request.Headers.TryGetValue(forwardedForHeader, out var forwardedValue))
+            {
+                ip = forwardedValue;
+                return true;
+            }
+            else if (request.Headers.TryGetValue(azureClientIpHeader, out var clientValue))
+            {
+                ip = clientValue;
+                return true;
+            }
+            else
+            {
+                ip = null;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Tries to read the version info from the http request headers.
