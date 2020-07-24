@@ -121,6 +121,7 @@ namespace Amphora.Api.Services.Auth
                     return false;
                 }
 
+                // TODO: this should be has ORG purchased amphora
                 if (HasUserPurchasedAmphora(user, entity) && accessLevel <= AccessLevels.ReadContents)
                 {
                     logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");

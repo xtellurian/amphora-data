@@ -6,24 +6,21 @@ using Amphora.Api.Models;
 using Amphora.Api.Services.Auth;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
-using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Permissions;
+using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
 
-namespace Amphora.Tests.Unit.Authorization
+namespace Amphora.Tests.Unit.Services
 {
-    public class AmphoraAuthTests : UnitTestBase
+    public class PermissionServiceTests : UnitTestBase
     {
-        public AmphoraAuthTests()
-        {
-        }
-
         [Fact]
         public async Task DenyAllButReadByDefault()
         {
@@ -101,6 +98,72 @@ namespace Amphora.Tests.Unit.Authorization
                 authContext = new AuthorizationHandlerContext(requirements, principal, a);
                 await handler.HandleAsync(authContext);
                 Assert.False(authContext.HasSucceeded);
+            }
+        }
+
+        [Fact]
+        public async Task UsersInSameOrg_CanReadContentsOfPurchased()
+        {
+            using (var context = GetContext())
+            {
+                // setup (lots of it)
+                var orgStore = new OrganisationsEFStore(context, CreateMockLogger<OrganisationsEFStore>());
+                var purchasingOrg = EntityLibrary.GetOrganisationModel();
+                purchasingOrg = await orgStore.CreateAsync(purchasingOrg);
+
+                var purchasorPrincipal = new TestPrincipal();
+                var purchasorUserData = new ApplicationUserDataModel
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    OrganisationId = purchasingOrg.Id,
+                    Organisation = purchasingOrg
+                };
+                var accessorPrincipal = new TestPrincipal();
+                var accessorUserData = new ApplicationUserDataModel()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    OrganisationId = purchasingOrg.Id,
+                    Organisation = purchasingOrg
+                };
+
+                var sellingOrg = EntityLibrary.GetOrganisationModel();
+                sellingOrg = await orgStore.CreateAsync(sellingOrg);
+                var sellerPrincipal = new TestPrincipal();
+                var sellerUserData = new ApplicationUserDataModel
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    OrganisationId = sellingOrg.Id,
+                    Organisation = sellingOrg
+                };
+
+                var userDataService = CreateMockUserDataService(
+                        new ConnectUser(purchasorUserData, purchasorPrincipal),
+                        new ConnectUser(accessorUserData, accessorPrincipal),
+                        new ConnectUser(sellerUserData, sellerPrincipal));
+
+                purchasingOrg.AddOrUpdateMembership(purchasorUserData);
+                purchasingOrg.AddOrUpdateMembership(accessorUserData);
+                await orgStore.UpdateAsync(purchasingOrg);
+                sellingOrg.AddOrUpdateMembership(sellerUserData);
+                await orgStore.UpdateAsync(sellingOrg);
+
+                var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
+                var amphora = EntityLibrary.GetAmphoraModel(sellingOrg);
+                amphora = await amphoraStore.CreateAsync(amphora);
+
+                // create the purchase entity + store
+                var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
+                var purchase = new PurchaseModel(purchasorUserData, amphora);
+                purchase = await purchaseStore.CreateAsync(purchase);
+
+                // create the SUT
+                var sut = new PermissionService(orgStore, amphoraStore, userDataService.Object, CreateMockLogger<PermissionService>());
+
+                // create the purchase model
+                var purchasorCanRead = await sut.IsAuthorizedAsync(purchasorPrincipal, amphora, AccessLevels.ReadContents);
+                purchasorCanRead.Should().BeTrue("because purchasor can read the data");
+                var accessorCanRead = await sut.IsAuthorizedAsync(accessorPrincipal, amphora, AccessLevels.ReadContents);
+                accessorCanRead.Should().BeTrue("because accessor can also read the data");
             }
         }
     }

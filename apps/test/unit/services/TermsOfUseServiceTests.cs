@@ -24,9 +24,9 @@ namespace Amphora.Tests.Unit.Services
             {
             };
 
-            var mockUserDataService = CreateMockUserDataService(fakeUserData);
-            var permission = CreateMockPermissionService();
             var mockPrincipal = MockClaimsPrincipal();
+            var mockUserDataService = CreateMockUserDataService(new ConnectUser(fakeUserData, mockPrincipal.Object));
+            var permission = CreateMockPermissionService();
             var sut = new TermsOfUseService(touStore, mockUserDataService.Object, permission, CreateMockLogger<TermsOfUseService>());
 
             var tou = new TermsOfUseModel("name of terms", "contents");

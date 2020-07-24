@@ -66,12 +66,27 @@ namespace Amphora.Tests.Unit
             return Mock.Of<IOptionsMonitor<T>>(_ => _.CurrentValue == o);
         }
 
-        protected Mock<IUserDataService> CreateMockUserDataService(ApplicationUserDataModel fakeUserData)
+        protected class ConnectUser
+        {
+            public ConnectUser(ApplicationUserDataModel userData, ClaimsPrincipal principal)
+            {
+                UserData = userData;
+                Principal = principal;
+            }
+
+            public ApplicationUserDataModel UserData { get; }
+            public ClaimsPrincipal Principal { get; }
+        }
+
+        protected Mock<IUserDataService> CreateMockUserDataService(params ConnectUser[] connectors)
         {
             var md = new Mock<IUserDataService>();
-            md
-                .Setup(_ => _.ReadAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
-                .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(fakeUserData, fakeUserData));
+            foreach (var connect in connectors)
+            {
+                md
+                    .Setup(_ => _.ReadAsync(It.Is<ClaimsPrincipal>(_ => connect.Principal == _), It.IsAny<string>()))
+                    .ReturnsAsync(new EntityOperationResult<ApplicationUserDataModel>(connect.UserData, connect.UserData));
+            }
 
             return md;
         }
