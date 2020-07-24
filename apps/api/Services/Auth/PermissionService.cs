@@ -121,8 +121,8 @@ namespace Amphora.Api.Services.Auth
                     return false;
                 }
 
-                // TODO: this should be has ORG purchased amphora
-                if (HasUserPurchasedAmphora(user, entity) && accessLevel <= AccessLevels.ReadContents)
+                var usersOrganisation = await orgStore.ReadAsync(user.OrganisationId);
+                if (accessLevel <= AccessLevels.ReadContents && HasOrganisationPurchasedAmphora(usersOrganisation, entity))
                 {
                     logger.LogInformation($"Authorization granted for user {user.Id} for amphora {entity.Id} - has purchased");
                     return true;
@@ -235,6 +235,13 @@ namespace Amphora.Api.Services.Auth
                 logger.LogInformation($"Has Purchased: {hasPurchased}");
                 return hasPurchased;
             }
+        }
+
+        private bool HasOrganisationPurchasedAmphora(OrganisationModel organisation, AmphoraModel amphora)
+        {
+            var hasPurchased = amphora.Purchases?.Any(p => string.Equals(p.PurchasedByOrganisationId, organisation.Id)) ?? false;
+            logger.LogInformation($"Has Purchased: {hasPurchased}");
+            return hasPurchased;
         }
     }
 }
