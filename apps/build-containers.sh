@@ -54,7 +54,7 @@ else
     docker build -f api/Dockerfile -t api -t $REGISTRY/webapp:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/webapp:latest --build-arg "BASE=builder" .
 
     echo "<< Building Identity Container >>"
-    docker build -f identity/Dockerfile -t identity -t $REGISTRY/identity:$TAG -t $REGISTRY/webapp:$GITHASH -t $REGISTRY/identity:latest --build-arg gitHash=$GITHASH --build-arg "BASE=builder" .
+    docker build -f identity/Dockerfile -t identity -t $REGISTRY/identity:$TAG -t $REGISTRY/identity:$GITHASH -t $REGISTRY/identity:latest --build-arg gitHash=$GITHASH --build-arg "BASE=builder" .
 fi
 
 echo "Finished Building Containers"
