@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Search;
@@ -45,29 +46,10 @@ namespace Amphora.Api.Controllers
         [CommonAuthorize]
         public async Task<IActionResult> SearchAmphorae([FromQuery] AmphoraSearchQueryOptions queryParameters)
         {
-            queryParameters ??= new AmphoraSearchQueryOptions();
-            var parameters = new SearchParameters();
-            parameters.Skip = queryParameters.Skip;
-            parameters.Top = queryParameters.Take;
-            var labelsArray = queryParameters.Labels?.Split(',')?.ToList();
-            if (labelsArray != null && labelsArray.Count > 0)
-            {
-                parameters = parameters.FilterByLabel<AmphoraModel>(new List<Label>(labelsArray.Select(_ => new Label(_))));
-            }
-
-            if (queryParameters.Lat != null && queryParameters.Lon != null)
-            {
-                parameters.WithGeoSearch<AmphoraModel>(queryParameters.Lat.Value, queryParameters.Lon.Value, queryParameters.Dist ?? 50);
-            }
-
-            if (!string.IsNullOrEmpty(queryParameters.OrgId))
-            {
-                parameters = parameters.FilterByOrganisation<AmphoraModel>(queryParameters.OrgId);
-            }
-
+            var parameters = queryParameters.ToSearchParameters();
             try
             {
-                var response = await searchService.SearchAmphora(queryParameters.Term ?? "", parameters);
+                var response = await searchService.SearchAsync<AmphoraModel>(queryParameters.Term ?? "", parameters);
                 var entities = response.Results.Select(a => a.Entity);
                 var dto = mapper.Map<List<BasicAmphora>>(entities);
                 return Ok(dto);

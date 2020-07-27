@@ -17,16 +17,14 @@ namespace Amphora.Api.Controllers
     [SkipStatusCodePages]
     public class MarketController : Controller
     {
-        private readonly IMarketService marketService;
         private readonly IMapService mapService;
         private readonly IMapper mapper;
         private readonly IPurchaseService purchaseService;
         private readonly IAmphoraeService amphoraeService;
 
-        public MarketController(IMarketService marketService, IMapService mapService, IMapper mapper,
+        public MarketController(IMapService mapService, IMapper mapper,
                                 IPurchaseService purchaseService, IAmphoraeService amphoraeService)
         {
-            this.marketService = marketService;
             this.mapService = mapService;
             this.mapper = mapper;
             this.purchaseService = purchaseService;
@@ -46,25 +44,6 @@ namespace Amphora.Api.Controllers
         {
             var response = await mapService.FuzzySearchAsync(query);
             return Ok(response);
-        }
-
-        /// <summary>
-        /// Finds Amphora using a fuzzy search.
-        /// </summary>
-        /// <param name="query">A string as a search term.</param>
-        /// <param name="top">How many results to return.</param>
-        /// <param name="skip">How many pages (in multiples of top) to skip.</param>
-        /// <returns> A collection of Amphora. </returns>
-        [Produces(typeof(List<BasicAmphora>))]
-        [OpenApiIgnore] // I think we can just ignore this too.
-        [HttpGet("api/market/search")]
-        [CommonAuthorize]
-        public async Task<IActionResult> Find(string query, int? top, int? skip)
-        {
-            var searchResult = await marketService.FindAsync(query, skip: skip, top: top);
-            var entities = searchResult.Results.Select(_ => _.Entity);
-            var dto = mapper.Map<List<BasicAmphora>>(entities);
-            return Ok(dto);
         }
     }
 }

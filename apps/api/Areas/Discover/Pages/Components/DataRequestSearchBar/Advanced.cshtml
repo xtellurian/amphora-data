@@ -1,4 +1,4 @@
-@model Amphora.Api.Areas.Discover.Pages.Components.SearchBarViewComponent
+@model Amphora.Api.Areas.Discover.Pages.Components.DataRequestSearchBarViewComponent
 
 <div class="card">
     <div class="container card-body">
@@ -31,18 +31,14 @@
             </div>
         </div>
         <div class="row justify-content-between mb-2">
-            <div class="col-6">
-                <input id="labels" form="searchform" asp-for="SearchDefinition.Labels" placeholder="Labels (comma separated)" class="form-control bg-none border-1">
-                <span asp-validation-for="SearchDefinition.Labels" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <select form="searchform" asp-for="SearchDefinition.Top" class="form-control">
-                    <option value="8">8</option>
-                    <option value="16">16</option>
-                    <option value="32">32</option>
+            <div class="col-4">
+                <select form="searchform" asp-for="SearchDefinition.Take" class="form-control">
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
                 </select>
-                <label asp-for="SearchDefinition.Top" class="control-label"></label>
-                <span asp-validation-for="SearchDefinition.Top" class="text-danger"></span>
+                <label asp-for="SearchDefinition.Take" class="control-label"></label>
+                <span asp-validation-for="SearchDefinition.Take" class="text-danger"></span>
             </div>
         </div>
         <div class="row text-left">

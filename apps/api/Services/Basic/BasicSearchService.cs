@@ -67,15 +67,15 @@ namespace Amphora.Api.Services.Basic
                 var res = await amphoraeService.AmphoraStore.QueryAsync(
                     a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
                 entities.AddRange(res);
+                var result = new EntitySearchResult<T>(entities.ToList().Cast<T>());
 
-                if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)
+                if (parameters.IncludeTotalResultCount)
                 {
-                    var toRemove = parameters.Skip * parameters.Top;
-                    entities.RemoveRange(0, toRemove.Value);
+                    result.Count = await amphoraeService.AmphoraStore.CountAsync(a =>
+                        a.Name.Contains(searchText) || a.Description.Contains(searchText));
                 }
 
-                var take = parameters.Top ?? entities.Count;
-                return new EntitySearchResult<T>(entities.Take(take).ToList().Cast<T>());
+                return result;
             }
             else if (typeof(T) == typeof(DataRequestModel))
             {
@@ -84,15 +84,14 @@ namespace Amphora.Api.Services.Basic
                 var res = await dataRequestStore.QueryAsync(
                     a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
                 entities.AddRange(res);
-
-                if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)
+                var result = new EntitySearchResult<T>(entities.ToList().Cast<T>());
+                if (parameters.IncludeTotalResultCount)
                 {
-                    var toRemove = parameters.Skip * parameters.Top;
-                    entities.RemoveRange(0, toRemove.Value);
+                    result.Count = await dataRequestStore.CountAsync(a =>
+                        a.Name.Contains(searchText) || a.Description.Contains(searchText));
                 }
 
-                var take = parameters.Top ?? entities.Count;
-                return new EntitySearchResult<T>(entities.Take(take).ToList().Cast<T>());
+                return result;
             }
             else if (typeof(T) == typeof(OrganisationModel))
             {
@@ -101,20 +100,14 @@ namespace Amphora.Api.Services.Basic
                 var res = await organisationStore.QueryAsync(
                     a => a.Name.Contains(searchText) || a.About.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
                 entities.AddRange(res);
-
-                if (parameters != null && parameters.Skip.HasValue && parameters.Top.HasValue)
+                var result = new EntitySearchResult<T>(entities.ToList().Cast<T>());
+                if (parameters.IncludeTotalResultCount)
                 {
-                    var toRemove = parameters.Skip * parameters.Top;
-                    entities.RemoveRange(0, toRemove.Value);
+                    result.Count = await organisationStore.CountAsync(a =>
+                        a.Name.Contains(searchText) || a.About.Contains(searchText));
                 }
 
-                var take = 10;
-                if (parameters != null)
-                {
-                    take = parameters.Top ?? entities.Count;
-                }
-
-                return new EntitySearchResult<T>(entities.Take(take).ToList().Cast<T>());
+                return result;
             }
             else
             {

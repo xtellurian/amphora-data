@@ -1,20 +1,17 @@
 using System.Collections.Generic;
-using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Search.Models;
 
 namespace Amphora.Api.Areas.Discover.Pages.Components
 {
-    [ViewComponent(Name = "SearchBar")]
-    public class SearchBarViewComponent : ViewComponent
+    [ViewComponent(Name = "AmphoraSearchBar")]
+    public class AmphoraSearchBarViewComponent : SearchBarViewModel
     {
-        public string FormId { get; private set; }
-        public string Handler { get; private set; }
-        public string Placeholder { get; private set; }
         [BindProperty]
-        public MarketSearch SearchDefinition { get; private set; }
+        public AmphoraSearchQueryOptions SearchDefinition { get; private set; }
         public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
-        public IViewComponentResult Invoke(MarketSearch searchDefinition,
+        public IViewComponentResult Invoke(AmphoraSearchQueryOptions searchDefinition,
                                            IList<FacetResult> labelfacets,
                                            string formId,
                                            bool isAdvanced,

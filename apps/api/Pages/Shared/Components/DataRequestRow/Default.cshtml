@@ -2,7 +2,7 @@
 
 <div class="row align-items-center entity-item">
     <div class="col-1">
-        <a asp-page="/DataRequests/Detail" asp-area="" asp-route-id="@Model.DataRequest.Id">    
+        <a asp-page="/DataRequests/Detail" asp-area="" asp-route-id="@Model.DataRequest.Id">
             <i class="far fa-question-circle fa-lg"></i>
         </a>
     </div>
@@ -13,7 +13,9 @@
         }
     </div>
     <div class="col-sm-6">
-        @Model.DataRequest.Name 
+        <a class="text-dark" asp-page="/DataRequests/Detail" asp-area="" asp-route-id="@Model.DataRequest.Id">
+            @Model.DataRequest.Name 
+        </a>
     </div>
     <div class="d-none d-sm-block col-sm-1 text-right">
         Votes: @Model.DataRequest.UserIdVotes?.Count 

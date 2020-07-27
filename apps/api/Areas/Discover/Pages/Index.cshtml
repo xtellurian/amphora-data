@@ -24,9 +24,8 @@
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
                     asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
                     asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                     asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                     asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                     asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -38,9 +37,8 @@
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
                     asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                    asp-route-SearchDefinition.Page="@Model.SearchDefinition.Page" 
                     asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                    asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                    asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                     asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                     asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                     asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -53,7 +51,7 @@
 
     <div class="row align-items-center">
         <div class="col-11 text-center">
-            @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
+            @await Component.InvokeAsync("AmphoraSearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
         </div>
         <div class="col-1 text-left">
             <div>
@@ -66,7 +64,7 @@
     <div class="row">
         <div id="advanced" class="col text-center">
             <div id="filterCollapse" class="collapse mb-2">
-                @await Component.InvokeAsync("SearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
+                @await Component.InvokeAsync("AmphoraSearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
             </div>
         </div>
     </div>
@@ -110,30 +108,30 @@
     @{
         var d = Model.SearchDefinition;
         // skip is zero based
-        int numPages = (int)(Model.Count / d.Top) + 1;
-        int currentPage = (int)d.Page;
-        var previousPage = d.Page - 1;
-        var nextPage = d.Page + 2;
+        int numPages = (int)(Model.Count / d.Take) + 1;
+        int currentPage = (int)(d.Skip / d.Take);
+        var previousPage = currentPage - 1;
+        var nextPage = currentPage + 1;
         var startPage = Math.Max(0, currentPage - 3);
         var endPage = Math.Min(numPages, currentPage + 3);
         string nextEnabled = "";
         string previousEnabled = "";
-        if(nextPage > numPages) nextEnabled = "disabled";
+        if(nextPage > numPages - 1) nextEnabled = "disabled";
         if(previousPage < 1) previousEnabled = "disabled";
     }
     <div class="row">
         <div class="col text-center">
             <hr/>
             <p> Page @currentPage of @(numPages - 1)</p>
+            <p> @Model.Count results</p>
             <nav aria-label="...">
                 <ul class="pagination justify-content-center">
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Page="0"
-                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Skip="0" 
+                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -146,9 +144,8 @@
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Page="@previousPage"
-                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Skip="@(previousPage * Model.SearchDefinition.Take)" 
+                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -165,9 +162,8 @@
                             <a class="page-link" asp-area="Discover" asp-page="/Index" 
                                 asp-page-handler="@Model.Handler"
                                 asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                                asp-route-SearchDefinition.Page="@p" 
-                                asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                                asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                                asp-route-SearchDefinition.Skip="@(p * Model.SearchDefinition.Take)" 
+                                asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                                 asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                                 asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                                 asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -180,9 +176,8 @@
                         <a class="page-link" asp-area="Discover" asp-page="/Index"
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Page="@nextPage"
-                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Skip="@(nextPage * Model.SearchDefinition.Take)" 
+                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
@@ -194,9 +189,8 @@
                         <a class="page-link" asp-area="Discover" asp-page="/Index"
                             asp-page-handler="@Model.Handler"
                             asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Page="@(numPages -1)"
-                            asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                            asp-route-SearchDefinition.Top="@Model.SearchDefinition.Top" 
+                            asp-route-SearchDefinition.Skip="@((numPages -1) * Model.SearchDefinition.Take)" 
+                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
                             asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
                             asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
                             asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"

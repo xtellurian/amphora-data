@@ -3,7 +3,6 @@ using Amphora.Api.Options;
 using Amphora.Api.Services.Azure;
 using Amphora.Api.Services.Basic;
 using Amphora.Api.Services.Discover;
-using Amphora.Api.Services.Market;
 using Amphora.Common.Models.DataRequests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +23,6 @@ namespace Amphora.Api.StartupModules
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMarketService, MarketService>();
             services.AddScoped<IDiscoverService<DataRequestModel>, DataRequestDiscoveryService>();
 
             var key = Configuration.GetSection("AzureSearch")["PrimaryKey"];

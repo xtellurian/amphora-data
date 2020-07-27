@@ -5,6 +5,7 @@ using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
 using Amphora.Api.Models.Dtos.Amphorae;
+using Amphora.Api.Models.Dtos.Search;
 using Amphora.Common.Contracts;
 using Amphora.Common.Maths;
 using Amphora.Common.Models.Amphorae;
@@ -19,7 +20,7 @@ namespace Amphora.Api.Areas.Discover.Pages
     [CommonAuthorize]
     public class IndexPageModel : PageModel
     {
-        private readonly IMarketService marketService;
+        private readonly ISearchService searchService;
         private readonly IAuthenticateService authenticateService;
         private readonly IMapService mapService;
 
@@ -27,19 +28,19 @@ namespace Amphora.Api.Areas.Discover.Pages
         public GeoLocation MapCenter { get; private set; }
         public int Zoom { get; private set; } = 3;
 
-        public IndexPageModel(IMarketService marketService,
+        public IndexPageModel(ISearchService searchService,
                               IAuthenticateService authenticateService,
                               IMapService mapService,
                               IOptionsMonitor<AzureMapsOptions> mapsOptions)
         {
-            this.marketService = marketService;
+            this.searchService = searchService;
             this.authenticateService = authenticateService;
             this.mapService = mapService;
             this.MapKey = mapsOptions.CurrentValue?.Key;
         }
 
         [BindProperty(SupportsGet = true)]
-        public MarketSearch SearchDefinition { get; set; } = new MarketSearch();
+        public AmphoraSearchQueryOptions SearchDefinition { get; set; } = new AmphoraSearchQueryOptions();
         public long Count { get; set; }
         public string CenterReason { get; set; }
 
@@ -197,13 +198,8 @@ namespace Amphora.Api.Areas.Discover.Pages
         {
             var geo = GetGeo();
             var labels = GetLabels();
-            var res = await marketService.FindAsync(SearchDefinition.Term,
-                                                    geo,
-                                                    SearchDefinition.Dist,
-                                                    SearchDefinition.Skip,
-                                                    SearchDefinition.Top,
-                                                    labels);
-
+            var searchParameters = SearchDefinition.ToSearchParameters();
+            var res = await searchService.SearchAsync<AmphoraModel>(SearchDefinition.Term, searchParameters);
             this.Count = res.Count.HasValue ? res.Count.Value : 0;
             this.Entities = res.Results.Select(_ => _.Entity);
             if (res.Facets.TryGetValue($"{nameof(AmphoraModel.Labels)}/{nameof(Label.Name)}", out var labelFacets))
@@ -220,8 +216,6 @@ namespace Amphora.Api.Areas.Discover.Pages
                 geo = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
             }
 
-            if (SearchDefinition.Skip == null) { SearchDefinition.Page = 0; }
-            if (SearchDefinition.Top == null) { SearchDefinition.Top = 8; }
             return geo;
         }
     }

@@ -13,7 +13,9 @@
         }
     </td>
     <td class="col-sm-6">
-        @Model.DataRequest.Name 
+        <a class="text-dark" asp-page="/DataRequests/Detail" asp-area="" asp-route-id="@Model.DataRequest.Id">
+            @Model.DataRequest.Name 
+        </a>
     </td>
     <td class="d-none d-sm-block col-sm-1 text-right">
         Votes: @Model.DataRequest.UserIdVotes?.Count 
