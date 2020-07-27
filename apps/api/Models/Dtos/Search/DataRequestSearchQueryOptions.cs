@@ -1,9 +1,22 @@
+using System.Collections.Generic;
 using Amphora.Api.Models.Dtos.Platform;
 
 namespace Amphora.Api.Models.Dtos.Search
 {
     public class DataRequestSearchQueryOptions : PaginatedResponse
     {
+        public override IDictionary<string, string> ToRouteData()
+        {
+            return new Dictionary<string, string>(base.ToRouteData())
+            {
+                { nameof(Term), Term },
+                { nameof(OrgId), OrgId },
+                { nameof(Lat), Lat?.ToString() },
+                { nameof(Lon), Lon?.ToString() },
+                { nameof(Dist), Dist?.ToString() }
+            };
+        }
+
         /// <summary>
         /// Gets or sets the free text search term.
         /// </summary>

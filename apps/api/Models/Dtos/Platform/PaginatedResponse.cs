@@ -1,7 +1,18 @@
+using System.Collections.Generic;
+
 namespace Amphora.Api.Models.Dtos.Platform
 {
     public abstract class PaginatedResponse
     {
+        public virtual IDictionary<string, string> ToRouteData()
+        {
+            return new Dictionary<string, string>
+            {
+                { nameof(Take), Take.ToString() },
+                { nameof(Skip), Skip.ToString() }
+            };
+        }
+
         /// <summary>
         /// Gets or sets how many files to return.
         /// Defaults to 64.

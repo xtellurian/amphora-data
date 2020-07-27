@@ -37,9 +37,9 @@
             </div>
             <div class="col-2">
                 <select form="searchform" asp-for="SearchDefinition.Take" class="form-control">
-                    <option value="8">8</option>
                     <option value="16">16</option>
                     <option value="32">32</option>
+                    <option value="64">64</option>
                 </select>
                 <label asp-for="SearchDefinition.Take" class="control-label"></label>
                 <span asp-validation-for="SearchDefinition.Take" class="text-danger"></span>

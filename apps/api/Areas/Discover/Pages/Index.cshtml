@@ -23,26 +23,14 @@
             @if(Model.MapView)
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
-                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                    asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                    asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                    asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
+                    asp-all-route-data="@Model.SearchDefinition.ToRouteData()"  >
                     View as List
                 </a>
             }
             else
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
-                    asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                    asp-route-SearchDefinition.Skip="@Model.SearchDefinition.Skip" 
-                    asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                    asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                    asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                    asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                    asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
+                    asp-all-route-data="@Model.SearchDefinition.ToRouteData()" >
                     View on Map
                 </a>
             }
@@ -118,6 +106,14 @@
         string previousEnabled = "";
         if(nextPage > numPages - 1) nextEnabled = "disabled";
         if(previousPage < 1) previousEnabled = "disabled";
+        var firstPageRouteData = Model.SearchDefinition.ToRouteData();
+        firstPageRouteData["Skip"] = "0";
+        var previousPageRouteData = Model.SearchDefinition.ToRouteData();
+        previousPageRouteData["Skip"] = (previousPage * Model.SearchDefinition.Take).ToString();
+        var nextPageRouteData = Model.SearchDefinition.ToRouteData();
+        nextPageRouteData["Skip"] = (nextPage * Model.SearchDefinition.Take).ToString();
+        var lastPageRouteData = Model.SearchDefinition.ToRouteData();
+        lastPageRouteData["Skip"] = ((numPages -1) * Model.SearchDefinition.Take).ToString();
     }
     <div class="row">
         <div class="col text-center">
@@ -129,13 +125,7 @@
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
                             asp-page-handler="@Model.Handler"
-                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Skip="0" 
-                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" 
+                            asp-all-route-data="@firstPageRouteData"
                             tabindex="-1">
                             <<
                         </a>
@@ -143,31 +133,21 @@
                     <li class="page-item @previousEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index" 
                             asp-page-handler="@Model.Handler"
-                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Skip="@(previousPage * Model.SearchDefinition.Take)" 
-                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" 
+                            asp-all-route-data="@previousPageRouteData"
                             tabindex="-1">
                             <
                         </a>
                     </li>
                     @for(var p = startPage; p < endPage; p++)
                     {
+                        var nPageRouteData = Model.SearchDefinition.ToRouteData();
+                        nPageRouteData["Skip"] = (p * Model.SearchDefinition.Take).ToString();
                         var active = "";
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">
                             <a class="page-link" asp-area="Discover" asp-page="/Index" 
                                 asp-page-handler="@Model.Handler"
-                                asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                                asp-route-SearchDefinition.Skip="@(p * Model.SearchDefinition.Take)" 
-                                asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                                asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                                asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                                asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                                asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels" >
+                                asp-all-route-data="@nPageRouteData" >
                                 @p
                             </a>
                         </li>
@@ -175,26 +155,14 @@
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index"
                             asp-page-handler="@Model.Handler"
-                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Skip="@(nextPage * Model.SearchDefinition.Take)" 
-                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
+                            asp-all-route-data="@nextPageRouteData"  >
                         >
                         </a>
                     </li>
                     <li class="page-item @nextEnabled">
                         <a class="page-link" asp-area="Discover" asp-page="/Index"
                             asp-page-handler="@Model.Handler"
-                            asp-route-SearchDefinition.Term="@Model.SearchDefinition.Term" 
-                            asp-route-SearchDefinition.Skip="@((numPages -1) * Model.SearchDefinition.Take)" 
-                            asp-route-SearchDefinition.Take="@Model.SearchDefinition.Take" 
-                            asp-route-SearchDefinition.Lat="@Model.SearchDefinition.Lat" 
-                            asp-route-SearchDefinition.Lon="@Model.SearchDefinition.Lon" 
-                            asp-route-SearchDefinition.Dist="@Model.SearchDefinition.Dist"
-                            asp-route-SearchDefinition.Labels="@Model.SearchDefinition.Labels"  >
+                            asp-all-route-data="@lastPageRouteData" >
                         >>
                         </a>
                     </li>
