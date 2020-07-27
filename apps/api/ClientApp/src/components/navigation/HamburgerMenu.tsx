@@ -32,7 +32,7 @@ interface HambuergerMenuState {
 }
 
 const ClickableMenuItem: React.FunctionComponent<{
-    id?: string;
+    className?: string;
     to: string;
     icon?: IconProp;
     onClick?:
@@ -41,7 +41,7 @@ const ClickableMenuItem: React.FunctionComponent<{
 }> = (props) => {
     return (
         <NavItem
-            id={props.id}
+            className={props.className}
             onClick={(e) => props.onClick && props.onClick(e)}
         >
             <NavLink tag={Link} className="text-light" to={props.to}>
@@ -133,20 +133,32 @@ class HamburgerMenu extends React.PureComponent<
                         icon="font"
                         startOpen={true}
                     >
-                        <ClickableMenuItem to="/create" icon="plus-circle">
+                        <ClickableMenuItem
+                            className="tour-create-button"
+                            to="/create"
+                            icon="plus-circle"
+                        >
                             Create
                         </ClickableMenuItem>
-                        <ClickableMenuItem to="/amphora" icon="cubes">
+                        <ClickableMenuItem
+                            className="tour-my-amphora-button"
+                            to="/amphora"
+                            icon="cubes"
+                        >
                             Collection
                         </ClickableMenuItem>
                         <ClickableMenuItem
-                            id="search-button"
+                            className="tour-search-button"
                             to="/search"
                             icon="search"
                         >
                             Search
                         </ClickableMenuItem>
-                        <ClickableMenuItem to="/request" icon="hand-paper">
+                        <ClickableMenuItem
+                            className="tour-request-button"
+                            to="/request"
+                            icon="hand-paper"
+                        >
                             Request
                         </ClickableMenuItem>
                     </MenuSection>
@@ -167,6 +179,10 @@ class HamburgerMenu extends React.PureComponent<
                         startOpen={false}
                     >
                         <NavItem>
+                            <FontAwesomeIcon
+                                icon="window-restore"
+                                style={{ marginRight: "0.5rem" }}
+                            />
                             <a
                                 className="ml-3 text-light"
                                 href="https://app.amphoradata.com/challenge"

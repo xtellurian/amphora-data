@@ -12,6 +12,8 @@ import { GeoLookupComponent } from "react-amphora";
 import { ValidateResult } from "../molecules/inputs/inputProps";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { useHistory } from "react-router";
+import { MagicModalCurrencyInput } from "../molecules/magic-inputs/MagicModalCurrencyInput";
+import { Row, Col } from "reactstrap";
 
 const TERMS_DEFAULT = "1";
 
@@ -101,7 +103,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
             });
         }
     };
-    const history = useHistory()
+    const history = useHistory();
     const createAmphora = () => {
         actions.dispatch({
             type: "amphora-operation:create",
@@ -109,7 +111,7 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
                 model: state.model,
             },
         });
-        history.replace('/amphora')
+        history.replace("/amphora");
     };
     const setTerms = (t: string) => {
         const model = state.model;
@@ -157,24 +159,36 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
             <h3>Package your data</h3>
             <div className="row">
                 <div className="col-8">
-                    <TextInput
-                        label="Name"
-                        placeholder="What data are you packaging?"
-                        helpText={(value) =>
-                            ` ${value ? value.length : ""}/120`
-                        }
-                        validator={(value) => validateName(value)}
-                        onComplete={(name) => setName(name)}
-                    />
+                    <Row>
+                        <Col sm="8">
+                            <TextInput
+                                className="tour-create-name"
+                                label="Name"
+                                placeholder="What data are you packaging?"
+                                helpText={(value) =>
+                                    ` ${value ? value.length : ""}/120`
+                                }
+                                validator={(value) => validateName(value)}
+                                onComplete={(name) => setName(name)}
+                            />
+                        </Col>
+                        <Col>
+                            <MagicModalCurrencyInput
+                                className="tour-create-price"
+                                initialValue={0}
+                                onSave={(p) => setPrice(p)}
+                            />
+                        </Col>
+                    </Row>
+
                     <TextAreaInput
+                        className="tour-create-description"
                         label="Description"
                         placeholder="Provide more details"
                         helpText={(value) => `${value ? value.length : 0}/620`}
                         validator={(s) => validateDescription(s)}
                         onComplete={(d) => setDescription(d)}
                     />
-
-                    <FloatInput label="Price" onComplete={(p) => setPrice(p)} />
                     <div
                         className={`row ${
                             state.manualPositionEntry && "d-none"

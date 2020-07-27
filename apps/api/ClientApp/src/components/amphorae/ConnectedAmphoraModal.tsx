@@ -63,7 +63,6 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                 loadAttempts: state.loadAttempts + 1,
             });
         }
-        console.log(context);
     }, [context, props.match.params.id, state, actions]);
 
     const toggleMenu = (isOpen: boolean) => {

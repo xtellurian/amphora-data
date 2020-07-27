@@ -13,7 +13,6 @@ interface AmphoraeListItemProps {
 export class AmphoraListItem extends React.PureComponent<AmphoraeListItemProps> {
 
     private openModal = () => {
-        console.log("Opening Modal for amphora", this.props.amphora);
         this.props.openModal(this.props.amphora);
     }
 

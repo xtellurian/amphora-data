@@ -25,8 +25,6 @@ class SearchComponent extends React.PureComponent<SearchComponentProps> {
         if (term) {
             this.doSearch(term);
         }
-
-        console.log(this.props);
     }
 
     private searchParams(): URLSearchParams {

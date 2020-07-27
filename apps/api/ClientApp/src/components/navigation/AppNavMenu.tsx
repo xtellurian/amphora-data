@@ -29,13 +29,11 @@ export default class AppNavMenu extends React.Component<{ path: string; isConnec
             <header>
                 <Navbar className="box-shadow mb-3 justify-content-end" light>
                     <Container className="">
-                        {/* <Collapse className="d-inline-flex flex-sm-row-reverse" isOpen={this.state.isOpen} navbar>
-                        </Collapse> */}
                         <div className="d-inline-flex ml-auto">
 
                             <ul className="mr-2 navbar-nav flex-grow">
                                 <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
+                                    <NavLink tag={Link} className="text-dark welcome-anchor" to="/">Home</NavLink>
                                 </NavItem>
 
                             </ul>

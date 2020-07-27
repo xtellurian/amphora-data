@@ -35,8 +35,6 @@ export default class PublicNavMenu extends React.Component<
                     light
                 >
                     <Container className="">
-                        {/* <Collapse className="d-inline-flex flex-sm-row-reverse" isOpen={this.state.isOpen} navbar>
-                        </Collapse> */}
                         <div className="d-inline-flex ml-auto">
                             <ul className="mr-2 navbar-nav flex-grow">
                                 <NavItem>
@@ -49,21 +47,6 @@ export default class PublicNavMenu extends React.Component<
                                     </NavLink>
                                 </NavItem>
                             </ul>
-                            {/* {this.props.isConnected ? (
-                                <button
-                                    className="btn btn-default"
-                                    onClick={(event) => this.logout(event)}
-                                >
-                                    Logout
-                                </button>
-                            ) : (
-                                <button
-                                    className="btn btn-primary btn-sm"
-                                    onClick={() => this.login()}
-                                >
-                                    Login
-                                </button>
-                            )} */}
                             <SignInButton>
                                 Sign In
                             </SignInButton>

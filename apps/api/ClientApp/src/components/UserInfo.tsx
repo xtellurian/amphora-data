@@ -24,7 +24,6 @@ const UserInfo: FunctionComponent<UserInfoProps> = (
       </div>
     );
   }
-  console.log("rendering thingo")
   return (
     <div className="container">
       <h3>From API</h3>

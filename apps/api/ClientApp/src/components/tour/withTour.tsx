@@ -15,7 +15,7 @@ const customModalStyles: Modal.Styles = {
         border: "none",
     },
     content: {
-        minWidth: "20rem",
+        minWidth: "15rem",
         top: "50%",
         left: "50%",
         right: "auto",
@@ -50,7 +50,6 @@ const withTour = (WrappedComponent: any) => {
         };
 
         const acceptTour = () => {
-            console.log("accepting tour");
             localStorage.setItem("tour", "accept");
             setState({
                 steps,
@@ -110,11 +109,9 @@ const withTour = (WrappedComponent: any) => {
                 c.action === ACTIONS.UPDATE &&
                 c.lifecycle == LIFECYCLE.TOOLTIP
             ) {
-                console.log(`pushing to ${c.step.navigateOnClick}`);
-                console.log(c);
                 history.push(c.step.navigateOnClick);
             }
-            if (c.action === "reset" && c.index === steps.length) {
+            if (c.step.finalStep && c.action === ACTIONS.CLOSE) {
                 // tour is done
                 localStorage.setItem("tour", "dismiss");
                 setState({ ...state, doTour: false });
@@ -145,11 +142,11 @@ const withTour = (WrappedComponent: any) => {
                         styles={{
                             options: {
                                 arrowColor: "#e3ffeb",
-                                backgroundColor: "#e3ffeb",
+                                backgroundColor: "var(--berry)",
                                 overlayColor: "rgba(79, 26, 0, 0.4)",
                                 primaryColor: "var(--amphora-red)",
-                                textColor: "#004a14",
-                                width: 900,
+                                textColor: "var(--amphora-white)",
+                                width: 500,
                                 zIndex: 5000,
                             },
                         }}

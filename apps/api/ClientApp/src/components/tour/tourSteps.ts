@@ -1,23 +1,23 @@
 import { Step } from "react-joyride";
-
+import Steps from "./steps";
 export interface ExtendedStep extends Step {
     navigateOnClick?: string;
+    finalStep?: boolean;
 }
 
-export const Welcome: ExtendedStep = {
-    target: "#welcome",
-    content: "Hi there :) We're going to take a short tour of Amphora Data.",
+const Welcome: ExtendedStep = {
+    target: ".welcome-anchor",
+    title: "hello",
+    navigateOnClick: "/",
+    content:
+        "We're going to take a quick your around Amphora Data. Just click on these icons to view the tips and advance the tour. Let's go!",
 };
 
-export const Search: ExtendedStep = {
-    target: "#search-button",
-    content: "This is the search button",
-    navigateOnClick: "/search"
+const FinalStep: ExtendedStep = {
+    target: ".welcome-anchor",
+    navigateOnClick: "/",
+    content: "That's the tour, thanks for playing.",
+    finalStep: true,
 };
 
-export const SearchBar: ExtendedStep = {
-    target: "#search-bar",
-    content: "This is the search bar, where you can find data you need",
-};
-
-export const steps: ExtendedStep[] = [Welcome, Search, SearchBar];
+export const steps: ExtendedStep[] = [Welcome, ...Steps, FinalStep];

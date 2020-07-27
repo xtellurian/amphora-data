@@ -4,7 +4,7 @@ export const RequestAmphoraPage: React.FunctionComponent = (props) => {
     return (
         <React.Fragment>
             <h2>Request Amphora</h2>
-            <p>Coming soon...</p>
+            <p className="tour-request">Coming soon...</p>
         </React.Fragment>
     );
 };

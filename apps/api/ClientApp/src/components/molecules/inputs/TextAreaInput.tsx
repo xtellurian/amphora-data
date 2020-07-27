@@ -1,4 +1,5 @@
 import * as React from "react";
+import classNames from "classnames";
 import { TextInputBase } from "./TextInputBase";
 import { InputProps } from "./inputProps";
 
@@ -18,7 +19,7 @@ export class TextAreaInput extends TextInputBase<TextAreaInputProps> {
 
     public render() {
         return (
-            <div className="input-outer">
+            <div className={classNames("input-outer", this.props.className)}>
                 <span>
                     <strong>{this.props.label}</strong>
                 </span>

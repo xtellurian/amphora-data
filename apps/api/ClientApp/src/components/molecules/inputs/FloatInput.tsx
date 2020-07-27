@@ -1,17 +1,19 @@
-import * as React from 'react';
-import { InputProps, ValidateResult } from './inputProps';
-import { Label } from 'reactstrap';
-
-import './inputs.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as React from "react";
+import { InputProps, ValidateResult } from "./inputProps";
+import { Label } from "reactstrap";
+import classNames from "classnames";
+import "./inputs.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface NumberInputState {
     value?: number;
     validation: ValidateResult;
 }
 
-export abstract class FloatInput extends React.PureComponent<InputProps<number>, NumberInputState> {
-
+export abstract class FloatInput extends React.PureComponent<
+    InputProps<number>,
+    NumberInputState
+> {
     /**
      *
      */
@@ -20,10 +22,10 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
         this.state = {
             validation: {
                 isValid: true,
-                message: ""
+                message: "",
             },
-            value: 0
-        }
+            value: 0,
+        };
     }
 
     private valueFromString(value?: string): number | undefined {
@@ -45,16 +47,17 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
         event.preventDefault();
     }
 
-    protected handleBlur(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+    protected handleBlur(
+        event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): void {
         if (this.props.onComplete) {
             if (this.props.validator) {
                 const validatorResult = this.props.validator(this.state.value);
-                this.setState({ validation: validatorResult })
+                this.setState({ validation: validatorResult });
                 if (validatorResult.isValid) {
                     this.props.onComplete(this.state.value);
                 }
-            }
-            else {
+            } else {
                 this.props.onComplete(this.state.value);
             }
         }
@@ -68,9 +71,8 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
 
     protected helpText(): React.ReactElement | undefined {
         if (this.props.helpText) {
-            return <Label>{this.props.helpText(this.state.value)}</Label>
-        }
-        else {
+            return <Label>{this.props.helpText(this.state.value)}</Label>;
+        } else {
             return <React.Fragment></React.Fragment>;
         }
     }
@@ -78,11 +80,17 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
     protected validation(): React.ReactElement | null {
         if (!this.state) {
             return null;
-        }
-        else if (this.state && this.state.validation && !this.state.validation.isValid) {
-            return <Label className="text-danger">{this.state.validation.message || "Invalid Input"}</Label>;
-        }
-        else {
+        } else if (
+            this.state &&
+            this.state.validation &&
+            !this.state.validation.isValid
+        ) {
+            return (
+                <Label className="text-danger">
+                    {this.state.validation.message || "Invalid Input"}
+                </Label>
+            );
+        } else {
             return null;
         }
     }
@@ -90,18 +98,28 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
     protected clearButton(): React.ReactElement | null | undefined {
         if (this.state && this.state.value) {
             return (
-                <button tabIndex={-1} onClick={(e) => this.setState({ value: 0, validation: { isValid: true } })}>
+                <button
+                    tabIndex={-1}
+                    onClick={(e) =>
+                        this.setState({
+                            value: 0,
+                            validation: { isValid: true },
+                        })
+                    }
+                >
                     <FontAwesomeIcon icon="times-circle" />
                 </button>
-            )
+            );
         }
     }
 
     render() {
-        const invalidClassName = this.state.validation.isValid ? "" : "input-invalid";
+        const invalidClassName = this.state.validation.isValid
+            ? ""
+            : "input-invalid";
         return (
             <React.Fragment>
-                <div className="input-outer">
+                <div className={classNames("input-outer", this.props.children)}>
                     <span>
                         <strong>{this.props.label}</strong>
                     </span>
@@ -120,6 +138,6 @@ export abstract class FloatInput extends React.PureComponent<InputProps<number>,
                     </span>
                 </div>
             </React.Fragment>
-        )
+        );
     }
 }

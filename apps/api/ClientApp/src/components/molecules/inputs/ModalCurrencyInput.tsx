@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import { Row, Col, Button, Container } from "reactstrap";
 
 export interface CurrencyInputProps {
+    className?: string;
     initialValue: number;
     values?: number[];
     onSave: (amount: number) => void;

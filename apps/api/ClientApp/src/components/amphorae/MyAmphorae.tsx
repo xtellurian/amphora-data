@@ -76,7 +76,7 @@ class MyAmphorae extends React.Component<MyAmphoraeProps, MyAmphoraeState> {
             <React.Fragment>
                 <div className="row">
                     <div className="col-lg-5">
-                        <div className="txt-xxl">My Amphora</div>
+                        <div className="txt-xxl tour-my-amphora">My Amphora</div>
                     </div>
                     <div className="col-lg-7">
                         <Toggle
@@ -126,27 +126,5 @@ class MyAmphorae extends React.Component<MyAmphoraeProps, MyAmphoraeState> {
         );
     }
 }
-
-// function mapStateToProps(state: ApplicationState): AmphoraState {
-//     if (state.amphora) {
-//         return state.amphora;
-//     } else {
-//         return {
-//             isLoading: true,
-//             collections: {
-//                 organisation: {
-//                     created: [],
-//                     purchased: [],
-//                 },
-//                 self: {
-//                     created: [],
-//                     purchased: [],
-//                 },
-//             },
-//             metadata: emptyCache<DetailedAmphora>(),
-//             signals: emptyCache<Signal[]>(),
-//         };
-//     }
-// }
 
 export default MyAmphoraContext.withMyAmphora(MyAmphorae);
