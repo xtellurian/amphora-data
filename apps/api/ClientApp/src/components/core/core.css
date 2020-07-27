@@ -1,43 +1,45 @@
 :root {
     /* primary colours */
-    --amphora-red: #BC312A;
+    --amphora-red: #bc312a;
     --amphora-black: #181717;
-    --amphora-white: #FFFEFD;
+    --amphora-white: #fffefd;
     /* secondary */
-    --turquoise: #5AA6C0;
-    --blue-garnet: #0A789E;
-    --pearl: #CFD2D6;
+    --turquoise: #5aa6c0;
+    --blue-garnet: #0a789e;
+    --pearl: #cfd2d6;
     /* text colours */
     --ebony: #222222;
     --stone: #696464;
     /* messaging and alerts */
-    --mandarin: #F68D00;
-    --plum: #E7140D;
-    --apple: #399B1E;
-    --berry: #057ED1;
+    --mandarin: #f68d00;
+    --plum: #e7140d;
+    --apple: #399b1e;
+    --berry: #057ed1;
     /* messaging and alert pastels */
-    --pear: #FFFAED;
-    --peach: #FBEAE5;
-    --avocado: #EFFAE3;
-    --yam: #E7F4FF;
+    --pear: #fffaed;
+    --peach: #fbeae5;
+    --avocado: #effae3;
+    --yam: #e7f4ff;
     /* backgerounds and dividers */
-    --marble: #AAADB0;
-    --platinum: #F1F4F6;
-    --porcelain: #FCFCFC;
+    --marble: #aaadb0;
+    --platinum: #f1f4f6;
+    --porcelain: #fcfcfc;
     --main-font: Helvetica, bold, sans-serif;
-    --helvetica: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --fjalla: 'Fjalla One', Arial, sans-serif;
+    --helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --fjalla: "Fjalla One", Arial, sans-serif;
 }
 
 body {
     font: helvetica, bold;
     font-family: var(--helvetica);
-    color: var(--ebony)
+    color: var(--ebony);
 }
 
+input {
+    background-color: var(--amphora-white);
+}
 
 /* TEXT CLASSES */
-
 
 /* fonts */
 
@@ -95,9 +97,8 @@ body {
     letter-spacing: 0.01em;
 }
 
-
 /* colours */
 
 .txt-ebony {
-    color: var(--ebony)
+    color: var(--ebony);
 }
