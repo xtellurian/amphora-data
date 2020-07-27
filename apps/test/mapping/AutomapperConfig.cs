@@ -5,7 +5,7 @@ using Amphora.Common.Models.Users;
 using AutoMapper;
 using Xunit;
 
-namespace Amphora.Tests.Unit.Automapper
+namespace Amphora.Tests.Unit.Mapping
 {
     public class AutomapperConfig
     {
