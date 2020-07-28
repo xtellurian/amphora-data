@@ -54,20 +54,6 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
       opts
     );
 
-    const ingressNginxNamespace = new k8s.core.v1.Namespace(
-      `${this.name}-nginx`,
-      {
-        metadata: {
-          labels: {
-            "app.kubernetes.io/name": "ingress-nginx",
-            "app.kubernetes.io/part-of": "ingress-nginx",
-          },
-          name: "ingress-nginx",
-        },
-      },
-      opts
-    );
-
     // aad pod identity
     const aadPods = new k8s.yaml.ConfigFile(
       `${this.name}-aadPods`,
@@ -160,12 +146,11 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
       }
     );
 
+    const nginxVersion = "controller-v0.34.1";
     this.ingressController = new k8s.yaml.ConfigFile(
       `${this.name}-ingressCtlr`,
       {
-        file:
-          "components/application/aks/infrastructure-manifests/ingress-nginx.yml",
-        resourcePrefix: this.name,
+        file: `https://raw.githubusercontent.com/kubernetes/ingress-nginx/${nginxVersion}/deploy/static/provider/cloud/deploy.yaml`,
       },
       opts
     );
@@ -198,7 +183,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
 
     // aksAU1-infra-ingress-nginx/ingress-nginx == with redourcePrefix
     this.ingressIp = this.ingressController
-      .getResource("v1/Service", `${this.name}-ingress-nginx`, `ingress-nginx`)
+      .getResource("v1/Service", `ingress-nginx`, "ingress-nginx-controller")
       .apply((service) => service.status.loadBalancer.ingress[0].ip);
 
     this.fqdnName = pulumi.interpolate`${stack}-amphoradata`;
