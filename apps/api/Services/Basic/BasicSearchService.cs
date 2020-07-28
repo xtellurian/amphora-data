@@ -25,37 +25,6 @@ namespace Amphora.Api.Services.Basic
             this.organisationStore = organisationStore;
         }
 
-        // this just returns all the amphora is memory
-        public async Task<EntitySearchResult<AmphoraModel>> SearchAmphora(string searchText, Models.Search.SearchParameters parameters)
-        {
-            var entities = new List<AmphoraModel>();
-
-            if (string.IsNullOrEmpty(parameters.OrganisationId))
-            {
-                var res = await amphoraeService.AmphoraStore.QueryAsync(
-                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters.Skip ?? 0, parameters.Top ?? 99);
-                entities.AddRange(res);
-            }
-            else
-            {
-                // filter by organisation
-                var res = await amphoraeService.AmphoraStore.QueryAsync(
-                    a =>
-                        (a.Name.Contains(searchText) || a.Description.Contains(searchText))
-                        && a.OrganisationId == parameters.OrganisationId,
-                    parameters.Skip ?? 0, parameters.Top ?? 99);
-                entities.AddRange(res);
-            }
-
-            return new EntitySearchResult<AmphoraModel>(entities);
-        }
-
-        public async Task<long?> SearchAmphoraCount(string searchText, SearchParameters parameters)
-        {
-            var res = await SearchAmphora(searchText, parameters);
-            return res.Results.Count;
-        }
-
         public async Task<EntitySearchResult<T>> SearchAsync<T>(string searchText, SearchParameters parameters) where T : ISearchable
         {
             searchText ??= ""; // ensure searchText not null
@@ -63,9 +32,20 @@ namespace Amphora.Api.Services.Basic
             if (typeof(T) == typeof(AmphoraModel))
             {
                 var entities = new List<AmphoraModel>();
+                IEnumerable<AmphoraModel> res;
+                if (string.IsNullOrEmpty(parameters.OrganisationId))
+                {
+                    res = await amphoraeService.AmphoraStore.QueryAsync(
+                        a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
+                }
+                else
+                {
+                    res = await amphoraeService.AmphoraStore.QueryAsync(
+                        a => (a.Name.Contains(searchText) || a.Description.Contains(searchText))
+                        && a.OrganisationId == parameters.OrganisationId,
+                        parameters?.Skip ?? 0, parameters?.Top ?? 99);
+                }
 
-                var res = await amphoraeService.AmphoraStore.QueryAsync(
-                    a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
                 entities.AddRange(res);
                 var result = new EntitySearchResult<T>(entities.ToList().Cast<T>());
 

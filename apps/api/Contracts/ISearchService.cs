@@ -6,7 +6,6 @@ namespace Amphora.Api.Contracts
 {
     public interface ISearchService
     {
-        Task<long?> SearchAmphoraCount(string searchText, SearchParameters parameters);
         Task<EntitySearchResult<T>> SearchAsync<T>(string searchText, SearchParameters parameters) where T : ISearchable;
         Task<bool> TryIndex();
     }
