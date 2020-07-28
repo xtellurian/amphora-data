@@ -59,12 +59,25 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
       `${this.name}-aadPods`,
       {
         file:
-          "components/application/aks/infrastructure-manifests/aad-pod-identity.yml",
+          "components/application/aks/infrastructure-manifests/aad-pods-1.6.2.yml",
         resourcePrefix: this.name,
       },
       {
         ...opts,
         dependsOn: aadPodIdentityNs,
+      }
+    );
+
+    const aadPodsAks = new k8s.yaml.ConfigFile(
+      `${this.name}-aadPodsAks`,
+      {
+        file:
+          "components/application/aks/infrastructure-manifests/aad-pods-aks-1.6.2.yml",
+        resourcePrefix: this.name,
+      },
+      {
+        ...opts,
+        dependsOn: [aadPods],
       }
     );
 
@@ -76,8 +89,8 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         namespace: amphoraNamespace.metadata.name,
       },
       spec: {
-        ClientID: this.params.identities.webApp.clientId,
-        ResourceID: this.params.identities.webApp.id,
+        clientID: this.params.identities.webApp.clientId,
+        resourceID: this.params.identities.webApp.id,
         type: 0, // 0 = MSI, 1 = SP
       },
     };
@@ -90,8 +103,8 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         namespace: amphoraNamespace.metadata.name,
       },
       spec: {
-        ClientID: this.params.identities.identityServer.clientId,
-        ResourceID: this.params.identities.identityServer.id,
+        clientID: this.params.identities.identityServer.clientId,
+        resourceID: this.params.identities.identityServer.id,
         type: 0, // 0 = MSI, 1 = SP
       },
     };
@@ -116,8 +129,8 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         namespace: amphoraNamespace.metadata.name,
       },
       spec: {
-        AzureIdentity: webAppId.metadata.name,
-        Selector: "amphora-front",
+        azureIdentity: webAppId.metadata.name,
+        selector: "amphora-front",
       },
     };
 
@@ -129,8 +142,8 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
         namespace: amphoraNamespace.metadata.name,
       },
       spec: {
-        AzureIdentity: webAppId.metadata.name,
-        Selector: "amphora-identity",
+        azureIdentity: webAppId.metadata.name,
+        selector: "amphora-identity",
       },
     };
 
