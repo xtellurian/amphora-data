@@ -11,4 +11,4 @@ const DataRequest: ExtendedStep = {
         "Sometimes you can't find the data you're looking for. For these scenarios, we've created Data Requests.",
 };
 
-export const Steps = [DataRequestButton, DataRequest];
+export const Steps: ExtendedStep[] = [];

@@ -58,6 +58,7 @@ const ClickableMenuItem: React.FunctionComponent<{
 };
 
 const MenuSection: React.FunctionComponent<{
+    className?: string;
     startOpen: boolean;
     title: string;
     icon?: IconProp;
@@ -65,7 +66,7 @@ const MenuSection: React.FunctionComponent<{
     const [open, setOpen] = React.useState(props.startOpen);
     const toggle = () => setOpen(!open);
     return (
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%" }} className={props.className}>
             <h5
                 onClick={() => toggle()}
                 style={{ cursor: "pointer", marginTop: "1rem" }}
@@ -174,19 +175,38 @@ class HamburgerMenu extends React.PureComponent<
                     </MenuSection>
 
                     <MenuSection
+                        className="tour-tour-button"
                         title="More"
                         icon="ellipsis-h"
                         startOpen={false}
                     >
                         <NavItem>
-                            <FontAwesomeIcon
-                                icon="window-restore"
-                                style={{ marginRight: "0.5rem" }}
-                            />
                             <a
-                                className="ml-3 text-light"
+                                className="text-light nav-link"
+                                href="#"
+                                onClick={() => {
+                                    localStorage.setItem("tour", "accept");
+                                    window.location.reload(false);
+                                }}
+                            >
+                                <FontAwesomeIcon
+                                    icon="sign"
+                                    style={{
+                                        marginRight: "0.5rem",
+                                    }}
+                                />
+                                Tour
+                            </a>
+                        </NavItem>
+                        <NavItem>
+                            <a
+                                className="text-light nav-link"
                                 href="https://app.amphoradata.com/challenge"
                             >
+                                <FontAwesomeIcon
+                                    icon="window-restore"
+                                    style={{ marginRight: "0.5rem" }}
+                                />
                                 Classic View
                             </a>
                         </NavItem>
