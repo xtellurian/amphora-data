@@ -117,7 +117,7 @@ namespace Amphora.Tests.Integration
         }
 
         [Fact]
-        public async Task CanSearchOrganisations()
+        public async Task SearchOrganisations_ByName()
         {
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             // now we have an org, it should show up in the search.

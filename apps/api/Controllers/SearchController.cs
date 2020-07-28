@@ -97,7 +97,8 @@ namespace Amphora.Api.Controllers
         [CommonAuthorize]
         public async Task<IActionResult> SearchOrganisations(string term)
         {
-            var res = await searchService.SearchAsync<OrganisationModel>(term);
+            var searchParameters = new SearchParameters();
+            var res = await searchService.SearchAsync<OrganisationModel>(term, searchParameters);
             var dto = mapper.Map<List<Organisation>>(res.Results.Select(_ => _.Entity));
             return Ok(dto);
         }
