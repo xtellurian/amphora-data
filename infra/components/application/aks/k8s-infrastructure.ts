@@ -55,6 +55,7 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
     );
 
     // aad pod identity
+    // BEWARE: there are some customisations in the yaml ... replace at your peril
     const aadPods = new k8s.yaml.ConfigFile(
       `${this.name}-aadPods`,
       {
@@ -159,11 +160,11 @@ export class K8sInfrastructure extends pulumi.ComponentResource {
       }
     );
 
-    const nginxVersion = "controller-v0.34.1";
+    // BEWARE: there are some customisations in the yaml ... replace at your peril
     this.ingressController = new k8s.yaml.ConfigFile(
       `${this.name}-ingressCtlr`,
       {
-        file: `https://raw.githubusercontent.com/kubernetes/ingress-nginx/${nginxVersion}/deploy/static/provider/cloud/deploy.yaml`,
+        file: `components/application/aks/infrastructure-manifests/ingress-nginx-0.34.1.yml`,
       },
       opts
     );
