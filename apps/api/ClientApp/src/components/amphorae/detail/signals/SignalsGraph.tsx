@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Components } from "react-amphora";
+import { SignalsChart } from "react-amphora";
 import { Signal, DetailedAmphora } from "amphoradata";
 import { EmptyState } from "../../../molecules/empty/EmptyState";
 import { LoadingState } from "../../../molecules/empty/LoadingState";
@@ -15,7 +15,7 @@ export const SignalsGraph: React.FunctionComponent<SignalProps> = (props) => {
     if (amphoraId) {
         return (
             <React.Fragment>
-                <Components.SignalsChart
+                <SignalsChart
                     emptyComponent={<EmptyState >There are no Signals in this Amphora</EmptyState>}
                     loadingComponent={<LoadingState > Just getting things ready...</LoadingState>}
                     amphoraId={amphoraId}
