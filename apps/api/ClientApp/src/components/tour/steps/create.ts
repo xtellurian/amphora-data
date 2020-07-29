@@ -16,16 +16,16 @@ const Name: ExtendedStep = {
     target: ".tour-create-name",
     content: "Choose a meaningful name for your new Amphora.",
 };
-const Description: ExtendedStep = {
-    title: "Description",
-    target: ".tour-create-description",
-    content: "In human terms, describe the data you are packaging. Markdown is supported.",
-};
 const Price: ExtendedStep = {
     title: "Price",
     target: ".tour-create-price",
     content: "Choose a monthly subscription price. It can be $0.",
 };
+const Description: ExtendedStep = {
+    title: "Description",
+    target: ".tour-create-description",
+    content: "In human terms, describe the data you are packaging. Markdown is supported.",
+};
 
 
-export const Steps = [MenuButton, CreateAmphora, Name, Description, Price];
+export const Steps = [MenuButton, CreateAmphora, Name, Price, Description];

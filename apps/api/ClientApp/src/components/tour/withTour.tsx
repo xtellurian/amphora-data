@@ -1,5 +1,10 @@
 import * as React from "react";
-import Joyride, { CallBackProps, ACTIONS, LIFECYCLE } from "react-joyride";
+import Joyride, {
+    CallBackProps,
+    ACTIONS,
+    LIFECYCLE,
+    Locale,
+} from "react-joyride";
 import Modal from "react-modal";
 import * as toast from "../molecules/toasts";
 import { steps, ExtendedStep } from "./tourSteps";
@@ -15,7 +20,8 @@ const customModalStyles: Modal.Styles = {
         border: "none",
     },
     content: {
-        minWidth: "15rem",
+        minWidth: "5rem",
+        maxWidth: "10rem",
         top: "50%",
         left: "50%",
         right: "auto",
@@ -23,6 +29,10 @@ const customModalStyles: Modal.Styles = {
         marginRight: "-50%",
         transform: "translate(-50%, -50%)",
     },
+};
+
+const tourLocale: Locale = {
+    close: "Next",
 };
 
 const withTour = (WrappedComponent: any) => {
@@ -135,17 +145,20 @@ const withTour = (WrappedComponent: any) => {
             return (
                 <React.Fragment>
                     <Joyride
+                        locale={tourLocale}
                         run={true}
                         debug={true}
                         steps={state.steps}
                         callback={(c) => tourCallback(c)}
                         styles={{
                             options: {
+                                beaconSize: 48,
                                 arrowColor: "#e3ffeb",
-                                backgroundColor: "var(--berry)",
-                                overlayColor: "rgba(79, 26, 0, 0.4)",
-                                primaryColor: "var(--amphora-red)",
-                                textColor: "var(--amphora-white)",
+                                backgroundColor: "var(--amphora-white)",
+                                overlayColor: "rgba(179, 173, 176, 0.4)",
+                                spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
+                                primaryColor: "var(--berry)",
+                                textColor: "var(--amphora-black)",
                                 width: 500,
                                 zIndex: 5000,
                             },

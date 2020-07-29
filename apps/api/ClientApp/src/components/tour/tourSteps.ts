@@ -10,7 +10,8 @@ const Welcome: ExtendedStep = {
     title: "Welcome to Amphora Data",
     navigateOnClick: "/",
     content:
-        "We're going to take a quick your around Amphora Data. Just click on these icons to view the tips and advance the tour. Let's go!",
+        `We're going to take a quick tour around Amphora Data. 
+        Just click on these icons to view the tips and advance the tour. Let's go!`,
 };
 const RedoTour: ExtendedStep = {
     target: ".tour-tour-button",
