@@ -11,11 +11,13 @@ import { Dispatch } from "redux";
 
 import withTour from "./components/tour/withTour";
 import { User } from "oidc-client";
-import UserInfo from "./components/UserInfo";
 import Amphora from "./components/amphorae/MyAmphorae";
 import { CreateAmphoraPage } from "./components/amphorae/CreateAmphora";
 import { RequestAmphoraPage } from "./components/amphorae/RequestAmphora";
 import Search from "./components/amphorae/Search";
+
+// profile
+import { ProfilePage } from "./components/profile/ProfilePage";
 
 import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 
@@ -24,14 +26,19 @@ import Pallete from "./components/Pallete";
 import { MainPage } from "./components/public/MainPage";
 import { LoadingState } from "./components/molecules/empty/LoadingState";
 
-interface RoutesModuleProps {
+interface AuthenticatedProps {
     user: User;
+}
+
+interface RoutesModuleProps extends AuthenticatedProps {
     isLoadingUser: boolean;
     dispatch: Dispatch;
     location: any;
 }
 
-const AuthenticatedRoutes: React.FunctionComponent = () => (
+const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
+    props
+) => (
     <React.Fragment>
         <Switch>
             <Route exact path="/" component={Home} />
@@ -40,14 +47,19 @@ const AuthenticatedRoutes: React.FunctionComponent = () => (
             <Route path="/amphora" component={Amphora} />
             <Route path="/terms" component={TermsOfUsePage} />
             <Route path="/request" component={RequestAmphoraPage} />
-            
-            <Route path="/user" component={UserInfo} />
+            <Route
+                path="/profile"
+                render={(p) => <ProfilePage user={props.user} {...p} />}
+            />
+
             <Route path="/pallete" component={Pallete} />
         </Switch>
     </React.Fragment>
 );
 
-const RoutesWithTour = withTour(AuthenticatedRoutes)
+const RoutesWithTour = withTour(
+    AuthenticatedRoutes
+) as typeof AuthenticatedRoutes;
 
 const AnonymousRoutes = () => (
     <React.Fragment>
@@ -61,7 +73,7 @@ const AnonymousRoutes = () => (
 const Routes = (props: RoutesModuleProps) => {
     // wait for user to be loaded, and location is known
     if (props.isLoadingUser || !props.location) {
-        return <LoadingState/>
+        return <LoadingState />;
     }
 
     // if location is callback page, return only CallbackPage route to allow signin process
@@ -75,7 +87,7 @@ const Routes = (props: RoutesModuleProps) => {
     const isConnected = !!props.user;
 
     if (isConnected) {
-        return <RoutesWithTour/>;
+        return <RoutesWithTour user={props.user} />;
     } else {
         return <AnonymousRoutes />;
     }

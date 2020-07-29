@@ -3,7 +3,12 @@ import * as toast from "../components/molecules/toasts";
 
 export const toastOnActionResult = (actionResult: Actions.ActionResult) => {
     if (actionResult.error) {
-        toast.error({ text: `${actionResult.error}` });
+        toast.error(
+            { text: `${actionResult.error}` },
+            {
+                autoClose: 1000,
+            }
+        );
     } else if (actionResult.payload) {
         toast.success(
             {

@@ -126,7 +126,7 @@ class HamburgerMenu extends React.PureComponent<
                         title="My Account"
                         icon="user-circle"
                     >
-                        <ClickableMenuItem to="/">TODO</ClickableMenuItem>
+                        <ClickableMenuItem icon="id-card" to="/profile">Profile</ClickableMenuItem>
                     </MenuSection>
                     <hr className="bg-white" />
                     <MenuSection
