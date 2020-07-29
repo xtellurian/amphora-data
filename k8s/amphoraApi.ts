@@ -146,7 +146,7 @@ export class AmphoraApi extends pulumi.ComponentResource {
     };
     // add the rule for each host
     const rules: pulumi.Input<
-      k8s.types.input.extensions.v1beta1.IngressRule
+      k8s.types.input.networking.v1beta1.IngressRule
     >[] = [];
 
     const hosts: pulumi.Output<string>[] = [
@@ -163,7 +163,7 @@ export class AmphoraApi extends pulumi.ComponentResource {
       });
     }
 
-    const ingress = new k8s.extensions.v1beta1.Ingress(
+    const ingress = new k8s.networking.v1beta1.Ingress(
       `${this.name}-ingress`,
       {
         kind: "Ingress",

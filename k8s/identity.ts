@@ -136,7 +136,7 @@ export class Identity extends pulumi.ComponentResource {
             // pulumi.interpolate `${env}.identity.amphoradata.com` // the front foor
         ]
         // add the rule for each host
-        const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [];
+        const rules: pulumi.Input<k8s.types.input.networking.v1beta1.IngressRule>[] = [];
 
         if (hosts) {
             hosts.forEach(h => {
@@ -148,7 +148,7 @@ export class Identity extends pulumi.ComponentResource {
         }
 
         if (rules && rules.length > 0) {
-            const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
+            const ingress = new k8s.networking.v1beta1.Ingress(`${this.name}-ingress`, {
                 kind: "Ingress",
                 metadata: {
                     name: `${name}-ingress`,

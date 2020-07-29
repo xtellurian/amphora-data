@@ -133,7 +133,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             ]
         }
         // add the rule for each host
-        const rules: pulumi.Input<k8s.types.input.extensions.v1beta1.IngressRule>[] = [];
+        const rules: pulumi.Input<k8s.types.input.networking.v1beta1.IngressRule>[] = [];
 
         const hosts: pulumi.Output<string>[] = [
             pulumi.interpolate `${this.params.environment}.${this.params.location}.app.amphoradata.com`,
@@ -149,7 +149,7 @@ export class FrontEnd extends pulumi.ComponentResource {
             });
         }
 
-        const ingress = new k8s.extensions.v1beta1.Ingress(`${this.name}-ingress`, {
+        const ingress = new k8s.networking.v1beta1.Ingress(`${this.name}-ingress`, {
             kind: "Ingress",
             metadata: {
                 name: `${name}-ingress`,
