@@ -84,7 +84,7 @@ const withTour = (WrappedComponent: any) => {
                         <div className="jumbotron">
                             <h1 className="display-4">Hello, and Welcome!</h1>
                             <p className="lead">
-                                If this is your first time, we reccommend taking
+                                If this is your first time, we recommend taking
                                 a quick tour.
                             </p>
 
