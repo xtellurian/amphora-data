@@ -20,8 +20,7 @@ const customModalStyles: Modal.Styles = {
         border: "none",
     },
     content: {
-        minWidth: "5rem",
-        maxWidth: "10rem",
+        minWidth: "20rem",
         top: "50%",
         left: "50%",
         right: "auto",
