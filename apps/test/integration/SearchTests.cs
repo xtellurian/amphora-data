@@ -24,26 +24,34 @@ namespace Amphora.Tests.Integration
 
         private async Task PopulateAmphora(Persona persona, [CallerMemberName] string testName = null)
         {
-            if (persona.User.Email != Personas.AmphoraAdmin)
-            {
-                throw new ArgumentException("You must use an admin to populate, because re-indexation is admin only");
-            }
-
             for (var i = 0; i <= 5; i++)
             {
                 var amphora = EntityLibrary.GetAmphoraDto(persona.Organisation.Id, testName);
+                if (i % 3 == 0)
+                {
+                    amphora.Labels = "a";
+                }
+
+                if (i % 4 == 0)
+                {
+                    amphora.Labels += "b";
+                }
+
                 var res = await persona.Http.PostAsJsonAsync("api/amphorae", amphora);
                 await AssertHttpSuccess(res);
             }
 
-            // now trigger the indexing
-            var indexRes = await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
-            if (!indexRes.IsSuccessStatusCode)
+            // now trigger the indexing, if we are an admin
+            if (persona.User.Email == Personas.AmphoraAdmin)
             {
-                Console.WriteLine("Waiting one minute for reindexation");
-                await Task.Delay(60 * 1000);
-                Console.WriteLine("Retriggering index");
-                await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
+                var indexRes = await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
+                if (!indexRes.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Waiting one minute for reindexation");
+                    await Task.Delay(60 * 1000);
+                    Console.WriteLine("Retriggering index");
+                    await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
+                }
             }
         }
 
@@ -113,6 +121,34 @@ namespace Amphora.Tests.Integration
             foreach (var r in results)
             {
                 r.OrganisationId.Should().Be(persona.Organisation.Id);
+            }
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("a")]
+        [InlineData("b")]
+        [InlineData("a,b")]
+        public async Task SearchAmphora_CanChooseOrgId_WithLabels(string labels)
+        {
+            var labelsList = labels.Split(',').Where(_ => !string.IsNullOrEmpty(_)).ToList();
+            var admin = await GetPersonaAsync(Personas.AmphoraAdmin);
+            var other = await GetPersonaAsync(Personas.Other);
+
+            await PopulateAmphora(admin);
+            await PopulateAmphora(other);
+
+            var url = $"api/search/amphorae?orgId={admin.Organisation.Id}&labels={labels}";
+            var paginateRes = await other.Http.GetAsync(url);
+            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
+            foreach (var amphora in results)
+            {
+                amphora.OrganisationId.Should().Be(admin.Organisation.Id, "because we filtered by orgId");
+                foreach (var l in labelsList)
+                {
+                    labelsList.Intersect(amphora.Labels.Split(','))
+                        .Should().NotBeNullOrEmpty("because there should be some label intersection");
+                }
             }
         }
 

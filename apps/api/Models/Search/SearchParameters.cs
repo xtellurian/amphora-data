@@ -17,6 +17,9 @@ namespace Amphora.Api.Models.Search
         private string GeoLocationProperty => nameof(AmphoraModel.GeoLocation);
         private string OrganisationIdProperty => nameof(AmphoraModel.OrganisationId);
         private string PurchaseCountPropertyName => nameof(AmphoraModel.PurchaseCount);
+
+        public IEnumerable<Label> Labels { get; private set; } = new List<Label>();
+
         public SearchParameters NotDeleted()
         {
             if (this.Filter.Length > 1) { this.Filter += " and "; }
@@ -77,6 +80,8 @@ namespace Amphora.Api.Models.Search
                     if (Filter.Length > 1) { Filter += " and "; }
                     this.Filter += $"{LabelsProperty}/any(t: t/Name eq '{l.Name}') ";
                 }
+
+                this.Labels = labels;
             }
 
             return this;

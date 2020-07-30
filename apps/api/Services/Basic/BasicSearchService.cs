@@ -7,6 +7,7 @@ using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Models.Organisations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amphora.Api.Services.Basic
 {
@@ -32,21 +33,32 @@ namespace Amphora.Api.Services.Basic
             if (typeof(T) == typeof(AmphoraModel))
             {
                 var entities = new List<AmphoraModel>();
-                IEnumerable<AmphoraModel> res;
+
+                IQueryable<AmphoraModel> query;
+
                 if (string.IsNullOrEmpty(parameters.OrganisationId))
                 {
-                    res = await amphoraeService.AmphoraStore.QueryAsync(
-                        a => a.Name.Contains(searchText) || a.Description.Contains(searchText), parameters?.Skip ?? 0, parameters?.Top ?? 99);
+                    query = (await amphoraeService.AmphoraStore.Query(
+                        a => a.Name.Contains(searchText) || a.Description.Contains(searchText))
+                        .ToListAsync())
+                        .AsQueryable();
                 }
                 else
                 {
-                    res = await amphoraeService.AmphoraStore.QueryAsync(
+                    query = (await amphoraeService.AmphoraStore.Query(
                         a => (a.Name.Contains(searchText) || a.Description.Contains(searchText))
-                        && a.OrganisationId == parameters.OrganisationId,
-                        parameters?.Skip ?? 0, parameters?.Top ?? 99);
+                        && a.OrganisationId == parameters.OrganisationId)
+                        .ToListAsync())
+                        .AsQueryable();
                 }
 
-                entities.AddRange(res);
+                if (parameters.Labels.Any())
+                {
+                    query = query
+                        .Where(a => a.Labels.Any(a => parameters.Labels.Any(b => b.Name == a.Name)));
+                }
+
+                entities.AddRange(query.Skip(parameters.Skip ?? 0).Take(parameters.Top ?? 64).ToList());
                 var result = new EntitySearchResult<T>(entities.ToList().Cast<T>());
 
                 if (parameters.IncludeTotalResultCount)
