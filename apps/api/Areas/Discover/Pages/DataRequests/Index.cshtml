@@ -22,7 +22,7 @@
     </div>
     <div class="row">
         <div class="col text-center">
-            @await Component.InvokeAsync("DataRequestSearchBar", new {searchDefinition = Model.SearchDefinition, formId = "searchform"})
+            @await Component.InvokeAsync("DataRequestSearchBar", new {q = Model.Q, formId = "searchform"})
         </div>
     </div>
     <div class="row">

@@ -9,9 +9,9 @@ namespace Amphora.Api.Areas.Discover.Pages.Components
     public class DataRequestSearchBarViewComponent : SearchBarViewModel
     {
         [BindProperty]
-        public DataRequestSearchQueryOptions SearchDefinition { get; private set; }
+        public DataRequestSearchQueryOptions Q { get; private set; }
         public IList<FacetResult> LabelFacets { get; private set; } = new List<FacetResult>();
-        public IViewComponentResult Invoke(DataRequestSearchQueryOptions searchDefinition,
+        public IViewComponentResult Invoke(DataRequestSearchQueryOptions q,
                                            IList<FacetResult> labelfacets,
                                            string formId,
                                            bool isAdvanced,
@@ -19,7 +19,7 @@ namespace Amphora.Api.Areas.Discover.Pages.Components
                                            string placeholder = null)
         {
             LabelFacets = labelfacets;
-            SearchDefinition = searchDefinition;
+            Q = q;
             FormId = formId;
             this.Handler = handler ?? "";
             Placeholder = placeholder ?? "What are you searching for?";

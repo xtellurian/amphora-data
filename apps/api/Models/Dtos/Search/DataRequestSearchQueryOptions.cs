@@ -7,14 +7,13 @@ namespace Amphora.Api.Models.Dtos.Search
     {
         public override IDictionary<string, string> ToRouteData()
         {
-            return new Dictionary<string, string>(base.ToRouteData())
-            {
-                { nameof(Term), Term },
-                { nameof(OrgId), OrgId },
-                { nameof(Lat), Lat?.ToString() },
-                { nameof(Lon), Lon?.ToString() },
-                { nameof(Dist), Dist?.ToString() }
-            };
+            var routeData = new Dictionary<string, string>(base.ToRouteData());
+            AddIfNotNull(routeData, nameof(Term), Term);
+            AddIfNotNull(routeData, nameof(OrgId), OrgId);
+            AddIfNotNull(routeData, nameof(Lat), Lat);
+            AddIfNotNull(routeData, nameof(Lon), Lon);
+            AddIfNotNull(routeData, nameof(Dist), Dist);
+            return routeData;
         }
 
         /// <summary>

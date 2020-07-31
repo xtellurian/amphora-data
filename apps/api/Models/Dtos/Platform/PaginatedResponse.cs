@@ -4,13 +4,36 @@ namespace Amphora.Api.Models.Dtos.Platform
 {
     public abstract class PaginatedResponse
     {
+        protected void AddIfNotNull(IDictionary<string, string> dict, string name, string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                dict.Add(name, value);
+            }
+        }
+
+        protected void AddIfNotNull(IDictionary<string, string> dict, string name, int? value)
+        {
+            if (value.HasValue)
+            {
+                dict.Add(name, value.Value.ToString());
+            }
+        }
+
+        protected void AddIfNotNull(IDictionary<string, string> dict, string name, double? value)
+        {
+            if (value.HasValue)
+            {
+                dict.Add(name, value.Value.ToString());
+            }
+        }
+
         public virtual IDictionary<string, string> ToRouteData()
         {
-            return new Dictionary<string, string>
-            {
-                { nameof(Take), Take.ToString() },
-                { nameof(Skip), Skip.ToString() }
-            };
+            var routeData = new Dictionary<string, string>();
+            AddIfNotNull(routeData, nameof(Take), Take);
+            AddIfNotNull(routeData, nameof(Skip), Skip);
+            return routeData;
         }
 
         /// <summary>

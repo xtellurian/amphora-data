@@ -23,14 +23,14 @@
             @if(Model.MapView)
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="ListView"
-                    asp-all-route-data="@Model.SearchDefinition.ToRouteData()"  >
+                    asp-all-route-data="@Model.Q.ToRouteData()"  >
                     View as List
                 </a>
             }
             else
             {
                 <a class="btn btn-link" asp-page="./Index" asp-page-handler="MapView"
-                    asp-all-route-data="@Model.SearchDefinition.ToRouteData()" >
+                    asp-all-route-data="@Model.Q.ToRouteData()" >
                     View on Map
                 </a>
             }
@@ -39,7 +39,7 @@
 
     <div class="row align-items-center">
         <div class="col-11 text-center">
-            @await Component.InvokeAsync("AmphoraSearchBar", new {searchDefinition=Model.SearchDefinition, formId="searchform", handler=Model.Handler})
+            @await Component.InvokeAsync("AmphoraSearchBar", new {q=Model.Q, formId="searchform", handler=Model.Handler})
         </div>
         <div class="col-1 text-left">
             <div>
@@ -52,7 +52,7 @@
     <div class="row">
         <div id="advanced" class="col text-center">
             <div id="filterCollapse" class="collapse mb-2">
-                @await Component.InvokeAsync("AmphoraSearchBar", new {searchDefinition=Model.SearchDefinition, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
+                @await Component.InvokeAsync("AmphoraSearchBar", new {q=Model.Q, labelFacets=Model.LabelFacets, handler=Model.Handler, isAdvanced=true, formId="searchform", })
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
     </div>
 
     @{
-        var d = Model.SearchDefinition;
+        var d = Model.Q;
         // skip is zero based
         int numPages = (int)(Model.Count / d.Take) + 1;
         int currentPage = (int)(d.Skip / d.Take);
@@ -106,14 +106,14 @@
         string previousEnabled = "";
         if(nextPage > numPages - 1) nextEnabled = "disabled";
         if(previousPage < 1) previousEnabled = "disabled";
-        var firstPageRouteData = Model.SearchDefinition.ToRouteData();
+        var firstPageRouteData = d.ToRouteData();
         firstPageRouteData["Skip"] = "0";
-        var previousPageRouteData = Model.SearchDefinition.ToRouteData();
-        previousPageRouteData["Skip"] = (previousPage * Model.SearchDefinition.Take).ToString();
-        var nextPageRouteData = Model.SearchDefinition.ToRouteData();
-        nextPageRouteData["Skip"] = (nextPage * Model.SearchDefinition.Take).ToString();
-        var lastPageRouteData = Model.SearchDefinition.ToRouteData();
-        lastPageRouteData["Skip"] = ((numPages -1) * Model.SearchDefinition.Take).ToString();
+        var previousPageRouteData = d.ToRouteData();
+        previousPageRouteData["Skip"] = (previousPage * d.Take).ToString();
+        var nextPageRouteData = d.ToRouteData();
+        nextPageRouteData["Skip"] = (nextPage * d.Take).ToString();
+        var lastPageRouteData = d.ToRouteData();
+        lastPageRouteData["Skip"] = ((numPages -1) * d.Take).ToString();
     }
     <div class="row">
         <div class="col text-center">
@@ -140,8 +140,8 @@
                     </li>
                     @for(var p = startPage; p < endPage; p++)
                     {
-                        var nPageRouteData = Model.SearchDefinition.ToRouteData();
-                        nPageRouteData["Skip"] = (p * Model.SearchDefinition.Take).ToString();
+                        var nPageRouteData = Model.Q.ToRouteData();
+                        nPageRouteData["Skip"] = (p * Model.Q.Take).ToString();
                         var active = "";
                         if(p == currentPage) active = "active";
                         <li class="page-item @active">

@@ -3,7 +3,7 @@
 <div class="m-3">
     <form id="@Model.FormId" method="get" >
         <div class="input-group border rounded-pill p-1">
-            <input type="search" placeholder="@Model.Placeholder" asp-for="SearchDefinition.Term" aria-describedby="secondary-search-button" class="form-control bg-none border-0">
+            <input type="search" placeholder="@Model.Placeholder" asp-for="Q.Term" aria-describedby="secondary-search-button" class="form-control bg-none border-0">
             <input type="hidden" name="handler" value="@Model.Handler" />
             <div class="input-group-append border-0">
                 <button id="secondary-search-button" type="submit" class="btn btn-link">

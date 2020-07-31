@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
-using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Search;
 using Amphora.Common.Contracts;
 using Amphora.Common.Maths;
@@ -40,7 +39,7 @@ namespace Amphora.Api.Areas.Discover.Pages
         }
 
         [BindProperty(SupportsGet = true)]
-        public AmphoraSearchQueryOptions SearchDefinition { get; set; } = new AmphoraSearchQueryOptions();
+        public AmphoraSearchQueryOptions Q { get; set; } = new AmphoraSearchQueryOptions();
         public long Count { get; set; }
         public string CenterReason { get; set; }
 
@@ -116,10 +115,10 @@ namespace Amphora.Api.Areas.Discover.Pages
 
         private bool TryLoadCenterFromSearchDefinition()
         {
-            if (SearchDefinition?.Lat != null && SearchDefinition.Lon != null)
+            if (Q?.Lat != null && Q.Lon != null)
             {
                 CenterReason = "Map Location based on search parameters";
-                MapCenter = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
+                MapCenter = new GeoLocation(Q.Lon.Value, Q.Lat.Value);
                 Zoom = 8;
                 return true;
             }
@@ -188,9 +187,9 @@ namespace Amphora.Api.Areas.Discover.Pages
 
         private ParallelQuery<string> GetLabels()
         {
-            var labels = this.SearchDefinition?.Labels?.Split(',').Where(_ => !string.IsNullOrWhiteSpace(_)).AsParallel();
+            var labels = this.Q?.Labels?.Split(',').Where(_ => !string.IsNullOrWhiteSpace(_)).AsParallel();
             labels?.ForAll(_ => _.Trim()); // trim all labels
-            this.SearchDefinition.Labels = labels != null ? string.Join(',', labels) : null;
+            this.Q.Labels = labels != null ? string.Join(',', labels) : null;
             return labels;
         }
 
@@ -198,8 +197,8 @@ namespace Amphora.Api.Areas.Discover.Pages
         {
             var geo = GetGeo();
             var labels = GetLabels();
-            var searchParameters = SearchDefinition.ToSearchParameters();
-            var res = await searchService.SearchAsync<AmphoraModel>(SearchDefinition.Term, searchParameters);
+            var searchParameters = Q.ToSearchParameters();
+            var res = await searchService.SearchAsync<AmphoraModel>(Q.Term, searchParameters);
             this.Count = res.Count.HasValue ? res.Count.Value : 0;
             this.Entities = res.Results.Select(_ => _.Entity);
             if (res.Facets.TryGetValue($"{nameof(AmphoraModel.Labels)}/{nameof(Label.Name)}", out var labelFacets))
@@ -211,9 +210,9 @@ namespace Amphora.Api.Areas.Discover.Pages
         private GeoLocation GetGeo()
         {
             GeoLocation geo = null;
-            if (SearchDefinition.Lat.HasValue && SearchDefinition.Lon.HasValue)
+            if (Q.Lat.HasValue && Q.Lon.HasValue)
             {
-                geo = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
+                geo = new GeoLocation(Q.Lon.Value, Q.Lat.Value);
             }
 
             return geo;

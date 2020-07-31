@@ -22,7 +22,7 @@ namespace Amphora.Api.Areas.Discover.Pages.DataRequests
         }
 
         [BindProperty(SupportsGet = true)]
-        public DataRequestSearchQueryOptions SearchDefinition { get; set; } = new DataRequestSearchQueryOptions();
+        public DataRequestSearchQueryOptions Q { get; set; } = new DataRequestSearchQueryOptions();
         public long Count { get; set; }
         public IEnumerable<DataRequestModel> Entities { get; set; }
 
@@ -41,8 +41,8 @@ namespace Amphora.Api.Areas.Discover.Pages.DataRequests
         private async Task RunSearch()
         {
             var geo = GetGeo();
-            var parameters = SearchDefinition.ToSearchParameters();
-            var res = await searchService.SearchAsync<DataRequestModel>(SearchDefinition.Term, parameters);
+            var parameters = Q.ToSearchParameters();
+            var res = await searchService.SearchAsync<DataRequestModel>(Q.Term, parameters);
 
             this.Count = res.Count.HasValue ? res.Count.Value : 0;
             this.Entities = res.Results.Select(_ => _.Entity);
@@ -51,9 +51,9 @@ namespace Amphora.Api.Areas.Discover.Pages.DataRequests
         private GeoLocation GetGeo()
         {
             GeoLocation geo = null;
-            if (SearchDefinition.Lat.HasValue && SearchDefinition.Lon.HasValue)
+            if (Q.Lat.HasValue && Q.Lon.HasValue)
             {
-                geo = new GeoLocation(SearchDefinition.Lon.Value, SearchDefinition.Lat.Value);
+                geo = new GeoLocation(Q.Lon.Value, Q.Lat.Value);
             }
 
             return geo;
