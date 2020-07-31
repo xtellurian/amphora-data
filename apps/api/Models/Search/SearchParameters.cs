@@ -90,7 +90,7 @@ namespace Amphora.Api.Models.Search
         public SearchParameters ForUserAsCreator(IUser user)
         {
             if (Filter.Length > 1) { Filter += " and "; }
-            Filter = $"{nameof(ISearchable.CreatedById)} eq '{user.Id}'";
+            Filter += $"{nameof(ISearchable.CreatedById)} eq '{user.Id}'";
             return this;
         }
 
@@ -99,7 +99,7 @@ namespace Amphora.Api.Models.Search
             if (HasProperty<T>(OrganisationIdProperty))
             {
                 if (Filter.Length > 1) { Filter += " and "; }
-                Filter = $"{OrganisationIdProperty} eq '{orgId}'";
+                Filter += $"{OrganisationIdProperty} eq '{orgId}'";
 
                 this.OrganisationId = orgId;
             }
