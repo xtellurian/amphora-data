@@ -47,8 +47,8 @@ namespace Amphora.Tests.Integration
                 var indexRes = await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
                 if (!indexRes.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("Waiting one minute for reindexation");
-                    await Task.Delay(60 * 1000);
+                    Console.WriteLine("Waiting 30s for reindexation");
+                    await Task.Delay(30 * 1000);
                     Console.WriteLine("Retriggering index");
                     await persona.Http.PostAsJsonAsync("api/search/indexers", new { });
                 }
