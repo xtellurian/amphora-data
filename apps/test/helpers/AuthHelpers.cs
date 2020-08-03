@@ -94,7 +94,7 @@ namespace Amphora.Tests.Helpers
             }
             else
             {
-                throw new System.Exception("Failed to get organisation info");
+                throw new System.Exception($"Failed to get organisation info from response: {res}");
             }
         }
 

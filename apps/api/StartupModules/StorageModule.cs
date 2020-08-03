@@ -18,6 +18,7 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Options;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Stores.TermsOfUse;
+using Amphora.Infrastructure.Database.Cache;
 using Amphora.Infrastructure.Database.Contexts;
 using Amphora.Infrastructure.Database.EFCoreProviders;
 using Amphora.Infrastructure.Extensions;
@@ -73,8 +74,10 @@ namespace Amphora.Api.StartupModules
                 var cosmosOptions = new CosmosOptions();
                 Configuration.GetSection("Cosmos").Bind(cosmosOptions);
                 services.Configure<CosmosOptions>(Configuration.GetSection("Cosmos"));
+                // add the caching layer
+                services.UseCosmosCache(cosmosOptions);
+                // amphroa context
                 services.UseCosmos<AmphoraContext>(cosmosOptions);
-
                 services.AddSingleton<IAmphoraBlobStore, AmphoraBlobStore>();
                 services.AddSingleton<IBlobStore<OrganisationModel>, OrganisationBlobStore>();
                 services.AddSingleton<IBlobCache, PlatformCacheBlobStore>();
@@ -82,6 +85,7 @@ namespace Amphora.Api.StartupModules
             }
             else if (HostingEnvironment.IsDevelopment())
             {
+                services.AddMemoryCache(); // in memory replacement for UseCosmosCache
                 var amphoraSqlOptions = new SqlServerOptions();
                 Configuration.GetSection("SqlServer:Amphora").Bind(amphoraSqlOptions);
                 services.UseSqlServer<AmphoraContext>(amphoraSqlOptions);
@@ -127,6 +131,8 @@ namespace Amphora.Api.StartupModules
             {
                 app.MigrateSql<AmphoraContext>();
             }
+
+            app.UseIpRateLimiter();
         }
 
         private static void InitCosmosContext<T>(IServiceScope scope, bool isTtl = false) where T : DbContext

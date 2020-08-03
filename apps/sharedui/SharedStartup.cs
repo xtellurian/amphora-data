@@ -18,6 +18,7 @@ namespace Amphora.SharedUI
         {
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
 
+            services.AddOptions(); // needed to load configuration from appsettings.json
             services.AddHealthChecks();
 
             services.Configure<ForwardedHeadersOptions>(options =>

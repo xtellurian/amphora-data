@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using Amphora.Api.AspNet.Cors;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
@@ -17,6 +18,7 @@ using Amphora.Common.Services.Access;
 using Amphora.Common.Services.Activities;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Plans;
+using Amphora.Infrastructure.Database.Cache;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
@@ -125,6 +127,9 @@ namespace Amphora.Api
             services.AddMarkdown(); // Westwind.AspNetCore.Markdown
             services.AddAllPollyHttpClients();
 
+            // add the rate limiting middleware
+            services.UseRateLimitingByIpAddress(Configuration, HostingEnvironment.IsDevelopment());
+
             // The following will configure the channel to use the given folder to temporarily
             // store telemetry items during network or Application Insights server issues.
             // User should ensure that the given folder already exists
@@ -220,6 +225,16 @@ namespace Amphora.Api
         private void CommonPipeline(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);
+            if (env.IsDevelopment())
+            {
+                // do this for integration tests where the remote IP doesn't exist
+                var fakeIpAddress = IPAddress.Parse("127.168.1.32");
+                app.Use(async (context, next) =>
+                {
+                    context.Connection.RemoteIpAddress = fakeIpAddress;
+                    await next.Invoke();
+                });
+            }
 
             app.UseAzureAppConfiguration();
 
