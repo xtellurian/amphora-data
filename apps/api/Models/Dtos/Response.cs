@@ -1,9 +1,9 @@
 namespace Amphora.Api.Models.Dtos
 {
-    public class GenericResponse
+    public class Response
     {
-        public GenericResponse() { }
-        public GenericResponse(string message)
+        public Response() { }
+        public Response(string message)
         {
             Message = message;
         }

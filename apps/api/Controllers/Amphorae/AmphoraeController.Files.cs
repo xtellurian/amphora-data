@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
@@ -293,6 +294,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="file">The name of the file.</param>
         /// <returns>200 if successful.</returns>
         [HttpDelete("{file}")]
+        [Produces(typeof(Response))]
         [CommonAuthorize]
         public async Task<IActionResult> DeleteFile(string id, string file)
         {
@@ -302,7 +304,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var deleteRes = await amphoraFileService.DeleteFileAsync(User, result.Entity, file);
                 if (deleteRes.Succeeded)
                 {
-                    return Ok();
+                    return Ok(new Response($"Deleted file {file} from Amphora({id})"));
                 }
                 else
                 {

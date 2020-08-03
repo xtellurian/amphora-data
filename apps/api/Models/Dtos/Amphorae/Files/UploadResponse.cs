@@ -1,8 +1,8 @@
 namespace Amphora.Api.Models.Dtos.Amphorae.Files
 {
-    public class UploadResponse
+    public class UploadResponse : Response
     {
-        public UploadResponse(string url)
+        public UploadResponse(string url) : base()
         {
             Url = url;
         }
