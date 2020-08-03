@@ -1,3 +1,4 @@
+using Amphora.Common.Extensions;
 using Amphora.Infrastructure.Database.Cache.RateLimiter;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +10,7 @@ namespace Amphora.Infrastructure.Database.Cache
 {
     public static class RateLimiterProvider
     {
-        public static void UseRateLimitingByIpAddress(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
+        public static void UseRateLimitingByIpAddress(this IServiceCollection services, IConfiguration configuration)
         {
             // load general configuration from appsettings.json
             services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
@@ -18,15 +19,15 @@ namespace Amphora.Infrastructure.Database.Cache
             services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
 
             // inject counter and rules stores
-            if (isDevelopment)
-            {
-                services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-                services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-            }
-            else
+            if (configuration.IsPersistentStores())
             {
                 services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
                 services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+            }
+            else
+            {
+                services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+                services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
             }
 
             // https://github.com/aspnet/Hosting/issues/793
@@ -38,7 +39,7 @@ namespace Amphora.Infrastructure.Database.Cache
             services.AddSingleton<IRateLimitConfiguration, CustomRateLimitConfiguration>();
         }
 
-        public static void UseRateLimitingByClientId(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
+        public static void UseRateLimitingByClientId(this IServiceCollection services, IConfiguration configuration)
         {
             // load general configuration from appsettings.json
             services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
@@ -47,15 +48,15 @@ namespace Amphora.Infrastructure.Database.Cache
             services.Configure<ClientRateLimitPolicies>(configuration.GetSection("ClientRateLimitPolicies"));
 
             // inject counter and rules stores
-            if (isDevelopment)
-            {
-                services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
-                services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-            }
-            else
+            if (configuration.IsPersistentStores())
             {
                 services.AddSingleton<IClientPolicyStore, DistributedCacheClientPolicyStore>();
                 services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+            }
+            else
+            {
+                services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
+                services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
             }
 
             // https://github.com/aspnet/Hosting/issues/793

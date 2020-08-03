@@ -128,7 +128,7 @@ namespace Amphora.Api
             services.AddAllPollyHttpClients();
 
             // add the rate limiting middleware
-            services.UseRateLimitingByIpAddress(Configuration, HostingEnvironment.IsDevelopment());
+            services.UseRateLimitingByIpAddress(Configuration);
 
             // The following will configure the channel to use the given folder to temporarily
             // store telemetry items during network or Application Insights server issues.
@@ -225,16 +225,16 @@ namespace Amphora.Api
         private void CommonPipeline(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
             ConfigureSharedPipeline(app);
-            if (env.IsDevelopment())
-            {
-                // do this for integration tests where the remote IP doesn't exist
-                var fakeIpAddress = IPAddress.Parse("127.168.1.32");
-                app.Use(async (context, next) =>
-                {
-                    context.Connection.RemoteIpAddress = fakeIpAddress;
-                    await next.Invoke();
-                });
-            }
+            // if (env.IsDevelopment())
+            // {
+            //     // do this for integration tests where the remote IP doesn't exist
+            //     var fakeIpAddress = IPAddress.Parse("127.168.1.32");
+            //     app.Use(async (context, next) =>
+            //     {
+            //         context.Connection.RemoteIpAddress = fakeIpAddress;
+            //         await next.Invoke();
+            //     });
+            // }
 
             app.UseAzureAppConfiguration();
 

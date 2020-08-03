@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amphora.Tests.Helpers;
 using Amphora.Tests.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,7 +16,7 @@ namespace Amphora.Tests.Integration
     [Trait("Category", "RateLimit")]
     public class RateLimitTests : WebAppIntegrationTestBase
     {
-        private const string IpAddressHeader = "X-Azure-ClientIP";
+        private const string IpAddressHeader = "X-ClientIP";
         public RateLimitTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory)
         {
         }
@@ -26,30 +29,41 @@ namespace Amphora.Tests.Integration
                 Method = HttpMethod.Get,
                 Headers =
                 {
-                    { IpAddressHeader, "10.10.10.10" } // fake IP address to be limitted,
+                    { IpAddressHeader, "10.10.10.10" } // fake IP address to be limited,
                 }
             };
         }
 
+        private async Task<HttpResponseMessage> MakeRequest(Persona persona, HttpRequestMessage m)
+        {
+            return await persona.Http.SendAsync(m);
+        }
+
         [Theory]
-        [InlineData("api/amphorae/")]
+        [InlineData("api/users/self")]
         public async Task Get_BurstIsRateLimited(string path)
         {
             var persona = await GetPersonaAsync(Personas.Other);
             var b = new UriBuilder(persona.Http.BaseAddress);
             b.Path = path;
-            // first should succeed
             var start = DateTime.Now;
-            var firstResponse = await persona.Http.SendAsync(CreateRequestMessage(b.Uri));
-            firstResponse.IsSuccessStatusCode.Should().BeTrue();
-            // second should succeed
-            var secondResponse = await persona.Http.SendAsync(CreateRequestMessage(b.Uri));
-            secondResponse.IsSuccessStatusCode.Should().BeTrue();
-            // third should be rate limitted and return 429
-            var thirdResponse = await persona.Http.SendAsync(CreateRequestMessage(b.Uri));
+
+            var successfulTasks = new List<Task<HttpResponseMessage>>
+            {
+                MakeRequest(persona, CreateRequestMessage(b.Uri)),
+                MakeRequest(persona, CreateRequestMessage(b.Uri)),
+            };
+            await Task.WhenAll(successfulTasks);
+            var rateLimitedResponse = await MakeRequest(persona, CreateRequestMessage(b.Uri));
             var end = DateTime.Now;
-            (end - start).TotalSeconds.Should().BeLessThan(1, "because this test needs to run in less than 1 second");
-            thirdResponse.IsSuccessStatusCode.Should().BeFalse("because we set the number in 1 seconds to be 2");
+            (end - start).TotalSeconds.Should().BeLessThan(5, "because this test needs to run in less than 10 seconds");
+
+            var successfulResponses = successfulTasks.Select(_ => _.Result).ToList();
+            successfulResponses.Where(_ => _.IsSuccessStatusCode).Should().HaveCount(2);
+            rateLimitedResponse.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+            rateLimitedResponse.IsSuccessStatusCode.Should().BeFalse("because one should have been rate limited");
+            var content = await rateLimitedResponse.Content.ReadAsStringAsync();
+            System.Console.WriteLine(content);
         }
     }
 }

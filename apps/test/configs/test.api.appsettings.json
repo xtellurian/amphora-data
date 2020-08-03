@@ -1,4 +1,18 @@
 {
+  "IpRateLimiting": {
+    "EnableEndpointRateLimiting": false,
+    "StackBlockedRequests": false,
+    "RealIpHeader": "X-ClientIP",
+    "HttpStatusCode": 429,
+    "IpWhitelist": ["10.11.12.10"],
+    "GeneralRules": [
+      {
+        "Endpoint": "*",
+        "Period": "10s",
+        "Limit": 2
+      }
+    ]
+  },
   "FeatureManagement": {
     "Spa": false
   }
