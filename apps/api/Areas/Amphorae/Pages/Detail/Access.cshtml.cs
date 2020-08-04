@@ -45,7 +45,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
         };
 
         [BindProperty]
-        public Models.Dtos.AccessControls.UserAccessRule Rule { get; set; } = new Models.Dtos.AccessControls.UserAccessRule();
+        public Models.Dtos.AccessControls.OrganisationAccessRule Rule { get; set; } = new Models.Dtos.AccessControls.OrganisationAccessRule();
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -59,21 +59,21 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             await LoadAmphoraAsync(id);
             await SetPagePropertiesAsync();
             EntityOperationResult<ApplicationUserDataModel> userReadRes = null;
-            if (Rule.Username == "*")
+            if (Rule.OrganisationId == "*")
             {
                 // then it's not a user
                 logger.LogInformation("Creating an All Rule");
             }
-            else if (IsValidEmail(Rule.Username))
+            else if (IsValidEmail(Rule.OrganisationId))
             {
-                userReadRes = await userDataService.ReadFromEmailAsync(User, Rule.Username);
+                userReadRes = await userDataService.ReadFromEmailAsync(User, Rule.OrganisationId);
             }
             else
             {
-                userReadRes = await userDataService.ReadFromUsernameAsync(User, Rule.Username);
+                userReadRes = await userDataService.ReadFromUsernameAsync(User, Rule.OrganisationId);
             }
 
-            if (Rule.Username?.Trim() == "*")
+            if (Rule.OrganisationId?.Trim() == "*")
             {
                 var rule = new AllRule(Rule.GetKind(), Rule.Priority);
                 var createRes = await accessControlService.CreateAsync(User, Amphora, rule);
@@ -101,7 +101,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
             }
             else
             {
-                logger.LogWarning($"Failed to create rule for target {Rule.Username}");
+                logger.LogWarning($"Failed to create rule for target {Rule.OrganisationId}");
             }
 
             return Page();
@@ -128,7 +128,7 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Detail
 
         private async Task<bool> TryCreateForOrganisation()
         {
-            var orgReadRes = await organisationService.ReadAsync(User, Rule.Username); // use the field for the other one too
+            var orgReadRes = await organisationService.ReadAsync(User, Rule.OrganisationId); // use the field for the other one too
             if (orgReadRes.Succeeded)
             {
                 var rule = new OrganisationAccessRule(Rule.GetKind(), Rule.Priority, orgReadRes.Entity);

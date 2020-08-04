@@ -19,6 +19,7 @@ namespace Amphora.Api.Models.Dtos.AccessControls
         }
 
         [Required]
+        [Display(Name = "Organisation Id")]
         public string OrganisationId { get; set; }
     }
 }
