@@ -153,7 +153,7 @@ namespace Amphora.Tests.Unit.Services
 
                 // create the purchase entity + store
                 var purchaseStore = new PurchaseEFStore(context, CreateMockLogger<PurchaseEFStore>());
-                var purchase = new PurchaseModel(purchasorUserData, amphora);
+                var purchase = new PurchaseModel(purchasorUserData, amphora, DateTimeOffset.UtcNow);
                 purchase = await purchaseStore.CreateAsync(purchase);
 
                 // create the SUT

@@ -10,8 +10,10 @@ using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Tests.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -33,7 +35,7 @@ namespace Amphora.Tests.Integration
         private static Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
 
-        public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory)
+        public WebAppIntegrationTestBase(WebApplicationFactory<Amphora.Api.Startup> factory, Action<IServiceCollection> configureServices = null)
         {
             // factory.ClientOptions.AllowAutoRedirect = false;
             var projectDir = Directory.GetCurrentDirectory();
@@ -45,6 +47,11 @@ namespace Amphora.Tests.Integration
                 {
                     conf.AddJsonFile(configPath);
                 });
+
+                if (configureServices != null)
+                {
+                    builder.ConfigureServices(configureServices);
+                }
             });
         }
 

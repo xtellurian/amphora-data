@@ -22,6 +22,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         public bool? IsPreview { get; set; } = true;
         public bool? IsPaid { get; set; } = false;
         public System.DateTimeOffset? DateCreated { get; set; }
+        public System.DateTimeOffset? ForMonth { get; set; }
 
         // Numbers
         public double? OpeningBalance { get; set; }

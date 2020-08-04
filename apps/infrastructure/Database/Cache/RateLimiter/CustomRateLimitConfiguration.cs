@@ -16,7 +16,7 @@ namespace Amphora.Infrastructure.Database.Cache.RateLimiter
         protected override void RegisterResolvers()
         {
             base.RegisterResolvers();
-
+            IpResolvers.Clear(); // really just so we can debug
             IpResolvers.Add(new CustomIpResolver(HttpContextAccessor, IpRateLimitOptions.RealIpHeader));
         }
     }

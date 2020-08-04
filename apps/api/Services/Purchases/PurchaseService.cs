@@ -94,7 +94,7 @@ namespace Amphora.Api.Services.Purchases
                 else
                 {
                     logger.LogInformation($"Purchasing Amphora({amphora.Id})");
-                    var purchase = new PurchaseModel(user, amphora);
+                    var purchase = new PurchaseModel(user, amphora, dateTimeProvider.UtcNow);
                     purchase = await purchaseStore.CreateAsync(purchase);
                     await SendPurchaseConfimationEmail(purchase);
                     purchase.Price ??= 0; // set 0 if

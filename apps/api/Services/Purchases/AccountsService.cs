@@ -127,16 +127,23 @@ namespace Amphora.Api.Services.Purchases
 
             var org = await orgStore.ReadAsync(organisationId);
             Invoice invoice;
-            var existing = org.Account.Invoices.FirstOrDefault(_ => _.DateCreated.HasValue && _.DateCreated.Value.Month == month.Month);
-            if (existing != null && !regenerate)
+            List<Invoice> toRemove = new List<Invoice>();
+            var existing = org.Account.Invoices.Where(_ => _.ForMonth.HasValue && _.ForMonth.Value.Month == month.Month);
+            if (existing != null && existing.Any() && !regenerate)
             {
                 return null;
+            }
+            else if (existing != null && existing.Any() && regenerate)
+            {
+                // save these to be deleted.
+                toRemove.AddRange(existing);
             }
 
             invoice = new Invoice()
             {
+                ForMonth = month,
                 DateCreated = dateTimeProvider.UtcNow,
-                Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice"
+                Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice",
             };
             var som = month.StartOfMonth();
             var eom = month.EndOfMonth();
@@ -159,7 +166,16 @@ namespace Amphora.Api.Services.Purchases
 
             org.Account.Invoices.Add(invoice);
 
-            await orgStore.UpdateAsync(org);
+            org = await orgStore.UpdateAsync(org);
+
+            // now remove the old ones
+            foreach (var i in toRemove)
+            {
+                logger.LogWarning($"Removing Invoice({i.Id}) from Org({org.Id})");
+                org.Account.Invoices.Remove(i);
+            }
+
+            org = await orgStore.UpdateAsync(org);
 
             return invoice;
         }

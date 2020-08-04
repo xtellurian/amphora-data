@@ -320,7 +320,7 @@ namespace Amphora.Tests.Unit.Services
             Assert.True(purchased_deleted_op.Succeeded);
 
             // fast fwd one month, and now we should see the recurring debit and credit
-            dtProvider.Now = dtProvider.Now.AddMonths(1);
+            dtProvider.GetNow = () => dtProvider.Now.AddMonths(1);
 
             // delete one just before running the thing
             deleted_amphora.ttl = 3600;

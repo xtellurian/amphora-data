@@ -65,7 +65,7 @@ namespace Amphora.Tests.Unit.Services
             run.StartedByUserId.Should().Be(creatorUserData.Id, "because the run was created by this user");
 
             // fast forward in time
-            dtProvider.Now = DateTime.Now;
+            dtProvider.GetNow = () => DateTime.Now;
             // now finish it
             var finishRes = await sut.FinishRunAsync(creatorPrincipal, activity, run, true);
             finishRes.Succeeded.Should().BeTrue("because we got the entity");

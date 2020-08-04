@@ -21,7 +21,7 @@ namespace Amphora.Common.Models.Purchases
             PurchasedByOrganisationId = purchasedByOrganisationId;
         }
 
-        public PurchaseModel(ApplicationUserDataModel user, AmphoraModel amphora)
+        public PurchaseModel(ApplicationUserDataModel user, AmphoraModel amphora, DateTimeOffset? created)
         {
             if (user.OrganisationId == null)
             {
@@ -33,8 +33,8 @@ namespace Amphora.Common.Models.Purchases
             this.Amphora = amphora;
             this.AmphoraId = amphora.Id;
             this.PurchasedByOrganisationId = user.OrganisationId;
-            this.CreatedDate = System.DateTime.UtcNow;
-            this.LastModified = System.DateTime.UtcNow;
+            this.CreatedDate = created ?? System.DateTimeOffset.UtcNow;
+            this.LastModified = created ?? System.DateTimeOffset.UtcNow;
             this.Price = amphora.Price ?? 0;
         }
 
