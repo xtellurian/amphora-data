@@ -128,10 +128,10 @@ namespace Amphora.Api.Services.Purchases
             var org = await orgStore.ReadAsync(organisationId);
             Invoice invoice;
             List<Invoice> toRemove = new List<Invoice>();
-            var existing = org.Account.Invoices.Where(_ => _.ForMonth.HasValue && _.ForMonth.Value.Month == month.Month);
+            var existing = org.Account.Invoices.Where(_ => _.Timestamp.HasValue && _.Timestamp.Value.Month == month.Month);
             if (existing != null && existing.Any() && !regenerate)
             {
-                return null;
+                return existing.FirstOrDefault();
             }
             else if (existing != null && existing.Any() && regenerate)
             {
@@ -141,16 +141,16 @@ namespace Amphora.Api.Services.Purchases
 
             invoice = new Invoice()
             {
-                ForMonth = month,
+                Timestamp = month,
                 DateCreated = dateTimeProvider.UtcNow,
                 Name = $"{month.ToString("MMM", CultureInfo.InvariantCulture)} Invoice",
             };
             var som = month.StartOfMonth();
             var eom = month.EndOfMonth();
             var thisMonthsDebits = org.Account.Debits
-                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
+                .Where(_ => _.Timestamp > som && _.Timestamp < eom);
             var thisMonthsCredits = org.Account.Credits
-                .Where(_ => _.CreatedDate > som && _.CreatedDate < eom);
+                .Where(_ => _.Timestamp > som && _.Timestamp < eom);
             foreach (var c in thisMonthsCredits)
             {
                 invoice.Transactions.Add(new InvoiceTransaction(c));

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
@@ -21,16 +22,19 @@ namespace Amphora.Api.Controllers
         private readonly IUserDataService userDataService;
         private readonly IAccountsService accountsService;
         private readonly IOrganisationService orgService;
+        private readonly IInvoiceFileService invoiceFileService;
         private readonly IMapper mapper;
 
         public InvoicesController(IUserDataService userDataService,
                                   IAccountsService accountsService,
                                   IOrganisationService orgService,
+                                  IInvoiceFileService invoiceFileService,
                                   IMapper mapper)
         {
             this.userDataService = userDataService;
             this.accountsService = accountsService;
             this.orgService = orgService;
+            this.invoiceFileService = invoiceFileService;
             this.mapper = mapper;
         }
 
@@ -80,6 +84,49 @@ namespace Amphora.Api.Controllers
                     var invoices = org.Account.Invoices;
                     var results = mapper.Map<List<Invoice>>(invoices);
                     return Ok(new CollectionResponse<Invoice>(invoices.Count, results));
+                }
+                else
+                {
+                    return BadRequest(new Response("You must be an administrator to list Invoices."));
+                }
+            }
+            else
+            {
+                return BadRequest(new Response("An unknown error occured."));
+            }
+        }
+
+        /// <summary>
+        /// Downloads an invoice in a specified format.
+        /// </summary>
+        /// <param name="id">Invoice Id.</param>
+        /// <param name="format">Only csv is supported.</param>
+        /// <returns>The invoice in the format specified.</returns>
+        [HttpGet("{id}/download")]
+        [CommonAuthorize]
+        [Produces(typeof(CollectionResponse<Invoice>))]
+        [ProducesErrorResponseType(typeof(Response))]
+        public async Task<IActionResult> DownloadInvoice(string id, string format)
+        {
+            if (!string.Equals(format?.ToLower(), "csv"))
+            {
+                return BadRequest(new Response("format must be csv"));
+            }
+
+            var userDataRes = await userDataService.ReadAsync(User);
+            if (userDataRes.Succeeded)
+            {
+                var org = userDataRes.Entity.Organisation;
+                if (org.IsAdministrator(userDataRes.Entity))
+                {
+                    var invoice = org.Account.Invoices.FirstOrDefault(i => i.Id == id);
+                    if (invoice == null)
+                    {
+                        return BadRequest($"Invoice({id}) not found");
+                    }
+
+                    var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(invoice);
+                    return File(f.Raw, "text/csv; chartset=utf-8", $"invoice-{f.FileName}");
                 }
                 else
                 {

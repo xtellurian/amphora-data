@@ -194,7 +194,8 @@ namespace Amphora.Api.Stores.InMemory
 
         public async Task WriteAsync(T entity, string path, Stream content)
         {
-            await WriteBytesAsync(entity, path, await content.ReadFullyAsync());
+            var bytes = await content.ReadFullyAsync();
+            await WriteBytesAsync(entity, path, bytes);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Amphora.Api.Models.Dtos.Accounts
         public string Name { get; set; }
         public bool? IsPaid { get; set; }
         public System.DateTimeOffset? DateCreated { get; set; }
-        public System.DateTimeOffset? ForMonth { get; set; }
+        public System.DateTimeOffset? Timestamp { get; set; }
 
         // Numbers
         public double OpeningBalance { get; set; }

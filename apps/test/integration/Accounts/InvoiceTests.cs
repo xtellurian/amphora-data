@@ -23,11 +23,11 @@ namespace Amphora.Tests.Integration.Accounts
         public InvoiceTests(WebApplicationFactory<Amphora.Api.Startup> factory) : base(factory, s => s.AddSingleton<IDateTimeProvider>(dtProvider))
         { }
 
-        private async Task GenerateSomeInvoices(Persona p)
+        private async Task GenerateSomeInvoices(Persona p, bool regenerate = false)
         {
             var admin = await GetPersonaAsync(Personas.AmphoraAdmin);
             var createInvoiceRes = await admin.Http.PostAsJsonAsync("api/invoices",
-                new CreateInvoice(DateTimeOffset.Now.AddMonths(-1), p.Organisation.Id, false, true));
+                new CreateInvoice(DateTimeOffset.Now.AddMonths(-1), p.Organisation.Id, false, regenerate));
 
             var res = await AssertHttpSuccess<ItemResponse<Invoice>>(createInvoiceRes);
             var invoice = res.Item;
@@ -53,7 +53,7 @@ namespace Amphora.Tests.Integration.Accounts
             // Arrange
             var persona = await GetPersonaAsync(Personas.Standard);
             await GenerateSomeTransactions(persona);
-            await GenerateSomeInvoices(persona);
+            await GenerateSomeInvoices(persona, true);
             // Act
             var res = await persona.Http.GetAsync("api/invoices");
             // Assert
@@ -64,8 +64,33 @@ namespace Amphora.Tests.Integration.Accounts
             // check there's only one for last month
             var lastMonth = DateTimeOffset.Now.AddMonths(-1).StartOfMonth();
             var thisMonth = lastMonth.AddMonths(1);
-            data.Items.Where(i => i.ForMonth >= lastMonth && i.ForMonth <= thisMonth)
+            data.Items.Where(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth)
                 .Should().HaveCount(1, "because we should have only 1 invoice per month");
+            var invoice = data.Items.FirstOrDefault(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth);
+            invoice.Transactions.Should().NotBeNullOrEmpty("because we added transactions to last month");
+        }
+
+        [Fact]
+        public async Task GetInvoice_DownloadCsv()
+        {
+            // Arrange
+            var persona = await GetPersonaAsync(Personas.Standard);
+            await GenerateSomeTransactions(persona);
+            await GenerateSomeInvoices(persona, false);
+            var res = await persona.Http.GetAsync("api/invoices");
+            var data = await AssertHttpSuccess<CollectionResponse<Invoice>>(res);
+            data.Items.Should().NotBeNullOrEmpty();
+            var invoice = data.Items.FirstOrDefault(_ => _.Transactions.Any());
+            invoice.Should().NotBeNull("because we wanted to select an invoice with transactions");
+            invoice.Transactions.Should().NotBeEmpty();
+            // Act
+            // download csv
+            var csvResponse = await persona.Http.GetAsync($"api/invoices/{invoice.Id}/download?format=csv");
+            await AssertHttpSuccess(csvResponse);
+            csvResponse.Content.Headers.ContentType.ToString().Should().Be("text/csv; chartset=utf-8");
+            // Assert
+            var content = await csvResponse.Content.ReadAsStringAsync();
+            content.Should().NotBeNullOrEmpty();
         }
     }
 }

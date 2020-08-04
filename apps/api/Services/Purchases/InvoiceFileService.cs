@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models;
@@ -29,23 +30,27 @@ namespace Amphora.Api.Services.Purchases
             if (!await blobStore.ExistsAsync(invoice.Account.Organisation, path))
             {
                 var stream = new MemoryStream();
-                await GenerateFileAsync(invoice, stream);
-                await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
+                using (var writer = new StreamWriter(stream, Encoding.UTF8))
+                {
+                    await GenerateFileAsync(invoice, writer);
+                    stream.Position = 0;
+                    await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
+                }
             }
 
             var contents = await blobStore.ReadBytesAsync(invoice.Account.Organisation, path);
             return new FileWrapper(contents, $"{invoice.Id}{CsvExtension}");
         }
 
-        private async Task GenerateFileAsync(Invoice invoice, Stream writableStream)
+        private async Task GenerateFileAsync(Invoice invoice, StreamWriter writer)
         {
-            using (var writer = new StreamWriter(writableStream))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture, true)) // leave open = true
             {
                 csv.Configuration.RegisterClassMap<InvoiceTransactionCsvMap>();
                 csv.WriteHeader<InvoiceTransaction>();
                 csv.NextRecord();
                 await csv.WriteRecordsAsync(invoice.Transactions.OrderBy(_ => _.Timestamp));
+                await csv.FlushAsync();
             }
         }
 
