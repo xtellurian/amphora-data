@@ -2,3 +2,4 @@
 apps/Entities.dgml
 **/*.cobertura.xml
 **/*.trx
+utilities/**/.*
