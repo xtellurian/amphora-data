@@ -94,7 +94,7 @@ namespace Amphora.Tests.Unit.Services
             Assert.True(createRes.Succeeded);
             Assert.NotNull(createRes.Entity.Id);
 
-            mockEmailSender.Verify(_ => _.SendEmailAsync(It.Is<GivenAccessToAmphoraEmail>(_ => _.Recipients[0].Email == contactEmail)));
+            mockEmailSender.Verify(_ => _.SendEmailAsyncV1(It.Is<GivenAccessToAmphoraEmail>(_ => _.Recipients[0].Email == contactEmail)));
 
             // now delete it
             var deleteRes = await sut.DeleteAsync(mockPrincipal.Object, amphora, createRes.Entity.Id);

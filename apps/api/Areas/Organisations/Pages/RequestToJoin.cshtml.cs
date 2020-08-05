@@ -57,7 +57,7 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     return RedirectToPage("./Index");
                 }
 
-                this.Succeeded = await emailSender.SendEmailAsync(new RequestToJoinEmail(userData, res.Entity));
+                this.Succeeded = await emailSender.SendEmailAsyncV1(new RequestToJoinEmail(userData, res.Entity));
                 return Page();
             }
             else

@@ -26,7 +26,7 @@ namespace Amphora.Infrastructure.Services
             options.CurrentValue?.ThrowIfInvalid();
         }
 
-        public async Task<bool> SendEmailAsync(IEmail email)
+        public async Task<bool> SendEmailAsyncV1(IEmail email)
         {
             try
             {
@@ -60,6 +60,11 @@ namespace Amphora.Infrastructure.Services
                 logger.LogError($"Failed to send email, {ex.Message}", ex);
                 return false;
             }
+        }
+
+        public Task<bool> SendEmailAsync(IEmail email)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
