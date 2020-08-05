@@ -16,5 +16,6 @@ namespace Amphora.Common.Models.Emails
         public static string BaseUrl => AmphoraHost.GetHost();
         public abstract string HtmlContent { get; set; }
         public virtual string Subject { get; set; }
+        public virtual string Category => GetType().Name;
     }
 }

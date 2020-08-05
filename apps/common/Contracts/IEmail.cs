@@ -5,6 +5,7 @@ namespace Amphora.Common.Contracts
 {
     public interface IEmail
     {
+        string Category { get; }
         string Subject { get; set; }
         string HtmlContent { get; set; }
         [JsonIgnore]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Options;
 using Amphora.Infrastructure.Models.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,7 +21,9 @@ namespace Amphora.Infrastructure.Services.Emails
         private SendGridOptions options;
         public IEmailGenerator Generator { get; }
 
-        public SendGridEmailSender(ILogger<SendGridEmailSender> logger, IOptionsMonitor<SendGridOptions> options, IEmailGenerator generator)
+        public SendGridEmailSender(ILogger<SendGridEmailSender> logger,
+                                   IOptionsMonitor<SendGridOptions> options,
+                                   IEmailGenerator generator)
         {
             this.options = options.CurrentValue;
             this.logger = logger;
@@ -52,6 +55,7 @@ namespace Amphora.Infrastructure.Services.Emails
                     }
                 }
 
+                msg.AddCategory(email.Category);
                 msg.SetSubject(email.Subject);
                 msg.AddContent(MimeType.Html, email.HtmlContent);
                 await TrySendMessage(msg);
