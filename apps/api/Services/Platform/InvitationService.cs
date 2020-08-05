@@ -86,7 +86,11 @@ namespace Amphora.Api.Services.Platform
                 invitation.LastModified = System.DateTime.UtcNow;
                 var created = await invitationStore.CreateAsync(invitation);
                 // send an invite email
-                await emailSender.SendEmailAsyncV1(new InvitationEmail(created));
+                var templateData = InvitationEmail.GetTemplateData(created);
+                var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync(
+                    InvitationEmail.TemplateName,
+                    templateData);
+                await emailSender.SendEmailAsync(new InvitationEmail(created, content));
                 return new EntityOperationResult<InvitationModel>(userData, created);
             }
         }

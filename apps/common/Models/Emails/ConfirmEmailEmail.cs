@@ -1,25 +1,29 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Users;
-using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Emails
 {
     public class ConfirmEmailEmail : EmailBase, IEmail
     {
-        private string page = "Profiles/Account/ConfirmEmail";
-        public ConfirmEmailEmail(ApplicationUserDataModel user, string code)
+        public static string TemplateName => "ConfirmEmail";
+        private static string page = "Profiles/Account/ConfirmEmail";
+        public static Dictionary<string, string> TemplateData(ApplicationUserDataModel user, string baseUrl, string code)
         {
-            Recipients.Add(new EmailRecipient(user?.ContactInformation?.Email!, user?.ContactInformation?.FullName!));
-            this.Name = user?.ContactInformation?.FullName!;
-            Link = HtmlEncoder.Default.Encode($"{BaseUrl}/{page}?userId={user?.Id}&code={code}");
+            return new Dictionary<string, string>
+            {
+                { "{{name}}", user.UserName ?? "Friend" },
+                { "{{link}}", HtmlEncoder.Default.Encode($"{baseUrl}/{page}?userId={user?.Id}&code={code}") }
+            };
         }
 
-        public override string SendGridTemplateId => "d-b6be9fdd4d49426ca958b83c166f3d1f";
+        public ConfirmEmailEmail(ApplicationUserDataModel user, string htmlContent) : base("Please confirm your email address.")
+        {
+            Recipients.Add(new EmailRecipient(user?.ContactInformation?.Email!, user?.ContactInformation?.FullName!));
+            HtmlContent = htmlContent;
+        }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-        [JsonProperty("link")]
-        public string Link { get; set; }
+        public override string HtmlContent { get; set; }
     }
 }

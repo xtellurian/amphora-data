@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Amphora.Api.Models.Versions;
+using Amphora.Common.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,22 +11,21 @@ namespace Amphora.Api.Pages.Changelog
 {
     public class IndexModel : PageModel
     {
-        public IndexModel(IWebHostEnvironment env)
+        public IndexModel(IContentLoader contentLoader)
         {
-            Env = env;
-            ContentRootPath = Env.ContentRootPath;
+            this.contentLoader = contentLoader;
         }
 
         public static string RootName = "wwwroot";
         public static string ChangelogsRelativePath = "docs/changelog";
         public IWebHostEnvironment Env { get; }
-        public string ContentRootPath { get; }
         public List<VersionFile> VersionDetails { get; private set; } = new List<VersionFile>();
         private IComparer<string> comparer = new VersionComparer();
+        private readonly IContentLoader contentLoader;
 
         public IActionResult OnGetAsync()
         {
-            var fullyQualifiedPaths = Directory.EnumerateFiles(Path.Join(ContentRootPath, RootName, ChangelogsRelativePath));
+            var fullyQualifiedPaths = contentLoader.GetFullyQualifiedPaths(RootName, ChangelogsRelativePath);
 
             foreach (var f in fullyQualifiedPaths)
             {

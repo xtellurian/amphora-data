@@ -6,24 +6,29 @@ namespace Amphora.Tests.Mocks
     public class MockDateTimeProvider : IDateTimeProvider
     {
         private readonly DateTimeOffset? minValue;
+        private DateTimeOffset? fixedNow;
 
-        public MockDateTimeProvider(DateTimeOffset? now = null)
+        public MockDateTimeProvider(DateTimeOffset? fixedNow = null)
         {
-            GetNow = () => now ?? DateTimeOffset.Now;
+            this.fixedNow = fixedNow;
         }
 
-        public MockDateTimeProvider(DateTimeOffset now, DateTimeOffset? minValue) : this(now)
+        public MockDateTimeProvider(DateTimeOffset fixedNow, DateTimeOffset? minValue) : this(fixedNow)
         {
             this.minValue = minValue;
         }
 
         public void Reset()
         {
-            GetNow = () => DateTimeOffset.Now;
+            fixedNow = null;
         }
 
-        public Func<DateTimeOffset> GetNow { get; set; }
-        public DateTimeOffset Now => GetNow();
+        public void SetFixed(DateTimeOffset fixedNow)
+        {
+            this.fixedNow = fixedNow;
+        }
+
+        public DateTimeOffset Now => fixedNow ?? DateTimeOffset.Now;
 
         public DateTimeOffset UtcNow => Now.UtcDateTime;
 

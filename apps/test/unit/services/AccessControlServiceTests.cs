@@ -82,8 +82,9 @@ namespace Amphora.Tests.Unit.Services
                     It.IsInRange(AccessLevels.Read, AccessLevels.Administer, Range.Inclusive)))
                 .ReturnsAsync(true);
 
+            var generator = Mock.Of<IEmailGenerator>();
             var mockEmailSender = new Mock<IEmailSender>();
-
+            mockEmailSender.SetupGet(_ => _.Generator).Returns(generator);
             var sut = new AccessControlService(ruleStore,
                                                mockUserDataService.Object,
                                                mockPermissionService.Object,
@@ -94,7 +95,7 @@ namespace Amphora.Tests.Unit.Services
             Assert.True(createRes.Succeeded);
             Assert.NotNull(createRes.Entity.Id);
 
-            mockEmailSender.Verify(_ => _.SendEmailAsyncV1(It.Is<GivenAccessToAmphoraEmail>(_ => _.Recipients[0].Email == contactEmail)));
+            mockEmailSender.Verify(_ => _.SendEmailAsync(It.Is<GivenAccessToAmphoraEmail>(_ => _.Recipients[0].Email == contactEmail)));
 
             // now delete it
             var deleteRes = await sut.DeleteAsync(mockPrincipal.Object, amphora, createRes.Entity.Id);

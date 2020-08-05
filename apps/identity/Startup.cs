@@ -2,6 +2,7 @@
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.Options;
+using Amphora.Common.Services.Emails;
 using Amphora.Identity.Contracts;
 using Amphora.Identity.EntityFramework;
 using Amphora.Identity.Extensions;
@@ -16,6 +17,7 @@ using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Models.Options;
 using Amphora.Infrastructure.Modules;
 using Amphora.Infrastructure.Services;
+using Amphora.Infrastructure.Services.Emails;
 using Amphora.Infrastructure.Stores.EFCore;
 using IdentityServer4.Services;
 using Microsoft.ApplicationInsights.Channel;
@@ -159,6 +161,7 @@ namespace Amphora.Identity
             services.AddScoped<IIdentityService, IdentityServerService>();
             services.AddScoped<IEventSink, IdentityServerEventConnectorService>();
             services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.AddTransient<IEmailGenerator, EmailGenerator>();
 
             services.AddAuthentication();
 

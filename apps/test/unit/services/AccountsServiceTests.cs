@@ -13,6 +13,7 @@ using Amphora.Common.Models.Users;
 using Amphora.Common.Services.Users;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
+using FluentAssertions;
 using Moq;
 using Xunit;
 
@@ -99,11 +100,11 @@ namespace Amphora.Tests.Unit.Services
                 var otherOrg = EntityLibrary.GetOrganisationModel();
                 otherOrg = await orgStore.CreateAsync(otherOrg);
                 var lastMonth = DateTime.Now.AddMonths(-1);
-                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // debit 50
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // debit 50
 
-                otherOrg.Account.Credits.Add(new AccountCredit("Test Credit", credit, otherOrg.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // credit 100
-                otherOrg.Account.Debits.Add(new AccountDebit("Test Debit", debit, otherOrg.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // debit 50
+                otherOrg.Account.Credits.Add(new AccountCredit("Test Credit", credit, otherOrg.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // credit 100
+                otherOrg.Account.Debits.Add(new AccountDebit("Test Debit", debit, otherOrg.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
@@ -148,8 +149,8 @@ namespace Amphora.Tests.Unit.Services
 
                 var credit = rand.Next(1, 105);
                 var debit = rand.Next(1, 105);
-                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // credit 100
-                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, dtProvider.UtcNow) { CreatedDate = lastMonth }); // debit 50
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // debit 50
 
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true);
 
@@ -164,7 +165,7 @@ namespace Amphora.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task InvoicesAreGenerated_DuplicateReturnsNull()
+        public async Task InvoicesAreGenerated_DuplicateReturnsExisting()
         {
             var dtProvider = new MockDateTimeProvider();
             var commissionMock = new Mock<ICommissionTrackingService>();
@@ -189,9 +190,10 @@ namespace Amphora.Tests.Unit.Services
 
                 Assert.True(invoice.IsPreview);
 
-                var regenereratedInvoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true, regenerate: false);
+                var oldInvoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true, regenerate: false);
 
-                Assert.Null(regenereratedInvoice);
+                oldInvoice.Should().NotBeNull();
+                oldInvoice.Id.Should().Be(invoice.Id);
                 commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
             }
         }
@@ -320,7 +322,7 @@ namespace Amphora.Tests.Unit.Services
             Assert.True(purchased_deleted_op.Succeeded);
 
             // fast fwd one month, and now we should see the recurring debit and credit
-            dtProvider.GetNow = () => dtProvider.Now.AddMonths(1);
+            dtProvider.SetFixed(dtProvider.Now.AddMonths(1));
 
             // delete one just before running the thing
             deleted_amphora.ttl = 3600;

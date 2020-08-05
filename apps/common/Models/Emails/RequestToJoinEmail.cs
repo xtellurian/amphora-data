@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Users;
@@ -8,17 +9,20 @@ namespace Amphora.Common.Models.Emails
 {
     public class RequestToJoinEmail : EmailBase, IEmail
     {
-        public RequestToJoinEmail(ApplicationUserDataModel requester, OrganisationModel org)
+        public static string TemplateName => "RequestToJoin";
+        public static Dictionary<string, string?> TemplateData(ApplicationUserDataModel requester, OrganisationModel org)
         {
-            if (requester?.ContactInformation?.Email == null)
+            return new Dictionary<string, string?>
             {
-                throw new ArgumentException($"{nameof(requester)} email cannot be null");
-            }
+                { "{{Organisation_Name}}", org.Name },
+                { "{{Invitee_Email}}", requester.ContactInformation?.Email },
+                { "{{Invitee_Name}}", requester.UserName },
+                { "{{Base_Url}}", BaseUrl },
+            };
+        }
 
-            this.OrganisationName = org.Name;
-            this.InviteeEmail = requester.ContactInformation.Email;
-            this.InviteeName = requester.ContactInformation?.FullName ?? "User";
-
+        public RequestToJoinEmail(OrganisationModel org, string htmlContent)
+        {
             // send this to the org owner and/or admins
             foreach (var member in org.Memberships)
             {
@@ -28,15 +32,10 @@ namespace Amphora.Common.Models.Emails
                         member.User?.ContactInformation?.FullName ?? "Amphora User"));
                 }
             }
+
+            HtmlContent = htmlContent;
         }
 
-        public override string SendGridTemplateId => "d-f9c2d344c20046ada377a2032f339e77";
-
-        [JsonProperty("inviteeName")]
-        public string InviteeName { get; set; }
-        [JsonProperty("inviteeEmail")]
-        public string InviteeEmail { get; set; }
-        [JsonProperty("organisationName")]
-        public string OrganisationName { get; set; }
+        public override string HtmlContent { get; set; }
     }
 }

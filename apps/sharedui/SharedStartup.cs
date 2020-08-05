@@ -1,5 +1,7 @@
 using System.Net.Http;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
+using Amphora.SharedUI.Services.Content;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -20,7 +22,8 @@ namespace Amphora.SharedUI
 
             services.AddOptions(); // needed to load configuration from appsettings.json
             services.AddHealthChecks();
-
+            services.AddTransient<IContentLoader, StaticContentLoader>(); // used for reading files from wwwroot
+            services.AddTransient<IMarkdownToHtml, MarkdownToHtml>(); // used for reading files from wwwroot
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;

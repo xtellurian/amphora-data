@@ -69,7 +69,10 @@ namespace Amphora.Common.Services.Access
 
                     if (rule is UserAccessRule r && r?.Kind == Kind.Allow)
                     {
-                        await emailSender.SendEmailAsyncV1(new GivenAccessToAmphoraEmail(amphora, r.UserData?.ContactInformation?.Email, r.UserData?.ContactInformation?.FullName));
+                        var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync(
+                            GivenAccessToAmphoraEmail.TemplateName,
+                            GivenAccessToAmphoraEmail.GetTemplateData(amphora));
+                        await emailSender.SendEmailAsync(new GivenAccessToAmphoraEmail(content, r.UserData?.ContactInformation?.Email, r.UserData?.ContactInformation?.FullName));
                     }
 
                     return new EntityOperationResult<AccessRule>(userData, rule);

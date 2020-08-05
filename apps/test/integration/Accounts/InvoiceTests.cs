@@ -37,7 +37,7 @@ namespace Amphora.Tests.Integration.Accounts
         private async Task GenerateSomeTransactions(Persona p)
         {
             var other = await GetPersonaAsync(Personas.Other);
-            dtProvider.GetNow = () => DateTimeOffset.Now.AddMonths(-1);
+            dtProvider.SetFixed(DateTimeOffset.Now.AddMonths(-1));
             var amphora = EntityLibrary.GetAmphoraDto(other.Organisation.Id);
             var amphoraCreate = await other.Http.PostAsJsonAsync("api/amphorae", amphora);
             amphora = await AssertHttpSuccess<DetailedAmphora>(amphoraCreate);

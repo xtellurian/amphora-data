@@ -1,24 +1,29 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
-using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Emails
 {
     public class GivenAccessToAmphoraEmail : EmailBase, IEmail
     {
-        public GivenAccessToAmphoraEmail(AmphoraModel amphora, string? targetEmail, string? fullName = null)
+        public static string TemplateName => "GivenAccessToAmphora";
+        public static Dictionary<string, string> GetTemplateData(AmphoraModel amphora) => new Dictionary<string, string>
         {
-            AmphoraUrl = HtmlEncoder.Default.Encode($"{BaseUrl}/Amphorae/Detail?id={amphora.Id}");
+            { "{{name}}", amphora.Name },
+            { "{{amphora_url}}", HtmlEncoder.Default.Encode($"{BaseUrl}/Amphorae/Detail?id={amphora.Id}") }
+        };
+
+        public GivenAccessToAmphoraEmail(string htmlContent, string? targetEmail, string? name) : base("New data!")
+        {
             if (!string.IsNullOrEmpty(targetEmail))
             {
-                this.Recipients.Add(new EmailRecipient(targetEmail, fullName ?? ""));
+                this.Recipients.Add(new EmailRecipient(targetEmail, name ?? "Friend"));
             }
+
+            HtmlContent = htmlContent;
         }
 
-        public override string SendGridTemplateId => " d-07e70362967f4436958b24e876f3bb87";
-
-        [JsonProperty("amphoraUrl")]
-        public string AmphoraUrl { get; set; }
+        public override string HtmlContent { get; set; }
     }
 }

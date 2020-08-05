@@ -1,12 +1,23 @@
+using System.Collections.Generic;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Platform;
-using Newtonsoft.Json;
 
 namespace Amphora.Common.Models.Emails
 {
     public class InvitationEmail : EmailBase, IEmail
     {
-        public InvitationEmail(InvitationModel recipient, string? baseUrl = null)
+        public static string TemplateName => "Invitation";
+        public static Dictionary<string, string> GetTemplateData(InvitationModel recipient, string? baseUrl = null)
+        {
+            return new Dictionary<string, string>
+            {
+                { "{{organisation_name}}", recipient.TargetOrganisation?.Name ?? recipient.TargetOrganisationId! },
+                { "{{email}}", recipient?.TargetEmail ?? throw new System.ArgumentNullException(nameof(recipient) + " or recipient.TargetEmail") },
+                { "{{base_url}}", baseUrl ?? BaseUrl },
+            };
+        }
+
+        public InvitationEmail(InvitationModel recipient, string htmlContent) : base("You've been invited to Amphora Data")
         {
             if (recipient is null || recipient.TargetEmail is null)
             {
@@ -14,22 +25,10 @@ namespace Amphora.Common.Models.Emails
             }
 
             this.Recipients.Add(new EmailRecipient(recipient.TargetEmail, ""));
-            this.Email = recipient.TargetEmail;
-            if (!string.IsNullOrEmpty(baseUrl))
-            {
-                BaseUrl = baseUrl;
-            }
-            else
-            {
-                BaseUrl = "https://app.amphoradata.com";
-            }
+
+            HtmlContent = htmlContent;
         }
 
-        [JsonIgnore]
-        public override string SendGridTemplateId => "d-25458a4c163b4003aa5579bb328c281a";
-
-        // template data
-        [JsonProperty("email")]
-        public string Email { get; set; }
+        public override string HtmlContent { get; set; }
     }
 }

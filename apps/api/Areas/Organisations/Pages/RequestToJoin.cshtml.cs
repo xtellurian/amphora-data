@@ -57,7 +57,10 @@ namespace Amphora.Api.Areas.Organisations.Pages
                     return RedirectToPage("./Index");
                 }
 
-                this.Succeeded = await emailSender.SendEmailAsyncV1(new RequestToJoinEmail(userData, res.Entity));
+                var templateData = RequestToJoinEmail.TemplateData(userDataReadRes.Entity, Organisation);
+                var content = await emailSender.Generator
+                    .ContentFromMarkdownTemplateAsync(RequestToJoinEmail.TemplateName, templateData);
+                this.Succeeded = await emailSender.SendEmailAsync(new RequestToJoinEmail(res.Entity, content));
                 return Page();
             }
             else

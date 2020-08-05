@@ -16,12 +16,11 @@ namespace Amphora.Tests.Unit.Services
 {
     public class RunServiceTests : UnitTestBase
     {
-        private MockDateTimeProvider dtProvider = new MockDateTimeProvider();
-
         [Fact]
         public async Task CanStartAndFinishARun_Successfully_AsNonOrgAdmin()
         {
             // setup
+            var dtProvider = new MockDateTimeProvider(DateTimeOffset.Now);
             var context = GetContext();
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var activityStore = new ActivitiesEFStore(context, CreateMockLogger<ActivitiesEFStore>());
@@ -65,7 +64,7 @@ namespace Amphora.Tests.Unit.Services
             run.StartedByUserId.Should().Be(creatorUserData.Id, "because the run was created by this user");
 
             // fast forward in time
-            dtProvider.GetNow = () => DateTime.Now;
+            dtProvider.SetFixed(DateTime.Now);
             // now finish it
             var finishRes = await sut.FinishRunAsync(creatorPrincipal, activity, run, true);
             finishRes.Succeeded.Should().BeTrue("because we got the entity");
@@ -78,6 +77,7 @@ namespace Amphora.Tests.Unit.Services
         public async Task CanReferenceAmphora_InARun_AsTheRunCreator()
         {
             // setup
+            var dtProvider = new MockDateTimeProvider();
             var context = GetContext();
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var activityStore = new ActivitiesEFStore(context, CreateMockLogger<ActivitiesEFStore>());
@@ -127,6 +127,7 @@ namespace Amphora.Tests.Unit.Services
         public async Task ReferenceUnknownAmphora_ReturnsAnError_AsTheRunCreator()
         {
             // setup
+            var dtProvider = new MockDateTimeProvider();
             var context = GetContext();
             var amphoraStore = new AmphoraeEFStore(context, CreateMockLogger<AmphoraeEFStore>());
             var activityStore = new ActivitiesEFStore(context, CreateMockLogger<ActivitiesEFStore>());

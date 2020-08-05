@@ -17,12 +17,13 @@ using Amphora.Common.Models.DataRequests;
 using Amphora.Common.Services.Access;
 using Amphora.Common.Services.Activities;
 using Amphora.Common.Services.Azure;
+using Amphora.Common.Services.Emails;
 using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Database.Cache;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
-using Amphora.Infrastructure.Services;
 using Amphora.Infrastructure.Services.Azure;
+using Amphora.Infrastructure.Services.Emails;
 using Amphora.Workflow;
 using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
@@ -92,6 +93,7 @@ namespace Amphora.Api
             }
 
             services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.AddTransient<IEmailGenerator, EmailGenerator>();
             services.AddScoped<ISignalService, SignalsService>();
 
             if (Configuration.IsPersistentStores() || HostingEnvironment.IsProduction())

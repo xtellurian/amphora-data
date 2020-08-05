@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace Amphora.Infrastructure.Services
+namespace Amphora.Infrastructure.Services.Emails
 {
     // This class is used by the application to send email for account confirmation and password reset.
     // For more details see https://go.microsoft.com/fwlink/?LinkID=532713
@@ -18,15 +18,17 @@ namespace Amphora.Infrastructure.Services
     {
         private readonly ILogger<SendGridEmailSender> logger;
         private SendGridOptions options;
+        public IEmailGenerator Generator { get; }
 
-        public SendGridEmailSender(ILogger<SendGridEmailSender> logger, IOptionsMonitor<SendGridOptions> options)
+        public SendGridEmailSender(ILogger<SendGridEmailSender> logger, IOptionsMonitor<SendGridOptions> options, IEmailGenerator generator)
         {
             this.options = options.CurrentValue;
             this.logger = logger;
+            Generator = generator;
             options.CurrentValue?.ThrowIfInvalid();
         }
 
-        public async Task<bool> SendEmailAsyncV1(IEmail email)
+        public async Task<bool> SendEmailAsync(IEmail email)
         {
             try
             {
@@ -50,8 +52,8 @@ namespace Amphora.Infrastructure.Services
                     }
                 }
 
-                msg.SetTemplateId(email.SendGridTemplateId);
-                msg.SetTemplateData(email);
+                msg.SetSubject(email.Subject);
+                msg.AddContent(MimeType.Html, email.HtmlContent);
                 await TrySendMessage(msg);
                 return true;
             }
@@ -60,11 +62,6 @@ namespace Amphora.Infrastructure.Services
                 logger.LogError($"Failed to send email, {ex.Message}", ex);
                 return false;
             }
-        }
-
-        public Task<bool> SendEmailAsync(IEmail email)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
