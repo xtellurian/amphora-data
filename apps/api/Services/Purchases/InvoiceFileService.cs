@@ -31,27 +31,21 @@ namespace Amphora.Api.Services.Purchases
             {
                 var stream = new MemoryStream();
                 using (var writer = new StreamWriter(stream, Encoding.UTF8))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture, true)) // leave open = true
                 {
-                    await GenerateFileAsync(invoice, writer);
+                    csv.Configuration.RegisterClassMap<InvoiceTransactionCsvMap>();
+                    csv.WriteHeader<InvoiceTransaction>();
+                    csv.NextRecord();
+                    await csv.WriteRecordsAsync(invoice.Transactions.OrderBy(_ => _.Timestamp));
+                    await writer.FlushAsync();
                     stream.Position = 0;
                     await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
                 }
+
             }
 
             var contents = await blobStore.ReadBytesAsync(invoice.Account.Organisation, path);
             return new FileWrapper(contents, $"{invoice.Id}{CsvExtension}");
-        }
-
-        private async Task GenerateFileAsync(Invoice invoice, StreamWriter writer)
-        {
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture, true)) // leave open = true
-            {
-                csv.Configuration.RegisterClassMap<InvoiceTransactionCsvMap>();
-                csv.WriteHeader<InvoiceTransaction>();
-                csv.NextRecord();
-                await csv.WriteRecordsAsync(invoice.Transactions.OrderBy(_ => _.Timestamp));
-                await csv.FlushAsync();
-            }
         }
 
         private string GetBlobPath(Invoice invoice)
