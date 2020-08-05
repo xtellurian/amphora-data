@@ -5,7 +5,6 @@ using Amphora.Api.Stores.InMemory;
 using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using FluentAssertions;
-using Moq;
 using Xunit;
 
 namespace Amphora.Tests.Unit.Services
