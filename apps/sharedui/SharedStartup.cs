@@ -1,5 +1,6 @@
 using System.Net.Http;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Options;
 using Amphora.Common.Models.Platform;
 using Amphora.SharedUI.Services.Content;
 using Microsoft.AspNetCore.Builder;
@@ -31,6 +32,7 @@ namespace Amphora.SharedUI
                 options.KnownProxies.Clear();
             });
 
+            services.Configure<GoogleAnalyticsOptions>(Configuration.GetSection("GoogleAnalytics"));
             services.Configure<EnvironmentInfo>(Configuration.GetSection("Environment"));
             Configuration.GetSection("Environment").Bind(EnvironmentInfo);
             EnvironmentInfo.IsDevelopment = HostingEnvironment.IsDevelopment();
