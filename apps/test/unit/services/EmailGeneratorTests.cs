@@ -16,6 +16,7 @@ namespace Amphora.Tests.Unit.Services
         {
             var templateName = "template";
             var templateFullPath = "/path/to/template";
+            var emailTemplatePath = "/path/to/emailtemplate";
             var templateData = new Dictionary<string, string>
             {
                 { "replace_this", "with_this" },
@@ -24,6 +25,7 @@ namespace Amphora.Tests.Unit.Services
             var content = "This is some content that would be in a markdown file. " +
                 "replace_this will be replaced. " +
                 "and_this will be too, including and_this the second time";
+            var htmlTemplate = "<div> {{content}} </div>";
 
             var mockContentLoader = new Mock<IContentLoader>();
             mockContentLoader.Setup(_ => _.FileExists(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -33,10 +35,20 @@ namespace Amphora.Tests.Unit.Services
                     It.IsAny<string>(),
                     It.Is<string>(_ => _ == $"{templateName}.template.md")))
                 .Returns(templateFullPath);
+            mockContentLoader.Setup(_ =>
+                _.GetFullyQualifiedPath(It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.Is<string>(_ => _ == "email.template.html")))
+                .Returns(emailTemplatePath);
             mockContentLoader.Setup(_ => _.ReadContentsAsStringAsync(
                     It.Is<string>(v => v == templateFullPath),
                     It.IsAny<Encoding>()))
                 .ReturnsAsync(content);
+            mockContentLoader.Setup(_ => _.ReadContentsAsStringAsync(
+                    It.Is<string>(v => v == emailTemplatePath),
+                    It.IsAny<Encoding>()))
+                .ReturnsAsync(htmlTemplate);
+
             var mockMarkdownToHtml = new Mock<IMarkdownToHtml>();
             mockMarkdownToHtml.Setup(_ => _.ToHtml(It.IsAny<string>())).Returns<string>((val) => val);
             var sut = new EmailGenerator(mockContentLoader.Object, mockMarkdownToHtml.Object);
