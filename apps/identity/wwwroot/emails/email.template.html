@@ -2,6 +2,13 @@
 <head>
     <style>
         body {
+            background-color: #696464;
+        }
+        .content {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            margin-left: 5rem;
+            margin-right: 5rem;
             background-color: #fcfcfc;
         }
         .img-container {
@@ -9,22 +16,26 @@
         }
         img {
             margin: auto;
-            width: 50%;
+            width: 40%;
         }
         .content-container {
-            margin: 2rem;
+            margin: 4rem;
         }
         h1 {
+            margin-left: 2rem;
             text-align: center;
-            text-decoration: underline;
         }
         h2 {
-            text-align: center;
+            margin-left: 2rem;
+            text-align: left;
         }
         p {
             margin-left: 2rem;
             margin-right: 2rem;
             margin-top: 0.5rem;
+        }
+        .signature {
+            margin-top: 10rem;
         }
         footer {
             margin: 0;
@@ -32,7 +43,7 @@
             text-align: center;
             min-height: 2rem;
             background-color: #222222;
-            color: #fcfcfc;
+            color: #fbfbfb;
         }
         footer a {
             color: white;
@@ -40,18 +51,20 @@
     </style>
 </head>
 <body>
-    <div class="img-container">
-        <img src=https://app.amphoradata.com/_content/sharedui/images/logos/amphoradata_black_rect_1.png />
+    <div class="content">
+        <div class="img-container">
+            <img src=https://app.amphoradata.com/_content/sharedui/images/logos/amphoradata_black_rect_1.png />
+        </div>
+        <div class="content-container">
+            <!-- MARKDOWN CONTENT IS RENDERED HERE -->
+           {{content}}
+        </div>
+        <footer>
+            <span>
+                <small>
+                    <a href="https://www.amphoradata.com">Amphora Data</a>
+                </small>
+            </span>
+        </footer>
     </div>
-    <div class="content-container">
-        <!-- MARKDOWN CONTENT IS RENDERED HERE -->
-       {{content}}
-    </div>
-    <footer>
-        <span>
-            <small>
-                <a href="https://www.amphoradata.com">Amphora Data</a>
-            </small>
-        </span>
-    </footer>
 </body>
