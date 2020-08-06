@@ -8,19 +8,18 @@ namespace Amphora.Common.Models.Emails
     public class ConfirmEmailEmail : EmailBase, IEmail
     {
         public static string TemplateName => "ConfirmEmail";
-        private static string page = "Profiles/Account/ConfirmEmail";
-        public static Dictionary<string, string> TemplateData(ApplicationUserDataModel user, string baseUrl, string code)
+        public static Dictionary<string, string> TemplateData(IUser user, string link)
         {
             return new Dictionary<string, string>
             {
                 { "{{name}}", user.UserName ?? "Friend" },
-                { "{{link}}", HtmlEncoder.Default.Encode($"{baseUrl}/{page}?userId={user?.Id}&code={code}") }
+                { "{{link}}", link }
             };
         }
 
-        public ConfirmEmailEmail(ApplicationUserDataModel user, string htmlContent) : base("Please confirm your email address.")
+        public ConfirmEmailEmail(string email, string userName, string htmlContent) : base("Please confirm your email address.")
         {
-            Recipients.Add(new EmailRecipient(user?.ContactInformation?.Email!, user?.ContactInformation?.FullName!));
+            Recipients.Add(new EmailRecipient(email, userName));
             HtmlContent = htmlContent;
         }
 

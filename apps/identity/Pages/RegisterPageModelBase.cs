@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
+using Amphora.Common.Models.Emails;
 using Amphora.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -63,8 +64,17 @@ namespace Amphora.Identity.Pages
                 values: new { userId = user.Id, code = code },
                 protocol: Request.Scheme);
 
-            await emailSender.SendEmailAsync(user.Email, "Please confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            var templateData = ConfirmEmailEmail.TemplateData(user, HtmlEncoder.Default.Encode(callbackUrl));
+            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync("ConfirmEmail", templateData);
+            var email = new ConfirmEmailEmail(user.Email, user.UserName, content);
+            var result = await emailSender.SendEmailAsync(email);
+            if (!result)
+            {
+                logger.LogCritical($"Failed to send email confirmation to User({user.Id})");
+            }
+
+            // await emailSender.SendEmailAsync(user.Email, "Please confirm your email",
+            //     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
         }
     }
 }
