@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import * as kx from "@pulumi/kubernetesx";
-
+import { common } from "./ingressAnnotations";
 export interface IFrontendArgs {
   environment: string;
   location: pulumi.Output<string>;
@@ -171,12 +171,7 @@ export class AmphoraApi extends pulumi.ComponentResource {
           name: `${name}-ingress`,
           namespace: "amphora",
           annotations: {
-            "kubernetes.io/ingress.class": "nginx",
-            "cert-manager.io/cluster-issuer": "letsencrypt",
-            "nginx.ingress.kubernetes.io/limit-rps": "5", // rate limits per second per IP address
-            "nginx.ingress.kubernetes.io/limit-rpm": "300", // rate limits per minute per IP address
-            "nginx.ingress.kubernetes.io/rewrite-target": " /$1",
-            "nginx.ingress.kubernetes.io/proxy-body-size": "0", // disable body size checking
+            ...common,
           },
         },
         spec: {
