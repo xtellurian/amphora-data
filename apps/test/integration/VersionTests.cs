@@ -111,5 +111,18 @@ namespace Amphora.Tests.Integration
             var fileVersion = await System.IO.File.ReadAllLinesAsync(versionFilePath);
             Assert.Equal(version.ToSemver(), fileVersion.FirstOrDefault());
         }
+
+        [Theory]
+        [InlineData("v1")]
+        [InlineData("v2")]
+        public async Task OpenApiFileGeneration(string version)
+        {
+            var client = _factory.CreateClient();
+            var openApiDocResponse = await client.GetAsync($"swagger/{version}/swagger.json");
+            await AssertHttpSuccess(openApiDocResponse);
+            var outputFilePath = $"{System.IO.Directory.GetCurrentDirectory()}/{version}.swagger.json";
+            var content = await openApiDocResponse.Content.ReadAsStringAsync();
+            await System.IO.File.WriteAllTextAsync(outputFilePath, content);
+        }
     }
 }

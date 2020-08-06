@@ -3,3 +3,4 @@ apps/Entities.dgml
 **/*.cobertura.xml
 **/*.trx
 utilities/**/.*
+apps/test/*diff.json
