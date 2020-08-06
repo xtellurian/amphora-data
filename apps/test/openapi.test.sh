@@ -4,11 +4,13 @@
 # dotnet test --filter Category=Versioning
 
 function compare {
-    echo "Comaring version $1"
+    echo "Comparing version $1"
     rm openapi.$1.diff.json
     docker run -v `pwd`/bin/Debug/netcoreapp3.1:/input xtellurian/openapi-diff-container \
     https://app.amphoradata.com/swagger/$1/swagger.json /input/$1.swagger.json \
     >> openapi.$1.diff.json
+
+    echo "Saved to openapi.$1.diff.json"
 }  
 
 compare v1
