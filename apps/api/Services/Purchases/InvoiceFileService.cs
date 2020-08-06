@@ -41,7 +41,6 @@ namespace Amphora.Api.Services.Purchases
                     stream.Position = 0;
                     await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
                 }
-
             }
 
             var contents = await blobStore.ReadBytesAsync(invoice.Account.Organisation, path);

@@ -55,6 +55,16 @@ namespace Amphora.Tests.Integration
             });
         }
 
+        protected T GetService<T>()
+        {
+            return _factory.Server.Services.GetService<T>();
+        }
+
+        protected IServiceScope CreateScope()
+        {
+            return _factory.Server.Services.CreateScope();
+        }
+
         protected async Task<Persona> GetPersonaAsync(string name = Personas.Standard)
         {
             if (!personaCache.ContainsKey(name))

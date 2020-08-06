@@ -16,7 +16,7 @@ namespace Amphora.Tests.Unit.Services
         {
             var orgId = "1234";
             var invoiceId = "5667";
-            var dtProvider = base.GetMockDateTimeProvider();
+            var dtProvider = GetMockDateTimeProvider();
             var blobStore = new InMemoryBlobStore<OrganisationModel>(dtProvider, CreateMockLogger<InMemoryBlobStore<OrganisationModel>>());
 
             var sut = new InvoiceFileService(blobStore);

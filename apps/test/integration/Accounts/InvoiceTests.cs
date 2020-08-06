@@ -2,11 +2,13 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amphora.Api.EntityFramework;
 using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Accounts;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Purchases;
 using Amphora.Tests.Helpers;
 using Amphora.Tests.Mocks;
 using FluentAssertions;
@@ -42,8 +44,17 @@ namespace Amphora.Tests.Integration.Accounts
             var amphoraCreate = await other.Http.PostAsJsonAsync("api/amphorae", amphora);
             amphora = await AssertHttpSuccess<DetailedAmphora>(amphoraCreate);
 
-            var purchaseRes = await p.Http.PostAsJsonAsync($"api/Amphorae/{amphora.Id}/Purchases", new { });
-            await AssertHttpSuccess(purchaseRes);
+            using (var scope = CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<AmphoraContext>();
+
+                var userData = await context.UserData.FindAsync(p.User.Id);
+                var amphoraModel = await context.Amphorae.FindAsync(amphora.Id);
+                var purchase = new PurchaseModel(userData, amphoraModel, dtProvider.Now);
+                context.Purchases.Add(purchase);
+                await context.SaveChangesAsync();
+            }
+
             dtProvider.Reset();
         }
 
