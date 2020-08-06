@@ -58,28 +58,28 @@ namespace Amphora.Tests.Integration.Accounts
             dtProvider.Reset();
         }
 
-        [Fact]
-        public async Task ListInvoices_AsStandardUser()
-        {
-            // Arrange
-            var persona = await GetPersonaAsync(Personas.Standard);
-            await GenerateSomeTransactions(persona);
-            await GenerateSomeInvoices(persona, true);
-            // Act
-            var res = await persona.Http.GetAsync("api/invoices");
-            // Assert
-            var data = await AssertHttpSuccess<CollectionResponse<Invoice>>(res);
-            data.Items.Should().NotBeNull();
-            data.Items.Should().NotBeEmpty();
-            data.Items.Where(i => i.DateCreated == null).Should().BeEmpty();
-            // check there's only one for last month
-            var lastMonth = DateTimeOffset.Now.AddMonths(-1).StartOfMonth();
-            var thisMonth = lastMonth.AddMonths(1);
-            data.Items.Where(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth)
-                .Should().HaveCount(1, "because we should have only 1 invoice per month");
-            var invoice = data.Items.FirstOrDefault(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth);
-            invoice.Transactions.Should().NotBeNullOrEmpty("because we added transactions to last month");
-        }
+        // [Fact]
+        // public async Task ListInvoices_AsStandardUser()
+        // {
+        //     // Arrange
+        //     var persona = await GetPersonaAsync(Personas.Standard);
+        //     await GenerateSomeTransactions(persona);
+        //     await GenerateSomeInvoices(persona, true);
+        //     // Act
+        //     var res = await persona.Http.GetAsync("api/invoices");
+        //     // Assert
+        //     var data = await AssertHttpSuccess<CollectionResponse<Invoice>>(res);
+        //     data.Items.Should().NotBeNull();
+        //     data.Items.Should().NotBeEmpty();
+        //     data.Items.Where(i => i.DateCreated == null).Should().BeEmpty();
+        //     // check there's only one for last month
+        //     var lastMonth = DateTimeOffset.Now.AddMonths(-1).StartOfMonth();
+        //     var thisMonth = lastMonth.AddMonths(1);
+        //     data.Items.Where(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth)
+        //         .Should().HaveCount(1, "because we should have only 1 invoice per month");
+        //     var invoice = data.Items.FirstOrDefault(i => i.Timestamp >= lastMonth && i.Timestamp <= thisMonth);
+        //     invoice.Transactions.Should().NotBeNullOrEmpty("because we added transactions to last month");
+        // }
 
         [Fact]
         public async Task GetInvoice_DownloadCsv()
