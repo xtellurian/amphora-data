@@ -56,10 +56,11 @@ namespace Amphora.Api.StartupModules
                     In = OpenApiSecurityApiKeyLocation.Header,
                     Description = "Bearer {your JWT token}."
                 });
-
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
+                // lets at least flatten for the older version of swagger
+                document.FlattenInheritanceHierarchy = true;
                 document.Description = Description;
                 document.Title = Title;
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
