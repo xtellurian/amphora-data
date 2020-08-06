@@ -39,7 +39,7 @@ namespace Amphora.Identity.Pages
             if (result.Succeeded)
             {
                 logger.LogInformation("User created a new account with password.");
-                await SendConfirmationEmailAsync(user);
+                await SendEmailsAsync(user);
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return this.LoadingPage("/Redirect", this.ReturnUrl);
             }
@@ -54,7 +54,16 @@ namespace Amphora.Identity.Pages
             }
         }
 
-        private async Task SendConfirmationEmailAsync(ApplicationUser user)
+        private async Task SendEmailsAsync(ApplicationUser user)
+        {
+            await SendEmailConfirmationAsync(user);
+            await SendWelcomeEmailAsync(user);
+
+            // await emailSender.SendEmailAsync(user.Email, "Please confirm your email",
+            //     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+        }
+
+        private async Task SendEmailConfirmationAsync(ApplicationUser user)
         {
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -72,9 +81,18 @@ namespace Amphora.Identity.Pages
             {
                 logger.LogCritical($"Failed to send email confirmation to User({user.Id})");
             }
+        }
 
-            // await emailSender.SendEmailAsync(user.Email, "Please confirm your email",
-            //     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+        private async Task SendWelcomeEmailAsync(ApplicationUser user)
+        {
+            var templateData = WelcomeEmail.TemplateData(user);
+            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync("ConfirmEmail", templateData);
+            var email = new WelcomeEmail(user.Email, user.UserName, content);
+            var result = await emailSender.SendEmailAsync(email);
+            if (!result)
+            {
+                logger.LogCritical($"Failed to send email welcome to User({user.Id})");
+            }
         }
     }
 }
