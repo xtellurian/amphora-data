@@ -100,7 +100,12 @@
             </div>
             <div class="row align-items-center">
                 <div class="col text-center text-white">
-                    <a class="ml-2 btn btn-link text-white" asp-page="./Login">Already have an account? Login</a>
+                    <a 
+                        class="ml-2 btn btn-link text-white" 
+                        asp-route-returnUrl="@Model.ReturnUrl" 
+                        asp-page="./Login">
+                            Already have an account? Login
+                    </a>
                 </div>
             </div>
             <div class="row align-items-center">
