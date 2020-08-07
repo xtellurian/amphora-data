@@ -12,6 +12,14 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
         private const string RootDomain = "amphoradata.com";
         private static string AppHost => $"app.{RootDomain}";
         private static string ApiHost => $"api.{RootDomain}";
+        private static List<string> prodScopes = new List<string>
+        {
+            IdentityModel.OidcConstants.StandardScopes.Profile,
+            IdentityModel.OidcConstants.StandardScopes.Email,
+            Common.Security.Resources.WebApi,
+            Common.Security.Scopes.AmphoraScope,
+            Common.Security.Scopes.PurchaseScope
+        };
         public static List<ApplicationModel> Get(EnvironmentInfo envInfo, ExternalServices externalServices)
         {
             return new List<ApplicationModel>
@@ -23,6 +31,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                     AllowOffline = true,
                     RequireConsent = false,
                     AllowedGrantTypes = new List<string> { "implicit", "password", "client_credentials" },
+                    AllowedScopes = prodScopes,
                     Locations = new List<ApplicationLocationModel>
                     {
                         new ApplicationLocationModel()
@@ -54,6 +63,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                     Name = "SPA Client",
                     AllowOffline = true,
                     RequireConsent = false,
+                    AllowedScopes = prodScopes,
                     Locations = new List<ApplicationLocationModel>
                     {
                         new ApplicationLocationModel()

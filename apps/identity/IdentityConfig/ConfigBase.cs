@@ -23,7 +23,14 @@ namespace Amphora.Identity.IdentityConfig
             return new ApiResource[]
             {
                 new ApiResource(Common.Security.Resources.WebApp, "The Amphora Data WebApp"),
-                new ApiResource(Common.Security.Resources.WebApi, "The Amphora Data API")
+                new ApiResource(Common.Security.Resources.WebApi, "The Amphora Data API"),
+                new ApiResource(Scopes.PurchaseScope, "Buy Amphora on your behalf",
+                    new List<string>
+                    {
+                        Claims.Purchase,
+                        Claims.Email,
+                        Claims.EmailConfirmed,
+                    })
             };
         }
 

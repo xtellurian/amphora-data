@@ -67,30 +67,46 @@ namespace Amphora.Identity.Stores.IdentityServer
                 AllowedCorsOrigins = model.Origins,
                 RequireClientSecret = model?.AllowedGrantTypes?.Contains("implicit") == true ? true : false,
                 ClientSecrets = { new Secret(this.secret) },
-                AllowedScopes = CommonScopes(model),
+                AllowedScopes = GetScopes(model!),
                 // defaults
                 // AccessTokenLifetime = 3600,
                 // AbsoluteRefreshTokenLifetime = 30 * 24 * 60 * 60
             };
         }
 
-        private List<string> CommonScopes(ApplicationModel? model)
+        private ICollection<string> GetScopes(ApplicationModel model)
         {
-            var scopes = new List<string>
+            if (model.AllowedScopes != null && model.AllowedScopes.Any() && model.AreScopesValid())
             {
-                IdentityModel.OidcConstants.StandardScopes.OpenId,
-                IdentityModel.OidcConstants.StandardScopes.Profile,
-                IdentityModel.OidcConstants.StandardScopes.Email,
-                Common.Security.Resources.WebApi,
-                Scopes.AmphoraScope
-            };
+                // there are scopes in the application model'
+                var result = new List<string>(model.AllowedScopes);
+                if (!result.Contains(IdentityModel.OidcConstants.StandardScopes.OpenId))
+                {
+                    result.Add(IdentityModel.OidcConstants.StandardScopes.OpenId);
+                }
 
-            if (model?.AllowOffline == true)
-            {
-                scopes.Add(IdentityModel.OidcConstants.StandardScopes.OfflineAccess);
+                return result;
             }
+            else
+            {
+                // just return the standard list of scopes
+                var scopes = new List<string>
+                {
+                    IdentityModel.OidcConstants.StandardScopes.OpenId,
+                    IdentityModel.OidcConstants.StandardScopes.Profile,
+                    IdentityModel.OidcConstants.StandardScopes.Email,
+                    Common.Security.Resources.WebApi,
+                    Scopes.AmphoraScope,
+                    Scopes.PurchaseScope
+                };
 
-            return scopes;
+                if (model?.AllowOffline == true)
+                {
+                    scopes.Add(IdentityModel.OidcConstants.StandardScopes.OfflineAccess);
+                }
+
+                return scopes;
+            }
         }
     }
 }

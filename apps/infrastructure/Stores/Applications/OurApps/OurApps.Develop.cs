@@ -7,6 +7,15 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
     public static class OurAppsDevelop
     {
         private static string locationId = "6b9d70ee-d499-4d77-b5e9-b352de5e2df6";
+        private static List<string> devScopes = new List<string>
+        {
+            IdentityModel.OidcConstants.StandardScopes.Profile,
+            IdentityModel.OidcConstants.StandardScopes.Email,
+            Common.Security.Resources.WebApi,
+            Common.Security.Scopes.AmphoraScope,
+            Common.Security.Scopes.PurchaseScope
+        };
+
         public static List<ApplicationModel> Get()
         {
             return new List<ApplicationModel>
@@ -18,6 +27,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                     AllowOffline = true,
                     RequireConsent = false,
                     AllowedGrantTypes = new List<string> { "implicit", "password", "client_credentials" },
+                    AllowedScopes = devScopes,
                     Locations = new List<ApplicationLocationModel>
                     {
                         new ApplicationLocationModel
@@ -38,6 +48,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                     Name = "SPA Client",
                     AllowOffline = true,
                     RequireConsent = false,
+                    AllowedScopes = devScopes,
                     Locations = new List<ApplicationLocationModel>
                     {
                         new ApplicationLocationModel
@@ -59,6 +70,7 @@ namespace Amphora.Infrastructure.Stores.Applications.OurApps
                     Name = "React Amphora",
                     AllowOffline = false,
                     RequireConsent = true,
+                    AllowedScopes = devScopes,
                     Locations = new List<ApplicationLocationModel>
                     {
                         new ApplicationLocationModel

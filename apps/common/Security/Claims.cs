@@ -8,5 +8,10 @@ namespace Amphora.Common.Security
         public static string FullName => "full_name";
         public static string GlobalAdmin => "global_admin";
         public static string UserName => "name";
+
+        /// <summary>
+        /// A claim that allows a token to purchase on behalf the user.
+        /// </summary>
+        public static string Purchase => "amphora.purchase";
     }
 }

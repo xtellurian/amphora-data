@@ -10,6 +10,7 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration.ApplicationsContext
         {
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
             builder.Property(p => p.AllowedGrantTypes).HasJsonConversion();
+            builder.Property(p => p.AllowedScopes).HasJsonConversion();
             builder.HasMany(p => p.Locations).WithOne().HasForeignKey(_ => _.ApplicationId);
         }
     }

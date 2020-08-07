@@ -11,6 +11,8 @@ namespace Amphora.Common.Models.Applications
         public bool? AllowOffline { get; set; }
         public bool? RequireConsent { get; set; }
         public string? LogoutUrl { get; set; } = null!;
+        public ICollection<string>? AllowedScopes { get; set; } = new Collection<string>();
+
         /// <summary>
         /// Overrides the default allowed grant types.
         /// Defaults to authorization_code
@@ -53,6 +55,47 @@ namespace Amphora.Common.Models.Applications
             }
 
             return results;
+        }
+
+        public ApplicationModel WithScope(string scope)
+        {
+            AllowedScopes ??= new Collection<string>();
+            if (IsValidScope(scope))
+            {
+                if (!AllowedScopes.Contains(scope))
+                {
+                    AllowedScopes.Add(scope);
+                }
+            }
+            else
+            {
+                throw new System.ArgumentException($"{scope} is not a valid scope");
+            }
+
+            return this;
+        }
+
+        public bool IsValidScope(string scope)
+        {
+            return
+                scope == Amphora.Common.Security.Scopes.AmphoraScope ||
+                scope == Amphora.Common.Security.Scopes.PurchaseScope ||
+                scope == "openid" ||
+                scope == "profile" ||
+                scope == "email" ||
+                scope == Common.Security.Resources.WebApi ||
+                scope == Common.Security.Resources.WebApp;
+        }
+
+        public bool AreScopesValid()
+        {
+            if (this.AllowedScopes == null)
+            {
+                // null scopes are OK
+                return true;
+            }
+
+            return this.AllowedScopes.All(scope => IsValidScope(scope));
         }
     }
 }
