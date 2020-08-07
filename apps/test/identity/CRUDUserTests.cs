@@ -1,21 +1,29 @@
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Security;
 using Amphora.Tests.Setup;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
-    [Collection(nameof(InMemoryIdentityFixtureCollection))]
+    [Collection(nameof(IdentityFixtureCollection))]
     [Trait("Category", "Identity")]
     public class CRUDUserTests
     {
-        private readonly InMemoryIdentityWebApplicationFactory factory;
+        private readonly WebApplicationFactory<Amphora.Identity.Startup> factory;
 
-        public CRUDUserTests(InMemoryIdentityWebApplicationFactory factory)
+        public CRUDUserTests(WebApplicationFactory<Amphora.Identity.Startup> factory)
         {
             this.factory = factory;
         }
@@ -24,12 +32,6 @@ namespace Amphora.Tests.Identity.Integration
         public async Task CanCreateUser_InMemory_AsAnonymous_AndGetToken_AndDelete()
         {
             var client = factory.CreateClient();
-            await Run_CanCreateUser_AsAnonymous_AndGetToken_AndDelete(client);
-        }
-
-#pragma warning disable xUnit1013 // Public method should be marked as test
-        public static async Task Run_CanCreateUser_AsAnonymous_AndGetToken_AndDelete(HttpClient client)
-        {
             var email = Guid.NewGuid().ToString() + "@amphoradata.com";
             var fullName = Guid.NewGuid().ToString();
             var password = Guid.NewGuid().ToString() + "!A14";
@@ -62,9 +64,34 @@ namespace Amphora.Tests.Identity.Integration
             Assert.NotNull(token);
             Assert.False(string.IsNullOrEmpty(token));
 
+            var tokenResponseWithPurchase = await client.PostAsJsonAsync("/api/token",
+                new LoginRequest()
+                {
+                    Username = email,
+                    Password = password,
+                    Claims = new List<LoginClaim>
+                    {
+                        new LoginClaim(Claims.Purchase, "")
+                    }
+                });
+
+            Assert.True(tokenResponseWithPurchase.IsSuccessStatusCode, "Content: " + await tokenResponseWithPurchase.Content.ReadAsStringAsync());
+            var tokenWithPurchase = await tokenResponseWithPurchase.Content.ReadAsStringAsync();
+            Assert.NotNull(token);
+            Assert.False(string.IsNullOrEmpty(token));
+            var jwt = GetPrincipal(tokenWithPurchase);
+            jwt.Claims.Should().NotBeNullOrEmpty();
+            jwt.Claims.Should().Contain(_ => _.Type == Claims.Purchase);
+
             // now check can delete
             var deleteRes = await client.DeleteAsync($"/api/users?userName={amphoraUser.UserName}");
             Assert.True(deleteRes.IsSuccessStatusCode, await deleteRes.Content.ReadAsStringAsync());
+        }
+
+        private JwtSecurityToken GetPrincipal(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            return handler.ReadJwtToken(token);
         }
     }
 }

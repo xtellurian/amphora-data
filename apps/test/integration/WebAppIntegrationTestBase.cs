@@ -9,8 +9,9 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Organisations.Accounts;
+using Amphora.Common.Models.Platform;
+using Amphora.Common.Security;
 using Amphora.Tests.Helpers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ namespace Amphora.Tests.Integration
     {
         protected static class Personas
         {
+            public static bool CanPurchase(string p) => !string.Equals(p, Other);
             public const string Standard = nameof(Standard) + "@standard.org";
             public const string StandardTwo = nameof(StandardTwo) + "@standard.org";
             public const string AmphoraAdmin = nameof(AmphoraAdmin) + "@amphoradata.com";
@@ -30,7 +32,7 @@ namespace Amphora.Tests.Integration
             public const string Other = nameof(Other) + "@other.com";
         }
 
-        private const string Password = "sjdbgBBHbdvklv984yt$$";
+        public const string Password = AuthHelpers.Password;
 
         private static Dictionary<string, Persona> personaCache = new Dictionary<string, Persona>();
         protected readonly WebApplicationFactory<Amphora.Api.Startup> _factory;
@@ -88,7 +90,14 @@ namespace Amphora.Tests.Integration
 
         private async Task<bool> TryLoginAndAddToCache(HttpClient httpClient, string name)
         {
-            if (await httpClient.GetTokenAsync(name, Password))
+            var loginRequest = new LoginRequest(name, Password);
+            // add the purchase claim if the persona is allowed to purchase
+            if (Personas.CanPurchase(name))
+            {
+                loginRequest.Claims.Add(new LoginClaim(Claims.Purchase, ""));
+            }
+
+            if (await httpClient.GetTokenAsync(loginRequest))
             {
                 try
                 {

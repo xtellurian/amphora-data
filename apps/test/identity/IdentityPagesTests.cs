@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
-    [Collection(nameof(InMemoryIdentityFixtureCollection))]
+    [Collection(nameof(IdentityFixtureCollection))]
     public class IdentityPagesTests : IdentityInMemoryIntegrationTestBase
     {
         public IdentityPagesTests(InMemoryIdentityWebApplicationFactory factory) : base(factory)

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
+using Amphora.Common.Security;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
@@ -12,6 +14,7 @@ namespace Amphora.Tests.Helpers
 {
     public static class AuthHelpers
     {
+        public const string Password = "sjdbgBBHbdvklv984yt$$";
         private const string PhoneNumber = "0412 345 678";
         public static async Task<AmphoraUser> CreateUserAsync(
             this HttpClient client,
@@ -36,7 +39,13 @@ namespace Amphora.Tests.Helpers
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.True(response.IsSuccessStatusCode, $"[{email}] [{response.StatusCode}] Content:  + {responseContent}");
             var createdUser = JsonConvert.DeserializeObject<AmphoraUser>(responseContent);
-            if (await client.GetTokenAsync(user.UserName, password))
+            var loginRequest = new LoginRequest()
+            {
+                Password = password,
+                Username = user.UserName,
+                Claims = new List<LoginClaim> { new LoginClaim(Claims.Purchase, "") }
+            };
+            if (await client.GetTokenAsync(loginRequest))
             {
                 return createdUser;
             }
@@ -105,18 +114,17 @@ namespace Amphora.Tests.Helpers
             setResult.EnsureSuccessStatusCode();
         }
 
+        public static async Task<bool> GetTokenAsync(this HttpClient client, Persona p, IEnumerable<LoginClaim> claims = null)
+        {
+            var loginReq = new LoginRequest(p.User.UserName, Password, claims);
+            return await client.GetTokenAsync(loginReq);
+        }
+
         /// <summary>
         /// Trys to get a token. Returns whether successful.
         /// </summary>
-        public static async Task<bool> GetTokenAsync(this HttpClient client, string userName, string password)
+        public static async Task<bool> GetTokenAsync(this HttpClient client, LoginRequest loginRequest)
         {
-            // can log in
-            var loginRequest = new LoginRequest()
-            {
-                Password = password,
-                Username = userName
-            };
-
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
             var loginResponse = await client.PostAsync("api/authentication/request", loginContent);
             if (loginResponse.IsSuccessStatusCode)

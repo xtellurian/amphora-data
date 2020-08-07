@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
-    [Collection(nameof(InMemoryIdentityFixtureCollection))]
+    [Collection(nameof(IdentityFixtureCollection))]
     [Trait("Category", "Identity")]
     public class IdentityHealthzTests
     {

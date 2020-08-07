@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
@@ -18,16 +17,29 @@ namespace Amphora.SharedUI.Services.Content
             this.env = env;
         }
 
+        private string AddContentRoot(string path)
+        {
+            var root = env.ContentRootPath;
+            if (path.StartsWith(root))
+            {
+                return path;
+            }
+            else
+            {
+                return Path.Join(root, path);
+            }
+        }
+
         public IEnumerable<string> GetFullyQualifiedPaths(string root, string contentDirectoryPath)
         {
-            return Directory.EnumerateFiles(Path.Join(env.ContentRootPath, root, contentDirectoryPath));
+            root = AddContentRoot(root);
+            return Directory.EnumerateFiles(Path.Join(root, contentDirectoryPath));
         }
 
         public bool FileExists(string root, string folder, string fileName)
         {
-            var p = Path.Join(root, folder, fileName);
-            var fs = Directory.EnumerateFiles(Path.Join(root, folder)).ToList();
-            return FileExists(p);
+            root = AddContentRoot(root);
+            return File.Exists(Path.Join(root, folder, fileName));
         }
 
         public bool FileExists(string root, string path)
@@ -37,27 +49,26 @@ namespace Amphora.SharedUI.Services.Content
 
         public bool FileExists(string filePath)
         {
-            return FilePathExists(Path.Join(env.ContentRootPath, filePath));
-        }
-
-        private bool FilePathExists(string absolutePath)
-        {
-            return File.Exists(absolutePath);
+            filePath = AddContentRoot(filePath);
+            return File.Exists(filePath);
         }
 
         public string GetFullyQualifiedPath(string root, string path)
         {
-            return Path.Join(env.ContentRootPath, root, path);
+            root = AddContentRoot(root);
+            return Path.Join(root, path);
         }
 
         public string GetFullyQualifiedPath(string root, string folder, string fileName)
         {
-            return Path.Join(env.ContentRootPath, root, folder, fileName);
+            root = AddContentRoot(root);
+            return Path.Join(root, folder, fileName);
         }
 
         public async Task<string> ReadContentsAsStringAsync(string filePath, Encoding encoding = null)
         {
-            if (!this.FilePathExists(filePath))
+            filePath = AddContentRoot(filePath);
+            if (!File.Exists(filePath))
             {
                 throw new ArgumentException($"File {filePath} does not exist");
             }
