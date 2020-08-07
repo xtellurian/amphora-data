@@ -12,6 +12,6 @@ namespace Amphora.Common.Security
         /// <summary>
         /// A claim that allows a token to purchase on behalf the user.
         /// </summary>
-        public static string Purchase => "amphora.purchase";
+        public const string Purchase = "amphora.purchase";
     }
 }

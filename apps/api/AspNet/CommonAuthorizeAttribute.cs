@@ -9,6 +9,16 @@ namespace Amphora.Api.AspNet
         public static string OidcSchemeName => "oidc";
         public CommonAuthorizeAttribute() : base()
         {
+            SetAuthenticationSchemes();
+        }
+
+        public CommonAuthorizeAttribute(string policy) : base(policy)
+        {
+            SetAuthenticationSchemes();
+        }
+
+        private void SetAuthenticationSchemes()
+        {
             AuthenticationSchemes ??= "";
             // the order matters!
             AuthenticationSchemes += $"{JwtBearerDefaults.AuthenticationScheme},{CookieSchemeName},{OidcSchemeName}";

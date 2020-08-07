@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Amphora.Api.Models.Dtos;
+using Amphora.Common.Security;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -27,10 +27,11 @@ namespace Amphora.Api.Controllers.Amphorae
         /// Purchases an Amphora as the logged in user.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
-        /// <returns>A Message.</returns>
+        /// <returns>A Response with a message.</returns>
         [HttpPost]
-        [Produces(typeof(string))]
-        [CommonAuthorize]
+        [Produces(typeof(Response))]
+        [ProducesDefaultResponseType(typeof(Response))]
+        [CommonAuthorize(Policies.RequirePurchaseClaim)]
         public async Task<IActionResult> Purchase(string id)
         {
             var a = await amphoraeService.ReadAsync(User, id);
@@ -38,30 +39,30 @@ namespace Amphora.Api.Controllers.Amphorae
             {
                 if (!await purchaseService.CanPurchaseAmphoraAsync(User, a.Entity))
                 {
-                    return StatusCode(403);
+                    return StatusCode(403, new Response("You are not allowed to purchase this Amphora"));
                 }
 
                 var result = await purchaseService.PurchaseAmphoraAsync(User, a.Entity);
                 if (result.Succeeded)
                 {
-                    return Ok("Purchased Amphora");
+                    return Ok(new Response("Purchased Amphora"));
                 }
                 else if (result.WasForbidden)
                 {
-                    return StatusCode(403);
+                    return StatusCode(403, new Response(result.Message));
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(new Response(result.Message));
                 }
             }
             else if (a.WasForbidden)
             {
-                return StatusCode(403);
+                return StatusCode(403, new Response(a.Message));
             }
             else
             {
-                return NotFound();
+                return NotFound(new Response(a.Message));
             }
         }
     }

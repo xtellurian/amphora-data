@@ -124,7 +124,7 @@ namespace Amphora.Identity
 
             // add this to the container so it can be consumed in InMemoryResourceStore
             services.AddSingleton<IIdentityServerConfig>(config);
-
+            services.AddTransient<IAmphoraClaimsService, AmphoraClaimsService>();
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;

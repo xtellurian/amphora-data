@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Platform;
+using Amphora.Identity.Contracts;
 using Amphora.Identity.Models;
 using IdentityServer4;
 using Microsoft.AspNetCore.Identity;
@@ -18,18 +19,21 @@ namespace Amphora.Identity.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> claimsPrincipalFactory;
+        private readonly IAmphoraClaimsService claimsService;
         private readonly ILogger<TokenController> logger;
 
         public TokenController(IdentityServerTools tools,
                                SignInManager<ApplicationUser> signInManager,
                                UserManager<ApplicationUser> userManager,
                                IUserClaimsPrincipalFactory<ApplicationUser> claimsPrincipalFactory,
+                               IAmphoraClaimsService claimsService,
                                ILogger<TokenController> logger)
         {
             this.tools = tools;
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.claimsPrincipalFactory = claimsPrincipalFactory;
+            this.claimsService = claimsService;
             this.logger = logger;
         }
 
@@ -42,17 +46,21 @@ namespace Amphora.Identity.Controllers
             {
                 logger.LogInformation($"{request.Username} signed in for a token.");
                 var user = await userManager.FindByNameAsync(request.Username);
-                var claimsPrincipal = await claimsPrincipalFactory.CreateAsync(user);
+                var principal = await claimsPrincipalFactory.CreateAsync(user);
+                // get Extra claims
+                var allClaims = claimsService.AllClaims(principal, request);
+
                 var message = new StringBuilder();
-                foreach (var c in claimsPrincipal.Claims)
+                foreach (var c in allClaims)
                 {
                     message.AppendLine($"Claim {c.Type} : {c.Value}");
                 }
 
-                logger.LogInformation($"User {request.Username} has {claimsPrincipal.Claims.Count()} claims");
+                logger.LogInformation($"User {request.Username} has {allClaims.Count()} claims");
                 logger.LogInformation(message.ToString());
+
                 // issue the token - THIS MIGHT NOT WORK, OTHER METHOD MIGHT BE BETTER
-                var token = await tools.IssueJwtAsync(lifetime: 3600, claims: claimsPrincipal.Claims);
+                var token = await tools.IssueJwtAsync(lifetime: 3600, claims: allClaims);
                 return Ok(token);
             }
             else

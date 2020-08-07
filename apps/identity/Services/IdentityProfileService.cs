@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Amphora.Common.Security;
 using Amphora.Identity.Models;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -33,7 +35,10 @@ namespace Amphora.Identity.Services
             var claims = principal.Claims.ToList();
 
             // Add more claims like this
-            // claims.Add(new System.Security.Claims.Claim("MyProfileID", user.Id));
+            if (context.RequestedResources.ApiResources.Any(_ => _.Name == Scopes.PurchaseScope))
+            {
+                claims.Add(new Claim(Claims.Purchase, ""));
+            }
 
             context.IssuedClaims = claims;
         }

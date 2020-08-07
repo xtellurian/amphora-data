@@ -83,6 +83,7 @@ namespace Amphora.Api.StartupModules
                     options.SaveTokens = true;
                     options.Scope.Add("email");
                     options.Scope.Add(Scopes.AmphoraScope);
+                    options.Scope.Add(Scopes.PurchaseScope);
 
                     options.Events.OnTicketReceived = (context) =>
                     {
@@ -113,6 +114,8 @@ namespace Amphora.Api.StartupModules
             {
                 options.AddPolicy(GlobalAdminRequirement.GlobalAdminPolicyName, policy =>
                     policy.Requirements.Add(new GlobalAdminRequirement()));
+                // configure that the require purchase policy needs the purchase claim
+                options.AddPolicy(Policies.RequirePurchaseClaim, p => p.RequireClaim(Claims.Purchase));
             });
 
             services.AddScoped<IAuthenticateService, IdentityServerService>();
