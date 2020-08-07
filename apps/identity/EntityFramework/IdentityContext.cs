@@ -1,4 +1,5 @@
 using Amphora.Identity.Models;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,5 +17,7 @@ namespace Amphora.Identity.EntityFramework
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(Amphora.Identity.EntityFramework.IdentityContext).Assembly);
         }
+
+        public DbSet<PersistedGrant> Grants { get; set; } = null!;
     }
 }

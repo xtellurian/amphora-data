@@ -137,6 +137,7 @@ namespace Amphora.Identity
                 .AddResourceStore<InMemoryResourceStore>()
                 .AddClientStore<ConnectedClientStore>()
                 .AddProfileService<IdentityProfileService>()
+                .AddPersistedGrantStore<PersistedGrantStore>()
                 .AddAspNetIdentity<ApplicationUser>();
 
             if (HostingEnvironment.IsProduction() || Configuration.IsPersistentStores())
