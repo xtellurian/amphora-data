@@ -7,12 +7,6 @@ namespace Amphora.Api.Models.Dtos.Applications
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the allowed scopes for the app.
-        /// Options include: ['amphora', 'amphora.purchase'].
-        /// </summary>
-        public List<string> AllowedScopes { get; set; }
-
-        /// <summary>
         /// Gets or sets a collection of locations your application will run.
         /// </summary>
         public IList<AppLocation> Locations { get; set; } = new List<AppLocation>();

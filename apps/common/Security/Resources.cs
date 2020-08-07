@@ -5,7 +5,7 @@ namespace Amphora.Common.Security
     /// </summary>
     public static class Resources
     {
-        public static string WebApp => "web_app";
-        public static string WebApi => "web_api";
+        public static string WebApp = "web_app";
+        public static string WebApi = "web_api";
     }
 }
