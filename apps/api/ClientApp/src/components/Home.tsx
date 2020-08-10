@@ -4,7 +4,6 @@ import { DiagnosticPage } from "./hidden/DiagnosticPage";
 
 export const Home = (): React.ReactElement => (
     <div>
-        <DiagnosticPage />
         <NewWelcome isLoggedIn={true} />
     </div>
 );
