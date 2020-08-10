@@ -2,16 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Security;
-using Amphora.Tests.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -19,19 +15,16 @@ namespace Amphora.Tests.Identity.Integration
 {
     [Collection(nameof(IdentityFixtureCollection))]
     [Trait("Category", "Identity")]
-    public class CRUDUserTests
+    public class CRUDUserTests : IdentityIntegrationTestBase
     {
-        private readonly WebApplicationFactory<Amphora.Identity.Startup> factory;
-
-        public CRUDUserTests(WebApplicationFactory<Amphora.Identity.Startup> factory)
+        public CRUDUserTests(WebApplicationFactory<Amphora.Identity.Startup> factory) : base(factory)
         {
-            this.factory = factory;
         }
 
         [Fact]
         public async Task CanCreateUser_InMemory_AsAnonymous_AndGetToken_AndDelete()
         {
-            var client = factory.CreateClient();
+            var client = _factory.CreateClient();
             var email = Guid.NewGuid().ToString() + "@amphoradata.com";
             var fullName = Guid.NewGuid().ToString();
             var password = Guid.NewGuid().ToString() + "!A14";

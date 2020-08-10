@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using Amphora.Tests.Setup;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
     [Collection(nameof(IdentityFixtureCollection))]
-    public class IdentityPagesTests : IdentityInMemoryIntegrationTestBase
+    public class IdentityPagesTests : IdentityIntegrationTestBase
     {
-        public IdentityPagesTests(InMemoryIdentityWebApplicationFactory factory) : base(factory)
+        public IdentityPagesTests(WebApplicationFactory<Amphora.Identity.Startup> factory) : base(factory)
         {
         }
 

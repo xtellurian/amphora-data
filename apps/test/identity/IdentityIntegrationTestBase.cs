@@ -3,17 +3,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
-using Amphora.Tests.Setup;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Identity.Integration
 {
-    public class IdentityInMemoryIntegrationTestBase : IntegrationTestBase
+    public class IdentityIntegrationTestBase : IntegrationTestBase
     {
-        protected readonly InMemoryIdentityWebApplicationFactory _factory;
+        protected readonly WebApplicationFactory<Amphora.Identity.Startup> _factory;
 
-        public IdentityInMemoryIntegrationTestBase(InMemoryIdentityWebApplicationFactory factory)
+        public IdentityIntegrationTestBase(WebApplicationFactory<Amphora.Identity.Startup> factory)
         {
             _factory = factory;
         }

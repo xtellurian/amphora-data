@@ -1,4 +1,3 @@
-using Amphora.Tests.Setup;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
