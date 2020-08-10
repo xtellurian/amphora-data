@@ -26,7 +26,7 @@ export const QualityPage: React.FunctionComponent<OneAmphora> = (props) => {
             setState({ isLoading: true });
 
             clients.amphoraeApi
-                .amphoraQualityGet(props.amphora.id, undefined, {
+                .amphoraQualityGet(props.amphora.id, {
                     cancelToken: source.token,
                 })
                 .then((r) => {

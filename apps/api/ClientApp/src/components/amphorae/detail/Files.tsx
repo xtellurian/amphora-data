@@ -87,11 +87,10 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
             clients.amphoraeApi
                 .amphoraeFilesListFiles(
                     props.amphora.id,
+                    "Alphabetical",
+                    '',
                     25,
                     0,
-                    "Alphabetical",
-                    undefined,
-                    undefined,
                     {
                         cancelToken: source.token,
                     }
