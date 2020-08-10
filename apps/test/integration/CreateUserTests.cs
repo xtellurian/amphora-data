@@ -6,6 +6,7 @@ using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;
 using Amphora.Tests.Helpers;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -136,12 +137,19 @@ namespace Amphora.Tests.Integration
             }
         }
 
-        private static async Task CheckPersonaAsync(Persona admin)
+        private async Task CheckPersonaAsync(Persona persona)
         {
-            Assert.NotNull(admin.Organisation?.Id);
-            Assert.NotNull(admin.User?.Id);
-            var getSelfRes = await admin.Http.GetAsync("api/users/self");
+            Assert.NotNull(persona.Organisation?.Id);
+            Assert.NotNull(persona.User?.Id);
+            var getSelfRes = await persona.Http.GetAsync("api/users/self");
             getSelfRes.EnsureSuccessStatusCode();
+            if (persona.Name == Personas.AmphoraAdmin)
+            {
+                // check the plan
+                var planRes = await persona.Http.GetAsync("api/account/plan");
+                var plan = await AssertHttpSuccess<PlanInformation>(planRes);
+                plan.PlanType.Should().Be(Common.Models.Organisations.Accounts.Plan.PlanTypes.Institution);
+            }
         }
     }
 }
