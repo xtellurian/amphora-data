@@ -83,7 +83,6 @@ namespace Amphora.Api.StartupModules
                     options.SaveTokens = true;
                     options.Scope.Add("email");
                     options.Scope.Add(Scopes.AmphoraScope);
-                    options.Scope.Add(Scopes.PurchaseScope);
 
                     options.Events.OnTicketReceived = (context) =>
                     {
