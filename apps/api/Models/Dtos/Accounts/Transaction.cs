@@ -2,7 +2,7 @@ using System;
 
 namespace Amphora.Api.Models.Dtos.Accounts
 {
-    public class Transaction
+    public class Transaction : IDto
     {
         public string Id { get; set; }
         public string AmphoraId { get; set; }

@@ -8,7 +8,7 @@ namespace Amphora.Api.Models.AutoMapper
         public InvoicesProfile()
         {
             CreateMap<Invoice, Dtos.Accounts.Invoice>()
-            .ForMember(m => m.OrganisationId, a => a.MapFrom(b => b.Account.OrganisationId));
+                .ForMember(m => m.OrganisationId, a => a.MapFrom(b => b.Account.OrganisationId));
             CreateMap<Transaction, Dtos.Accounts.Transaction>();
         }
     }
