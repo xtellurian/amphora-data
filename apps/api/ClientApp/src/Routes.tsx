@@ -2,7 +2,7 @@ import { Home } from "./components/Home";
 
 import * as React from "react";
 import { connect } from "react-redux";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import CallbackPage from "./components/auth/CallbackPage";
 import { Challenge } from "./components/auth/Challenge";
@@ -61,11 +61,18 @@ const RoutesWithTour = withTour(
     AuthenticatedRoutes
 ) as typeof AuthenticatedRoutes;
 
+const RedirectToChallenge = () => {
+    return (
+        <React.Fragment>
+            <Redirect to="/challenge" />
+        </React.Fragment>
+    );
+};
 const AnonymousRoutes = () => (
     <React.Fragment>
         <Switch>
             <Route exact path="/challenge" component={Challenge} />
-            <Route path="/" component={MainPage} />
+            <Route path="/" component={RedirectToChallenge} />
         </Switch>
     </React.Fragment>
 );

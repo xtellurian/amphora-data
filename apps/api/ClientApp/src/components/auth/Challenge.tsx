@@ -11,7 +11,7 @@ export class Challenge extends React.PureComponent {
     }
     render() {
         return (<div>
-            Redirecting you to login.
+            Redirecting you to login...
         </div>)
     }
 }
