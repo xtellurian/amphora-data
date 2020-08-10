@@ -41,6 +41,7 @@ namespace Amphora.Api.Controllers.Accounts
         /// <summary>
         /// Creates a new invoice. Restricted to global administrators.
         /// </summary>
+        /// <param name="createFor">The organisation for which to create the invoice.</param>
         /// <returns>The new invoice.</returns>
         [HttpPost]
         [GlobalAdminAuthorize]
