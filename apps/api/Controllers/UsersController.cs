@@ -87,7 +87,7 @@ namespace Amphora.Api.Controllers
 
             if (result.Succeeded)
             {
-                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
+                var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToLower());
 
                 var applicationUser = new ApplicationUserDataModel(result.Entity.Id, result.Entity.UserName, result.Entity.About,
                     new ContactInformation(result.Entity.Email, result.Entity.FullName));

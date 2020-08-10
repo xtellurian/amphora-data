@@ -59,8 +59,6 @@ namespace Amphora.Identity.Controllers
                 applicationUser.EmailConfirmed = true;
             }
 
-            // var invitation = await invitationService.GetInvitationByEmailAsync(user.Email.ToUpper());
-
             var result = await userService.CreateAsync(applicationUser, null!, user.Password!); // invitation goes here
 
             if (result.Succeeded && result.Entity != null)

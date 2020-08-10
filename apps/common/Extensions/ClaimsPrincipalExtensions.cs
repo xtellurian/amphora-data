@@ -46,7 +46,7 @@ namespace Amphora.Common.Extensions
         public static string? GetEmail(this ClaimsPrincipal principal, bool normalise = true)
         {
             var email = principal.Claims.FirstOrDefault(_ => _.Type == Claims.Email)?.Value;
-            return normalise ? email?.ToUpper() ?? "" : email ?? "";
+            return normalise ? email?.ToLower() ?? "" : email ?? "";
         }
 
         public static string? GetAbout(this ClaimsPrincipal principal, bool normalise = true)

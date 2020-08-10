@@ -45,7 +45,7 @@ namespace Amphora.Api.Services.Platform
         public IEntityStore<InvitationModel> Store => invitationStore;
         public async Task<EntityOperationResult<InvitationModel>> CreateInvitation(ClaimsPrincipal principal, InvitationModel invitation)
         {
-            invitation.TargetEmail = invitation.TargetEmail.ToUpper(); // set uppercase
+            invitation.TargetEmail = invitation.TargetEmail.ToLower(); // set uppercase
             var userReadRes = await userDataService.ReadAsync(principal);
             if (!userReadRes.Succeeded)
             {
@@ -139,7 +139,7 @@ namespace Amphora.Api.Services.Platform
 
         public async Task<InvitationModel> GetInvitationByEmailAsync(string email)
         {
-            email = email?.ToUpper();
+            email = email?.ToLower();
             var existing = await invitationStore.QueryAsync(i =>
                 i.TargetEmail == email, 0, 5);
             var invite = existing.FirstOrDefault();
