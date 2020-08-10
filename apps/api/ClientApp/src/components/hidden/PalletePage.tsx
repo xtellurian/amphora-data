@@ -1,12 +1,12 @@
 import * as React from "react";
-import { PrimaryButton, SecondaryButton } from "./molecules/buttons";
-import { TextInput } from "./molecules/inputs";
-import { ValidateResult } from "./molecules/inputs/inputProps";
-import { Toggle } from "./molecules/toggles/Toggle";
-import { Tabs, activeTab } from "./molecules/tabs";
+import { PrimaryButton, SecondaryButton } from "../molecules/buttons";
+import { TextInput } from "../molecules/inputs";
+import { ValidateResult } from "../molecules/inputs/inputProps";
+import { Toggle } from "../molecules/toggles/Toggle";
+import { Tabs, activeTab } from "../molecules/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RouteComponentProps } from "react-router";
-import ConnectedMapComponent from "./geo/ConnectedMapComponent";
+import ConnectedMapComponent from "../geo/ConnectedMapComponent";
 
 interface TabState {
     created?: boolean;

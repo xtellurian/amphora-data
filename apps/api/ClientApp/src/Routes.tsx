@@ -21,7 +21,8 @@ import { ProfilePage } from "./components/profile/ProfilePage";
 
 import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 
-import Pallete from "./components/Pallete";
+import Pallete from "./components/hidden/PalletePage";
+import { DiagnosticPage } from "./components/hidden/DiagnosticPage";
 
 import { MainPage } from "./components/public/MainPage";
 import { LoadingState } from "./components/molecules/empty/LoadingState";
@@ -53,6 +54,7 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
             />
 
             <Route path="/pallete" component={Pallete} />
+            <Route path="/diagnostic" component={DiagnosticPage} />
         </Switch>
     </React.Fragment>
 );
