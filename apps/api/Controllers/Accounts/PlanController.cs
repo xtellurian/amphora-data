@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations.Accounts;
 using AutoMapper;
@@ -41,7 +40,7 @@ namespace Amphora.Api.Controllers.Accounts
         public async Task<IActionResult> GetPlan(string id)
         {
             var ensureRes = await EnsureIdAsync(id);
-            if (ensureRes == null)
+            if (ensureRes != null)
             {
                 return ensureRes;
             }
@@ -82,7 +81,7 @@ namespace Amphora.Api.Controllers.Accounts
             }
 
             var ensureRes = await EnsureIdAsync(id);
-            if (ensureRes == null)
+            if (ensureRes != null)
             {
                 return ensureRes;
             }
