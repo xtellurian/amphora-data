@@ -32,7 +32,7 @@ namespace Amphora.Tests.Integration.Accounts
             var ids = new List<string>();
             for (var monthsAgo = 2; monthsAgo >= 0; monthsAgo--)
             {
-                var createInvoiceRes = await admin.Http.PostAsJsonAsync("api/invoices",
+                var createInvoiceRes = await admin.Http.PostAsJsonAsync("api/account/invoices",
                     new CreateInvoice(DateTimeOffset.Now.AddMonths(-monthsAgo), p.Organisation.Id, false, regenerate));
 
                 var res = await AssertHttpSuccess<ItemResponse<Invoice>>(createInvoiceRes);
@@ -76,7 +76,7 @@ namespace Amphora.Tests.Integration.Accounts
             await GenerateSomeTransactions(persona);
             await GenerateSomeInvoices(persona, true);
             // Act
-            var res = await persona.Http.GetAsync("api/invoices");
+            var res = await persona.Http.GetAsync("api/account/invoices");
             // Assert
             var data = await AssertHttpSuccess<CollectionResponse<Invoice>>(res);
             data.Items.Should().NotBeNull();
@@ -98,7 +98,7 @@ namespace Amphora.Tests.Integration.Accounts
             var persona = await GetPersonaAsync(Personas.Standard);
             await GenerateSomeTransactions(persona);
             await GenerateSomeInvoices(persona, false);
-            var res = await persona.Http.GetAsync("api/invoices");
+            var res = await persona.Http.GetAsync("api/account/invoices");
             var data = await AssertHttpSuccess<CollectionResponse<Invoice>>(res);
             data.Items.Should().NotBeNullOrEmpty();
             var invoice = data.Items.FirstOrDefault(_ => _.Transactions.Any());
@@ -106,7 +106,7 @@ namespace Amphora.Tests.Integration.Accounts
             invoice.Transactions.Should().NotBeEmpty();
             // Act
             // download csv
-            var csvResponse = await persona.Http.GetAsync($"api/invoices/{invoice.Id}/download?format=csv");
+            var csvResponse = await persona.Http.GetAsync($"api/account/invoices/{invoice.Id}/download?format=csv");
             await AssertHttpSuccess(csvResponse);
             csvResponse.Content.Headers.ContentType.ToString().Should().Be("text/csv; chartset=utf-8");
             // Assert

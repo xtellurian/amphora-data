@@ -15,7 +15,7 @@ namespace Amphora.Api.Controllers
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
-    [Route("api/invoices")]
+    [Route("api/account/invoices")]
     [OpenApiTag("Account")]
     public class InvoicesController : EntityController
     {
