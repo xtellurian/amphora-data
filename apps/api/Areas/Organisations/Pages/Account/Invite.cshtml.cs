@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
-using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Api.Models.Dtos.Accounts.Memberships;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models;

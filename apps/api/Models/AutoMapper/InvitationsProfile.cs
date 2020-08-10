@@ -1,4 +1,4 @@
-using Amphora.Api.Models.Dtos.Platform;
+using Amphora.Api.Models.Dtos.Accounts.Memberships;
 using Amphora.Common.Models.Platform;
 using AutoMapper;
 

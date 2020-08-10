@@ -1,18 +1,23 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
+using Amphora.Api.Models.Dtos.Accounts.Memberships;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Platform;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
+
+// invitations should not go inside /account
+// because invitations exist outside of an account
+// i.e. you can be invited into another's account
 
 namespace Amphora.Api.Controllers
 {
     [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
-    [OpenApiIgnore]
     public class InvitationsController : EntityController
     {
         private readonly IInvitationService invitationService;
@@ -28,17 +33,22 @@ namespace Amphora.Api.Controllers
         /// Returns all the invitations sent to me.
         /// </summary>
         /// <returns> A collection of invitations.</returns>
-        [HttpGet("api/invitations/")]
+        [Produces(typeof(IEnumerable<Invitation>))]
+        [ProducesBadRequest]
         [CommonAuthorize]
+        [HttpGet("api/invitations/")]
         public async Task<IActionResult> ReadMyInvitations()
         {
             var res = await invitationService.GetMyInvitations(User);
             if (res.Succeeded)
             {
-                return Ok(res.Entity);
+                var dto = mapper.Map<List<Invitation>>(res.Entity);
+                return Ok(dto);
             }
-            else if (res.WasForbidden) { return StatusCode(403); }
-            else { return BadRequest(res.Message); }
+            else
+            {
+                return Handle(res);
+            }
         }
 
         /// <summary>
@@ -49,6 +59,7 @@ namespace Amphora.Api.Controllers
         /// <returns> Invitation information that was submitted. </returns>
         [HttpPost("api/invitations/{orgId}")]
         [Produces(typeof(HandleInvitation))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> AcceptInvitation(string orgId, HandleInvitation handle)
         {
@@ -81,7 +92,7 @@ namespace Amphora.Api.Controllers
                 }
                 else
                 {
-                    return BadRequest("The server does not know how to handle that request.");
+                    return BadRequest(new Response("The server does not know how to handle that request."));
                 }
             }
             else
@@ -97,6 +108,7 @@ namespace Amphora.Api.Controllers
         /// <returns> An Invitation Object. </returns>
         [HttpPost("api/invitations/")]
         [Produces(typeof(Invitation))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> InviteNewUser(Invitation invitation)
         {
@@ -106,10 +118,9 @@ namespace Amphora.Api.Controllers
             {
                 return Ok(invitation);
             }
-            else if (res.WasForbidden) { return StatusCode(403); }
             else
             {
-                return BadRequest(res.Message);
+                return Handle(res);
             }
         }
     }

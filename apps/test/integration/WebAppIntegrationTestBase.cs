@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models.Dtos.Accounts.Memberships;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Dtos.Users;

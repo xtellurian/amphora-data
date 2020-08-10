@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Amphora.Api.Models.Dtos.Platform
+namespace Amphora.Api.Models.Dtos.Accounts.Memberships
 {
     public class Invitation
     {

@@ -17,7 +17,6 @@ namespace Amphora.Common.Models.Platform
 
     public class InvitationModel : EntityBase
     {
-        public InvitationModel() { }
         public string? TargetEmail { get; set; }
         public string? TargetDomain { get; set; }
         public InvitationState? State { get; set; } = InvitationState.Open;
