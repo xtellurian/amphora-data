@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae.Signals;
 using Amphora.Api.Options;
 using Amphora.Common.Models.Amphorae;
@@ -45,6 +46,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>A collection of signals.</returns>
         [Produces(typeof(List<Signal>))]
+        [ProducesBadRequest]
         [HttpGet("signals")]
         [CommonAuthorize]
         public async Task<IActionResult> GetSignals(string id)
@@ -123,6 +125,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="signal">Signal Details.</param>
         /// <returns>Signal metadata.</returns>
         [Produces(typeof(Signal))]
+        [ProducesBadRequest]
         [HttpPost("signals")]
         [ValidateModel]
         [CommonAuthorize]
@@ -152,7 +155,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     }
                     else
                     {
-                        return BadRequest(message);
+                        return BadRequest(new Response(message));
                     }
                 }
                 else
@@ -160,13 +163,13 @@ namespace Amphora.Api.Controllers.Amphorae
                     return Handle(result);
                 }
             }
-            catch (System.ArgumentException ex)
+            catch (System.ArgumentException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new Response("The request was likely bad"));
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new Response("An unknown error occurred"));
             }
         }
 
@@ -178,6 +181,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="signal">Signal properties to update.</param>
         /// <returns>Signal metadata.</returns>
         [Produces(typeof(Signal))]
+        [ProducesBadRequest]
         [HttpPut("signals/{signalId}")]
         [CommonAuthorize]
         public async Task<IActionResult> UpdateSignal(string id, string signalId, [FromBody] UpdateSignal signal)
@@ -189,7 +193,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var existingSignal = amphora.V2Signals.FirstOrDefault(s => s.Id == signalId);
                 if (existingSignal == null)
                 {
-                    return BadRequest("Signal not found");
+                    return BadRequest(new Response("Signal not found"));
                 }
 
                 existingSignal.Attributes = new AttributeStore(signal.Meta);
@@ -219,8 +223,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPost("signalValues")]
         [CommonAuthorize]
         [Produces(typeof(Dictionary<string, object>))]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesBadRequest]
         public async Task<IActionResult> UploadSignal(string id, [FromBody] Dictionary<string, object> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);
@@ -252,8 +255,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPost("batchSignalValues")]
         [CommonAuthorize]
         [Produces(typeof(Dictionary<string, object>))]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesBadRequest]
         public async Task<IActionResult> UploadSignalBatch(string id, [FromBody] List<Dictionary<string, object>> data)
         {
             var result = await amphoraeService.ReadAsync(User, id, true);

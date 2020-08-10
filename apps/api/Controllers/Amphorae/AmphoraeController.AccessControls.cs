@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Permissions.Rules;
 using AutoMapper;
@@ -42,6 +43,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>A list of rules.</returns>
         [Produces(typeof(IEnumerable<Models.Dtos.AccessControls.UserAccessRule>))]
+        [ProducesBadRequest]
         [HttpGet("ForUser")]
         [CommonAuthorize]
         public async Task<IActionResult> GetUserRules(string id)
@@ -75,6 +77,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A list of rules.</returns>
+        [ProducesBadRequest]
         [Produces(typeof(IEnumerable<Models.Dtos.AccessControls.OrganisationAccessRule>))]
         [HttpGet("ForOrganisation")]
         [CommonAuthorize]
@@ -110,6 +113,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>A rule, if it exists.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.AllAccessRule))]
+        [ProducesBadRequest]
         [HttpGet("ForAll")]
         [CommonAuthorize]
         public async Task<IActionResult> GetForAllRule(string id)
@@ -121,7 +125,7 @@ namespace Amphora.Api.Controllers.Amphorae
                 var res = new List<Models.Dtos.AccessControls.AllAccessRule>();
                 if (amphora.AccessControl.AllRule == null)
                 {
-                    return Ok();
+                    return NotFound(new Response("Rule not found"));
                 }
                 else
                 {
@@ -146,6 +150,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="rule">The rule to create.</param>
         /// <returns>The rule.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.UserAccessRule))]
+        [ProducesBadRequest]
         [HttpPost("ForUser")]
         [CommonAuthorize]
         public async Task<IActionResult> CreateForUser(string id, [FromBody] Models.Dtos.AccessControls.UserAccessRule rule)
@@ -188,6 +193,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="rule">The rule to create.</param>
         /// <returns>The same rule.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.UserAccessRule))]
+        [ProducesBadRequest]
         [HttpPost("ForOrganisation")]
         [CommonAuthorize]
         public async Task<IActionResult> CreateForOrganisation(string id, [FromBody] Models.Dtos.AccessControls.OrganisationAccessRule rule)
@@ -230,6 +236,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="rule">The rule to create.</param>
         /// <returns>The same rule.</returns>
         [Produces(typeof(Models.Dtos.AccessControls.AllAccessRule))]
+        [ProducesBadRequest]
         [HttpPost("ForAll")]
         [CommonAuthorize]
         public async Task<IActionResult> CreateForAll(string id, [FromBody] Models.Dtos.AccessControls.AllAccessRule rule)
@@ -263,12 +270,14 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="ruleId">The Id of the rule to delete.</param>
         /// <returns>An Empty 200.</returns>
         [HttpDelete("{ruleId}")]
+        [Produces(typeof(Response))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> Delete(string id, string ruleId)
         {
             if (id == null || ruleId == null)
             {
-                return BadRequest();
+                return BadRequest(new Response("id or ruleId must not be null"));
             }
 
             var readRes = await amphoraeService.ReadAsync(User, id);

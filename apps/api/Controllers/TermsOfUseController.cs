@@ -36,8 +36,9 @@ namespace Amphora.Api.Controllers
         /// Returns all Terms of Use.
         /// </summary>
         /// <returns> A collection of Terms of Use.</returns>
-        [HttpGet("")]
+        [HttpGet]
         [Produces(typeof(IEnumerable<Models.Dtos.Terms.TermsOfUse>))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> List([FromQuery] ListTermsOptions options = null)
         {
@@ -48,8 +49,10 @@ namespace Amphora.Api.Controllers
                 var dto = mapper.Map<List<TermsOfUse>>(res.Entity);
                 return Ok(dto);
             }
-            else if (res.WasForbidden) { return StatusCode(403); }
-            else { return BadRequest(res.Message); }
+            else
+            {
+                return Handle(res);
+            }
         }
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace Amphora.Api.Controllers
         /// <returns> A collection of Terms of Use.</returns>
         [HttpGet("{id}")]
         [Produces(typeof(Models.Dtos.Terms.TermsOfUse))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> Read(string id)
         {
@@ -67,8 +71,10 @@ namespace Amphora.Api.Controllers
                 var dto = mapper.Map<TermsOfUse>(res.Entity);
                 return Ok(dto);
             }
-            else if (res.WasForbidden) { return StatusCode(403); }
-            else { return BadRequest(res.Message); }
+            else
+            {
+                return Handle(res);
+            }
         }
 
         /// <summary>
@@ -76,8 +82,9 @@ namespace Amphora.Api.Controllers
         /// </summary>
         /// <param name="tou">The terms of use to create.</param>
         /// <returns> The terms of use object. </returns>
-        [HttpPost("")]
+        [HttpPost]
         [Produces(typeof(TermsOfUse))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> Create([FromBody] CreateTermsOfUse tou)
         {
@@ -101,6 +108,7 @@ namespace Amphora.Api.Controllers
         /// <returns> The terms of use object. </returns>
         [HttpPost("/api/GlobalTermsOfUse")]
         [Produces(typeof(TermsOfUse))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         [OpenApiIgnore]
         public async Task<IActionResult> CreateGlobal([FromBody] CreateTermsOfUse tou)
@@ -132,6 +140,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">The terms of use id to delete.</param>
         /// <returns> 200 if successful. </returns>
         [HttpDelete("{id}")]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> Delete(string id)
         {
@@ -160,6 +169,7 @@ namespace Amphora.Api.Controllers
         /// <param name="id">The Terms of Use id.</param>
         /// <returns> 200 if accepted. </returns>
         [HttpPost("{id}/Accepts")]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> Accept(string id)
         {

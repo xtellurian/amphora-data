@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -31,13 +32,14 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="quality">The data quality metrics.</param>
         /// <returns>The quality metrics.</returns>
         [Produces(typeof(Quality))]
+        [ProducesBadRequest]
         [HttpPost]
         [CommonAuthorize]
         public async Task<IActionResult> Set(string id, [FromBody] Quality quality)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.ValidationState);
+                return BadRequest(new Response(ModelState.ValidationState.ToString()));
             }
 
             var readRes = await amphoraService.ReadAsync(User, id);
@@ -68,6 +70,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="id">Amphora Id.</param>
         /// <returns>The quality metrics.</returns>
         [Produces(typeof(Quality))]
+        [ProducesBadRequest]
         [HttpGet]
         [CommonAuthorize]
         public async Task<IActionResult> Get(string id)

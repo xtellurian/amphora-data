@@ -40,6 +40,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="options">Option for listing the files.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
+        [ProducesBadRequest]
         [HttpGet]
         [CommonAuthorize]
         public async Task<IActionResult> ListFiles(string id, [FromQuery] FileListOptions options)
@@ -78,6 +79,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="options">Option for querying the files.</param>
         /// <returns>A list of file names.</returns>
         [Produces(typeof(List<string>))]
+        [ProducesBadRequest]
         [HttpPost]
         [CommonAuthorize]
         public async Task<IActionResult> QueryFiles(string id, FileQueryOptions options)
@@ -127,6 +129,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>The file contents.</returns>
         [HttpGet("{file}")]
         [ProducesResponseType(typeof(FileResult), 200)]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> DownloadFile(string id, string file)
         {
@@ -153,8 +156,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>An object with a blob URL.</returns>
         [HttpPut("{file}")]
         [Produces(typeof(UploadResponse))]
-        [ProducesResponseType((int)HttpStatusCode.Conflict)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesBadRequest]
         [CommonAuthorize]
         [DisableRequestSizeLimit]
         [OpenApiIgnore]
@@ -195,6 +197,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <returns>An object with a blob URL.</returns>
         [HttpPost("{file}")]
         [Produces(typeof(UploadResponse))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> CreateFileRequest(string id, string file)
         {
@@ -232,6 +235,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="attributes">A dict containing attributes for the file.</param>
         /// <returns>The attributes.</returns>
         [Produces(typeof(Dictionary<string, string>))]
+        [ProducesBadRequest]
         [HttpPost("{file}/attributes")]
         [CommonAuthorize]
         public async Task<IActionResult> WriteFileAttributes(string id, string file, [FromBody] Dictionary<string, string> attributes)
@@ -251,7 +255,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     }
                     else { return Handle(writeResult); }
                 }
-                else { return NotFound(); }
+                else { return NotFound(new Response("File not found")); }
             }
             else { return Handle(result); }
         }
@@ -263,6 +267,7 @@ namespace Amphora.Api.Controllers.Amphorae
         /// <param name="file">The name of the file.</param>
         /// <returns>The attributes.</returns>
         [Produces(typeof(Dictionary<string, string>))]
+        [ProducesBadRequest]
         [HttpGet("{file}/attributes")]
         [CommonAuthorize]
         public async Task<IActionResult> ReadFileAttributes(string id, string file)
@@ -282,7 +287,7 @@ namespace Amphora.Api.Controllers.Amphorae
                     }
                     else { return Handle(readRes); }
                 }
-                else { return NotFound(); }
+                else { return NotFound(new Response("File not found")); }
             }
             else { return Handle(result); }
         }

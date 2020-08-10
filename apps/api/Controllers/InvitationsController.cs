@@ -4,8 +4,6 @@ using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Platform;
 using Amphora.Common.Models.Platform;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 

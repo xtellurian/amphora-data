@@ -1,53 +1,32 @@
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
+using Amphora.Common.Contracts;
 using Amphora.Common.Models.Organisations.Accounts;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace Amphora.Api.Controllers.Organisations
+namespace Amphora.Api.Controllers.Accounts
 {
-    [ApiMajorVersion(0)]
     [ApiController]
     [SkipStatusCodePages]
     [OpenApiTag("Organisations")]
-    [Route("api/Organisations/{id}/Account")]
-    public class AccountController : Controller
+    [OpenApiTag("Account")]
+    [Route("api/Organisations/{id}/Account")] // backwards compat
+    [Route("api/Account")]
+    public class PlanController : AccountControllerBase
     {
         private readonly IOrganisationService organisationService;
         private readonly IMapper mapper;
 
-        public AccountController(IOrganisationService organisationService, IMapper mapper)
+        public PlanController(IOrganisationService organisationService,
+                                 IUserDataService userDataService,
+                                 IMapper mapper) : base(userDataService)
         {
             this.organisationService = organisationService;
             this.mapper = mapper;
-        }
-
-        /// <summary>
-        /// Get's an Organisation's account information.
-        /// </summary>
-        /// <param name="id">Organisation Id.</param>
-        /// <returns>An Organisation's account metadata. </returns>
-        [Produces(typeof(Models.Dtos.Organisations.Account))]
-        [HttpGet]
-        [CommonAuthorize]
-        public async Task<IActionResult> Read(string id)
-        {
-            var res = await organisationService.ReadAsync(User, id);
-            if (res.Succeeded)
-            {
-                var dto = mapper.Map<Models.Dtos.Organisations.Account>(res.Entity.Account ?? new Account());
-                return Ok(dto);
-            }
-            else if (res.WasForbidden)
-            {
-                return StatusCode(403, res.Message);
-            }
-            else
-            {
-                return BadRequest(res.Message);
-            }
         }
 
         /// <summary>
@@ -56,11 +35,18 @@ namespace Amphora.Api.Controllers.Organisations
         /// <param name="id">Organisation Id.</param>
         /// <returns>An Organisation's plan. </returns>
         [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
+        [ProducesBadRequest]
         [HttpGet("Plan")]
         [CommonAuthorize]
         public async Task<IActionResult> GetPlan(string id)
         {
-            var res = await organisationService.ReadAsync(User, id);
+            var ensureRes = await EnsureIdAsync(id);
+            if (ensureRes == null)
+            {
+                return ensureRes;
+            }
+
+            var res = await organisationService.ReadAsync(User, OrganisationId);
             if (res.Succeeded)
             {
                 var p = res.Entity.Account.Plan.PlanType ?? Plan.PlanTypes.Free;
@@ -71,13 +57,9 @@ namespace Amphora.Api.Controllers.Organisations
                 };
                 return Ok(dto);
             }
-            else if (res.WasForbidden)
-            {
-                return StatusCode(403, res.Message);
-            }
             else
             {
-                return BadRequest(res.Message);
+                return Handle(res);
             }
         }
 
@@ -88,6 +70,7 @@ namespace Amphora.Api.Controllers.Organisations
         /// <param name="planType">The Plan Type.</param>
         /// <returns>An Organisation's plan. </returns>
         [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
+        [ProducesBadRequest]
         [HttpPost("Plan")]
         [CommonAuthorize]
         [OpenApiIgnore]
@@ -98,7 +81,14 @@ namespace Amphora.Api.Controllers.Organisations
                 return BadRequest("planType cannot be empty");
             }
 
-            var res = await organisationService.ReadAsync(User, id);
+            var ensureRes = await EnsureIdAsync(id);
+            if (ensureRes == null)
+            {
+                return ensureRes;
+            }
+
+            var res = await organisationService.ReadAsync(User, OrganisationId);
+
             var plan = System.Enum.Parse(typeof(Plan.PlanTypes), planType) as Plan.PlanTypes? ?? Plan.PlanTypes.Free;
             if (res.Succeeded)
             {

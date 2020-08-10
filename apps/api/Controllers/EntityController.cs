@@ -1,3 +1,4 @@
+using Amphora.Api.Models.Dtos;
 using Amphora.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,23 +10,23 @@ namespace Amphora.Api.Controllers
         {
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok(new Response("Success"));
             }
 
             if (result.Code == null)
             {
                 if (result.WasForbidden)
                 {
-                    return StatusCode(403, result.Message);
+                    return StatusCode(403, new Response(result.Message));
                 }
                 else
                 {
-                    return BadRequest(result.Message);
+                    return BadRequest(new Response(result.Message));
                 }
             }
             else
             {
-                return StatusCode(result.Code.Value, result.Message);
+                return StatusCode(result.Code.Value, new Response(result.Message));
             }
         }
     }

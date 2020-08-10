@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Activities;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
@@ -44,6 +45,7 @@ namespace Amphora.Api.Controllers
         [HttpPost]
         [CommonAuthorize]
         [Produces(typeof(Activity))]
+        [ProducesBadRequest]
         [ValidateModel]
         public async Task<IActionResult> CreateActivity([FromBody] CreateActivity activity)
         {
@@ -68,6 +70,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("{id}")]
         [CommonAuthorize]
         [Produces(typeof(Activity))]
+        [ProducesBadRequest]
         public async Task<IActionResult> ReadActivity(string id)
         {
             var readRes = await activityService.ReadAsync(User, id);
@@ -88,6 +91,8 @@ namespace Amphora.Api.Controllers
         /// <param name="id">The activity Id.</param>
         /// <returns>The Activity information.</returns>
         [HttpDelete("{id}")]
+        [Produces(typeof(Response))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> DeleteActivity(string id)
         {
@@ -95,7 +100,14 @@ namespace Amphora.Api.Controllers
             if (readRes.Succeeded)
             {
                 var deleteRes = await activityService.DeleteAsync(User, readRes.Entity);
-                return Handle(deleteRes);
+                if (deleteRes.Succeeded)
+                {
+                    return Ok(new Response($"Deleted Activity({id})"));
+                }
+                else
+                {
+                    return Handle(deleteRes);
+                }
             }
             else
             {
@@ -110,6 +122,7 @@ namespace Amphora.Api.Controllers
         /// <returns>The Run information.</returns>
         [HttpPost("{id}/Runs")]
         [Produces(typeof(Run))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> StartRun(string id)
         {
@@ -151,6 +164,7 @@ namespace Amphora.Api.Controllers
         /// <returns>The Activity information.</returns>
         [HttpPost("{id}/Runs/{runId}")]
         [Produces(typeof(Run))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> UpdateRun(string id, string runId, UpdateRun update)
         {
@@ -201,12 +215,13 @@ namespace Amphora.Api.Controllers
         /// <returns>The reference information.</returns>
         [HttpPut("{id}/Runs/{runId}/amphorae/{amphoraId}")]
         [Produces(typeof(AmphoraReference))]
+        [ProducesBadRequest]
         [CommonAuthorize]
         public async Task<IActionResult> ReferenceAmphora(string id, string runId, string amphoraId, [FromBody] AmphoraReference amphoraReference)
         {
             if (amphoraReference.AmphoraId != amphoraId)
             {
-                return BadRequest($"Amphora Id {amphoraReference.AmphoraId} must match id {amphoraId}");
+                return BadRequest(new Response($"Amphora Id {amphoraReference.AmphoraId} must match id {amphoraId}"));
             }
 
             var activityReadRes = await activityService.ReadAsync(User, id);
@@ -216,11 +231,11 @@ namespace Amphora.Api.Controllers
                 var run = activity.Runs.FirstOrDefault(_ => _.Id == runId);
                 if (run == null)
                 {
-                    return BadRequest($"Run({runId}) not found in activity {id}");
+                    return BadRequest(new Response($"Run({runId}) not found in activity {id}"));
                 }
                 else if (run.Success == true || run.EndTime != null)
                 {
-                    return BadRequest($"Run({runId}) is already complete");
+                    return BadRequest(new Response($"Run({runId}) is already complete"));
                 }
 
                 var amphoraReadRes = await amphoraeService.ReadAsync(User, amphoraId);

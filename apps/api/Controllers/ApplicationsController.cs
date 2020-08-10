@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Applications;
 using Amphora.Common.Models.Applications;
 using AutoMapper;
@@ -35,6 +36,7 @@ namespace Amphora.Api.Controllers
         [HttpPost]
         [CommonAuthorize]
         [Produces(typeof(Application))]
+        [ProducesBadRequest]
         [ValidateModel]
         public async Task<IActionResult> CreateApplication(CreateApplication application)
         {

@@ -10,7 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace Amphora.Api.Controllers
+namespace Amphora.Api.Controllers.Accounts
 {
     [ApiMajorVersion(0)]
     [ApiController]
@@ -45,7 +45,7 @@ namespace Amphora.Api.Controllers
         [HttpPost]
         [GlobalAdminAuthorize]
         [Produces(typeof(ItemResponse<Invoice>))]
-        [ProducesErrorResponseType(typeof(Response))]
+        [ProducesBadRequest]
         public async Task<IActionResult> CreateInvoice(CreateInvoice createFor)
         {
             var orgReadRes = await orgService.ReadAsync(User, createFor.OrganisationId);
@@ -72,7 +72,7 @@ namespace Amphora.Api.Controllers
         [HttpGet]
         [CommonAuthorize]
         [Produces(typeof(CollectionResponse<Invoice>))]
-        [ProducesErrorResponseType(typeof(Response))]
+        [ProducesBadRequest]
         public async Task<IActionResult> GetInvoices()
         {
             var userDataRes = await userDataService.ReadAsync(User);
@@ -105,7 +105,7 @@ namespace Amphora.Api.Controllers
         [HttpGet("{id}/download")]
         [CommonAuthorize]
         [Produces(typeof(CollectionResponse<Invoice>))]
-        [ProducesErrorResponseType(typeof(Response))]
+        [ProducesBadRequest]
         public async Task<IActionResult> DownloadInvoice(string id, string format)
         {
             if (!string.Equals(format?.ToLower(), "csv"))
