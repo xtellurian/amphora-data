@@ -5,16 +5,19 @@ using Amphora.Identity.EntityFramework;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Amphora.Identity.Stores.IdentityServer
 {
     public class PersistedGrantStore : IPersistedGrantStore
     {
         private readonly IdentityContext context;
+        private readonly ILogger<PersistedGrantStore> logger;
 
-        public PersistedGrantStore(IdentityContext context)
+        public PersistedGrantStore(IdentityContext context, ILogger<PersistedGrantStore> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
         public async Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
@@ -32,6 +35,7 @@ namespace Amphora.Identity.Stores.IdentityServer
             var grants = await context.Grants.Where(_ => _.SubjectId == subjectId && _.ClientId == clientId).ToListAsync();
             foreach (var g in grants)
             {
+                logger.LogInformation($"(RemoveAll {subjectId}, {clientId}) Removing grant, key: {g.Key}");
                 context.Remove(g);
             }
 
@@ -47,6 +51,7 @@ namespace Amphora.Identity.Stores.IdentityServer
                 .ToListAsync();
             foreach (var g in grants)
             {
+                logger.LogInformation($"(RemoveAll {subjectId}, {clientId}, {type}) Removing grant, key: {g.Key}");
                 context.Remove(g);
             }
 
@@ -55,13 +60,23 @@ namespace Amphora.Identity.Stores.IdentityServer
 
         public async Task RemoveAsync(string key)
         {
+            logger.LogInformation($"Removing grant, key: {key}");
             var grant = await context.Grants.FindAsync(key);
-            context.Grants.Remove(grant);
-            await context.SaveChangesAsync();
+            if (grant != null)
+            {
+                context.Grants.Remove(grant);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task StoreAsync(PersistedGrant grant)
         {
+            if (grant == null)
+            {
+                return;
+            }
+
+            logger.LogInformation($"Storing grant, key: {grant.Key}");
             context.Grants.Add(grant);
             await context.SaveChangesAsync();
         }
