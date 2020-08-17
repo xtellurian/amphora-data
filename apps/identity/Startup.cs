@@ -24,6 +24,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -172,6 +173,7 @@ namespace Amphora.Identity
 
             services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 options.LoginPath = "/Login";
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/AccessDenied";
