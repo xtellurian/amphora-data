@@ -88,7 +88,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                 .amphoraeFilesListFiles(
                     props.amphora.id,
                     "Alphabetical",
-                    '',
+                    "",
                     25,
                     0,
                     {
@@ -103,7 +103,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
     React.useEffect(() => {
         tryLoadFiles();
         return () => source.cancel("The files component unmounted");
-    }, []);
+    }, [source, props.amphora.id, tryLoadFiles, state.isLoading]);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);
@@ -174,7 +174,10 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
             >
                 <div className="text-center">
                     <Link target="_blank" to={downloadPath}>
-                        <PrimaryButton className="w-75" onClick={() => setTimeout(closeModal, 250)}>
+                        <PrimaryButton
+                            className="w-75"
+                            onClick={() => setTimeout(closeModal, 250)}
+                        >
                             {`Download ${state.downloadFileName}`}
                         </PrimaryButton>
                     </Link>
@@ -194,7 +197,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                     Upload File{" "}
                 </PrimaryButton>
             </Header>
-            {state.fileNames.length == 0 ? (
+            {state.fileNames.length === 0 ? (
                 <EmptyState> There are no files in this Amphora.</EmptyState>
             ) : (
                 <Table
