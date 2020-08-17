@@ -1,11 +1,12 @@
 import * as React from "react";
 import { useAmphoraClients } from "react-amphora";
-
-export const DiagnosticPage: React.FunctionComponent = () => {
+import { Header } from "../layout/ManagementLayout";
+export const ApplicationsPage: React.FunctionComponent = () => {
     const clients = useAmphoraClients();
+
     return (
         <React.Fragment>
-            {JSON.stringify(clients.axios.defaults)}
+            <Header title="Applications"></Header>
         </React.Fragment>
     );
 };

@@ -15,6 +15,7 @@ import Amphora from "./components/amphorae/MyAmphorae";
 import { CreateAmphoraPage } from "./components/amphorae/CreateAmphora";
 import { RequestAmphoraPage } from "./components/amphorae/RequestAmphora";
 import Search from "./components/amphorae/Search";
+import { ApplicationsPage } from "./components/applications/ApplicationsPage";
 
 // profile
 import { ProfilePage } from "./components/profile/ProfilePage";
@@ -43,6 +44,8 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
     <React.Fragment>
         <Switch>
             <Route exact path="/" component={Home} />
+            <Route path="/applications" component={ApplicationsPage} />
+
             <Route path="/search" component={Search} />
             <Route path="/create" component={CreateAmphoraPage} />
             <Route path="/amphora" component={Amphora} />

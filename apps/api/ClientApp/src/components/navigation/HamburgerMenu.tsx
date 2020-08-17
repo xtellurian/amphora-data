@@ -169,6 +169,9 @@ class HamburgerMenu extends React.PureComponent<
                         icon="tasks"
                         startOpen={false}
                     >
+                        <ClickableMenuItem to="/applications" icon="window-restore">
+                            Applications
+                        </ClickableMenuItem>
                         <ClickableMenuItem to="/terms" icon="file-contract">
                             Terms of Use
                         </ClickableMenuItem>
