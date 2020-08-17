@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { BurgerMenuState } from "../../redux/state/plugins/burgerMenu";
 import { ApplicationState } from "../../redux/state";
 import { actionCreators } from "../../redux/actions/plugins/burgerMenu";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 
 import "./burgerMenu.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -126,7 +126,9 @@ class HamburgerMenu extends React.PureComponent<
                         title="My Account"
                         icon="user-circle"
                     >
-                        <ClickableMenuItem icon="id-card" to="/profile">Profile</ClickableMenuItem>
+                        <ClickableMenuItem icon="id-card" to="/profile">
+                            Profile
+                        </ClickableMenuItem>
                     </MenuSection>
                     <hr className="bg-white" />
                     <MenuSection
@@ -169,7 +171,10 @@ class HamburgerMenu extends React.PureComponent<
                         icon="tasks"
                         startOpen={false}
                     >
-                        <ClickableMenuItem to="/applications" icon="window-restore">
+                        <ClickableMenuItem
+                            to="/applications"
+                            icon="window-restore"
+                        >
                             Applications
                         </ClickableMenuItem>
                         <ClickableMenuItem to="/terms" icon="file-contract">

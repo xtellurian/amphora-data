@@ -4,15 +4,11 @@ import { connectRouter, routerMiddleware } from 'connected-react-router';
 import { History } from 'history';
 import { ApplicationState } from './state';
 import { reducers } from './reducers';
-import createOidcMiddleware from 'redux-oidc';
-import userManager from '../userManager';
 import allMiddleware from './middleware';
 
 export default function configureStore(history: History, initialState?: ApplicationState) {
-    const oidcMiddleware = createOidcMiddleware(userManager);
     const middleware = [
         thunk,
-        oidcMiddleware,
         routerMiddleware(history),
         ...allMiddleware
     ];

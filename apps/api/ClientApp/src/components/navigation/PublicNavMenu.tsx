@@ -3,7 +3,7 @@ import userManager from "../../userManager";
 import { Container, Navbar, NavItem, NavLink } from "reactstrap";
 import { Link } from "react-router-dom";
 import "./NavMenu.css";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { SignInButton } from "react-amphora";
 
 export default class PublicNavMenu extends React.Component<
@@ -47,9 +47,7 @@ export default class PublicNavMenu extends React.Component<
                                     </NavLink>
                                 </NavItem>
                             </ul>
-                            <SignInButton>
-                                Sign In
-                            </SignInButton>
+                            <SignInButton>Sign In</SignInButton>
                             <Avatar />
                         </div>
                     </Container>

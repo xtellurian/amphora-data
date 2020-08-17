@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ModalWrapper } from "../molecules/modal/ModalWrapper";
+import { ModalWrapper, ModalContents } from "../molecules/modal";
 import { RouteComponentProps, Route } from "react-router";
 import { AmphoraOperationsContext } from "react-amphora";
 import { Description } from "./detail/Description";
@@ -107,7 +107,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                         isOpen={state.isOpen}
                         maxPermissionLevel={context.maxPermissionLevel}
                     />
-                    <div className="modal-inner">
+                    <ModalContents>
                         <div className="mb-1">
                             <div>
                                 <MagicLabel
@@ -218,7 +218,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                         <div className="purchase-button-row">
                             <PurchaseButtonComponent amphora={amphora} />
                         </div>
-                    </div>
+                    </ModalContents>
                 </div>
             </ModalWrapper>
         );

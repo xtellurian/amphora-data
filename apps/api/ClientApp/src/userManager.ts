@@ -1,40 +1,45 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { createUserManager } from "redux-oidc";
-import { UserManagerSettings } from "oidc-client";
+import { createUserManager } from "react-amphora";
 
-const settings = {
-    authority: "http://localhost:6500",
-    redirect_uri: "https://localhost:5001/#/callback",
-    silent_redirect_uri: "http://localhost:5001/silentRenew.html",
-    client_id: "spa",
-    response_type: "code",
-    scope: "openid profile web_api offline_access",
+const defaults = {
+    authority: "https://identity.amphoradata.com",
+    clientId: "spa",
     automaticSilentRenew: true,
     filterProtocolClaims: true,
     loadUserInfo: true,
     monitorSession: true,
 };
 
-function getSettings(): UserManagerSettings {
-    const host = window.location.host;
-    const protocol = window.location.protocol; // protocol ends in :
-    settings.redirect_uri = `${protocol}//${host}/#/callback`;
-    settings.silent_redirect_uri = `${protocol}//${host}/silentRenew.html`;
-
+const getAuthority = () => {
     // choose the authority based on the environment (develop, master, prod)
     if (window.location.host.includes("develop")) {
-        settings.authority = "https://develop.identity.amphoradata.com";
+        return "https://develop.identity.amphoradata.com";
     } else if (window.location.host.includes("master")) {
-        settings.authority = "https://master.identity.amphoradata.com";
-    } else if (!window.location.host.includes("localhost")) {
-        // do prod
-        settings.authority = "https://identity.amphoradata.com";
+        return "https://master.identity.amphoradata.com";
+    } else if (window.location.host.includes("localhost")) {
+        // do localhost
+        return "http://localhost:6500";
+    } else {
+        return defaults.authority;
     }
+};
 
-    console.log(settings);
-    return settings;
-}
+const host = window.location.host;
+const protocol = window.location.protocol; // protocol ends in :
 
-const userManager = createUserManager(getSettings());
+const userManager = createUserManager({
+    ...defaults,
+    redirectUri: `${protocol}//${host}/#/callback`,
+    authority: getAuthority(),
+    scopes: [
+        "amphora",
+        "amphora.purchase",
+        "openid",
+        "profile",
+        "web_api",
+        "offline_access",
+    ],
+    silentRedirectUri: `${protocol}//${host}/silentRenew.html`,
+});
 
 export default userManager;

@@ -9320,10 +9320,10 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-amphora@^1.6.1-6:
-  version "1.6.1-6"
-  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.6.1-6.tgz#59d9c9967c241b7e006031451f428006904d1188"
-  integrity sha512-3irHlpSgDxzUae2SzTwPWQIBgef81X5uUQg2mzt5g5xf3Do/rtnBm2uIK9hBGhb6NfWY7BGccx8Xc0sjEJPCLw==
+react-amphora@^1.7.1-1:
+  version "1.7.1-1"
+  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.7.1-1.tgz#fcae7e5c05aa3795609d47a5e147690023d6b968"
+  integrity sha512-jR3nl22oFfn4lFZ4yQsxKz9eqhaBMMSMLoSqos6Ei2gScdGRqFCWBvjNcwGXyEiA+Mwg7QFHaVJMUoSDiKvuCg==
   dependencies:
     amphoradata "^0.10.16"
     oidc-client "^1.10.1"
@@ -9738,11 +9738,6 @@ redux-burger-menu@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/redux-burger-menu/-/redux-burger-menu-0.2.8.tgz#3d487a708ac360ddd55817580cac9e6a0a8db154"
   integrity sha512-hzMPsmKF0QcMFYU/u/yC8Du0f0tZh3O88Usm1GI9h/xLTNGm248PEuCsVN6JCKHhdSTYt33d9Ir3edzHQGrqaw==
-
-redux-oidc@^4.0.0-beta1:
-  version "4.0.0-beta1"
-  resolved "https://registry.yarnpkg.com/redux-oidc/-/redux-oidc-4.0.0-beta1.tgz#db4ed8843595214d879d6f2399ae1db6ea33c12c"
-  integrity sha512-tv9Jyhu+Ki491+MOuzq672s5dd/jTmZyQ4FYAhP7f/tqWQN9CPiHfZFqn3kLzdmqbeXXgf82EVMnjfUoWwIS/g==
 
 redux-thunk@2.3.0:
   version "2.3.0"

@@ -10,7 +10,7 @@ const columns = [
     { key: "price", name: "Price per Month" },
 ];
 
-class ConnectedAmphoraTable extends React.PureComponent<
+class MyAmphoraTable extends React.PureComponent<
     MyAmphoraContext.MyAmphoraState & RouteComponentProps
 > {
     render() {
@@ -33,4 +33,4 @@ class ConnectedAmphoraTable extends React.PureComponent<
     }
 }
 
-export default MyAmphoraContext.withMyAmphoraState(ConnectedAmphoraTable);
+export default MyAmphoraContext.withMyAmphoraState(MyAmphoraTable);

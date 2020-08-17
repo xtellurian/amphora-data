@@ -1,3 +1,1 @@
-import { onLogin } from "./onLogin";
-
-export const reactors = [onLogin];
+export const reactors = [];
