@@ -29,10 +29,10 @@ namespace Amphora.Api.Controllers.Accounts
         }
 
         /// <summary>
-        /// Returns a list of invoices as items.
+        /// Returns a collection of members of an organisational account.
         /// </summary>
         /// <param name="id">Organisation Id. Defaults to your org.</param>
-        /// <returns>A list of invoices.</returns>
+        /// <returns>A collection response of memberships.</returns>
         [HttpGet]
         [CommonAuthorize]
         [Produces(typeof(CollectionResponse<Membership>))]
