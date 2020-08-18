@@ -77,6 +77,28 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
+        /// Gets all applications a user has access to.
+        /// </summary>
+        /// <returns>The Application information.</returns>
+        [HttpGet]
+        [CommonAuthorize]
+        [Produces(typeof(CollectionResponse<Application>))]
+        [ValidateModel]
+        public async Task<IActionResult> GetApplications()
+        {
+            var result = await applicationService.ListAsync(User);
+            if (result.Succeeded)
+            {
+                var mapped = mapper.Map<List<Application>>(result.Entity);
+                return Ok(new CollectionResponse<Application>(mapped));
+            }
+            else
+            {
+                return Handle(result);
+            }
+        }
+
+        /// <summary>
         /// Updates an application by Id, if it exists.
         /// </summary>
         /// <param name="id">The id of the application to update.</param>

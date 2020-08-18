@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -75,6 +76,25 @@ namespace Amphora.Api.Services.Applications
             {
                 // found it
                 return new EntityOperationResult<ApplicationModel>(userReadRes.Entity, model);
+            }
+        }
+
+        public async Task<EntityOperationResult<IEnumerable<ApplicationModel>>> ListAsync(ClaimsPrincipal principal)
+        {
+            var userReadRes = await userDataService.ReadAsync(principal);
+            if (userReadRes.Failed)
+            {
+                return new EntityOperationResult<IEnumerable<ApplicationModel>>("Unknown user");
+            }
+
+            var apps = await store.QueryAsync(a => a.OrganisationId == userReadRes.Entity.OrganisationId, 0, 50);
+            if (userReadRes.Entity.Organisation.IsAdministrator(userReadRes.User))
+            {
+                return new EntityOperationResult<IEnumerable<ApplicationModel>>(userReadRes.Entity, apps);
+            }
+            else
+            {
+                return new EntityOperationResult<IEnumerable<ApplicationModel>>(userReadRes.Entity, "User is not an administrator. Cannot list apps");
             }
         }
 

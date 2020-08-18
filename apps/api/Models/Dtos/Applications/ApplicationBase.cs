@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Amphora.Api.Models.Dtos.Applications
 {
-    public abstract class ApplicationBase
+    public abstract class ApplicationBase : IDto
     {
         /// <summary>
         /// Gets or sets the name of your application.
