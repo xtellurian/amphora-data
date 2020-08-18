@@ -6,7 +6,7 @@ import { CallbackPage, IdentityContext } from "react-amphora";
 import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
 
 import { Challenge } from "./components/auth/Challenge";
-import { ApplicationState } from "./redux/state";
+import { AccountPage } from "./components/account/AccountPage";
 
 import withTour from "./components/tour/withTour";
 import { User } from "oidc-client";
@@ -17,7 +17,7 @@ import Search from "./components/amphorae/Search";
 import { ApplicationsPage } from "./components/applications/ApplicationsPage";
 
 // profile
-import { ProfilePage } from "./components/profile/ProfilePage";
+import { ProfilePage } from "./components/account/ProfilePage";
 
 import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 
@@ -54,6 +54,8 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
                 render={(p) => <ProfilePage user={props.user} {...p} />}
             />
 
+            <Route path="/account" component={AccountPage} />
+
             <Route path="/pallete" component={Pallete} />
             <Route path="/diagnostic" component={DiagnosticPage} />
         </Switch>
@@ -83,7 +85,7 @@ const AnonymousRoutes = () => (
 
 export const Routes: React.FC<RouteProps> = (props) => {
     const location = useLocation();
-    const idState = IdentityContext.useIdentityState()
+    const idState = IdentityContext.useIdentityState();
 
     // if location is callback page, return only CallbackPage route to allow signin process
     // IdentityServer 'bug' with hash history: if callback page contains a '#' params are appended with no delimiter

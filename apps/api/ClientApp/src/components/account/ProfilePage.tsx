@@ -1,8 +1,11 @@
 import * as React from "react";
 import { UserInformationComponent } from "react-amphora";
-import { Row, Col, Container } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { User } from "oidc-client";
 import { PrimaryButton } from "../molecules/buttons";
+import { Header } from "../layout/AccountLayout";
+import { PageContainer } from "../layout/PageContainer";
+
 interface ProfilePageProps {
     user?: User;
 }
@@ -13,12 +16,8 @@ export const ProfilePage: React.FunctionComponent<ProfilePageProps> = (
     const [showTokenInfo, setShowTokenInfo] = React.useState(false);
 
     return (
-        <Container>
-            <Row>
-                <Col>
-                    <div className="txt-xxl">User Profile</div>
-                </Col>
-            </Row>
+        <PageContainer>
+            <Header title="User Profile" />
 
             <Row>
                 <Col xs="8">
@@ -68,6 +67,6 @@ export const ProfilePage: React.FunctionComponent<ProfilePageProps> = (
             </Row>
 
             {props.children}
-        </Container>
+        </PageContainer>
     );
 };
