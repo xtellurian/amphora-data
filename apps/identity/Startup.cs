@@ -123,6 +123,9 @@ namespace Amphora.Identity
                 config = new ProductionConfig(externalServices, EnvironmentInfo, mvcClientSecret);
             }
 
+            // this should be added before callsing AddAspNetIdentity
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory>();
+
             // add this to the container so it can be consumed in InMemoryResourceStore
             services.AddSingleton<IIdentityServerConfig>(config);
             services.AddTransient<IAmphoraClaimsService, AmphoraClaimsService>();
@@ -158,7 +161,6 @@ namespace Amphora.Identity
 
             services.AddTransient<CosmosInitialiser<IdentityContext>>();
 
-            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory>();
             services.AddScoped<IEntityStore<ApplicationUser>, UsersEFStore>();
             services.AddScoped<IIdentityService, IdentityServerService>();
             services.AddScoped<IEventSink, IdentityServerEventConnectorService>();

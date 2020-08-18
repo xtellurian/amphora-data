@@ -2,6 +2,8 @@ namespace Amphora.Common.Security
 {
     public static class Claims
     {
+        // the username
+        public static string Name = "name";
         public static string About => "about";
         public static string Email => "email";
         public static string EmailConfirmed => "email_confirmed";
