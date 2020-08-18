@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Applications;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -53,6 +54,12 @@ namespace Amphora.Tests.Integration.Applications
             appRead.Id.Should().Be(app.Id);
             appRead.Locations.Should().HaveCount(1);
             appRead.Locations[0].Origin.Should().Be(fakeOrigin);
+
+            // list
+            var listRes = await persona.Http.GetAsync("api/applications");
+            var apps = await AssertHttpSuccess<CollectionResponse<Application>>(listRes);
+            apps.Items.Should().HaveCountGreaterOrEqualTo(1);
+            apps.Items.Should().Contain(_ => _.Id == appRead.Id);
 
             // update
             var updateModel = new UpdateApplication(app.Id);
