@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useAmphoraClients } from "react-amphora";
 import { CreateApplication, AppLocation } from "amphoradata";
-import { ModalWrapper, ModalContents } from "../molecules/modal";
+import { ModalWrapper, ModalContents, ModalHeading } from "../molecules/modal";
 import { TextInput } from "../molecules/inputs";
 import { EditApplicationLocationSection } from "./ApplicationLocationSection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,7 +43,7 @@ export const CreateApplicationModal: React.FC = () => {
         <React.Fragment>
             <ModalWrapper onCloseRedirectTo="/applications" isOpen={true}>
                 <ModalContents>
-                    <h3>Create a new Application</h3>
+                    <ModalHeading>Create a new Application</ModalHeading>
                     <TextInput label="Application Name" onComplete={setName} />
                     <TextInput label="Logout URL" onComplete={setLogoutUrl} />
 

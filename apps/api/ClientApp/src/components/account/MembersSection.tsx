@@ -5,6 +5,8 @@ import { useAmphoraClients } from "react-amphora";
 import { LoadingState } from "../molecules/empty/LoadingState";
 import { EmptyState } from "../molecules/empty/EmptyState";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PrimaryButton } from "../molecules/buttons";
+import { Link } from "react-router-dom";
 
 interface MembersSectionState {
     loading: boolean;
@@ -60,6 +62,16 @@ export const MembersSection: React.FC = () => {
                         <MemberRow key={i} member={m} />
                     ))}
                 </div>
+                <hr/>
+                <Row>
+                    <Col sm="12" md={{ size: 6, offset: 6 }}>
+                        <Link to="/account/new-invitation">
+                            <PrimaryButton className="float-right"> 
+                                Invite a new member
+                            </PrimaryButton>
+                        </Link>
+                    </Col>
+                </Row>
             </Container>
         );
     } else {

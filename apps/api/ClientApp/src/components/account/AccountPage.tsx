@@ -3,6 +3,7 @@ import { Header, AccountNav } from "../layout/AccountLayout";
 import { PageContainer } from "../layout/PageContainer";
 import { useLocation, useHistory, Route } from "react-router";
 import { MembersSection } from "./MembersSection";
+import { InvitationModal } from "./InvitationModal";
 
 export const AccountPage: React.FC = () => {
     const location = useLocation();
@@ -17,6 +18,7 @@ export const AccountPage: React.FC = () => {
             <Header title="Account"></Header>
             <AccountNav />
             <Route path="/account/members" component={MembersSection} />
+            <Route path="/account/new-invitation" component={InvitationModal} />
         </PageContainer>
     );
 };

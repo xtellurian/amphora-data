@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 export interface ValidateResult {
     isValid: boolean;
     message?: string;
@@ -12,6 +10,7 @@ export interface InputProps<T> {
     value?: T;
     placeholder?: string;
     focusOnMount?: boolean;
+    type?: string;
     helpText?: (value?: T) => string | undefined;
     validator?: (value?: T) => ValidateResult;
     onComplete?: (value?: T) => void;

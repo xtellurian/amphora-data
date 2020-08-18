@@ -30,3 +30,11 @@
     background-color: var(--platinum);
     min-width: 5rem;
 }
+
+.ReactModal__Content .modal-footer  {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
