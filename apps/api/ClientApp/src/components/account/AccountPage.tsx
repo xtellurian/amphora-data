@@ -1,16 +1,22 @@
 import * as React from "react";
-import { Header } from "../layout/AccountLayout";
+import { Header, AccountNav } from "../layout/AccountLayout";
 import { PageContainer } from "../layout/PageContainer";
-import { Tabs, activeTab } from "../molecules/tabs";
-
-const tabs = [{ id: "transactions" }, { id: "invoices" }];
+import { useLocation, useHistory, Route } from "react-router";
+import { MembersSection } from "./MembersSection";
 
 export const AccountPage: React.FC = () => {
+    const location = useLocation();
+    const history = useHistory();
+
+    if (location.pathname === "/account" || location.pathname === "/account/") {
+        history.push("/account/members");
+    }
+
     return (
         <PageContainer>
             <Header title="Account"></Header>
-
-            <Tabs default={tabs[0].id}  tabs={tabs} />
+            <AccountNav />
+            <Route path="/account/members" component={MembersSection} />
         </PageContainer>
     );
 };

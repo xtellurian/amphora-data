@@ -2077,15 +2077,6 @@ amphoradata@^0.10.16:
     request "^2.88.2"
     url "^0.11.0"
 
-amphoradata@^0.10.8-dev.1:
-  version "0.10.8-dev.1"
-  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.10.8-dev.1.tgz#036ae82b7cca979b1ba9301e0e6b9cefab1c7be8"
-  integrity sha512-qnYJFdpWDBFTpxUiTXC4aSpwUZUJA/rvD987l0KC/pKj35n2DvJYafLie4u4zzwWh9EFiUeHR/LedxNXAEjoRw==
-  dependencies:
-    axios "^0.19.2"
-    request "^2.88.2"
-    url "^0.11.0"
-
 ansi-colors@^3.0.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
@@ -9320,10 +9311,10 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-amphora@^1.7.1-1:
-  version "1.7.1-1"
-  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.7.1-1.tgz#fcae7e5c05aa3795609d47a5e147690023d6b968"
-  integrity sha512-jR3nl22oFfn4lFZ4yQsxKz9eqhaBMMSMLoSqos6Ei2gScdGRqFCWBvjNcwGXyEiA+Mwg7QFHaVJMUoSDiKvuCg==
+react-amphora@^1.7.1-2:
+  version "1.7.1-2"
+  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.7.1-2.tgz#69dfc615acae369019304e8485f3b74dc36a684a"
+  integrity sha512-2QPJ89clScbfldk/iWlyVAjJy7prD45lG6LjbUl5IvbVBUaFWqrtoIKa0M/lfXpV+WTpb/Zif9QzerczpXxx9Q==
   dependencies:
     amphoradata "^0.10.16"
     oidc-client "^1.10.1"
