@@ -50,9 +50,9 @@ function completeUpload(
 
     data.append("name", name);
     data.append("content", file);
-
-    console.log("starting upload");
-    if (res && res.url) {
+    const useBlobEndpoint = false;
+    console.log(`starting upload, useElobEndpoint: ${useBlobEndpoint}`);
+    if (res && res.url && useBlobEndpoint) {
         axios
             .put(res.url, data)
             .then((k) => callback && callback())
@@ -81,29 +81,24 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
     const cancelToken = axios.default.CancelToken;
     const source = cancelToken.source();
 
-    const tryLoadFiles = () => {
-        if (props.amphora.id && !state.isLoading) {
+    const tryLoadFiles = (id: string) => {
+        if (id && !state.isLoading) {
             setState({ isLoading: true, fileNames: state.fileNames });
             clients.amphoraeApi
-                .amphoraeFilesListFiles(
-                    props.amphora.id,
-                    "Alphabetical",
-                    "",
-                    25,
-                    0,
-                    {
-                        cancelToken: source.token,
-                    }
-                )
+                .amphoraeFilesListFiles(id, "Alphabetical", "", 25, 0, {
+                    cancelToken: source.token,
+                })
                 .then((r) => setState({ fileNames: r.data, isLoading: false }))
                 .catch((e) => setState({ fileNames: [], isLoading: false }));
         }
     };
 
     React.useEffect(() => {
-        tryLoadFiles();
-        return () => source.cancel("The files component unmounted");
-    }, [source, props.amphora.id, tryLoadFiles, state.isLoading]);
+        if (props.amphora && props.amphora.id) {
+            tryLoadFiles(props.amphora.id);
+            return () => source.cancel("The files component unmounted");
+        }
+    }, [props.amphora]);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);
@@ -123,8 +118,9 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
             e.target.files &&
             e.target.files.length > 0
         ) {
+            const amphoraId = props.amphora.id;
             clients.amphoraeApi
-                .amphoraeFilesCreateFileRequest(props.amphora.id, fileName)
+                .amphoraeFilesCreateFileRequest(amphoraId, fileName)
                 .then((r) =>
                     completeUpload(
                         props.amphora,
@@ -132,7 +128,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                         fileName,
                         file,
                         r.data,
-                        (e) => !e && tryLoadFiles()
+                        (e) => !e && tryLoadFiles(amphoraId)
                     )
                 )
                 .catch((e) => console.log(e));
