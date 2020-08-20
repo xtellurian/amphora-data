@@ -72,7 +72,6 @@ namespace Amphora.Api.Controllers.Accounts
         [ProducesBadRequest]
         [HttpPost("Plan")]
         [CommonAuthorize]
-        [OpenApiIgnore]
         public async Task<IActionResult> SetPlan(string id, string planType)
         {
             if (string.IsNullOrEmpty(planType))
