@@ -6,6 +6,8 @@ import { MembersSection } from "./members/MembersSection";
 import { InvitationModal } from "./members/InvitationModal";
 import { TransactionSection } from "./transactions/TransactionSection";
 import { InvoicesSection } from "./invoices/InvoicesSection";
+import { PlanSection } from "./plan/PlanSection";
+import { SelectPlanModal } from "./plan/SelectPlanModal";
 
 export const AccountPage: React.FC = () => {
     const location = useLocation();
@@ -26,6 +28,8 @@ export const AccountPage: React.FC = () => {
                 component={TransactionSection}
             />
             <Route path="/account/invoices" component={InvoicesSection} />
+            <Route path="/account/plan" component={PlanSection} />
+            <Route path="/account/select-plan" component={SelectPlanModal} />
         </PageContainer>
     );
 };
