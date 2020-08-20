@@ -26,7 +26,7 @@ namespace Amphora.Api.Controllers.Organisations
         }
 
         /// <summary>
-        /// Get's a list of an Organisation's Terms of Use.
+        /// Gets a list of an Organisation's Terms of Use.
         /// </summary>
         /// <param name="id">The Id of the Organisation.</param>
         /// <returns> The Terms. </returns>

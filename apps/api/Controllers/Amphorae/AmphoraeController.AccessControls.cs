@@ -38,7 +38,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the list of access rules applied to users.
+        /// Gets the list of access rules applied to users.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A list of rules.</returns>
@@ -73,7 +73,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the list of access rules applied to organisations.
+        /// Gets the list of access rules applied to organisations.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A list of rules.</returns>
@@ -108,7 +108,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the 'for all' rule, if it exists, else an empty 200.
+        /// Gets the 'for all' rule, if it exists, else an empty 200.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A rule, if it exists.</returns>

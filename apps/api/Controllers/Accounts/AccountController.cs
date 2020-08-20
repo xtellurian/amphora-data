@@ -30,7 +30,7 @@ namespace Amphora.Api.Controllers.Accounts
         }
 
         /// <summary>
-        /// Get's an Organisation's account information.
+        /// Gets an Organisation's account information.
         /// </summary>
         /// <param name="id">Organisation Id.</param>
         /// <returns>An Organisation's account metadata. </returns>

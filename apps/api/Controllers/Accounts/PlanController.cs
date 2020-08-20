@@ -29,7 +29,7 @@ namespace Amphora.Api.Controllers.Accounts
         }
 
         /// <summary>
-        /// Get's an Organisation's plan information.
+        /// Gets an Organisation's plan information.
         /// </summary>
         /// <param name="id">Organisation Id.</param>
         /// <returns>An Organisation's plan. </returns>

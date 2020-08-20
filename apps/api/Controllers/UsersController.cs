@@ -49,7 +49,7 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Get's logged in users information.
+        /// Gets logged in users information.
         /// </summary>
         /// <returns> Your own details. </returns>
         [Produces(typeof(AmphoraUser))]

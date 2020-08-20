@@ -41,7 +41,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the signals associated with an Amphora.
+        /// Gets the signals associated with an Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <returns>A collection of signals.</returns>
@@ -76,7 +76,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the signals associated with an Amphora.
+        /// Gets the signals associated with an Amphora.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="property">The name or id of the signal property.</param>

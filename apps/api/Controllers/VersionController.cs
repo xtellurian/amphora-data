@@ -15,7 +15,7 @@ namespace Amphora.Api.Controllers
         }
 
         /// <summary>
-        /// Get's the current server version.
+        /// Gets the current server version.
         /// </summary>
         /// <returns> The current version string.</returns>
         [Produces(typeof(string))]

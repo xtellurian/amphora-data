@@ -122,7 +122,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the contents of a file. Returns application/octet-stream.
+        /// Gets the contents of a file. Returns application/octet-stream.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>
@@ -261,7 +261,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the attributes of a file.
+        /// Gets the attributes of a file.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>
@@ -293,7 +293,7 @@ namespace Amphora.Api.Controllers.Amphorae
         }
 
         /// <summary>
-        /// Get's the contents of a file. Returns application/octet-stream.
+        /// Gets the contents of a file. Returns application/octet-stream.
         /// </summary>
         /// <param name="id">Amphora Id.</param>
         /// <param name="file">The name of the file.</param>

@@ -329,7 +329,7 @@ namespace Amphora.Tests.Integration.Amphorae
             var requestBody = new ByteArrayContent(content);
             var alpha = "alpha";
             var beta = "beta";
-            // beta get's uploaded first
+            // beta Gets uploaded first
             var uploadResponse2 = await persona.Http.PutAsync($"api/amphorae/{amphora.Id}/files/{beta}", requestBody);
             // wait a bit to ignore race conds
             await Task.Delay(1000);
