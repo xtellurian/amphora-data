@@ -2,10 +2,10 @@ import * as React from "react";
 import { Container, Row, Col } from "reactstrap";
 import { Membership } from "amphoradata";
 import { useAmphoraClients } from "react-amphora";
-import { LoadingState } from "../molecules/empty/LoadingState";
-import { EmptyState } from "../molecules/empty/EmptyState";
+import { LoadingState } from "../../molecules/empty/LoadingState";
+import { EmptyState } from "../../molecules/empty/EmptyState";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PrimaryButton } from "../molecules/buttons";
+import { PrimaryButton } from "../../molecules/buttons";
 import { Link } from "react-router-dom";
 
 interface MembersSectionState {

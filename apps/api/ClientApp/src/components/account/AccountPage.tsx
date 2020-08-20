@@ -2,9 +2,10 @@ import * as React from "react";
 import { Header, AccountNav } from "../layout/AccountLayout";
 import { PageContainer } from "../layout/PageContainer";
 import { useLocation, useHistory, Route } from "react-router";
-import { MembersSection } from "./MembersSection";
-import { InvitationModal } from "./InvitationModal";
+import { MembersSection } from "./members/MembersSection";
+import { InvitationModal } from "./members/InvitationModal";
 import { TransactionSection } from "./transactions/TransactionSection";
+import { InvoicesSection } from "./invoices/InvoicesSection";
 
 export const AccountPage: React.FC = () => {
     const location = useLocation();
@@ -20,7 +21,11 @@ export const AccountPage: React.FC = () => {
             <AccountNav />
             <Route path="/account/members" component={MembersSection} />
             <Route path="/account/new-invitation" component={InvitationModal} />
-            <Route path="/account/transactions" component={TransactionSection} />
+            <Route
+                path="/account/transactions"
+                component={TransactionSection}
+            />
+            <Route path="/account/invoices" component={InvoicesSection} />
         </PageContainer>
     );
 };

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Invitation } from "amphoradata";
 import { useAmphoraClients } from "react-amphora";
-import { success, warning } from "../molecules/toasts";
-import { ModalContents, ModalWrapper, ModalHeading } from "../molecules/modal";
-import { TextInput } from "../molecules/inputs/TextInput";
-import { ValidateResult } from "../molecules/inputs/inputProps";
-import { ModalFooter } from "../molecules/modal/ModalContents";
-import { PrimaryButton } from "../molecules/buttons";
+import { success, warning } from "../../molecules/toasts";
+import { ModalContents, ModalWrapper, ModalHeading } from "../../molecules/modal";
+import { TextInput } from "../../molecules/inputs/TextInput";
+import { ValidateResult } from "../../molecules/inputs/inputProps";
+import { ModalFooter } from "../../molecules/modal/ModalContents";
+import { PrimaryButton } from "../../molecules/buttons";
 
 const validateEmail = (value?: string): ValidateResult => {
     if (!value) {
