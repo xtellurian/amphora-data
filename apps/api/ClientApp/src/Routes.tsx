@@ -32,11 +32,6 @@ interface AuthenticatedProps {
     user: User;
 }
 
-interface RoutesModuleProps extends AuthenticatedProps {
-    isLoadingUser: boolean;
-    location: any;
-}
-
 const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
     props
 ) => (
