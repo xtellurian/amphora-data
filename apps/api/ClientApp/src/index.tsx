@@ -14,6 +14,7 @@ import registerServiceWorker from "./registerServiceWorker";
 import { getHostUrl } from "./utilities";
 import { toastOnActionResult } from "./utilities/toasts";
 import Modal from "react-modal";
+import { Settings } from "./redux/state/Settings";
 // Create browser history to use in the Redux store
 const baseUrl = document
     .getElementsByTagName("base")[0]
@@ -22,7 +23,6 @@ const history = createBrowserHistory({ basename: baseUrl });
 const store = configureStore(history);
 const host = getHostUrl();
 Modal.setAppElement("#root");
-console.log(`HOST is ${host}`);
 
 ReactDOM.render(
     <Provider store={store}>
@@ -32,7 +32,7 @@ ReactDOM.render(
                 configuration={
                     new amphoradata.Configuration({ basePath: host })
                 }
-                onActionResult={(r) => toastOnActionResult(r)}
+                onActionResult={(r) => toastOnActionResult(r, store.getState().settings as Settings)}
             >
                 <App />
             </AmphoraProvider>

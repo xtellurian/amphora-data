@@ -3,7 +3,7 @@ import { SecondaryButton } from '../buttons/SecondaryButton';
 import './toggles.css';
 import { ButtonGroup } from 'reactstrap';
 
-interface ToggleOption {
+export interface ToggleOption {
     id: string;
     text: string;
 }

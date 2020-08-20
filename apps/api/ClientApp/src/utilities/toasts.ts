@@ -1,7 +1,11 @@
 import { Actions } from "react-amphora";
 import * as toast from "../components/molecules/toasts";
+import { Settings } from "../redux/state/Settings";
 
-export const toastOnActionResult = (actionResult: Actions.ActionResult) => {
+export const toastOnActionResult = (
+    actionResult: Actions.ActionResult,
+    settings: Settings
+) => {
     if (actionResult.error) {
         toast.error(
             { text: `${actionResult.error}` },
@@ -9,6 +13,8 @@ export const toastOnActionResult = (actionResult: Actions.ActionResult) => {
                 autoClose: 1000,
             }
         );
+    } else if (!settings.showDebuggingNotifications) {
+        return;
     } else if (actionResult.payload) {
         toast.success(
             {

@@ -221,6 +221,9 @@ class HamburgerMenu extends React.PureComponent<
                                 Classic View
                             </a>
                         </NavItem>
+                        <ClickableMenuItem to="/settings" icon="cog">
+                            Settings
+                        </ClickableMenuItem>
                     </MenuSection>
                 </Nav>
             </Menu>

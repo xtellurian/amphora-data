@@ -19,12 +19,13 @@ import { ApplicationsPage } from "./components/applications/ApplicationsPage";
 // profile
 import { ProfilePage } from "./components/account/ProfilePage";
 
+// settings
+import { SettingsPage } from "./components/settings/SettingsPage";
 import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 
 import Pallete from "./components/hidden/PalletePage";
 import { DiagnosticPage } from "./components/hidden/DiagnosticPage";
 
-import { LoadingState } from "./components/molecules/empty/LoadingState";
 import { useLocation } from "react-router";
 
 interface AuthenticatedProps {
@@ -55,6 +56,7 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
             />
 
             <Route path="/account" component={AccountPage} />
+            <Route path="/settings" component={SettingsPage} />
 
             <Route path="/pallete" component={Pallete} />
             <Route path="/diagnostic" component={DiagnosticPage} />
