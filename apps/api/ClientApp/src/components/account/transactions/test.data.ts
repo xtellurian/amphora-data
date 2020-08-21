@@ -2,7 +2,7 @@ import { Transaction } from "amphoradata";
 
 
 const sum = (x: number): number => {
-    if (x == 0) {
+    if (x === 0) {
         return 0;
     } else {
         return x + sum(x - 1);
