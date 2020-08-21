@@ -50,7 +50,7 @@ export const TransactionSection: React.FC = (props) => {
 
     if (state.loading) {
         return <LoadingState />;
-    } else if (state.transactions.length == 0) {
+    } else if (state.transactions.length === 0) {
         return (
             <EmptyState>There are no recent transactions to display</EmptyState>
         );

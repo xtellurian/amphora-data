@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useAmphoraClients } from "react-amphora";
 import { warning } from "../../molecules/toasts";
 import {
     ModalContents,
     ModalWrapper,
     ModalHeading,
 } from "../../molecules/modal";
-import { ModalFooter } from "../../molecules/modal/ModalContents";
 import { PrimaryButton } from "../../molecules/buttons";
 import { Row, Col } from "reactstrap";
 
@@ -20,8 +18,6 @@ export const SelectPlanModal: React.FC = (props) => {
         isOpen: true,
         loading: false,
     });
-
-    const clients = useAmphoraClients();
 
     const selectPlan = (plan: any) => {
         warning(

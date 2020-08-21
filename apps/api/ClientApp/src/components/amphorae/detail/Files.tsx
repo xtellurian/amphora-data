@@ -1,19 +1,21 @@
 import * as React from "react";
 import { AxiosInstance } from "axios";
+import Modal, { Styles } from "react-modal";
+import { Link } from "react-router-dom";
+import * as axios from "axios";
 import { useAmphoraClients } from "react-amphora";
 import { OneAmphora } from "./props";
 import { EmptyState } from "../../molecules/empty/EmptyState";
-import * as axios from "axios";
+import { success, error } from "../../molecules/toasts";
 import { PrimaryButton } from "../../molecules/buttons";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Table } from "../../molecules/tables/Table";
 import { Header } from "./Header";
 import { UploadResponse, DetailedAmphora } from "amphoradata";
-import Modal, { Styles } from "react-modal";
-import { Link } from "react-router-dom";
 
 interface FilesState {
     isLoading: boolean;
+    requiresReload?: boolean;
     downloadFileName?: string | null;
     fileNames: string[];
     newFileName?: string;
@@ -73,6 +75,7 @@ const hiddenInputId = "select-file-input";
 export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
     const clients = useAmphoraClients();
     const [state, setState] = React.useState<FilesState>({
+        requiresReload: false,
         fileNames: [],
         isLoading: false,
         downloadFileName: null,
@@ -81,24 +84,34 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
     const cancelToken = axios.default.CancelToken;
     const source = cancelToken.source();
 
-    const tryLoadFiles = (id: string) => {
-        if (id && !state.isLoading) {
-            setState({ isLoading: true, fileNames: state.fileNames });
-            clients.amphoraeApi
-                .amphoraeFilesListFiles(id, "Alphabetical", "", 25, 0, {
-                    cancelToken: source.token,
-                })
-                .then((r) => setState({ fileNames: r.data, isLoading: false }))
-                .catch((e) => setState({ fileNames: [], isLoading: false }));
-        }
-    };
-
     React.useEffect(() => {
+        console.log("using files effect");
         if (props.amphora && props.amphora.id) {
-            tryLoadFiles(props.amphora.id);
+            const amphoraId = props.amphora.id;
+            if (amphoraId && !state.isLoading) {
+                setState({ ...state, isLoading: true });
+                clients.amphoraeApi
+                    .amphoraeFilesListFiles(
+                        amphoraId,
+                        "Alphabetical",
+                        "",
+                        25,
+                        0,
+                        {
+                            cancelToken: source.token,
+                        }
+                    )
+                    .then((r) =>
+                        setState({ fileNames: r.data, isLoading: false })
+                    )
+                    .catch((e) => {
+                        console.log(e);
+                        setState({ fileNames: [], isLoading: false });
+                    });
+            }
             return () => source.cancel("The files component unmounted");
         }
-    }, [props.amphora]);
+    }, [props.amphora, state.requiresReload]);
 
     const triggerUpload = () => {
         const x = document.getElementById(hiddenInputId);
@@ -128,7 +141,20 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                         fileName,
                         file,
                         r.data,
-                        (e) => !e && tryLoadFiles(amphoraId)
+                        (e) => {
+                            if (!e) {
+                                success(
+                                    { text: "File Uploaded" },
+                                    { autoClose: 1000 }
+                                );
+                                setState({ ...state, requiresReload: true });
+                            } else {
+                                error(
+                                    { text: "Error Uploading File" },
+                                    { autoClose: 2000 }
+                                );
+                            }
+                        }
                     )
                 )
                 .catch((e) => console.log(e));
@@ -157,6 +183,7 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
         });
     };
     const downloadPath = `/api/amphorae/${props.amphora.id}/files/${state.downloadFileName}`;
+    console.log(state);
     return (
         <React.Fragment>
             <Modal

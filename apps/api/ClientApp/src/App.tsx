@@ -1,10 +1,10 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
+import ReactGA from "react-ga";
 import Layout from "./components/Layout";
 import { Routes } from "./Routes";
 import "./components/core/fontawesome"; // Load FontAwesome library
-import ReactGA from "react-ga";
 import withSplashScreen from "./components/splash/withSplashScreen";
 
 // Load all global css
@@ -17,7 +17,6 @@ ReactGA.initialize("UA-164144906-5"); // v2 app
 const GATracker: React.FC = () => {
     const history = useHistory();
     history.listen((location) => {
-        console.log('tracking pathname')
         ReactGA.pageview(location.pathname);
     });
     return <React.Fragment></React.Fragment>;
