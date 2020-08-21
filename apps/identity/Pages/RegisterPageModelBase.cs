@@ -74,7 +74,7 @@ namespace Amphora.Identity.Pages
                 protocol: Request.Scheme);
 
             var templateData = ConfirmEmailEmail.TemplateData(user, HtmlEncoder.Default.Encode(callbackUrl));
-            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync("ConfirmEmail", templateData);
+            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync(ConfirmEmailEmail.TemplateName, templateData);
             var email = new ConfirmEmailEmail(user.Email, user.UserName, content);
             var result = await emailSender.SendEmailAsync(email);
             if (!result)
@@ -86,7 +86,7 @@ namespace Amphora.Identity.Pages
         private async Task SendWelcomeEmailAsync(ApplicationUser user)
         {
             var templateData = WelcomeEmail.TemplateData(user);
-            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync("ConfirmEmail", templateData);
+            var content = await emailSender.Generator.ContentFromMarkdownTemplateAsync(WelcomeEmail.TemplateName, templateData);
             var email = new WelcomeEmail(user.Email, user.UserName, content);
             var result = await emailSender.SendEmailAsync(email);
             if (!result)
