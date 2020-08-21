@@ -1,19 +1,21 @@
-import { Home } from "./components/Home";
-
-import * as React from "react";
-import userManager from "./userManager";
-import { CallbackPage, IdentityContext } from "react-amphora";
+import React, { Suspense } from "react";
 import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
+import { useLocation } from "react-router";
+import { CallbackPage, IdentityContext } from "react-amphora";
 
+import userManager from "./userManager";
 import { Challenge } from "./components/auth/Challenge";
 import { AccountPage } from "./components/account/AccountPage";
 
 import withTour from "./components/tour/withTour";
+import { Home } from "./components/Home";
 import { User } from "oidc-client";
-import Amphora from "./components/amphorae/MyAmphorae";
+
+import { LoadingState } from "./components/molecules/empty";
+
+import Search from "./components/amphorae/Search";
 import { CreateAmphoraPage } from "./components/amphorae/CreateAmphora";
 import { RequestAmphoraPage } from "./components/amphorae/RequestAmphora";
-import Search from "./components/amphorae/Search";
 import { ApplicationsPage } from "./components/applications/ApplicationsPage";
 
 // profile
@@ -26,11 +28,24 @@ import { TermsOfUsePage } from "./components/terms/TermsOfUsePage";
 import Pallete from "./components/hidden/PalletePage";
 import { DiagnosticPage } from "./components/hidden/DiagnosticPage";
 
-import { useLocation } from "react-router";
+// try lazy loading
+const Amphora = React.lazy(() => import("./components/amphorae/MyAmphoraPage"));
 
 interface AuthenticatedProps {
     user: User;
 }
+
+const LazyLoader: React.FC = ({ children }) => {
+    return <Suspense fallback={<LoadingState />}>{children}</Suspense>;
+};
+
+const LazyAmphora: React.FC = (props) => {
+    return (
+        <LazyLoader>
+            <Amphora {...props} />
+        </LazyLoader>
+    );
+};
 
 const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
     props
@@ -42,7 +57,7 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
 
             <Route path="/search" component={Search} />
             <Route path="/create" component={CreateAmphoraPage} />
-            <Route path="/amphora" component={Amphora} />
+            <Route path="/amphora" component={LazyAmphora} />
             <Route path="/terms" component={TermsOfUsePage} />
             <Route path="/request" component={RequestAmphoraPage} />
             <Route
