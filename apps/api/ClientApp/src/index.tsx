@@ -1,8 +1,8 @@
 import "bootstrap/dist/css/bootstrap.css";
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as amphoradata from "amphoradata";
+import { render } from "react-dom";
+import { Configuration } from "amphoradata";
 import { AmphoraProvider } from "react-amphora";
 import userManager from "./userManager";
 import { Provider } from "react-redux";
@@ -24,15 +24,18 @@ const store = configureStore(history);
 const host = getHostUrl();
 Modal.setAppElement("#root");
 
-ReactDOM.render(
+render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
             <AmphoraProvider
                 userManager={userManager}
-                configuration={
-                    new amphoradata.Configuration({ basePath: host })
+                configuration={new Configuration({ basePath: host })}
+                onActionResult={(r) =>
+                    toastOnActionResult(
+                        r,
+                        store.getState().settings as Settings
+                    )
                 }
-                onActionResult={(r) => toastOnActionResult(r, store.getState().settings as Settings)}
             >
                 <App />
             </AmphoraProvider>
