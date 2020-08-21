@@ -192,9 +192,11 @@ class HamburgerMenu extends React.PureComponent<
                         startOpen={false}
                     >
                         <NavItem>
-                            <a
+                            <span
+                                style={{
+                                    cursor: "pointer",
+                                }}
                                 className="text-light nav-link"
-                                href="#"
                                 onClick={() => {
                                     localStorage.setItem("tour", "accept");
                                     window.location.reload(false);
@@ -207,7 +209,7 @@ class HamburgerMenu extends React.PureComponent<
                                     }}
                                 />
                                 Tour
-                            </a>
+                            </span>
                         </NavItem>
                         <NavItem>
                             <a

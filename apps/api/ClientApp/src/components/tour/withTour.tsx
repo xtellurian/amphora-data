@@ -89,21 +89,20 @@ const withTour = (WrappedComponent: any) => {
                             </p>
 
                             <div className="lead btn-group">
-                                <a
-                                    href="#"
+                                <span
                                     className="btn btn-primary btn-lg text-white"
                                     role="button"
                                     onClick={() => acceptTour()}
                                 >
                                     Take the Tour
-                                </a>
-                                <a
+                                </span>
+                                <span
                                     className="btn btn-secondary btn-lg"
                                     role="button"
                                     onClick={() => dismissTour()}
                                 >
                                     No thanks, maybe later
-                                </a>
+                                </span>
                             </div>
                         </div>
                     </Modal>
@@ -116,7 +115,7 @@ const withTour = (WrappedComponent: any) => {
                 c.step.navigateOnClick &&
                 c.step.navigateOnClick.length > 0 &&
                 c.action === ACTIONS.UPDATE &&
-                c.lifecycle == LIFECYCLE.TOOLTIP
+                c.lifecycle === LIFECYCLE.TOOLTIP
             ) {
                 history.push(c.step.navigateOnClick);
             }
