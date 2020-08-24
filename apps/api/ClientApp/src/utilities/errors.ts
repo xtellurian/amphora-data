@@ -10,6 +10,6 @@ export const parseServerError = (e: any, fallback?: string): string => {
         }
     } else {
         // not an axios error
-        return fallback || "The did not respond as expected";
+        return fallback || "The server did not respond as expected";
     }
 };

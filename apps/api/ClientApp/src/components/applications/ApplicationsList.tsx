@@ -3,7 +3,7 @@ import { Application } from "amphoradata";
 import { Row, Col } from "reactstrap";
 import { useAmphoraClients } from "react-amphora";
 import { LoadingState, ErrorState, EmptyState } from "../molecules/empty";
-import { SecondaryButton } from "../molecules/buttons";
+import { SecondaryButton, OverflowMenuButton } from "../molecules/buttons";
 import { Link } from "react-router-dom";
 
 interface ApplicationsListState {
@@ -22,10 +22,10 @@ const ApplicationsRowHeader: React.FC = () => {
             <Col>
                 <div className="txt-med">Name</div>
             </Col>
-            <Col>
+            <Col lg={5} className="d-none d-lg-block">
                 <div className="txt-med">Allowed Origins</div>
             </Col>
-            <Col xs={2}></Col>
+            <Col xs={4} lg={3}></Col>
         </Row>
     );
 };
@@ -33,14 +33,21 @@ const ApplicationsRow: React.FC<ApplicationRowProps> = ({ application }) => {
     return (
         <Row className="p-3 mt-1 align-items-center border rounded">
             <Col>{application.name}</Col>
-            <Col className="align-middle">
+            <Col lg={5} xs={5} className="d-none d-lg-block align-middle">
                 {application.locations &&
                     application.locations.map((l) => `${l.origin},`)}
             </Col>
-            <Col xs={2}>
+            <Col lg={3} className="d-none d-lg-block">
                 <Link to={`applications/edit?id=${application.id}`}>
                     <SecondaryButton>Edit</SecondaryButton>
                 </Link>
+            </Col>
+            <Col xs={3} className="d-lg-none">
+                <OverflowMenuButton>
+                    <Link to={`applications/edit?id=${application.id}`}>
+                        <SecondaryButton className="w-100">Edit</SecondaryButton>
+                    </Link>
+                </OverflowMenuButton>
             </Col>
         </Row>
     );

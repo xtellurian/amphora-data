@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export const ModalContents: React.FC = (props) => {
-    return <div className="modal-inner">{props.children}</div>;
+    return <div className="modal-inner overflow-auto">{props.children}</div>;
 };
 
 export const ModalFooter: React.FC = ({ children }) => {
