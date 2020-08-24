@@ -102,3 +102,9 @@ input {
 .txt-ebony {
     color: var(--ebony);
 }
+
+/* utilities */
+
+.cursor-pointer {
+    cursor: pointer;
+}

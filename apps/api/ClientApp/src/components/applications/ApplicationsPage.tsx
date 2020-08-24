@@ -1,27 +1,25 @@
-import * as React from "react";
-
-// import { Header } from "../layout/ManagementLayout";
-// import { Link, Route } from "react-router-dom";
-// import { PrimaryButton } from "../molecules/buttons";
-// import { CreateApplicationModal } from "./CreateApplicationModal";
-// import { ApplicationsList } from "./ApplicationsList";
+import React from "react";
+import { Link, Route } from "react-router-dom";
+import { Header } from "../layout/ManagementLayout";
+import { PrimaryButton } from "../molecules/buttons";
+import { CreateOrUpdateApplicationModal } from "./CreateOrUpdateApplicationModal";
+import { ApplicationsList } from "./ApplicationsList";
+import { PageContainer } from "../layout/PageContainer";
 
 export const ApplicationsPage: React.FunctionComponent = () => {
-
     return (
-        <React.Fragment>
-            Coming Soon
-            {/* <Header title="Applications">
-                <Link to="/applications/create">
+        <PageContainer>
+            <Header title="Applications" helpText="Applications help you connect external apps to Amphora.">
+                <Link to="/applications/edit">
                     <PrimaryButton>New Application</PrimaryButton>
                 </Link>
             </Header>
             <hr />
             <Route
-                path="/applications/create"
-                component={CreateApplicationModal}
+                path="/applications/edit"
+                component={CreateOrUpdateApplicationModal}
             />
-            <Route exact path="/applications" component={ApplicationsList} /> */}
-        </React.Fragment>
+            <Route exact path="/applications" component={ApplicationsList} />
+        </PageContainer>
     );
 };
