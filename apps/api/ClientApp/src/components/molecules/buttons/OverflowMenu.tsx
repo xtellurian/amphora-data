@@ -10,6 +10,7 @@ export const OverflowMenuButton: React.FC = ({ children }) => {
     return (
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
             <DropdownToggle
+                className="cursor-pointer"
                 tag="span"
                 data-toggle="dropdown"
                 aria-expanded={dropdownOpen}

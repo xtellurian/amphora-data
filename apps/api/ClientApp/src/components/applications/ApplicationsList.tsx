@@ -42,7 +42,7 @@ const ApplicationsRow: React.FC<ApplicationRowProps> = ({ application }) => {
                     <SecondaryButton>Edit</SecondaryButton>
                 </Link>
             </Col>
-            <Col xs={3} className="d-lg-none">
+            <Col xs={4} className="d-lg-none">
                 <OverflowMenuButton>
                     <Link to={`applications/edit?id=${application.id}`}>
                         <SecondaryButton className="w-100">Edit</SecondaryButton>

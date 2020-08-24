@@ -6,10 +6,16 @@ import { CreateTermsOfUseComponent } from "./CreateTermsOfUseComponent";
 import { Header } from "../layout/ManagementLayout";
 import { TermsOfUseList } from "./TermsOfUseList";
 import { PrimaryButton } from "../molecules/buttons";
+import { PageContainer } from "../layout/PageContainer";
+
+
 export const TermsOfUsePage: React.FunctionComponent = (props) => {
     return (
-        <React.Fragment>
-            <Header title="Terms of Use">
+        <PageContainer>
+            <Header
+                title="Terms of Use"
+                helpText="Some data are associated with specific terms of use. You can create your own custom terms, and attach them to Amphora you create."
+            >
                 <Link to="/terms/create">
                     <PrimaryButton>Create Custom Terms</PrimaryButton>
                 </Link>
@@ -21,6 +27,6 @@ export const TermsOfUsePage: React.FunctionComponent = (props) => {
                 path="/terms/detail/:id"
                 component={ConnectedTermsOfUseDetail}
             />
-        </React.Fragment>
+        </PageContainer>
     );
 };
