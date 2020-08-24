@@ -11,6 +11,7 @@ import {
     CardBody,
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import { useWindowSize } from "../../utilities/useWindowSize";
 import { BurgerMenuState } from "../../redux/state/plugins/burgerMenu";
 import { ApplicationState } from "../../redux/state";
 import { actionCreators } from "../../redux/actions/plugins/burgerMenu";
@@ -19,6 +20,7 @@ import { Avatar } from "./Avatar";
 import "./burgerMenu.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { useLocation } from "react-router";
 const menuId = "primary";
 const Menu = reduxBurgerMenu(PlainMenu, menuId); // this line connects the burger menu to redux state
 type HamburgerMenuProps = {
@@ -26,10 +28,6 @@ type HamburgerMenuProps = {
     outerContainerId?: string;
 } & BurgerMenuState & // ... state we've requested from the Redux store
     typeof actionCreators & { path: string; isConnected: boolean }; // ... plus action creators we've requested // ... plus incoming routing parameters
-
-interface HambuergerMenuState {
-    openId?: string | null;
-}
 
 const ClickableMenuItem: React.FunctionComponent<{
     className?: string;
@@ -86,214 +84,199 @@ const MenuSection: React.FunctionComponent<{
     );
 };
 
-class HamburgerMenu extends React.PureComponent<
-    HamburgerMenuProps,
-    HambuergerMenuState
-> {
-    /**
-     *
-     */
-    constructor(props: HamburgerMenuProps) {
-        super(props);
-        this.state = {};
-    }
-    componentDidMount() {
-        this.props.open(menuId);
-    }
+const customStyles = {
+    /* Position and sizing of burger button */
+    bmBurgerButton: {
+        position: "fixed",
+        width: "22px",
+        height: "20px",
+        left: "18px",
+        top: "18px",
+    },
+    /* Color/shape of burger icon bars */
+    bmBurgerBars: {
+        background: "var(--amphora-white)",
+    },
+    /* Color/shape of burger icon bars on hover*/
+    bmBurgerBarsHover: {
+        background: "#a90000",
+    },
+    /* Position and sizing of clickable cross button */
+    bmCrossButton: {
+        height: "24px",
+        width: "24px",
+    },
+    /* Color/shape of close button cross */
+    bmCross: {
+        background: "#bdc3c7",
+    },
+    /*
+    Sidebar wrapper styles
+    Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
+    */
+    bmMenuWrap: {
+        position: "fixed",
+        height: "100%",
+    },
+    /* General sidebar styles */
+    bmMenu: {
+        background: "var(--ebony)",
+        padding: "2.5em 1.5em 0",
+        fontSize: "1.15em",
+    },
+    /* Morph shape necessary with bubble or elastic */
+    bmMorphShape: {
+        fill: "#373a47",
+    },
+    /* Wrapper for item list */
+    bmItemList: {
+        color: "#b8b7ad",
+        width: "100%",
+        padding: "0.8em",
+    },
+    /* Individual item */
+    bmItem: {
+        display: "inline-block",
+    },
+    /* Styling of overlay */
+    bmOverlay: {
+        background: "rgba(0, 0, 0, 0.3)",
+    },
+};
 
-    public render() {
-        return (
-            // noOverlay prevents greying out the main parts when triggering the menu
-            <Menu
-                disableAutoFocus
-                noOverlay
-                styles={this.styles()}
-                outerContainerId={this.props.outerContainerId}
-                pageWrapId={this.props.pageWrapId}
-            >
-                <NavbarBrand className="w-100 m-2" tag={Link} to="/">
-                    <img
-                        alt="The Amphora Data logo"
-                        className="img-fluid"
-                        src="/_content/sharedui/images/Amphora_Data_Logo_white.png"
-                    />
-                </NavbarBrand>
-                <Avatar />
-                {this.state.openId}
-                <Nav vertical className="m-2 w-100">
-                    <MenuSection
-                        startOpen={false}
-                        title="My Account"
-                        icon="user-circle"
-                    >
-                        <ClickableMenuItem icon="id-card" to="/profile">
-                            Profile
-                        </ClickableMenuItem>
-                        <ClickableMenuItem icon="credit-card" to="/account">
-                            Account
-                        </ClickableMenuItem>
-                    </MenuSection>
-                    <hr className="bg-white" />
-                    <MenuSection
-                        title="My Amphora"
-                        icon="font"
-                        startOpen={true}
-                    >
-                        <ClickableMenuItem
-                            className="tour-create-button"
-                            to="/create"
-                            icon="plus-circle"
-                        >
-                            Create
-                        </ClickableMenuItem>
-                        <ClickableMenuItem
-                            className="tour-my-amphora-button"
-                            to="/amphora"
-                            icon="cubes"
-                        >
-                            Collection
-                        </ClickableMenuItem>
-                        <ClickableMenuItem
-                            className="tour-search-button"
-                            to="/search"
-                            icon="search"
-                        >
-                            Search
-                        </ClickableMenuItem>
-                        <ClickableMenuItem
-                            className="tour-request-button"
-                            to="/request"
-                            icon="hand-paper"
-                        >
-                            Request
-                        </ClickableMenuItem>
-                    </MenuSection>
+const windowWidthBehaviourThreshold = 1024;
+const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
+    const windowSize = useWindowSize();
+    const location = useLocation();
+    // change the default based on the window sizew
+    React.useEffect(() => {
+        if (
+            windowSize.width &&
+            windowSize.width > windowWidthBehaviourThreshold
+        ) {
+            props.open(menuId);
+        } else {
+            props.close(menuId);
+        }
+    }, [windowSize, location]);
 
-                    <MenuSection
-                        title="Management"
-                        icon="tasks"
-                        startOpen={false}
+    return (
+        // noOverlay prevents greying out the main parts when triggering the menu
+        <Menu
+            disableAutoFocus
+            noOverlay
+            styles={customStyles}
+            outerContainerId={props.outerContainerId}
+            pageWrapId={props.pageWrapId}
+        >
+            <NavbarBrand className="w-100 m-2" tag={Link} to="/">
+                <img
+                    alt="The Amphora Data logo"
+                    className="img-fluid"
+                    src="/_content/sharedui/images/Amphora_Data_Logo_white.png"
+                />
+            </NavbarBrand>
+            <Avatar />
+            <Nav vertical className="m-2 w-100">
+                <MenuSection
+                    startOpen={false}
+                    title="My Account"
+                    icon="user-circle"
+                >
+                    <ClickableMenuItem icon="id-card" to="/profile">
+                        Profile
+                    </ClickableMenuItem>
+                    <ClickableMenuItem icon="credit-card" to="/account">
+                        Account
+                    </ClickableMenuItem>
+                </MenuSection>
+                <hr className="bg-white" />
+                <MenuSection title="My Amphora" icon="font" startOpen={true}>
+                    <ClickableMenuItem
+                        className="tour-create-button"
+                        to="/create"
+                        icon="plus-circle"
                     >
-                        <ClickableMenuItem
-                            to="/applications"
-                            icon="window-restore"
-                        >
-                            Applications
-                        </ClickableMenuItem>
-                        <ClickableMenuItem to="/terms" icon="file-contract">
-                            Terms of Use
-                        </ClickableMenuItem>
-                    </MenuSection>
+                        Create
+                    </ClickableMenuItem>
+                    <ClickableMenuItem
+                        className="tour-my-amphora-button"
+                        to="/amphora"
+                        icon="cubes"
+                    >
+                        Collection
+                    </ClickableMenuItem>
+                    <ClickableMenuItem
+                        className="tour-search-button"
+                        to="/search"
+                        icon="search"
+                    >
+                        Search
+                    </ClickableMenuItem>
+                    <ClickableMenuItem
+                        className="tour-request-button"
+                        to="/request"
+                        icon="hand-paper"
+                    >
+                        Request
+                    </ClickableMenuItem>
+                </MenuSection>
 
-                    <MenuSection
-                        className="tour-tour-button"
-                        title="More"
-                        icon="ellipsis-h"
-                        startOpen={false}
-                    >
-                        <NavItem>
-                            <span
+                <MenuSection title="Management" icon="tasks" startOpen={false}>
+                    <ClickableMenuItem to="/applications" icon="window-restore">
+                        Applications
+                    </ClickableMenuItem>
+                    <ClickableMenuItem to="/terms" icon="file-contract">
+                        Terms of Use
+                    </ClickableMenuItem>
+                </MenuSection>
+
+                <MenuSection
+                    className="tour-tour-button"
+                    title="More"
+                    icon="ellipsis-h"
+                    startOpen={false}
+                >
+                    <NavItem>
+                        <span
+                            style={{
+                                cursor: "pointer",
+                            }}
+                            className="text-light nav-link"
+                            onClick={() => {
+                                localStorage.setItem("tour", "accept");
+                                window.location.reload(false);
+                            }}
+                        >
+                            <FontAwesomeIcon
+                                icon="sign"
                                 style={{
-                                    cursor: "pointer",
+                                    marginRight: "0.5rem",
                                 }}
-                                className="text-light nav-link"
-                                onClick={() => {
-                                    localStorage.setItem("tour", "accept");
-                                    window.location.reload(false);
-                                }}
-                            >
-                                <FontAwesomeIcon
-                                    icon="sign"
-                                    style={{
-                                        marginRight: "0.5rem",
-                                    }}
-                                />
-                                Tour
-                            </span>
-                        </NavItem>
-                        <NavItem>
-                            <a
-                                className="text-light nav-link"
-                                href="https://app.amphoradata.com/challenge"
-                            >
-                                <FontAwesomeIcon
-                                    icon="window-restore"
-                                    style={{ marginRight: "0.5rem" }}
-                                />
-                                Classic View
-                            </a>
-                        </NavItem>
-                        <ClickableMenuItem to="/settings" icon="cog">
-                            Settings
-                        </ClickableMenuItem>
-                    </MenuSection>
-                </Nav>
-            </Menu>
-        );
-    }
-
-    private styles() {
-        return {
-            /* Position and sizing of burger button */
-            bmBurgerButton: {
-                position: "fixed",
-                width: "22px",
-                height: "20px",
-                left: "18px",
-                top: "18px",
-            },
-            /* Color/shape of burger icon bars */
-            bmBurgerBars: {
-                background: "var(--amphora-white)",
-            },
-            /* Color/shape of burger icon bars on hover*/
-            bmBurgerBarsHover: {
-                background: "#a90000",
-            },
-            /* Position and sizing of clickable cross button */
-            bmCrossButton: {
-                height: "24px",
-                width: "24px",
-            },
-            /* Color/shape of close button cross */
-            bmCross: {
-                background: "#bdc3c7",
-            },
-            /*
-            Sidebar wrapper styles
-            Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
-            */
-            bmMenuWrap: {
-                position: "fixed",
-                height: "100%",
-            },
-            /* General sidebar styles */
-            bmMenu: {
-                background: "var(--ebony)",
-                padding: "2.5em 1.5em 0",
-                fontSize: "1.15em",
-            },
-            /* Morph shape necessary with bubble or elastic */
-            bmMorphShape: {
-                fill: "#373a47",
-            },
-            /* Wrapper for item list */
-            bmItemList: {
-                color: "#b8b7ad",
-                width: "100%",
-                padding: "0.8em",
-            },
-            /* Individual item */
-            bmItem: {
-                display: "inline-block",
-            },
-            /* Styling of overlay */
-            bmOverlay: {
-                background: "rgba(0, 0, 0, 0.3)",
-            },
-        };
-    }
-}
+                            />
+                            Tour
+                        </span>
+                    </NavItem>
+                    <NavItem>
+                        <a
+                            className="text-light nav-link"
+                            href="https://app.amphoradata.com/challenge"
+                        >
+                            <FontAwesomeIcon
+                                icon="window-restore"
+                                style={{ marginRight: "0.5rem" }}
+                            />
+                            Classic View
+                        </a>
+                    </NavItem>
+                    <ClickableMenuItem to="/settings" icon="cog">
+                        Settings
+                    </ClickableMenuItem>
+                </MenuSection>
+            </Nav>
+        </Menu>
+    );
+};
 
 function mapStateToProps(state: ApplicationState) {
     return {
