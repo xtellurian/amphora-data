@@ -3,9 +3,10 @@ Hi {{name}},
 Welcome to Amphora Data! Our mission is to help people share knowledge and real-time information.
 
 <div class="image-container">
-![Welcome Image]({{base_url}}/images/stock/celebrate/undraw_welcome_3gvl.svg)
+    <img src="{{base_url}}/_content/sharedui/images/undraw/undraw_welcome_3gvl.svg"
+        alt="Welcoming image of someone in a window"
+        style="margin: auto; width: 66%" />
 </div>
-
 
 Amphora helps you
 
