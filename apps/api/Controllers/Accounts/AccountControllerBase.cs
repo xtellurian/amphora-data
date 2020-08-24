@@ -15,7 +15,7 @@ namespace Amphora.Api.Controllers.Accounts
         }
 
         // returns null if no need to return
-        protected async Task<Microsoft.AspNetCore.Mvc.IActionResult> EnsureIdAsync(string id)
+        protected async Task<Microsoft.AspNetCore.Mvc.IActionResult> EnsureIdAsync(string id = null)
         {
             if (id == null)
             {

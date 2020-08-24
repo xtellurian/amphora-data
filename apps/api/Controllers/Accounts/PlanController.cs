@@ -13,7 +13,6 @@ namespace Amphora.Api.Controllers.Accounts
     [SkipStatusCodePages]
     [OpenApiTag("Organisations")]
     [OpenApiTag("Account")]
-    [Route("api/Organisations/{id}/Account")] // backwards compat
     [Route("api/Account")]
     public class PlanController : AccountControllerBase
     {
@@ -31,15 +30,14 @@ namespace Amphora.Api.Controllers.Accounts
         /// <summary>
         /// Gets an Organisation's plan information.
         /// </summary>
-        /// <param name="id">Organisation Id.</param>
-        /// <returns>An Organisation's plan. </returns>
+        /// <returns>The user's Organisation's plan. </returns>
         [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
         [ProducesBadRequest]
         [HttpGet("Plan")]
         [CommonAuthorize]
-        public async Task<IActionResult> GetPlan(string id)
+        public async Task<IActionResult> GetPlan()
         {
-            var ensureRes = await EnsureIdAsync(id);
+            var ensureRes = await EnsureIdAsync();
             if (ensureRes != null)
             {
                 return ensureRes;
@@ -65,21 +63,20 @@ namespace Amphora.Api.Controllers.Accounts
         /// <summary>
         /// Set's an Organisation's plan.
         /// </summary>
-        /// <param name="id">Organisation Id.</param>
-        /// <param name="planType">The Plan Type.</param>
+        /// <param name="planType">The Plan Type. Should be PAYG or Glaze.</param>
         /// <returns>An Organisation's plan. </returns>
         [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
         [ProducesBadRequest]
         [HttpPost("Plan")]
         [CommonAuthorize]
-        public async Task<IActionResult> SetPlan(string id, string planType)
+        public async Task<IActionResult> SetPlan(string planType)
         {
             if (string.IsNullOrEmpty(planType))
             {
                 return BadRequest("planType cannot be empty");
             }
 
-            var ensureRes = await EnsureIdAsync(id);
+            var ensureRes = await EnsureIdAsync();
             if (ensureRes != null)
             {
                 return ensureRes;
@@ -106,16 +103,12 @@ namespace Amphora.Api.Controllers.Accounts
                 }
                 else
                 {
-                    return BadRequest(res.Message);
+                    return Handle(updateRes);
                 }
-            }
-            else if (res.WasForbidden)
-            {
-                return StatusCode(403, res.Message);
             }
             else
             {
-                return BadRequest(res.Message);
+                return Handle(res);
             }
         }
     }
