@@ -31,7 +31,7 @@ const TermsRow: React.FC<TermsListItemProps> = ({ terms }) => {
             </Col>
             <Col lg={2} className="d-none d-lg-block">
                 <Link to={`/terms/detail/${terms.id}`}>
-                    <SecondaryButton className="w-100 m-4">Edit</SecondaryButton>
+                    <SecondaryButton className="w-100 m-4">View</SecondaryButton>
                 </Link>
             </Col>
             <Col xs={2} className="d-lg-none d-block">
