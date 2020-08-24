@@ -1,5 +1,6 @@
 import * as React from "react";
-import { warning } from "../../molecules/toasts";
+import { success, error } from "../../molecules/toasts";
+import { parseServerError } from "../../../utilities";
 import {
     ModalContents,
     ModalWrapper,
@@ -7,6 +8,9 @@ import {
 } from "../../molecules/modal";
 import { PrimaryButton } from "../../molecules/buttons";
 import { Row, Col } from "reactstrap";
+import { useAmphoraClients } from "react-amphora";
+
+type Plan = "PAYG" | "Glaze";
 
 interface SelectPlanModalState {
     loading: boolean;
@@ -19,26 +23,34 @@ export const SelectPlanModal: React.FC = (props) => {
         loading: false,
     });
 
-    const selectPlan = (plan: any) => {
-        warning(
-            {
-                text: "Plan select is currently unavailable",
-            },
-            {
-                autoClose: 2000,
-            }
-        );
-        setState({
-            loading: false,
-            isOpen: true,
-            error: "Can't select a plan yet.",
-        });
-        // clients.accountApi
-        //     .planGetPlan("")
-        //     .then((r) => {
+    const clients = useAmphoraClients();
 
-        //     })
-        //     .catch((e) => warning({ text: `${e}` }));
+    const selectPlan = (plan: Plan) => {
+        setState({
+            loading: true,
+            isOpen: true,
+        });
+
+        clients.accountApi
+            .planSetPlan2("", plan)
+            .then((r) => {
+                success(
+                    { text: `Plan set to  ${r.data.friendlyName}` },
+                    {
+                        autoClose: 2000,
+                    }
+                );
+                setState({ loading: false, isOpen: false });
+            })
+            .catch((e) => {
+                const text = parseServerError(e);
+                error({ text });
+                setState({
+                    loading: false,
+                    isOpen: true,
+                    error: e,
+                });
+            });
     };
     return (
         <ModalWrapper onCloseRedirectTo="/account/plan" isOpen={state.isOpen}>
@@ -53,12 +65,18 @@ export const SelectPlanModal: React.FC = (props) => {
 
                 <Row className="mt-5 m-auto">
                     <Col sm={3}>
-                        <PrimaryButton className="w-100" onClick={() => selectPlan("PAYG")}>
+                        <PrimaryButton
+                            className="w-100"
+                            onClick={() => selectPlan("PAYG")}
+                        >
                             PAYG Plan
                         </PrimaryButton>
                     </Col>
                     <Col sm={3}>
-                        <PrimaryButton className="w-100" onClick={() => selectPlan("Glaze")}>
+                        <PrimaryButton
+                            className="w-100"
+                            onClick={() => selectPlan("Glaze")}
+                        >
                             Glaze
                         </PrimaryButton>
                     </Col>

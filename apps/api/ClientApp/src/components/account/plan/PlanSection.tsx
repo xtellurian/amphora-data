@@ -10,7 +10,7 @@ interface PlanSectionState {
     information?: PlanInformation;
 }
 
-export const PlanSection: React.FC = (props) => {
+export const PlanSection: React.FC = () => {
     const [state, setState] = React.useState<PlanSectionState>({
         loading: true,
     });
@@ -43,8 +43,6 @@ export const PlanSection: React.FC = (props) => {
     if (state.loading) {
         return <LoadingState />;
     } else if (state.information) {
-        console.log('plan loaded')
-        console.log(state.information)
         return (
             <React.Fragment>
                 <PlanInformationCard plan={state.information} />
