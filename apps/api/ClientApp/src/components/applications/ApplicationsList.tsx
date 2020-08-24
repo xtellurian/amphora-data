@@ -42,10 +42,26 @@ const ApplicationsRow: React.FC<ApplicationRowProps> = ({ application }) => {
                     <SecondaryButton>Edit</SecondaryButton>
                 </Link>
             </Col>
-            <Col xs={4} className="d-lg-none">
+            <Col lg={1} className="d-none d-lg-block text-right">
+                <OverflowMenuButton>
+                    <Link to={`applications/delete?id=${application.id}`}>
+                        <SecondaryButton className="w-100">
+                            Delete
+                        </SecondaryButton>
+                    </Link>
+                </OverflowMenuButton>
+            </Col>
+            <Col xs={4} className="d-lg-none text-right mr-5">
                 <OverflowMenuButton>
                     <Link to={`applications/edit?id=${application.id}`}>
-                        <SecondaryButton className="w-100">Edit</SecondaryButton>
+                        <SecondaryButton className="w-100">
+                            Edit
+                        </SecondaryButton>
+                    </Link>
+                    <Link to={`applications/delete?id=${application.id}`}>
+                        <SecondaryButton className="w-100">
+                            Delete
+                        </SecondaryButton>
                     </Link>
                 </OverflowMenuButton>
             </Col>
