@@ -1,3 +1,4 @@
-import { isLocalhost, getHostUrl } from './host';
+import { isLocalhost, getHostUrl } from "./host";
+import { parseServerError } from "./errors";
 
-export { isLocalhost, getHostUrl }
+export { isLocalhost, getHostUrl, parseServerError };
