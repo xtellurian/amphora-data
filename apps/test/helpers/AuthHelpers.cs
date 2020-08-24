@@ -109,7 +109,7 @@ namespace Amphora.Tests.Helpers
 
         public static async Task SetPlan(this HttpClient client, string orgId, Common.Models.Organisations.Accounts.Plan.PlanTypes planType)
         {
-            var setResult = await client.PostAsJsonAsync($"api/Organisations/{orgId}/Account/Plan?planType={planType}",
+            var setResult = await client.PostAsJsonAsync($"api/Account/Plan?planType={planType}",
                     new object());
             setResult.EnsureSuccessStatusCode();
         }

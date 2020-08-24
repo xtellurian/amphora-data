@@ -5,6 +5,7 @@ using Amphora.Api.Contracts;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Applications;
+using Amphora.Common.Models.Organisations.Accounts;
 using Microsoft.Extensions.Logging;
 
 namespace Amphora.Api.Services.Applications
@@ -43,7 +44,8 @@ namespace Amphora.Api.Services.Applications
                 return new EntityOperationResult<ApplicationModel>(userReadRes.Entity, $"Application Name {model.Name} already exists.");
             }
 
-            if (userReadRes.Entity.Organisation.Account.Plan.PlanType == Common.Models.Organisations.Accounts.Plan.PlanTypes.Institution)
+            if (userReadRes.Entity.Organisation.Account.Plan.PlanType == Plan.PlanTypes.Institution
+            || userReadRes.Entity.Organisation.Account.Plan.PlanType == Plan.PlanTypes.Glaze)
             {
                 // check the org is on institution
                 model.OrganisationId = userReadRes.Entity.OrganisationId;
@@ -53,7 +55,7 @@ namespace Amphora.Api.Services.Applications
             else
             {
                 return new EntityOperationResult<ApplicationModel>(userReadRes.Entity,
-                    "Institution Plan is required to create applications");
+                    "Institution or Glaze plan is required to create applications");
             }
         }
 

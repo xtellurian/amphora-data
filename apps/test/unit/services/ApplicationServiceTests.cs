@@ -69,7 +69,7 @@ namespace Amphora.Tests.Unit.Services
             // act
             var res = await sut.CreateAsync(principal, app);
             res.Succeeded.Should().BeFalse("because we didn't set the properties in the application model");
-            res.Message.Should().Be("Institution Plan is required to create applications");
+            res.Message.Should().Be("Institution or Glaze plan is required to create applications");
         }
 
         [Fact]

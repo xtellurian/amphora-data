@@ -12,7 +12,9 @@ namespace Amphora.Common.Models.Organisations.Accounts
         {
             Free = 0,
             Team = 1,
-            Institution = 2
+            Institution = 2,
+            PAYG = 3,
+            Glaze = 4,
         }
     }
 }

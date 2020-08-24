@@ -148,7 +148,7 @@ namespace Amphora.Tests.Integration
                 // check the plan
                 var planRes = await persona.Http.GetAsync("api/account/plan");
                 var plan = await AssertHttpSuccess<PlanInformation>(planRes);
-                plan.PlanType.Should().Be(Common.Models.Organisations.Accounts.Plan.PlanTypes.Institution);
+                plan.PlanType.Should().Be(Common.Models.Organisations.Accounts.Plan.PlanTypes.Glaze);
             }
         }
     }

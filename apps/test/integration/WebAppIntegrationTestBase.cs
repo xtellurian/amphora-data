@@ -132,14 +132,14 @@ namespace Amphora.Tests.Integration
             }
             else if (email == Personas.Standard)
             {
-                var (c, u, o) = await NewUser(email, Password, httpClient, TeamPlan);
+                var (c, u, o) = await NewUser(email, Password, httpClient, PAYG);
                 personaCache[email] = new Persona(email, c, u, o);
             }
             else if (email == Personas.AmphoraAdmin)
             {
-                // this should have the institution plan
+                // this should have the glaze plan
                 var (c, u, o) = await NewUser(email, Password, httpClient, FreePlan);
-                await c.SetPlan(o.Id, Plan.PlanTypes.Institution);
+                await c.SetPlan(o.Id, Plan.PlanTypes.Glaze);
                 personaCache[email] = new Persona(email, c, u, o);
             }
             else
@@ -150,8 +150,8 @@ namespace Amphora.Tests.Integration
         }
 
         protected Plan.PlanTypes FreePlan => Plan.PlanTypes.Free;
-        protected Plan.PlanTypes TeamPlan => Plan.PlanTypes.Team;
-        protected Plan.PlanTypes InstitutionPlan => Plan.PlanTypes.Institution;
+        protected Plan.PlanTypes PAYG => Plan.PlanTypes.PAYG;
+        protected Plan.PlanTypes Glaze => Plan.PlanTypes.Glaze;
 
         private async Task<(HttpClient client, AmphoraUser user, Organisation org)> GetNewClientInOrg(
             HttpClient currentClient,
