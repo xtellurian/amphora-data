@@ -32,10 +32,11 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
     props
 ) => {
     const redirectToPath = (): string => {
+        const searchParams = new URLSearchParams(props.location.search)
         if (props.location.pathname) {
             const split = props.location.pathname.split("/");
             if (split.length > 1) {
-                return `${split[0]}/${split[1]}`;
+                return `${split[0]}/${split[1]}?${searchParams.toString()}`;
             }
         }
         // default to this:

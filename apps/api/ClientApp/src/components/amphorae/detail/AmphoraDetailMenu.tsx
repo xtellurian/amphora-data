@@ -1,15 +1,17 @@
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { baseLink } from "../ConnectedAmphoraModal";
-import "./detail.css";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { useLocation } from "react-router";
+import "./detail.css";
 
-type DetailMenuProps = { toggleMenu: (isOpen: boolean) => void } & {
+interface DetailMenuProps {
     id: string;
     isOpen: boolean;
     maxPermissionLevel: number;
-} & RouteComponentProps<{}>; // ... plus action creators we've requested
+    toggleMenu: (isOpen: boolean) => void;
+}
 
 const iconBackground: React.CSSProperties = {
     textAlign: "end",
@@ -18,58 +20,62 @@ const iconBackground: React.CSSProperties = {
 const icon: React.CSSProperties = {
     cursor: "pointer",
 };
+const pages: {
+    path: string;
+    name: string;
+    icon: IconProp;
+}[] = [
+    { path: "", name: "Description", icon: "edit" },
+    { path: "files", name: "Files", icon: "paperclip" },
+    { path: "signals", name: "Signals", icon: "chart-line" },
+    { path: "integrate", name: "Integrate", icon: "code" },
+    { path: "terms", name: "Terms", icon: "file-signature" },
+    { path: "location", name: "Location", icon: "map-marker-alt" },
+    { path: "quality", name: "Quality", icon: "award" },
+];
 
-export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
-    private pages: {
-        path: string;
-        name: string;
-        icon: IconProp;
-    }[] = [
-        { path: "", name: "Description", icon: "edit" },
-        { path: "files", name: "Files", icon: "paperclip" },
-        { path: "signals", name: "Signals", icon: "chart-line" },
-        { path: "integrate", name: "Integrate", icon: "code" },
-        { path: "terms", name: "Terms", icon: "file-signature" },
-        { path: "location", name: "Location", icon: "map-marker-alt" },
-        { path: "quality", name: "Quality", icon: "award" },
-    ];
+export const AmphoraDetailMenu: React.FC<DetailMenuProps> = ({
+    id,
+    maxPermissionLevel,
+    isOpen,
+    toggleMenu,
+}) => {
+    const location = useLocation();
 
-    private isEnabled(path: string, maxPermissionLevel: number) {
+    const isEnabled = (path: string, maxPermissionLevel: number) => {
         if (path === "files" || path === "signals") {
             return maxPermissionLevel >= 32; // read contents
         } else {
             return true;
         }
-    }
+    };
 
-    private getLink(path: string) {
-        return `${baseLink(this.props.location.pathname)}/${
-            this.props.id
-        }/${path}`;
-    }
+    const getLink = (path: string) => {
+        return `${baseLink(location.pathname)}/${id}/${path}`;
+    };
 
-    private isPageActive(path: string): boolean {
-        const actual = this.props.location.pathname;
-        const link = this.getLink(path);
+    const isPageActive = (path: string): boolean => {
+        const actual = location.pathname;
+        const link = getLink(path);
         return link === actual;
-    }
+    };
 
-    private renderLinks(): JSX.Element {
+    const renderLinks = () => {
         return (
             <React.Fragment>
-                {this.pages
-                    .filter((p) => this.isEnabled(p.path, this.props.maxPermissionLevel))
+                {pages
+                    .filter((p) => isEnabled(p.path, maxPermissionLevel))
                     .map((p) => (
-                        <Link key={p.path} to={this.getLink(p.path)}>
+                        <Link key={p.path} to={getLink(p.path)}>
                             <div
                                 className={`menu-item txt-sm ${
-                                    this.isPageActive(p.path) ? "active" : ""
+                                    isPageActive(p.path) ? "active" : ""
                                 }`}
                             >
                                 <span className="menu-icon">
                                     <FontAwesomeIcon icon={p.icon} />
                                 </span>
-                                {this.props.isOpen ? (
+                                {isOpen ? (
                                     <span className="menu-item-name">
                                         {p.name}
                                     </span>
@@ -79,9 +85,9 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
                     ))}
             </React.Fragment>
         );
-    }
+    };
 
-    private renderOpen(): JSX.Element {
+    const renderOpen = () => {
         return (
             <div className="modal-menu open">
                 <div style={iconBackground}>
@@ -89,16 +95,16 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
                         style={icon}
                         className="m-2"
                         size="lg"
-                        onClick={() => this.props.toggleMenu(false)}
+                        onClick={() => toggleMenu(false)}
                         icon="chevron-left"
                     />
                 </div>
-                <div className="menu-items">{this.renderLinks()}</div>
+                <div className="menu-items">{renderLinks()}</div>
             </div>
         );
-    }
+    };
 
-    private renderClosed(): JSX.Element {
+    const renderClosed = () => {
         return (
             <div className="modal-menu closed">
                 <div style={iconBackground}>
@@ -106,16 +112,13 @@ export class AmphoraDetailMenu extends React.PureComponent<DetailMenuProps> {
                         style={icon}
                         className="m-2"
                         size="lg"
-                        onClick={() => this.props.toggleMenu(true)}
+                        onClick={() => toggleMenu(true)}
                         icon="chevron-right"
                     />
                 </div>
-                {this.renderLinks()}
+                {renderLinks()}
             </div>
         );
-    }
-
-    public render() {
-        return this.props.isOpen ? this.renderOpen() : this.renderClosed();
-    }
-}
+    };
+    return isOpen ? renderOpen() : renderClosed();
+};

@@ -13,7 +13,6 @@ import { User } from "oidc-client";
 
 import { LoadingState } from "./components/molecules/empty";
 
-import Search from "./components/amphorae/Search";
 import { CreateAmphoraPage } from "./components/amphorae/CreateAmphora";
 import { RequestAmphoraPage } from "./components/amphorae/RequestAmphora";
 import { ApplicationsPage } from "./components/applications/ApplicationsPage";
@@ -29,6 +28,9 @@ import Pallete from "./components/hidden/PalletePage";
 import { DiagnosticPage } from "./components/hidden/DiagnosticPage";
 
 // try lazy loading
+const SearchPage = React.lazy(() =>
+    import("./components/amphorae/search/SearchPage")
+);
 const Amphora = React.lazy(() => import("./components/amphorae/MyAmphoraPage"));
 
 interface AuthenticatedProps {
@@ -46,6 +48,13 @@ const LazyAmphora: React.FC = (props) => {
         </LazyLoader>
     );
 };
+const LazySearch: React.FC = (props) => {
+    return (
+        <LazyLoader>
+            <SearchPage {...props} />
+        </LazyLoader>
+    );
+};
 
 const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
     props
@@ -55,7 +64,7 @@ const AuthenticatedRoutes: React.FunctionComponent<AuthenticatedProps> = (
             <Route exact path="/" component={Home} />
             <Route path="/applications" component={ApplicationsPage} />
 
-            <Route path="/search" component={Search} />
+            <Route path="/search" component={LazySearch} />
             <Route path="/create" component={CreateAmphoraPage} />
             <Route path="/amphora" component={LazyAmphora} />
             <Route path="/terms" component={TermsOfUsePage} />
