@@ -158,7 +158,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
         } else {
             props.close(menuId);
         }
-    }, [windowSize, location]);
+    }, [windowSize, location, props]);
 
     return (
         // noOverlay prevents greying out the main parts when triggering the menu
@@ -193,6 +193,13 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
                 <hr className="bg-white" />
                 <MenuSection title="My Amphora" icon="font" startOpen={true}>
                     <ClickableMenuItem
+                        className="tour-search-button"
+                        to="/search"
+                        icon="search"
+                    >
+                        Search
+                    </ClickableMenuItem>
+                    <ClickableMenuItem
                         className="tour-create-button"
                         to="/create"
                         icon="plus-circle"
@@ -205,13 +212,6 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
                         icon="cubes"
                     >
                         Collection
-                    </ClickableMenuItem>
-                    <ClickableMenuItem
-                        className="tour-search-button"
-                        to="/search"
-                        icon="search"
-                    >
-                        Search
                     </ClickableMenuItem>
                     <ClickableMenuItem
                         className="tour-request-button"

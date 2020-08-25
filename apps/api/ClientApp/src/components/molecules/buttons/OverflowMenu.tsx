@@ -8,10 +8,14 @@ export const OverflowMenuButton: React.FC = ({ children }) => {
     const toggle = () => setDropdownOpen((prevState) => !prevState);
 
     return (
-        <Dropdown className="w-100" isOpen={dropdownOpen} toggle={toggle}>
+        <Dropdown
+            className="m-auto text-right"
+            isOpen={dropdownOpen}
+            toggle={toggle}
+        >
             <DropdownToggle
                 className="cursor-pointer w-100"
-                tag="span"
+                tag="div"
                 data-toggle="dropdown"
                 aria-expanded={dropdownOpen}
             >

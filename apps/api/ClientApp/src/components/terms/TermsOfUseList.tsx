@@ -11,14 +11,14 @@ interface TermsListItemProps {
 
 const TermsRowHeader: React.FC = () => {
     return (
-        <Row className="m-3">
+        <Row className="m-3 align-items-center">
             <Col>
                 <div className="txt-med">Name</div>
             </Col>
-            <Col lg={5} className="d-none d-lg-block">
+            <Col lg={5} xs={5} className="d-md-block d-none">
                 <div className="txt-med">Content</div>
             </Col>
-            <Col xs={4} lg={3}></Col>
+            <Col xs={2} lg={2}></Col>
         </Row>
     );
 };
@@ -59,6 +59,7 @@ export const TermsOfUseList: React.FunctionComponent = (props) => {
 
     return (
         <React.Fragment>
+            <TermsRowHeader />
             {context.results.map((t) => (
                 <TermsRow key={t.id || ""} terms={t} />
             ))}

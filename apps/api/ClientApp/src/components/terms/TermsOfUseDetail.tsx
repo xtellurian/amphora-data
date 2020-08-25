@@ -12,14 +12,18 @@ export const ConnectedTermsOfUseDetail: React.FunctionComponent = () => {
     const params = useParams<{ id: string }>();
     const context = TermsOfUseContext.useTermsState();
     const actions = TermsOfUseContext.useTermsDispatch();
+    const [loaded, setLoaded] = React.useState(false);
     React.useEffect(() => {
-        actions.dispatch({
-            type: "terms:fetch-single",
-            payload: {
-                id: params.id,
-            },
-        });
-    }, []);
+        if (!loaded) {
+            actions.dispatch({
+                type: "terms:fetch-single",
+                payload: {
+                    id: params.id,
+                },
+            });
+            setLoaded(true);
+        }
+    }, [actions, params.id, loaded]);
 
     const terms = context.results.find((t) => t.id === params.id);
     if (terms) {
@@ -45,7 +49,7 @@ export const TermsOfUseDetail: React.FunctionComponent<TermsOfUseDetailProps> = 
     return (
         <React.Fragment>
             <h3>{terms.name}</h3>
-            <hr/>
+            <hr />
             <ReactMarkdown>{terms.contents}</ReactMarkdown>
         </React.Fragment>
     );
