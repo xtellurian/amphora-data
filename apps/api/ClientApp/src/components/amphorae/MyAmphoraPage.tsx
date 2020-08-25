@@ -5,13 +5,15 @@ import { MyAmphoraContext } from "react-amphora";
 import { AmphoraTable } from "../tables/AmphoraTable";
 import { ConnectedAmphoraModal } from "./ConnectedAmphoraModal";
 import { Tabs, activeTab } from "../molecules/tabs";
+import { PaginationComponent } from "../molecules/pagination/Pagination";
 import { Toggle } from "../molecules/toggles/Toggle";
 import { LoadingState } from "../molecules/empty/LoadingState";
 
 type Scope = "self" | "organisation";
 type AccessType = "created" | "purchased";
-
+const perPage = 64;
 interface MyAmphoraPageState {
+    page: number;
     loading: boolean;
     scope: Scope;
     accessType: AccessType;
@@ -23,6 +25,16 @@ const getAccessType = (queryString: string): AccessType => {
     return accessType || "created";
 };
 
+const getPage = (queryString: string): number => {
+    const p = new URLSearchParams(queryString);
+    const parsed = parseInt(p.get("page") || "1");
+    if (isNaN(parsed)) {
+        return 1;
+    } else {
+        return parsed;
+    }
+};
+
 const MyAmphoraPage: React.FC = () => {
     const context = MyAmphoraContext.useMyAmphora();
     const location = useLocation();
@@ -32,15 +44,18 @@ const MyAmphoraPage: React.FC = () => {
         accessType: getAccessType(location.search),
         scope: "self",
         results: context.results,
+        page: getPage(location.search),
     });
 
-    // react to changes in access type
+    // react to changes in query string (page, access type)
     React.useEffect(() => {
         if (context.isAuthenticated) {
             const accessType = getAccessType(location.search);
-            if (state.accessType !== accessType) {
+            const page = getPage(location.search);
+            if (state.accessType !== accessType || state.page !== page) {
                 setState({
                     ...state,
+                    page,
                     accessType,
                 });
             }
@@ -52,10 +67,15 @@ const MyAmphoraPage: React.FC = () => {
         if (context.isAuthenticated) {
             context.dispatch({
                 type: "my-amphora:fetch-list",
-                payload: { accessType: state.accessType, scope: state.scope },
+                payload: {
+                    accessType: state.accessType,
+                    scope: state.scope,
+                    skip: (state.page - 1) * perPage,
+                    take: perPage,
+                },
             });
         }
-    }, [context.isAuthenticated, state.accessType, state.scope]);
+    }, [context.isAuthenticated, state.accessType, state.scope, state.page]);
 
     // react to changes in results
     React.useEffect(() => {
@@ -92,14 +112,28 @@ const MyAmphoraPage: React.FC = () => {
         return <Tabs name="accessType" default="created" tabs={tabs} />;
     };
 
-    const renderList = () => {
-        if (state.loading) {
+    const renderList = (
+        loading: boolean,
+        page: number,
+        results: DetailedAmphora[]
+    ) => {
+        if (loading) {
             return <LoadingState />;
+        }
+        let nPages = page;
+        if (state.results.length === perPage) {
+            nPages = nPages + 1;
         }
         return (
             <div>
                 {renderTabs()}
-                <AmphoraTable amphoras={state.results} />
+                <AmphoraTable amphoras={results} />
+                <PaginationComponent
+                    page={page}
+                    nPages={nPages}
+                    baseTo="/amphora"
+                    className="mt-5"
+                />
             </div>
         );
     };
@@ -121,8 +155,7 @@ const MyAmphoraPage: React.FC = () => {
                 </div>
             </div>
             <hr />
-            {renderList()}
-
+            {renderList(state.loading, state.page, state.results)}
             <Route
                 path="/amphora/detail/:id"
                 component={ConnectedAmphoraModal}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Platform
 {
@@ -37,15 +38,17 @@ namespace Amphora.Api.Models.Dtos.Platform
         }
 
         /// <summary>
-        /// Gets or sets how many files to return.
+        /// Gets or sets how many items to return.
         /// Defaults to 64.
         /// </summary>
+        [Range(1, 256, ErrorMessage = "Only positive numbers allowed, maximum 256")]
         public int? Take { get; set; } = 64;
 
         /// <summary>
-        /// Gets or sets how many files to skip before returning.
+        /// Gets or sets how many items to skip before returning.
         /// Defaults to 0.
         /// </summary>
+        [Range(0, int.MaxValue, ErrorMessage = "Only positive numbers allowed.")]
         public int? Skip { get; set; } = 0;
     }
 }
