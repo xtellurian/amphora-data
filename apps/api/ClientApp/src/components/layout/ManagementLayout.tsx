@@ -13,13 +13,13 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
     return (
         <Row>
-            <Col lg={5}>
+            <Col lg={7} sm={6}>
                 <div className="txt-xxl">
                     {title}
                     {helpText && <InfoIcon content={helpText} />}
                 </div>
             </Col>
-            <Col lg={7} className="text-right">
+            <Col lg={5} sm={6} className="text-right">
                 {children}
             </Col>
         </Row>

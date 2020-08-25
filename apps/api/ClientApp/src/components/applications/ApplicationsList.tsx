@@ -51,7 +51,7 @@ const ApplicationsRow: React.FC<ApplicationRowProps> = ({ application }) => {
                     </Link>
                 </OverflowMenuButton>
             </Col>
-            <Col xs={4} className="d-lg-none text-right mr-5">
+            <Col xs={4} className="d-lg-none text-right pr-5">
                 <OverflowMenuButton>
                     <Link to={`applications/edit?id=${application.id}`}>
                         <SecondaryButton className="w-100">
@@ -76,8 +76,7 @@ export const ApplicationsList: React.FC = () => {
     });
 
     React.useEffect(() => {
-        if (clients.isAuthenticated) {
-            console.log("Loading applications...");
+        if (clients.isAuthenticated ) {
             clients.applicationsApi
                 .applicationsGetApplications()
                 .then((r) => {
@@ -90,11 +89,11 @@ export const ApplicationsList: React.FC = () => {
                     setState({
                         loading: false,
                         error: e,
-                        applications: state.applications,
+                        applications: [],
                     });
                 });
         }
-    }, [clients.isAuthenticated]);
+    }, [clients.isAuthenticated, clients.applicationsApi]);
 
     if (state.loading) {
         return <LoadingState />;
@@ -104,12 +103,12 @@ export const ApplicationsList: React.FC = () => {
         return <EmptyState>No Applications</EmptyState>;
     } else {
         return (
-            <React.Fragment>
+            <div className="pb-5">
                 <ApplicationsRowHeader />
                 {state.applications.map((a, i) => (
                     <ApplicationsRow key={i} application={a} />
                 ))}
-            </React.Fragment>
+            </div>
         );
     }
 };

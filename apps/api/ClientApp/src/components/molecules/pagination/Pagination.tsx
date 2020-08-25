@@ -3,10 +3,8 @@ import {
     Pagination,
     PaginationItem,
     PaginationLink,
-    PaginationLinkProps,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router";
 
 const paramsForPage = (page: number, qs?: string): string => {
     const urlSearchParams = new URLSearchParams(qs);
