@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { createUserManager } from "react-amphora";
+import { isLocalhost } from "./utilities";
 
 const defaults = {
     authority: "https://identity.amphoradata.com",
     clientId: "spa",
-    automaticSilentRenew: true,
+    automaticSilentRenew: !isLocalhost,
     filterProtocolClaims: true,
     loadUserInfo: true,
-    monitorSession: true,
+    monitorSession: !isLocalhost,
 };
 
 const getAuthority = () => {
