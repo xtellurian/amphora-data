@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Amphora.Api.Models.Dtos.Organisations
 {
-    public class Organisation : Entity
+    public class Organisation : Entity, IDto
     {
         [DataType(DataType.Text)]
         [Required]

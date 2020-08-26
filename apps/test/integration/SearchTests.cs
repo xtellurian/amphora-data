@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
+using Amphora.Api.Models.Dtos.Search;
 using Amphora.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Amphora.Tests.Integration
@@ -55,59 +53,15 @@ namespace Amphora.Tests.Integration
             }
         }
 
-        [Theory]
-        [InlineData("api/search/amphorae/byOrganisation")]
-        public async Task SearchAmphorae_ByOrgIdAsUser_ForTeamPlan(string url)
-        {
-            // Arrange
-            var client = await GetPersonaAsync();
-            var otherClient = await GetPersonaAsync(Personas.StandardTwo);
-            var a = Helpers.EntityLibrary.GetAmphoraDto(client.Organisation.Id);
-            var createResponse = await client.Http.PostAsJsonAsync("api/amphorae", a);
-            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            await AssertHttpSuccess(createResponse);
-            a = JsonConvert.DeserializeObject<DetailedAmphora>(createResponseContent);
-
-            // Act
-            var response = await otherClient.Http.GetAsync($"{url}?orgId={client.Organisation.Id}");
-            await AssertHttpSuccess(response);
-            var content = await response.Content.ReadAsStringAsync();
-            var amphorae = JsonConvert.DeserializeObject<List<DetailedAmphora>>(content);
-        }
-
-        [Theory]
-        [InlineData("api/search/amphorae/byLocation")]
-        public async Task SearchAmphorae_ByLocation(string url)
-        {
-            var (client, user, org) = await NewOrgAuthenticatedClientAsync();
-            var rnd = new Random();
-            var lat = rnd.Next(90);
-            var lon = rnd.Next(90);
-            var term = string.Empty;
-            // let's create an amphorae
-            var a = EntityLibrary.GetAmphoraDto(org.Id, nameof(SearchAmphorae_ByLocation));
-            a.Lat = lat;
-            a.Lon = lon;
-            var content = new StringContent(JsonConvert.SerializeObject(a), Encoding.UTF8, "application/json");
-            var createResponse = await client.PostAsync("api/amphorae", content);
-            a = JsonConvert.DeserializeObject<DetailedAmphora>(await createResponse.Content.ReadAsStringAsync());
-            await AssertHttpSuccess(createResponse);
-            var response = await client.GetAsync($"{url}?lat={lat}&lon={lon}&dist=10");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            await AssertHttpSuccess(response);
-
-            var responseList = JsonConvert.DeserializeObject<List<DetailedAmphora>>(responseContent);
-        }
-
         [Fact]
         public async Task SearchAmphora_CanPaginate()
         {
             var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
             await PopulateAmphora(persona);
 
-            var paginateRes = await persona.Http.GetAsync("api/search/amphorae?skip=2&take=3");
-            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
-            results.Should().HaveCount(3, "because we set take to 3");
+            var paginateRes = await persona.Http.GetAsync("api/search-v2/amphorae?skip=2&take=3");
+            var result = await AssertHttpSuccess<SearchResponse<BasicAmphora>>(paginateRes);
+            result.Items.Should().HaveCount(3, "because we set take to 3");
         }
 
         [Fact]
@@ -116,9 +70,9 @@ namespace Amphora.Tests.Integration
             var persona = await GetPersonaAsync(Personas.AmphoraAdmin);
             await PopulateAmphora(persona);
 
-            var paginateRes = await persona.Http.GetAsync($"api/search/amphorae?orgId={persona.Organisation.Id}");
-            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
-            foreach (var r in results)
+            var paginateRes = await persona.Http.GetAsync($"api/search-v2/amphorae?orgId={persona.Organisation.Id}");
+            var result = await AssertHttpSuccess<SearchResponse<BasicAmphora>>(paginateRes);
+            foreach (var r in result.Items)
             {
                 r.OrganisationId.Should().Be(persona.Organisation.Id);
             }
@@ -138,10 +92,10 @@ namespace Amphora.Tests.Integration
             await PopulateAmphora(admin);
             await PopulateAmphora(other);
 
-            var url = $"api/search/amphorae?orgId={admin.Organisation.Id}&labels={labels}";
+            var url = $"api/search-v2/amphorae?orgId={admin.Organisation.Id}&labels={labels}";
             var paginateRes = await other.Http.GetAsync(url);
-            var results = await AssertHttpSuccess<List<BasicAmphora>>(paginateRes);
-            foreach (var amphora in results)
+            var result = await AssertHttpSuccess<SearchResponse<BasicAmphora>>(paginateRes);
+            foreach (var amphora in result.Items)
             {
                 amphora.OrganisationId.Should().Be(admin.Organisation.Id, "because we filtered by orgId");
                 foreach (var l in labelsList)
@@ -158,12 +112,10 @@ namespace Amphora.Tests.Integration
             var (client, user, org) = await NewOrgAuthenticatedClientAsync();
             // now we have an org, it should show up in the search.
 
-            var searchRes = await client.GetAsync($"api/search/organisations?term={org.Name}");
+            var searchRes = await client.GetAsync($"api/search-v2/organisations?term={org.Name}");
             var content = await searchRes.Content.ReadAsStringAsync();
-            await AssertHttpSuccess(searchRes);
-            var orgs = JsonConvert.DeserializeObject<List<Organisation>>(content);
-
-            Assert.NotNull(orgs);
+            var result = await AssertHttpSuccess<SearchResponse<Organisation>>(searchRes);
+            result.Items.Should().NotBeNullOrEmpty();
         }
     }
 }

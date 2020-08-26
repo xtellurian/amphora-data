@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
 using Amphora.Api.Extensions;
+using Amphora.Api.Models.Dtos;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Api.Models.Dtos.Search;
@@ -40,11 +41,80 @@ namespace Amphora.Api.Controllers
         /// <summary>
         /// Searches for Amphorae.
         /// </summary>
+        /// <returns> A search response of Amphora. </returns>
+        [Produces(typeof(SearchResponse<BasicAmphora>))]
+        [ProducesBadRequest]
+        [HttpGet("api/search-v2/amphorae")]
+        [CommonAuthorize]
+        public async Task<IActionResult> SearchAmphora([FromQuery] AmphoraSearchQueryOptions queryParameters)
+        {
+            var parameters = queryParameters.ToSearchParameters();
+            try
+            {
+                var response = await searchService.SearchAsync<AmphoraModel>(queryParameters.Term ?? "", parameters);
+                var dto = mapper.Map<SearchResponse<BasicAmphora>>(response);
+                return Ok(dto);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError("Search API failed", ex);
+                return BadRequest(new Response("The search failed."));
+            }
+        }
+
+        /// <summary>
+        /// Searches for Organisations with fuzzy search.
+        /// </summary>
+        /// <returns> A collection of Organisations. </returns>
+        [Produces(typeof(SearchResponse<Organisation>))]
+        [ProducesBadRequest]
+        [HttpGet("api/search-v2/organisations/")]
+        [CommonAuthorize]
+        public async Task<IActionResult> SearchOrganisations([FromQuery] OrganisationSearchQueryOptions queryParameters)
+        {
+            try
+            {
+                var searchParameters = new SearchParameters();
+                var res = await searchService.SearchAsync<OrganisationModel>(queryParameters.Term, searchParameters);
+                var dto = mapper.Map<SearchResponse<Organisation>>(res);
+                return Ok(dto);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return BadRequest(new Response("A server error occurred"));
+            }
+        }
+
+        // BACKWARDS COMPAT ACTIONS
+
+        /// <summary>
+        /// Searches for Organisations with fuzzy search.
+        /// </summary>
+        /// <param name="term">Search Term.</param>
+        /// <returns> A collection of Organisations. </returns>
+        [OpenApiIgnore]
+        [Produces(typeof(List<Organisation>))]
+        [HttpGet("api/search/organisations/")]
+        [CommonAuthorize]
+        public async Task<IActionResult> SearchOrganisations_Old(string term)
+        {
+            var searchParameters = new SearchParameters();
+            var res = await searchService.SearchAsync<OrganisationModel>(term, searchParameters);
+            var dto = mapper.Map<List<Organisation>>(res.Results.Select(_ => _.Entity));
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// Searches for Amphorae.
+        /// Backwards compatability.
+        /// </summary>
         /// <returns> A collection of Amphora. </returns>
+        [OpenApiIgnore]
         [Produces(typeof(List<BasicAmphora>))]
         [HttpGet("api/search/amphorae")]
         [CommonAuthorize]
-        public async Task<IActionResult> SearchAmphorae([FromQuery] AmphoraSearchQueryOptions queryParameters)
+        public async Task<IActionResult> SearchAmphorae_Old([FromQuery] AmphoraSearchQueryOptions queryParameters)
         {
             var parameters = queryParameters.ToSearchParameters();
             try
@@ -85,22 +155,6 @@ namespace Amphora.Api.Controllers
         public IActionResult SearchAmphoraeByOrganisation(string orgId)
         {
             return Redirect($"api/search/amphorae?orgId={orgId}");
-        }
-
-        /// <summary>
-        /// Searches for Organisations with fuzzy search.
-        /// </summary>
-        /// <param name="term">Search Term.</param>
-        /// <returns> A collection of Organisations. </returns>
-        [Produces(typeof(List<Organisation>))]
-        [HttpGet("api/search/organisations/")]
-        [CommonAuthorize]
-        public async Task<IActionResult> SearchOrganisations(string term)
-        {
-            var searchParameters = new SearchParameters();
-            var res = await searchService.SearchAsync<OrganisationModel>(term, searchParameters);
-            var dto = mapper.Map<List<Organisation>>(res.Results.Select(_ => _.Entity));
-            return Ok(dto);
         }
 
         [HttpPost("api/search/indexers")]

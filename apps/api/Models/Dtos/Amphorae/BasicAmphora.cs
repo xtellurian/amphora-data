@@ -8,7 +8,7 @@ namespace Amphora.Api.Models.Dtos.Amphorae
     /// <summary>
     /// The basic metadata of an Amphora.
     /// </summary>
-    public class BasicAmphora : Entity
+    public class BasicAmphora : Entity, IDto
     {
         /// <summary>
         /// Gets or sets the owner's organisation Id.
