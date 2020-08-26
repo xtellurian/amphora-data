@@ -6,7 +6,6 @@ import { Toggle } from "../molecules/toggles/Toggle";
 import { Tabs, activeTab } from "../molecules/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RouteComponentProps } from "react-router";
-import ConnectedMapComponent from "../geo/ConnectedMapComponent";
 
 interface TabState {
     created?: boolean;
@@ -93,9 +92,6 @@ export default class Pallete extends React.PureComponent<
                     onComplete={(v) => alert("Input completed: " + v)}
                     validator={(v) => this.validateText(v)}
                 />
-                <hr />
-                <h2>MAPS</h2>
-                <ConnectedMapComponent amphora={[]} />
             </React.Fragment>
         );
     }

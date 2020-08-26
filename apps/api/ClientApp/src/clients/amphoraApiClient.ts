@@ -1,6 +1,5 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const axiosClient = axios;
 function setDates(e: any | undefined) {
     if (e && e.createdDate) {
         e.createdDate = new Date(e.createdDate);
@@ -10,9 +9,9 @@ function setDates(e: any | undefined) {
 
 axios.interceptors.response.use((response) => {
     if (Array.isArray(response.data)) {
-        response.data = response.data.map((a) => setDates(a))
+        response.data = response.data.map((a) => setDates(a));
     } else {
-        response.data = setDates(response.data)
+        response.data = setDates(response.data);
     }
     return response;
-})
+});
