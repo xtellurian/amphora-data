@@ -1,17 +1,17 @@
 import * as React from "react";
 import { AxiosInstance } from "axios";
 import Modal, { Styles } from "react-modal";
-import { Link } from "react-router-dom";
 import * as axios from "axios";
 import { useAmphoraClients } from "react-amphora";
+import { UploadResponse, DetailedAmphora } from "amphoradata";
+import fileDownload from "js-file-download";
 import { OneAmphora } from "./props";
 import { EmptyState } from "../../molecules/empty/EmptyState";
-import { success, error } from "../../molecules/toasts";
+import { success, error, info } from "../../molecules/toasts";
 import { PrimaryButton } from "../../molecules/buttons";
 import { LoadingState } from "../../molecules/empty/LoadingState";
 import { Table } from "../../molecules/tables/Table";
 import { Header } from "./Header";
-import { UploadResponse, DetailedAmphora } from "amphoradata";
 
 interface FilesState {
     isLoading: boolean;
@@ -26,6 +26,7 @@ const modalStyle: Styles = {
     },
     content: {
         minWidth: "20rem",
+        minHeight: "7rem",
         top: "50%",
         left: "50%",
         right: "auto",
@@ -182,8 +183,37 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
             downloadFileName: null,
         });
     };
-    const downloadPath = `/api/amphorae/${props.amphora.id}/files/${state.downloadFileName}`;
-    console.log(state);
+    // const downloadPath = `/api/amphorae/${props.amphora.id}/files/${state.downloadFileName}`;
+    const onDownloadConfim = (
+        amphoraId?: string | null,
+        filename?: string | null
+    ) => {
+        if (!amphoraId || !filename) {
+            error(
+                { text: "The amphora file was not recognised" },
+                { autoClose: 1000 }
+            );
+            return;
+        }
+        clients.amphoraeApi
+            .amphoraeFilesDownloadFile(amphoraId, filename, {
+                responseType: "blob",
+            })
+            .then((r) => {
+                info(
+                    { text: `Downloading ${state.downloadFileName}...` },
+                    { autoClose: 1000 }
+                );
+                fileDownload(r.data, filename);
+                closeModal();
+            })
+            .catch(() =>
+                error(
+                    { text: "Ooops! The file could not be downloaded." },
+                    { autoClose: 1000 }
+                )
+            );
+    };
     return (
         <React.Fragment>
             <Modal
@@ -196,14 +226,18 @@ export const FilesPage: React.FunctionComponent<OneAmphora> = (props) => {
                 contentLabel="Example Modal"
             >
                 <div className="text-center">
-                    <Link target="_blank" to={downloadPath}>
-                        <PrimaryButton
-                            className="w-75"
-                            onClick={() => setTimeout(closeModal, 250)}
-                        >
-                            {`Download ${state.downloadFileName}`}
-                        </PrimaryButton>
-                    </Link>
+                    <p>{state.downloadFileName}</p>
+                    <PrimaryButton
+                        className="w-75"
+                        onClick={() =>
+                            onDownloadConfim(
+                                props.amphora.id,
+                                state.downloadFileName
+                            )
+                        }
+                    >
+                        Download
+                    </PrimaryButton>
                 </div>
             </Modal>
 
