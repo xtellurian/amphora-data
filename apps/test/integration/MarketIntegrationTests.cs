@@ -44,7 +44,6 @@ namespace Amphora.Tests.Integration
                 indexRes = await client.Http.PostAsJsonAsync("api/search/indexers", new object());
             }
 
-            await AssertHttpSuccess(indexRes);
             // how do we get this to index first?
             var top = 2;
             var k = 0;
