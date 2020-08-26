@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api;
+using Amphora.Api.Models.Dtos.Accounts;
 using Amphora.Api.Models.Dtos.Organisations;
 using Amphora.Common.Models.Dtos.Users;
 using Amphora.Common.Models.Platform;

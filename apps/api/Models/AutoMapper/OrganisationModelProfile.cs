@@ -26,7 +26,7 @@ namespace Amphora.Api.Models.AutoMapper
             .ForMember(p => p.CreatedDate, o => o.Ignore())
             .ReverseMap();
 
-            CreateMap<Common.Models.Organisations.Accounts.Account, Dtos.Organisations.Account>();
+            CreateMap<Common.Models.Organisations.Accounts.Account, Dtos.Accounts.AccountInformation>();
         }
     }
 }

@@ -1,8 +1,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.AccessControls;
+using Amphora.Api.Models.Dtos.Accounts;
 using Amphora.Api.Models.Dtos.Amphorae;
-using Amphora.Api.Models.Dtos.Organisations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
@@ -31,7 +31,7 @@ namespace Amphora.Tests.Integration
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             var accountContent = await accountResponse.Content.ReadAsStringAsync();
             await AssertHttpSuccess(accountResponse);
-            var account1 = JsonConvert.DeserializeObject<Account>(accountContent);
+            var account1 = JsonConvert.DeserializeObject<AccountInformation>(accountContent);
             Assert.NotNull(account1);
 
             var purchaseRes = await client.PostAsJsonAsync($"api/Amphorae/{dto.Id}/Purchases", new { });
@@ -41,7 +41,7 @@ namespace Amphora.Tests.Integration
             accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             accountContent = await accountResponse.Content.ReadAsStringAsync();
             await AssertHttpSuccess(accountResponse);
-            var account2 = JsonConvert.DeserializeObject<Account>(accountContent);
+            var account2 = JsonConvert.DeserializeObject<AccountInformation>(accountContent);
             // get balance is deducted
             Assert.Equal(account1.Balance - dto.Price, account2.Balance);
 
@@ -94,7 +94,7 @@ namespace Amphora.Tests.Integration
             var accountResponse = await client.GetAsync($"api/Organisations/{org.Id}/Account");
             var accountContent = await accountResponse.Content.ReadAsStringAsync();
             await AssertHttpSuccess(accountResponse);
-            var account1 = JsonConvert.DeserializeObject<Account>(accountContent);
+            var account1 = JsonConvert.DeserializeObject<AccountInformation>(accountContent);
             Assert.NotNull(account1);
 
             // retrict this org

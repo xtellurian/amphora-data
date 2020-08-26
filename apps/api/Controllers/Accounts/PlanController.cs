@@ -31,7 +31,7 @@ namespace Amphora.Api.Controllers.Accounts
         /// Gets an Organisation's plan information.
         /// </summary>
         /// <returns>The user's Organisation's plan. </returns>
-        [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
+        [Produces(typeof(Models.Dtos.Accounts.PlanInformation))]
         [ProducesBadRequest]
         [HttpGet("Plan")]
         [CommonAuthorize]
@@ -47,7 +47,7 @@ namespace Amphora.Api.Controllers.Accounts
             if (res.Succeeded)
             {
                 var p = res.Entity.Account.Plan.PlanType ?? Plan.PlanTypes.Free;
-                var dto = new Models.Dtos.Organisations.PlanInformation()
+                var dto = new Models.Dtos.Accounts.PlanInformation()
                 {
                     PlanType = p,
                     FriendlyName = p.ToString()
@@ -65,7 +65,7 @@ namespace Amphora.Api.Controllers.Accounts
         /// </summary>
         /// <param name="planType">The Plan Type. Should be PAYG or Glaze.</param>
         /// <returns>An Organisation's plan. </returns>
-        [Produces(typeof(Models.Dtos.Organisations.PlanInformation))]
+        [Produces(typeof(Models.Dtos.Accounts.PlanInformation))]
         [ProducesBadRequest]
         [HttpPost("Plan")]
         [CommonAuthorize]
@@ -94,7 +94,7 @@ namespace Amphora.Api.Controllers.Accounts
                 var updateRes = await organisationService.UpdateAsync(User, org);
                 if (updateRes.Succeeded)
                 {
-                    var dto = new Models.Dtos.Organisations.PlanInformation()
+                    var dto = new Models.Dtos.Accounts.PlanInformation()
                     {
                         PlanType = plan,
                         FriendlyName = planType.ToString()

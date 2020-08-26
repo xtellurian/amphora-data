@@ -1,4 +1,4 @@
-namespace Amphora.Api.Models.Dtos.Organisations
+namespace Amphora.Api.Models.Dtos.Accounts
 {
     public class PlanInformation
     {

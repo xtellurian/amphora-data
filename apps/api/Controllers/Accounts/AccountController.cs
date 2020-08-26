@@ -34,7 +34,7 @@ namespace Amphora.Api.Controllers.Accounts
         /// </summary>
         /// <param name="id">Organisation Id.</param>
         /// <returns>An Organisation's account metadata. </returns>
-        [Produces(typeof(Models.Dtos.Organisations.Account))]
+        [Produces(typeof(Models.Dtos.Accounts.AccountInformation))]
         [ProducesBadRequest]
         [CommonAuthorize]
         [HttpGet]
@@ -49,7 +49,7 @@ namespace Amphora.Api.Controllers.Accounts
             var res = await organisationService.ReadAsync(User, OrganisationId);
             if (res.Succeeded)
             {
-                var dto = mapper.Map<Models.Dtos.Organisations.Account>(res.Entity.Account ?? new Account());
+                var dto = mapper.Map<Models.Dtos.Accounts.AccountInformation>(res.Entity.Account ?? new Account());
                 return Ok(dto);
             }
             else
