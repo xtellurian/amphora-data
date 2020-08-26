@@ -21,8 +21,23 @@ class Error extends ToastBase {
 }
 
 export const error: ToastTrigger = (content, options) => {
-    toast(<Error content={content}></Error>, {
-        ...options,
-        className: "toast-error",
-    });
+    if (!options) {
+        options = {
+            autoClose: 1000,
+        };
+    }
+    if (typeof content === "string") {
+        const newContent = {
+            text: content,
+        };
+        toast(<Error content={newContent}></Error>, {
+            ...options,
+            className: "toast-error",
+        });
+    } else {
+        toast(<Error content={content}></Error>, {
+            ...options,
+            className: "toast-error",
+        });
+    }
 };

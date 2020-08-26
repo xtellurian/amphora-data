@@ -21,8 +21,21 @@ export class Success extends ToastBase {
 }
 
 export const success: ToastTrigger = (content, options?) => {
-    toast(<Success content={content}></Success>, {
-        ...options,
-        className: "toast-success",
-    });
+    if (!options) {
+        options = {
+            autoClose: 1000,
+        };
+    }
+    if (typeof content === "string") {
+        const newContent = { text: content };
+        toast(<Success content={newContent}></Success>, {
+            ...options,
+            className: "toast-success",
+        });
+    } else {
+        toast(<Success content={content}></Success>, {
+            ...options,
+            className: "toast-success",
+        });
+    }
 };

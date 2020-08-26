@@ -5,4 +5,4 @@ export interface ToastContent {
     path?: string;
 }
 
-export type ToastTrigger = (content: ToastContent, options?: ToastOptions) => void
+export type ToastTrigger = (content: ToastContent | string, options?: ToastOptions) => void

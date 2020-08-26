@@ -20,8 +20,23 @@ class Info extends ToastBase {
 }
 
 export const info: ToastTrigger = (content, options) => {
-    toast(<Info content={content}></Info>, {
-        ...options,
-        className: "toast-info",
-    });
+    if (!options) {
+        options = {
+            autoClose: 1000,
+        };
+    }
+    if (typeof content === "string") {
+        const newContent = {
+            text: content,
+        };
+        toast(<Info content={newContent}></Info>, {
+            ...options,
+            className: "toast-info",
+        });
+    } else {
+        toast(<Info content={content}></Info>, {
+            ...options,
+            className: "toast-info",
+        });
+    }
 };

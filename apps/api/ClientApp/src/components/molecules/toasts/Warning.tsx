@@ -20,8 +20,23 @@ class Warning extends ToastBase {
 }
 
 export const warning: ToastTrigger = (content, options) => {
-    toast(<Warning content={content}></Warning>, {
-        ...options,
-        className: "toast-warning",
-    });
+    if (!options) {
+        options = {
+            autoClose: 1000,
+        };
+    }
+    if (typeof content === "string") {
+        const newContent = {
+            text: content,
+        };
+        toast(<Warning content={newContent}></Warning>, {
+            ...options,
+            className: "toast-warning",
+        });
+    } else {
+        toast(<Warning content={content}></Warning>, {
+            ...options,
+            className: "toast-warning",
+        });
+    }
 };
