@@ -104,9 +104,9 @@ namespace Amphora.Api.Controllers.Accounts
         /// <param name="format">Only csv is supported.</param>
         /// <returns>The invoice in the format specified.</returns>
         [HttpGet("{id}/download")]
-        [CommonAuthorize]
-        [Produces(typeof(CollectionResponse<Invoice>))]
+        [ProducesResponseType(typeof(FileResult), 200)]
         [ProducesBadRequest]
+        [CommonAuthorize]
         public async Task<IActionResult> DownloadInvoice(string id, string format)
         {
             if (!string.Equals(format?.ToLower(), "csv"))
@@ -123,7 +123,7 @@ namespace Amphora.Api.Controllers.Accounts
                     var invoice = org.Account.Invoices.FirstOrDefault(i => i.Id == id);
                     if (invoice == null)
                     {
-                        return BadRequest($"Invoice({id}) not found");
+                        return BadRequest(new Response($"Invoice({id}) not found"));
                     }
 
                     var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(invoice);
