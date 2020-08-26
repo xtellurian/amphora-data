@@ -8,7 +8,6 @@ namespace Amphora.Api.Controllers
 {
     [Route("api/maps")]
     [OpenApiIgnore]
-    [CommonAuthorize]
     public class AzureMapsController : ControllerBase
     {
         private readonly IMapService mapService;
@@ -19,6 +18,7 @@ namespace Amphora.Api.Controllers
         }
 
         [HttpGet("key")]
+        [CommonAuthorize]
         public async Task<IActionResult> GetToken()
         {
             var token = await mapService.GetSubscriptionKeyAsync();
