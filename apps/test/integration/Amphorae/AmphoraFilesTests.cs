@@ -155,7 +155,8 @@ namespace Amphora.Tests.Integration.Amphorae
             var testMetadata = new Dictionary<string, string>()
             {
                 { "abc", Guid.NewGuid().ToString() },
-                { "def", Guid.NewGuid().ToString() }
+                { "def", Guid.NewGuid().ToString() },
+                {"content-type", "application/octet-stream"} // ensure we can set content type
             };
             var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/attributes", testMetadata);
             await AssertHttpSuccess(createMetaRes);
