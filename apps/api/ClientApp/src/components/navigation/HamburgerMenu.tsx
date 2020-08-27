@@ -259,7 +259,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
                     </NavItem>
                     <NavItem>
                         <a
-                            className="text-light nav-link"
+                            className="text-light nav-link text-nowrap"
                             href="https://app.amphoradata.com/challenge"
                         >
                             <FontAwesomeIcon
