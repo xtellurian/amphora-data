@@ -92,7 +92,7 @@ export const SearchSection: React.FC = (props) => {
                 },
             });
         }
-    }, [context.isAuthenticated, state.term]);
+    }, [context.isAuthenticated, state.term, state.page]);
 
     // react to changes in results
     React.useEffect(() => {
