@@ -12,7 +12,7 @@ import configureStore from "./redux/configureStore";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import { getHostUrl } from "./utilities";
-import { toastOnActionResult } from "./utilities/toasts";
+import { toastOnActionResult, toastOnAction } from "./utilities/toasts";
 import Modal from "react-modal";
 import { Settings } from "./redux/state/Settings";
 // Create browser history to use in the Redux store
@@ -30,6 +30,9 @@ render(
             <AmphoraProvider
                 userManager={userManager}
                 configuration={new Configuration({ basePath: host })}
+                onAction={(a) =>
+                    toastOnAction(a, store.getState().settings as Settings)
+                }
                 onActionResult={(r) =>
                     toastOnActionResult(
                         r,

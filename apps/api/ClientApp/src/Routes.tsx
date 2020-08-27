@@ -1,11 +1,14 @@
 import React, { Suspense } from "react";
 import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
-import { useLocation } from "react-router";
+import { useLocation, useHistory } from "react-router";
 import { CallbackPage, IdentityContext } from "react-amphora";
 
 import userManager from "./userManager";
 import { Challenge } from "./components/auth/Challenge";
 import { AccountPage } from "./components/account/AccountPage";
+
+// toasts
+import { toastOnSignIn, toastOnSignInError } from "./utilities/toasts";
 
 import withTour from "./components/tour/withTour";
 import { Home } from "./components/Home";
@@ -107,14 +110,26 @@ const AnonymousRoutes = () => (
 export const Routes: React.FC<RouteProps> = (props) => {
     const location = useLocation();
     const idState = IdentityContext.useIdentityState();
-
+    const history = useHistory();
     // if location is callback page, return only CallbackPage route to allow signin process
     // IdentityServer 'bug' with hash history: if callback page contains a '#' params are appended with no delimiter
     // eg. /callbacktoken_id=...
     if (location.hash.substring(0, 10) === "#/callback") {
         const rest = location.hash.substring(10);
         return (
-            <CallbackPage signInParams={`${rest}`} userManager={userManager} />
+            <CallbackPage
+                onSignIn={(u) => {
+                    toastOnSignIn(u);
+                    history.replace("/");
+                }}
+                onSignInError={(e) => {
+                    toastOnSignInError(e);
+                }}
+                signInParams={`${rest}`}
+                userManager={userManager}
+            >
+                <LoadingState>Just getting things ready...</LoadingState>
+            </CallbackPage>
         );
     }
 
