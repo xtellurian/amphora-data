@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amphora.Api.Models.Dtos.Amphorae;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
+using Amphora.Common.Models.Amphorae;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -156,7 +157,7 @@ namespace Amphora.Tests.Integration.Amphorae
             {
                 { "abc", Guid.NewGuid().ToString() },
                 { "def", Guid.NewGuid().ToString() },
-                {"content-type", "application/octet-stream"} // ensure we can set content type
+                {SpecialFileAttributes.ContentType.ToLower(), "application/octet-stream"} // ensure we can set content type
             };
             var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/attributes", testMetadata);
             await AssertHttpSuccess(createMetaRes);

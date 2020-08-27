@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
 using Amphora.Api.Models.Dtos.Amphorae.Files;
 using Amphora.Common.Contracts;
+using Amphora.Common.Extensions;
 using Amphora.Common.Models;
 using Amphora.Common.Models.Amphorae;
 using Amphora.Common.Models.Logging;
@@ -22,7 +22,15 @@ namespace Amphora.Api.Services.Amphorae
 
         private readonly ILogger<AmphoraFileService> logger;
         private readonly IPlanLimitService planLimitService;
-        private Regex attributeRegex = new Regex("^[A-Za-z-]*$");
+
+        private bool IsValidAttributeName(string attributeName)
+        {
+            if (attributeName == null)
+            {
+                return false;
+            }
+            return attributeName.IsValidIdentifier();
+        }
 
         public AmphoraFileService(
             ILogger<AmphoraFileService> logger,
@@ -202,9 +210,9 @@ namespace Amphora.Api.Services.Amphorae
                 return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Message);
             }
 
-            if (attributes.Keys.Any(_ => !attributeRegex.IsMatch(_)))
+            if (attributes.Keys.Any(k => !IsValidAttributeName(k)))
             {
-                return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Entity, "Attribute keys must be valid HTTP headers");
+                return new EntityOperationResult<WriteAttributesResponse>(userReadRes.Entity, "Attribute keys must be valid HTTP headers and valid C# identifiers");
             }
 
             using (logger.BeginScope(new LoggerScope<AmphoraFileService>(principal)))
