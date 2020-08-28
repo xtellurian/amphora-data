@@ -157,7 +157,7 @@ namespace Amphora.Tests.Integration.Amphorae
             {
                 { "abc", Guid.NewGuid().ToString() },
                 { "def", Guid.NewGuid().ToString() },
-                {SpecialFileAttributes.ContentType.ToLower(), "application/octet-stream"} // ensure we can set content type
+                { SpecialFileAttributes.ContentType.ToLower(), "application/octet-stream" } // ensure we can set content type
             };
             var createMetaRes = await adminClient.PostAsJsonAsync($"{url}/{amphora.Id}/files/{file}/attributes", testMetadata);
             await AssertHttpSuccess(createMetaRes);

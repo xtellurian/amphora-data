@@ -114,7 +114,7 @@ namespace Amphora.Api.StartupModules
                 options.AddPolicy(GlobalAdminRequirement.GlobalAdminPolicyName, policy =>
                     policy.Requirements.Add(new GlobalAdminRequirement()));
                 // configure that the require purchase policy needs the purchase claim
-                options.AddPolicy(Policies.RequirePurchaseClaim, p => p.RequireClaim(Claims.Purchase));
+                options.AddPolicy(Policies.RequirePurchaseClaim, p => p.RequireClaim("scope", Claims.Purchase));
             });
 
             services.AddScoped<IAuthenticateService, IdentityServerService>();

@@ -9311,10 +9311,10 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-amphora@^1.7.1-7:
-  version "1.7.1-7"
-  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.7.1-7.tgz#02eb2daf7be23bae1fd56f8280590f8ac6266944"
-  integrity sha512-EX1SbN3UDmNV8S8Bp+BzdAKk1BTxvf6wQwp6dNZTnSYVzxEGeQH3PeQ/EdkVr0J6mCwBvwv/4pV/3GuPGQdtig==
+react-amphora@^1.8.1-1:
+  version "1.8.1-1"
+  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.8.1-1.tgz#d9ed7ec7b4c551f1009b08b3e3647da8064a4ab4"
+  integrity sha512-pGX112+SGZLr5IX5xUofP0zSy4DrixUiDcgtxCjudA+38TCfyEoM0mV7AtZESwkYAbWJrExlHTc5ezjhN4YFtA==
   dependencies:
     amphoradata "^0.10.18"
     oidc-client "^1.10.1"
