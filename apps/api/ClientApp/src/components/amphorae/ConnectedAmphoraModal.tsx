@@ -73,7 +73,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
     if (context.isLoading) {
         return (
             <ModalWrapper isOpen={true} onCloseRedirectTo={redirectToPath()}>
-                <LoadingState />;
+                <LoadingState />
             </ModalWrapper>
         );
     } else if (context.current) {
