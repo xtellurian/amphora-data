@@ -157,7 +157,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
         } else {
             props.close(menuId);
         }
-    }, [windowSize, location, props]);
+    }, [windowSize, location, props.close, props.open]);
 
     return (
         // noOverlay prevents greying out the main parts when triggering the menu
