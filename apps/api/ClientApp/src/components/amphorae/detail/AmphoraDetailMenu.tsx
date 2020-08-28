@@ -1,9 +1,13 @@
 import * as React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { baseLink } from "../ConnectedAmphoraModal";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useLocation } from "react-router";
+import {
+    useWindowSize,
+    windowWidthBreakpoint,
+} from "../../../utilities/useWindowSize";
+import { baseLink } from "../ConnectedAmphoraModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./detail.css";
 
 interface DetailMenuProps {
@@ -41,6 +45,15 @@ export const AmphoraDetailMenu: React.FC<DetailMenuProps> = ({
     toggleMenu,
 }) => {
     const location = useLocation();
+    const windowSize = useWindowSize();
+
+    React.useEffect(() => {
+        if (windowSize.width && windowSize.width > windowWidthBreakpoint) {
+            toggleMenu(true);
+        } else {
+            toggleMenu(false);
+        }
+    }, [windowSize, location]);
 
     const isEnabled = (path: string, maxPermissionLevel: number) => {
         if (path === "files" || path === "signals") {

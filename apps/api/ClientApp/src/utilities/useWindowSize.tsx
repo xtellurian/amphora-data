@@ -5,6 +5,7 @@ interface WindowSizeState {
     width: number | undefined;
     height: number | undefined;
 }
+export const windowWidthBreakpoint = 1024;
 export function useWindowSize() {
     // Initialize state with undefined width/height so server and client renders match
 

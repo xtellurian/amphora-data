@@ -11,7 +11,7 @@ import {
     CardBody,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { useWindowSize } from "../../utilities/useWindowSize";
+import { useWindowSize, windowWidthBreakpoint } from "../../utilities/useWindowSize";
 import { BurgerMenuState } from "../../redux/state/plugins/burgerMenu";
 import { ApplicationState } from "../../redux/state";
 import { actionCreators } from "../../redux/actions/plugins/burgerMenu";
@@ -144,7 +144,6 @@ const customStyles = {
     },
 };
 
-const windowWidthBehaviourThreshold = 1024;
 const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
     const windowSize = useWindowSize();
     const location = useLocation();
@@ -152,7 +151,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = (props) => {
     React.useEffect(() => {
         if (
             windowSize.width &&
-            windowSize.width > windowWidthBehaviourThreshold
+            windowSize.width > windowWidthBreakpoint
         ) {
             props.open(menuId);
         } else {
