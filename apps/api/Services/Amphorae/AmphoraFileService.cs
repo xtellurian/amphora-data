@@ -29,6 +29,7 @@ namespace Amphora.Api.Services.Amphorae
             {
                 return false;
             }
+
             return attributeName.IsValidIdentifier();
         }
 

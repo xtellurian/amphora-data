@@ -2,30 +2,27 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-
 namespace Amphora.Common.Extensions
 {
-
     public static class IdentifierExtensions
     {
         // definition of a valid C# identifier: http://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx
-        private const string FORMATTING_CHARACTER = @"\p{Cf}";
-        private const string CONNECTING_CHARACTER = @"\p{Pc}";
-        private const string DECIMAL_DIGIT_CHARACTER = @"\p{Nd}";
-        private const string COMBINING_CHARACTER = @"\p{Mn}|\p{Mc}";
-        private const string LETTER_CHARACTER = @"\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}";
+        private const string FORMATTING = @"\p{Cf}";
+        private const string CONNECTING = @"\p{Pc}";
+        private const string DECIMAL = @"\p{Nd}";
+        private const string COMBINING = @"\p{Mn}|\p{Mc}";
+        private const string LETTER = @"\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}";
 
-        private const string IDENTIFIER_PART_CHARACTER = LETTER_CHARACTER + "|" +
-                                                         DECIMAL_DIGIT_CHARACTER + "|" +
-                                                         CONNECTING_CHARACTER + "|" +
-                                                         COMBINING_CHARACTER + "|" +
-                                                         FORMATTING_CHARACTER;
+        private const string PART = LETTER + "|" +
+                                                         DECIMAL + "|" +
+                                                         CONNECTING + "|" +
+                                                         COMBINING + "|" +
+                                                         FORMATTING;
 
-        private const string IDENTIFIER_PART_CHARACTERS = "(" + IDENTIFIER_PART_CHARACTER + ")+";
-        private const string IDENTIFIER_START_CHARACTER = "(" + LETTER_CHARACTER + "|_)";
+        private const string PARTS = "(" + PART + ")+";
+        private const string START = "(" + LETTER + "|_)";
 
-        private const string IDENTIFIER_OR_KEYWORD = IDENTIFIER_START_CHARACTER + "(" +
-                                                     IDENTIFIER_PART_CHARACTERS + ")*";
+        private const string ALL = START + "(" + PARTS + ")*";
 
         // C# keywords: http://msdn.microsoft.com/en-us/library/x53a06bb(v=vs.71).aspx
         private static readonly string[] _keywords = new[]
@@ -50,13 +47,16 @@ namespace Amphora.Common.Extensions
         "double",    "lock",       "stackalloc",
         "else",      "long",       "static",
         "enum",      "namespace",  "string"
-    };
+        };
 
-        private static readonly Regex _validIdentifierRegex = new Regex("^" + IDENTIFIER_OR_KEYWORD + "$", RegexOptions.Compiled);
+        private static readonly Regex _validIdentifierRegex = new Regex("^" + ALL + "$", RegexOptions.Compiled);
 
         public static bool IsValidIdentifier(this string identifier)
         {
-            if (String.IsNullOrWhiteSpace(identifier)) return false;
+            if (string.IsNullOrWhiteSpace(identifier))
+            {
+                return false;
+            }
 
             var normalizedIdentifier = identifier.Normalize();
 
