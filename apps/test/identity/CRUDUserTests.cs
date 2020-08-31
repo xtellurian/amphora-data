@@ -64,7 +64,7 @@ namespace Amphora.Tests.Identity.Integration
                     Password = password,
                     Claims = new List<LoginClaim>
                     {
-                        new LoginClaim(Claims.Purchase, "")
+                        new LoginClaim("scope", Claims.Purchase)
                     }
                 });
 

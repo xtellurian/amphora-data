@@ -43,7 +43,7 @@ namespace Amphora.Tests.Helpers
             {
                 Password = password,
                 Username = user.UserName,
-                Claims = new List<LoginClaim> { new LoginClaim(Claims.Purchase, "") }
+                Claims = new List<LoginClaim> { new LoginClaim("scope", Claims.Purchase) }
             };
             if (await client.GetTokenAsync(loginRequest))
             {

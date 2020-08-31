@@ -95,7 +95,7 @@ namespace Amphora.Tests.Integration
             // add the purchase claim if the persona is allowed to purchase
             if (Personas.CanPurchase(name))
             {
-                loginRequest.Claims.Add(new LoginClaim(Claims.Purchase, ""));
+                loginRequest.Claims.Add(new LoginClaim("scope", Claims.Purchase));
             }
 
             if (await httpClient.GetTokenAsync(loginRequest))
