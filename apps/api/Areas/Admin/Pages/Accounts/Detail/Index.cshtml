@@ -25,13 +25,13 @@
                 <div class="col">
                     <a class="btn btn-primary float-right mb-2" asp-page="./Invoice" asp-route-id="@Model.Org.Id">Generate</a>
                     <h5>Invoices</h5>
-                    @if(Model.Org?.Account?.Invoices?.Count == 0)
+                    @if(Model.Org?.Account?.Invoices()?.Count == 0)
                     {
                         <p>No Invoices Yet</p>
                     }
                     else
                     {
-                        @foreach(var i in Model.Org.Account.Invoices)
+                        @foreach(var i in Model.Org.Account.Invoices())
                         {
                             <div class="m-2"> 
                                 <a asp-page="./Invoice" asp-route-id="@Model.Org.Id" asp-route-invoiceId="@i.Id"> 

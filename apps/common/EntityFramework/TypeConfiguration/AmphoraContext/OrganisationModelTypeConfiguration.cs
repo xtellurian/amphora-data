@@ -68,17 +68,6 @@ namespace Amphora.Common.EntityFramework.TypeConfiguration.AmphoraContext
                     debit.HasKey(_ => _.Id);
                     debit.WithOwner(_ => _.Account);
                 });
-                account.OwnsMany(b => b!.Invoices, invoice =>
-                {
-                    invoice.Property(_ => _.Id).ValueGeneratedOnAdd();
-                    invoice.OwnsMany(_ => _.Transactions, transaction =>
-                    {
-                        transaction.Property(_ => _.Id).ValueGeneratedOnAdd();
-                        transaction.HasKey(_ => _.Id);
-                    });
-                    invoice.HasKey(_ => _.Id);
-                    invoice.WithOwner(_ => _.Account);
-                });
             });
             // builder.HasMany(_ => _.Purchases).WithOne(p => p.PurchasedByOrganisation).HasForeignKey(_ => _.PurchasedByOrganisationId);
         }

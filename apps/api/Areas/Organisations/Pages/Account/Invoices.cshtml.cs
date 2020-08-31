@@ -16,10 +16,10 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
         {
         }
 
-        public ICollection<Invoice> Invoices { get; private set; }
+        public ICollection<InvoiceModel> Invoices { get; private set; }
 
-        public IEnumerable<Invoice> PaidInvoices => this.Organisation.Account.GetPaidInvoices();
-        public IEnumerable<Invoice> UnpaidInvoices => this.Organisation.Account.GetUnpaidInvoices();
+        public IEnumerable<InvoiceModel> PaidInvoices => this.Organisation.Account.GetPaidInvoices();
+        public IEnumerable<InvoiceModel> UnpaidInvoices => this.Organisation.Account.GetUnpaidInvoices();
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -27,7 +27,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             {
                 if (IsAdmin)
                 {
-                    this.Invoices = this.Organisation.Account?.Invoices ?? new List<Invoice>();
+                    this.Invoices = this.Organisation.Account?.Invoices() ?? new List<InvoiceModel>();
 
                     return Page();
                 }

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Amphorae;
+using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Platform;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -47,6 +48,7 @@ namespace Amphora.Common.Models.Organisations
         public virtual ICollection<TermsOfUseModel> TermsOfUses { get; set; } = new Collection<TermsOfUseModel>();
         public virtual ICollection<TermsOfUseAcceptanceModel> TermsOfUsesAccepted { get; set; } = new Collection<TermsOfUseAcceptanceModel>();
         public virtual ICollection<PurchaseModel> Purchases { get; set; } = new Collection<PurchaseModel>();
+        public virtual ICollection<InvoiceModel> Invoices { get; set; } = new Collection<InvoiceModel>();
         public string? CreatedById { get; set; }
         public virtual ApplicationUserDataModel? CreatedBy { get; set; }
 

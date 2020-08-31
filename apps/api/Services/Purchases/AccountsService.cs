@@ -115,7 +115,7 @@ namespace Amphora.Api.Services.Purchases
         /// <param name="isPreview"> Flag whether this is a preview invoice.</param>
         /// <param name="regenerate"> Override existing invoices.</param>
         /// <returns> An Invoice. </returns>
-        public async Task<Invoice> GenerateInvoiceAsync(System.DateTimeOffset month,
+        public async Task<InvoiceModel> GenerateInvoiceAsync(System.DateTimeOffset month,
                                                         string organisationId,
                                                         bool isPreview = true,
                                                         bool regenerate = false)
@@ -126,9 +126,9 @@ namespace Amphora.Api.Services.Purchases
             }
 
             var org = await orgStore.ReadAsync(organisationId);
-            Invoice invoice;
-            List<Invoice> toRemove = new List<Invoice>();
-            var existing = org.Account.Invoices.Where(_ => _.Timestamp.HasValue && _.Timestamp.Value.Month == month.Month);
+            InvoiceModel invoice;
+            List<InvoiceModel> toRemove = new List<InvoiceModel>();
+            var existing = org.Account.Invoices().Where(_ => _.Timestamp.HasValue && _.Timestamp.Value.Month == month.Month);
             if (existing != null && existing.Any() && !regenerate)
             {
                 return existing.FirstOrDefault();
@@ -139,7 +139,7 @@ namespace Amphora.Api.Services.Purchases
                 toRemove.AddRange(existing);
             }
 
-            invoice = new Invoice()
+            invoice = new InvoiceModel()
             {
                 Timestamp = month,
                 DateCreated = dateTimeProvider.UtcNow,
@@ -164,7 +164,7 @@ namespace Amphora.Api.Services.Purchases
             CalculateAmounts(invoice, thisMonthsCredits, thisMonthsDebits, org.Account.Balance);
             invoice.IsPreview = isPreview;
 
-            org.Account.Invoices.Add(invoice);
+            org.Account.Invoices().Add(invoice);
 
             org = await orgStore.UpdateAsync(org);
 
@@ -172,7 +172,7 @@ namespace Amphora.Api.Services.Purchases
             foreach (var i in toRemove)
             {
                 logger.LogWarning($"Removing Invoice({i.Id}) from Org({org.Id})");
-                org.Account.Invoices.Remove(i);
+                org.Account.Invoices().Remove(i);
             }
 
             org = await orgStore.UpdateAsync(org);
@@ -180,16 +180,16 @@ namespace Amphora.Api.Services.Purchases
             return invoice;
         }
 
-        public async Task<Invoice> PublishInvoice(Invoice invoice)
+        public async Task<InvoiceModel> PublishInvoice(InvoiceModel invoice)
         {
             invoice.IsPreview = false;
-            await orgStore.UpdateAsync(invoice.Account.Organisation);
+            await orgStore.UpdateAsync(invoice.Organisation);
 
             // TODO: send the invoice
             return invoice;
         }
 
-        private void CalculateAmounts(Invoice invoice, IEnumerable<AccountCredit> credits, IEnumerable<AccountDebit> debits, double? openingBalance)
+        private void CalculateAmounts(InvoiceModel invoice, IEnumerable<AccountCredit> credits, IEnumerable<AccountDebit> debits, double? openingBalance)
         {
             if (credits is null)
             {

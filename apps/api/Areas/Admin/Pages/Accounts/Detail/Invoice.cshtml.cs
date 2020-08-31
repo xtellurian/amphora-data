@@ -49,14 +49,14 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
         public bool Regenerate { get; set; }
         [BindProperty]
         public string Action { get; set; }
-        public Invoice Invoice { get; private set; }
+        public InvoiceModel Invoice { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string invoiceId)
         {
             this.Organisation = await organisationService.Store.ReadAsync(id);
             if (invoiceId != null)
             {
-                this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                this.Invoice = this.Organisation.Account.Invoices().FirstOrDefault(_ => _.Id == invoiceId);
             }
 
             return Page();
@@ -67,7 +67,7 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
             this.Organisation = await organisationService.Store.ReadAsync(id);
             if (invoiceId != null)
             {
-                this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                this.Invoice = this.Organisation.Account.Invoices().FirstOrDefault(_ => _.Id == invoiceId);
 
                 var f = await invoiceFileService.GetTransactionsAsCsvFileAsync(Invoice);
                 return File(f.Raw, "text/csv", $"invoice-{f.FileName}");

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -7,6 +8,7 @@ using Amphora.Api.Services.Purchases;
 using Amphora.Api.Stores.EFCore;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
+using Amphora.Common.Models.Organisations;
 using Amphora.Common.Models.Organisations.Accounts;
 using Amphora.Common.Models.Purchases;
 using Amphora.Common.Models.Users;
@@ -69,7 +71,7 @@ namespace Amphora.Tests.Unit.Services
 
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
 
-                Assert.Equal(1, org.Account.Invoices.Count);
+                Assert.Equal(1, org.Account.Invoices().Count);
 
                 Assert.NotNull(invoice);
 
@@ -109,8 +111,8 @@ namespace Amphora.Tests.Unit.Services
                 var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
 
-                Assert.Equal(1, org.Account.Invoices.Count);
-                var thisMonthsInvoice = org.Account.Invoices.FirstOrDefault();
+                Assert.Equal(1, org.Account.Invoices().Count);
+                var thisMonthsInvoice = org.Account.Invoices().FirstOrDefault();
                 Assert.NotNull(thisMonthsInvoice);
                 Assert.Empty(thisMonthsInvoice.Credits);
                 Assert.Empty(thisMonthsInvoice.Debits);
@@ -119,7 +121,7 @@ namespace Amphora.Tests.Unit.Services
                 invoice = await sut.GenerateInvoiceAsync(lastMonth.StartOfMonth(), org.Id);
                 org = await orgStore.ReadAsync(org.Id); // update org from "db"
 
-                Assert.Equal(2, org.Account.Invoices.Count);
+                Assert.Equal(2, org.Account.Invoices().Count);
 
                 Assert.NotNull(invoice);
 
@@ -202,12 +204,18 @@ namespace Amphora.Tests.Unit.Services
         public void AccountWithInvoices_CanGetListOfPaid()
         {
             var dtProvider = new MockDateTimeProvider();
-            var sut = new Account();
-            var invoice = new Invoice();
+            var sut = new Account
+            {
+                Organisation = new OrganisationModel
+                {
+                    Invoices = new Collection<InvoiceModel>()
+                }
+            };
+            var invoice = new InvoiceModel();
             invoice.Transactions.Add(new InvoiceTransaction("test1", 5, 10, dtProvider.UtcNow, isCredit: true));
             invoice.IsPaid = false;
             invoice.IsPreview = false;
-            sut.Invoices.Add(invoice);
+            sut.Invoices().Add(invoice);
 
             var unpaid = sut.GetUnpaidInvoices();
             var paid = sut.GetPaidInvoices();

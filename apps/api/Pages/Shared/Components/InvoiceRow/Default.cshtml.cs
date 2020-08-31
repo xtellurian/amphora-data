@@ -15,12 +15,12 @@ namespace Amphora.Api.Pages.Shared.Components
             this.organisationService = organisationService;
         }
 
-        public Invoice Invoice { get; private set; }
+        public InvoiceModel Invoice { get; private set; }
 
         public async Task<IViewComponentResult> InvokeAsync(string orgId, string invoiceId)
         {
             var org = await organisationService.Store.ReadAsync(orgId);
-            this.Invoice = org.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+            this.Invoice = org.Account.Invoices().FirstOrDefault(_ => _.Id == invoiceId);
             return View(this);
         }
     }

@@ -7,8 +7,8 @@ namespace Amphora.Api.Models.AutoMapper
     {
         public InvoicesProfile()
         {
-            CreateMap<Invoice, Dtos.Accounts.Invoice>()
-                .ForMember(m => m.OrganisationId, a => a.MapFrom(b => b.Account.OrganisationId));
+            CreateMap<InvoiceModel, Dtos.Accounts.Invoice>()
+                .ForMember(m => m.OrganisationId, a => a.MapFrom(b => b.OrganisationId));
             CreateMap<Transaction, Dtos.Accounts.Transaction>();
         }
     }

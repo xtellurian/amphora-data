@@ -23,11 +23,11 @@ namespace Amphora.Api.Services.Purchases
             this.blobStore = blobStore;
         }
 
-        public async Task<FileWrapper> GetTransactionsAsCsvFileAsync(Invoice invoice)
+        public async Task<FileWrapper> GetTransactionsAsCsvFileAsync(InvoiceModel invoice)
         {
             // check if the file exists
             var path = GetBlobPath(invoice);
-            if (!await blobStore.ExistsAsync(invoice.Account.Organisation, path))
+            if (!await blobStore.ExistsAsync(invoice.Organisation, path))
             {
                 var stream = new MemoryStream();
                 using (var writer = new StreamWriter(stream, Encoding.UTF8))
@@ -39,15 +39,15 @@ namespace Amphora.Api.Services.Purchases
                     await csv.WriteRecordsAsync(invoice.Transactions.OrderBy(_ => _.Timestamp));
                     await writer.FlushAsync();
                     stream.Position = 0;
-                    await blobStore.WriteAsync(invoice.Account.Organisation, path, stream);
+                    await blobStore.WriteAsync(invoice.Organisation, path, stream);
                 }
             }
 
-            var contents = await blobStore.ReadBytesAsync(invoice.Account.Organisation, path);
+            var contents = await blobStore.ReadBytesAsync(invoice.Organisation, path);
             return new FileWrapper(contents, $"{invoice.Id}{CsvExtension}");
         }
 
-        private string GetBlobPath(Invoice invoice)
+        private string GetBlobPath(InvoiceModel invoice)
         {
             if (invoice.IsPreview == true)
             {

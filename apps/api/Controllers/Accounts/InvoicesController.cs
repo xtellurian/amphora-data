@@ -82,7 +82,7 @@ namespace Amphora.Api.Controllers.Accounts
                 var org = userDataRes.Entity.Organisation;
                 if (org.IsAdministrator(userDataRes.Entity))
                 {
-                    var invoices = org.Account.Invoices;
+                    var invoices = org.Account.Invoices();
                     var results = mapper.Map<List<Invoice>>(invoices);
                     return Ok(new CollectionResponse<Invoice>(invoices.Count, results));
                 }
@@ -120,7 +120,7 @@ namespace Amphora.Api.Controllers.Accounts
                 var org = userDataRes.Entity.Organisation;
                 if (org.IsAdministrator(userDataRes.Entity))
                 {
-                    var invoice = org.Account.Invoices.FirstOrDefault(i => i.Id == id);
+                    var invoice = org.Account.Invoices().FirstOrDefault(i => i.Id == id);
                     if (invoice == null)
                     {
                         return BadRequest(new Response($"Invoice({id}) not found"));

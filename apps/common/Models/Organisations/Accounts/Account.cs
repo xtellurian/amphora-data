@@ -10,7 +10,7 @@ namespace Amphora.Common.Models.Organisations.Accounts
         private const double DefaultCommissionRate = 0.8; // i.e. the fraction kept by the provider
         public virtual ICollection<AccountCredit> Credits { get; set; } = new Collection<AccountCredit>();
         public virtual ICollection<AccountDebit> Debits { get; set; } = new Collection<AccountDebit>();
-        public virtual ICollection<Invoice> Invoices { get; set; } = new Collection<Invoice>();
+        public ICollection<InvoiceModel> Invoices() => this.Organisation.Invoices;
         public virtual OrganisationModel Organisation { get; set; } = null!;
         public virtual Plan? Plan { get; set; } = new Plan();
         public string OrganisationId { get; set; } = null!;
@@ -24,17 +24,17 @@ namespace Amphora.Common.Models.Organisations.Accounts
 
         private double GetCommissionRate() => CommissionRate ?? DefaultCommissionRate;
 
-        public IList<Invoice> GetUnpaidInvoices(bool includePreview = false)
+        public IList<InvoiceModel> GetUnpaidInvoices(bool includePreview = false)
         {
-            IList<Invoice> unpaidInvoices;
+            IList<InvoiceModel> unpaidInvoices;
             if (includePreview)
             {
-                unpaidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                unpaidInvoices = this.Invoices().Where(_ => _.IsPaid.HasValue
                     && !_.IsPaid.Value).ToList();
             }
             else
             {
-                unpaidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                unpaidInvoices = this.Invoices().Where(_ => _.IsPaid.HasValue
                     && !_.IsPaid.Value
                     && _.IsPreview.HasValue
                     && !_.IsPreview.Value).ToList();
@@ -43,17 +43,17 @@ namespace Amphora.Common.Models.Organisations.Accounts
             return unpaidInvoices;
         }
 
-        public IList<Invoice> GetPaidInvoices(bool includePreview = false)
+        public IList<InvoiceModel> GetPaidInvoices(bool includePreview = false)
         {
-            IList<Invoice> paidInvoices;
+            IList<InvoiceModel> paidInvoices;
             if (includePreview)
             {
-                paidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                paidInvoices = this.Invoices().Where(_ => _.IsPaid.HasValue
                 && _.IsPaid.Value).ToList();
             }
             else
             {
-                paidInvoices = this.Invoices.Where(_ => _.IsPaid.HasValue
+                paidInvoices = this.Invoices().Where(_ => _.IsPaid.HasValue
                     && _.IsPaid.Value
                     && _.IsPreview.HasValue
                     && !_.IsPreview.Value).ToList();

@@ -4,20 +4,21 @@ using System.Linq;
 
 namespace Amphora.Common.Models.Organisations.Accounts
 {
-    public class Invoice
+    public class InvoiceModel
     {
-        public Invoice(string id)
+        public InvoiceModel(string id)
         {
             Id = id;
         }
 
-        public Invoice()
+        public InvoiceModel()
         {
             Id = null!;
         }
 
         public string Id { get; set; }
-        public virtual Account Account { get; set; } = null!;
+        public virtual OrganisationModel Organisation { get; set; } = null!;
+        public string OrganisationId { get; set; } = null!;
         public string? Name { get; set; }
         public bool? IsPreview { get; set; } = true;
         public bool? IsPaid { get; set; } = false;

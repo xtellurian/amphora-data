@@ -21,16 +21,13 @@ namespace Amphora.Tests.Unit.Services
 
             var sut = new InvoiceFileService(blobStore);
 
-            var invoice = new Invoice
+            var invoice = new InvoiceModel
             {
                 Id = invoiceId,
-                Account = new Account
+                OrganisationId = orgId,
+                Organisation = new OrganisationModel
                 {
-                    OrganisationId = orgId,
-                    Organisation = new OrganisationModel
-                    {
-                        Id = orgId
-                    }
+                    Id = orgId
                 },
                 Transactions = new List<InvoiceTransaction>
                 {

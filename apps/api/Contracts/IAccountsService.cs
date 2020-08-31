@@ -7,11 +7,11 @@ namespace Amphora.Api.Contracts
 {
     public interface IAccountsService
     {
-        Task<Invoice> GenerateInvoiceAsync(DateTimeOffset month,
+        Task<InvoiceModel> GenerateInvoiceAsync(DateTimeOffset month,
                                            string organisationId,
                                            bool isPreview = true,
                                            bool regenerate = false);
         Task<Report> PopulateDebitsAndCreditsAsync(DateTimeOffset? month = null);
-        Task<Invoice> PublishInvoice(Invoice invoice);
+        Task<InvoiceModel> PublishInvoice(InvoiceModel invoice);
     }
 }

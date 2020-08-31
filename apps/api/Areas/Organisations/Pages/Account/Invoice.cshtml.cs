@@ -18,7 +18,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             this.invoiceFileService = invoiceFileService;
         }
 
-        public Invoice Invoice { get; private set; }
+        public InvoiceModel Invoice { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string invoiceId)
         {
@@ -26,7 +26,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             {
                 if (IsAdmin)
                 {
-                    this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                    this.Invoice = this.Organisation.Account.Invoices().FirstOrDefault(_ => _.Id == invoiceId);
                     if (this.Invoice == null)
                     {
                         return NotFound();
@@ -51,7 +51,7 @@ namespace Amphora.Api.Areas.Organisations.Pages.Account
             {
                 if (IsAdmin)
                 {
-                    this.Invoice = this.Organisation.Account.Invoices.FirstOrDefault(_ => _.Id == invoiceId);
+                    this.Invoice = this.Organisation.Account.Invoices().FirstOrDefault(_ => _.Id == invoiceId);
                     if (this.Invoice == null)
                     {
                         return NotFound();

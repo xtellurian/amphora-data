@@ -6,6 +6,6 @@ namespace Amphora.Api.Contracts
 {
     public interface IInvoiceFileService
     {
-        Task<FileWrapper> GetTransactionsAsCsvFileAsync(Invoice invoice);
+        Task<FileWrapper> GetTransactionsAsCsvFileAsync(InvoiceModel invoice);
     }
 }
