@@ -74,7 +74,7 @@ namespace Amphora.Tests.Identity.Integration
             Assert.False(string.IsNullOrEmpty(token));
             var jwt = GetPrincipal(tokenWithPurchase);
             jwt.Claims.Should().NotBeNullOrEmpty();
-            jwt.Claims.Should().Contain(_ => _.Type == Claims.Purchase);
+            jwt.Claims.Should().Contain(_ => _.Type == "scope" && _.Value == Claims.Purchase);
 
             // now check can delete
             var deleteRes = await client.DeleteAsync($"/api/users?userName={amphoraUser.UserName}");
