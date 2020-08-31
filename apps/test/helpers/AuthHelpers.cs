@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -96,6 +97,11 @@ namespace Amphora.Tests.Helpers
 
         public static async Task<Organisation> GetOrganisationAsync(this HttpClient client, string organisationId)
         {
+            if (string.IsNullOrEmpty(organisationId))
+            {
+                throw new ArgumentNullException(nameof(organisationId));
+            }
+
             var res = await client.GetAsync($"api/Organisations/{organisationId}");
             if (res.IsSuccessStatusCode)
             {
