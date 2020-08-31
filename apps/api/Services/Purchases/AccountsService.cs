@@ -148,9 +148,11 @@ namespace Amphora.Api.Services.Purchases
             var som = month.StartOfMonth();
             var eom = month.EndOfMonth();
             var thisMonthsDebits = org.Account.Debits
-                .Where(_ => _.Timestamp > som && _.Timestamp < eom);
+                .Where(_ => _.Timestamp > som && _.Timestamp < eom)
+                .ToList();
             var thisMonthsCredits = org.Account.Credits
-                .Where(_ => _.Timestamp > som && _.Timestamp < eom);
+                .Where(_ => _.Timestamp > som && _.Timestamp < eom)
+                .ToList(); // these may be removed, so copy them to a new list
             foreach (var c in thisMonthsCredits)
             {
                 invoice.Transactions.Add(new InvoiceTransaction(c));
@@ -176,6 +178,38 @@ namespace Amphora.Api.Services.Purchases
             }
 
             org = await orgStore.UpdateAsync(org);
+
+            if (!isPreview)
+            {
+                logger.LogInformation("Removing old transactions....");
+                // include a transaction for this invoice, to account for the balance changing 
+                // now remove the transactions from the account
+                foreach (var d in thisMonthsDebits)
+                {
+                    org.Account.Debits.Remove(d);
+                }
+
+                foreach (var c in thisMonthsCredits)
+                {
+                    org.Account.Credits.Remove(c);
+                }
+
+                if (invoice.InvoiceBalance > 0)
+                {
+                    org.Account.Credits.Add(new AccountCredit($"Carry from invoice ${invoice.Id}", invoice.InvoiceBalance));
+                }
+                else if (invoice.InvoiceBalance < 0)
+                {
+                    org.Account.Debits.Add(new AccountDebit($"Carry from invoice ${invoice.Id}", invoice.InvoiceBalance));
+                }
+
+                await orgStore.UpdateAsync(org);
+                logger.LogInformation("Removed old transactions.");
+            }
+            else
+            {
+                logger.LogWarning("Refusing to remove old transaction due to isPreview.");
+            }
 
             return invoice;
         }

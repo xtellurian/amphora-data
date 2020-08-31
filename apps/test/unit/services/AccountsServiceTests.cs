@@ -135,7 +135,17 @@ namespace Amphora.Tests.Unit.Services
         [Fact]
         public async Task InvoicesAreGenerated_RegenerateNotEqual()
         {
-            var dtProvider = new MockDateTimeProvider();
+            var transactionTimestamp = DateTime.Now;
+            if (transactionTimestamp.Day > 25)
+            {
+                transactionTimestamp = transactionTimestamp.AddDays(-5);
+            }
+            else if (transactionTimestamp.Day < 5)
+            {
+                transactionTimestamp = transactionTimestamp.AddDays(5);
+            }
+
+            var dtProvider = new MockDateTimeProvider(transactionTimestamp);
             var commissionMock = new Mock<ICommissionTrackingService>();
             commissionMock.Setup(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double?>()));
             using (var context = GetContext())
@@ -147,22 +157,28 @@ namespace Amphora.Tests.Unit.Services
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
 
-                var lastMonth = DateTime.Now.AddMonths(-1);
-
                 var credit = rand.Next(1, 105);
                 var debit = rand.Next(1, 105);
-                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // credit 100
-                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, dtProvider.UtcNow) { Timestamp = lastMonth }); // debit 50
+                org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, transactionTimestamp)); // credit 100
+                org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, transactionTimestamp)); // debit 50
 
-                var invoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true);
-
+                var invoice = await sut.GenerateInvoiceAsync(transactionTimestamp, org.Id, isPreview: true);
                 Assert.True(invoice.IsPreview);
+                invoice.Credits.Should().NotBeNullOrEmpty();
+                invoice.Debits.Should().NotBeNullOrEmpty();
 
-                var regenereratedInvoice = await sut.GenerateInvoiceAsync(DateTime.Now, org.Id, isPreview: true, regenerate: true);
-
+                var regenereratedInvoice = await sut.GenerateInvoiceAsync(transactionTimestamp, org.Id, isPreview: true, regenerate: true);
+                regenereratedInvoice.Credits.Should().NotBeNullOrEmpty();
+                regenereratedInvoice.Debits.Should().NotBeNullOrEmpty();
                 Assert.NotEqual(invoice.Id, regenereratedInvoice.Id);
                 Assert.Equal(invoice.InvoiceBalance, regenereratedInvoice.InvoiceBalance);
                 commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
+                var oldBalance = org.Account.Balance;
+                var lastInvoice = await sut.GenerateInvoiceAsync(transactionTimestamp, org.Id, isPreview: false, regenerate: true);
+                lastInvoice.Credits.Should().NotBeNullOrEmpty();
+                lastInvoice.Debits.Should().NotBeNullOrEmpty();
+                var newBalance = org.Account.Balance;
+                Assert.Equal(oldBalance, newBalance);
             }
         }
 
