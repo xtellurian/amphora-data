@@ -14,6 +14,11 @@ namespace Amphora.Api.Areas.Admin.Pages.Accounts.Detail
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
+            if (id == null)
+            {
+                return BadRequest("Id was null");
+            }
+
             await LoadOrganisationAsync(id);
             return Page();
         }

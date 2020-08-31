@@ -182,7 +182,7 @@ namespace Amphora.Api.Services.Purchases
             if (!isPreview)
             {
                 logger.LogInformation("Removing old transactions....");
-                // include a transaction for this invoice, to account for the balance changing 
+                // include a transaction for this invoice, to account for the balance changing
                 // now remove the transactions from the account
                 foreach (var d in thisMonthsDebits)
                 {

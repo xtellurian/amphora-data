@@ -1,0 +1,118 @@
+@page
+@model Amphora.Api.Areas.Admin.Pages.Invoicing.IndexPageModel
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+@{
+    ViewData["Title"] = "Global Terms";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <div class="col">
+            <h3>Invoicing</h3>
+            <hr/>
+        </div>
+    </div>
+    <form method="post">
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <label asp-for="Action"></label>
+                    <select class="custom-select" asp-for="Action" asp-items="@Model.ActionOptions"></select> 
+                    <span asp-validation-for="Action" class="text-danger"></span>
+                </div>
+            </div>
+        
+            <div class="col-3">
+                <div class="form-group">
+                    <label asp-for="Month"></label>
+                    <span asp-validation-for="Month" class="text-danger"></span>
+                    <input class="form-control" asp-for="Month" />
+                    <p>UTC</p>
+                </div>
+            </div>
+        
+            <div class="col-3">
+                    <div class="form-group">
+                    <label asp-for="Regenerate"></label>
+                    <input class="form-control" asp-for="Regenerate" />
+                    <span asp-validation-for="Regenerate" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <div class="form-group">
+                    <input class="btn btn-primary" type="submit" value="Generate" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    Name
+                </div>
+                <div class="col-1">
+                    Opening Balance
+                </div>
+                <div class="col-1">
+                    Invoice Balance
+                </div>
+                <div class="col-1">
+                    Count
+                </div>
+                <div class="col-1">
+                    Count
+                </div>
+            </div>
+            <hr/>
+            @if(Model.Invoices?.Count() == 0)
+            {
+                <div>
+                    There are no Invoices here...
+                </div>
+            }
+            @{
+                var i = 0;
+                var bgColour = "bg-light";
+            }
+            @foreach(var t in Model.Invoices)
+            {
+                @if(i++ % 2 == 1)
+                {
+                    bgColour = "bg-light";
+                }
+                else
+                {
+                    bgColour = "";
+                }
+                <div class="row @bgColour">
+                    <div class="col text-truncate">
+                        @(t.IsPreview == true ? "(Preview)" : "")
+                        @t.Name - 
+                        <a asp-area="Admin" asp-page="/Accounts/Detail/Index" asp-route-id="@t.OrganisationId">
+                            @t.Organisation.Name
+                        </a>
+                    </div>
+                    <div class="col-1 text-truncate">
+                        @t.OpeningBalance
+                    </div>
+                    <div class="col-1 text-truncate">
+                        @t.InvoiceBalance
+                    </div>
+                    <div class="col-1">
+                        @t.CountCredits credits
+                    </div>
+                    <div class="col-1">
+                        @t.CountDebits debits
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
