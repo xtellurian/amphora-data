@@ -159,6 +159,12 @@ namespace Amphora.Tests.Unit.Services
 
                 var credit = rand.Next(1, 105);
                 var debit = rand.Next(1, 105);
+                while (debit == credit)
+                {
+                    // ensure debit and credit are not equal
+                    debit = rand.Next(1, 105);
+                }
+
                 org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, transactionTimestamp)); // credit 100
                 org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, transactionTimestamp)); // debit 50
 
