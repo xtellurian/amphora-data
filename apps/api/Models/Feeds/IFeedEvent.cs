@@ -3,7 +3,7 @@ using Amphora.Api.Models.Dtos;
 
 namespace Amphora.Api.Models.Feeds
 {
-    public interface IPost : IDto
+    public interface IFeedEvent
     {
         DateTimeOffset Timestamp { get; set; }
         PostSubjectType SubjectType { get; }

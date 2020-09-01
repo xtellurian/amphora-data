@@ -3,9 +3,9 @@ using Amphora.Common.Models.Amphorae;
 
 namespace Amphora.Api.Models.Feeds
 {
-    public class AmphoraCreatedPost : IPost
+    public class AmphoraCreatedFeedEvent : IFeedEvent
     {
-        public AmphoraCreatedPost(AmphoraModel amphora)
+        public AmphoraCreatedFeedEvent(AmphoraModel amphora)
         {
             SubjectId = amphora.Id;
             Timestamp = amphora.CreatedDate ?? DateTimeOffset.MinValue;

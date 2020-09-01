@@ -7,6 +7,6 @@ namespace Amphora.Api.Contracts
 {
     public interface IAmphoraFeedService
     {
-        Task<IEnumerable<IPost>> GetPostsAsync(OrganisationModel org, int take = 10);
+        Task<IEnumerable<IFeedEvent>> GetPostsAsync(OrganisationModel org, int take = 10);
     }
 }

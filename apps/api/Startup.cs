@@ -1,24 +1,17 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Amphora.Api.AspNet.Cors;
 using Amphora.Api.Contracts;
 using Amphora.Api.Options;
 using Amphora.Api.Services.Amphorae;
-using Amphora.Api.Services.Applications;
 using Amphora.Api.Services.DataRequests;
 using Amphora.Api.Services.GitHub;
 using Amphora.Api.Services.InMemory;
-using Amphora.Api.Services.Organisations;
-using Amphora.Api.Services.Purchases;
 using Amphora.Api.StartupModules;
 using Amphora.Common.Contracts;
 using Amphora.Common.Extensions;
 using Amphora.Common.Models.DataRequests;
-using Amphora.Common.Services.Access;
-using Amphora.Common.Services.Activities;
 using Amphora.Common.Services.Azure;
 using Amphora.Common.Services.Emails;
-using Amphora.Common.Services.Plans;
 using Amphora.Infrastructure.Database.Cache;
 using Amphora.Infrastructure.Extensions;
 using Amphora.Infrastructure.Modules;
@@ -57,6 +50,7 @@ namespace Amphora.Api
             this.geoModule = new GeoModule(configuration, env);
             this.discoverModule = new DiscoverModule(configuration, env);
             this.openApiModule = new OpenApiModule(configuration, env);
+            this.servicesModule = new LogicalServicesModule(configuration, env);
         }
 
         private readonly IdentityModule identityModule;
@@ -64,6 +58,7 @@ namespace Amphora.Api
         private readonly GeoModule geoModule;
         private readonly DiscoverModule discoverModule;
         private readonly OpenApiModule openApiModule;
+        private readonly LogicalServicesModule servicesModule;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -78,6 +73,7 @@ namespace Amphora.Api
             this.geoModule.ConfigureServices(services);
             this.discoverModule.ConfigureServices(services);
             this.openApiModule.ConfigureServices(services);
+            this.servicesModule.ConfigureServices(services);
             services.RegisterEventsModule(Configuration, HostingEnvironment.IsProduction());
 
             // feature management
@@ -108,21 +104,6 @@ namespace Amphora.Api
             // permissioned stores
             services.AddTransient<IPermissionedEntityStore<DataRequestModel>, DataRequestService>();
             // logical services
-            services.AddTransient<IAmphoraeService, AmphoraeService>();
-            services.AddTransient<IAmphoraFileService, AmphoraFileService>();
-            services.AddTransient<IOrganisationService, OrganisationService>();
-            services.AddTransient<IPurchaseService, PurchaseService>();
-            services.AddTransient<ICommissionTrackingService, CommissionTrackingService>();
-            services.AddTransient<IAccountsService, AccountsService>();
-            services.AddTransient<IInvoiceFileService, InvoiceFileService>();
-            services.AddTransient<IQualityEstimatorService, QualityEstimatorService>();
-            services.AddSingleton<IDateTimeProvider, Common.Services.Timing.DateTimeProvider>();
-            services.AddTransient<IAccessControlService, AccessControlService>();
-            services.AddTransient<IPlanLimitService, PlanLimitService>();
-            services.AddTransient<ITermsOfUseService, TermsOfUseService>();
-            services.AddTransient<IActivityService, ActivityService>();
-            services.AddTransient<IActivityRunService, ActivityRunService>();
-            services.AddTransient<IApplicationService, ApplicationService>();
 
             services.AddSingleton<IAmphoraGitHubIssueConnectorService, AmphoraGitHubIssueConnectorService>();
 
@@ -245,6 +226,7 @@ namespace Amphora.Api
             this.identityModule.Configure(app, env, mapper);
             this.storageModule.Configure(app, env);
             this.openApiModule.Configure(app);
+            this.servicesModule.Configure(app);
             app.UseRouting();
             app.UseCors("test"); // needs to match policy name above
 

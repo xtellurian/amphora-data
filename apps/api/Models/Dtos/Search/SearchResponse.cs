@@ -1,5 +1,5 @@
 namespace Amphora.Api.Models.Dtos.Search
 {
-    public class SearchResponse<T> : CollectionResponse<T> where T : IDto
+    public class SearchResponse<T> : CollectionResponse<T> where T : class, IDto
     { }
 }

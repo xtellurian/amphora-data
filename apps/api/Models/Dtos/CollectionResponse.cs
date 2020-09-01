@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amphora.Api.Models.Dtos
 {
-    public class CollectionResponse<T> : Response where T : IDto
+    public class CollectionResponse<T> : Response where T : class, IDto
     {
         public CollectionResponse()
         { }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Amphora.Api.Contracts;
@@ -18,17 +19,16 @@ namespace Amphora.Api.Services.Feeds
             this.amphoraFeed = amphoraFeed;
         }
 
-        public async Task<EntityOperationResult<Feed>> GetFeedAsync(ClaimsPrincipal principal)
+        public async Task<EntityOperationResult<IEnumerable<IFeedEvent>>> GetFeedAsync(ClaimsPrincipal principal)
         {
             var userRead = await userDataService.ReadAsync(principal);
             if (userRead.Failed)
             {
-                return new EntityOperationResult<Feed>("Unknown User");
+                return new EntityOperationResult<IEnumerable<IFeedEvent>>("Unknown User");
             }
 
             var posts = await amphoraFeed.GetPostsAsync(userRead.Entity.Organisation);
-            var feed = new Feed(posts);
-            return new EntityOperationResult<Feed>(userRead.Entity, feed);
+            return new EntityOperationResult<IEnumerable<IFeedEvent>>(userRead.Entity, posts);
         }
     }
 }

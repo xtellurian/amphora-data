@@ -8,11 +8,11 @@ namespace Amphora.Tests.Unit.Entities
     public class SerialiseFeedTests : UnitTestBase
     {
         [Fact]
-        public void AmphoraCreatedPost_CanSerialise()
+        public void AmphoraCreatedFeedEvent_CanSerialise()
         {
             var org = EntityLibrary.GetOrganisationModel();
             var amphora = EntityLibrary.GetAmphoraModel(org);
-            var post = new AmphoraCreatedPost(amphora);
+            var post = new AmphoraCreatedFeedEvent(amphora);
 
             var serialised = JsonConvert.SerializeObject(post);
             // bit of a weird, do-nothing test eh?

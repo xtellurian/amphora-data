@@ -5,9 +5,9 @@ using Newtonsoft.Json.Converters;
 
 namespace Amphora.Api.Models.Feeds
 {
-    public class AmphoraPurchasedPost : IPost
+    public class AmphoraPurchasedFeedEvent : IFeedEvent
     {
-        public AmphoraPurchasedPost(PurchaseModel purchase)
+        public AmphoraPurchasedFeedEvent(PurchaseModel purchase)
         {
             SubjectId = purchase.AmphoraId;
             Timestamp = purchase.CreatedDate ?? DateTimeOffset.MinValue;

@@ -21,9 +21,9 @@ namespace Amphora.Tests.Unit.Services
         {
             var org = EntityLibrary.GetOrganisationModel();
             var amphora = EntityLibrary.GetAmphoraModel(org);
-            var posts = new List<IPost>
+            var posts = new List<IFeedEvent>
             {
-                new AmphoraCreatedPost(amphora)
+                new AmphoraCreatedFeedEvent(amphora)
             };
             var userData = new ApplicationUserDataModel
             {
@@ -38,7 +38,7 @@ namespace Amphora.Tests.Unit.Services
 
             var feedResult = await sut.GetFeedAsync(testPrincipal);
             feedResult.Succeeded.Should().BeTrue();
-            feedResult.Entity.Items.Should().NotBeEmpty();
+            feedResult.Entity.Should().NotBeEmpty();
         }
     }
 }

@@ -22,43 +22,43 @@ namespace Amphora.Api.Services.Feeds
             this.purchaseStore = purchaseStore;
         }
 
-        public async Task<IEnumerable<IPost>> GetPostsAsync(OrganisationModel org, int take = 10)
+        public async Task<IEnumerable<IFeedEvent>> GetPostsAsync(OrganisationModel org, int take = 10)
         {
             // get latest created
-            var posts = new List<IPost>();
+            var posts = new List<IFeedEvent>();
             posts.AddRange(await GetAmphoraCreatedPosts(org, take / 2));
             posts.AddRange(await GetAmphoraPurchasedPosts(org, take / 2));
             posts.Sort((x, y) => y.Timestamp.CompareTo(x.Timestamp)); // this should order descending timestamp
             return posts;
         }
 
-        private async Task<List<AmphoraPurchasedPost>> GetAmphoraPurchasedPosts(OrganisationModel org, int take)
+        private async Task<List<AmphoraPurchasedFeedEvent>> GetAmphoraPurchasedPosts(OrganisationModel org, int take)
         {
             var recentlyPurchased = await purchaseStore.Query(p => p.PurchasedByOrganisationId == org.Id)
                 .OrderByDescending(_ => _.CreatedDate)
                 .Take(take)
                 .ToListAsync();
 
-            var posts = new List<AmphoraPurchasedPost>();
+            var posts = new List<AmphoraPurchasedFeedEvent>();
             foreach (var p in recentlyPurchased)
             {
-                posts.Add(new AmphoraPurchasedPost(p));
+                posts.Add(new AmphoraPurchasedFeedEvent(p));
             }
 
             return posts;
         }
 
-        private async Task<List<AmphoraCreatedPost>> GetAmphoraCreatedPosts(OrganisationModel org, int take)
+        private async Task<List<AmphoraCreatedFeedEvent>> GetAmphoraCreatedPosts(OrganisationModel org, int take)
         {
             var recentlyCreatedAmphora = await amphoraStore.Query(a => a.OrganisationId == org.Id)
                 .OrderByDescending(_ => _.CreatedDate)
                 .Take(take)
                 .ToListAsync();
 
-            var posts = new List<AmphoraCreatedPost>();
+            var posts = new List<AmphoraCreatedFeedEvent>();
             foreach (var a in recentlyCreatedAmphora)
             {
-                posts.Add(new AmphoraCreatedPost(a));
+                posts.Add(new AmphoraCreatedFeedEvent(a));
             }
 
             return posts;
