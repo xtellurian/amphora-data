@@ -132,8 +132,13 @@ namespace Amphora.Tests.Unit.Services
             }
         }
 
-        [Fact]
-        public async Task InvoicesAreGenerated_RegenerateNotEqual()
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(50, 0)]
+        [InlineData(0, 50)]
+        [InlineData(25, 47)]
+        [InlineData(50, 22)]
+        public async Task InvoicesAreGenerated_RegenerateNotEqual(double credit, double debit)
         {
             var transactionTimestamp = DateTime.Now;
             if (transactionTimestamp.Day > 25)
@@ -157,14 +162,6 @@ namespace Amphora.Tests.Unit.Services
                 var org = EntityLibrary.GetOrganisationModel();
                 org = await orgStore.CreateAsync(org);
 
-                var credit = rand.Next(1, 105);
-                var debit = rand.Next(1, 105);
-                while (debit == credit)
-                {
-                    // ensure debit and credit are not equal
-                    debit = rand.Next(1, 105);
-                }
-
                 org.Account.Credits.Add(new AccountCredit("Test Credit", credit, org.Account.Balance, transactionTimestamp)); // credit 100
                 org.Account.Debits.Add(new AccountDebit("Test Debit", debit, org.Account.Balance, transactionTimestamp)); // debit 50
 
@@ -181,10 +178,10 @@ namespace Amphora.Tests.Unit.Services
                 commissionMock.Verify(mock => mock.TrackCommissionAsync(It.IsAny<PurchaseModel>(), It.IsAny<double>()), Times.Never());
                 var oldBalance = org.Account.Balance;
                 var lastInvoice = await sut.GenerateInvoiceAsync(transactionTimestamp, org.Id, isPreview: false, regenerate: true);
-                lastInvoice.Credits.Should().NotBeNullOrEmpty();
-                lastInvoice.Debits.Should().NotBeNullOrEmpty();
                 var newBalance = org.Account.Balance;
                 Assert.Equal(oldBalance, newBalance);
+                lastInvoice.Credits.Should().NotBeNullOrEmpty();
+                lastInvoice.Debits.Should().NotBeNullOrEmpty();
             }
         }
 

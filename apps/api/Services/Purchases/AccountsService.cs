@@ -194,13 +194,15 @@ namespace Amphora.Api.Services.Purchases
                     org.Account.Credits.Remove(c);
                 }
 
+                // debiting account must be a positive number, when either debiting or crediting.
+                var absInvoiceBalance = Math.Abs(invoice.InvoiceBalance);
                 if (invoice.InvoiceBalance > 0)
                 {
-                    org.Account.Credits.Add(new AccountCredit($"Carry from invoice ${invoice.Id}", invoice.InvoiceBalance));
+                    org.Account.CreditAccount($"Carry from invoice ${invoice.Id}", absInvoiceBalance, dateTimeProvider.UtcNow);
                 }
                 else if (invoice.InvoiceBalance < 0)
                 {
-                    org.Account.Debits.Add(new AccountDebit($"Carry from invoice ${invoice.Id}", invoice.InvoiceBalance));
+                    org.Account.DebitAccount($"Carry from invoice ${invoice.Id}", absInvoiceBalance, dateTimeProvider.UtcNow);
                 }
 
                 await orgStore.UpdateAsync(org);

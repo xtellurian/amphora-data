@@ -7,7 +7,6 @@ namespace Amphora.Api.Models.Feeds
     {
         public AmphoraCreatedPost(AmphoraModel amphora)
         {
-
             SubjectId = amphora.Id;
             Timestamp = amphora.CreatedDate ?? DateTimeOffset.MinValue;
             if (amphora.CreatedBy == null)
@@ -25,6 +24,5 @@ namespace Amphora.Api.Models.Feeds
         public DateTimeOffset Timestamp { get; set; }
         public string SubjectId { get; set; }
         public string Text { get; set; }
-
     }
 }
