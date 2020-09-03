@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Common.Contracts;
 using Microsoft.Azure.TimeSeriesInsights.Models;
@@ -72,7 +73,7 @@ namespace Amphora.Api.Services.InMemory
             }
             else if (query.GetEvents?.ProjectedProperties != null)
             {
-                return Task.FromResult(Results(Timestamps(), Properties(query.GetEvents.ProjectedProperties)));
+                return Task.FromResult(Results(Timestamps(), Properties(query.GetEvents.ProjectedProperties.Select(_ => _.Name))));
             }
             else
             {
