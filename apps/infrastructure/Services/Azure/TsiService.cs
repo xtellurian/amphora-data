@@ -60,13 +60,18 @@ namespace Amphora.Infrastructure.Services.Azure
         public async Task<IList<TimeSeriesInstance>> GetInstancesAsync()
         {
             await InitAsync();
+            if (client == null)
+            {
+                throw new NullReferenceException("TSI Client was null");
+            }
+
             var instances = new List<TimeSeriesInstance>();
             string? continuationToken = null;
             GetInstancesPage page;
             do
             {
                 // this method will return everything in ONE set (one graphed line). to split, call it twice
-                page = await client.GetInstancesPagedAsync(continuationToken);
+                page = await client.TimeSeriesInstances.ListAsync(continuationToken);
                 continuationToken = page.ContinuationToken;
                 instances.AddRange(page.Instances);
             }
@@ -78,7 +83,12 @@ namespace Amphora.Infrastructure.Services.Azure
         {
             var start = StartTelemetry();
             await InitAsync();
-            var queryResponse = await client.ExecuteQueryPagedAsync(query, continuationToken);
+            if (client == null)
+            {
+                throw new NullReferenceException("TSI Client was null");
+            }
+
+            var queryResponse = await client.Query.ExecuteAsync(query, continuationToken);
             var queryType = "unknown";
             if (query.AggregateSeries != null)
             {
@@ -103,12 +113,17 @@ namespace Amphora.Infrastructure.Services.Azure
         {
             var start = StartTelemetry();
             await InitAsync();
+            if (client == null)
+            {
+                throw new NullReferenceException("TSI Client was null");
+            }
+
             string continuationToken;
             QueryResultPage queryResponse;
             do
             {
                 // this method will return everything in ONE set (one graphed line). to split, call it twice
-                queryResponse = await client.ExecuteQueryPagedAsync(
+                queryResponse = await client.Query.ExecuteAsync(
                    new QueryRequest(
                        getEvents: new Microsoft.Azure.TimeSeriesInsights.Models.GetEvents(
                            timeSeriesId: ids,
@@ -131,13 +146,18 @@ namespace Amphora.Infrastructure.Services.Azure
         {
             var start = StartTelemetry();
             await InitAsync();
+            if (client == null)
+            {
+                throw new NullReferenceException("TSI Client was null");
+            }
+
             interval ??= TimeSpan.FromDays(365);
             string continuationToken;
             QueryResultPage queryResponse;
             do
             {
                 // this method will return everything in ONE set (one graphed line). to split, call it twice
-                queryResponse = await client.ExecuteQueryPagedAsync(
+                queryResponse = await client.Query.ExecuteAsync(
                    new QueryRequest(
                        aggregateSeries: new Microsoft.Azure.TimeSeriesInsights.Models.AggregateSeries(
                            timeSeriesId: ids,
@@ -161,12 +181,17 @@ namespace Amphora.Infrastructure.Services.Azure
         {
             var start = StartTelemetry();
             await InitAsync();
+            if (client == null)
+            {
+                throw new NullReferenceException("TSI Client was null");
+            }
+
             string continuationToken;
             QueryResultPage queryResponse;
             do
             {
                 // this method will return everything in ONE set (one graphed line). to split, call it twice
-                queryResponse = await client.ExecuteQueryPagedAsync(
+                queryResponse = await client.Query.ExecuteAsync(
                    new QueryRequest(
                        getSeries: new Microsoft.Azure.TimeSeriesInsights.Models.GetSeries(
                            timeSeriesId: ids,
