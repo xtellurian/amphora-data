@@ -10,6 +10,7 @@ import { useAmphoraClients } from "react-amphora";
 import { EmptyState } from "../../molecules/empty/EmptyState";
 
 interface QualityState {
+    loaded: boolean;
     quality?: Quality | null;
     isLoading: boolean;
 }
@@ -17,29 +18,34 @@ export const QualityPage: React.FunctionComponent<OneAmphora> = (props) => {
     const clients = useAmphoraClients();
     const [state, setState] = React.useState<QualityState>({
         isLoading: false,
+        loaded: false,
     });
-    const cancelToken = axios.default.CancelToken;
-    const source = cancelToken.source();
 
     React.useEffect(() => {
-        if (props.amphora.id && !state.quality && !state.isLoading) {
-            setState({ isLoading: true });
+        if (
+            props.amphora.id &&
+            !state.quality &&
+            !state.isLoading &&
+            !state.loaded
+        ) {
+            setState({ isLoading: true, loaded: false });
 
             clients.amphoraeApi
-                .amphoraQualityGet(props.amphora.id, {
-                    cancelToken: source.token,
-                })
+                .amphoraQualityGet(props.amphora.id)
                 .then((r) => {
-                    setState({ quality: r.data, isLoading: false });
+                    console.log("loaded quality");
+                    setState({
+                        quality: r.data,
+                        isLoading: false,
+                        loaded: true,
+                    });
                 })
                 .catch((e) => {
-                    setState({ isLoading: false });
+                    setState({ isLoading: false, loaded: true });
                     console.log(e);
                 });
-
-            return () => source.cancel("The quality component unmounted");
         }
-    }, []);
+    }, [props.amphora.id, state, clients]);
 
     const renderHarveyBalls = (q: Quality) => {
         return (

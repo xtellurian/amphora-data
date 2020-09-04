@@ -14,11 +14,13 @@ export const MagicLabel: React.FunctionComponent<MagicProps<string>> = (
     });
 
     React.useEffect(() => {
-        setState({
-            ...state,
-            disableEditing: props.disableEditing,
-        });
-    }, [props.disableEditing]);
+        if(state.disableEditing !== props.disableEditing) {
+            setState({
+                ...state,
+                disableEditing: props.disableEditing,
+            });
+        }
+    }, [props.disableEditing, state]);
 
     const onComplete = (value: string) => {
         setState({
