@@ -42,7 +42,7 @@ const ClickableMenuItem: React.FunctionComponent<{
             className={props.className}
             onClick={(e) => props.onClick && props.onClick(e)}
         >
-            <NavLink tag={Link} className="text-light" to={props.to}>
+            <NavLink tag={Link} className="text-light text-nowrap" to={props.to}>
                 {props.icon && (
                     <FontAwesomeIcon
                         icon={props.icon}
