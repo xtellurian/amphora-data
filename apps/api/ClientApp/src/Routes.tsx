@@ -31,8 +31,8 @@ import Pallete from "./components/hidden/PalletePage";
 import { DiagnosticPage } from "./components/hidden/DiagnosticPage";
 
 // try lazy loading
-const SearchPage = React.lazy(() =>
-    import("./components/amphorae/search/SearchPage")
+const SearchPage = React.lazy(
+    () => import("./components/amphorae/search/SearchPage")
 );
 const Amphora = React.lazy(() => import("./components/amphorae/MyAmphoraPage"));
 
@@ -128,7 +128,12 @@ export const Routes: React.FC<RouteProps> = (props) => {
                 signInParams={`${rest}`}
                 userManager={userManager}
             >
-                <LoadingState>Just getting things ready...</LoadingState>
+                <LoadingState>
+                    <p>Just getting things ready.</p>
+                    <p className="text-primary" onClick={() => window.location.reload(false)}>
+                        If you're stuck trying to sign in, refresh the page, or try signing out.
+                    </p>
+                </LoadingState>
             </CallbackPage>
         );
     }
