@@ -1,5 +1,9 @@
 import * as React from "react";
-import { TermsOfUseContext, AmphoraOperationsContext } from "react-amphora";
+import {
+    TermsOfUseContext,
+    AmphoraOperationsContext,
+    MyAmphoraContext,
+} from "react-amphora";
 import { CreateAmphora as Model, Result, Position } from "amphoradata";
 import { PrimaryButton, SecondaryButton } from "../molecules/buttons";
 import {
@@ -26,7 +30,7 @@ interface CreateAmphoraComponentState {
 export const CreateAmphoraPage: React.FunctionComponent = (props) => {
     const termsContext = TermsOfUseContext.useTermsState();
     const termsDispatch = TermsOfUseContext.useTermsDispatch();
-
+    const myAmphoraDispatch = MyAmphoraContext.useMyAmphoraDispatch();
     const actions = AmphoraOperationsContext.useAmphoraOperationsDispatch();
 
     const [attempts, setAttempts] = React.useState(0);
@@ -111,6 +115,13 @@ export const CreateAmphoraPage: React.FunctionComponent = (props) => {
                 model: state.model,
             },
         });
+        setTimeout(() => {
+            console.log("Fetching My Amphora after creation");
+            myAmphoraDispatch.dispatch({
+                type: "my-amphora:fetch-list",
+                payload: { accessType: "created", scope: "self" },
+            });
+        }, 1000);
         history.replace("/amphora");
     };
     const setTerms = (t: string) => {

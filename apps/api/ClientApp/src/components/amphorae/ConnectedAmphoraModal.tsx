@@ -32,7 +32,7 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
     props
 ) => {
     const redirectToPath = (): string => {
-        const searchParams = new URLSearchParams(props.location.search)
+        const searchParams = new URLSearchParams(props.location.search);
         if (props.location.pathname) {
             const split = props.location.pathname.split("/");
             if (split.length > 1) {
@@ -97,6 +97,13 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
             }
         };
 
+        const onPurchased = (id: string) => {
+            actions.dispatch({
+                type: "amphora-operation:read",
+                payload: { id },
+            });
+        };
+
         return (
             <ModalWrapper isOpen={true} onCloseRedirectTo={redirectToPath()}>
                 <div className={openClose}>
@@ -114,6 +121,9 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                                 <MagicLabel
                                     initialValue={amphora.name}
                                     onSave={(v) => handleUpdateName(v)}
+                                    disableEditing={
+                                        context.maxPermissionLevel < 128
+                                    }
                                 >
                                     <span className="txt-lg">
                                         {amphora.name}
@@ -217,7 +227,10 @@ export const ConnectedAmphoraModal: React.FunctionComponent<ConnectedAmphoraModa
                             )}
                         />
                         <div className="purchase-button-row">
-                            <PurchaseButtonComponent amphora={amphora} />
+                            <PurchaseButtonComponent
+                                amphora={amphora}
+                                onPurchased={onPurchased}
+                            />
                         </div>
                     </ModalContents>
                 </div>

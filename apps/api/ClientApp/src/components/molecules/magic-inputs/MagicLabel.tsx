@@ -10,12 +10,28 @@ export const MagicLabel: React.FunctionComponent<MagicProps<string>> = (
     const [state, setState] = React.useState({
         value: props.initialValue,
         isEditing: false,
+        disableEditing: props.disableEditing,
     });
 
+    React.useEffect(() => {
+        setState({
+            ...state,
+            disableEditing: props.disableEditing,
+        });
+    }, [props.disableEditing]);
+
     const onComplete = (value: string) => {
-        setState({ isEditing: false, value: value || state.value });
+        setState({
+            isEditing: false,
+            value: value || state.value,
+            disableEditing: state.disableEditing,
+        });
         props.onSave(value);
     };
+
+    if (state.disableEditing) {
+        return <React.Fragment>{props.children}</React.Fragment>;
+    }
 
     return (
         <React.Fragment>
@@ -33,7 +49,11 @@ export const MagicLabel: React.FunctionComponent<MagicProps<string>> = (
                         icon="pencil-alt"
                         className="edit-button"
                         onClick={() =>
-                            setState({ value: state.value, isEditing: true })
+                            setState({
+                                value: state.value,
+                                isEditing: true,
+                                disableEditing: state.disableEditing,
+                            })
                         }
                     />
                 </React.Fragment>
