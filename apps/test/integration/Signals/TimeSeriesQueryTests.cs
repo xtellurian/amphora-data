@@ -68,7 +68,7 @@ namespace Amphora.Tests.Integration.TimeSeries
             formatter.SerializerSettings.Converters.Add(new PolymorphicSerializeJsonConverter<Variable>("kind"));
 
             var result = await persona.Http.PostAsync("/api/timeseries/query", query, formatter);
-            result.IsSuccessStatusCode.Should().BeTrue();
+            await AssertHttpSuccess(result);
         }
     }
 }
