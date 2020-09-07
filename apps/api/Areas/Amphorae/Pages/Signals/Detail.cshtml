@@ -64,7 +64,6 @@
     <script src="~/js/tsi.js"></script>
     <script>
         var cols = @Html.Raw(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Signals.Where(s => s.IsNumeric)));
-        var response = @Html.Raw(@Model.QueryResponse);
         var id = '@Model.Amphora.Id';
         tsi(id, cols).then(() => console.log('TSI Loaded'))
     </script>

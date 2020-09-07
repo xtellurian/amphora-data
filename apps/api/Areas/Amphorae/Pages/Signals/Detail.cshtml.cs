@@ -22,7 +22,6 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
 
         public List<SignalV2> Signals => new List<SignalV2> { Signal };
         public SignalV2 Signal { get; private set; }
-        public string QueryResponse { get; private set; }
         public IEnumerable<string> Values { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string id, string signalId)
@@ -45,23 +44,9 @@ namespace Amphora.Api.Areas.Amphorae.Pages.Signals
                         this.Values = values;
                     }
                 }
-
-                QueryResponse = await GetQueryResponse();
             }
 
             return OnReturnPage();
-        }
-
-        private async Task<string> GetQueryResponse()
-        {
-            // should be a list of query result (for javascript formatting tsi.js)
-            var q = await signalService.GetTsiSignalAsync(User, Amphora, Signal, true);
-            var res = new List<QueryResultPage>()
-            {
-                q
-            };
-            // must be an array
-            return JsonConvert.SerializeObject(res);
         }
     }
 }
