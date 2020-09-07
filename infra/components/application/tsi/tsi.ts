@@ -171,7 +171,7 @@ export class Tsi extends pulumi.ComponentResource {
     identities.forEach((i) => {
       accessPolicies.push(
         new azure.core.TemplateDeployment(
-          `${i.name}-tsiAccess`,
+          `${i.name}-access`,
           {
             deploymentMode: "Incremental",
             parameters: {
