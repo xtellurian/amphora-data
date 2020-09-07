@@ -141,8 +141,10 @@ namespace Amphora.Api
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.Converters.Add(new Iso8601TimeSpanConverter());
-                options.SerializerSettings.Converters.Add(new PolymorphicSerializeJsonConverter<Variable>("kind"));
+                // the order of converters seems important.
+                // I had to swap these to get the polymorphic variables to deserialise properly.
                 options.SerializerSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind"));
+                options.SerializerSettings.Converters.Add(new PolymorphicSerializeJsonConverter<Variable>("kind"));
             });
 
             services.ConfigureApplicationCookie(options =>

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amphora.Api.AspNet;
 using Amphora.Api.Contracts;
+using Amphora.Api.Models.Dtos;
 using Amphora.Common.Contracts;
 using Amphora.Common.Models.Permissions;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [CommonAuthorize]
         [Produces(typeof(QueryResultPage))]
         [ProducesResponseType(403)]
+        [ProducesBadRequest]
         [AddJsonContentType]
         public async Task<IActionResult> QueryTimeSeries(QueryRequest query)
         {
@@ -92,10 +94,15 @@ namespace Amphora.Api.Controllers.Amphorae
                 var response = await tsiService.RunQueryAsync(query);
                 return new OkObjectResult(response);
             }
+            catch (TsiErrorException tsiEx)
+            {
+                logger.LogError(tsiEx.Body.Error.Message);
+                return BadRequest(new Response($"The upstream service responsed: {tsiEx.Body.Error.Message}"));
+            }
             catch (System.Exception ex)
             {
                 logger.LogError(ex.Message, ex);
-                return BadRequest(ex.Message);
+                return BadRequest(new Response(ex.Message));
             }
         }
     }
