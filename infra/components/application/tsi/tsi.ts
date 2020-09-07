@@ -3,12 +3,15 @@ import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
 
 import { CONSTANTS } from "../../../components";
+import { AzureId } from "../../../models/azure-id";
 import { State } from "../../state/state";
 import { IAksCollection } from "../application";
 import { AppSvc } from "../appSvc/appSvc";
 import { accessPolicyTemplate } from "./tsi_accesspolicy";
 import { environmentTemplate } from "./tsi_environment";
 import { eventSourceTemplate } from "./tsi_eventsource";
+
+const auth = new pulumi.Config("auth");
 
 const azTags = {
   component: "state",
@@ -32,7 +35,7 @@ export class Tsi extends pulumi.ComponentResource {
   constructor(
     private name: string,
     private params: ITsiParams,
-    opts?: pulumi.ComponentResourceOptions,
+    opts?: pulumi.ComponentResourceOptions
   ) {
     super("amphora:Tsi", name, {}, opts);
 
@@ -46,7 +49,7 @@ export class Tsi extends pulumi.ComponentResource {
         location: CONSTANTS.location.primary,
         tags: azTags,
       },
-      { parent: this },
+      { parent: this }
     );
 
     this.envName = new random.RandomString(
@@ -57,7 +60,7 @@ export class Tsi extends pulumi.ComponentResource {
         number: false,
         special: false,
       },
-      { parent: this },
+      { parent: this }
     );
 
     const env = new azure.core.TemplateDeployment(
@@ -73,7 +76,7 @@ export class Tsi extends pulumi.ComponentResource {
         resourceGroupName: rg.name,
         templateBody: JSON.stringify(environmentTemplate()),
       },
-      { parent: rg },
+      { parent: rg }
     );
 
     const eventSource = new azure.core.TemplateDeployment(
@@ -93,66 +96,99 @@ export class Tsi extends pulumi.ComponentResource {
         resourceGroupName: rg.name,
         templateBody: JSON.stringify(eventSourceTemplate()),
       },
-      { parent: rg, dependsOn: env },
+      { parent: rg, dependsOn: env }
     );
 
     const accessPolicies: azure.core.TemplateDeployment[] = [];
 
     this.params.appSvc.apps.forEach((app) => {
-      accessPolicies.push(new azure.core.TemplateDeployment(
-        app.name + "_ap",
-        {
-          deploymentMode: "Incremental",
-          parameters: {
-            accessPolicyReaderObjectId: app.appSvc.identity.apply(
-              (identity) =>
-                identity.principalId || "11111111-1111-1111-1111-111111111111",
-            ), // https://github.com/pulumi/pulumi-azure/issues/192)
-            environmentName: this.envName.result,
-            name: app.name,
-          },
-          resourceGroupName: rg.name,
-          templateBody: JSON.stringify(accessPolicyTemplate()),
-        },
-        { parent: rg, dependsOn: eventSource },
-      ));
-      if (app.appSvcStaging) {
-        // if the staging env exists, add it to the access policy
-        accessPolicies.push(new azure.core.TemplateDeployment(
-          app.name + "_apSlot",
+      accessPolicies.push(
+        new azure.core.TemplateDeployment(
+          app.name + "_ap",
           {
             deploymentMode: "Incremental",
             parameters: {
-              accessPolicyReaderObjectId: app.appSvcStaging.identity.apply(
+              accessPolicyReaderObjectId: app.appSvc.identity.apply(
                 (identity) =>
-                  identity.principalId || "11111111-1111-1111-1111-111111111111",
+                  identity.principalId || "11111111-1111-1111-1111-111111111111"
               ), // https://github.com/pulumi/pulumi-azure/issues/192)
               environmentName: this.envName.result,
-              name: app.name + "staging",
+              name: app.name,
             },
             resourceGroupName: rg.name,
             templateBody: JSON.stringify(accessPolicyTemplate()),
           },
-          { parent: rg, dependsOn: eventSource },
-        ));
+          { parent: rg, dependsOn: eventSource }
+        )
+      );
+      if (app.appSvcStaging) {
+        // if the staging env exists, add it to the access policy
+        accessPolicies.push(
+          new azure.core.TemplateDeployment(
+            app.name + "_apSlot",
+            {
+              deploymentMode: "Incremental",
+              parameters: {
+                accessPolicyReaderObjectId: app.appSvcStaging.identity.apply(
+                  (identity) =>
+                    identity.principalId ||
+                    "11111111-1111-1111-1111-111111111111"
+                ), // https://github.com/pulumi/pulumi-azure/issues/192)
+                environmentName: this.envName.result,
+                name: app.name + "staging",
+              },
+              resourceGroupName: rg.name,
+              templateBody: JSON.stringify(accessPolicyTemplate()),
+            },
+            { parent: rg, dependsOn: eventSource }
+          )
+        );
+      }
+      if (pulumi.getStack() !== "prod") {
+        // add the build agent
       }
     });
 
-    accessPolicies.push(new azure.core.TemplateDeployment(
-      "aksPrimary_ap",
-      {
-        deploymentMode: "Incremental",
-        parameters: {
-          accessPolicyReaderObjectId: this.params.akss.primary.identities.webApp.principalId,
-          environmentName: this.envName.result,
-          name: this.params.akss.primary.k8sCluster.name,
+    accessPolicies.push(
+      new azure.core.TemplateDeployment(
+        "aksPrimary_ap",
+        {
+          deploymentMode: "Incremental",
+          parameters: {
+            accessPolicyReaderObjectId: this.params.akss.primary.identities
+              .webApp.principalId,
+            environmentName: this.envName.result,
+            name: this.params.akss.primary.k8sCluster.name,
+          },
+          resourceGroupName: rg.name,
+          templateBody: JSON.stringify(accessPolicyTemplate()),
         },
-        resourceGroupName: rg.name,
-        templateBody: JSON.stringify(accessPolicyTemplate()),
-      },
-      { parent: rg, dependsOn: eventSource },
-    ));
+        { parent: rg, dependsOn: eventSource }
+      )
+    );
 
+    const identities = auth.requireObject<AzureId[]>("ids");
+    identities.forEach((i) => {
+      accessPolicies.push(
+        new azure.core.TemplateDeployment(
+          `${i.name}-tsiAccess`,
+          {
+            deploymentMode: "Incremental",
+            parameters: {
+              accessPolicyReaderObjectId: i.objectId,
+              environmentName: this.envName.result,
+              name: `${i.name}-access`,
+            },
+            resourceGroupName: rg.name,
+            templateBody: JSON.stringify(accessPolicyTemplate()),
+          },
+          {
+            dependsOn: eventSource,
+            parent: rg,
+          }
+        )
+      );
+    });
     // TODO: renable secondary
     // accessPolicies.push(new azure.core.TemplateDeployment(
     //   "aksSecondary_ap",
@@ -171,6 +207,11 @@ export class Tsi extends pulumi.ComponentResource {
 
     this.dataAccessFqdn = env.outputs.dataAccessFqdn;
 
-    this.params.state.storeInVault("TsiDataAccessFqdn", "Tsi--DataAccessFqdn", this.dataAccessFqdn, this);
+    this.params.state.storeInVault(
+      "TsiDataAccessFqdn",
+      "Tsi--DataAccessFqdn",
+      this.dataAccessFqdn,
+      this
+    );
   }
 }
