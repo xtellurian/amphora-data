@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,24 @@ namespace Amphora.Identity.Stores.IdentityServer
             return await context.Grants.FindAsync(key);
         }
 
+        /// <summary>
+        /// Tries to save changes.
+        /// Logs an critical error on failure.
+        /// Will rethrow any exceptions.
+        /// </summary>
+        private async Task SaveChangesWithLoggerAsync(IdentityContext context)
+        {
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, ex.Message);
+                throw ex;
+            }
+        }
+
         public async Task RemoveAllAsync(string subjectId, string clientId)
         {
             var grants = await context.Grants.Where(_ => _.SubjectId == subjectId && _.ClientId == clientId).ToListAsync();
@@ -39,7 +58,7 @@ namespace Amphora.Identity.Stores.IdentityServer
                 context.Remove(g);
             }
 
-            await context.SaveChangesAsync();
+            await SaveChangesWithLoggerAsync(context);
         }
 
         public async Task RemoveAllAsync(string subjectId, string clientId, string type)
@@ -55,7 +74,7 @@ namespace Amphora.Identity.Stores.IdentityServer
                 context.Remove(g);
             }
 
-            await context.SaveChangesAsync();
+            await SaveChangesWithLoggerAsync(context);
         }
 
         public async Task RemoveAsync(string key)
@@ -65,7 +84,7 @@ namespace Amphora.Identity.Stores.IdentityServer
             if (grant != null)
             {
                 context.Grants.Remove(grant);
-                await context.SaveChangesAsync();
+                await SaveChangesWithLoggerAsync(context);
             }
         }
 
@@ -78,7 +97,7 @@ namespace Amphora.Identity.Stores.IdentityServer
 
             logger.LogInformation($"Storing grant, key: {grant.Key}");
             context.Grants.Add(grant);
-            await context.SaveChangesAsync();
+            await SaveChangesWithLoggerAsync(context);
         }
     }
 }

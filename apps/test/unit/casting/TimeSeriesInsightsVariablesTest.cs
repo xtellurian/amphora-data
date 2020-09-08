@@ -22,7 +22,7 @@ namespace Amphora.Tests.Unit.Casting
         private JsonSerializerSettings GetDeserialisationSettings()
         {
             var deserializationSettings = new JsonSerializerSettings();
-            deserializationSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind")); // does the order matter? YES! 
+            deserializationSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind")); // does the order matter? YES!
             return deserializationSettings;
         }
 
