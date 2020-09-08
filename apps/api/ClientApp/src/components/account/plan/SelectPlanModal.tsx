@@ -32,7 +32,7 @@ export const SelectPlanModal: React.FC = (props) => {
         });
 
         clients.accountApi
-            .planSetPlan2("", plan)
+            .planSetPlan(plan)
             .then((r) => {
                 success(
                     { text: `Plan set to  ${r.data.friendlyName}` },

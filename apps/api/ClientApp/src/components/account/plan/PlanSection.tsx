@@ -24,7 +24,7 @@ export const PlanSection: React.FC = () => {
                 loading: true,
             });
             clients.accountApi
-                .planGetPlan2("")
+                .planGetPlan("")
                 .then((r) => {
                     setState({
                         loading: false,

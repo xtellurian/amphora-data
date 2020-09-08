@@ -2090,10 +2090,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amphoradata@^0.10.18:
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.10.18.tgz#c1671a848e0400df557b223cc3326f3ca2067513"
-  integrity sha512-qexLNWDHPRlmFONHhJYB4alomGUk0irDmVfg+6/JmkoYrEi3iqWGQ+dtL1y1+Y1KOPdYjQ+8Rze+DId3cDAfrQ==
+amphoradata@^0.10.21:
+  version "0.10.21"
+  resolved "https://registry.yarnpkg.com/amphoradata/-/amphoradata-0.10.21.tgz#fae8092e155391a64ce8549d2bc7894eadc74d30"
+  integrity sha512-b+fmL9eT76OU/SGcyaEH1FfkxVhgibIIlPEij6KtyT8PbrTl00yHxskU/0sLP475KPankFvgBD/2v+Fq6MF5Cg==
   dependencies:
     axios "^0.19.2"
     request "^2.88.2"
@@ -9311,12 +9311,12 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-amphora@^1.8.1-1:
-  version "1.8.1-1"
-  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.8.1-1.tgz#d9ed7ec7b4c551f1009b08b3e3647da8064a4ab4"
-  integrity sha512-pGX112+SGZLr5IX5xUofP0zSy4DrixUiDcgtxCjudA+38TCfyEoM0mV7AtZESwkYAbWJrExlHTc5ezjhN4YFtA==
+react-amphora@^1.9.1-0:
+  version "1.9.1-0"
+  resolved "https://registry.yarnpkg.com/react-amphora/-/react-amphora-1.9.1-0.tgz#bcdc3bd9b0ab145b3ee32ba6e91123920bc5ee7d"
+  integrity sha512-H13ChlncJT9Yb63d3LdyknSTcSuRWvYfhzNX63txGJ6yBBqMv5OhgBvBWhNK8EKbO0hqnvyQsFLMW7D02Ae+nA==
   dependencies:
-    amphoradata "^0.10.18"
+    amphoradata "^0.10.21"
     oidc-client "^1.10.1"
     styled-components "^5.x"
     tsiclient "^1.3.0"

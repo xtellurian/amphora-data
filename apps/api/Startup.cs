@@ -139,8 +139,10 @@ namespace Amphora.Api
             })
             .AddNewtonsoftJson(options =>
             {
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.Converters.Add(new Iso8601TimeSpanConverter());
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 // the order of converters seems important.
                 // I had to swap these to get the polymorphic variables to deserialise properly.
                 options.SerializerSettings.Converters.Add(new PolymorphicDeserializeJsonConverter<Variable>("kind"));
