@@ -1,12 +1,12 @@
+// not used any more. just here as a record.
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-
 export function squarespaceDns(
     rg: azure.core.ResourceGroup,
     dnsZone: azure.dns.Zone
 ) {
     const opts = {
-        protect: true,
+        protect: false,
     };
 
     const tags = {

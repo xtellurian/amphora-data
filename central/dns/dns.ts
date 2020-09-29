@@ -4,7 +4,6 @@ import { IMultiEnvironmentMultiCluster } from "../contracts";
 import { frontDoorDns, IFrontendHosts } from "./front-door-dns";
 import { K8sDns } from "./k8s-dns";
 import { sendGridDns } from "./sendgrid";
-import { squarespaceDns } from "./squarespace";
 
 const config = new pulumi.Config();
 
@@ -161,7 +160,6 @@ export function createDns(rg: azure.core.ResourceGroup, clusters: IMultiEnvironm
     );
 
     sendGridDns(rg, dnsZone);
-    squarespaceDns(rg, dnsZone);
 
     return frontDoorDns(rg, dnsZone);
 }
