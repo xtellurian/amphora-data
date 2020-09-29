@@ -17,6 +17,8 @@ jobs:
       value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
     - name: pulumi.webAppResourceId
       value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+    - name: pulumi.identityAppResourceId
+      value: $[ dependencies.infrastructure.outputs['pulumi.identityAppResourceId'] ]
   steps:
     - template: artifacts.download.steps.yaml
     - template: az-login.steps.yaml
@@ -37,11 +39,14 @@ jobs:
     value: $[ dependencies.infrastructure.outputs['pulumi.acrName'] ]
   - name: pulumi.webAppResourceId
     value: $[ dependencies.infrastructure.outputs['pulumi.webAppResourceId'] ]
+  - name: pulumi.identityAppResourceId
+    value: $[ dependencies.infrastructure.outputs['pulumi.identityAppResourceId'] ]
   steps:
   - template: artifacts.download.steps.yaml
   - script: |
       echo acrName is $(acrName)
       echo webAppResourceId is $(webAppResourceId)
+      echo identityAppResourceId is $(identityAppResourceId)
     displayName: Echo requirement variables.
   - template: app.deploy-app-svc.steps.yaml
 

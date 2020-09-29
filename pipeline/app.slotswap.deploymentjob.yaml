@@ -37,7 +37,28 @@ jobs:
             az webapp config appsettings set --ids $webAppId -s staging --slot-settings STACK="$STACK(staging)"
             az webapp config appsettings set --ids $webAppId --slot-settings STACK="$STACK" #prod slot
             popd
-          displayName: Swap Staging and Production
+          displayName: Swap WebApp Staging and Production
+          env:
+            PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+            ARM_CLIENT_ID: $(appId)
+            ARM_CLIENT_SECRET: $(password)
+            ARM_SUBSCRIPTION_ID: $(subscription)
+            ARM_TENANT_ID: $(tenant)
+            STACK: $(stack) 
+            STAGING_PERCENT: $(percent)
+        - script: |
+            # Add the pulumi CLI to the PATH
+            set -e
+            export PATH=$PATH:$HOME/.pulumi/bin
+            pushd infra
+            . pulumi-stack-ci.sh
+            appId=$(pulumi stack output identityAppResourceId)
+            az webapp deployment slot swap  --ids $appId --slot staging --target-slot production
+            az webapp traffic-routing set --distribution staging=0 --ids $appId
+            az webapp config appsettings set --ids $appId -s staging --slot-settings STACK="$STACK(staging)"
+            az webapp config appsettings set --ids $appId --slot-settings STACK="$STACK" #prod slot
+            popd
+          displayName: Swap Identity Staging and Production
           env:
             PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
             ARM_CLIENT_ID: $(appId)

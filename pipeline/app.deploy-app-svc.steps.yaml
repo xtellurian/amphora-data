@@ -8,4 +8,5 @@ steps:
     IMAGE: $(pulumi.acrName).azurecr.io/webapp
     BUILD: $(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
+    IDAPPID: $(pulumi.identityAppResourceId)
     STAGING: $(staging)

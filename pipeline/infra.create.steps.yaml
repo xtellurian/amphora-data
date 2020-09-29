@@ -21,12 +21,14 @@ steps:
     echo "$kvName"
     echo "$pulumiStack"
     echo "$webAppResourceId"
+    echo "$identityAppResourceId"
   displayName: Important Variables
   env: 
     kvUri: $(pulumi.kvUri)
     kvName: $(pulumi.kvName)
     pulumiStack: $(pulumi.stack)
     webAppResourceId: $(pulumi.webAppResourceId)
+    identityAppResourceId: $(pulumi.identityAppResourceId)
 
 - script: ./infra/scripts/subscribe_logic_app_to_eventgrid.sh -t "$workflowTriggerId" -e "$appEventGridTopicId"
   displayName: Subscribe LogicApp to EventGrid 
