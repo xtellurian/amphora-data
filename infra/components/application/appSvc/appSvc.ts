@@ -49,7 +49,7 @@ interface IAppServicePlanConfig {
 }
 
 export class AppSvc extends pulumi.ComponentResource {
-  public imageName: pulumi.Output<string>;
+  // public imageName: pulumi.Output<string>;
   public apps: IPlanAndSlot[] = [];
   public appSettings: pulumi.Input<{
     [key: string]: pulumi.Input<string>;
@@ -110,7 +110,7 @@ export class AppSvc extends pulumi.ComponentResource {
       }
     );
 
-    this.imageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.application.imageName}`;
+    const identityImageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.identity.imageName}`;
     const host = appsConfig.get("mainHost")
       ? appsConfig.require("mainHost")
       : "";
@@ -134,9 +134,39 @@ export class AppSvc extends pulumi.ComponentResource {
       kvUri: kv.vaultUri, // important
     };
 
+    this.appSettings = appSettings;
+
+    this.createApp(
+      appSettings,
+      CONSTANTS.application.imageName,
+      acr.loginServer,
+      plan,
+      appSvcPlan,
+      rg
+    );
+    this.createApp(
+      appSettings,
+      CONSTANTS.identity.imageName,
+      acr.loginServer,
+      plan,
+      appSvcPlan,
+      rg
+    );
+  }
+
+  private createApp(
+    appSettings: any,
+    imageName: string,
+    acrLoginServer: pulumi.Output<string>,
+    plan: IAppServicePlanConfig,
+    appSvcPlan: azure.appservice.Plan,
+    rg: azure.core.ResourceGroup
+  ) {
     if (stack === "develop" || stack === "master") {
       appSettings.DisableHsts = "true"; // disable enforced hsts on develop and master stacks
     }
+    const uniqueAppName = plan.name.substr(0, 3) + imageName.substr(0, 3);
+    const fullImageName = pulumi.interpolate`${acrLoginServer}/${imageName}`;
 
     // Add cors for applicationsƒ
     const cors = {
@@ -147,11 +177,11 @@ export class AppSvc extends pulumi.ComponentResource {
       alwaysOn: true,
       cors,
       healthCheckPath: "/healthz",
-      linuxFxVersion: pulumi.interpolate`DOCKER|${this.imageName}:latest`, // to make the app service = container
+      linuxFxVersion: pulumi.interpolate`DOCKER|${fullImageName}:latest`,
     };
 
     const appSvc = new azure.appservice.AppService(
-      plan.name,
+      uniqueAppName,
       {
         appServicePlanId: appSvcPlan.id,
         appSettings,
@@ -163,7 +193,7 @@ export class AppSvc extends pulumi.ComponentResource {
         tags,
       },
       {
-        ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
+        ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"],
         parent: appSvcPlan,
       }
     );
@@ -171,7 +201,7 @@ export class AppSvc extends pulumi.ComponentResource {
     // need second for deep copying reasons
     if (plan.planTier === "Standard") {
       appSvcStaging = new azure.appservice.Slot(
-        plan.name + "Slot",
+        uniqueAppName + "Slot",
         {
           appServiceName: appSvc.name,
           appServicePlanId: appSvcPlan.id,
@@ -185,28 +215,26 @@ export class AppSvc extends pulumi.ComponentResource {
           tags,
         },
         {
-          ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"], // don't reset every time
+          ignoreChanges: ["appSettings.siteConfig.linuxFxVersion"],
           parent: rg,
         }
       );
     }
 
-    this.appSettings = appSettings;
-
     // section--key
     this.accessPolicyKeyVault(
-      plan.name + "-access",
+      uniqueAppName+ "-acs",
       this.params.state.kv,
       appSvc
     );
     if (appSvcStaging) {
       this.accessPolicyKeyVault(
-        plan.name + "StagingAccess",
+        uniqueAppName + "StagingAccess",
         this.params.state.kv,
         appSvcStaging
       );
     }
-    this.apps.push({ name: plan.name, appSvc, appSvcStaging });
+    this.apps.push({ name: uniqueAppName, appSvc, appSvcStaging });
   }
 
   private accessPolicyKeyVault(

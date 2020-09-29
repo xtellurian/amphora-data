@@ -19,6 +19,9 @@ const CONSTANTS = {
   authentication: {
     tenantId: "617bc365-674a-436e-8a27-5bacbe6df190",
   },
+  identity: {
+    imageName: "identity",
+  },
   location: {
     primary: "australiasoutheast",
     secondary: "australiaeast",

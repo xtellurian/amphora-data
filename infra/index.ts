@@ -61,9 +61,9 @@ export let tsiFqdn = result.then((r) =>
   r.application.tsi.dataAccessFqdn,
 );
 
-export let imageName = result.then((r) =>
-  r.application.imageName,
-);
+// export let imageName = result.then((r) =>
+//   r.application.imageName,
+// );
 
 export let acrName = result.then((r) =>
   r.application.acr.name,
