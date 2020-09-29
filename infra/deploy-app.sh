@@ -11,6 +11,9 @@ fi
 if [ -z "$APPIMAGE" ]; then
     APPIMAGE="$ACR_NAME.azurecr.io/webapp"
 fi
+if [ -z "$IDIMAGE" ]; then
+    IDIMAGE="$ACR_NAME.azurecr.io/identity"
+fi
 if [ -z "$BUILD" ]; then
     BUILD=local
 fi
@@ -18,7 +21,7 @@ if [ -z "$WEBAPPID" ]; then
     WEBAPPID=$(pulumi stack output webAppResourceId)
 fi
 if [ -z "$IDAPPID" ]; then
-    WEBAPPID=$(pulumi stack output identityAppResourceId)
+    IDAPPID=$(pulumi stack output identityAppResourceId)
 fi
 if [ -z "$STAGING" ]; then
     STAGING=false

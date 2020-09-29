@@ -5,7 +5,8 @@ steps:
   displayName: Deploy to Azure App Service
   env:
     ACR_NAME: $(pulumi.acrName)
-    IMAGE: $(pulumi.acrName).azurecr.io/webapp
+    APPIMAGE: $(pulumi.acrName).azurecr.io/webapp
+    IDIMAGE: $(pulumi.acrName).azurecr.io/identity
     BUILD: $(Build.BuildNumber)
     WEBAPPID: $(pulumi.webAppResourceId)
     IDAPPID: $(pulumi.identityAppResourceId)
