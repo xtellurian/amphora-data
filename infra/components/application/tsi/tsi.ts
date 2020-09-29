@@ -101,7 +101,7 @@ export class Tsi extends pulumi.ComponentResource {
 
     const accessPolicies: azure.core.TemplateDeployment[] = [];
 
-    this.params.appSvc.apps.forEach((app) => {
+    this.params.appSvc.mainApps.forEach((app) => {
       accessPolicies.push(
         new azure.core.TemplateDeployment(
           app.name + "_ap",

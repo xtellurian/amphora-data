@@ -50,7 +50,8 @@ interface IAppServicePlanConfig {
 
 export class AppSvc extends pulumi.ComponentResource {
   // public imageName: pulumi.Output<string>;
-  public apps: IPlanAndSlot[] = [];
+  public mainApps: IPlanAndSlot[] = [];
+  public identityApps: IPlanAndSlot[] = [];
   public appSettings: pulumi.Input<{
     [key: string]: pulumi.Input<string>;
   }>;
@@ -136,21 +137,25 @@ export class AppSvc extends pulumi.ComponentResource {
 
     this.appSettings = appSettings;
 
-    this.createApp(
-      appSettings,
-      CONSTANTS.application.imageName,
-      acr.loginServer,
-      plan,
-      appSvcPlan,
-      rg
+    this.mainApps.push(
+      this.createApp(
+        appSettings,
+        CONSTANTS.application.imageName,
+        acr.loginServer,
+        plan,
+        appSvcPlan,
+        rg
+      )
     );
-    this.createApp(
-      appSettings,
-      CONSTANTS.identity.imageName,
-      acr.loginServer,
-      plan,
-      appSvcPlan,
-      rg
+    this.identityApps.push(
+      this.createApp(
+        appSettings,
+        CONSTANTS.identity.imageName,
+        acr.loginServer,
+        plan,
+        appSvcPlan,
+        rg
+      )
     );
   }
 
@@ -223,7 +228,7 @@ export class AppSvc extends pulumi.ComponentResource {
 
     // section--key
     this.accessPolicyKeyVault(
-      uniqueAppName+ "-acs",
+      uniqueAppName + "-acs",
       this.params.state.kv,
       appSvc
     );
@@ -234,7 +239,7 @@ export class AppSvc extends pulumi.ComponentResource {
         appSvcStaging
       );
     }
-    this.apps.push({ name: uniqueAppName, appSvc, appSvcStaging });
+    return { name: uniqueAppName, appSvc, appSvcStaging };
   }
 
   private accessPolicyKeyVault(

@@ -18,14 +18,18 @@ interface IMainResult {
 }
 
 async function main(): Promise<IMainResult> {
-
   const monitoring = new Monitoring({ name: "monitoring" });
 
   const network = new Network({ name: "network" });
 
   const state = new State({ name: "state" }, monitoring);
 
-  const application = new Application({ name: "application" }, monitoring, network, state);
+  const application = new Application(
+    { name: "application" },
+    monitoring,
+    network,
+    state
+  );
 
   const business = new Business({ name: "business" }, monitoring);
 
@@ -40,47 +44,48 @@ async function main(): Promise<IMainResult> {
 // https://github.com/pulumi/pulumi/issues/2910
 
 const generateIdList = (apps: IPlanAndSlot[]): pulumi.Output<string> =>
-  pulumi.output(apps.map((a) => pulumi.interpolate`${a.appSvc.id} `)).apply((array) => array.join(" "));
+  pulumi
+    .output(apps.map((a) => pulumi.interpolate`${a.appSvc.id} `))
+    .apply((array) => array.join(" "));
 
 const result: Promise<IMainResult> = main();
 
-export let instrumentatonKey = result.then((r) =>
-  r.monitoring.applicationInsights.instrumentationKey,
+export let instrumentatonKey = result.then(
+  (r) => r.monitoring.applicationInsights.instrumentationKey
 );
 export let appHostnames = result.then((r) =>
-  r.application.appSvc.apps.map((app) => app.appSvc.defaultSiteHostname),
+  r.application.appSvc.mainApps.map((app) => app.appSvc.defaultSiteHostname)
 );
-export let kvUri = result.then((r) =>
-  r.state.kv.vaultUri,
+export let identityHostnames = result.then((r) =>
+  r.application.appSvc.identityApps.map((app) => app.appSvc.defaultSiteHostname)
 );
-export let kvName = result.then((r) =>
-  r.state.kv.name,
-);
+export let kvUri = result.then((r) => r.state.kv.vaultUri);
+export let kvName = result.then((r) => r.state.kv.name);
 
-export let tsiFqdn = result.then((r) =>
-  r.application.tsi.dataAccessFqdn,
-);
+export let tsiFqdn = result.then((r) => r.application.tsi.dataAccessFqdn);
 
 // export let imageName = result.then((r) =>
 //   r.application.imageName,
 // );
 
-export let acrName = result.then((r) =>
-  r.application.acr.name,
+export let acrName = result.then((r) => r.application.acr.name);
+export let acrId = result.then((r) => r.application.acr.id);
+export let workflowTriggerId = result.then(
+  (r) => r.business.workflowTrigger.id
 );
-export let acrId = result.then((r) =>
-  r.application.acr.id,
+export let appEventGridTopicId = result.then((r) => r.monitoring.appTopic.id);
+export let webAppResourceId = result.then((r) =>
+  generateIdList(r.application.appSvc.mainApps)
 );
-export let workflowTriggerId = result.then((r) =>
-  r.business.workflowTrigger.id,
+export let identityAppResourceId = result.then((r) =>
+  generateIdList(r.application.appSvc.identityApps)
 );
-export let appEventGridTopicId = result.then((r) =>
-  r.monitoring.appTopic.id,
-);
-export let webAppResourceId = result.then((r) => generateIdList(r.application.appSvc.apps));
 
 export let webAppResourceIds = result.then((r) =>
-  r.application.appSvc.apps.map((a) => a.appSvc.id),
+  r.application.appSvc.mainApps.map((a) => a.appSvc.id)
+);
+export let identityAppResourceIds = result.then((r) =>
+  r.application.appSvc.identityApps.map((a) => a.appSvc.id)
 );
 
 const asAksOutput = (c: Aks) => {
