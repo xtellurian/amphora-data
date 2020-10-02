@@ -92,9 +92,15 @@ namespace Amphora.Api.StartupModules
                         // it can be hard to set the base url in theapp svc itself behind a reverse proxy like front door
                         var uri = new Uri(redirectUri);
                         var host = uri.Host.ToString();
-                        if (!host.Contains("localhost"))
+                        if (!host.Contains("localhost") && !string.IsNullOrEmpty(externalServices.WebAppBaseUrl))
                         {
-                            context.ProtocolMessage.RedirectUri = redirectUri.Replace(host, externalServices.WebAppBaseUrl);
+                            var replacement = redirectUri.Replace(host, externalServices.WebAppBaseUrl);
+                            Console.WriteLine($"Replacing Redirect URI with {replacement}");
+                            context.ProtocolMessage.RedirectUri = replacement;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not replacing RedirectUri for this request");
                         }
 
                         return System.Threading.Tasks.Task.CompletedTask;
