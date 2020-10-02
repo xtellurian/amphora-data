@@ -1,3 +1,4 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Amphora.Api.AspNet;
@@ -83,7 +84,21 @@ namespace Amphora.Api.StartupModules
                     options.SaveTokens = true;
                     options.Scope.Add("email");
                     options.Scope.Add(Scopes.AmphoraScope);
+                    options.Events.OnRedirectToIdentityProvider = (context) =>
+                    {
+                        var redirectUri = context.ProtocolMessage.RedirectUri;
+                        Console.WriteLine($"Old redirect URI is {redirectUri}");
+                        // this ensures the return url works when deployed in an app service
+                        // it can be hard to set the base url in theapp svc itself behind a reverse proxy like front door
+                        var uri = new Uri(redirectUri);
+                        var host = uri.Host.ToString();
+                        if (!host.Contains("localhost"))
+                        {
+                            context.ProtocolMessage.RedirectUri = redirectUri.Replace(host, externalServices.WebAppBaseUrl);
+                        }
 
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    };
                     options.Events.OnTicketReceived = (context) =>
                     {
                         // expire in 24 hours
