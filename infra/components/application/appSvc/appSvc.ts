@@ -111,7 +111,6 @@ export class AppSvc extends pulumi.ComponentResource {
       }
     );
 
-    const identityImageName = pulumi.interpolate`${acr.loginServer}/${CONSTANTS.identity.imageName}`;
     const host = appsConfig.get("mainHost")
       ? appsConfig.require("mainHost")
       : "";
