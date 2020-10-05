@@ -84,27 +84,27 @@ namespace Amphora.Api.StartupModules
                     options.SaveTokens = true;
                     options.Scope.Add("email");
                     options.Scope.Add(Scopes.AmphoraScope);
-                    options.Events.OnRedirectToIdentityProvider = (context) =>
-                    {
-                        var redirectUri = context.ProtocolMessage.RedirectUri;
-                        Console.WriteLine($"Old redirect URI is {redirectUri}");
-                        // this ensures the return url works when deployed in an app service
-                        // it can be hard to set the base url in theapp svc itself behind a reverse proxy like front door
-                        var uri = new Uri(redirectUri);
-                        var host = uri.Host.ToString();
-                        if (!host.Contains("localhost") && !string.IsNullOrEmpty(externalServices.WebAppBaseUrl))
-                        {
-                            var replacement = redirectUri.Replace(host, externalServices.WebAppBaseUrl);
-                            Console.WriteLine($"Replacing Redirect URI with {replacement}");
-                            context.ProtocolMessage.RedirectUri = replacement;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Not replacing RedirectUri for this request");
-                        }
-
-                        return System.Threading.Tasks.Task.CompletedTask;
-                    };
+                    // options.Events.OnRedirectToIdentityProvider = (context) =>
+                    // {
+                    //     var redirectUri = context.ProtocolMessage.RedirectUri;
+                    //     Console.WriteLine($"Old redirect URI is {redirectUri}");
+                    //     // this ensures the return url works when deployed in an app service
+                    //     // it can be hard to set the base url in theapp svc itself behind a reverse proxy like front door
+                    //     var uri = new Uri(redirectUri);
+                    //     var host = uri.Host.ToString();
+                    //     if (!host.Contains("localhost") && !string.IsNullOrEmpty(externalServices.WebAppBaseUrl))
+                    //     {
+                    //         var replacement = redirectUri.Replace(host, externalServices.WebAppBaseUrl);
+                    //         Console.WriteLine($"Replacing Redirect URI with {replacement}");
+                    //         context.ProtocolMessage.RedirectUri = replacement;
+                    //     }
+                    //     else
+                    //     {
+                    //         Console.WriteLine("Not replacing RedirectUri for this request");
+                    //     }
+                    //
+                    //     return System.Threading.Tasks.Task.CompletedTask;
+                    // };
                     options.Events.OnTicketReceived = (context) =>
                     {
                         // expire in 24 hours

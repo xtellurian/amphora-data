@@ -27,7 +27,7 @@ namespace Amphora.SharedUI
             services.AddTransient<IMarkdownToHtml, MarkdownToHtml>(); // used for reading files from wwwroot
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardedHeaders = ForwardedHeaders.All;
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             });
@@ -60,7 +60,7 @@ namespace Amphora.SharedUI
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                ForwardedHeaders = ForwardedHeaders.All
             });
 
             if (HostingEnvironment.IsDevelopment())
