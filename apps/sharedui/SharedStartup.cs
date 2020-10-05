@@ -20,11 +20,6 @@ namespace Amphora.SharedUI
         protected void ConfigureSharedServices(IServiceCollection services)
         {
             System.Console.WriteLine($"Hosting Environment Name is {HostingEnvironment.EnvironmentName}");
-
-            services.AddOptions(); // needed to load configuration from appsettings.json
-            services.AddHealthChecks();
-            services.AddTransient<IContentLoader, StaticContentLoader>(); // used for reading files from wwwroot
-            services.AddTransient<IMarkdownToHtml, MarkdownToHtml>(); // used for reading files from wwwroot
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.All;
@@ -32,6 +27,10 @@ namespace Amphora.SharedUI
                 options.KnownProxies.Clear();
             });
 
+            services.AddOptions(); // needed to load configuration from appsettings.json
+            services.AddHealthChecks();
+            services.AddTransient<IContentLoader, StaticContentLoader>(); // used for reading files from wwwroot
+            services.AddTransient<IMarkdownToHtml, MarkdownToHtml>(); // used for reading files from wwwroot
             services.Configure<GoogleAnalyticsOptions>(Configuration.GetSection("GoogleAnalytics"));
             services.Configure<EnvironmentInfo>(Configuration.GetSection("Environment"));
             Configuration.GetSection("Environment").Bind(EnvironmentInfo);
@@ -40,6 +39,9 @@ namespace Amphora.SharedUI
 
         protected void ConfigureSharedPipeline(IApplicationBuilder app)
         {
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
+            app.UseForwardedHeaders();
+
             // should come before other middleware. Because prod is behind a reverse proxy,
             // this is needed so the redirect_uri in identity server isn't http
             if (HostingEnvironment.IsProduction())
@@ -55,13 +57,6 @@ namespace Amphora.SharedUI
                 context => context.Request.Method == HttpMethod.Get.Method &&
                     context.Request.Path.StartsWithSegments("/healthz"),
                 builder => builder.UseHealthChecks("/healthz"));
-
-            // app.UseHealthChecks("/healthz");
-            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.All
-            });
 
             if (HostingEnvironment.IsDevelopment())
             {
