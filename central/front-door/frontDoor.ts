@@ -1,6 +1,7 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
+import { IAppServiceBackend } from "../contracts";
 import { IFrontendHosts } from "../dns/front-door-dns";
 import { getBackendPools, IBackendEnvironments } from "./backendPools";
 import { getFrontendEndpoints } from "./frontends";
@@ -28,18 +29,24 @@ export function createFrontDoor({
     rg,
     kv,
     frontendHosts,
-    prodHostnames,
+    prod,
+    master,
+    develop
 }: // tslint:disable-next-line: max-line-length
 {
     rg: azure.core.ResourceGroup;
     kv: azure.keyvault.KeyVault;
     frontendHosts: IFrontendHosts;
-    prodHostnames: pulumi.Output<any>;
+    prod: IAppServiceBackend;
+    master?: IAppServiceBackend;
+    develop?: IAppServiceBackend;
 }): IBackendEnvironments {
     const backendPools = getBackendPools({
         backendEnvironments,
+        develop,
         frontendHosts,
-        prodHostnames,
+        master,
+        prod,
     });
     const frontendEndpoints = getFrontendEndpoints(kv, frontendHosts);
     const routingRules = getRoutingRules(backendEnvironments, frontendHosts);

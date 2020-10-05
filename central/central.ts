@@ -9,7 +9,14 @@ const prodStack = new pulumi.StackReference(`xtellurian/amphora/prod`);
 const masterStack = new pulumi.StackReference(`xtellurian/amphora/master`);
 const developStack = new pulumi.StackReference(`xtellurian/amphora/develop`);
 
-const prodHostnames = prodStack.getOutput("appHostnames"); // should be an array
+const prodAppHostnames = prodStack.getOutput("appHostnames"); // should be an array
+const prodIdentityHostnames = prodStack.getOutput("identityHostnames"); // should be an array
+
+const masterAppHostnames = masterStack.getOutput("appHostnames"); // should be an array
+const masterIdentityHostnames = masterStack.getOutput("identityHostnames"); // should be an array
+
+const developAppHostnames = developStack.getOutput("appHostnames"); // should be an array
+const developIdentityHostnames = developStack.getOutput("identityHostnames"); // should be an array
 
 const authConfig = new pulumi.Config("authentication");
 
@@ -157,8 +164,19 @@ const kv = new azure.keyvault.KeyVault(
 );
 
 export const backendEnvironments = createFrontDoor({
+    develop: {
+        identityUrl: developIdentityHostnames as pulumi.Output<string[]>,
+        webAppUrl: developAppHostnames as pulumi.Output<string[]>,
+    },
     frontendHosts,
     kv,
-    prodHostnames,
+    master: {
+        identityUrl: masterIdentityHostnames as pulumi.Output<string[]>,
+        webAppUrl: masterAppHostnames as pulumi.Output<string[]>,
+    },
+    prod: {
+        identityUrl: prodIdentityHostnames as pulumi.Output<string[]>,
+        webAppUrl: prodAppHostnames as pulumi.Output<string[]>,
+    },
     rg,
 });

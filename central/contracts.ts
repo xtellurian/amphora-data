@@ -15,3 +15,8 @@ export interface IMultiEnvironmentMultiCluster {
     master: IMultiCluster;
     prod: IMultiCluster;
 }
+
+export interface IAppServiceBackend {
+    webAppUrl: pulumi.Output<string[]>;
+    identityUrl: pulumi.Output<string[]>;
+}

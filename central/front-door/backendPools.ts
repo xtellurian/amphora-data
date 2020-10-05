@@ -1,6 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
-import { IMultiEnvironmentMultiCluster } from "../contracts";
+import { IAppServiceBackend } from "../contracts";
 import { IFrontendHosts, IUniqueUrl } from "../dns/front-door-dns";
 
 const config = new pulumi.Config();
@@ -27,12 +27,16 @@ const prodBackendCount = 2;
 export function getBackendPools({
     backendEnvironments,
     frontendHosts,
-    prodHostnames,
+    prod,
+    master,
+    develop,
 }: {
     // param type definition
     backendEnvironments: IBackendEnvironments;
     frontendHosts: IFrontendHosts;
-    prodHostnames: pulumi.Output<any>;
+    prod: IAppServiceBackend;
+    master?: IAppServiceBackend;
+    develop?: IAppServiceBackend;
 }): pulumi.Input<
     Array<pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>>
 > {
@@ -47,7 +51,7 @@ export function getBackendPools({
     >> = [];
     for (let i = 0; i < prodBackendCount; i++) {
         prodApplicationBackends.push({
-            address: prodHostnames.apply((h) => h[i]),
+            address: prod.webAppUrl.apply((h) => h[i]),
             hostHeader: frontendHosts.prod.app.globalHost,
             httpPort: 80,
             httpsPort: 443,
@@ -99,57 +103,91 @@ export function getBackendPools({
     backendPools.push(prodAPIBackendPool);
 
     // Prod ID pool
-    const prodIdPool = createPool(
-        `${backendEnvironments.prod.identity}`,
-        "prod",
-        frontendHosts.prod.identity
-    );
+    // const prodIdPool = createPool(
+    //     `${backendEnvironments.prod.identity}`,
+    //     "prod",
+    //     frontendHosts.prod.identity
+    // );
+
+    const identityBackends: Array<pulumi.Input<
+        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
+    >> = [];
+    const melHostId = `prod.${locations.mel}.identity.amphoradata.com`;
+    identityBackends.push({
+        address: melHostId,
+        hostHeader: melHostId,
+        httpPort: 80,
+        httpsPort: 443,
+    });
+
+    for (let i = 0; i < prodBackendCount; i++) {
+        identityBackends.push({
+            address: prod.identityUrl.apply((h) => h[i]),
+            hostHeader: frontendHosts.prod.identity.globalHost,
+            httpPort: 80,
+            httpsPort: 443,
+        });
+    }
+
+    const prodIdPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
+        backends: identityBackends,
+        healthProbeName: "normal",
+        loadBalancingName: "loadBalancingSettings1",
+        name: backendEnvironments.prod.identity,
+    };
 
     backendPools.push(prodIdPool);
 
-    // create develop pools
-    const devAppPool = createPool(
-        `${backendEnvironments.develop.app}`,
-        "develop",
-        frontendHosts.develop.app,
-        "quickstart"
-    );
-    const devApiPool = createPool(
-        `${backendEnvironments.develop.api}`,
-        "develop",
-        frontendHosts.develop.api
-    );
-    const devIdPool = createPool(
-        `${backendEnvironments.develop.identity}`,
-        "develop",
-        frontendHosts.develop.identity
-    );
-
-    // create master pools
-    const masterAppPool = createPool(
-        `${backendEnvironments.master.app}`,
-        "master",
-        frontendHosts.master.app,
-        "quickstart"
-    );
-    const masterApiPool = createPool(
-        `${backendEnvironments.master.api}`,
-        "master",
-        frontendHosts.master.api
-    );
-    const masterIdPool = createPool(
-        `${backendEnvironments.master.identity}`,
-        "master",
-        frontendHosts.master.identity
-    );
-
     // add tobackends
     if (config.requireBoolean("deployDevelop")) {
+        // create develop pools
+        const devApiPool = createPool(
+            `${backendEnvironments.develop.api}`,
+            "develop",
+            frontendHosts.develop.api,
+            "normal"
+        );
+        const devAppPool = createPool(
+            `${backendEnvironments.develop.app}`,
+            "develop",
+            frontendHosts.develop.app,
+            "quickstart",
+            develop
+        );
+        const devIdPool = createPool(
+            `${backendEnvironments.develop.identity}`,
+            "develop",
+            frontendHosts.develop.identity,
+            "normal",
+            develop
+        );
         backendPools.push(devAppPool);
         backendPools.push(devApiPool);
         backendPools.push(devIdPool);
     }
     if (config.requireBoolean("deployMaster")) {
+        // create master pools
+        const masterApiPool = createPool(
+            `${backendEnvironments.master.api}`,
+            "master",
+            frontendHosts.master.api,
+            "normal"
+        );
+        const masterAppPool = createPool(
+            `${backendEnvironments.master.app}`,
+            "master",
+            frontendHosts.master.app,
+            "quickstart",
+            master
+        );
+        const masterIdPool = createPool(
+            `${backendEnvironments.master.identity}`,
+            "master",
+            frontendHosts.master.identity,
+            "normal",
+            master
+        );
+
         backendPools.push(masterAppPool);
         backendPools.push(masterApiPool);
         backendPools.push(masterIdPool);
@@ -164,20 +202,36 @@ function createPool(
     poolName: string,
     envName: string,
     url: IUniqueUrl,
-    healthProbeName: string = "normal"
+    healthProbeName: string,
+    appSvc?: IAppServiceBackend
 ): azure.types.input.frontdoor.FrontdoorBackendPool {
     const backends: Array<pulumi.Input<
         azure.types.input.frontdoor.FrontdoorBackendPoolBackend
     >> = [];
-    // add sydney
-    // TODO: renable secondary
-    // const sydHost = `${envName}.${locations.syd}.${url.appName}.${domain}`;
-    // backends.push({
-    //     address: sydHost,
-    //     hostHeader: sydHost,
-    //     httpPort: 80,
-    //     httpsPort: 443,
-    // });
+    if (appSvc && appSvc.identityUrl.length && appSvc.webAppUrl.length) {
+        console.log(`Creating appsvc pool for ${poolName}`);
+        if (url.appName === "identity") {
+            for (let i = 0; i < prodBackendCount; i++) {
+                backends.push({
+                    address: appSvc.identityUrl.apply((h) => h[i]),
+                    hostHeader: appSvc.identityUrl.apply((h) => h[i]),
+                    httpPort: 80,
+                    httpsPort: 443,
+                });
+            }
+        } else if (url.appName === "app") {
+            for (let i = 0; i < prodBackendCount; i++) {
+                backends.push({
+                    address: appSvc.webAppUrl.apply((h) => h[i]),
+                    hostHeader: appSvc.webAppUrl.apply((h) => h[i]),
+                    httpPort: 80,
+                    httpsPort: 443,
+                });
+            }
+        }
+    } else {
+        console.log(`Not creating appsvc pool for ${poolName}`);
+    }
     // add melbourne
     const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
     backends.push({
