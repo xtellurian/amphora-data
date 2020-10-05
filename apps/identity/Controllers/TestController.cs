@@ -11,8 +11,8 @@ namespace Amphora.Identity.Controllers
         public TestController()
         { }
 
-        [HttpPost("api/headers-echo")]
-        public async Task<IActionResult> Get()
+        [HttpGet("api/headers-echo")]
+        public async Task<IActionResult> EchoHeaders()
         {
             await Task.Delay(1); // just make it async for warnings
             var headers = new Dictionary<string, string>();
@@ -22,6 +22,14 @@ namespace Amphora.Identity.Controllers
             }
 
             return Ok(headers);
+        }
+
+        [HttpGet("api/host-echo")]
+        public async Task<IActionResult> EchoHost()
+        {
+            await Task.Delay(1); // just make it async for warnings
+
+            return Ok(Request.Scheme + "://" + Request.Host.Value);
         }
     }
 }
