@@ -44,41 +44,13 @@ export function getBackendPools({
         pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>
     >> = [];
 
-    // APP SERVICE BACKENDS
-    // add app service backends
-    const prodApplicationBackends: Array<pulumi.Input<
-        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
-    >> = [];
-    for (let i = 0; i < prodBackendCount; i++) {
-        prodApplicationBackends.push({
-            address: prod.webAppUrl.apply((h) => h[i]),
-            hostHeader: frontendHosts.prod.app.globalHost,
-            httpPort: 80,
-            httpsPort: 443,
-        });
-    }
-
-    // add k8s primary + secondary backend from aks
-    // sydney cluster removed for cost reasons
-    // prodBackends.push({
-    //     address: `prod.${locations.syd}.app.${domain}`,
-    //     hostHeader: `prod.${locations.syd}.app.${domain}`,
-    //     httpPort: 80,
-    //     httpsPort: 443,
-    // });
-    prodApplicationBackends.push({
-        address: `prod.${locations.mel}.app.${domain}`,
-        hostHeader: `prod.${locations.mel}.app.${domain}`,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-
-    const prodApplicationBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: prodApplicationBackends,
-        healthProbeName: "quickstart",
-        loadBalancingName: "loadBalancingSettings1",
-        name: backendEnvironments.prod.app,
-    };
+    const prodApplicationBackendPool = createPool(
+        backendEnvironments.prod.app,
+        "prod",
+        frontendHosts.prod.app,
+        "quickstart",
+        prod
+    );
 
     backendPools.push(prodApplicationBackendPool);
 
@@ -103,38 +75,13 @@ export function getBackendPools({
     backendPools.push(prodAPIBackendPool);
 
     // Prod ID pool
-    // const prodIdPool = createPool(
-    //     `${backendEnvironments.prod.identity}`,
-    //     "prod",
-    //     frontendHosts.prod.identity
-    // );
-
-    const identityBackends: Array<pulumi.Input<
-        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
-    >> = [];
-    const melHostId = `prod.${locations.mel}.identity.amphoradata.com`;
-    identityBackends.push({
-        address: melHostId,
-        hostHeader: melHostId,
-        httpPort: 80,
-        httpsPort: 443,
-    });
-
-    for (let i = 0; i < prodBackendCount; i++) {
-        identityBackends.push({
-            address: prod.identityUrl.apply((h) => h[i]),
-            hostHeader: frontendHosts.prod.identity.globalHost,
-            httpPort: 80,
-            httpsPort: 443,
-        });
-    }
-
-    const prodIdPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: identityBackends,
-        healthProbeName: "normal",
-        loadBalancingName: "loadBalancingSettings1",
-        name: backendEnvironments.prod.identity,
-    };
+    const prodIdPool = createPool(
+        backendEnvironments.prod.identity,
+        "prod",
+        frontendHosts.prod.identity,
+        "normal",
+        prod
+    );
 
     backendPools.push(prodIdPool);
 
@@ -142,20 +89,20 @@ export function getBackendPools({
     if (config.requireBoolean("deployDevelop")) {
         // create develop pools
         const devApiPool = createPool(
-            `${backendEnvironments.develop.api}`,
+            backendEnvironments.develop.api,
             "develop",
             frontendHosts.develop.api,
             "normal"
         );
         const devAppPool = createPool(
-            `${backendEnvironments.develop.app}`,
+            backendEnvironments.develop.app,
             "develop",
             frontendHosts.develop.app,
             "quickstart",
             develop
         );
         const devIdPool = createPool(
-            `${backendEnvironments.develop.identity}`,
+            backendEnvironments.develop.identity,
             "develop",
             frontendHosts.develop.identity,
             "normal",
@@ -168,20 +115,20 @@ export function getBackendPools({
     if (config.requireBoolean("deployMaster")) {
         // create master pools
         const masterApiPool = createPool(
-            `${backendEnvironments.master.api}`,
+            backendEnvironments.master.api,
             "master",
             frontendHosts.master.api,
             "normal"
         );
         const masterAppPool = createPool(
-            `${backendEnvironments.master.app}`,
+            backendEnvironments.master.app,
             "master",
             frontendHosts.master.app,
             "quickstart",
             master
         );
         const masterIdPool = createPool(
-            `${backendEnvironments.master.identity}`,
+            backendEnvironments.master.identity,
             "master",
             frontendHosts.master.identity,
             "normal",
