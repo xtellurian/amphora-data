@@ -180,13 +180,13 @@ function createPool(
         console.log(`Not creating appsvc pool for ${poolName}`);
     }
     // add melbourne
-    const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
-    backends.push({
-        address: melHost,
-        hostHeader: melHost,
-        httpPort: 80,
-        httpsPort: 443,
-    });
+    // const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
+    // backends.push({
+    //     address: melHost,
+    //     hostHeader: melHost,
+    //     httpPort: 80,
+    //     httpsPort: 443,
+    // });
 
     const backendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends,
