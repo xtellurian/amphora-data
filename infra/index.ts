@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 
-import { Aks } from "./components/application/aks/aks";
 import { Application } from "./components/application/application";
 import { IPlanAndSlot } from "./components/application/appSvc/appSvc";
 import { Business } from "./components/business/business";
@@ -88,23 +87,23 @@ export let identityAppResourceIds = result.then((r) =>
   r.application.appSvc.identityApps.map((a) => a.appSvc.id)
 );
 
-const asAksOutput = (c: Aks) => {
-  return {
-    aksId: c.k8sCluster.id,
-    fqdn: c.k8sInfra.fqdn,
-    fqdnName: c.k8sInfra.fqdnName,
-    group: c.k8sCluster.resourceGroupName,
-    ingressIp: c.k8sInfra.ingressIp,
-    kubeConfig: c.k8sCluster.kubeConfigRaw,
-    location: c.k8sCluster.location,
-    name: c.k8sCluster.name,
-  };
-};
+// const asAksOutput = (c: Aks) => {
+//   return {
+//     aksId: c.k8sCluster.id,
+//     fqdn: c.k8sInfra.fqdn,
+//     fqdnName: c.k8sInfra.fqdnName,
+//     group: c.k8sCluster.resourceGroupName,
+//     ingressIp: c.k8sInfra.ingressIp,
+//     kubeConfig: c.k8sCluster.kubeConfigRaw,
+//     location: c.k8sCluster.location,
+//     name: c.k8sCluster.name,
+//   };
+// };
 
-// TODO: re-enable secondary
-export let k8s = result.then((r) => {
-  return {
-    // australiaeast: asAksOutput(r.application.aks.secondary),
-    australiasoutheast: asAksOutput(r.application.aks.primary),
-  };
-});
+// // TODO: re-enable secondary
+// export let k8s = result.then((r) => {
+//   return {
+//     // australiaeast: asAksOutput(r.application.aks.secondary),
+//     australiasoutheast: asAksOutput(r.application.aks.primary),
+//   };
+// });

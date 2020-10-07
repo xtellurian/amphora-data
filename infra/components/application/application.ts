@@ -5,7 +5,6 @@ import { CONSTANTS, IComponentParams } from "../../components";
 import { Monitoring } from "../monitoring/monitoring";
 import { Network } from "../network/network";
 import { State } from "../state/state";
-import { Aks } from "./aks/aks";
 import { AppSvc } from "./appSvc/appSvc";
 import { AzureMaps } from "./maps/azure-maps";
 import { AzureSearch } from "./search/azure-search";
@@ -30,14 +29,8 @@ export interface IApplication {
   appSvc: AppSvc;
 }
 
-export interface IAksCollection {
-  primary: Aks;
-  secondary?: Aks;
-}
-
 export class Application extends pulumi.ComponentResource
   implements IApplication {
-  public aks: IAksCollection;
   public appSvc: AppSvc;
   public acr: azure.containerservice.Registry;
   public tsi: Tsi;
@@ -84,7 +77,6 @@ export class Application extends pulumi.ComponentResource
     this.createAzureMaps(rg);
     // disable creating the config store for now
     // this.createConfigStore(rg);
-    this.createAks(rg, this.acr);
     this.createTsi();
 
     const searchRg = new azure.core.ResourceGroup(searchRgName,
@@ -94,45 +86,6 @@ export class Application extends pulumi.ComponentResource
       }, { parent: this });
 
     this.createSearch(searchRg);
-  }
-
-  private createAks(rg: azure.core.ResourceGroup, acr: azure.containerservice.Registry) {
-
-    const roleAssignment = new azure.authorization.Assignment("acrPull", {
-      principalId: objectId,
-      roleDefinitionName: "AcrPull",
-      scope: this.acr.id,
-    }, {
-      dependsOn: this.acr,
-      parent: this,
-    });
-
-    const primary = new Aks("aks-au1", {
-      acr: this.acr,
-      appSettings: this.appSvc.appSettings,
-      kv: this.state.kv,
-      location: CONSTANTS.location.primary,
-      monitoring: this.monitoring,
-      network: this.network,
-      rg,
-      state: this.state,
-    }, { parent: this });
-
-    // const secondary = new Aks("aks-au2", {
-    //   acr: this.acr,
-    //   appSettings: this.appSvc.appSettings,
-    //   kv: this.state.kv,
-    //   location: CONSTANTS.location.secondary,
-    //   monitoring: this.monitoring,
-    //   network: this.network,
-    //   rg,
-    //   state: this.state,
-    // }, { parent: this });
-    // TODO: renable secondary
-    this.aks = {
-      primary,
-      // secondary,
-    };
   }
 
   private createSearch(rg: azure.core.ResourceGroup) {
@@ -148,7 +101,6 @@ export class Application extends pulumi.ComponentResource
 
   private createTsi() {
     this.tsi = new Tsi("tsi", {
-      akss: this.aks,
       appSvc: this.appSvc,
       eh: this.state.eh,
       eh_namespace: this.state.ehns,
