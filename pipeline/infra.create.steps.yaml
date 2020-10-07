@@ -36,7 +36,3 @@ steps:
     workflowTriggerId: $(pulumi.workflowTriggerId)
     appEventGridTopicId: $(pulumi.appEventGridTopicId)
 
-- script: ./infra/scripts/set-fqdn-multi.sh
-  displayName: Set Multi AKS public IP FQDN 
-  env:
-    STACK_OUTPUT_PATH: $(Pipeline.Workspace)/artifacts/infra/$(pulumi.stack).output.json

@@ -50,6 +50,3 @@ jobs:
     displayName: Echo requirement variables.
   - template: app.deploy-app-svc.steps.yaml
 
-- template: k8s.job.yaml
-  parameters:
-    dependsOn: deploy_container

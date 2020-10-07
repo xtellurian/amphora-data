@@ -18,53 +18,9 @@ variables:
 - group: AzureDeploySP
 
 jobs:
-  - job: destroy_develop_k8s
-    displayName: Destroy Develop K8s
-    steps:
-      - template: install.pulumi.steps.yaml
-      - script: |
-          export PATH=$PATH:$HOME/.pulumi/bin
-          pushd k8s
-          npm install
-          set -x
-          pulumi destroy -y -s develop-australiaeast
-          pulumi destroy -y -s develop-australiasoutheast
-          set +x
-          popd
-        displayName: Run Pulumi Destroy
-        env:
-          PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-          ARM_CLIENT_ID: $(appId)
-          ARM_CLIENT_SECRET: $(password)
-          ARM_SUBSCRIPTION_ID: $(subscription)
-          ARM_TENANT_ID: $(tenant)
-          STACK: $(stack) 
-
-  - job: destroy_master_k8s
-    displayName: Destroy Master K8s
-    steps:
-      - template: install.pulumi.steps.yaml
-      - script: |
-          export PATH=$PATH:$HOME/.pulumi/bin
-          pushd k8s
-          npm install
-          set -x
-          pulumi destroy -y -s master-australiaeast
-          pulumi destroy -y -s master-australiasoutheast
-          set +x
-          popd
-        displayName: Run Pulumi Destroy
-        env:
-          PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
-          ARM_CLIENT_ID: $(appId)
-          ARM_CLIENT_SECRET: $(password)
-          ARM_SUBSCRIPTION_ID: $(subscription)
-          ARM_TENANT_ID: $(tenant)
-          STACK: $(stack) 
 
   - job: destroy_develop_infra
     displayName: Destroy Develop Infrastructure
-    dependsOn: destroy_develop_k8s
     steps:
     - template: install.pulumi.steps.yaml
     - template: az-login.steps.yaml
@@ -72,14 +28,6 @@ jobs:
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
         npm install
-
-        k8s=`pulumi stack output -s develop -j k8s`
-        name=$(jq -r '.australiasoutheast.name' <<< ${k8s})
-        group=$(jq -r '.australiasoutheast.group' <<< ${k8s})
-        az aks delete -y -n $name -g $group
-        name=$(jq -r '.australiaeast.name' <<< ${k8s})
-        group=$(jq -r '.australiaeast.group' <<< ${k8s})
-        az aks delete -y -n $name -g $group
         pulumi destroy -r -s develop -y
         popd
       displayName: Destroy Infrastructure
@@ -94,7 +42,6 @@ jobs:
 
   - job: destroy_master_infra
     displayName: Destroy Master Infrastructure
-    dependsOn: destroy_master_k8s
     steps:
     - template: install.pulumi.steps.yaml
     - template: az-login.steps.yaml
@@ -102,14 +49,6 @@ jobs:
         export PATH=$PATH:$HOME/.pulumi/bin
         pushd infra
         npm install
-
-        k8s=`pulumi stack output -s master -j k8s`
-        name=$(jq -r '.australiasoutheast.name' <<< ${k8s})
-        group=$(jq -r '.australiasoutheast.group' <<< ${k8s})
-        az aks delete -y -n $name -g $group
-        name=$(jq -r '.australiaeast.name' <<< ${k8s})
-        group=$(jq -r '.australiaeast.group' <<< ${k8s})
-        az aks delete -y -n $name -g $group
         pulumi destroy -r -s master -y
         popd
       displayName: Destroy Infrastructure

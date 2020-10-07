@@ -1,10 +1,5 @@
 config:
   acr:sku: Basic
-  aks:nodeCount: "1"
-  aks:nodeSize: Standard_B2ms
-  aks:kubeVersion: "1.16.13"
-  aks:spAppId: cd2af837-c848-491b-acc5-c187b42f4500
-  aks:spObjectId: dbb559ce-417d-4fef-bcb9-f65e059d2932
   amphora:SendGridApiKey:
     secure: AAABAOeeviUNSEtmScuEbitizbMppi3bZ5J9DJJvLw/BMB5AAlysqczTaHTbFOPNaaZeaVsE8LWFMFTzVd4k5E5XIQgMMUkQ1y0deEDmlwRnjYkW9R1RRxl90byaxSTnixj+sbc=
   amphora:aksSpAppPassword:
@@ -40,3 +35,4 @@ config:
   azure:environment: public
   azure:subscriptionId: 651f2ed5-6e2f-41d0-b533-0cd28801ef2a
   azuresearch:sku: free
+  central:deployDevelop: "true"

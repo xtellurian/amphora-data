@@ -30,8 +30,4 @@ jobs:
         - template: infra.create.steps.yaml
         - template: app.deploy-container-image.steps.yaml
         - template: app.deploy-app-svc.steps.yaml
-        # - template: app.deploy-k8s.steps.yaml
 
-- template: k8s.deploymentjob.yaml
-  parameters:
-    environment: ${{ parameters.environment }}
