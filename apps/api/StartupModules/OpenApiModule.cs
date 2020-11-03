@@ -41,6 +41,7 @@ namespace Amphora.Api.StartupModules
                 document.OperationProcessors.Add(
                     new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
+                document.FlattenInheritanceHierarchy = true;
                 document.Description = Description;
                 document.Title = Title;
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
