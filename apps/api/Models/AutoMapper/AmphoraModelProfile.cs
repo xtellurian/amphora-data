@@ -13,12 +13,13 @@ namespace Amphora.Api.Models.AutoMapper
         {
             CreateMap<AmphoraModel, BasicAmphora>()
                 .ForMember(o => o.Labels, p => p.MapFrom(src => src.Labels.ToLabelString()))
+                .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
+                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()))
                 .IncludeBase<EntityBase, Amphora.Api.Models.Dtos.Entity>();
 
             CreateMap<AmphoraModel, EditAmphora>()
                 .ForMember(o => o.Labels, p => p.MapFrom(src => src.Labels.ToLabelString()))
-                .ForMember(o => o.Lat, p => p.MapFrom(src => src.GeoLocation.Lat()))
-                .ForMember(o => o.Lon, p => p.MapFrom(src => src.GeoLocation.Lon()));
+                .IncludeBase<AmphoraModel, BasicAmphora>();
 
             CreateMap<CreateAmphora, AmphoraModel>()
                 .ConstructUsing(_ => new AmphoraModel(_.Name, _.Description, _.Price, null))

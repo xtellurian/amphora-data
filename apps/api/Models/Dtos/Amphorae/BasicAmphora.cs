@@ -24,6 +24,11 @@ namespace Amphora.Api.Models.Dtos.Amphorae
         [DataType(DataType.Currency)]
         public double Price { get; set; }
 
+        [Display(Name = "Latitude")]
+        public double? Lat { get; set; }
+        [Display(Name = "Longitude")]
+        public double? Lon { get; set; }
+
         // number of labels is enforced by this REGEX
         [Display(Name = "Labels")]
         [RegularExpression(@"^(([-\w ]{0,12})[, ]?){1,11}$", ErrorMessage = "Comma Separated Labels, Max 10 Labels")]
