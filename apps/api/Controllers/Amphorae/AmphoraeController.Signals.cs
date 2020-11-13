@@ -254,7 +254,7 @@ namespace Amphora.Api.Controllers.Amphorae
         [HttpPost("signals/batchvalues")] // TODO: make obsolete
         [HttpPost("batchSignalValues")]
         [CommonAuthorize]
-        [Produces(typeof(Dictionary<string, object>))]
+        [Produces(typeof(IEnumerable<Dictionary<string, object>>))]
         [ProducesBadRequest]
         public async Task<IActionResult> UploadSignalBatch(string id, [FromBody] List<Dictionary<string, object>> data)
         {
