@@ -12,3 +12,7 @@ az ad sp create-for-rbac --name $SP_NAME --scopes /subscriptions/$SUB
 # user access administrator
 # https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#user-access-administrator
 az role assignment create --assignee $SP_NAME --role $ROLE_ID --subscription $SUB
+
+
+# to create the prod service principal for the pipeline
+# az ad sp create-for-rbac --name ProdPulumiDevOps --scopes /subscriptions/cfd587d5-8215-4c5c-83bd-f61df6ba51c3
