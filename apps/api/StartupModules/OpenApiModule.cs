@@ -1,4 +1,5 @@
 using System.Linq;
+using Amphora.Api.AspNet.NSwag;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,7 @@ namespace Amphora.Api.StartupModules
                 document.Description = Description;
                 document.Title = Title;
                 document.Version = ApiVersion.CurrentVersion.ToSemver();
+                document.SchemaProcessors.Add(new VariableSchemaProcessor());
             });
 
             services.AddSwaggerDocument(document => // add a Swagger (OpenAPI v2) doc
@@ -72,7 +74,7 @@ namespace Amphora.Api.StartupModules
         {
             app.UseOpenApi(); // serve OpenAPI/Swagger documents
             app.UseSwaggerUi3(settings => { }); // serve Swagger UI
-            // app.UseReDoc(); // serve ReDoc UIÎ
+                                                // app.UseReDoc(); // serve ReDoc UIÎ
         }
     }
 }
