@@ -26,6 +26,8 @@ config:
     name: syd
     planSize: B1
     planTier: Basic
+  apps:segmentTrackingId:
+    secure: AAABAP7EdzuUtq4wAEQUequu8H00NB/1rqA5W4g5a+wMmQpQERxQRF4p1M8Vxsh9GgtaZ3svqJplNiZKjmFFOA==
   auth:ids:
   - name: rian
     objectId: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
