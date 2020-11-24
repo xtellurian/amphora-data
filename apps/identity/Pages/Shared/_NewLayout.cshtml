@@ -20,6 +20,16 @@
     var returnUrl = Context.Request.Query["returnUrl"].FirstOrDefault()?.ToString() 
         ?? externalServicesOptions.CurrentValue.WebAppUri().ToStandardString() + "/Challenge";
     var googleTrackingId = Configuration.GetSection("GoogleAnalytics")["TrackingId"];
+    var segmentTrackingId = Configuration.GetSection("Segment")["TrackingId"];
+    string id = "";
+    dynamic traits = new {};
+    var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+    if (User != null && isAuthenticated)
+    {
+        id = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+        var uName = User.Claims.First(x => x.Type == ClaimTypes.Name).Value;
+        traits = new {username = name, email = name};
+    }
 }
 
 <!DOCTYPE html>
@@ -51,6 +61,18 @@
     <link rel="stylesheet" href="~/_content/sharedui/css/login.css" />
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Fjalla+One&display=swap" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <script>
+        @* Segment Tracking *@
+        !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.13.1";
+        analytics.load('@segmentTrackingId');
+        @if (isAuthenticated)
+        {
+            @:analytics.identify('@id', @Json.Serialize(traits));
+        }
+        analytics.page();
+        }}();
+    </script>
 </head>
 <body>
     <div class="bg-login">
