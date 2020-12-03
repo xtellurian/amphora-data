@@ -27,11 +27,11 @@ export function getRoutingRules(
             backendEnvironments.prod.identity,
             frontendHosts.prod.identity
         ),
-        getRule(
-            "PRODrouteToAPI",
-            backendEnvironments.prod.api,
-            frontendHosts.prod.api
-        ),
+        // getRule(
+        //     "PRODrouteToAPI",
+        //     backendEnvironments.prod.api,
+        //     frontendHosts.prod.api
+        // ),
     ];
 
     if (config.requireBoolean("deployDevelop")) {
@@ -42,13 +42,13 @@ export function getRoutingRules(
                 frontendHosts.develop.identity
             )
         );
-        rules.push(
-            getRule(
-                "developAPIRoute",
-                backendEnvironments.develop.api,
-                frontendHosts.develop.api
-            )
-        );
+        // rules.push(
+        //     getRule(
+        //         "developAPIRoute",
+        //         backendEnvironments.develop.api,
+        //         frontendHosts.develop.api
+        //     )
+        // );
         rules.push(
             getRule(
                 "developAppRoute",
@@ -66,13 +66,13 @@ export function getRoutingRules(
                 frontendHosts.master.identity
             )
         );
-        rules.push(
-            getRule(
-                "masterAPIRoute",
-                backendEnvironments.master.api,
-                frontendHosts.master.api
-            )
-        );
+        // rules.push(
+        //     getRule(
+        //         "masterAPIRoute",
+        //         backendEnvironments.master.api,
+        //         frontendHosts.master.api
+        //     )
+        // );
         rules.push(
             getRule(
                 "masterAppRoute",
@@ -153,20 +153,20 @@ function getHttpRedirectRule(frontendHosts: IFrontendHosts) {
         "rootDomain",
         "docsDomain",
         frontendHosts.prod.app.frontendName,
-        frontendHosts.prod.api.frontendName,
+        // frontendHosts.prod.api.frontendName,
         frontendHosts.prod.identity.frontendName,
     ];
 
     // now add optionally based on config
     if (config.requireBoolean("deployDevelop")) {
         frontendEndpoints.push(frontendHosts.develop.app.frontendName);
-        frontendEndpoints.push(frontendHosts.develop.api.frontendName);
+        // frontendEndpoints.push(frontendHosts.develop.api.frontendName);
         frontendEndpoints.push(frontendHosts.develop.identity.frontendName);
     }
 
     if (config.requireBoolean("deployMaster")) {
         frontendEndpoints.push(frontendHosts.master.app.frontendName);
-        frontendEndpoints.push(frontendHosts.master.api.frontendName);
+        // frontendEndpoints.push(frontendHosts.master.api.frontendName);
         frontendEndpoints.push(frontendHosts.master.identity.frontendName);
     }
     const rule = {

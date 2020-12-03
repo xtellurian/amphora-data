@@ -46,7 +46,6 @@ export function getBackendPools({
 
     const prodApplicationBackendPool = createPool(
         backendEnvironments.prod.app,
-        "prod",
         frontendHosts.prod.app,
         "quickstart",
         prod
@@ -55,29 +54,28 @@ export function getBackendPools({
     backendPools.push(prodApplicationBackendPool);
 
     // THE API PROD POOL
-    const prodAPIBackends: Array<pulumi.Input<
-        azure.types.input.frontdoor.FrontdoorBackendPoolBackend
-    >> = [];
-    prodAPIBackends.push({
-        address: `prod.${locations.mel}.api.${domain}`,
-        hostHeader: `prod.${locations.mel}.api.${domain}`,
-        httpPort: 80,
-        httpsPort: 443,
-    });
+    // const prodAPIBackends: Array<pulumi.Input<
+    //     azure.types.input.frontdoor.FrontdoorBackendPoolBackend
+    // >> = [];
+    // prodAPIBackends.push({
+    //     address: `prod.${locations.mel}.api.${domain}`,
+    //     hostHeader: `prod.${locations.mel}.api.${domain}`,
+    //     httpPort: 80,
+    //     httpsPort: 443,
+    // });
 
-    const prodAPIBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
-        backends: prodAPIBackends,
-        healthProbeName: "quickstart",
-        loadBalancingName: "loadBalancingSettings1",
-        name: backendEnvironments.prod.api,
-    };
+    // const prodAPIBackendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
+    //     backends: prodAPIBackends,
+    //     healthProbeName: "quickstart",
+    //     loadBalancingName: "loadBalancingSettings1",
+    //     name: backendEnvironments.prod.api,
+    // };
 
-    backendPools.push(prodAPIBackendPool);
+    // backendPools.push(prodAPIBackendPool);
 
     // Prod ID pool
     const prodIdPool = createPool(
         backendEnvironments.prod.identity,
-        "prod",
         frontendHosts.prod.identity,
         "normal",
         prod
@@ -88,66 +86,57 @@ export function getBackendPools({
     // add tobackends
     if (config.requireBoolean("deployDevelop")) {
         // create develop pools
-        const devApiPool = createPool(
-            backendEnvironments.develop.api,
-            "develop",
-            frontendHosts.develop.api,
-            "normal"
-        );
+        // const devApiPool = createPool(
+        //     backendEnvironments.develop.api,
+        //     frontendHosts.develop.api,
+        //     "normal"
+        // );
         const devAppPool = createPool(
             backendEnvironments.develop.app,
-            "develop",
             frontendHosts.develop.app,
             "quickstart",
             develop
         );
         const devIdPool = createPool(
             backendEnvironments.develop.identity,
-            "develop",
             frontendHosts.develop.identity,
             "normal",
             develop
         );
         backendPools.push(devAppPool);
-        backendPools.push(devApiPool);
+        // backendPools.push(devApiPool);
         backendPools.push(devIdPool);
     }
     if (config.requireBoolean("deployMaster")) {
         // create master pools
-        const masterApiPool = createPool(
-            backendEnvironments.master.api,
-            "master",
-            frontendHosts.master.api,
-            "normal"
-        );
+        // const masterApiPool = createPool(
+        //     backendEnvironments.master.api,
+        //     frontendHosts.master.api,
+        //     "normal"
+        // );
         const masterAppPool = createPool(
             backendEnvironments.master.app,
-            "master",
             frontendHosts.master.app,
             "quickstart",
             master
         );
         const masterIdPool = createPool(
             backendEnvironments.master.identity,
-            "master",
             frontendHosts.master.identity,
             "normal",
             master
         );
 
         backendPools.push(masterAppPool);
-        backendPools.push(masterApiPool);
+        // backendPools.push(masterApiPool);
         backendPools.push(masterIdPool);
     }
 
     return backendPools;
 }
 
-const domain = "amphoradata.com";
-
 function createPool(
     poolName: string,
-    envName: string,
     url: IUniqueUrl,
     healthProbeName: string,
     appSvc?: IAppServiceBackend
@@ -156,6 +145,7 @@ function createPool(
         azure.types.input.frontdoor.FrontdoorBackendPoolBackend
     >> = [];
     if (appSvc && appSvc.identityUrl.length && appSvc.webAppUrl.length) {
+        // tslint:disable-next-line: no-console
         console.log(`Creating appsvc pool for ${poolName}`);
         if (url.appName === "identity") {
             for (let i = 0; i < prodBackendCount; i++) {
@@ -177,16 +167,9 @@ function createPool(
             }
         }
     } else {
+        // tslint:disable-next-line: no-console
         console.log(`Not creating appsvc pool for ${poolName}`);
     }
-    // add melbourne
-    // const melHost = `${envName}.${locations.mel}.${url.appName}.${domain}`;
-    // backends.push({
-    //     address: melHost,
-    //     hostHeader: melHost,
-    //     httpPort: 80,
-    //     httpsPort: 443,
-    // });
 
     const backendPool: azure.types.input.frontdoor.FrontdoorBackendPool = {
         backends,

@@ -1,7 +1,6 @@
 import * as azure from "@pulumi/azure";
 import * as pulumi from "@pulumi/pulumi";
 
-import { IMultiEnvironmentMultiCluster } from "./contracts";
 import { createDns } from "./dns/dns";
 import { createFrontDoor } from "./front-door/frontDoor";
 
@@ -40,73 +39,8 @@ const rg = new azure.core.ResourceGroup(
     },
     opts
 );
-const outputName = "k8s";
 
-// TODO: renable secondary
-const clusters: IMultiEnvironmentMultiCluster = {
-    develop: {
-        // australiaeast: {
-        //     ingressIp: developStack.getOutput(outputName)
-        //         .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
-        //     location: developStack.getOutput(outputName)
-        //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
-        // },
-        australiasoutheast: {
-            ingressIp: developStack
-                .getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<
-                string
-            >,
-            location: developStack
-                .getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<
-                string
-            >,
-        },
-    },
-    master: {
-        // australiaeast: {
-        //     ingressIp: masterStack.getOutput(outputName)
-        //         .apply((k) => k?.australiaeast.ingressIp) as pulumi.Output<string>,
-        //     location: masterStack.getOutput(outputName)
-        //         .apply((k) => k?.australiaeast.location) as pulumi.Output<string>,
-        // },
-        australiasoutheast: {
-            ingressIp: masterStack
-                .getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.ingressIp) as pulumi.Output<
-                string
-            >,
-            location: masterStack
-                .getOutput(outputName)
-                .apply((k) => k?.australiasoutheast.location) as pulumi.Output<
-                string
-            >,
-        },
-    },
-    prod: {
-        // australiaeast: {
-        //     ingressIp: prodStack.requireOutput(outputName)
-        //         .apply((k) => k.australiaeast.ingressIp) as pulumi.Output<string>,
-        //     location: prodStack.requireOutput(outputName)
-        //         .apply((k) => k.australiaeast.location) as pulumi.Output<string>,
-        // },
-        australiasoutheast: {
-            ingressIp: prodStack
-                .requireOutput(outputName)
-                .apply((k) => k.australiasoutheast.ingressIp) as pulumi.Output<
-                string
-            >,
-            location: prodStack
-                .requireOutput(outputName)
-                .apply((k) => k.australiasoutheast.location) as pulumi.Output<
-                string
-            >,
-        },
-    },
-};
-
-export const frontendHosts = createDns(rg, clusters);
+export const frontendHosts = createDns(rg);
 
 const kv = new azure.keyvault.KeyVault(
     "central-keyVault",
@@ -157,6 +91,7 @@ const kv = new azure.keyvault.KeyVault(
         name: "amphora-central",
         resourceGroupName: rg.name,
         skuName: "standard",
+        softDeleteEnabled: true,
         tags,
         tenantId: authConfig.require("tenantId"),
     },

@@ -44,18 +44,18 @@ export function getFrontendEndpoints(
     ];
 
     frontends.push(getFrontend(frontendHosts.prod.app));
-    frontends.push(getFrontend(frontendHosts.prod.api));
+    // frontends.push(getFrontend(frontendHosts.prod.api));
     frontends.push(getFrontend(frontendHosts.prod.identity));
 
     if (config.requireBoolean("deployDevelop")) {
         frontends.push(getFrontend(frontendHosts.develop.app));
-        frontends.push(getFrontend(frontendHosts.develop.api));
+        // frontends.push(getFrontend(frontendHosts.develop.api));
         frontends.push(getFrontend(frontendHosts.develop.identity));
     }
 
     if (config.requireBoolean("deployMaster")) {
         frontends.push(getFrontend(frontendHosts.master.app));
-        frontends.push(getFrontend(frontendHosts.master.api));
+        // frontends.push(getFrontend(frontendHosts.master.api));
         frontends.push(getFrontend(frontendHosts.master.identity));
     }
 
