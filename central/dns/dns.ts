@@ -107,27 +107,27 @@ export function createDns(rg: azure.core.ResourceGroup): IFrontendHosts {
     //     opts
     // );
 
-    const autodoscoverCName = new azure.dns.CNameRecord(
-        "autodiscoverCName",
-        {
-            name: "autodiscover",
-            record: "autodiscover.outlook.com",
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: dnsZone.name,
-        },
-        opts
-    );
+    // const autodoscoverCName = new azure.dns.CNameRecord(
+    //     "autodiscoverCName",
+    //     {
+    //         name: "autodiscover",
+    //         record: "autodiscover.outlook.com",
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: dnsZone.name,
+    //     },
+    //     opts
+    // );
 
     const txtRecord = new azure.dns.TxtRecord(
         "outlookTxtRecord",
         {
             name: "@",
             records: [
-                {
-                    value: "v=spf1 include:spf.protection.outlook.com -all", // from 365
-                },
+                // {
+                //     value: "v=spf1 include:spf.protection.outlook.com -all", // from 365
+                // },
                 {
                     value: "a9eb31102744451ca0ad66b3cc7bde06", // from digicert
                 },
