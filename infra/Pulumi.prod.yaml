@@ -24,10 +24,10 @@ config:
     webAppBaseUrl: app.amphoradata.com
   apps:mainHost: app.amphoradata.com
   apps:plans:
-  - location: australiasoutheast
-    name: appSvc
-    planSize: S1
-    planTier: Standard
+  # - location: australiasoutheast
+  #   name: appSvc
+  #   planSize: S1
+  #   planTier: Standard
   - location: australiaeast
     name: syd
     planSize: S1

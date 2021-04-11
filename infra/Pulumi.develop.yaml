@@ -22,10 +22,10 @@ config:
     name: appSvc
     planSize: B1
     planTier: Basic
-  - location: australiaeast
-    name: syd
-    planSize: B1
-    planTier: Basic
+  # - location: australiaeast
+  #   name: syd
+  #   planSize: B1
+  #   planTier: Basic
   apps:segmentTrackingId:
     secure: AAABAP7EdzuUtq4wAEQUequu8H00NB/1rqA5W4g5a+wMmQpQERxQRF4p1M8Vxsh9GgtaZ3svqJplNiZKjmFFOA==
   auth:ids:

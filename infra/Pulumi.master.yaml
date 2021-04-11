@@ -22,10 +22,10 @@ config:
     name: appSvc
     planSize: S1
     planTier: Standard
-  - location: australiaeast
-    name: syd
-    planSize: S1
-    planTier: Standard
+  # - location: australiaeast
+  #   name: syd
+  #   planSize: S1
+  #   planTier: Standard
   auth:ids:
   - name: rian
     objectId: 16ab5eb9-f9e7-4df0-b40c-58ad0e0022d8
