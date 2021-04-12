@@ -17,16 +17,16 @@ export function getRoutingRules(
         getDocsRedirect(),
         getFrontPageRedirect(),
         getHttpRedirectRule(frontendHosts),
-        getRule(
-            "PRODrouteToApp",
-            backendEnvironments.prod.app,
-            frontendHosts.prod.app
-        ),
-        getRule(
-            "PRODrouteToIdentity",
-            backendEnvironments.prod.identity,
-            frontendHosts.prod.identity
-        ),
+        // getRule(
+        //     "PRODrouteToApp",
+        //     backendEnvironments.prod.app,
+        //     frontendHosts.prod.app
+        // ),
+        // getRule(
+        //     "PRODrouteToIdentity",
+        //     backendEnvironments.prod.identity,
+        //     frontendHosts.prod.identity
+        // ),
         // getRule(
         //     "PRODrouteToAPI",
         //     backendEnvironments.prod.api,
@@ -34,53 +34,53 @@ export function getRoutingRules(
         // ),
     ];
 
-    if (config.requireBoolean("deployDevelop")) {
-        rules.push(
-            getRule(
-                "developIdRoute",
-                backendEnvironments.develop.identity,
-                frontendHosts.develop.identity
-            )
-        );
-        // rules.push(
-        //     getRule(
-        //         "developAPIRoute",
-        //         backendEnvironments.develop.api,
-        //         frontendHosts.develop.api
-        //     )
-        // );
-        rules.push(
-            getRule(
-                "developAppRoute",
-                backendEnvironments.develop.app,
-                frontendHosts.develop.app
-            )
-        );
-    }
+    // if (config.requireBoolean("deployDevelop")) {
+    //     rules.push(
+    //         getRule(
+    //             "developIdRoute",
+    //             backendEnvironments.develop.identity,
+    //             frontendHosts.develop.identity
+    //         )
+    //     );
+    //     // rules.push(
+    //     //     getRule(
+    //     //         "developAPIRoute",
+    //     //         backendEnvironments.develop.api,
+    //     //         frontendHosts.develop.api
+    //     //     )
+    //     // );
+    //     rules.push(
+    //         getRule(
+    //             "developAppRoute",
+    //             backendEnvironments.develop.app,
+    //             frontendHosts.develop.app
+    //         )
+    //     );
+    // }
 
-    if (config.requireBoolean("deployMaster")) {
-        rules.push(
-            getRule(
-                "masterIdRoute",
-                backendEnvironments.master.identity,
-                frontendHosts.master.identity
-            )
-        );
-        // rules.push(
-        //     getRule(
-        //         "masterAPIRoute",
-        //         backendEnvironments.master.api,
-        //         frontendHosts.master.api
-        //     )
-        // );
-        rules.push(
-            getRule(
-                "masterAppRoute",
-                backendEnvironments.master.app,
-                frontendHosts.master.app
-            )
-        );
-    }
+    // if (config.requireBoolean("deployMaster")) {
+    //     rules.push(
+    //         getRule(
+    //             "masterIdRoute",
+    //             backendEnvironments.master.identity,
+    //             frontendHosts.master.identity
+    //         )
+    //     );
+    //     // rules.push(
+    //     //     getRule(
+    //     //         "masterAPIRoute",
+    //     //         backendEnvironments.master.api,
+    //     //         frontendHosts.master.api
+    //     //     )
+    //     // );
+    //     rules.push(
+    //         getRule(
+    //             "masterAppRoute",
+    //             backendEnvironments.master.app,
+    //             frontendHosts.master.app
+    //         )
+    //     );
+    // }
 
     return rules;
 }
@@ -152,23 +152,23 @@ function getHttpRedirectRule(frontendHosts: IFrontendHosts) {
         "defaultFrontend",
         "rootDomain",
         "docsDomain",
-        frontendHosts.prod.app.frontendName,
+        // frontendHosts.prod.app.frontendName,
         // frontendHosts.prod.api.frontendName,
-        frontendHosts.prod.identity.frontendName,
+        // frontendHosts.prod.identity.frontendName,
     ];
 
     // now add optionally based on config
-    if (config.requireBoolean("deployDevelop")) {
-        frontendEndpoints.push(frontendHosts.develop.app.frontendName);
-        // frontendEndpoints.push(frontendHosts.develop.api.frontendName);
-        frontendEndpoints.push(frontendHosts.develop.identity.frontendName);
-    }
+    // if (config.requireBoolean("deployDevelop")) {
+    //     frontendEndpoints.push(frontendHosts.develop.app.frontendName);
+    //     // frontendEndpoints.push(frontendHosts.develop.api.frontendName);
+    //     frontendEndpoints.push(frontendHosts.develop.identity.frontendName);
+    // }
 
-    if (config.requireBoolean("deployMaster")) {
-        frontendEndpoints.push(frontendHosts.master.app.frontendName);
-        // frontendEndpoints.push(frontendHosts.master.api.frontendName);
-        frontendEndpoints.push(frontendHosts.master.identity.frontendName);
-    }
+    // if (config.requireBoolean("deployMaster")) {
+    //     frontendEndpoints.push(frontendHosts.master.app.frontendName);
+    //     // frontendEndpoints.push(frontendHosts.master.api.frontendName);
+    //     frontendEndpoints.push(frontendHosts.master.identity.frontendName);
+    // }
     const rule = {
         // Https Redirects Route
         acceptedProtocols: ["Http"],

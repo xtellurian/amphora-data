@@ -40,7 +40,11 @@ const rg = new azure.core.ResourceGroup(
     opts
 );
 
-export const frontendHosts = createDns(rg);
+export const frontendHosts = createDns(
+    rg,
+    prodAppHostnames as pulumi.Output<string[]>,
+    prodIdentityHostnames as pulumi.Output<string[]>
+);
 
 const kv = new azure.keyvault.KeyVault(
     "central-keyVault",
@@ -98,20 +102,20 @@ const kv = new azure.keyvault.KeyVault(
     opts
 );
 
-export const backendEnvironments = createFrontDoor({
-    develop: {
-        identityUrl: developIdentityHostnames as pulumi.Output<string[]>,
-        webAppUrl: developAppHostnames as pulumi.Output<string[]>,
-    },
-    frontendHosts,
-    kv,
-    master: {
-        identityUrl: masterIdentityHostnames as pulumi.Output<string[]>,
-        webAppUrl: masterAppHostnames as pulumi.Output<string[]>,
-    },
-    prod: {
-        identityUrl: prodIdentityHostnames as pulumi.Output<string[]>,
-        webAppUrl: prodAppHostnames as pulumi.Output<string[]>,
-    },
-    rg,
-});
+// export const backendEnvironments = createFrontDoor({
+//     develop: {
+//         identityUrl: developIdentityHostnames as pulumi.Output<string[]>,
+//         webAppUrl: developAppHostnames as pulumi.Output<string[]>,
+//     },
+//     frontendHosts,
+//     kv,
+//     master: {
+//         identityUrl: masterIdentityHostnames as pulumi.Output<string[]>,
+//         webAppUrl: masterAppHostnames as pulumi.Output<string[]>,
+//     },
+//     prod: {
+//         identityUrl: prodIdentityHostnames as pulumi.Output<string[]>,
+//         webAppUrl: prodAppHostnames as pulumi.Output<string[]>,
+//     },
+//     rg,
+// });

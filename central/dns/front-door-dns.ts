@@ -22,14 +22,14 @@ export interface IUniqueUrl {
 }
 
 export interface IGlobalUrl {
-    app: IUniqueUrl;
+    // app: IUniqueUrl;
     api: IUniqueUrl;
-    identity: IUniqueUrl;
+    // identity: IUniqueUrl;
 }
 
 export interface IFrontendHosts {
-    develop: IGlobalUrl;
-    master: IGlobalUrl;
+    // develop: IGlobalUrl;
+    // master: IGlobalUrl;
     prod: IGlobalUrl;
 }
 
@@ -37,21 +37,6 @@ export function frontDoorDns(
     rg: azure.core.ResourceGroup,
     zone: azure.dns.Zone
 ): IFrontendHosts {
-
-    // PROD
-    const appCName = new azure.dns.CNameRecord(
-        "appCName",
-        {
-            name: "app",
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: zone.name,
-        },
-        opts
-    );
-
     const apiCName = new azure.dns.CNameRecord(
         "apiCName",
         {
@@ -65,54 +50,67 @@ export function frontDoorDns(
         opts
     );
 
-    const identityCName = new azure.dns.CNameRecord(
-        "identityCName",
-        {
-            name: "identity",
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: zone.name,
-        },
-        opts
-    );
+    // const identityCName = new azure.dns.CNameRecord(
+    //     "identityCName",
+    //     {
+    //         name: "identity",
+    //         record,
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: zone.name,
+    //     },
+    //     opts
+    // );
 
-    const docsCName = new azure.dns.CNameRecord(
-        "docsCName",
-        {
-            name: "docs",
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: zone.name,
-        },
-        opts
-    );
+    // const docsCName = new azure.dns.CNameRecord(
+    //     "docsCName",
+    //     {
+    //         name: "docs",
+    //         record,
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: zone.name,
+    //     },
+    //     opts
+    // );
 
-    const develop = addForEnvironment("develop", rg, zone);
-    const master = addForEnvironment("master", rg, zone);
+    // const docsCName = new azure.dns.CNameRecord(
+    //     "docsCName",
+    //     {
+    //         name: "docs",
+    //         record,
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: zone.name,
+    //     },
+    //     opts
+    // );
+
+    // const develop = addForEnvironment("develop", rg, zone);
+    // const master = addForEnvironment("master", rg, zone);
 
     return {
-        develop,
-        master,
+        // develop,
+        // master,
         prod: {
             api: {
                 appName: "api",
                 frontendName: "apiDomain",
                 globalHost: apiCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
             },
-            app: {
-                appName: "app",
-                frontendName: "appDomain",
-                globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
-            },
-            identity: {
-                appName: "identity",
-                frontendName: "identityFrontend",
-                globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
-            },
+            // app: {
+            //     appName: "app",
+            //     frontendName: "appDomain",
+            //     globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
+            // },
+            // identity: {
+            //     appName: "identity",
+            //     frontendName: "identityFrontend",
+            //     globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period,
+            // },
         },
     };
 }
@@ -122,18 +120,18 @@ function addForEnvironment(
     rg: azure.core.ResourceGroup,
     zone: azure.dns.Zone
 ): IGlobalUrl {
-    const appCName = new azure.dns.CNameRecord(
-        `${env}-app-CN`,
-        {
-            name: `${env}.app`,
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: zone.name,
-        },
-        opts
-    );
+    // const appCName = new azure.dns.CNameRecord(
+    //     `${env}-app-CN`,
+    //     {
+    //         name: `${env}.app`,
+    //         record,
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: zone.name,
+    //     },
+    //     opts
+    // );
 
     const apiCName = new azure.dns.CNameRecord(
         `${env}-api-CN`,
@@ -148,18 +146,18 @@ function addForEnvironment(
         opts
     );
 
-    const identityCName = new azure.dns.CNameRecord(
-        `${env}-id-CN`,
-        {
-            name: `${env}.identity`,
-            record,
-            resourceGroupName: rg.name,
-            tags,
-            ttl,
-            zoneName: zone.name,
-        },
-        opts
-    );
+    // const identityCName = new azure.dns.CNameRecord(
+    //     `${env}-id-CN`,
+    //     {
+    //         name: `${env}.identity`,
+    //         record,
+    //         resourceGroupName: rg.name,
+    //         tags,
+    //         ttl,
+    //         zoneName: zone.name,
+    //     },
+    //     opts
+    // );
 
     return {
         api: {
@@ -167,15 +165,15 @@ function addForEnvironment(
             frontendName: `${env}apifront`,
             globalHost: apiCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
         },
-        app: {
-            appName: "app",
-            frontendName: `${env}appfront`,
-            globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
-        },
-        identity: {
-            appName: "identity",
-            frontendName: `${env}idfront`,
-            globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
-        },
+        // app: {
+        //     appName: "app",
+        //     frontendName: `${env}appfront`,
+        //     globalHost: appCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
+        // },
+        // identity: {
+        //     appName: "identity",
+        //     frontendName: `${env}idfront`,
+        //     globalHost: identityCName.fqdn.apply((_) => _.slice(0, -1)), // remove a trailing period
+        // },
     };
 }

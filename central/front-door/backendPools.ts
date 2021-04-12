@@ -22,7 +22,7 @@ const locations = {
     syd: "australiaeast",
 };
 
-const prodBackendCount = 2;
+const prodBackendCount = 1;
 
 export function getBackendPools({
     backendEnvironments,
@@ -44,14 +44,14 @@ export function getBackendPools({
         pulumi.Input<azure.types.input.frontdoor.FrontdoorBackendPool>
     >> = [];
 
-    const prodApplicationBackendPool = createPool(
-        backendEnvironments.prod.app,
-        frontendHosts.prod.app,
-        "quickstart",
-        prod
-    );
+    // const prodApplicationBackendPool = createPool(
+    //     backendEnvironments.prod.app,
+    //     frontendHosts.prod.app,
+    //     "quickstart",
+    //     prod
+    // );
 
-    backendPools.push(prodApplicationBackendPool);
+    // backendPools.push(prodApplicationBackendPool);
 
     // THE API PROD POOL
     // const prodAPIBackends: Array<pulumi.Input<
@@ -74,63 +74,63 @@ export function getBackendPools({
     // backendPools.push(prodAPIBackendPool);
 
     // Prod ID pool
-    const prodIdPool = createPool(
-        backendEnvironments.prod.identity,
-        frontendHosts.prod.identity,
-        "normal",
-        prod
-    );
+    // const prodIdPool = createPool(
+    //     backendEnvironments.prod.identity,
+    //     frontendHosts.prod.identity,
+    //     "normal",
+    //     prod
+    // );
 
-    backendPools.push(prodIdPool);
+    // backendPools.push(prodIdPool);
 
     // add tobackends
-    if (config.requireBoolean("deployDevelop")) {
-        // create develop pools
-        // const devApiPool = createPool(
-        //     backendEnvironments.develop.api,
-        //     frontendHosts.develop.api,
-        //     "normal"
-        // );
-        const devAppPool = createPool(
-            backendEnvironments.develop.app,
-            frontendHosts.develop.app,
-            "quickstart",
-            develop
-        );
-        const devIdPool = createPool(
-            backendEnvironments.develop.identity,
-            frontendHosts.develop.identity,
-            "normal",
-            develop
-        );
-        backendPools.push(devAppPool);
-        // backendPools.push(devApiPool);
-        backendPools.push(devIdPool);
-    }
-    if (config.requireBoolean("deployMaster")) {
-        // create master pools
-        // const masterApiPool = createPool(
-        //     backendEnvironments.master.api,
-        //     frontendHosts.master.api,
-        //     "normal"
-        // );
-        const masterAppPool = createPool(
-            backendEnvironments.master.app,
-            frontendHosts.master.app,
-            "quickstart",
-            master
-        );
-        const masterIdPool = createPool(
-            backendEnvironments.master.identity,
-            frontendHosts.master.identity,
-            "normal",
-            master
-        );
+    // if (config.requireBoolean("deployDevelop")) {
+    //     // create develop pools
+    //     // const devApiPool = createPool(
+    //     //     backendEnvironments.develop.api,
+    //     //     frontendHosts.develop.api,
+    //     //     "normal"
+    //     // );
+    //     const devAppPool = createPool(
+    //         backendEnvironments.develop.app,
+    //         frontendHosts.develop.app,
+    //         "quickstart",
+    //         develop
+    //     );
+    //     const devIdPool = createPool(
+    //         backendEnvironments.develop.identity,
+    //         frontendHosts.develop.identity,
+    //         "normal",
+    //         develop
+    //     );
+    //     backendPools.push(devAppPool);
+    //     // backendPools.push(devApiPool);
+    //     backendPools.push(devIdPool);
+    // }
+    // if (config.requireBoolean("deployMaster")) {
+    //     // create master pools
+    //     // const masterApiPool = createPool(
+    //     //     backendEnvironments.master.api,
+    //     //     frontendHosts.master.api,
+    //     //     "normal"
+    //     // );
+    //     const masterAppPool = createPool(
+    //         backendEnvironments.master.app,
+    //         frontendHosts.master.app,
+    //         "quickstart",
+    //         master
+    //     );
+    //     const masterIdPool = createPool(
+    //         backendEnvironments.master.identity,
+    //         frontendHosts.master.identity,
+    //         "normal",
+    //         master
+    //     );
 
-        backendPools.push(masterAppPool);
-        // backendPools.push(masterApiPool);
-        backendPools.push(masterIdPool);
-    }
+    //     backendPools.push(masterAppPool);
+    //     // backendPools.push(masterApiPool);
+    //     backendPools.push(masterIdPool);
+    // }
 
     return backendPools;
 }
