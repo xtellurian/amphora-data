@@ -15,7 +15,7 @@ jobs:
     maxParallel: 2
   condition: succeeded()
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'ubuntu-16.04'
 
   variables:
     - group: Pulumi xtellurian
