@@ -27,7 +27,7 @@ const tags = {
 };
 
 const opts = {
-    protect: true,
+    protect: false,
 };
 
 const rg = new azure.core.ResourceGroup(
